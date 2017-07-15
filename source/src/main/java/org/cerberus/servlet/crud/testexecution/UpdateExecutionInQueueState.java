@@ -20,8 +20,7 @@
 package org.cerberus.servlet.crud.testexecution;
 
 import com.google.common.collect.Sets;
-import org.cerberus.crud.entity.TestCaseExecutionInQueue;
-import org.cerberus.crud.service.ITestCaseExecutionInQueueService;
+import org.cerberus.crud.entity.TestCaseExecutionQueue;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.servlet.api.mapper.HttpMapper;
 import org.cerberus.servlet.api.PostableHttpServlet;
@@ -36,9 +35,10 @@ import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import java.util.Collections;
 import java.util.List;
+import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 
 /**
- * Dedicated servlet to only set {@link TestCaseExecutionInQueue}'s {@link TestCaseExecutionInQueue.State}
+ * Dedicated servlet to only set {@link TestCaseExecutionQueue}'s {@link TestCaseExecutionInQueue.State}
  *
  * @author abourdon
  */
@@ -50,11 +50,11 @@ public class UpdateExecutionInQueueState extends PostableHttpServlet<UpdateExecu
      */
     public static class Request implements Validable {
 
-        private TestCaseExecutionInQueue.State state;
+        private TestCaseExecutionQueue.State state;
 
         private List<Long> ids;
 
-        public TestCaseExecutionInQueue.State getState() {
+        public TestCaseExecutionQueue.State getState() {
             return state;
         }
 
@@ -66,7 +66,7 @@ public class UpdateExecutionInQueueState extends PostableHttpServlet<UpdateExecu
         @Override
         public Validity validate() {
             final Validity.Builder validity = Validity.builder();
-            if (state == null || (state != TestCaseExecutionInQueue.State.WAITING && state != TestCaseExecutionInQueue.State.CANCELLED)) {
+            if (state == null || (state != TestCaseExecutionQueue.State.WAITING && state != TestCaseExecutionQueue.State.CANCELLED)) {
                 validity.reason("`state` null or invalid (not WAITING nor CANCELLED)");
             }
             if (ids == null || ids.isEmpty()) {
@@ -93,12 +93,12 @@ public class UpdateExecutionInQueueState extends PostableHttpServlet<UpdateExecu
     }
 
     private HttpMapper httpMapper;
-    private ITestCaseExecutionInQueueService executionInQueueService;
+    private ITestCaseExecutionQueueService executionInQueueService;
 
     @Override
     public void postInit() throws ServletException {
         httpMapper = new DefaultJsonHttpMapper();
-        executionInQueueService = getApplicationContext().getBean(ITestCaseExecutionInQueueService.class);
+        executionInQueueService = getApplicationContext().getBean(ITestCaseExecutionQueueService.class);
     }
 
     @Override

@@ -47,6 +47,7 @@ import org.springframework.stereotype.Service;
 import org.cerberus.crud.service.ICountryEnvironmentParametersService;
 import org.cerberus.crud.factory.IFactoryCountryEnvironmentParameters;
 import org.cerberus.crud.service.IParameterService;
+import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.answer.AnswerItem;
 
@@ -81,6 +82,8 @@ public class ExecutionStartService implements IExecutionStartService {
     private ISeleniumServerService serverService;
     @Autowired
     private IParameterService parameterService;
+    @Autowired
+    private ITestCaseExecutionQueueService inQueueService;
 
     private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(ExecutionStartService.class);
 
@@ -437,6 +440,9 @@ public class ExecutionStartService implements IExecutionStartService {
             if (runID != 0) {
                 tCExecution.setId(runID);
                 executionUUIDObject.setExecutionUUID(tCExecution.getExecutionUUID(), tCExecution);
+                // Update Queue Execution here.
+                inQueueService.toDone(tCExecution.getQueueID(), "", runID);
+
             } else {
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_COULDNOTCREATE_RUNID);
                 tCExecution.setResultMessage(mes);

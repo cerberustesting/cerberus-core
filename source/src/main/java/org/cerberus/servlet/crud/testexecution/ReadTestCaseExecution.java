@@ -41,12 +41,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.cerberus.crud.entity.Invariant;
 import org.cerberus.crud.entity.TestCaseExecution;
-import org.cerberus.crud.entity.TestCaseExecutionInQueue;
+import org.cerberus.crud.entity.TestCaseExecutionQueue;
 import org.cerberus.crud.entity.TestCaseLabel;
 import org.cerberus.crud.service.IApplicationService;
 import org.cerberus.crud.service.IBuildRevisionInvariantService;
 import org.cerberus.crud.service.IInvariantService;
-import org.cerberus.crud.service.ITestCaseExecutionInQueueService;
 import org.cerberus.crud.service.ITestCaseExecutionService;
 import org.cerberus.crud.service.ITestCaseLabelService;
 import org.cerberus.crud.service.ITestCaseService;
@@ -69,6 +68,7 @@ import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.util.JavaScriptUtils;
+import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 
 /**
  *
@@ -78,7 +78,7 @@ import org.springframework.web.util.JavaScriptUtils;
 public class ReadTestCaseExecution extends HttpServlet {
 
     private ITestCaseExecutionService testCaseExecutionService;
-    private ITestCaseExecutionInQueueService testCaseExecutionInQueueService;
+    private ITestCaseExecutionQueueService testCaseExecutionInQueueService;
     private ITestCaseLabelService testCaseLabelService;
     private ITestCaseService testCaseService;
     private IInvariantService invariantService;
@@ -231,7 +231,7 @@ public class ReadTestCaseExecution extends HttpServlet {
         AnswerList testCaseExecutionListInQueue = new AnswerList();
 
         testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
-        testCaseExecutionInQueueService = appContext.getBean(ITestCaseExecutionInQueueService.class);
+        testCaseExecutionInQueueService = appContext.getBean(ITestCaseExecutionQueueService.class);
 
         /**
          * Get list of execution by tag, env, country, browser
@@ -243,7 +243,7 @@ public class ReadTestCaseExecution extends HttpServlet {
          * Get list of Execution in Queue by Tag
          */
         testCaseExecutionListInQueue = testCaseExecutionInQueueService.readDistinctEnvCoutnryBrowserByTag(Tag);
-        List<TestCaseExecutionInQueue> testCaseExecutionsInQueue = testCaseExecutionListInQueue.getDataList();
+        List<TestCaseExecutionQueue> testCaseExecutionsInQueue = testCaseExecutionListInQueue.getDataList();
 
         /**
          * Feed hash map with execution from the two list (to get only one by
@@ -258,7 +258,7 @@ public class ReadTestCaseExecution extends HttpServlet {
                     + testCaseWithExecution.getControlStatus();
             testCaseExecutionsList.put(key, testCaseWithExecution);
         }
-        for (TestCaseExecutionInQueue testCaseWithExecutionInQueue : testCaseExecutionsInQueue) {
+        for (TestCaseExecutionQueue testCaseWithExecutionInQueue : testCaseExecutionsInQueue) {
             TestCaseExecution testCaseExecution = testCaseExecutionInQueueService.convertToTestCaseExecution(testCaseWithExecutionInQueue);
             String key = testCaseExecution.getBrowser() + "_"
                     + testCaseExecution.getCountry() + "_"
@@ -502,7 +502,7 @@ public class ReadTestCaseExecution extends HttpServlet {
         return countryList;
     }
 
-    private List<TestCaseExecution> hashExecution(List<TestCaseExecution> testCaseExecutions, List<TestCaseExecutionInQueue> testCaseExecutionsInQueue) throws ParseException {
+    private List<TestCaseExecution> hashExecution(List<TestCaseExecution> testCaseExecutions, List<TestCaseExecutionQueue> testCaseExecutionsInQueue) throws ParseException {
         LinkedHashMap<String, TestCaseExecution> testCaseExecutionsList = new LinkedHashMap();
         SimpleDateFormat formater = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
@@ -514,7 +514,7 @@ public class ReadTestCaseExecution extends HttpServlet {
                     + testCaseExecution.getTestCase();
             testCaseExecutionsList.put(key, testCaseExecution);
         }
-        for (TestCaseExecutionInQueue testCaseExecutionInQueue : testCaseExecutionsInQueue) {
+        for (TestCaseExecutionQueue testCaseExecutionInQueue : testCaseExecutionsInQueue) {
             TestCaseExecution testCaseExecution = testCaseExecutionInQueueService.convertToTestCaseExecution(testCaseExecutionInQueue);
             String key = testCaseExecution.getBrowser() + "_"
                     + testCaseExecution.getCountry() + "_"
@@ -573,11 +573,11 @@ public class ReadTestCaseExecution extends HttpServlet {
 
     private List<TestCaseExecution> readExecutionByTagList(ApplicationContext appContext, String Tag, int startPosition, int length, String sortInformation, String searchParameter, Map<String, List<String>> individualSearch) throws ParseException, CerberusException {
         AnswerList<TestCaseExecution> testCaseExecution;
-        AnswerList<TestCaseExecutionInQueue> testCaseExecutionInQueue;
+        AnswerList<TestCaseExecutionQueue> testCaseExecutionInQueue;
 
         ITestCaseExecutionService testCaseExecService = appContext.getBean(ITestCaseExecutionService.class);
 
-        ITestCaseExecutionInQueueService testCaseExecutionInQueueService = appContext.getBean(ITestCaseExecutionInQueueService.class);
+        ITestCaseExecutionQueueService testCaseExecutionInQueueService = appContext.getBean(ITestCaseExecutionQueueService.class);
         /**
          * Get list of execution by tag, env, country, browser
          */
@@ -587,7 +587,7 @@ public class ReadTestCaseExecution extends HttpServlet {
          * Get list of Execution in Queue by Tag
          */
         testCaseExecutionInQueue = testCaseExecutionInQueueService.readByTagByCriteria(Tag, startPosition, length, sortInformation, searchParameter, individualSearch);
-        List<TestCaseExecutionInQueue> testCaseExecutionsInQueue = testCaseExecutionInQueue.getDataList();
+        List<TestCaseExecutionQueue> testCaseExecutionsInQueue = testCaseExecutionInQueue.getDataList();
         /**
          * Feed hash map with execution from the two list (to get only one by
          * test,testcase,country,env,browser)
@@ -661,11 +661,11 @@ public class ReadTestCaseExecution extends HttpServlet {
         /**
          * Get list of Execution in Queue by Tag
          */
-        ITestCaseExecutionInQueueService testCaseExecutionInQueueService = appContext.getBean(ITestCaseExecutionInQueueService.class);
+        ITestCaseExecutionQueueService testCaseExecutionInQueueService = appContext.getBean(ITestCaseExecutionQueueService.class);
         AnswerList answerExecutionsInQueue = testCaseExecutionInQueueService.readBySystemByVarious(system, testList, applicationList, projectList, tcstatusList, groupList, tcactiveList, priorityList,
                 targetsprintList, targetrevisionList, creatorList, implementerList, buildList, revisionList,
                 environmentList, countryList, browserList, tcestatusList, ip, port, tag, browserversion, comment, bugid, ticket);
-        List<TestCaseExecutionInQueue> testCaseExecutionsInQueue = (List<TestCaseExecutionInQueue>) answerExecutionsInQueue.getDataList();
+        List<TestCaseExecutionQueue> testCaseExecutionsInQueue = (List<TestCaseExecutionQueue>) answerExecutionsInQueue.getDataList();
 
         /**
          * Merge Test Case Executions
@@ -760,7 +760,7 @@ public class ReadTestCaseExecution extends HttpServlet {
                 dataList.add(TestCaseExecution.CONTROLSTATUS_PE);
                 values.setDataList(dataList);
                 MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", "xecution").replace("%OPERATION%", "SELECT"));
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "execution").replace("%OPERATION%", "SELECT"));
                 values.setResultMessage(msg);
                 break;
             /**

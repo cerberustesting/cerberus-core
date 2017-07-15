@@ -19,17 +19,10 @@
  */
 package org.cerberus.crud.entity;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
-public class TestCaseExecutionInQueue {
-
-    public enum State {
-        WAITING,
-        QUEUED,
-        EXECUTING,
-        CANCELLED,
-        ERROR
-    }
+public class TestCaseExecutionQueue {
 
     private long id;
     private String test;
@@ -49,24 +42,76 @@ public class TestCaseExecutionInQueue {
     private String manualLoginRelativeURL;
     private String manualEnvData;
     private String tag;
-    private String outputFormat;
     private int screenshot;
     private int verbose;
     private String timeout;
-    private boolean synchroneous;
     private int pageSource;
     private int seleniumLog;
-    private Date requestDate;
-    private String comment;
-    private int retries;
     private boolean manualExecution;
+    private int retries;
+    private Date requestDate;
     private State state;
+    private String comment;
+    private long exeId;
+    private String UsrCreated;
+    private Timestamp DateCreated;
+    private String UsrModif;
+    private Timestamp DateModif;
 
     /**
      * From here are data outside database model.
      */
     private Application applicationObj;
     private TestCase testCaseObj;
+
+    public enum State {
+        WAITING,
+        QUEUED,
+        EXECUTING,
+        CANCELLED,
+        ERROR,
+        DONE
+    }
+
+    public long getExeId() {
+        return exeId;
+    }
+
+    public void setExeId(long exeId) {
+        this.exeId = exeId;
+    }
+
+    public String getUsrCreated() {
+        return UsrCreated;
+    }
+
+    public void setUsrCreated(String UsrCreated) {
+        this.UsrCreated = UsrCreated;
+    }
+
+    public Timestamp getDateCreated() {
+        return DateCreated;
+    }
+
+    public void setDateCreated(Timestamp DateCreated) {
+        this.DateCreated = DateCreated;
+    }
+
+    public String getUsrModif() {
+        return UsrModif;
+    }
+
+    public void setUsrModif(String UsrModif) {
+        this.UsrModif = UsrModif;
+    }
+
+    public Timestamp getDateModif() {
+        return DateModif;
+    }
+
+    public void setDateModif(Timestamp DateModif) {
+        this.DateModif = DateModif;
+    }
 
     public String getScreenSize() {
         return screenSize;
@@ -282,14 +327,6 @@ public class TestCaseExecutionInQueue {
         this.tag = tag;
     }
 
-    public String getOutputFormat() {
-        return outputFormat;
-    }
-
-    public void setOutputFormat(String outputFormat) {
-        this.outputFormat = outputFormat;
-    }
-
     public int getScreenshot() {
         return screenshot;
     }
@@ -312,14 +349,6 @@ public class TestCaseExecutionInQueue {
 
     public void setTimeout(String timeout) {
         this.timeout = timeout;
-    }
-
-    public boolean isSynchroneous() {
-        return synchroneous;
-    }
-
-    public void setSynchroneous(boolean synchroneous) {
-        this.synchroneous = synchroneous;
     }
 
     public int getPageSource() {
@@ -359,8 +388,8 @@ public class TestCaseExecutionInQueue {
         return "TestCaseExecutionInQueue [id=" + id + ", test=" + test + ", testCase=" + testCase + ", country=" + country + ", environment=" + environment + ", robot=" + robot
                 + ", robotIP=" + robotIP + ", robotPort=" + robotPort + ", browser=" + browser + ", browserVersion=" + browserVersion + ", platform=" + platform + ", manualURL="
                 + manualURL + ", manualHost=" + manualHost + ", manualContextRoot=" + manualContextRoot + ", manualLoginRelativeURL=" + manualLoginRelativeURL + ", manualEnvData="
-                + manualEnvData + ", tag=" + tag + ", outputFormat=" + outputFormat + ", screenshot=" + screenshot + ", verbose=" + verbose + ", timeout=" + timeout
-                + ", synchroneous=" + synchroneous + ", pageSource=" + pageSource + ", seleniumLog=" + seleniumLog + ", requestDate=" + requestDate + "]";
+                + manualEnvData + ", tag=" + tag + ", screenshot=" + screenshot + ", verbose=" + verbose + ", timeout=" + timeout
+                + ", pageSource=" + pageSource + ", seleniumLog=" + seleniumLog + ", requestDate=" + requestDate + "]";
     }
 
 }

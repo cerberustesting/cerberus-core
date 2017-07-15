@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.entity;
 
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import org.apache.log4j.Logger;
@@ -58,8 +59,6 @@ public class TestCaseExecution {
     private String ip; // Host the Selenium IP
     private String port; // host the Selenium Port
     private String tag;
-    private String finished;
-    private int verbose;
     private String status;
     private String crbVersion;
     private String executor;
@@ -71,11 +70,17 @@ public class TestCaseExecution {
     private String conditionVal2;
     private boolean manualExecution;
     private String userAgent;
+    private long queueID;
+    private String UsrCreated;
+    private Timestamp DateCreated;
+    private String UsrModif;
+    private Timestamp DateModif;
 
     /**
      * From here are data outside database model.
      */
     // Execution Parameters
+    private int verbose;
     private int screenshot;
     private String outputFormat;
     private boolean manualURL;
@@ -105,14 +110,13 @@ public class TestCaseExecution {
     // Host the full list of data calculated during the execution.
     private HashMap<String, TestCaseExecutionData> testCaseExecutionDataMap;
     // This is used to keep track of all property calculated within a step/action/control. It is reset each time we enter a step/action/control and the property name is added to the list each time it gets calculated. In case it was already asked for calculation, we stop the execution with FA message.
-    private List<String> recursiveAlreadyCalculatedPropertiesList; 
+    private List<String> recursiveAlreadyCalculatedPropertiesList;
     private List<TestCaseCountryProperties> testCaseCountryPropertyList;
     // Others
     private MessageGeneral resultMessage;
     private Selenium selenium;
     private String executionUUID;
     private Session session;
-    private long idFromQueue;
     private AppService lastServiceCalled;
     private List<RobotCapability> capabilities;
     // Global parameters.
@@ -131,6 +135,46 @@ public class TestCaseExecution {
     public static final String CONTROLSTATUS_CA = "CA";
     public static final String CONTROLSTATUS_FA = "FA";
     public static final String CONTROLSTATUS_QU = "QU";
+
+    public String getUsrCreated() {
+        return UsrCreated;
+    }
+
+    public void setUsrCreated(String UsrCreated) {
+        this.UsrCreated = UsrCreated;
+    }
+
+    public Timestamp getDateCreated() {
+        return DateCreated;
+    }
+
+    public void setDateCreated(Timestamp DateCreated) {
+        this.DateCreated = DateCreated;
+    }
+
+    public String getUsrModif() {
+        return UsrModif;
+    }
+
+    public void setUsrModif(String UsrModif) {
+        this.UsrModif = UsrModif;
+    }
+
+    public Timestamp getDateModif() {
+        return DateModif;
+    }
+
+    public void setDateModif(Timestamp DateModif) {
+        this.DateModif = DateModif;
+    }
+
+    public long getQueueID() {
+        return queueID;
+    }
+
+    public void setQueueID(long queueID) {
+        this.queueID = queueID;
+    }
 
     public String getDescription() {
         return description;
@@ -263,14 +307,6 @@ public class TestCaseExecution {
 
     public void decreaseNumberOfRetries() {
         this.numberOfRetries--;
-    }
-
-    public long getIdFromQueue() {
-        return idFromQueue;
-    }
-
-    public void setIdFromQueue(long idFromQueue) {
-        this.idFromQueue = idFromQueue;
     }
 
     public List<TestCaseCountryProperties> getTestCaseCountryPropertyList() {
@@ -617,14 +653,6 @@ public class TestCaseExecution {
         this.environment = environment;
     }
 
-    public String getFinished() {
-        return finished;
-    }
-
-    public void setFinished(String finished) {
-        this.finished = finished;
-    }
-
     public long getId() {
         return id;
     }
@@ -778,7 +806,6 @@ public class TestCaseExecution {
             result.put("url", this.getUrl());
             result.put("port", this.getPort());
             result.put("tag", this.getTag());
-            result.put("finished", this.getFinished());
             result.put("verbose", this.getVerbose());
             result.put("status", this.getStatus());
             result.put("crbVersion", this.getCrbVersion());

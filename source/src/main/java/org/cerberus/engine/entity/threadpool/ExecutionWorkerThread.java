@@ -30,17 +30,17 @@ import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.fluent.Request;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.entity.CountryEnvironmentParameters;
-import org.cerberus.crud.entity.TestCaseExecutionInQueue;
-import org.cerberus.crud.service.ITestCaseExecutionInQueueService;
+import org.cerberus.crud.entity.TestCaseExecutionQueue;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.servlet.zzpublic.RunTestCase;
 import org.cerberus.util.ParamRequestMaker;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 
 /**
- * Execute a {@link TestCaseExecutionInQueue}
+ * Execute a {@link TestCaseExecutionQueue}
  *
  * @author bcivel
  * @author abourdon
@@ -133,7 +133,7 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
             executionWorkerThread = new ExecutionWorkerThread();
         }
 
-        public Builder toExecute(TestCaseExecutionInQueue toExecute) {
+        public Builder toExecute(TestCaseExecutionQueue toExecute) {
             executionWorkerThread.setToExecute(toExecute);
             return this;
         }
@@ -148,7 +148,7 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
             return this;
         }
 
-        public Builder inQueueService(ITestCaseExecutionInQueueService inQueueService) {
+        public Builder inQueueService(ITestCaseExecutionQueueService inQueueService) {
             executionWorkerThread.setInQueueService(inQueueService);
             return this;
         }
@@ -229,6 +229,12 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
                 paramRequestMaker.addParam(RunTestCase.PARAMETER_SELENIUM_LOG, Integer.toString(executionWorkerThread.getToExecute().getSeleniumLog()));
                 paramRequestMaker.addParam(RunTestCase.PARAMETER_EXECUTION_QUEUE_ID, Long.toString(executionWorkerThread.getToExecute().getId()));
                 paramRequestMaker.addParam(RunTestCase.PARAMETER_NUMBER_OF_RETRIES, Long.toString(executionWorkerThread.getToExecute().getRetries()));
+                paramRequestMaker.addParam(RunTestCase.PARAMETER_EXECUTOR, executionWorkerThread.getToExecute().getUsrCreated());
+                String manual = "N";
+                if (executionWorkerThread.getToExecute().isManualExecution()) {
+                    manual = "Y";
+                }
+                paramRequestMaker.addParam(RunTestCase.PARAMETER_MANUAL_EXECUTION, manual);
             } catch (UnsupportedEncodingException ex) {
                 LOG.error("Error when encoding string in URL : ", ex);
             }
@@ -255,7 +261,7 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
 
     private String name;
 
-    private TestCaseExecutionInQueue toExecute;
+    private TestCaseExecutionQueue toExecute;
 
     @JsonIgnore
     private String toExecuteUrl;
@@ -264,7 +270,7 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
     private int toExecuteTimeout;
 
     @JsonIgnore
-    private ITestCaseExecutionInQueueService inQueueService;
+    private ITestCaseExecutionQueueService inQueueService;
 
     /**
      * Private constructor, use the {@link Builder} instead
@@ -280,11 +286,11 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
         this.name = name;
     }
 
-    public TestCaseExecutionInQueue getToExecute() {
+    public TestCaseExecutionQueue getToExecute() {
         return toExecute;
     }
 
-    private void setToExecute(TestCaseExecutionInQueue toExecute) {
+    private void setToExecute(TestCaseExecutionQueue toExecute) {
         this.toExecute = toExecute;
     }
 
@@ -304,11 +310,11 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
         this.toExecuteTimeout = toExecuteTimeout;
     }
 
-    public ITestCaseExecutionInQueueService getInQueueService() {
+    public ITestCaseExecutionQueueService getInQueueService() {
         return inQueueService;
     }
 
-    private void setInQueueService(ITestCaseExecutionInQueueService inQueueService) {
+    private void setInQueueService(ITestCaseExecutionQueueService inQueueService) {
         this.inQueueService = inQueueService;
     }
 
@@ -339,7 +345,7 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
                 return;
             }
             runParseAnswer(runExecution());
-            runRemoveExecutionInQueue();
+//            runRemoveExecutionInQueue();
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Execution in queue " + toExecute.getId() + " has been successfully executed");
             }
@@ -354,7 +360,7 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
     }
 
     /**
-     * Move the inner {@link TestCaseExecutionInQueue} to the
+     * Move the inner {@link TestCaseExecutionQueue} to the
      * {@link org.cerberus.crud.entity.TestCaseExecutionInQueue.State#EXECUTING}
      * state
      *
@@ -371,7 +377,7 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
     }
 
     /**
-     * Request execution of the inner {@link TestCaseExecutionInQueue} to the
+     * Request execution of the inner {@link TestCaseExecutionQueue} to the
      * {@link RunTestCase} servlet
      *
      * @return the execution answer from the {@link RunTestCase} servlet

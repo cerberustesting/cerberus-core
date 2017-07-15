@@ -20,7 +20,7 @@
 package org.cerberus.crud.service;
 
 import org.cerberus.crud.entity.TestCaseExecution;
-import org.cerberus.crud.entity.TestCaseExecutionInQueue;
+import org.cerberus.crud.entity.TestCaseExecutionQueue;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.AnswerList;
 
@@ -28,25 +28,25 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Service layer to handle {@link TestCaseExecutionInQueue} instances
+ * Service layer to handle {@link TestCaseExecutionQueue} instances
  *
  * @author abourdon
  */
-public interface ITestCaseExecutionInQueueService {
+public interface ITestCaseExecutionQueueService {
 
     /**
-     * Inserts the given {@link TestCaseExecutionInQueue} to the execution queue
+     * Inserts the given {@link TestCaseExecutionQueue} to the execution queue
      *
-     * @param inQueue the {@link TestCaseExecutionInQueue} to insert to the
+     * @param inQueue the {@link TestCaseExecutionQueue} to insert to the
      *                execution queue
      * @throws CerberusException if an exception occurs
      */
-    void insert(TestCaseExecutionInQueue inQueue) throws CerberusException;
+    void insert(TestCaseExecutionQueue inQueue) throws CerberusException;
 
     /**
-     * Removes a {@link TestCaseExecutionInQueue} record from the database.
+     * Removes a {@link TestCaseExecutionQueue} record from the database.
      *
-     * @param id the {@link TestCaseExecutionInQueue#getId()} to remove
+     * @param id the {@link TestCaseExecutionQueue#getId()} to remove
      * @throws CerberusException if an exception occurs
      */
     void remove(long id) throws CerberusException;
@@ -59,30 +59,32 @@ public interface ITestCaseExecutionInQueueService {
      * @return
      * @throws CerberusException
      */
-    List<TestCaseExecutionInQueue> findTestCaseExecutionInQueuebyTag(String tag) throws CerberusException;
+    List<TestCaseExecutionQueue> findTestCaseExecutionInQueuebyTag(String tag) throws CerberusException;
 
     /**
-     * Find a {@link TestCaseExecutionInQueue} from database
+     * Find a {@link TestCaseExecutionQueue} from database
      *
      * @param id
      * @return
      * @throws CerberusException
      */
-    TestCaseExecutionInQueue findByKey(long id) throws CerberusException;
+    TestCaseExecutionQueue findByKey(long id) throws CerberusException;
 
     void toWaiting(long id) throws CerberusException;
 
     List<Long> toWaiting(List<Long> ids) throws CerberusException;
 
-    List<TestCaseExecutionInQueue> toQueued() throws CerberusException;
+    List<TestCaseExecutionQueue> toQueued() throws CerberusException;
 
-    List<TestCaseExecutionInQueue> toQueued(int maxFetchSize) throws CerberusException;
+    List<TestCaseExecutionQueue> toQueued(int maxFetchSize) throws CerberusException;
 
-    List<TestCaseExecutionInQueue> toQueued(List<Long> ids) throws CerberusException;
+    List<TestCaseExecutionQueue> toQueued(List<Long> ids) throws CerberusException;
 
     void toExecuting(long id) throws CerberusException;
 
     void toError(long id, String comment) throws CerberusException;
+
+    void toDone(long id, String comment, long exeId) throws CerberusException;
 
     void toCancelled(long id) throws CerberusException;
 
@@ -94,7 +96,7 @@ public interface ITestCaseExecutionInQueueService {
      * @return
      * @throws CerberusException
      */
-    List<TestCaseExecutionInQueue> findAll() throws CerberusException;
+    List<TestCaseExecutionQueue> findAll() throws CerberusException;
 
     public AnswerList readByTagByCriteria(String tag, int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException;
 
@@ -121,5 +123,5 @@ public interface ITestCaseExecutionInQueueService {
      * @param testCaseExecutionInQueue
      * @return TestCaseExecution Object
      */
-    public TestCaseExecution convertToTestCaseExecution(TestCaseExecutionInQueue testCaseExecutionInQueue);
+    public TestCaseExecution convertToTestCaseExecution(TestCaseExecutionQueue testCaseExecutionInQueue);
 }

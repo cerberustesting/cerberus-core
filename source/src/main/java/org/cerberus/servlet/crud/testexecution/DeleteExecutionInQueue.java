@@ -21,7 +21,6 @@ package org.cerberus.servlet.crud.testexecution;
 
 import com.google.common.collect.Sets;
 import org.apache.log4j.Logger;
-import org.cerberus.crud.service.ITestCaseExecutionInQueueService;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.servlet.api.mapper.HttpMapper;
 import org.cerberus.servlet.api.PostableHttpServlet;
@@ -36,6 +35,7 @@ import javax.servlet.annotation.WebServlet;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 
 /**
  * @author bcivel
@@ -86,12 +86,12 @@ public class DeleteExecutionInQueue extends PostableHttpServlet<DeleteExecutionI
     private static final Logger LOGGER = Logger.getLogger(DeleteExecutionInQueue.class);
 
     private HttpMapper httpMapper;
-    private ITestCaseExecutionInQueueService executionInQueueService;
+    private ITestCaseExecutionQueueService executionInQueueService;
 
     @Override
     public void postInit() throws ServletException {
         httpMapper = new DefaultJsonHttpMapper();
-        executionInQueueService = getApplicationContext().getBean(ITestCaseExecutionInQueueService.class);
+        executionInQueueService = getApplicationContext().getBean(ITestCaseExecutionQueueService.class);
     }
 
     @Override

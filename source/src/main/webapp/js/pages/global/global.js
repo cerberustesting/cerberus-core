@@ -2442,7 +2442,7 @@ function generateExecutionLink(status, id, tag) {
         result = "./ExecutionPending.jsp?search=" + tag;
     } else if (status === "NE") {
         // Not executed (means manual execution).
-        result = "./ExecutionManual.jsp?executionId=" + id;
+        result = "./ExecutionDetail2.jsp?executionId=" + id;
     } else {
         // No longuer in the queue so we display the result.
         result = "./ExecutionDetail2.jsp?executionId=" + id;

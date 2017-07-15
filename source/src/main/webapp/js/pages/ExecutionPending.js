@@ -106,7 +106,7 @@ function aoColumnsFunc(tableId) {
             "data": null,
             "sName": "selectAll",
             "title": '<input id="selectAll" title="' + doc.getDocLabel("page_global", "tooltip_massAction") + '" type="checkbox"/>',
-            "sWidth": "5px",
+            "sWidth": "30px",
             "bSortable": false,
             "bSearchable": false,
             "sClass": "overflowVisible", //change the overflow style for a display bug on chrome
@@ -128,7 +128,60 @@ function aoColumnsFunc(tableId) {
             "data": "id",
             "sName": "id",
             "title": doc.getDocLabel("page_testcaseexecutionqueue", "id_col"),
+            "sWidth": "40px"
+        },
+        {
+            "data": "tag",
+            "sName": "tag",
+            "title": doc.getDocLabel("page_testcaseexecutionqueue", "tag_col"),
+            "sWidth": "150px"
+        },
+        {
+            "data": "requestDate",
+            "sName": "requestDate",
+            "title": doc.getDocLabel("page_testcaseexecutionqueue", "requestDate_col"),
+            "sWidth": "110px"
+        },
+        {
+            "data": "state",
+            "sName": "state",
+            "title": doc.getDocLabel("page_testcaseexecutionqueue", "state_col"),
             "sWidth": "70px"
+        },
+        {
+            "data": "comment",
+            "sName": "comment",
+            "title": doc.getDocLabel("page_testcaseexecutionqueue", "comment_col"),
+            "sWidth": "200px",
+            "defaultContent": ""
+        },
+        {
+            "data": "exeId",
+            "sName": "exeId",
+            "title": doc.getDocLabel("testcaseexecutionqueue", "exeId"),
+            "sWidth": "40px",
+            "defaultContent": "",
+            "mRender": function (data, type, obj) {
+                if (obj["exeId"] <= 0) {
+                    return "";
+                } else {
+                    return '<a href="ExecutionDetail2.jsp?executionId=' + obj["exeId"] + '">' + obj["exeId"] + '</div>';
+                }
+            }
+        },
+        {
+            "data": "UsrCreated",
+            "sName": "UsrCreated",
+            "sWidth": "70px",
+            "defaultContent": "",
+            "title": doc.getDocOnline("applicationObject", "UsrCreated")
+        },
+        {
+            "data": "DateCreated",
+            "sName": "DateCreated",
+            "sWidth": "110px",
+            "defaultContent": "",
+            "title": doc.getDocOnline("applicationObject", "DateCreated")
         },
         {
             "data": "test",
@@ -153,31 +206,6 @@ function aoColumnsFunc(tableId) {
             "sName": "environment",
             "title": doc.getDocLabel("page_testcaseexecutionqueue", "environment_col"),
             "sWidth": "70px"
-        },
-        {
-            "data": "tag",
-            "sName": "tag",
-            "title": doc.getDocLabel("page_testcaseexecutionqueue", "tag_col"),
-            "sWidth": "70px"
-        },
-        {
-            "data": "requestDate",
-            "sName": "requestDate",
-            "title": doc.getDocLabel("page_testcaseexecutionqueue", "requestDate_col"),
-            "sWidth": "70px"
-        },
-        {
-            "data": "state",
-            "sName": "state",
-            "title": doc.getDocLabel("page_testcaseexecutionqueue", "state_col"),
-            "sWidth": "70px"
-        },
-        {
-            "data": "comment",
-            "sName": "comment",
-            "title": doc.getDocLabel("page_testcaseexecutionqueue", "comment_col"),
-            "sWidth": "200px",
-            "defaultContent": ""
         },
         {
             "data": "robot",
@@ -322,6 +350,20 @@ function aoColumnsFunc(tableId) {
             "sWidth": "70px",
             "defaultContent": "",
             "visible": false
+        },
+        {
+            "data": "UsrModif",
+            "sName": "UsrModif",
+            "sWidth": "70px",
+            "defaultContent": "",
+            "title": doc.getDocOnline("applicationObject", "UsrModif")
+        },
+        {
+            "data": "DateModif",
+            "sName": "DateModif",
+            "sWidth": "110px",
+            "defaultContent": "",
+            "title": doc.getDocOnline("applicationObject", "DateModif")
         }
     ];
     return aoColumns;
@@ -497,10 +539,10 @@ function drawQueueInformation() {
     $.when(jqxhr).then(function (data) {
         //var messageType = getAlertType(data.messageType);
         //if (messageType === "success") {
-            //redraw the datatable
-            for (var inc = 0; inc < data.length; inc++) {
-                generatePie("statusChart", inc, data[inc]);
-            }
+        //redraw the datatable
+        for (var inc = 0; inc < data.length; inc++) {
+            generatePie("statusChart", inc, data[inc]);
+        }
         //}
         //show message in the main page
         //showMessageMainPage(messageType, data.message, false);

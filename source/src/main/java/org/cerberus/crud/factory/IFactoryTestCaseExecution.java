@@ -59,7 +59,6 @@ public interface IFactoryTestCaseExecution {
      * @param url
      * @param port
      * @param tag
-     * @param finished
      * @param verbose
      * @param screenshot
      * @param pageSource
@@ -96,7 +95,7 @@ public interface IFactoryTestCaseExecution {
      */
     TestCaseExecution create(long id, String test, String testCase, String description, String build, String revision, String environment,
             String country, String browser, String version, String platform, String browserFullVersion, long start, long end, String controlStatus, String controlMessage,
-            String application, Application applicationObj, String ip, String url, String port, String tag, String finished, int verbose, int screenshot, int pageSource, int seleniumLog, boolean synchroneous, String timeout,
+            String application, Application applicationObj, String ip, String url, String port, String tag, int verbose, int screenshot, int pageSource, int seleniumLog, boolean synchroneous, String timeout,
             String outputFormat, String status, String crbVersion, TestCase tCase, CountryEnvParam countryEnvParam,
             CountryEnvironmentParameters countryEnvironmentParameters, boolean manualURL, String myHost, String myContextRoot, String myLoginRelativeURL, String myEnvData,
             String seleniumIP, String seleniumPort, List<TestCaseStepExecution> testCaseStepExecution, MessageGeneral resultMessage, 

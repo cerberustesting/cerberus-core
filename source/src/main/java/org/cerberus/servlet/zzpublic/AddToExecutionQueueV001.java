@@ -34,11 +34,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.entity.CampaignParameter;
 import org.cerberus.crud.entity.TestCase;
-import org.cerberus.crud.entity.TestCaseExecutionInQueue;
-import org.cerberus.crud.factory.IFactoryTestCaseExecutionInQueue;
+import org.cerberus.crud.entity.TestCaseExecutionQueue;
 import org.cerberus.crud.service.ICampaignParameterService;
 import org.cerberus.crud.service.ILogEventService;
-import org.cerberus.crud.service.ITestCaseExecutionInQueueService;
 import org.cerberus.crud.service.ITestCaseService;
 import org.cerberus.engine.threadpool.IExecutionThreadPoolService;
 import org.cerberus.enums.MessageEventEnum;
@@ -49,6 +47,8 @@ import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.servlet.ServletUtil;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.cerberus.crud.factory.IFactoryTestCaseExecutionQueue;
+import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 
 /**
  * Add a test case to the execution queue (so to be executed later).
@@ -100,8 +100,8 @@ public class AddToExecutionQueueV001 extends HttpServlet {
 
     private static final String LINE_SEPARATOR = "\n";
 
-    private ITestCaseExecutionInQueueService inQueueService;
-    private IFactoryTestCaseExecutionInQueue inQueueFactoryService;
+    private ITestCaseExecutionQueueService inQueueService;
+    private IFactoryTestCaseExecutionQueue inQueueFactoryService;
     private IExecutionThreadPoolService executionThreadService;
     private ITestCaseService testCaseService;
     private ICampaignParameterService campaignParameterService;
@@ -129,8 +129,8 @@ public class AddToExecutionQueueV001 extends HttpServlet {
 
         // Loading Services.
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        inQueueService = appContext.getBean(ITestCaseExecutionInQueueService.class);
-        inQueueFactoryService = appContext.getBean(IFactoryTestCaseExecutionInQueue.class);
+        inQueueService = appContext.getBean(ITestCaseExecutionQueueService.class);
+        inQueueFactoryService = appContext.getBean(IFactoryTestCaseExecutionQueue.class);
         executionThreadService = appContext.getBean(IExecutionThreadPoolService.class);
         testCaseService = appContext.getBean(ITestCaseService.class);
         campaignParameterService = appContext.getBean(ICampaignParameterService.class);
@@ -269,7 +269,7 @@ public class AddToExecutionQueueV001 extends HttpServlet {
         if (!error) {
 
             // Part 1: Getting all possible xecution from test cases + countries + environments + browsers which have been sent to this servlet.
-            List<TestCaseExecutionInQueue> toInserts = new ArrayList<TestCaseExecutionInQueue>();
+            List<TestCaseExecutionQueue> toInserts = new ArrayList<TestCaseExecutionQueue>();
             for (Map<String, String> selectedTest : selectedTests) {
                 String test = selectedTest.get(PARAMETER_SELECTED_TEST_KEY_TEST);
                 String testCase = selectedTest.get(PARAMETER_SELECTED_TEST_KEY_TESTCASE);
@@ -294,16 +294,16 @@ public class AddToExecutionQueueV001 extends HttpServlet {
                                         manualLoginRelativeURL,
                                         manualEnvData,
                                         tag,
-                                        outputFormat,
                                         screenshot,
                                         verbose,
                                         timeout,
-                                        synchroneous,
                                         pageSource,
                                         seleniumLog,
                                         requestDate,
                                         retries,
-                                        manualExecution));
+                                        manualExecution,
+                                        request.getRemoteUser(),
+                                        null, null, null));
                             } catch (FactoryCreationException e) {
                                 LOG.error("Unable to insert record due to: " + e);
                                 LOG.error("test: " + test + "-" + testCase + "-" + country + "-" + environment + "-" + robot);
@@ -316,7 +316,7 @@ public class AddToExecutionQueueV001 extends HttpServlet {
             // Part 2: Try to insert all these test cases to the execution queue.
             int nbExe = 0;
             List<String> errorMessages = new ArrayList<String>();
-            for (TestCaseExecutionInQueue toInsert : toInserts) {
+            for (TestCaseExecutionQueue toInsert : toInserts) {
                 try {
                     inQueueService.insert(toInsert);
                     nbExe++;

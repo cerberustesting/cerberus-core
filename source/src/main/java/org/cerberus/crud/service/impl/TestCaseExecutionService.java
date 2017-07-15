@@ -35,11 +35,10 @@ import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionData;
 import org.cerberus.crud.entity.TestCaseExecutionFile;
-import org.cerberus.crud.entity.TestCaseExecutionInQueue;
+import org.cerberus.crud.entity.TestCaseExecutionQueue;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ITestCaseExecutionDataService;
 import org.cerberus.crud.service.ITestCaseExecutionFileService;
-import org.cerberus.crud.service.ITestCaseExecutionInQueueService;
 import org.cerberus.crud.service.ITestCaseExecutionService;
 import org.cerberus.crud.service.ITestCaseService;
 import org.cerberus.crud.service.ITestCaseStepActionControlExecutionService;
@@ -57,6 +56,7 @@ import org.cerberus.util.answer.AnswerUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
+import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 
 /**
  * @author bcivel
@@ -81,7 +81,7 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     @Autowired
     ITestCaseService testCaseService;
     @Autowired
-    ITestCaseExecutionInQueueService testCaseExecutionInQueueService;
+    ITestCaseExecutionQueueService testCaseExecutionInQueueService;
 
 
     private static final Logger LOG = Logger.getLogger(TestCaseExecutionService.class);
@@ -310,7 +310,7 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     @Override
     public List<TestCaseExecution> readLastExecutionAndExecutionInQueueByTag(String tag) throws ParseException, CerberusException {
         AnswerList<TestCaseExecution> testCaseExecution;
-        AnswerList<TestCaseExecutionInQueue> testCaseExecutionInQueue;
+        AnswerList<TestCaseExecutionQueue> testCaseExecutionInQueue;
 
         /**
          * Get list of execution by tag
@@ -321,7 +321,7 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
          * Get list of Execution in Queue by Tag
          */
         testCaseExecutionInQueue = testCaseExecutionInQueueService.readByTag(tag);
-        List<TestCaseExecutionInQueue> testCaseExecutionsInQueue = testCaseExecutionInQueue.getDataList();
+        List<TestCaseExecutionQueue> testCaseExecutionsInQueue = testCaseExecutionInQueue.getDataList();
         /**
          * Feed hash map with execution from the two list (to get only one by
          * test,testcase,country,env,browser)
@@ -330,7 +330,7 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
         return testCaseExecutions;
     }
 
-    private List<TestCaseExecution> hashExecution(List<TestCaseExecution> testCaseExecutions, List<TestCaseExecutionInQueue> testCaseExecutionsInQueue) throws ParseException {
+    private List<TestCaseExecution> hashExecution(List<TestCaseExecution> testCaseExecutions, List<TestCaseExecutionQueue> testCaseExecutionsInQueue) throws ParseException {
         LinkedHashMap<String, TestCaseExecution> testCaseExecutionsList = new LinkedHashMap();
         for (TestCaseExecution testCaseExecution : testCaseExecutions) {
             String key = testCaseExecution.getBrowser() + "_"
@@ -340,7 +340,7 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
                     + testCaseExecution.getTestCase();
             testCaseExecutionsList.put(key, testCaseExecution);
         }
-        for (TestCaseExecutionInQueue testCaseExecutionInQueue : testCaseExecutionsInQueue) {
+        for (TestCaseExecutionQueue testCaseExecutionInQueue : testCaseExecutionsInQueue) {
             TestCaseExecution testCaseExecution = testCaseExecutionInQueueService.convertToTestCaseExecution(testCaseExecutionInQueue);
             String key = testCaseExecution.getBrowser() + "_"
                     + testCaseExecution.getCountry() + "_"

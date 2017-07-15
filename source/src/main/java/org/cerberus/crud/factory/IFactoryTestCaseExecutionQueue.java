@@ -19,31 +19,34 @@
  */
 package org.cerberus.crud.factory;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
-import org.cerberus.crud.entity.TestCaseExecutionInQueue;
+import org.cerberus.crud.entity.TestCaseExecutionQueue;
 import org.cerberus.exception.FactoryCreationException;
 
 /**
- * Factories to create a {@link TestCaseExecutionInQueue} instance
+ * Factories to create a {@link TestCaseExecutionQueue} instance
  *
  * @author abourdon
  */
-public interface IFactoryTestCaseExecutionInQueue {
+public interface IFactoryTestCaseExecutionQueue {
 
-    TestCaseExecutionInQueue create(long id, String test, String testCase, String country, String environment, String robot, String robotIP, String robotPort, String browser,
+    TestCaseExecutionQueue create(long id, String test, String testCase, String country, String environment, String robot, String robotIP, String robotPort, String browser,
             String browserVersion, String platform, String screenSize, boolean manualURL, String manualHost, String manualContextRoot, String manualLoginRelativeURL, String manualEnvData,
-            String tag, String outputFormat, int screenshot, int verbose, String timeout, boolean synchroneous, int pageSource, int seleniumLog, Date requestDate)
+            String tag, int screenshot, int verbose, String timeout, int pageSource, int seleniumLog, Date requestDate, String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif)
             throws FactoryCreationException;
 
-    TestCaseExecutionInQueue create(String test, String testCase, String country, String environment, String robot, String robotIP, String robotPort, String browser,
+    TestCaseExecutionQueue create(String test, String testCase, String country, String environment, String robot, String robotIP, String robotPort, String browser,
             String browserVersion, String platform, String screenSize, boolean manualURL, String manualHost, String manualContextRoot, String manualLoginRelativeURL, String manualEnvData,
-            String tag, String outputFormat, int screenshot, int verbose, String timeout, boolean synchroneous, int pageSource, int seleniumLog, Date requestDate, Integer retries, boolean manualExecution)
+            String tag, int screenshot, int verbose, String timeout, int pageSource, int seleniumLog, Date requestDate, Integer retries, 
+            boolean manualExecution, String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif)
             throws FactoryCreationException;
 
-    TestCaseExecutionInQueue create(long id, String test, String testCase, String country, String environment, String robot, String robotIP, String robotPort, String browser,
+    TestCaseExecutionQueue create(long id, String test, String testCase, String country, String environment, String robot, String robotIP, String robotPort, String browser,
             String browserVersion, String platform, String screenSize, boolean manualURL, String manualHost, String manualContextRoot, String manualLoginRelativeURL, String manualEnvData,
-            String tag, String outputFormat, int screenshot, int verbose, String timeout, boolean synchroneous, int pageSource, int seleniumLog, Date requestDate, TestCaseExecutionInQueue.State state, String comment, Integer retries, boolean manualExecution)
+            String tag, int screenshot, int verbose, String timeout, int pageSource, int seleniumLog, Date requestDate, TestCaseExecutionQueue.State state, String comment, Integer retries,
+            boolean manualExecution, long exeId, String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif)
             throws FactoryCreationException;
 
 }

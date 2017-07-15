@@ -25,11 +25,9 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.IApplicationDAO;
 import org.cerberus.crud.dao.ITestCaseDAO;
-import org.cerberus.crud.dao.ITestCaseExecutionInQueueDAO;
 import org.cerberus.crud.entity.Application;
-import org.cerberus.crud.entity.TestCaseExecutionInQueue;
+import org.cerberus.crud.entity.TestCaseExecutionQueue;
 import org.cerberus.crud.factory.IFactoryApplication;
-import org.cerberus.crud.factory.IFactoryTestCaseExecutionInQueue;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.MessageGeneral;
@@ -55,14 +53,18 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import org.cerberus.crud.entity.AppServiceContent;
+import org.cerberus.crud.factory.IFactoryTestCaseExecutionQueue;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.crud.dao.ITestCaseExecutionQueueDAO;
 
 @Repository
-public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO {
+public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
 
     /**
      * The associated {@link Logger} to this class
      */
-    private static final Logger LOG = Logger.getLogger(TestCaseExecutionInQueueDAO.class);
+    private static final Logger LOG = Logger.getLogger(TestCaseExecutionQueueDAO.class);
 
     private static final String TABLE = "testcaseexecutionqueue";
     private static final String TABLE_TEST_CASE = "testcase";
@@ -86,11 +88,9 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
     private static final String COLUMN_MANUAL_LOGIN_RELATIVE_URL = "ManualLoginRelativeURL";
     private static final String COLUMN_MANUAL_ENV_DATA = "ManualEnvData";
     private static final String COLUMN_TAG = "Tag";
-    private static final String COLUMN_OUTPUT_FORMAT = "OutputFormat";
     private static final String COLUMN_SCREENSHOT = "Screenshot";
     private static final String COLUMN_VERBOSE = "Verbose";
     private static final String COLUMN_TIMEOUT = "Timeout";
-    private static final String COLUMN_SYNCHRONEOUS = "Synchroneous";
     private static final String COLUMN_PAGE_SOURCE = "PageSource";
     private static final String COLUMN_SELENIUM_LOG = "SeleniumLog";
     private static final String COLUMN_REQUEST_DATE = "RequestDate";
@@ -98,6 +98,11 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
     private static final String COLUMN_RETRIES = "Retries";
     private static final String COLUMN_MANUAL_EXECUTION = "ManualExecution";
     private static final String COLUMN_STATE = "State";
+    private static final String COLUMN_EXEID = "ExeId";
+    private static final String COLUMN_USRCREATED = "UsrCreated";
+    private static final String COLUMN_DATECREATED = "DateCreated";
+    private static final String COLUMN_USRMODIF = "UsrModif";
+    private static final String COLUMN_DATEMODIF = "DateModif";
 
     private static final String VALUE_MANUAL_EXECUTION_FALSE = "N";
 
@@ -130,8 +135,13 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
             = "SELECT * FROM `" + TABLE + "`;";
 
     private static final String QUERY_INSERT
-            = "INSERT INTO `" + TABLE + "` (`" + COLUMN_TEST + "`, `" + COLUMN_TEST_CASE + "`, `" + COLUMN_COUNTRY + "`, `" + COLUMN_ENVIRONMENT + "`, `" + COLUMN_ROBOT + "`, `" + COLUMN_ROBOT_IP + "`, `" + COLUMN_ROBOT_PORT + "`, `" + COLUMN_BROWSER + "`, `" + COLUMN_BROWSER_VERSION + "`, `" + COLUMN_PLATFORM + "`, `" + COLUMN_SCREENSIZE + "`, `" + COLUMN_MANUAL_URL + "`, `" + COLUMN_MANUAL_HOST + "`, `" + COLUMN_MANUAL_CONTEXT_ROOT + "`, `" + COLUMN_MANUAL_LOGIN_RELATIVE_URL + "`, `" + COLUMN_MANUAL_ENV_DATA + "`, `" + COLUMN_TAG + "`, `" + COLUMN_OUTPUT_FORMAT + "`, `" + COLUMN_SCREENSHOT + "`, `" + COLUMN_VERBOSE + "`, `" + COLUMN_TIMEOUT + "`, `" + COLUMN_SYNCHRONEOUS + "`, `" + COLUMN_PAGE_SOURCE + "`, `" + COLUMN_SELENIUM_LOG + "`, `" + COLUMN_REQUEST_DATE + "`, `" + COLUMN_RETRIES + "`, `" + COLUMN_MANUAL_EXECUTION + "`, `" + COLUMN_STATE + "`) "
-            + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+            = "INSERT INTO `" + TABLE + "` (`" + COLUMN_TEST + "`, `" + COLUMN_TEST_CASE + "`, `" + COLUMN_COUNTRY + "`, `" + COLUMN_ENVIRONMENT + "`, `" + COLUMN_ROBOT
+            + "`, `" + COLUMN_ROBOT_IP + "`, `" + COLUMN_ROBOT_PORT + "`, `" + COLUMN_BROWSER + "`, `" + COLUMN_BROWSER_VERSION + "`, `" + COLUMN_PLATFORM
+            + "`, `" + COLUMN_SCREENSIZE + "`, `" + COLUMN_MANUAL_URL + "`, `" + COLUMN_MANUAL_HOST + "`, `" + COLUMN_MANUAL_CONTEXT_ROOT + "`, `"
+            + COLUMN_MANUAL_LOGIN_RELATIVE_URL + "`, `" + COLUMN_MANUAL_ENV_DATA + "`, `" + COLUMN_TAG + "`, `" + COLUMN_SCREENSHOT + "`, `" + COLUMN_VERBOSE + "`, `"
+            + COLUMN_TIMEOUT + "`, `" + COLUMN_PAGE_SOURCE + "`, `" + COLUMN_SELENIUM_LOG + "`, `" + COLUMN_REQUEST_DATE + "`, `" + COLUMN_RETRIES + "`, `"
+            + COLUMN_MANUAL_EXECUTION + "`, `" + COLUMN_STATE + "`, `" + COLUMN_USRCREATED + "`) "
+            + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
     private static final String QUERY_REMOVE
             = "DELETE FROM `" + TABLE + "` "
@@ -139,31 +149,26 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
 
     private static final String QUERY_UPDATE_STATE_FROM_STATE
             = "UPDATE `" + TABLE + "` "
-            + "SET `" + COLUMN_STATE + "` = ? "
+            + "SET `" + COLUMN_STATE + "` = ?, `" + COLUMN_REQUEST_DATE + "` = now(), `" + COLUMN_DATEMODIF + "` = now() "
             + "WHERE `" + COLUMN_ID + "` = ? "
             + "AND `" + COLUMN_STATE + "` = ?";
 
     private static final String QUERY_UPDATE_STATE_NOT_FROM_STATE
             = "UPDATE `" + TABLE + "` "
-            + "SET `" + COLUMN_STATE + "` = ? "
+            + "SET `" + COLUMN_STATE + "` = ?, `" + COLUMN_REQUEST_DATE + "` = now(), `" + COLUMN_DATEMODIF + "` = now() "
             + "WHERE `" + COLUMN_ID + "` = ? "
             + "AND `" + COLUMN_STATE + "` <> ?";
 
     private static final String QUERY_UPDATE_STATE_NOT_FROM_BOTH_STATES
             = "UPDATE `" + TABLE + "` "
-            + "SET `" + COLUMN_STATE + "` = ? "
+            + "SET `" + COLUMN_STATE + "` = ?, `" + COLUMN_REQUEST_DATE + "` = now(), `" + COLUMN_DATEMODIF + "` = now() "
             + "WHERE `" + COLUMN_ID + "` = ? "
             + "AND `" + COLUMN_STATE + "` NOT IN (?, ?)";
-
-    private static final String QUERY_UPDATE_STATE_AND_COMMENT
-            = "UPDATE `" + TABLE + "` "
-            + "SET `" + COLUMN_STATE + "` = ?, `" + COLUMN_COMMENT + "` = ? "
-            + "WHERE `" + COLUMN_ID + "` = ? ";
 
     @Autowired
     private DatabaseSpring databaseSpring;
     @Autowired
-    private IFactoryTestCaseExecutionInQueue factoryTestCaseExecutionInQueue;
+    private IFactoryTestCaseExecutionQueue factoryTestCaseExecutionInQueue;
     @Autowired
     private IFactoryApplication factoryApplication;
     @Autowired
@@ -173,10 +178,10 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
 
     private final int MAX_ROW_SELECTED = 100000;
 
-    private final String OBJECT_NAME = "TestCaseExecutionInQueue";
+    private final String OBJECT_NAME = "TestCaseExecutionQueue";
 
     @Override
-    public void insert(TestCaseExecutionInQueue inQueue) throws CerberusException {
+    public void insert(TestCaseExecutionQueue inQueue) throws CerberusException {
         Connection connection = this.databaseSpring.connect();
         if (connection == null) {
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
@@ -206,17 +211,16 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
             statementInsert.setString(i++, inQueue.getManualLoginRelativeURL());
             statementInsert.setString(i++, inQueue.getManualEnvData());
             statementInsert.setString(i++, inQueue.getTag());
-            statementInsert.setString(i++, inQueue.getOutputFormat());
             statementInsert.setInt(i++, inQueue.getScreenshot());
             statementInsert.setInt(i++, inQueue.getVerbose());
             statementInsert.setString(i++, inQueue.getTimeout());
-            statementInsert.setBoolean(i++, inQueue.isSynchroneous());
             statementInsert.setInt(i++, inQueue.getPageSource());
             statementInsert.setInt(i++, inQueue.getSeleniumLog());
             statementInsert.setTimestamp(i++, new Timestamp(inQueue.getRequestDate().getTime()));
             statementInsert.setInt(i++, inQueue.getRetries());
             statementInsert.setString(i++, inQueue.isManualExecution() ? "Y" : "N");
-            statementInsert.setString(i++, inQueue.getState() == null ? TestCaseExecutionInQueue.State.WAITING.name() : inQueue.getState().name());
+            statementInsert.setString(i++, inQueue.getState() == null ? TestCaseExecutionQueue.State.WAITING.name() : inQueue.getState().name());
+            statementInsert.setString(i++, inQueue.getUsrCreated());
 
             statementInsert.executeUpdate();
         } catch (SQLException exception) {
@@ -278,7 +282,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
     }
 
     @Override
-    public List<TestCaseExecutionInQueue> findTestCaseExecutionInQueuebyTag(String tag) throws CerberusException {
+    public List<TestCaseExecutionQueue> findTestCaseExecutionInQueuebyTag(String tag) throws CerberusException {
         boolean throwEx = false;
         final StringBuilder query = new StringBuilder("select exq.*, tec.*, app.* from ( select exq.* ")
                 .append("from testcaseexecutionqueue exq ")
@@ -288,7 +292,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
                 .append("LEFT JOIN application app ON tec.application = app.application ")
                 .append("GROUP BY exq.test, exq.testcase, exq.Environment, exq.Browser, exq.Country ");
 
-        List<TestCaseExecutionInQueue> testCaseExecutionInQueueList = new ArrayList<TestCaseExecutionInQueue>();
+        List<TestCaseExecutionQueue> testCaseExecutionInQueueList = new ArrayList<TestCaseExecutionQueue>();
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -334,7 +338,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
     }
 
     @Override
-    public TestCaseExecutionInQueue findByKey(long id) throws CerberusException {
+    public TestCaseExecutionQueue findByKey(long id) throws CerberusException {
         final Connection connection = this.databaseSpring.connect();
         if (connection == null) {
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
@@ -342,7 +346,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
 
         PreparedStatement statement = null;
 
-        TestCaseExecutionInQueue result = null;
+        TestCaseExecutionQueue result = null;
 
         try {
             statement = connection.prepareStatement(QUERY_FIND_BY_KEY);
@@ -388,7 +392,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
     }
 
     @Override
-    public TestCaseExecutionInQueue findByKeyWithDependencies(long id) throws CerberusException {
+    public TestCaseExecutionQueue findByKeyWithDependencies(long id) throws CerberusException {
         try (
                 Connection connection = this.databaseSpring.connect();
                 PreparedStatement selectStatement = connection.prepareStatement(QUERY_FIND_BY_KEY_WITH_DEPENDENCIES);) {
@@ -405,8 +409,8 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
     }
 
     @Override
-    public List<TestCaseExecutionInQueue> toQueued(int fetchSize) throws CerberusException {
-        List<TestCaseExecutionInQueue> result = new ArrayList<>();
+    public List<TestCaseExecutionQueue> toQueued(int fetchSize) throws CerberusException {
+        List<TestCaseExecutionQueue> result = new ArrayList<>();
         final String selectByStateQuery = UNLIMITED_FETCH_SIZE == fetchSize ? QUERY_FIND_BY_STATE_WITH_DEPENDENCIES : QUERY_FIND_BY_STATE_WITH_DEPENDENCIES_LIMITED;
 
         try (
@@ -414,7 +418,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
                 PreparedStatement selectWaitingsStatement = connection.prepareStatement(selectByStateQuery);
                 PreparedStatement updateStateStatement = connection.prepareStatement(QUERY_UPDATE_STATE_FROM_STATE)) {
             // Select all executions in queue in WAITING state
-            selectWaitingsStatement.setString(1, TestCaseExecutionInQueue.State.WAITING.name());
+            selectWaitingsStatement.setString(1, TestCaseExecutionQueue.State.WAITING.name());
             if (UNLIMITED_FETCH_SIZE != fetchSize) {
                 selectWaitingsStatement.setInt(2, fetchSize);
             }
@@ -423,8 +427,8 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
             // Then set their state to QUEUED by checking state is still the same
             while (waitings.next()) {
                 try {
-                    TestCaseExecutionInQueue waiting = loadWithDependenciesFromResultSet(waitings);
-                    fillUpdateStateFromStateStatement(waiting.getId(), TestCaseExecutionInQueue.State.WAITING, TestCaseExecutionInQueue.State.QUEUED, updateStateStatement);
+                    TestCaseExecutionQueue waiting = loadWithDependenciesFromResultSet(waitings);
+                    fillUpdateStateFromStateStatement(waiting.getId(), TestCaseExecutionQueue.State.WAITING, TestCaseExecutionQueue.State.QUEUED, updateStateStatement);
                     updateStateStatement.addBatch();
                     result.add(waiting);
                 } catch (SQLException | FactoryCreationException e) {
@@ -454,9 +458,9 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
     }
 
     @Override
-    public List<TestCaseExecutionInQueue> toQueued(final List<Long> ids) throws CerberusException {
+    public List<TestCaseExecutionQueue> toQueued(final List<Long> ids) throws CerberusException {
         List<Long> registeredIds = new ArrayList<>();
-        List<TestCaseExecutionInQueue> result = new ArrayList<>();
+        List<TestCaseExecutionQueue> result = new ArrayList<>();
 
         try (
                 Connection connection = this.databaseSpring.connect();
@@ -464,7 +468,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
             // Then set their state to QUEUED by checking state is still the same
             for (Long id : ids) {
                 try {
-                    fillUpdateStateFromStateStatement(id, TestCaseExecutionInQueue.State.WAITING, TestCaseExecutionInQueue.State.QUEUED, updateStateStatement);
+                    fillUpdateStateFromStateStatement(id, TestCaseExecutionQueue.State.WAITING, TestCaseExecutionQueue.State.QUEUED, updateStateStatement);
                     updateStateStatement.addBatch();
                     registeredIds.add(id);
                 } catch (SQLException e) {
@@ -498,7 +502,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
         try (
                 Connection connection = databaseSpring.connect();
                 PreparedStatement updateStateStatement = connection.prepareStatement(QUERY_UPDATE_STATE_FROM_STATE)) {
-            fillUpdateStateFromStateStatement(id, TestCaseExecutionInQueue.State.QUEUED, TestCaseExecutionInQueue.State.EXECUTING, updateStateStatement);
+            fillUpdateStateFromStateStatement(id, TestCaseExecutionQueue.State.QUEUED, TestCaseExecutionQueue.State.EXECUTING, updateStateStatement);
             int updateResult = updateStateStatement.executeUpdate();
             if (updateResult <= 0) {
                 LOG.warn("Unable to move state from QUEUED to EXECUTING for execution in queue " + id + " (update result: " + updateResult + "). Is the execution is not currently QUEUED?");
@@ -515,7 +519,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
         try (
                 Connection connection = databaseSpring.connect();
                 PreparedStatement updateStateStatement = connection.prepareStatement(QUERY_UPDATE_STATE_NOT_FROM_STATE)) {
-            fillUpdateStateNotFromStateStatement(id, TestCaseExecutionInQueue.State.EXECUTING, TestCaseExecutionInQueue.State.WAITING, updateStateStatement);
+            fillUpdateStateNotFromStateStatement(id, TestCaseExecutionQueue.State.EXECUTING, TestCaseExecutionQueue.State.WAITING, updateStateStatement);
             int updateResult = updateStateStatement.executeUpdate();
             if (updateResult <= 0) {
                 LOG.warn("Unable to move state to WAITING for execution in queue " + id + " (update result: " + updateResult + "). Is the execution is currently EXECUTING?");
@@ -537,7 +541,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
             // First, create batch statement
             for (final long id : ids) {
                 try {
-                    fillUpdateStateNotFromStateStatement(id, TestCaseExecutionInQueue.State.EXECUTING, TestCaseExecutionInQueue.State.WAITING, updateStateStatement);
+                    fillUpdateStateNotFromStateStatement(id, TestCaseExecutionQueue.State.EXECUTING, TestCaseExecutionQueue.State.WAITING, updateStateStatement);
                     updateStateStatement.addBatch();
                 } catch (SQLException e) {
                     LOG.warn("Unable to add execution in queue id " + id + " to the batch process from setting its state to WAITING", e);
@@ -562,10 +566,15 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
 
     @Override
     public void toError(long id, String comment) throws CerberusException {
+        String query
+                = "UPDATE `" + TABLE + "` "
+                + "SET `" + COLUMN_STATE + "` = ?, `" + COLUMN_COMMENT + "` = ?, `" + COLUMN_REQUEST_DATE + "` = now(), `" + COLUMN_DATEMODIF + "` = now() "
+                + "WHERE `" + COLUMN_ID + "` = ? ";
+
         try (
                 Connection connection = databaseSpring.connect();
-                PreparedStatement updateStateAndCommentStatement = connection.prepareStatement(QUERY_UPDATE_STATE_AND_COMMENT)) {
-            fillUpdateStateAndCommentStatement(id, TestCaseExecutionInQueue.State.ERROR, comment, updateStateAndCommentStatement);
+                PreparedStatement updateStateAndCommentStatement = connection.prepareStatement(query)) {
+            fillUpdateStateAndCommentStatement(id, TestCaseExecutionQueue.State.ERROR, comment, updateStateAndCommentStatement);
             int updateResult = updateStateAndCommentStatement.executeUpdate();
             if (updateResult <= 0) {
                 LOG.warn("Unable to move state to ERROR for execution in queue " + id + " (update result: " + updateResult + ")");
@@ -578,11 +587,37 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
     }
 
     @Override
+    public void toDone(long id, String comment, long exeId) throws CerberusException {
+        String query
+                = "UPDATE `" + TABLE + "` "
+                + "SET `" + COLUMN_STATE + "` = ?, `" + COLUMN_EXEID + "` = ?, `" + COLUMN_COMMENT + "` = ?, `" + COLUMN_REQUEST_DATE + "` = now(), `" + COLUMN_DATEMODIF + "` = now() "
+                + "WHERE `" + COLUMN_ID + "` = ? ";
+
+        try (
+                Connection connection = databaseSpring.connect();
+                PreparedStatement updateStateAndCommentStatement = connection.prepareStatement(query)) {
+//            fillUpdateStateAndCommentAndIdStatement(id, TestCaseExecutionQueue.State.DONE, comment, exeId, updateStateAndCommentStatement);
+            updateStateAndCommentStatement.setString(1, TestCaseExecutionQueue.State.DONE.name());
+            updateStateAndCommentStatement.setLong(2, exeId);
+            updateStateAndCommentStatement.setString(3, comment);
+            updateStateAndCommentStatement.setLong(4, id);
+            int updateResult = updateStateAndCommentStatement.executeUpdate();
+            if (updateResult <= 0) {
+                LOG.warn("Unable to move state to DONE for execution in queue " + id + " (update result: " + updateResult + ")");
+                throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+            }
+        } catch (SQLException e) {
+            LOG.warn("Unable to set move to DONE for execution in queue id " + id, e);
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+        }
+    }
+
+    @Override
     public void toCancelled(long id) throws CerberusException {
         try (
                 Connection connection = databaseSpring.connect();
                 PreparedStatement updateStateStatement = connection.prepareStatement(QUERY_UPDATE_STATE_NOT_FROM_BOTH_STATES)) {
-            fillUpdateStateNotFromBothStatesStatement(id, TestCaseExecutionInQueue.State.EXECUTING, TestCaseExecutionInQueue.State.ERROR, TestCaseExecutionInQueue.State.CANCELLED, updateStateStatement);
+            fillUpdateStateNotFromBothStatesStatement(id, TestCaseExecutionQueue.State.EXECUTING, TestCaseExecutionQueue.State.ERROR, TestCaseExecutionQueue.State.CANCELLED, updateStateStatement);
             int updateResult = updateStateStatement.executeUpdate();
             if (updateResult <= 0) {
                 LOG.warn("Unable to move state from QUEUED to CANCELLED for execution in queue " + id + " (update result: " + updateResult + "). Is the execution is not currently QUEUED?");
@@ -604,7 +639,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
             // First, create batch statement
             for (final long id : ids) {
                 try {
-                    fillUpdateStateNotFromBothStatesStatement(id, TestCaseExecutionInQueue.State.EXECUTING, TestCaseExecutionInQueue.State.ERROR, TestCaseExecutionInQueue.State.CANCELLED, updateStateStatement);
+                    fillUpdateStateNotFromBothStatesStatement(id, TestCaseExecutionQueue.State.EXECUTING, TestCaseExecutionQueue.State.ERROR, TestCaseExecutionQueue.State.CANCELLED, updateStateStatement);
                     updateStateStatement.addBatch();
                 } catch (SQLException e) {
                     LOG.warn("Unable to add execution in queue id " + id + " to the batch process from setting its state to CANCELLED", e);
@@ -628,7 +663,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
     }
 
     @Override
-    public List<TestCaseExecutionInQueue> findAll() throws CerberusException {
+    public List<TestCaseExecutionQueue> findAll() throws CerberusException {
         final Connection connection = this.databaseSpring.connect();
         if (connection == null) {
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
@@ -636,7 +671,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
 
         PreparedStatement statement = null;
 
-        List<TestCaseExecutionInQueue> result = new ArrayList<TestCaseExecutionInQueue>();
+        List<TestCaseExecutionQueue> result = new ArrayList<TestCaseExecutionQueue>();
 
         try {
             statement = connection.prepareStatement(QUERY_GET_ALL);
@@ -733,7 +768,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
             LOG.debug("SQL : " + query.toString());
         }
 
-        List<TestCaseExecutionInQueue> testCaseExecutionInQueueList = new ArrayList<TestCaseExecutionInQueue>();
+        List<TestCaseExecutionQueue> testCaseExecutionInQueueList = new ArrayList<TestCaseExecutionQueue>();
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -813,14 +848,14 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
         query.append("SELECT * FROM testcaseexecutionqueue exq ");
         query.append("left join testcase tec on exq.Test = tec.Test and exq.TestCase = tec.TestCase ");
         query.append("left join application app on tec.application = app.application ");
-        query.append("where exq.tag = ? ");
+        query.append("where exq.tag = ? and exq.state != 'DONE'");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
         }
 
-        List<TestCaseExecutionInQueue> testCaseExecutionInQueueList = new ArrayList<TestCaseExecutionInQueue>();
+        List<TestCaseExecutionQueue> testCaseExecutionInQueueList = new ArrayList<TestCaseExecutionQueue>();
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -882,7 +917,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
         AnswerList response = new AnswerList();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<TestCaseExecutionInQueue> objectList = new ArrayList<TestCaseExecutionInQueue>();
+        List<TestCaseExecutionQueue> objectList = new ArrayList<TestCaseExecutionQueue>();
         StringBuilder searchSQL = new StringBuilder();
         List<String> individalColumnSearchValues = new ArrayList<String>();
 
@@ -1040,7 +1075,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
 
         Connection connection = this.databaseSpring.connect();
 
-        List<TestCaseExecutionInQueue> EnvCountryBrowserList = new ArrayList<TestCaseExecutionInQueue>();
+        List<TestCaseExecutionQueue> EnvCountryBrowserList = new ArrayList<TestCaseExecutionQueue>();
 
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -1055,12 +1090,12 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
                     msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCaseExecutionInQueue").replace("%OPERATION%", "SELECT"));
                     answer = new AnswerList(EnvCountryBrowserList, EnvCountryBrowserList.size());
                 } catch (SQLException exception) {
-                    MyLogger.log(TestCaseExecutionInQueueDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    MyLogger.log(TestCaseExecutionQueueDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
                     EnvCountryBrowserList = null;
                 } catch (FactoryCreationException ex) {
-                    MyLogger.log(TestCaseExecutionInQueueDAO.class.getName(), Level.ERROR, "Unable to execute query : " + ex.toString());
+                    MyLogger.log(TestCaseExecutionQueueDAO.class.getName(), Level.ERROR, "Unable to execute query : " + ex.toString());
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
                     EnvCountryBrowserList = null;
@@ -1070,7 +1105,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
                     }
                 }
             } catch (SQLException ex) {
-                MyLogger.log(TestCaseExecutionInQueueDAO.class.getName(), Level.ERROR, "Unable to execute query : " + ex.toString());
+                MyLogger.log(TestCaseExecutionQueueDAO.class.getName(), Level.ERROR, "Unable to execute query : " + ex.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
                 EnvCountryBrowserList = null;
@@ -1080,7 +1115,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
                 }
             }
         } catch (SQLException ex) {
-            MyLogger.log(TestCaseExecutionInQueueDAO.class.getName(), Level.WARN, ex.toString());
+            MyLogger.log(TestCaseExecutionQueueDAO.class.getName(), Level.WARN, ex.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
         } finally {
@@ -1089,7 +1124,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
                     connection.close();
                 }
             } catch (SQLException ex) {
-                MyLogger.log(TestCaseExecutionInQueueDAO.class.getName(), Level.ERROR, "Unable to execute query : " + ex.toString());
+                MyLogger.log(TestCaseExecutionQueueDAO.class.getName(), Level.ERROR, "Unable to execute query : " + ex.toString());
             }
         }
 
@@ -1145,7 +1180,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
 
         Connection connection = this.databaseSpring.connect();
 
-        List<TestCaseExecutionInQueue> column = new ArrayList<TestCaseExecutionInQueue>();
+        List<TestCaseExecutionQueue> column = new ArrayList<TestCaseExecutionQueue>();
 
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -1155,7 +1190,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     while (resultSet.next()) {
-                        TestCaseExecutionInQueue tmp = new TestCaseExecutionInQueue();
+                        TestCaseExecutionQueue tmp = new TestCaseExecutionQueue();
                         tmp.setTest(resultSet.getString("tec.test"));
                         tmp.setTestCase(resultSet.getString("tec.testcase"));
                         tmp.setTag(resultSet.getString("exq.tag"));
@@ -1183,7 +1218,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
                     msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCaseExecution").replace("%OPERATION%", "SELECT"));
                     answer = new AnswerList(column, column.size());
                 } catch (SQLException exception) {
-                    MyLogger.log(TestCaseExecutionInQueueDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    MyLogger.log(TestCaseExecutionQueueDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
                     column = null;
@@ -1193,7 +1228,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
                     }
                 }
             } catch (SQLException ex) {
-                MyLogger.log(TestCaseExecutionInQueueDAO.class.getName(), Level.ERROR, "Unable to execute query : " + ex.toString());
+                MyLogger.log(TestCaseExecutionQueueDAO.class.getName(), Level.ERROR, "Unable to execute query : " + ex.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
                 column = null;
@@ -1203,7 +1238,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
                 }
             }
         } catch (SQLException ex) {
-            MyLogger.log(TestCaseExecutionInQueueDAO.class.getName(), Level.WARN, ex.toString());
+            MyLogger.log(TestCaseExecutionQueueDAO.class.getName(), Level.WARN, ex.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
         } finally {
@@ -1212,7 +1247,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
                     connection.close();
                 }
             } catch (SQLException ex) {
-                MyLogger.log(TestCaseExecutionInQueueDAO.class.getName(), Level.ERROR, "Unable to execute query : " + ex.toString());
+                MyLogger.log(TestCaseExecutionQueueDAO.class.getName(), Level.ERROR, "Unable to execute query : " + ex.toString());
             }
         }
 
@@ -1284,7 +1319,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
     public AnswerList readBySystemByVarious(String system, List<String> testList, List<String> applicationList, List<String> projectList, List<String> tcstatusList, List<String> groupList, List<String> tcactiveList, List<String> priorityList, List<String> targetsprintList, List<String> targetrevisionList, List<String> creatorList, List<String> implementerList, List<String> buildList, List<String> revisionList, List<String> environmentList, List<String> countryList, List<String> browserList, List<String> tcestatusList, String ip, String port, String tag, String browserversion, String comment, String bugid, String ticket) {
         AnswerList answer = new AnswerList();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-        List<TestCaseExecutionInQueue> tceList = new ArrayList<TestCaseExecutionInQueue>();
+        List<TestCaseExecutionQueue> tceList = new ArrayList<TestCaseExecutionQueue>();
         List<String> whereClauses = new LinkedList<String>();
 
         StringBuilder query = new StringBuilder();
@@ -1556,12 +1591,12 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
                     }
 
                 } catch (SQLException exception) {
-                    MyLogger.log(TestCaseExecutionInQueueDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    MyLogger.log(TestCaseExecutionQueueDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
                     tceList.clear();
                 } catch (FactoryCreationException ex) {
-                    MyLogger.log(TestCaseExecutionInQueueDAO.class.getName(), Level.ERROR, "Unable to execute query : " + ex.toString());
+                    MyLogger.log(TestCaseExecutionQueueDAO.class.getName(), Level.ERROR, "Unable to execute query : " + ex.toString());
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
                     tceList.clear();
@@ -1571,7 +1606,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
                     }
                 }
             } catch (SQLException ex) {
-                MyLogger.log(TestCaseExecutionInQueueDAO.class.getName(), Level.ERROR, "Unable to execute query : " + ex.toString());
+                MyLogger.log(TestCaseExecutionQueueDAO.class.getName(), Level.ERROR, "Unable to execute query : " + ex.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
             } finally {
@@ -1580,7 +1615,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
                 }
             }
         } catch (SQLException ex) {
-            MyLogger.log(TestCaseExecutionInQueueDAO.class.getName(), Level.WARN, ex.toString());
+            MyLogger.log(TestCaseExecutionQueueDAO.class.getName(), Level.WARN, ex.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
         } finally {
@@ -1589,7 +1624,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
                     connection.close();
                 }
             } catch (SQLException ex) {
-                MyLogger.log(TestCaseExecutionInQueueDAO.class.getName(), Level.ERROR, "Unable to execute query : " + ex.toString());
+                MyLogger.log(TestCaseExecutionQueueDAO.class.getName(), Level.ERROR, "Unable to execute query : " + ex.toString());
             }
         }
         answer.setTotalRows(tceList.size());
@@ -1701,9 +1736,43 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
         return answer;
     }
 
+    private TestCaseExecutionQueue findByKey(long id, PreparedStatement findByKeyStatement) throws SQLException, FactoryCreationException {
+        findByKeyStatement.setLong(1, id);
+
+        ResultSet result = findByKeyStatement.executeQuery();
+        if (result == null || !result.next()) {
+            throw new SQLException("Execution queue " + id + " does not exist");
+        }
+        return loadFromResultSet(result);
+    }
+
+    private void fillUpdateStateFromStateStatement(long id, TestCaseExecutionQueue.State fromState, TestCaseExecutionQueue.State toState, PreparedStatement updateStateFromStateStatement) throws SQLException {
+        updateStateFromStateStatement.setString(1, toState.name());
+        updateStateFromStateStatement.setLong(2, id);
+        updateStateFromStateStatement.setString(3, fromState.name());
+    }
+
+    private void fillUpdateStateNotFromStateStatement(long id, TestCaseExecutionQueue.State notFromState, TestCaseExecutionQueue.State toState, PreparedStatement updateStateFromNotStateStatement) throws SQLException {
+        fillUpdateStateFromStateStatement(id, notFromState, toState, updateStateFromNotStateStatement);
+    }
+
+    private void fillUpdateStateNotFromBothStatesStatement(long id, TestCaseExecutionQueue.State notFromState1, TestCaseExecutionQueue.State notFromState2, TestCaseExecutionQueue.State toState, PreparedStatement updateStateFromNotStateStatement) throws SQLException {
+        updateStateFromNotStateStatement.setString(1, toState.name());
+        updateStateFromNotStateStatement.setLong(2, id);
+        updateStateFromNotStateStatement.setString(3, notFromState1.name());
+        updateStateFromNotStateStatement.setString(4, notFromState2.name());
+    }
+
+    private void fillUpdateStateAndCommentStatement(long id, TestCaseExecutionQueue.State toState, String comment, PreparedStatement updateStateAndCommentStatement) throws SQLException {
+        updateStateAndCommentStatement.setString(1, toState.name());
+        updateStateAndCommentStatement.setString(2, comment);
+        updateStateAndCommentStatement.setLong(3, id);
+    }
+
     @Override
-    public TestCaseExecutionInQueue loadFromResultSet(ResultSet resultSet) throws FactoryCreationException, SQLException {
-        return factoryTestCaseExecutionInQueue.create(resultSet.getLong(COLUMN_ID),
+    public TestCaseExecutionQueue loadFromResultSet(ResultSet resultSet) throws FactoryCreationException, SQLException {
+        return factoryTestCaseExecutionInQueue.create(
+                resultSet.getLong(COLUMN_ID),
                 resultSet.getString(COLUMN_TEST),
                 resultSet.getString(COLUMN_TEST_CASE),
                 resultSet.getString(COLUMN_COUNTRY),
@@ -1721,66 +1790,37 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
                 resultSet.getString(COLUMN_MANUAL_LOGIN_RELATIVE_URL),
                 resultSet.getString(COLUMN_MANUAL_ENV_DATA),
                 resultSet.getString(COLUMN_TAG),
-                resultSet.getString(COLUMN_OUTPUT_FORMAT),
                 resultSet.getInt(COLUMN_SCREENSHOT),
                 resultSet.getInt(COLUMN_VERBOSE),
                 resultSet.getString(COLUMN_TIMEOUT),
-                resultSet.getBoolean(COLUMN_SYNCHRONEOUS),
                 resultSet.getInt(COLUMN_PAGE_SOURCE),
                 resultSet.getInt(COLUMN_SELENIUM_LOG),
                 new Date(resultSet.getTimestamp(COLUMN_REQUEST_DATE).getTime()),
-                TestCaseExecutionInQueue.State.valueOf(resultSet.getString(COLUMN_STATE)),
+                TestCaseExecutionQueue.State.valueOf(resultSet.getString(COLUMN_STATE)),
                 resultSet.getString(COLUMN_COMMENT),
                 resultSet.getInt(COLUMN_RETRIES),
-                resultSet.getString(COLUMN_MANUAL_EXECUTION).equals("Y"));
-    }
-
-    private TestCaseExecutionInQueue findByKey(long id, PreparedStatement findByKeyStatement) throws SQLException, FactoryCreationException {
-        findByKeyStatement.setLong(1, id);
-
-        ResultSet result = findByKeyStatement.executeQuery();
-        if (result == null || !result.next()) {
-            throw new SQLException("Execution queue " + id + " does not exist");
-        }
-        return loadFromResultSet(result);
-    }
-
-    private void fillUpdateStateFromStateStatement(long id, TestCaseExecutionInQueue.State fromState, TestCaseExecutionInQueue.State toState, PreparedStatement updateStateFromStateStatement) throws SQLException {
-        updateStateFromStateStatement.setString(1, toState.name());
-        updateStateFromStateStatement.setLong(2, id);
-        updateStateFromStateStatement.setString(3, fromState.name());
-    }
-
-    private void fillUpdateStateNotFromStateStatement(long id, TestCaseExecutionInQueue.State notFromState, TestCaseExecutionInQueue.State toState, PreparedStatement updateStateFromNotStateStatement) throws SQLException {
-        fillUpdateStateFromStateStatement(id, notFromState, toState, updateStateFromNotStateStatement);
-    }
-
-    private void fillUpdateStateNotFromBothStatesStatement(long id, TestCaseExecutionInQueue.State notFromState1, TestCaseExecutionInQueue.State notFromState2, TestCaseExecutionInQueue.State toState, PreparedStatement updateStateFromNotStateStatement) throws SQLException {
-        updateStateFromNotStateStatement.setString(1, toState.name());
-        updateStateFromNotStateStatement.setLong(2, id);
-        updateStateFromNotStateStatement.setString(3, notFromState1.name());
-        updateStateFromNotStateStatement.setString(4, notFromState2.name());
-    }
-
-    private void fillUpdateStateAndCommentStatement(long id, TestCaseExecutionInQueue.State toState, String comment, PreparedStatement updateStateAndCommentStatement) throws SQLException {
-        updateStateAndCommentStatement.setString(1, toState.name());
-        updateStateAndCommentStatement.setString(2, comment);
-        updateStateAndCommentStatement.setLong(3, id);
+                resultSet.getString(COLUMN_MANUAL_EXECUTION).equals("Y"),
+                resultSet.getLong(COLUMN_EXEID),
+                resultSet.getString(COLUMN_USRCREATED),
+                resultSet.getTimestamp(COLUMN_DATECREATED),
+                resultSet.getString(COLUMN_USRMODIF),
+                resultSet.getTimestamp(COLUMN_DATEMODIF)
+        );
     }
 
     /**
-     * Uses data of ResultSet to create object {@link TestCaseExecutionInQueue}
+     * Uses data of ResultSet to create object {@link TestCaseExecutionQueue}
      *
      * @param resultSet ResultSet relative to select from table
      * TestCaseExecutionInQueue
-     * @return object {@link TestCaseExecutionInQueue} with objects
+     * @return object {@link TestCaseExecutionQueue} with objects
      * {@link ResultSet} and {@link Application}
      * @throws SQLException when trying to get value from
      * {@link java.sql.ResultSet#getString(String)}
-     * @see TestCaseExecutionInQueue
+     * @see TestCaseExecutionQueue
      */
-    private TestCaseExecutionInQueue loadWithDependenciesFromResultSet(ResultSet resultSet) throws SQLException, FactoryCreationException {
-        TestCaseExecutionInQueue testCaseExecutionInQueue = this.loadFromResultSet(resultSet);
+    private TestCaseExecutionQueue loadWithDependenciesFromResultSet(ResultSet resultSet) throws SQLException, FactoryCreationException {
+        TestCaseExecutionQueue testCaseExecutionInQueue = this.loadFromResultSet(resultSet);
         testCaseExecutionInQueue.setTestCaseObj(testCaseDAO.loadFromResultSet(resultSet));
         testCaseExecutionInQueue.setApplicationObj(applicationDAO.loadFromResultSet(resultSet));
         return testCaseExecutionInQueue;

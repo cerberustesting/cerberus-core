@@ -40,7 +40,6 @@ import org.cerberus.crud.entity.Invariant;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseLabel;
 import org.cerberus.crud.service.IInvariantService;
-import org.cerberus.crud.service.ITestCaseExecutionInQueueService;
 import org.cerberus.crud.service.ITestCaseExecutionService;
 import org.cerberus.crud.service.ITestCaseLabelService;
 import org.cerberus.crud.service.impl.InvariantService;
@@ -58,6 +57,7 @@ import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.util.JavaScriptUtils;
+import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 
 /**
  *
@@ -67,7 +67,7 @@ import org.springframework.web.util.JavaScriptUtils;
 public class ReadTestCaseExecutionByTag extends HttpServlet {
 
     private ITestCaseExecutionService testCaseExecutionService;
-    private ITestCaseExecutionInQueueService testCaseExecutionInQueueService;
+    private ITestCaseExecutionQueueService testCaseExecutionInQueueService;
     private ITestCaseLabelService testCaseLabelService;
 
     private static final Logger LOG = Logger.getLogger("ReadTestCaseExecutionByTag");
@@ -94,7 +94,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
 
         testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
-        testCaseExecutionInQueueService = appContext.getBean(ITestCaseExecutionInQueueService.class);
+        testCaseExecutionInQueueService = appContext.getBean(ITestCaseExecutionQueueService.class);
 
         try {
             // Data/Filter Parameters.

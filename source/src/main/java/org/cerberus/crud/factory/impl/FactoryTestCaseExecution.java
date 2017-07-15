@@ -45,7 +45,7 @@ public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
     @Override
     public TestCaseExecution create(long id, String test, String testCase, String description, String build, String revision, String environment, String country,
             String browser, String version, String platform, String browserFullVersion, long start, long end, String controlStatus, String controlMessage,
-            String application, Application applicationObj, String ip, String url, String port, String tag, String finished, int verbose, int screenshot, int pageSource, int seleniumLog,
+            String application, Application applicationObj, String ip, String url, String port, String tag, int verbose, int screenshot, int pageSource, int seleniumLog,
             boolean synchroneous, String timeout, String outputFormat, String status, String crbVersion, TestCase tCase, CountryEnvParam countryEnvParam,
             CountryEnvironmentParameters countryEnvironmentParameters, boolean manualURL, String myHost, String myContextRoot, String myLoginRelativeURL, String myEnvData,
             String seleniumIP, String seleniumPort, List<TestCaseStepExecution> testCaseStepExecution, MessageGeneral resultMessage, String executor,
@@ -66,7 +66,6 @@ public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
         newTce.setEnd(end);
         newTce.setEnvironment(environment);
         newTce.setEnvironmentData(myEnvData);
-        newTce.setFinished(finished);
         newTce.setId(id);
         newTce.setIp(ip);
         newTce.setPort(port);

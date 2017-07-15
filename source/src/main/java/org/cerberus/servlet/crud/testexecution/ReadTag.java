@@ -34,7 +34,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.engine.entity.MessageEvent;
-import org.cerberus.crud.service.ITestCaseExecutionInQueueService;
 import org.cerberus.crud.service.ITestCaseExecutionService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
@@ -47,6 +46,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 
 /**
  *
@@ -152,7 +152,7 @@ public class ReadTag extends HttpServlet {
         JSONObject jsonResponse = new JSONObject();
 
         ITestCaseExecutionService testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
-        ITestCaseExecutionInQueueService inQueueService = appContext.getBean(ITestCaseExecutionInQueueService.class);
+        ITestCaseExecutionQueueService inQueueService = appContext.getBean(ITestCaseExecutionQueueService.class);
 
         AnswerList execTagAns;
         AnswerList inQueueTagAns;

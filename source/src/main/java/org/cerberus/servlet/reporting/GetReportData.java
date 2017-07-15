@@ -38,9 +38,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.TestCaseExecution;
-import org.cerberus.crud.entity.TestCaseExecutionInQueue;
+import org.cerberus.crud.entity.TestCaseExecutionQueue;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.crud.service.ITestCaseExecutionInQueueService;
 import org.cerberus.crud.service.ITestCaseExecutionService;
 import org.cerberus.dto.SummaryStatisticsDTO;
 import org.cerberus.util.ParameterParserUtil;
@@ -50,6 +49,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 
 /**
  *
@@ -59,7 +59,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class GetReportData extends HttpServlet {
 
     ITestCaseExecutionService testCaseExecutionService;
-    ITestCaseExecutionInQueueService testCaseExecutionInQueueService;
+    ITestCaseExecutionQueueService testCaseExecutionInQueueService;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -75,7 +75,7 @@ public class GetReportData extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
-        testCaseExecutionInQueueService = appContext.getBean(ITestCaseExecutionInQueueService.class);
+        testCaseExecutionInQueueService = appContext.getBean(ITestCaseExecutionQueueService.class);
 
         response.setContentType("application/json");
         response.setCharacterEncoding("utf8");
@@ -93,7 +93,7 @@ public class GetReportData extends HttpServlet {
         /**
          * Get list of Execution in Queue by Tag
          */
-        List<TestCaseExecutionInQueue> testCaseExecutionsInQueue = testCaseExecutionInQueueService.findTestCaseExecutionInQueuebyTag(tag);
+        List<TestCaseExecutionQueue> testCaseExecutionsInQueue = testCaseExecutionInQueueService.findTestCaseExecutionInQueuebyTag(tag);
 
         /**
          * Feed hash map with execution from the two list (to get only one by
@@ -165,7 +165,7 @@ public class GetReportData extends HttpServlet {
             List<TestCaseExecution> columnTcExec = columnExec.getDataList();
 
             AnswerList columnQueue = testCaseExecutionInQueueService.readDistinctColumnByTag(tag, env, country, browser, app);
-            List<TestCaseExecutionInQueue> columnInQueue = columnQueue.getDataList();
+            List<TestCaseExecutionQueue> columnInQueue = columnQueue.getDataList();
 
             Map<String, TestCaseExecution> testCaseExecutionsList = new LinkedHashMap();
 
@@ -177,7 +177,7 @@ public class GetReportData extends HttpServlet {
                 testCaseExecutionsList.put(key, column);
             }
 
-            for (TestCaseExecutionInQueue column : columnInQueue) {
+            for (TestCaseExecutionQueue column : columnInQueue) {
                 TestCaseExecution testCaseExecution = testCaseExecutionInQueueService.convertToTestCaseExecution(column);
                 String key = testCaseExecution.getBrowser()
                         + testCaseExecution.getCountry()
@@ -262,7 +262,7 @@ public class GetReportData extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private List<TestCaseExecution> hashExecution(List<TestCaseExecution> testCaseExecutions, List<TestCaseExecutionInQueue> testCaseExecutionsInQueue) throws ParseException {
+    private List<TestCaseExecution> hashExecution(List<TestCaseExecution> testCaseExecutions, List<TestCaseExecutionQueue> testCaseExecutionsInQueue) throws ParseException {
         Map<String, TestCaseExecution> testCaseExecutionsList = new LinkedHashMap();
         SimpleDateFormat formater = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
@@ -274,7 +274,7 @@ public class GetReportData extends HttpServlet {
                     + testCaseExecution.getTestCase();
             testCaseExecutionsList.put(key, testCaseExecution);
         }
-        for (TestCaseExecutionInQueue testCaseExecutionInQueue : testCaseExecutionsInQueue) {
+        for (TestCaseExecutionQueue testCaseExecutionInQueue : testCaseExecutionsInQueue) {
             TestCaseExecution testCaseExecution = testCaseExecutionInQueueService.convertToTestCaseExecution(testCaseExecutionInQueue);
             String key = testCaseExecution.getBrowser() + "_"
                     + testCaseExecution.getCountry() + "_"

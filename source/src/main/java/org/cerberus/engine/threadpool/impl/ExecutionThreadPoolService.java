@@ -21,10 +21,9 @@ package org.cerberus.engine.threadpool.impl;
 
 import org.apache.log4j.Logger;
 import org.cerberus.crud.entity.CountryEnvironmentParameters;
-import org.cerberus.crud.entity.TestCaseExecutionInQueue;
+import org.cerberus.crud.entity.TestCaseExecutionQueue;
 import org.cerberus.crud.service.ICountryEnvironmentParametersService;
 import org.cerberus.crud.service.IParameterService;
-import org.cerberus.crud.service.ITestCaseExecutionInQueueService;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.engine.entity.threadpool.ExecutionThreadPool;
 import org.cerberus.engine.entity.threadpool.ExecutionThreadPoolStats;
@@ -46,6 +45,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 
 /**
  * {@link IExecutionThreadPoolService} default implementation
@@ -78,7 +78,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService, 
     private static final String PARAMETER_CERBERUS_URL = "cerberus_url";
 
     @Autowired
-    private ITestCaseExecutionInQueueService tceiqService;
+    private ITestCaseExecutionQueueService tceiqService;
 
     @Autowired
     private IParameterService parameterService;
@@ -105,8 +105,8 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService, 
             LOG.warn("Unable to fetch " + limit + " waiting execution in queue");
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
         }
-        final List<TestCaseExecutionInQueue> executionsInQueue = limit == UNLIMITED_FETCH_SIZE ? tceiqService.toQueued() : tceiqService.toQueued(limit);
-        for (final TestCaseExecutionInQueue executionInQueue : executionsInQueue) {
+        final List<TestCaseExecutionQueue> executionsInQueue = limit == UNLIMITED_FETCH_SIZE ? tceiqService.toQueued() : tceiqService.toQueued(limit);
+        for (final TestCaseExecutionQueue executionInQueue : executionsInQueue) {
             try {
                 execute(executionInQueue);
             } catch (CerberusException e) {
@@ -121,7 +121,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService, 
      */
     @Override
     public void executeNextInQueue(final List<Long> ids) throws CerberusException {
-        for (final TestCaseExecutionInQueue queued : tceiqService.toQueued(ids)) {
+        for (final TestCaseExecutionQueue queued : tceiqService.toQueued(ids)) {
             try {
                 execute(queued);
             } catch (CerberusException e) {
@@ -269,7 +269,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService, 
         return String.format(EXECUTION_POOL_NAME_FORMAT, key.getSystem(), key.getApplication(), key.getCountry(), key.getEnvironment());
     }
 
-    private void execute(TestCaseExecutionInQueue toExecute) throws CerberusException {
+    private void execute(TestCaseExecutionQueue toExecute) throws CerberusException {
         try {
             CountryEnvironmentParameters.Key toExecuteKey = getKey(toExecute);
             ExecutionThreadPool<ExecutionWorkerThread> executionPool = getOrCreateExecutionPool(toExecuteKey);
@@ -311,7 +311,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService, 
         }
     }
 
-    private CountryEnvironmentParameters.Key getKey(TestCaseExecutionInQueue inQueue) throws CerberusException {
+    private CountryEnvironmentParameters.Key getKey(TestCaseExecutionQueue inQueue) throws CerberusException {
         return new CountryEnvironmentParameters.Key(
                 inQueue.getApplicationObj().getSystem(),
                 inQueue.getApplicationObj().getApplication(),

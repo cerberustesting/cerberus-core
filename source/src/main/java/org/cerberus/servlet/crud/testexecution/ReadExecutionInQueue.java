@@ -21,9 +21,18 @@ package org.cerberus.servlet.crud.testexecution;
 
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
+import java.io.IOException;
+import java.util.*;
+import java.util.logging.Logger;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import org.cerberus.crud.entity.TestCaseExecution;
+import org.cerberus.crud.entity.TestCaseExecutionQueue;
+import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.engine.entity.MessageEvent;
-import org.cerberus.crud.entity.TestCaseExecutionInQueue;
-import org.cerberus.crud.service.ITestCaseExecutionInQueueService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
@@ -37,31 +46,24 @@ import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.*;
-import java.util.logging.Logger;
-
 /**
  * @author foudro
  */
 @WebServlet(name = "ReadExecutionInQueue", urlPatterns = {"/ReadExecutionInQueue"})
 public class ReadExecutionInQueue extends HttpServlet {
 
-    private ITestCaseExecutionInQueueService executionService;
+    private ITestCaseExecutionQueueService executionService;
+
+    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(ReadExecutionInQueue.class);
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
-     * @throws ServletException  if a servlet-specific error occurs
-     * @throws IOException       if an I/O error occurs
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
      * @throws CerberusException
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
@@ -109,10 +111,10 @@ public class ReadExecutionInQueue extends HttpServlet {
     /**
      * Handles the HTTP <code>GET</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -127,10 +129,10 @@ public class ReadExecutionInQueue extends HttpServlet {
     /**
      * Handles the HTTP <code>POST</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -146,7 +148,7 @@ public class ReadExecutionInQueue extends HttpServlet {
 
         AnswerItem item = new AnswerItem();
         JSONObject object = new JSONObject();
-        executionService = appContext.getBean(ITestCaseExecutionInQueueService.class);
+        executionService = appContext.getBean(ITestCaseExecutionQueueService.class);
 
         int startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"), "0"));
         int length = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayLength"), "0"));
@@ -171,7 +173,7 @@ public class ReadExecutionInQueue extends HttpServlet {
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (TestCaseExecutionInQueue exec : (List<TestCaseExecutionInQueue>) resp.getDataList()) {
+            for (TestCaseExecutionQueue exec : (List<TestCaseExecutionQueue>) resp.getDataList()) {
                 jsonArray.put(convertTestCaseExecutionInQueueToJSONObject(exec));
             }
         }
@@ -189,35 +191,58 @@ public class ReadExecutionInQueue extends HttpServlet {
     private AnswerItem findDistinctValuesOfColumn(ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
         AnswerItem answer = new AnswerItem();
         JSONObject object = new JSONObject();
+        AnswerList values = new AnswerList();
+        Map<String, List<String>> individualSearch = new HashMap();
 
-        executionService = appContext.getBean(ITestCaseExecutionInQueueService.class);
+        executionService = appContext.getBean(ITestCaseExecutionQueueService.class);
 
-        String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
-        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "id,test,testcase,country,environment,browser,tag");
-        String columnToSort[] = sColumns.split(",");
         String column = ParameterParserUtil.parseStringParam(request.getParameter("columnName"), "");
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
 
-        Map<String, List<String>> individualSearch = new HashMap<String, List<String>>();
-        for (int a = 0; a < columnToSort.length; a++) {
-            if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
-                List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
-                individualSearch.put(columnToSort[a], search);
-            }
+        LOG.debug(columnName);
+        switch (columnName) {
+            /**
+             * Columns from Status
+             */
+            case "state":
+                List<String> dataList = new ArrayList<>();
+                dataList.add(TestCaseExecutionQueue.State.QUEUED.name());
+                dataList.add(TestCaseExecutionQueue.State.WAITING.name());
+                dataList.add(TestCaseExecutionQueue.State.EXECUTING.name());
+                dataList.add(TestCaseExecutionQueue.State.ERROR.name());
+                dataList.add(TestCaseExecutionQueue.State.DONE.name());
+                dataList.add(TestCaseExecutionQueue.State.CANCELLED.name());
+                values.setDataList(dataList);
+                MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "execution").replace("%OPERATION%", "SELECT"));
+                values.setResultMessage(msg);
+                break;
+            /**
+             * For all other columns, get distinct values from testcaseexecution
+             */
+            default:
+                String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
+                String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "id,test,testcase,country,environment,browser,tag");
+                String columnToSort[] = sColumns.split(",");
+
+                individualSearch = new HashMap<>();
+                for (int a = 0; a < columnToSort.length; a++) {
+                    if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
+                        List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
+                        individualSearch.put(columnToSort[a], search);
+                    }
+                }
+                values = executionService.readDistinctValuesByCriteria(columnName, sort, searchParameter, individualSearch, column);
         }
 
-        AnswerList applicationList;
-
-        applicationList = executionService.readDistinctValuesByCriteria(columnName, sort, searchParameter, individualSearch, column);
-
-        object.put("distinctValues", applicationList.getDataList());
+        object.put("distinctValues", values.getDataList());
 
         answer.setItem(object);
-        answer.setResultMessage(applicationList.getResultMessage());
+        answer.setResultMessage(values.getResultMessage());
         return answer;
     }
 
-    private JSONObject convertTestCaseExecutionInQueueToJSONObject(TestCaseExecutionInQueue exec) throws JSONException {
+    private JSONObject convertTestCaseExecutionInQueueToJSONObject(TestCaseExecutionQueue exec) throws JSONException {
 
         Gson gson = new Gson();
         JSONObject result = new JSONObject(gson.toJson(exec));

@@ -35,11 +35,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.entity.CampaignParameter;
 import org.cerberus.crud.entity.TestCase;
-import org.cerberus.crud.entity.TestCaseExecutionInQueue;
-import org.cerberus.crud.factory.IFactoryTestCaseExecutionInQueue;
+import org.cerberus.crud.entity.TestCaseExecutionQueue;
 import org.cerberus.crud.service.ICampaignParameterService;
 import org.cerberus.crud.service.ILogEventService;
-import org.cerberus.crud.service.ITestCaseExecutionInQueueService;
 import org.cerberus.crud.service.ITestCaseService;
 import org.cerberus.engine.threadpool.IExecutionThreadPoolService;
 import org.cerberus.enums.MessageEventEnum;
@@ -51,6 +49,8 @@ import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.servlet.ServletUtil;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.cerberus.crud.factory.IFactoryTestCaseExecutionQueue;
+import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 
 /**
  * Add a test case to the execution queue (so to be executed later).
@@ -123,8 +123,8 @@ public class AddToExecutionQueue extends HttpServlet {
 
     private static final String LINE_SEPARATOR = "\n";
 
-    private ITestCaseExecutionInQueueService inQueueService;
-    private IFactoryTestCaseExecutionInQueue inQueueFactoryService;
+    private ITestCaseExecutionQueueService inQueueService;
+    private IFactoryTestCaseExecutionQueue inQueueFactoryService;
     private IExecutionThreadPoolService executionThreadService;
     private ITestCaseService testCaseService;
     private ICampaignParameterService campaignParameterService;
@@ -132,8 +132,8 @@ public class AddToExecutionQueue extends HttpServlet {
     @Override
     public void init() throws ServletException {
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        inQueueService = appContext.getBean(ITestCaseExecutionInQueueService.class);
-        inQueueFactoryService = appContext.getBean(IFactoryTestCaseExecutionInQueue.class);
+        inQueueService = appContext.getBean(ITestCaseExecutionQueueService.class);
+        inQueueFactoryService = appContext.getBean(IFactoryTestCaseExecutionQueue.class);
         executionThreadService = appContext.getBean(IExecutionThreadPoolService.class);
         testCaseService = appContext.getBean(ITestCaseService.class);
         campaignParameterService = appContext.getBean(ICampaignParameterService.class);
@@ -200,7 +200,7 @@ public class AddToExecutionQueue extends HttpServlet {
         if (!error) {
 
             // Part 1: Getting all test cases which have been sent to this servlet.
-            List<TestCaseExecutionInQueue> toInserts = null;
+            List<TestCaseExecutionQueue> toInserts = null;
             try {
                 toInserts = getTestCasesToInsert(request);
             } catch (ParameterException pe) {
@@ -212,7 +212,7 @@ public class AddToExecutionQueue extends HttpServlet {
 
             // Part 2: Try to insert all these test cases to the execution queue.
             List<String> errorMessages = new ArrayList<String>();
-            for (TestCaseExecutionInQueue toInsert : toInserts) {
+            for (TestCaseExecutionQueue toInsert : toInserts) {
                 try {
                     inQueueService.insert(toInsert);
                 } catch (CerberusException e) {
@@ -254,35 +254,35 @@ public class AddToExecutionQueue extends HttpServlet {
     /**
      * Gets all test cases requested to be inserted into the execution queue
      *
-     * @param req
-     * @return a {@link List} of {@link TestCaseExecutionInQueue} which have
-     * been defined into the request.
+     * @param request
+     * @return a {@link List} of {@link TestCaseExecutionQueue} which have been
+     * defined into the request.
      * @throws ParameterException
      */
-    private List<TestCaseExecutionInQueue> getTestCasesToInsert(HttpServletRequest req) throws ParameterException, CerberusException {
+    private List<TestCaseExecutionQueue> getTestCasesToInsert(HttpServletRequest request) throws ParameterException, CerberusException {
 
-        final String charset = req.getCharacterEncoding();
+        final String charset = request.getCharacterEncoding();
 
         // Select test cases and associated parameters to run
         List<Map<String, String>> selectedTests;
         List<String> countries;
         List<String> environments;
         List<String> browsers;
-        final String campaign = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(req.getParameter(PARAMETER_CAMPAIGN), null, charset);
+        final String campaign = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter(PARAMETER_CAMPAIGN), null, charset);
         if (campaign == null || campaign.isEmpty()) {
-            selectedTests = ParameterParserUtil.parseListMapParamAndDecode(req.getParameterValues(PARAMETER_SELECTED_TEST), null, charset);
+            selectedTests = ParameterParserUtil.parseListMapParamAndDecode(request.getParameterValues(PARAMETER_SELECTED_TEST), null, charset);
             if (selectedTests == null || selectedTests.isEmpty()) {
                 throw new ParameterException("Selected tests are not defined");
             }
-            countries = ParameterParserUtil.parseListParamAndDecode(req.getParameterValues(PARAMETER_COUNTRY), null, charset);
+            countries = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues(PARAMETER_COUNTRY), null, charset);
             if (countries == null || countries.isEmpty()) {
                 throw new ParameterException("Countries are not defined");
             }
-            environments = ParameterParserUtil.parseListParamAndDecode(req.getParameterValues(PARAMETER_ENVIRONMENT), null, charset);
+            environments = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues(PARAMETER_ENVIRONMENT), null, charset);
             if (environments == null || environments.isEmpty()) {
                 throw new ParameterException("Environment are not defined");
             }
-            browsers = ParameterParserUtil.parseListParamAndDecode(req.getParameterValues(PARAMETER_BROWSER), null, charset);
+            browsers = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues(PARAMETER_BROWSER), null, charset);
             if (browsers == null || browsers.isEmpty()) {
                 throw new ParameterException("Browsers are not defined");
             }
@@ -317,34 +317,34 @@ public class AddToExecutionQueue extends HttpServlet {
             }
         }
 
-        final String tag = ParameterParserUtil.parseStringParam(req.getParameter(PARAMETER_TAG), "");
+        final String tag = ParameterParserUtil.parseStringParam(request.getParameter(PARAMETER_TAG), "");
         if (tag == null || tag.isEmpty()) {
             throw new ParameterException("Tag is not defined");
         }
 
         Date requestDate = new Date();
 
-        String robot = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(req.getParameter(PARAMETER_ROBOT), null, charset);
-        String robotIP = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(req.getParameter(PARAMETER_ROBOT_IP), null, charset);
-        String robotPort = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(req.getParameter(PARAMETER_ROBOT_PORT), null, charset);
-        String browserVersion = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(req.getParameter(PARAMETER_BROWSER_VERSION), null, charset);
-        String platform = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(req.getParameter(PARAMETER_PLATFORM), null, charset);
-        boolean manualURL = ParameterParserUtil.parseBooleanParamAndDecode(req.getParameter(PARAMETER_MANUAL_URL), DEFAULT_VALUE_MANUAL_URL, charset);
-        String manualHost = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(req.getParameter(PARAMETER_MANUAL_HOST), null, charset);
-        String manualContextRoot = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(req.getParameter(PARAMETER_MANUAL_CONTEXT_ROOT), null, charset);
-        String manualLoginRelativeURL = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(req.getParameter(PARAMETER_MANUAL_LOGIN_RELATIVE_URL), null, charset);
-        String manualEnvData = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(req.getParameter(PARAMETER_MANUAL_ENV_DATA), null, charset);
-        String outputFormat = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(req.getParameter(PARAMETER_OUTPUT_FORMAT), DEFAULT_VALUE_OUTPUT_FORMAT, charset);
-        int screenshot = ParameterParserUtil.parseIntegerParamAndDecode(req.getParameter(PARAMETER_SCREENSHOT), DEFAULT_VALUE_SCREENSHOT, charset);
-        int verbose = ParameterParserUtil.parseIntegerParamAndDecode(req.getParameter(PARAMETER_VERBOSE), DEFAULT_VALUE_VERBOSE, charset);
-        String timeout = req.getParameter(PARAMETER_TIMEOUT);
-        boolean synchroneous = ParameterParserUtil.parseBooleanParamAndDecode(req.getParameter(PARAMETER_SYNCHRONEOUS), DEFAULT_VALUE_SYNCHRONEOUS, charset);
-        int pageSource = ParameterParserUtil.parseIntegerParamAndDecode(req.getParameter(PARAMETER_PAGE_SOURCE), DEFAULT_VALUE_PAGE_SOURCE, charset);
-        int seleniumLog = ParameterParserUtil.parseIntegerParamAndDecode(req.getParameter(PARAMETER_SELENIUM_LOG), DEFAULT_VALUE_SELENIUM_LOG, charset);
-        int retries = ParameterParserUtil.parseIntegerParamAndDecode(req.getParameter(PARAMETER_RETRIES), DEFAULT_VALUE_RETRIES, charset);
-        boolean manualExecution = ParameterParserUtil.parseBooleanParamAndDecode(req.getParameter(PARAMETER_MANUAL_EXECUTION), DEFAULT_VALUE_MANUAL_EXECUTION, charset);
+        String robot = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter(PARAMETER_ROBOT), null, charset);
+        String robotIP = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter(PARAMETER_ROBOT_IP), null, charset);
+        String robotPort = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter(PARAMETER_ROBOT_PORT), null, charset);
+        String browserVersion = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter(PARAMETER_BROWSER_VERSION), null, charset);
+        String platform = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter(PARAMETER_PLATFORM), null, charset);
+        boolean manualURL = ParameterParserUtil.parseBooleanParamAndDecode(request.getParameter(PARAMETER_MANUAL_URL), DEFAULT_VALUE_MANUAL_URL, charset);
+        String manualHost = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter(PARAMETER_MANUAL_HOST), null, charset);
+        String manualContextRoot = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter(PARAMETER_MANUAL_CONTEXT_ROOT), null, charset);
+        String manualLoginRelativeURL = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter(PARAMETER_MANUAL_LOGIN_RELATIVE_URL), null, charset);
+        String manualEnvData = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter(PARAMETER_MANUAL_ENV_DATA), null, charset);
+        String outputFormat = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter(PARAMETER_OUTPUT_FORMAT), DEFAULT_VALUE_OUTPUT_FORMAT, charset);
+        int screenshot = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_SCREENSHOT), DEFAULT_VALUE_SCREENSHOT, charset);
+        int verbose = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_VERBOSE), DEFAULT_VALUE_VERBOSE, charset);
+        String timeout = request.getParameter(PARAMETER_TIMEOUT);
+        boolean synchroneous = ParameterParserUtil.parseBooleanParamAndDecode(request.getParameter(PARAMETER_SYNCHRONEOUS), DEFAULT_VALUE_SYNCHRONEOUS, charset);
+        int pageSource = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_PAGE_SOURCE), DEFAULT_VALUE_PAGE_SOURCE, charset);
+        int seleniumLog = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_SELENIUM_LOG), DEFAULT_VALUE_SELENIUM_LOG, charset);
+        int retries = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_RETRIES), DEFAULT_VALUE_RETRIES, charset);
+        boolean manualExecution = ParameterParserUtil.parseBooleanParamAndDecode(request.getParameter(PARAMETER_MANUAL_EXECUTION), DEFAULT_VALUE_MANUAL_EXECUTION, charset);
 
-        List<TestCaseExecutionInQueue> inQueues = new ArrayList<TestCaseExecutionInQueue>();
+        List<TestCaseExecutionQueue> inQueues = new ArrayList<TestCaseExecutionQueue>();
         for (Map<String, String> selectedTest : selectedTests) {
             String test = selectedTest.get(PARAMETER_SELECTED_TEST_TEST);
             String testCase = selectedTest.get(PARAMETER_SELECTED_TEST_TEST_CASE);
@@ -369,16 +369,16 @@ public class AddToExecutionQueue extends HttpServlet {
                                     manualLoginRelativeURL,
                                     manualEnvData,
                                     tag,
-                                    outputFormat,
                                     screenshot,
                                     verbose,
                                     timeout,
-                                    synchroneous,
                                     pageSource,
                                     seleniumLog,
                                     requestDate,
                                     retries,
-                                    manualExecution));
+                                    manualExecution,
+                                    request.getRemoteUser(),
+                                    null, null, null));
                         } catch (FactoryCreationException e) {
                             throw new ParameterException("Unable to insert record due to: " + e.getMessage(), e);
                         }

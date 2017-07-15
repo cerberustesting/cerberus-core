@@ -229,7 +229,7 @@ function loadReportingData(selectTag) {
     //Retrieve data for charts and draw them
     var jqxhr = $.get("ReadTestCaseExecutionByTag?Tag=" + selectTag + "&" + statusFilter.serialize() + "&" + countryFilter.serialize() + "&" + params.serialize(), null, "json");
     $.when(jqxhr).then(function (data) {
-        loadByStatusAndByfunctionReports(data.functionChart);
+        loadByStatusAndByfunctionReports(data.functionChart, selectTag);
         loadEnvCountryBrowserReport(data.statsChart);
         loadReportList(data.table, selectTag);
     });
@@ -250,14 +250,14 @@ function  filterCountryBrowserReport(selectTag, splitFilterSettings) {
 
 }
 
-function loadByStatusAndByfunctionReports(data) {
+function loadByStatusAndByfunctionReports(data, selectTag) {
 
     //clear the old report content before redrawing it
     $("#ReportByStatusTable").empty();
     $("#statusChart").empty();
     $("#ReportByfunctionChart").empty();
-    loadReportByStatusTable(data);
-    loadReportByFunctionChart(data);
+    loadReportByStatusTable(data, selectTag);
+    loadReportByFunctionChart(data, selectTag);
     $("#startExe").val(data.globalStart);
     $("#endExe").val(data.globalEnd);
 
@@ -286,7 +286,7 @@ function generateBarTooltip(data, statusOrder) {
 
 function buildBar(obj) {
     var buildBar;
-    var statusOrder = ["OK", "KO", "FA", "NA", "NE", "PE", "CA"];
+    var statusOrder = ["OK", "KO", "FA", "NA", "NE", "PE", "QU", "CA"];
     var len = statusOrder.length;
     //Build the title to show at the top of the bar by checking the value of the checkbox
     var params = $("#splitFilter input");
@@ -360,21 +360,38 @@ function loadReportList(data2, selectTag) {
  * Status panels
  */
 
-function appendPanelStatus(status, total) {
+function appendPanelStatus(status, total, selectTag) {
     var rowClass = getRowClass(status);
-    $("#ReportByStatusTable").append(
-            $("<div class='panel " + rowClass.panel + "'></div>").append(
-            $('<div class="panel-heading"></div>').append(
-            $('<div class="row"></div>').append(
-            $('<div class="col-xs-6 status"></div>').text(status).prepend(
-            $('<span class="' + rowClass.glyph + '" style="margin-right: 5px;"></span>'))).append(
-            $('<div class="col-xs-6 text-right"></div>').append(
-            $('<div class="total"></div>').text(total[status].value)))).append(
-            $('<div class="row"></div>').append(
-            $('<div class="percentage pull-right"></div>').text('Percentage : ' + Math.round(((total[status].value / total.test) * 100) * 100) / 100 + '%')))));
+    if (rowClass.panel === "panelQU") {
+        // When we display the QU status, we add a link to all executions in the queue on the queue page.
+        $("#ReportByStatusTable").append(
+                $("<a href='./ExecutionPending.jsp?search=" + selectTag + "'></a>").append(
+                $("<div class='panel " + rowClass.panel + "'></div>").append(
+                $('<div class="panel-heading"></div>').append(
+                $('<div class="row"></div>').append(
+                $('<div class="col-xs-6 status"></div>').text(status).prepend(
+                $('<span class="' + rowClass.glyph + '" style="margin-right: 5px;"></span>'))).append(
+                $('<div class="col-xs-6 text-right"></div>').append(
+                $('<div class="total"></div>').text(total[status].value)))).append(
+                $('<div class="row"></div>').append(
+                $('<div class="percentage pull-right"></div>').text('Percentage : ' + Math.round(((total[status].value / total.test) * 100) * 100) / 100 + '%'))
+                ))));
+    } else {
+        $("#ReportByStatusTable").append(
+                $("<div class='panel " + rowClass.panel + "'></div>").append(
+                $('<div class="panel-heading"></div>').append(
+                $('<div class="row"></div>').append(
+                $('<div class="col-xs-6 status"></div>').text(status).prepend(
+                $('<span class="' + rowClass.glyph + '" style="margin-right: 5px;"></span>'))).append(
+                $('<div class="col-xs-6 text-right"></div>').append(
+                $('<div class="total"></div>').text(total[status].value)))).append(
+                $('<div class="row"></div>').append(
+                $('<div class="percentage pull-right"></div>').text('Percentage : ' + Math.round(((total[status].value / total.test) * 100) * 100) / 100 + '%'))
+                )));
+    }
 }
 
-function loadReportByStatusTable(data) {
+function loadReportByStatusTable(data, selectTag) {
     var total = {};
     var len = data.axis.length;
 
@@ -398,7 +415,7 @@ function loadReportByStatusTable(data) {
     // create a panel for each control status
     for (var label in total) {
         if (label !== "test") {
-            appendPanelStatus(label, total);
+            appendPanelStatus(label, total, selectTag);
         }
     }
 // add a panel for the total
@@ -482,7 +499,7 @@ function loadReportByFunctionChart(dataset) {
     var data = convertData(dataset.axis);
 
     var margin = {top: 20, right: 20, bottom: 200, left: 150},
-    width = 1200 - margin.left - margin.right,
+            width = 1200 - margin.left - margin.right,
             height = 600 - margin.top - margin.bottom;
 
     var x = d3.scale.ordinal()
@@ -622,6 +639,7 @@ function controlExportRadioButtons() {
 /**
  * Create a row for the summaryTable
  * @param {JSONObject} row containing the data of the row
+ * @param {boolean} isTotalRow true is the row to display is total line.
  * @returns {jQuery} the jquery object row
  */
 function createRow(row, isTotalRow) {
@@ -662,6 +680,7 @@ function createRow(row, isTotalRow) {
             $('<td>').text(row.NA).css("text-align", "right"),
             $('<td>').text(row.NE).css("text-align", "right"),
             $('<td>').text(row.PE).css("text-align", "right"),
+            $('<td>').text(row.QU).css("text-align", "right"),
             $('<td>').text(row.CA).css("text-align", "right"),
             $('<td>').text(row.notOKTotal).css("text-align", "right"),
             $('<td>').text(row.total).css("text-align", "right"),
@@ -671,6 +690,7 @@ function createRow(row, isTotalRow) {
             $('<td>').text(row.percNA + "%").css("text-align", "right"),
             $('<td>').text(row.percNE + "%").css("text-align", "right"),
             $('<td>').text(row.percPE + "%").css("text-align", "right"),
+            $('<td>').text(row.percQU + "%").css("text-align", "right"),
             $('<td>').text(row.percCA + "%").css("text-align", "right"),
             $('<td>').text(row.percNotOKTotal + "%").css("text-align", "right")
             );
@@ -701,6 +721,7 @@ function createHeaderRow() {
             $('<td>').text("NA").css("text-align", "center"),
             $('<td>').text("NE").css("text-align", "center"),
             $('<td>').text("PE").css("text-align", "center"),
+            $('<td>').text("QU").css("text-align", "center"),
             $('<td>').text("CA").css("text-align", "center"),
             $('<td>').text("NOT OK").css("text-align", "center"),
             $('<td>').text("TOTAL").css("text-align", "center"),
@@ -710,6 +731,7 @@ function createHeaderRow() {
             $('<td>').text("% NA").css("text-align", "center"),
             $('<td>').text("% NE").css("text-align", "center"),
             $('<td>').text("% PE").css("text-align", "center"),
+            $('<td>').text("% QU").css("text-align", "center"),
             $('<td>').text("% CA").css("text-align", "center"), /*.class("width80")*/
             $('<td>').text("% NOT OK").css("text-align", "center")
             );
@@ -867,7 +889,7 @@ function aoColumnsFunc(Columns) {
                     var cell = '<div class="progress-bar status' + data.ControlStatus + '" \n\
                                 role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;cursor: pointer; height: 40px;" \n\
                                 data-toggle="tooltip" data-html="true" title="' + tooltip + '"\n\'';
-                        cell = cell + ' onclick="window.open(\'' + executionLink + '\')">\n\' ';
+                    cell = cell + ' onclick="window.open(\'' + executionLink + '\')">\n\' ';
                     cell = cell + '<span class="' + glyphClass.glyph + ' marginRight5"></span>\n\
                                  <span>' + data.ControlStatus + '<span></div>';
                     return cell;

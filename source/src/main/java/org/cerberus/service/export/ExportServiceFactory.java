@@ -212,38 +212,43 @@ public class ExportServiceFactory {
             cellOk.setCellValue("OK");
             cellOk.setCellStyle(okStyle);
 
-            row.createCell(1).setCellValue(sumsTotal.getOk());
-            row.createCell(2).setCellValue(sumsTotal.getPercOk());
+            row.createCell(1).setCellValue(sumsTotal.getOK());
+            row.createCell(2).setCellValue(sumsTotal.getPercOK());
 
             row = sheet.createRow(++rowCount);
             row.createCell(0).setCellValue("KO");
-            row.createCell(1).setCellValue(sumsTotal.getKo());
-            row.createCell(2).setCellValue(sumsTotal.getPercKo());
+            row.createCell(1).setCellValue(sumsTotal.getKO());
+            row.createCell(2).setCellValue(sumsTotal.getPercKO());
 
             row = sheet.createRow(++rowCount);
             row.createCell(0).setCellValue("FA");
-            row.createCell(1).setCellValue(sumsTotal.getFa());
-            row.createCell(2).setCellValue(sumsTotal.getPercFa());
+            row.createCell(1).setCellValue(sumsTotal.getFA());
+            row.createCell(2).setCellValue(sumsTotal.getPercFA());
 
             row = sheet.createRow(++rowCount);
             row.createCell(0).setCellValue("NA");
-            row.createCell(1).setCellValue(sumsTotal.getNa());
-            row.createCell(2).setCellValue(sumsTotal.getPercNa());
+            row.createCell(1).setCellValue(sumsTotal.getNA());
+            row.createCell(2).setCellValue(sumsTotal.getPercNA());
 
             row = sheet.createRow(++rowCount);
             row.createCell(0).setCellValue("NE");
-            row.createCell(1).setCellValue(sumsTotal.getNe());
-            row.createCell(2).setCellValue(sumsTotal.getPercNe());
+            row.createCell(1).setCellValue(sumsTotal.getNE());
+            row.createCell(2).setCellValue(sumsTotal.getPercNE());
+
+            row = sheet.createRow(++rowCount);
+            row.createCell(0).setCellValue("QU");
+            row.createCell(1).setCellValue(sumsTotal.getQU());
+            row.createCell(2).setCellValue(sumsTotal.getPercQU());
 
             row = sheet.createRow(++rowCount);
             row.createCell(0).setCellValue("PE");
-            row.createCell(1).setCellValue(sumsTotal.getPe());
-            row.createCell(2).setCellValue(sumsTotal.getPercPe());
+            row.createCell(1).setCellValue(sumsTotal.getPE());
+            row.createCell(2).setCellValue(sumsTotal.getPercPE());
 
             row = sheet.createRow(++rowCount);
             row.createCell(0).setCellValue("CA");
-            row.createCell(1).setCellValue(sumsTotal.getCa());
-            row.createCell(2).setCellValue(sumsTotal.getPercCa());
+            row.createCell(1).setCellValue(sumsTotal.getCA());
+            row.createCell(2).setCellValue(sumsTotal.getPercCA());
 
             row = sheet.createRow(++rowCount);
             row.createCell(0).setCellValue("Total");
@@ -273,6 +278,7 @@ public class ExportServiceFactory {
             row.createCell(6).setCellValue("NA");
             row.createCell(7).setCellValue("NE");
             row.createCell(8).setCellValue("PE");
+            row.createCell(8).setCellValue("QU");
             row.createCell(9).setCellValue("CA");
             row.createCell(10).setCellValue("NOT OK");
             row.createCell(11).setCellValue("Total");
@@ -308,29 +314,31 @@ public class ExportServiceFactory {
                 row.createCell(2).setCellValue((String) sumStats.getEnvironment());
 
                 //OK
-                row.createCell(3).setCellValue(sumStats.getOk());
+                row.createCell(3).setCellValue(sumStats.getOK());
                 //KO
-                row.createCell(4).setCellValue(sumStats.getKo());
+                row.createCell(4).setCellValue(sumStats.getKO());
                 //FA
-                row.createCell(5).setCellValue(sumStats.getFa());
+                row.createCell(5).setCellValue(sumStats.getFA());
                 //NA
-                row.createCell(6).setCellValue(sumStats.getNa());
+                row.createCell(6).setCellValue(sumStats.getNA());
                 //NE
-                row.createCell(7).setCellValue(sumStats.getNe());
+                row.createCell(7).setCellValue(sumStats.getNE());
                 //PE
-                row.createCell(8).setCellValue(sumStats.getPe());
+                row.createCell(8).setCellValue(sumStats.getPE());
+                //QU
+                row.createCell(9).setCellValue(sumStats.getQU());
                 //CA
-                row.createCell(9).setCellValue(sumStats.getCa());
+                row.createCell(10).setCellValue(sumStats.getCA());
                 int rowNumber = row.getRowNum() + 1;
                 //NOT OK
                 //row.createCell(11).setCellValue(sumStats.getNotOkTotal());
-                row.createCell(10).setCellFormula("SUM(E" + rowNumber + ":J" + rowNumber + ")");
+                row.createCell(11).setCellFormula("SUM(E" + rowNumber + ":J" + rowNumber + ")");
                 //Total
-                row.createCell(11).setCellFormula("SUM(D" + rowNumber + ",K" + rowNumber + ")");
+                row.createCell(12).setCellFormula("SUM(D" + rowNumber + ",K" + rowNumber + ")");
                 //row.createCell(12).setCellValue(sumStats.getTotal());
 
-                if (sumStats.getOk() == sumStats.getTotal()) {
-                    for (int i = 0; i < 12; i++) {
+                if (sumStats.getOK() == sumStats.getTotal()) {
+                    for (int i = 0; i < 13; i++) {
                         row.getCell(i).setCellStyle(styleGreen);
                     }
                 }
@@ -354,15 +362,17 @@ public class ExportServiceFactory {
             row.createCell(7).setCellFormula("SUM(H" + startRow + ":H" + rowCount + ")");
             //PE
             row.createCell(8).setCellFormula("SUM(I" + startRow + ":I" + rowCount + ")");
+            //QU
+            row.createCell(9).setCellFormula("SUM(J" + startRow + ":I" + rowCount + ")");
             //CA
-            row.createCell(9).setCellFormula("SUM(J" + startRow + ":J" + rowCount + ")");
+            row.createCell(10).setCellFormula("SUM(K" + startRow + ":J" + rowCount + ")");
 
             int rowNumberTotal = row.getRowNum() + 1;
             //NOT OK
-            row.createCell(10).setCellFormula("SUM(E" + rowNumberTotal + ":J" + rowNumberTotal + ")");
+            row.createCell(11).setCellFormula("SUM(E" + rowNumberTotal + ":J" + rowNumberTotal + ")");
             //Total
-            row.createCell(11).setCellFormula("SUM(D" + rowNumberTotal + ",K" + rowNumberTotal + ")");
-            for (int i = 0; i < 12; i++) {
+            row.createCell(12).setCellFormula("SUM(D" + rowNumberTotal + ",K" + rowNumberTotal + ")");
+            for (int i = 0; i < 13; i++) {
                 row.getCell(i).setCellStyle(styleBlue);
             }
 
@@ -526,32 +536,35 @@ public class ExportServiceFactory {
         int naTotal = 0;
         int neTotal = 0;
         int peTotal = 0;
+        int quTotal = 0;
         int faTotal = 0;
         int caTotal = 0;
 
         for (String key : summaryMap.keySet()) {
             SummaryStatisticsDTO sumStats = summaryMap.get(key);
             //percentage values
-            okTotal += sumStats.getOk();
-            koTotal += sumStats.getKo();
-            naTotal += sumStats.getNa();
-            neTotal += sumStats.getNe();
-            peTotal += sumStats.getPe();
-            faTotal += sumStats.getFa();
-            caTotal += sumStats.getCa();
+            okTotal += sumStats.getOK();
+            koTotal += sumStats.getKO();
+            naTotal += sumStats.getNA();
+            neTotal += sumStats.getNE();
+            peTotal += sumStats.getPE();
+            quTotal += sumStats.getQU();
+            faTotal += sumStats.getFA();
+            caTotal += sumStats.getCA();
         }
         SummaryStatisticsDTO sumGlobal = new SummaryStatisticsDTO();
         sumGlobal.setApplication("Total");
-        sumGlobal.setOk(okTotal);
-        sumGlobal.setKo(koTotal);
-        sumGlobal.setNa(naTotal);
-        sumGlobal.setNe(neTotal);
-        sumGlobal.setPe(peTotal);
-        sumGlobal.setFa(faTotal);
-        sumGlobal.setCa(caTotal);
+        sumGlobal.setOK(okTotal);
+        sumGlobal.setKO(koTotal);
+        sumGlobal.setNA(naTotal);
+        sumGlobal.setNE(neTotal);
+        sumGlobal.setPE(peTotal);
+        sumGlobal.setQU(quTotal);
+        sumGlobal.setFA(faTotal);
+        sumGlobal.setCA(caTotal);
 
-        int notOkTotal = koTotal + naTotal + peTotal + faTotal + caTotal + neTotal;
-        sumGlobal.setNotOkTotal(notOkTotal);
+        int notOkTotal = koTotal + naTotal + peTotal + faTotal + caTotal + neTotal + quTotal;
+        sumGlobal.setNotOKTotal(notOkTotal);
 
         int totalGlobal = notOkTotal + okTotal;
         sumGlobal.setTotal(totalGlobal);

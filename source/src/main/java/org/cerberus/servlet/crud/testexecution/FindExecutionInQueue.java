@@ -25,15 +25,15 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Level;
-import org.cerberus.crud.entity.TestCaseExecutionInQueue;
+import org.cerberus.crud.entity.TestCaseExecutionQueue;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
-import org.cerberus.crud.service.ITestCaseExecutionInQueueService;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 
 /**
  *
@@ -53,7 +53,7 @@ public class FindExecutionInQueue extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        ITestCaseExecutionInQueueService executionService = appContext.getBean(ITestCaseExecutionInQueueService.class);
+        ITestCaseExecutionQueueService executionService = appContext.getBean(ITestCaseExecutionQueueService.class);
         String echo = request.getParameter("sEcho");
 
         JSONArray data = new JSONArray(); //data that will be shown in the table
@@ -61,7 +61,7 @@ public class FindExecutionInQueue extends HttpServlet {
         try {
             JSONObject jsonResponse = new JSONObject();
             try {
-                for (TestCaseExecutionInQueue exec : executionService.findAll()) {
+                for (TestCaseExecutionQueue exec : executionService.findAll()) {
                     JSONArray row = new JSONArray();
                     row.put(exec.getId());
                     row.put(exec.getTest());

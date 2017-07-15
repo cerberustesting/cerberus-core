@@ -95,6 +95,7 @@ public class RunTestCase extends HttpServlet {
     public static final String PARAMETER_NUMBER_OF_RETRIES = "retries";
     public static final String AUTOMATIC_RUN = "autoRun";
     public static final String PARAMETER_SCREEN_SIZE = "screenSize";
+    public static final String PARAMETER_EXECUTOR = "executor";
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -150,7 +151,6 @@ public class RunTestCase extends HttpServlet {
         getPageSource = ParameterParserUtil.parseIntegerParam(request.getParameter("pageSource"), 1);
         getSeleniumLog = ParameterParserUtil.parseIntegerParam(request.getParameter("seleniumLog"), 1);
         manualExecution = ParameterParserUtil.parseBooleanParam(request.getParameter("manualExecution"), false);
-        long idFromQueue = ParameterParserUtil.parseIntegerParam(request.getParameter("IdFromQueue"), 0);
         int numberOfRetries = ParameterParserUtil.parseIntegerParam(request.getParameter("retries"), 0);
         screenSize = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("screenSize"), "");
 
@@ -160,6 +160,10 @@ public class RunTestCase extends HttpServlet {
         browser = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("Browser"), ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("browser"), ""));
         version = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("version"), "");
         platform = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("platform"), "");
+
+        // hidden parameters.
+        long idFromQueue = ParameterParserUtil.parseIntegerParam(request.getParameter("IdFromQueue"), 0);
+        String executor = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("executor"), ParameterParserUtil.parseStringParamAndSanitize(request.getRemoteUser(), null));
 
         String helpMessage = "\nThis servlet is used to start the execution of a test case.\n"
                 + "Parameter list :\n"
@@ -297,9 +301,9 @@ public class RunTestCase extends HttpServlet {
                 TestCase tCase = factoryTCase.create(test, testCase);
 
                 TestCaseExecution tCExecution = factoryTCExecution.create(0, test, testCase, null, null, null, environment, country, browser, version, platform, "",
-                        0, 0, "", "", "", null, ss_ip, null, ss_p, tag, "N", verbose, screenshot, getPageSource, getSeleniumLog, synchroneous, timeout, outputFormat, null,
+                        0, 0, "", "", "", null, ss_ip, null, ss_p, tag, verbose, screenshot, getPageSource, getSeleniumLog, synchroneous, timeout, outputFormat, null,
                         Infos.getInstance().getProjectNameAndVersion(), tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL, myEnvData, ss_ip, ss_p,
-                        null, new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED), request.getRemoteUser(), numberOfRetries, screenSize, capabilities,
+                        null, new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED), executor, numberOfRetries, screenSize, capabilities,
                         "", "", "", "", "", manualExecution, userAgent);
 
                 /**
@@ -314,7 +318,7 @@ public class RunTestCase extends HttpServlet {
                 /**
                  * Set IdFromQueue
                  */
-                tCExecution.setIdFromQueue(idFromQueue);
+                tCExecution.setQueueID(idFromQueue);
 
                 /**
                  * Loop on the execution of the testcase until we get an OK or
@@ -362,7 +366,7 @@ public class RunTestCase extends HttpServlet {
                         out.println("<body>");
                         out.println("<table>");
                         out.println("<tr><td>RunID</td><td><span id='RunID'>" + runID + "</span></td></tr>");
-                        out.println("<tr><td>IdFromQueue</td><td><b><span id='IdFromQueue'>" + tCExecution.getIdFromQueue() + "</span></b></td></tr>");
+                        out.println("<tr><td>IdFromQueue</td><td><b><span id='IdFromQueue'>" + tCExecution.getQueueID() + "</span></b></td></tr>");
                         out.println("<tr><td>Test</td><td><span id='Test'>" + test + "</span></td></tr>");
                         out.println("<tr><td>TestCase</td><td><span id='TestCase'>" + testCase + "</span></td></tr>");
                         out.println("<tr><td>Country</td><td><span id='Country'>" + country + "</span></td></tr>");
