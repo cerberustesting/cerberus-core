@@ -180,7 +180,7 @@ function FormatedExeId(id) {
     if (id === 0) {
         return id
     } else {
-        return "<a href='ExecutionDetail.jsp?executionId=" + id + "'>" + id + "</a>";
+        return "<a href='TestCaseExecution.jsp?executionId=" + id + "'>" + id + "</a>";
     }
 }
 

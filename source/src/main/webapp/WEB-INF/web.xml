@@ -49,10 +49,6 @@
         <servlet-class>org.cerberus.servlet.crud.testexecution</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>SaveStatistic</servlet-name>
-        <servlet-class>org.cerberus.servlet.engine.SaveStatistic</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>GetTestCaseList</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.test.GetTestCaseList</servlet-class>
     </servlet>
@@ -689,18 +685,6 @@
         <servlet-class>org.cerberus.servlet.crud.transversaltables.FindInvariantByID</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>PictureConnector</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.test.PictureConnector</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>Thumbnailer</servlet-name>
-        <servlet-class>org.cerberus.servlet.Thumbnailer</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>VirtualProxy</servlet-name>
-        <servlet-class>org.cerberus.servlet.VirtualProxy</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>GetTestCaseForTest</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.test.GetTestCaseForTest</servlet-class>
     </servlet>
@@ -1008,10 +992,6 @@
     <servlet-mapping>
         <servlet-name>ReadDocumentation</servlet-name>
         <url-pattern>/ReadDocumentation</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>SaveStatistic</servlet-name>
-        <url-pattern>/SaveStatistic</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>importXML</servlet-name>
@@ -1644,18 +1624,6 @@
     <servlet-mapping>
         <servlet-name>FindInvariantByID</servlet-name>
         <url-pattern>/FindInvariantByID</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>PictureConnector</servlet-name>
-        <url-pattern>/PictureConnector</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>Thumbnailer</servlet-name>
-        <url-pattern>/Thumbnailer</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>VirtualProxy</servlet-name>
-        <url-pattern>/VirtualProxy</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>GetTestCaseForTest</servlet-name>

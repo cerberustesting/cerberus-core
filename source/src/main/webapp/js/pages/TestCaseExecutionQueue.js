@@ -165,7 +165,7 @@ function aoColumnsFunc(tableId) {
                 if (obj["exeId"] <= 0) {
                     return "";
                 } else {
-                    return '<a href="ExecutionDetail.jsp?executionId=' + obj["exeId"] + '">' + obj["exeId"] + '</div>';
+                    return '<a href="TestCaseExecution.jsp?executionId=' + obj["exeId"] + '">' + obj["exeId"] + '</div>';
                 }
             }
         },

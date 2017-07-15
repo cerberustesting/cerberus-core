@@ -96,7 +96,7 @@ function initPage(id) {
     $("#lastExecution").prop("disabled", true);
 
     $("#runOld").click(function () {
-        window.location = "ExecutionDetail.jsp?id_tc=" + id;
+        window.location = "TestCaseExecution.jsp?executionId=" + id;
     });
 
     $("#editTag").click(function () {
