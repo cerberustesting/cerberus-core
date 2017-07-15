@@ -227,7 +227,7 @@ function generateTooltip(data, statusOrder, tag) {
 
 function generateTagReport(data, tag) {
     var reportArea = $("#tagExecStatus");
-    var statusOrder = ["OK", "KO", "FA", "NA", "NE", "PE", "CA"];
+    var statusOrder = ["OK", "KO", "FA", "NA", "NE", "PE", "QU", "CA"];
     var buildBar;
     var tooltip = generateTooltip(data, statusOrder, tag);
     var len = statusOrder.length;
