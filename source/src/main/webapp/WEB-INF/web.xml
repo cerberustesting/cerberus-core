@@ -2124,6 +2124,11 @@
     </security-constraint>
     <security-constraint>
         <display-name>TestStepLibrary</display-name>
+        <web-resource-collection>
+            <web-resource-name>jsp</web-resource-name>
+            <description/>
+            <url-pattern>/ZZZ</url-pattern>
+        </web-resource-collection>
         <auth-constraint>
             <description>TestStepLibrary</description>
             <role-name>TestStepLibrary</role-name>

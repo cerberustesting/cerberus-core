@@ -8852,6 +8852,32 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ALTER TABLE `testcaseexecution` DROP FOREIGN KEY `FK_testcaseexecution_02`, DROP FOREIGN KEY `FK_testcaseexecution_01`; ");
         SQLInstruction.add(SQLS.toString());
 
+        // Added link between testcaseexecution and testcaseexecutionqueue.
+        //-- ------------------------ 1170-1173
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcaseexecution` ADD COLUMN `QueueID` BIGINT(20) NULL DEFAULT NULL AFTER `ManualExecution`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcaseexecutionqueue` ADD COLUMN `ExeID` BIGINT(20) NULL DEFAULT NULL AFTER `State`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcaseexecution` DROP COLUMN `Verbose`, DROP COLUMN `Finished`, ");
+        SQLS.append(" ADD COLUMN `UsrCreated` VARCHAR(45) NOT NULL DEFAULT '' AFTER `QueueID`,");
+        SQLS.append(" ADD COLUMN `DateCreated` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `UsrCreated`,");
+        SQLS.append(" ADD COLUMN `UsrModif` VARCHAR(45) NULL DEFAULT '' AFTER `DateCreated`,");
+        SQLS.append(" ADD COLUMN `DateModif` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01' AFTER `UsrModif` ;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcaseexecutionqueue` DROP COLUMN `OutputFormat`, DROP COLUMN `Synchroneous`, ");
+        SQLS.append(" CHANGE COLUMN `manualexecution` `manualexecution` VARCHAR(1) NOT NULL DEFAULT 'N' AFTER `SeleniumLog`, ");
+        SQLS.append(" CHANGE COLUMN `retries` `retries` TINYINT(1) NOT NULL DEFAULT '0' AFTER `manualexecution`, ");
+        SQLS.append(" CHANGE COLUMN `State` `State` VARCHAR(9) NOT NULL DEFAULT 'WAITING' AFTER `RequestDate`, ");
+        SQLS.append(" ADD COLUMN `UsrCreated` VARCHAR(45) NOT NULL DEFAULT '' AFTER `ExeID`,");
+        SQLS.append(" ADD COLUMN `DateCreated` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `UsrCreated`,");
+        SQLS.append(" ADD COLUMN `UsrModif` VARCHAR(45) NULL DEFAULT '' AFTER `DateCreated`,");
+        SQLS.append(" ADD COLUMN `DateModif` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01'  AFTER `UsrModif` ;");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 
