@@ -24,20 +24,20 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <%@ include file="include/dependenciesInclusions.html" %>
+        <%@ include file="include/global/dependenciesInclusions.html" %>
         <script type="text/javascript" src="js/pages/Environment.js"></script>
         <title id="pageTitle">Environment</title>
     </head>
     <body>
-        <%@ include file="include/header.html" %>
+        <%@ include file="include/global/header.html" %>
         <div class="container-fluid center" id="page-layout">
-            <%@ include file="include/messagesArea.html"%>
+            <%@ include file="include/global/messagesArea.html"%>
             <%@ include file="include/utils/modal-confirmation.html"%>
-            <%@ include file="include/environment/addEnvironment.html"%>
-            <%@ include file="include/environment/editEnvironment.html"%>
-            <%@ include file="include/environment/eventEnable.html"%>
-            <%@ include file="include/environment/eventDisable.html"%>
-            <%@ include file="include/environment/eventNewChain.html"%>
+            <%@ include file="include/pages/environment/addEnvironment.html"%>
+            <%@ include file="include/pages/environment/editEnvironment.html"%>
+            <%@ include file="include/pages/environment/eventEnable.html"%>
+            <%@ include file="include/pages/environment/eventDisable.html"%>
+            <%@ include file="include/pages/environment/eventNewChain.html"%>
 
             <h1 class="page-title-line" id="title">Environment</h1>
 

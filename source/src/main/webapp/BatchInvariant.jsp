@@ -24,17 +24,17 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <%@ include file="include/dependenciesInclusions.html" %>
+        <%@ include file="include/global/dependenciesInclusions.html" %>
         <script type="text/javascript" src="js/pages/BatchInvariant.js"></script>
         <title id="pageTitle">Batch Invariant</title>
     </head>
     <body>
-        <%@ include file="include/header.html" %>
+        <%@ include file="include/global/header.html" %>
         <div class="container-fluid center" id="page-layout">
-            <%@ include file="include/messagesArea.html"%>
+            <%@ include file="include/global/messagesArea.html"%>
             <%@ include file="include/utils/modal-confirmation.html"%>
-            <%@ include file="include/batchinvariant/addBatchInvariant.html"%> 
-            <%@ include file="include/batchinvariant/editBatchInvariant.html"%> 
+            <%@ include file="include/pages/batchinvariant/addBatchInvariant.html"%> 
+            <%@ include file="include/pages/batchinvariant/editBatchInvariant.html"%> 
 
             <h1 class="page-title-line" id="title">Deploy Type</h1>
             <div class="panel panel-default">

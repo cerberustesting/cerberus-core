@@ -24,20 +24,20 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <%@ include file="include/dependenciesInclusions.html" %>
+        <%@ include file="include/global/dependenciesInclusions.html" %>
         <title>Change Password</title>
         <script type="text/javascript" src="js/pages/ChangePassword.js"></script>
     </head>
     <body>
 
-        <%@ include file="include/messagesArea.html"%>
+        <%@ include file="include/global/messagesArea.html"%>
         <div class="body-login">
             <div class="col-md-2"></div>
 
             <div class="col-md-8 panel panel-default panel-login" >
 
                 <div class="col-md-12">
-                    <%@ include file="include/messagesArea.html"%>
+                    <%@ include file="include/global/messagesArea.html"%>
                     <div id="error" style="display:none"><%="0"/*display*/%></div>
                 </div>
 

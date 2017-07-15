@@ -34,14 +34,14 @@
     <head>
         <meta content="text/html; charset=UTF-8" http-equiv="content-type">
         <title>Cerberus Homepage</title>
-        <%@ include file="include/dependenciesInclusions.html" %>
+        <%@ include file="include/global/dependenciesInclusions.html" %>
         <link rel="stylesheet" href="css/pages/Homepage.css" type="text/css"/>
         <link rel="stylesheet" href="css/pages/ReportingExecutionByTag.css" type="text/css"/>
         <script type="text/javascript" src="js/pages/Homepage.js"></script>
     </head>
     <body>
-        <%@ include file="include/header.html"%>
-        <%@ include file="include/homepage/tagSettingsModal.html" %>
+        <%@ include file="include/global/header.html"%>
+        <%@ include file="include/pages/homepage/tagSettingsModal.html" %>
         <%
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
 
@@ -63,7 +63,7 @@
 
         </style>
         <div class="container-fluid center" id="page-layout">
-            <%@ include file="include/messagesArea.html"%>
+            <%@ include file="include/global/messagesArea.html"%>
             <h1 class="page-title-line" id="title">Welcome to Cerberus Application</h1>
             
             <div id="homeTableDiv" class="panel panel-default">

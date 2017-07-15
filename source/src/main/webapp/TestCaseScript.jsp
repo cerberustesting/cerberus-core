@@ -24,24 +24,24 @@
 <html>
     <head>
         <meta content="text/html; charset=UTF-8" http-equiv="content-type">
-        <%@ include file="include/dependenciesInclusions.html" %>
+        <%@ include file="include/global/dependenciesInclusions.html" %>
         <title id="pageTitle">Test Case</title>        
         <script type="text/javascript" src="dependencies/Tinymce-4.2.6/tinymce.min.js"></script>
-        <script type="text/javascript" src="js/pages/transversalobject/ApplicationObject.js"></script>
-        <script type="text/javascript" src="js/pages/transversalobject/TestCase.js"></script>
-        <script type="text/javascript" src="js/pages/TestCaseScript.js"></script>
         <script type="text/javascript" src="dependencies/Ace-1.2.6/ext-language_tools.js"></script>
+        <script type="text/javascript" src="js/transversalobject/ApplicationObject.js"></script>
+        <script type="text/javascript" src="js/transversalobject/TestCase.js"></script>
+        <script type="text/javascript" src="js/pages/TestCaseScript.js"></script>
         <link rel="stylesheet" type="text/css" href="css/pages/TestCaseScript.css">
     </head>
     <body>
-        <%@ include file="include/header.html"%>
+        <%@ include file="include/global/header.html"%>
         <div id="page-layout" class="container-fluid center">
-            <%@ include file="include/messagesArea.html"%>
+            <%@ include file="include/global/messagesArea.html"%>
             <%@ include file="include/transversalobject/TestCase.html"%>
             <%@ include file="include/utils/modal-confirmation.html"%>
-            <%@ include file="include/testcasescript/manageProperties.html"%>
-            <%@ include file="include/testcasescript/addStep.html"%>
-            <%@ include file="include/transversalobject/addApplicationObject.html"%>
+            <%@ include file="include/pages/testcasescript/manageProperties.html"%>
+            <%@ include file="include/pages/testcasescript/addStep.html"%>
+            <%@ include file="include/transversalobject/ApplicationObject.html"%>
 
             <h1 class="page-title-line">Test Case Script</h1>
             <div class="panel panel-default" style="margin-top: 10px;">

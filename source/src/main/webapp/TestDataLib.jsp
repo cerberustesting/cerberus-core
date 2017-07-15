@@ -24,21 +24,21 @@
 <html>
     <head>
         <meta content="text/html; charset=UTF-8" http-equiv="content-type">
-        <%@ include file="include/dependenciesInclusions.html" %>
+        <%@ include file="include/global/dependenciesInclusions.html" %>
         <title id="pageTitle">Test Data Library</title>        
         <script type="text/javascript" src="js/pages/TestDataLib.js"></script>     
     </head>
     <body>
-        <%@ include file="include/header.html"%>
+        <%@ include file="include/global/header.html"%>
 
         <div id="page-layout" class="container-fluid center">     
-            <%@ include file="include/messagesArea.html"%>
+            <%@ include file="include/global/messagesArea.html"%>
             <%@ include file="include/utils/modal-confirmation.html"%>
-            <%@ include file="include/testdatalib/addTestDataLib.html"%>
-            <%@ include file="include/testdatalib/editTestDataLib.html"%>       
-            <%@ include file="include/testdatalib/duplicateTestDataLib.html"%>       
-            <%@ include file="include/testdatalib/listTestCase.html"%>       
-            <%@ include file="include/utils/modal-upload.html"%>      
+            <%@ include file="include/utils/modal-upload.html"%>
+            <%@ include file="include/pages/testdatalib/addTestDataLib.html"%>
+            <%@ include file="include/pages/testdatalib/editTestDataLib.html"%>       
+            <%@ include file="include/pages/testdatalib/duplicateTestDataLib.html"%>       
+            <%@ include file="include/pages/testdatalib/listTestCase.html"%>       
             <h1 class="page-title-line" id="title">Test Data Library</h1>
             <div class="panel panel-default">
                 <div class="panel-heading">

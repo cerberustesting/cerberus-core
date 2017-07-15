@@ -24,12 +24,12 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <%@ include file="include/dependenciesInclusions.html" %>
+        <%@ include file="include/global/dependenciesInclusions.html" %>
         <script type="text/javascript" src="js/pages/Documentation.js"></script>
         <title id="pageTitle">Documentation</title>
     </head>
     <body>
-        <%@ include file="include/header.html" %>
+        <%@ include file="include/global/header.html" %>
         <div class="container-fluid center" id="page-layout">
 
             <h1 class="page-title-line" id="title">Documentation</h1>

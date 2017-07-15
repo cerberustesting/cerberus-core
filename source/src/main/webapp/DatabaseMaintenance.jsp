@@ -37,14 +37,14 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <%@ include file="include/dependenciesInclusions.html" %>
+        <%@ include file="include/global/dependenciesInclusions.html" %>
         <title>Cerberus Database Maintenance</title>
         <script type="text/javascript" src="js/pages/DatabaseMaintenance.js"></script>
     </head>
     <body>
-        <%@ include file="include/header.html" %>
+        <%@ include file="include/global/header.html" %>
         <div class="container-fluid center" id="page-layout">
-            <%@ include file="include/messagesArea.html"%>
+            <%@ include file="include/global/messagesArea.html"%>
             <%@ include file="include/utils/modal-confirmation.html"%>
             <h1 class="page-title-line" id="title">Database Maintenance</h1>
             <%

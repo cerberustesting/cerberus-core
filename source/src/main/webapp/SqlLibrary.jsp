@@ -24,17 +24,17 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <%@ include file="include/dependenciesInclusions.html" %>
+    <%@ include file="include/global/dependenciesInclusions.html" %>
     <title>SQL Library</title>
     <script type="text/javascript" src="js/pages/SqlLibrary.js"></script>
 </head>
 <body>
-<%@ include file="include/header.html" %>
+<%@ include file="include/global/header.html" %>
 <div class="container-fluid center" id="page-layout">
-    <%@ include file="include/messagesArea.html"%>
+    <%@ include file="include/global/messagesArea.html"%>
     <%@ include file="include/utils/modal-confirmation.html"%>
-    <%@ include file="include/sqlLibrary/editSqlLibrary.html"%>
-    <%@ include file="include/sqlLibrary/addSqlLibrary.html"%>
+    <%@ include file="include/pages/sqlLibrary/editSqlLibrary.html"%>
+    <%@ include file="include/pages/sqlLibrary/addSqlLibrary.html"%>
 
     <h1 class="page-title-line" id="title">SQL Library</h1>
     <div class="panel panel-default">

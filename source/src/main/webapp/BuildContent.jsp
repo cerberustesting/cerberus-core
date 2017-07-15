@@ -24,19 +24,19 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <%@ include file="include/dependenciesInclusions.html" %>
+        <%@ include file="include/global/dependenciesInclusions.html" %>
         <script type="text/javascript" src="js/pages/BuildContent.js"></script>
         <title id="pageTitle">Build Content</title>
     </head>
     <body>
-        <%@ include file="include/header.html" %>
+        <%@ include file="include/global/header.html" %>
         <div class="container-fluid center" id="page-layout">
-            <%@ include file="include/messagesArea.html"%>
+            <%@ include file="include/global/messagesArea.html"%>
             <%@ include file="include/utils/modal-confirmation.html"%>
-            <%@ include file="include/buildcontent/addBuildContent.html"%>
-            <%@ include file="include/buildcontent/editBuildContent.html"%>
-            <%@ include file="include/buildcontent/massActionBuildContent.html"%>
-            <%@ include file="include/buildcontent/listInstallInstructions.html"%>
+            <%@ include file="include/pages/buildcontent/addBuildContent.html"%>
+            <%@ include file="include/pages/buildcontent/editBuildContent.html"%>
+            <%@ include file="include/pages/buildcontent/massActionBuildContent.html"%>
+            <%@ include file="include/pages/buildcontent/listInstallInstructions.html"%>
 
             <h1 class="page-title-line" id="title">Build Content</h1>
 

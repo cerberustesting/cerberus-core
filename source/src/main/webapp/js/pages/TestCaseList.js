@@ -19,7 +19,7 @@
  */
 /* global modalFormCleaner */
 
-$.when($.getScript("js/pages/global/global.js")).then(function () {
+$.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
         initPage();
     });

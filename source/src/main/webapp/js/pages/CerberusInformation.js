@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-$.when($.getScript("js/pages/global/global.js")).then(function () {
+$.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
         initPage();
     });
@@ -180,7 +180,7 @@ function FormatedExeId(id) {
     if (id === 0) {
         return id
     } else {
-        return "<a href='ExecutionDetail2.jsp?executionId=" + id + "'>" + id + "</a>";
+        return "<a href='ExecutionDetail.jsp?executionId=" + id + "'>" + id + "</a>";
     }
 }
 

@@ -2439,13 +2439,13 @@ function generateExecutionLink(status, id, tag) {
     var result = "";
     if (status === "QU") {
         // If in queue, we redirect to queue management in order to be able the see the error and restart the execution from the queue.
-        result = "./ExecutionPending.jsp?search=" + tag;
+        result = "./TestCaseExecutionQueue.jsp?search=" + tag;
     } else if (status === "NE") {
         // Not executed (means manual execution).
-        result = "./ExecutionDetail2.jsp?executionId=" + id;
+        result = "./TestCaseExecution.jsp?executionId=" + id;
     } else {
         // No longuer in the queue so we display the result.
-        result = "./ExecutionDetail2.jsp?executionId=" + id;
+        result = "./TestCaseExecution.jsp?executionId=" + id;
     }
     return result;
 }

@@ -18,7 +18,7 @@
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
 var imagePasteFromClipboard = undefined;//stock the picture if the user chose to upload it from his clipboard
-$.when($.getScript("js/pages/global/global.js")).then(function () {
+$.when($.getScript("js/global/global.js")).then(function () {
     
     $(document).ready(function () {
         initPage();

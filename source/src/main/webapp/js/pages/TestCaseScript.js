@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-$.when($.getScript("js/pages/global/global.js")).then(function () {
+$.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
 
         $(window).bind('beforeunload', function () {
@@ -368,7 +368,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 
             $("#runTestCase").attr("onclick", "document.location.href='./RunTests1.jsp?test=" + test + "&testcase=" + testcase + "'");
             $("#seeLastExec").parent().attr("href", "./TestCaseExecution.jsp?test=" + test + "&testcase=" + testcase);
-            $("#seeLogs").parent().attr("href", "./LogViewer.jsp?Test=" + test + "&TestCase=" + testcase);
+            $("#seeLogs").parent().attr("href", "./LogEvent.jsp?Test=" + test + "&TestCase=" + testcase);
 
             $.ajax({
                 url: "ReadTestCaseExecution",

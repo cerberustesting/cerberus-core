@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-$.when($.getScript("js/pages/global/global.js")).then(function () {
+$.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
         initPage();
     });
@@ -165,7 +165,7 @@ function aoColumnsFunc(tableId) {
                 if (obj["exeId"] <= 0) {
                     return "";
                 } else {
-                    return '<a href="ExecutionDetail2.jsp?executionId=' + obj["exeId"] + '">' + obj["exeId"] + '</div>';
+                    return '<a href="ExecutionDetail.jsp?executionId=' + obj["exeId"] + '">' + obj["exeId"] + '</div>';
                 }
             }
         },

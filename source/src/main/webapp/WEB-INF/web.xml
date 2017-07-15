@@ -45,6 +45,10 @@
         <servlet-class>org.cerberus.servlet.zzpublic.RunTestCase</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>RunExecutionInQueue</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.testexecution</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>SaveStatistic</servlet-name>
         <servlet-class>org.cerberus.servlet.engine.SaveStatistic</servlet-class>
     </servlet>
@@ -113,6 +117,10 @@
         <servlet-class>org.cerberus.servlet.crud.test.UpdateTestCase</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>UpdateTestCaseMass</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.test.UpdateTestCaseMass</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>CalculatePropertyForTestCase</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.test.CalculatePropertyForTestCase</servlet-class>
     </servlet>
@@ -127,6 +135,14 @@
     <servlet>
         <servlet-name>CreateTestCase</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.test.CreateTestCase</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>CreateTestCaseLabel</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.test.CreateTestCaseLabel</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DeleteTestCaseLabel</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.test.DeleteTestCaseLabel</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GetUsers</servlet-name>
@@ -529,10 +545,6 @@
         <servlet-class>org.cerberus.servlet.crud.test.ImportTestCaseStep</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>CreateTestData</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.testdata.CreateTestData</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>SaveManualExecutionPicture</servlet-name>
         <servlet-class>org.cerberus.servlet.manualtestcase.SaveManualExecutionPicture</servlet-class>
     </servlet>
@@ -799,6 +811,11 @@
         <servlet-class>org.cerberus.servlet.zzpublic.AddToExecutionQueue</servlet-class>
     </servlet>
     <servlet>
+        <description>Add a test case to the execution queue.</description>
+        <servlet-name>AddToExecutionQueueV001</servlet-name>
+        <servlet-class>org.cerberus.servlet.zzpublic.AddToExecutionQueueV001</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>GetExecutionQueue</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.testexecution.GetExecutionQueue</servlet-class>
     </servlet>
@@ -981,6 +998,10 @@
         <url-pattern>/RunTestCase</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>RunExecutionInQueue</servlet-name>
+        <url-pattern>/RunExecutionInQueue</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>DocumentationField</servlet-name>
         <url-pattern>/DocumentationField</url-pattern>
     </servlet-mapping>
@@ -1027,6 +1048,14 @@
     <servlet-mapping>
         <servlet-name>CreateTestCase</servlet-name>
         <url-pattern>/CreateTestCase</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CreateTestCaseLabel</servlet-name>
+        <url-pattern>/CreateTestCaseLabel</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteTestCaseLabel</servlet-name>
+        <url-pattern>/DeleteTestCaseLabel</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>GetUsers</servlet-name>
@@ -1151,6 +1180,10 @@
     <servlet-mapping>
         <servlet-name>UpdateTestCase</servlet-name>
         <url-pattern>/UpdateTestCase</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UpdateTestCaseMass</servlet-name>
+        <url-pattern>/UpdateTestCaseMass</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>CalculatePropertyForTestCase</servlet-name>
@@ -1721,6 +1754,10 @@
         <url-pattern>/AddToExecutionQueue</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>AddToExecutionQueueV001</servlet-name>
+        <url-pattern>/AddToExecutionQueueV001</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>GetExecutionQueue</servlet-name>
         <url-pattern>/GetExecutionQueue</url-pattern>
     </servlet-mapping>
@@ -1901,19 +1938,19 @@
     </session-config>
     <error-page>
         <error-code>400</error-code>
-        <location>/ErrorPages/Error.jsp?error=400</location>
+        <location>/ErrorPages/Error.jsp</location>
     </error-page>
     <error-page>
         <error-code>403</error-code>
-        <location>/ErrorPages/Error.jsp?error=403</location>
+        <location>/ErrorPages/Error.jsp</location>
     </error-page>
     <error-page>
         <error-code>404</error-code>
-        <location>/ErrorPages/Error.jsp?error=404</location>
+        <location>/ErrorPages/Error.jsp</location>
     </error-page>
     <error-page>
         <error-code>500</error-code>
-        <location>/ErrorPages/Error.jsp?error=500</location>
+        <location>/ErrorPages/Error.jsp</location>
     </error-page>
     <!-- Start JAAS Configuration -->
     <security-role>
@@ -1973,32 +2010,15 @@
         <web-resource-collection>
             <web-resource-name>jsp</web-resource-name>
             <description>jsp</description>
-            <url-pattern>/ExecutionDetail.jsp</url-pattern>
-            <url-pattern>/ExecutionDetail2.jsp</url-pattern>
-            <url-pattern>/ExecutionManual.jsp</url-pattern>
             <url-pattern>/TestCaseExecution.jsp</url-pattern>
-            <url-pattern>/ExecutionDetailList.jsp</url-pattern>
-            <url-pattern>/ExecutionPerBuildRevision.jsp</url-pattern>
-            <url-pattern>/NetworkTraficDetail.jsp</url-pattern>
-            <url-pattern>/ReportingExecution.jsp</url-pattern>
-            <url-pattern>/ReportingExecution1.jsp</url-pattern>
-            <url-pattern>/ReportingExecutionTime.jsp</url-pattern>
+            <url-pattern>/TestCaseExecutionList.jsp</url-pattern>
             <url-pattern>/ReportingExecutionByTag.jsp</url-pattern>
-            <url-pattern>/ExecutionPending.jsp</url-pattern>
+            <url-pattern>/TestCaseExecutionQueue.jsp</url-pattern>
             <url-pattern>/Test.jsp</url-pattern>
-            <url-pattern>/TestCase.jsp</url-pattern>
             <url-pattern>/TestCaseScript.jsp</url-pattern>
             <url-pattern>/TestCaseList.jsp</url-pattern>
-            <url-pattern>/TestCaseSearch.jsp</url-pattern>
-            <url-pattern>/TestCaseSearchNew.jsp</url-pattern>
             <url-pattern>/TestBattery.jsp</url-pattern>
-            <url-pattern>/TestBattery2.jsp</url-pattern>
-            <url-pattern>/TestBatteryTestCaseResult.jsp</url-pattern>
-            <url-pattern>/TestBatteryTestCaseSearch.jsp</url-pattern>
             <url-pattern>/TestCampaign.jsp</url-pattern>
-            <url-pattern>/TestCampaign2.jsp</url-pattern>
-            <url-pattern>/ViewProperty.jsp</url-pattern>
-            <url-pattern>/ReadTestCaseStep</url-pattern>
         </web-resource-collection>
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>
@@ -2025,6 +2045,7 @@
             <url-pattern>/GetStepInLibrary</url-pattern>
             <url-pattern>/ReadTestCase</url-pattern>
             <url-pattern>/ReadTest</url-pattern>
+            <url-pattern>/ReadTestCaseStep</url-pattern>
             <url-pattern>/GetReportTest</url-pattern>
             <url-pattern>/ReadTestCaseExecutionByTag</url-pattern>
         </web-resource-collection>
@@ -2038,10 +2059,6 @@
         <web-resource-collection>
             <web-resource-name>jsp</web-resource-name>
             <description>jsp</description>
-            <url-pattern>/SqlLib.jsp</url-pattern>
-            <url-pattern>/TestCaseImport.jsp</url-pattern>
-            <url-pattern>/ImportTestCase.jsp</url-pattern>
-            <url-pattern>/TestData.jsp</url-pattern>
             <url-pattern>/SqlLibrary.jsp</url-pattern>
             <url-pattern>/AppService.jsp</url-pattern>
             <url-pattern>/TestDataLib.jsp</url-pattern>
@@ -2052,17 +2069,19 @@
             <description>servlet</description>
             <url-pattern>/DuplicateTestCase</url-pattern>
             <url-pattern>/UpdateTestCase</url-pattern>
+            <url-pattern>/UpdateTestCaseMass</url-pattern>
             <url-pattern>/CreateTestCaseCountry</url-pattern>
             <url-pattern>/DeleteTestCaseCountry</url-pattern>
             <url-pattern>/CalculatePropertyForTestCase</url-pattern>
             <url-pattern>/UpdateProperties</url-pattern>
             <url-pattern>/CreateTestCase</url-pattern>
+            <url-pattern>/CreateTestCaseLabel</url-pattern>
+            <url-pattern>/DeleteTestCaseLabel</url-pattern>
             <url-pattern>/UpdateTestCaseDetail</url-pattern>
             <url-pattern>/ImportSeleniumIDE</url-pattern>
             <url-pattern>/ImportTestCaseStep</url-pattern>
             <url-pattern>/ImportPropertyOfATestCaseToAnOtherTestCase</url-pattern>
             <url-pattern>/CreateNotDefinedProperty</url-pattern>
-            <url-pattern>/CreateTestData</url-pattern>
             <url-pattern>/DeleteTestData</url-pattern>
             <url-pattern>/UpdateTestData</url-pattern>
             <url-pattern>/FindAllTestData</url-pattern>
@@ -2105,11 +2124,6 @@
     </security-constraint>
     <security-constraint>
         <display-name>TestStepLibrary</display-name>
-        <web-resource-collection>
-            <web-resource-name>jsp</web-resource-name>
-            <description/>
-            <url-pattern>/ZZZ</url-pattern>
-        </web-resource-collection>
         <auth-constraint>
             <description>TestStepLibrary</description>
             <role-name>TestStepLibrary</role-name>
@@ -2117,11 +2131,6 @@
     </security-constraint>
     <security-constraint>
         <display-name>TestAdmin</display-name>
-        <web-resource-collection>
-            <web-resource-name>jsp</web-resource-name>
-            <description>jsp</description>
-            <url-pattern>/NoPaternDefined.jsp</url-pattern>
-        </web-resource-collection>
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>
             <description>servlet</description>
@@ -2153,16 +2162,13 @@
             <web-resource-name>jsp</web-resource-name>
             <description>jsp</description>
             <url-pattern>/RunTests.jsp</url-pattern>
-            <url-pattern>/RunTestsSearchFilters.jsp</url-pattern>
-            <url-pattern>/RunTestsSearchResult.jsp</url-pattern>
-            <url-pattern>/TestCaseManualRun.jsp</url-pattern>
-            <url-pattern>/RunTestsTriggerBatchExecution.jsp</url-pattern>
-            <url-pattern>/RunTests1.jsp</url-pattern>
         </web-resource-collection>
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>
             <description>servlet</description>
             <url-pattern>/findEnvironmentByCriteria</url-pattern>
+            <url-pattern>/UpdateTestCaseExecution</url-pattern>
+            <url-pattern>/RunExecutionInQueue</url-pattern>
             <url-pattern>/RunManualTest</url-pattern>
             <url-pattern>/SetTagToExecution</url-pattern>
             <url-pattern>/FindExecutionInQueue</url-pattern>
@@ -2314,12 +2320,10 @@
         <web-resource-collection>
             <web-resource-name>jsp</web-resource-name>
             <description>jsp</description>
-            <url-pattern>/LogViewer.jsp</url-pattern>
+            <url-pattern>/LogEvent.jsp</url-pattern>
             <url-pattern>/Parameter.jsp</url-pattern>
             <url-pattern>/UserManager.jsp</url-pattern>
-            <url-pattern>/UserManager2.jsp</url-pattern>
             <url-pattern>/Invariant.jsp</url-pattern>
-            <url-pattern>/ExecutionThreadMonitoring.jsp</url-pattern>
             <url-pattern>/CerberusInformation.jsp</url-pattern>
         </web-resource-collection>
         <web-resource-collection>
@@ -2364,6 +2368,7 @@
             <url-pattern>/index1.jsp</url-pattern>
             <url-pattern>/index2.jsp</url-pattern>
             <url-pattern>/index3.jsp</url-pattern>
+            <url-pattern>/index4.jsp</url-pattern>
             <url-pattern>/ChangePassword.jsp</url-pattern>
         </web-resource-collection>
         <web-resource-collection>
@@ -2435,6 +2440,7 @@
             <url-pattern>/ForgotPasswordEmailConfirmation</url-pattern>
             <url-pattern>/ChangeUserPassword</url-pattern>
             <url-pattern>/AddToExecutionQueue</url-pattern>
+            <url-pattern>/AddToExecutionQueueV001</url-pattern>
             <url-pattern>/ReadApplicationObjectImage</url-pattern>
             <url-pattern>/GetTestCases</url-pattern>
         </web-resource-collection>

@@ -36,7 +36,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <%@ include file="include/dependenciesInclusions.html" %>
+        <%@ include file="include/global/dependenciesInclusions.html" %>
         <script type='text/javascript' src='js/pages/Login.js'></script>
         <script type="text/javascript">
             EnvTuning("<%=System.getProperty("org.cerberus.environment")%>");
@@ -76,7 +76,7 @@
             <div class="col-md-8 panel panel-default panel-login" >
 
 				<div class="col-md-12">
-				    <%@ include file="include/messagesArea.html"%>
+				    <%@ include file="include/global/messagesArea.html"%>
             		<div id="error" style="display:none"><%=display%></div>
             	</div>
             	

@@ -23,37 +23,33 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta content="text/html; charset=UTF-8" http-equiv="content-type">
-        <%@ include file="include/dependenciesInclusions.html" %>
-        <title id="pageTitle">Test Data Library</title>        
-        <script type="text/javascript" src="js/pages/TestDataLib.js"></script>     
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <%@ include file="include/global/dependenciesInclusions.html" %>
+        <link rel="stylesheet" href="css/pages/ReportingExecutionByTag.css" type="text/css"/>
+        <script type="text/javascript" src="js/pages/TestCaseExecutionList.js"></script>
+        
+        <title id="pageTitle">Execution</title>
     </head>
     <body>
-        <%@ include file="include/header.html"%>
-
-        <div id="page-layout" class="container-fluid center">     
-            <%@ include file="include/messagesArea.html"%>
+        <%@ include file="include/global/header.html" %>
+        <div class="container-fluid center" id="page-layout">
+            <%@ include file="include/global/messagesArea.html"%>
             <%@ include file="include/utils/modal-confirmation.html"%>
-            <%@ include file="include/testdatalib/addTestDataLib.html"%>
-            <%@ include file="include/testdatalib/editTestDataLib.html"%>       
-            <%@ include file="include/testdatalib/duplicateTestDataLib.html"%>       
-            <%@ include file="include/testdatalib/listTestCase.html"%>       
-            <%@ include file="include/utils/modal-upload.html"%>      
-            <h1 class="page-title-line" id="title">Test Data Library</h1>
+            
+            <h1 class="page-title-line" id="title">TestCase Execution</h1>
             <div class="panel panel-default">
-                <div class="panel-heading">
+                <div class="panel-heading" id="testCaseExecutionListLabel">
                     <span class="glyphicon glyphicon-list"></span>
-                    <label id="testListLabel">Test Data List</label>
+                    TestCase Execution List
                 </div>
-                <div class="panel-body" id="testDataLibList">
-                    <table id="listOfTestDataLib" class="table table-bordered table-hover display" name="listOfTestDataLib"></table>
+                <div class="panel-body" id="testCaseExecution">
+                    <table id="testCaseExecutionTable" class="table table-bordered table-hover display" name="testCaseExecutionTable"></table>
                     <div class="marginBottom20"></div>
                 </div>
             </div>
             <footer class="footer">
                 <div class="container-fluid" id="footer"></div>
             </footer>
-        </div>     
-    </body> 
-
+        </div>
+    </body>
 </html>

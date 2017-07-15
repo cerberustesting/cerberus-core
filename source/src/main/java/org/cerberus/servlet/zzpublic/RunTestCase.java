@@ -359,7 +359,7 @@ public class RunTestCase extends HttpServlet {
                 long runID = tCExecution.getId();
                 if (outputFormat.equalsIgnoreCase("gui")) { // HTML GUI output. either the detailed execution page or an error page when the execution is not created.
                     if (runID > 0) { // Execution has been created.
-                        response.sendRedirect("ExecutionDetail2.jsp?executionId=" + runID);
+                        response.sendRedirect("TestCaseExecution.jsp?executionId=" + runID);
                     } else { // Execution was not even created.
                         response.setContentType("text/html");
                         out.println("<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><title>Test Execution Result</title></head>");
