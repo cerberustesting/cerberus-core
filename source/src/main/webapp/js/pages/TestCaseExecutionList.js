@@ -27,14 +27,13 @@ function initPage() {
     // The page take some parameters.
     var test = GetURLParameter("Test");
     var testCase = GetURLParameter("TestCase");
-    
+
     displayPageLabel();
     loadTable();
-    
+
 }
 
-function loadTable(){
-    console.info('TOTO');
+function loadTable() {
     //clear the old report content before reloading it
     $("#testCaseExecution").empty();
     $("#testCaseExecution").html('<table id="testCaseExecutionTable" class="table table-bordered table-hover display" name="testCaseExecutionTable">\n\
@@ -46,15 +45,15 @@ function loadTable(){
     var lengthMenu = [10, 25, 50, 100, 500, 1000];
     var configurations = new TableConfigurationsServerSide("testCaseExecutionTable", contentUrl, "contentTable", aoColumnsFunc(), [3, 'desc'], lengthMenu);
     configurations.aaSorting = [2, 'desc'];
-    
-    var filtrableColumns = new Array("test","testcase","application","country","environment");
-    
+
+    var filtrableColumns = new Array("test", "testcase", "application", "country", "environment");
+
     var table = createDataTableWithPermissions(configurations, undefined, "#testCaseExecution", filtrableColumns);
-    
-   
+
+
 }
 
-function afterTableLoad(){
+function afterTableLoad() {
     $("#testCaseExecutionTable_paginate").hide();
 }
 
@@ -87,36 +86,40 @@ function aoColumnsFunc() {
             "bSearchable": false,
             "title": doc.getDocOnline("page_global", "columnAction"),
             "sDefaultContent": "",
-            "sWidth": "100px",
+            "sWidth": "150px",
             "mRender": function (data, type, obj) {
                 var buttons = "";
 
-                var editScript = '<a id="testCaseBetaLink" class="btn btn-default btn-xs marginRight5"\n\
+                var viewExecution = '<a id="viewExecution" class="btn btn-primary btn-xs marginRight5"\n\
+                                    data-toggle="tooltip" title="' + doc.getDocLabel("page_executiondetail", "viewExecution") + '" href="./TestCaseExecution.jsp?executionId=' + obj.id + '">\n\
+                                    <span class="glyphicon glyphicon-eye-open"></span>\n\
+                                    </a>';
+                var editScript = '<a id="testCaseBetaLink" class="btn btn-primary btn-xs marginRight5"\n\
                                     data-toggle="tooltip" title="' + doc.getDocLabel("page_executiondetail", "edittc") + '" href="./TestCaseScript.jsp?test=' + encodeURIComponent(obj["test"]) + '&testcase=' + encodeURIComponent(obj["testcase"]) + '">\n\
                                     <span class="glyphicon glyphicon-new-window"></span>\n\
                                     </a>';
-                var runTest = '<a id="runTest" class="btn btn-default btn-xs marginRight5"\n\
-                                    data-toggle="tooltip" title="' + doc.getDocLabel("page_executiondetail", "runtc") + '" href="./RunTests1.jsp?test=' + encodeURIComponent(obj["test"]) + '&testcase=' + encodeURIComponent(obj["testcase"]) + '&country=' + encodeURIComponent(obj["country"]) + '&environment=' + encodeURIComponent(obj["environment"]) + '">\n\
+                var runTest = '<a id="runTest" class="btn btn-primary btn-xs marginRight5"\n\
+                                    data-toggle="tooltip" title="' + doc.getDocLabel("page_executiondetail", "runtc") + '" href="./RunTests.jsp?test=' + encodeURIComponent(obj["test"]) + '&testcase=' + encodeURIComponent(obj["testcase"]) + '&country=' + encodeURIComponent(obj["country"]) + '&environment=' + encodeURIComponent(obj["environment"]) + '">\n\
                                     <span class="glyphicon glyphicon-play"></span>\n\
                                     </a>';
-                var lastExec = '<a id="lastExec" class="btn btn-default btn-xs marginRight5"\n\
-                                    data-toggle="tooltip" title="' + doc.getDocLabel("page_executiondetail", "lastexecution") + '" href="./TestCaseExecution.jsp?test=' + encodeURIComponent(obj["test"]) + '&testcase=' + encodeURIComponent(obj["testcase"]) + '&country=' + encodeURIComponent(obj["country"]) + '&environment=' + encodeURIComponent(obj["environment"]) + '">\n\
+                var lastExec = '<a id="lastExec" class="btn btn-primary btn-xs marginRight5"\n\
+                                    data-toggle="tooltip" title="' + doc.getDocLabel("page_executiondetail", "lastexecution") + '" href="./TestCaseExecutionList.jsp?test=' + encodeURIComponent(obj["test"]) + '&testcase=' + encodeURIComponent(obj["testcase"]) + '&country=' + encodeURIComponent(obj["country"]) + '&environment=' + encodeURIComponent(obj["environment"]) + '">\n\
                                     <span class="glyphicon glyphicon-backward"></span>\n\
                                     </a>';
-                var tag = '<a id="tagExec'+(obj["id"])+'" class="btn btn-default btn-xs marginRight5"\n\
+                var tag = '<a id="tagExec' + (obj["id"]) + '" class="btn btn-primary btn-xs marginRight5"\n\
                                     data-toggle="tooltip" title="' + doc.getDocLabel("page_executiondetail", "see_execution_tag") + '" href="./ReportingExecutionByTag.jsp?Tag=' + obj["tag"] + '">\n\
                                     <span class="glyphicon glyphicon-tag"></span>\n\
                                     </a>';
 
-                
+                buttons += viewExecution;
                 buttons += editScript;
                 buttons += lastExec;
-                buttons += tag;
+                if (!(isEmpty(obj["tag"]))) {
+                    buttons += tag;
+                }
                 buttons += runTest;
 
-
-
-                return '<div class="center btn-group width250">' + buttons + '</div>';
+                return '<div class="center btn-group width300">' + buttons + '</div>';
             }
         },
         {
@@ -135,7 +138,7 @@ function aoColumnsFunc() {
                                 role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;cursor: pointer; height: 20px;" \n\
                                 data-toggle="tooltip" data-html="true" title="' + tooltip + '"\n\
                                 <span class="' + glyphClass.glyph + ' marginRight5" style="margin-top:0;"></span>\n\
-                                 <span>' + obj.controlStatus + '<span></div></a>';
+                                 <span>' + obj.controlStatus + '</span></div></a>';
                     return cell;
                 } else {
                     return obj;
@@ -242,7 +245,7 @@ function aoColumnsFunc() {
             "sWidth": "70px",
             "sDefaultContent": "",
             "mRender": function (data, type, obj) {
-                    return new Date(obj.start);
+                return new Date(obj.start);
 //                    return new Date(obj);
             }
         },
@@ -254,7 +257,7 @@ function aoColumnsFunc() {
             "sWidth": "70px",
             "sDefaultContent": "",
             "mRender": function (data, type, obj) {
-                    return new Date(obj.end);
+                return new Date(obj.end);
 //                    return new Date(obj);
             }
         },
@@ -295,12 +298,12 @@ function aoColumnsFunc() {
             "sDefaultContent": "",
             "mRender": function (data, type, obj) {
                 if (data !== "") {
-                        return data;
-                    } else {
-                        $('#tagExec' + (obj["id"])).attr("disabled", "disabled");
-                        return data;
-                    }
-             }
+                    return data;
+                } else {
+                    $('#tagExec' + (obj["id"])).attr("disabled", "disabled");
+                    return data;
+                }
+            }
         },
         {
             "data": "verbose",
@@ -344,6 +347,14 @@ function aoColumnsFunc() {
             "sName": "exe.userAgent",
             "bSearchable": false,
             "title": doc.getDocOnline("page_executiondetail", "userAgent"),
+            "sWidth": "130px",
+            "sDefaultContent": ""
+        },
+        {
+            "data": "queueId",
+            "sName": "exe.queueId",
+            "bSearchable": false,
+            "title": doc.getDocOnline("page_executiondetail", "queueId"),
             "sWidth": "130px",
             "sDefaultContent": ""
         }

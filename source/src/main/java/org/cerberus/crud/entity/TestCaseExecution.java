@@ -817,6 +817,8 @@ public class TestCaseExecution {
             result.put("conditionVal1", this.getConditionVal1());
             result.put("conditionVal2", this.getConditionVal2());
             result.put("userAgent", this.getUserAgent());
+            result.put("queueId", this.getQueueID());
+            result.put("manualExecution", this.isManualExecution());
 
             if (withChilds) {
                 // Looping on ** Step **

@@ -134,7 +134,14 @@ function aoColumnsFunc(tableId) {
             "data": "tag",
             "sName": "tag",
             "title": doc.getDocLabel("page_testcaseexecutionqueue", "tag_col"),
-            "sWidth": "150px"
+            "sWidth": "150px",
+            "mRender": function (data, type, obj) {
+                if (isEmpty(obj["tag"])) {
+                    return "";
+                } else {
+                    return '<a href="ReportingExecutionByTag.jsp?Tag=' + obj["tag"] + '">' + obj["tag"] + '</div>';
+                }
+            }
         },
         {
             "data": "requestDate",
@@ -158,7 +165,7 @@ function aoColumnsFunc(tableId) {
         {
             "data": "exeId",
             "sName": "exeId",
-            "title": doc.getDocLabel("testcaseexecutionqueue", "exeId"),
+            "title": doc.getDocLabel("page_testcaseexecutionqueue", "exeId"),
             "sWidth": "40px",
             "defaultContent": "",
             "mRender": function (data, type, obj) {
@@ -174,14 +181,14 @@ function aoColumnsFunc(tableId) {
             "sName": "UsrCreated",
             "sWidth": "70px",
             "defaultContent": "",
-            "title": doc.getDocOnline("applicationObject", "UsrCreated")
+            "title": doc.getDocOnline("transversal", "UsrCreated")
         },
         {
             "data": "DateCreated",
             "sName": "DateCreated",
             "sWidth": "110px",
             "defaultContent": "",
-            "title": doc.getDocOnline("applicationObject", "DateCreated")
+            "title": doc.getDocOnline("transversal", "DateCreated")
         },
         {
             "data": "test",
@@ -356,14 +363,14 @@ function aoColumnsFunc(tableId) {
             "sName": "UsrModif",
             "sWidth": "70px",
             "defaultContent": "",
-            "title": doc.getDocOnline("applicationObject", "UsrModif")
+            "title": doc.getDocOnline("transversal", "UsrModif")
         },
         {
             "data": "DateModif",
             "sName": "DateModif",
             "sWidth": "110px",
             "defaultContent": "",
-            "title": doc.getDocOnline("applicationObject", "DateModif")
+            "title": doc.getDocOnline("transversal", "DateModif")
         }
     ];
     return aoColumns;

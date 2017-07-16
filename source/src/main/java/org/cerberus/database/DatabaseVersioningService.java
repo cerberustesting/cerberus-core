@@ -7050,6 +7050,24 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // New updated Documentation.
         //-- ------------------------ 1174-1175
         SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Removed testcase link from testcaseexeecutionqueue.
+        //-- ------------------------ 1176-1177
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcaseexecutionqueue` DROP FOREIGN KEY `FK_testcaseexecutionqueue_01`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcaseexecutionqueue` ADD INDEX `IX_testcaseexecution_03` (`DateCreated` ASC);");
+        SQLInstruction.add(SQLS.toString());
+
+        // New updated Documentation.
+        //-- ------------------------ 1178-1179
+        SQLS = new StringBuilder();
         SQLS.append("DELETE FROM `documentation`;");
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
@@ -7403,7 +7421,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_appservice','button_duplicate','','fr','Dupliquer Service',NULL)");
         SQLS.append(",('page_appservice','button_edit','','en','Edit Service','')");
         SQLS.append(",('page_appservice','button_edit','','fr','Editer le Service','')");
-        SQLS.append(",('page_appservice','button_remove','','en','Remove Service','')");
+        SQLS.append(",('page_appservice','button_remove','','en','Delete Service','')");
         SQLS.append(",('page_appservice','button_remove','','fr','Supprimer le Service','')");
         SQLS.append(",('page_appservice','close_btn','','en','Close','')");
         SQLS.append(",('page_appservice','close_btn','','fr','Fermer','')");
@@ -7413,7 +7431,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_appservice','message_remove','','fr','Êtes-vous sûrs de supprimer le service \\'%SERVICE%\\' ?','')");
         SQLS.append(",('page_appservice','save_btn','','en','Save Service','')");
         SQLS.append(",('page_appservice','save_btn','','fr','Sauvegarder le Service','')");
-        SQLS.append(",('page_appservice','title_remove','','en','Remove Service','')");
+        SQLS.append(",('page_appservice','title_remove','','en','Delete Service','')");
         SQLS.append(",('page_appservice','title_remove','','fr','Supprimer le Service','')");
         SQLS.append(",('page_batchinvariant','button_create','','en','Create new Batch','')");
         SQLS.append(",('page_batchinvariant','button_create','','fr','Créer un nouveau Batch','')");
@@ -7601,8 +7619,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_executiondetail','id','','fr','ID','')");
         SQLS.append(",('page_executiondetail','ip','','en','IP','')");
         SQLS.append(",('page_executiondetail','ip','','fr','IP','')");
-        SQLS.append(",('page_executiondetail','lastexecution','','en','Last Executions','')");
-        SQLS.append(",('page_executiondetail','lastexecution','','fr','Dernières exécutions','')");
+        SQLS.append(",('page_executiondetail','lastexecution','','en','Filter on Last Executions','')");
+        SQLS.append(",('page_executiondetail','lastexecution','','fr','Filtrer les Dernières exécutions','')");
         SQLS.append(",('page_executiondetail','lastexecutionwithenvcountry','','en','Last Execution with Environment & Country','')");
         SQLS.append(",('page_executiondetail','lastexecutionwithenvcountry','','fr','Dernières Exécutions même Environement & Pays','')");
         SQLS.append(",('page_executiondetail','more_detail','','en','More details','')");
@@ -7611,6 +7629,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_executiondetail','platform','','fr','Platforme','')");
         SQLS.append(",('page_executiondetail','port','','en','Port','')");
         SQLS.append(",('page_executiondetail','port','','fr','Port','')");
+        SQLS.append(",('page_executiondetail','queueId','','en','Execution Queue ID',NULL)");
+        SQLS.append(",('page_executiondetail','queueId','','fr','ID de la queue',NULL)");
         SQLS.append(",('page_executiondetail','return_code','','en','Return Code','')");
         SQLS.append(",('page_executiondetail','return_code','','fr','Code de retour','')");
         SQLS.append(",('page_executiondetail','return_message','','en','Return Message','')");
@@ -7619,10 +7639,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_executiondetail','revision','','fr','Revision','')");
         SQLS.append(",('page_executiondetail','runtc','','en','Run this Test Case again','')");
         SQLS.append(",('page_executiondetail','runtc','','fr','Executer ce Cas de Test encore','')");
+        SQLS.append(",('page_executiondetail','save','','en','Save',NULL)");
+        SQLS.append(",('page_executiondetail','save','','fr','Sauvegarder',NULL)");
         SQLS.append(",('page_executiondetail','screensize','','en','Screen Size','')");
         SQLS.append(",('page_executiondetail','screensize','','fr','Taille de l\\'ecran','')");
-        SQLS.append(",('page_executiondetail','see_execution_tag','','en','See Execution By Tag','')");
-        SQLS.append(",('page_executiondetail','see_execution_tag','','fr','Voir l\\'execution par Tag','')");
+        SQLS.append(",('page_executiondetail','see_execution_tag','','en','See Execution Report By Tag','')");
+        SQLS.append(",('page_executiondetail','see_execution_tag','','fr','Voir le rapport d\\'execution par Tag','')");
         SQLS.append(",('page_executiondetail','SeleniumLog','','en','Media Files','Link to the media execution files (ex : selenium logs).')");
         SQLS.append(",('page_executiondetail','sort','','en','Sort','')");
         SQLS.append(",('page_executiondetail','sort','','fr','Ordre','')");
@@ -7654,6 +7676,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_executiondetail','verbose','','fr','Loquacité','')");
         SQLS.append(",('page_executiondetail','version','','en','Version','')");
         SQLS.append(",('page_executiondetail','version','','fr','Version','')");
+        SQLS.append(",('page_executiondetail','viewExecution','','en','View Execution','')");
+        SQLS.append(",('page_executiondetail','viewExecution','','fr','Voir l\\'Execution','')");
         SQLS.append(",('page_exeperbuildrevision','Days','','en','Days','Number of days with this revision for this build.')");
         SQLS.append(",('page_exeperbuildrevision','NbAPP','','en','Nb Appli','Number of distinct <code class=\\'doc-crbvvoca\\'>application</code> that has been tested.')");
         SQLS.append(",('page_exeperbuildrevision','NbExecution','','en','Exec','Number of <code class=\\'doc-crbvvoca\\'>test case</code> execution.')");
@@ -7730,8 +7754,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_global','tooltip_massActionLine','','fr','Selection pour Action en masse',NULL)");
         SQLS.append(",('page_global','tooltip_restoreuserpreferences','','en','Restore the table configuration','Restore the table configuration from the user preferences. Filters and column display are available in user preferences')");
         SQLS.append(",('page_global','tooltip_restoreuserpreferences','','fr','Restaurer la configuration de la table','Restaurer la configuration de la table à partir des préférences utilisateur. Les filtres et l\\'affichage des colonnes sont chargés à partir des préférences utilisateur')");
-        SQLS.append(",('page_global','tooltip_savetableconfig','','en','Save the table configuration.','Save the table configuration. Filters and column display is stored in user preferences')");
-        SQLS.append(",('page_global','tooltip_savetableconfig','','fr','Sauvegarder la configuration de la table.','Sauvegarder la configuration de la table. Les filtres et l\\'affichage des colonnes sont sauvegardés dans les préférences utilisateur')");
+        SQLS.append(",('page_global','tooltip_savetableconfig','','en','Save the table configuration','Save the table configuration. Filters and column display is stored in user preferences')");
+        SQLS.append(",('page_global','tooltip_savetableconfig','','fr','Sauvegarder la configuration de la table','Sauvegarder la configuration de la table. Les filtres et l\\'affichage des colonnes sont sauvegardés dans les préférences utilisateur')");
         SQLS.append(",('page_global','tooltip_showHideColumns','','en','Show/hide columns','')");
         SQLS.append(",('page_global','tooltip_showHideColumns','','fr','Afficher/cacher des colonnes','')");
         SQLS.append(",('page_global','unexpected_error_message','','en','Unable to perform the task. An unexpected error has happened!','')");
@@ -8126,7 +8150,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_sqlLibrary','button_create','','fr','Ajouter une librairie','')");
         SQLS.append(",('page_sqlLibrary','button_edit','','en','Edit Library','')");
         SQLS.append(",('page_sqlLibrary','button_edit','','fr','Editer la librairie','')");
-        SQLS.append(",('page_sqlLibrary','button_remove','','en','Remove Library','')");
+        SQLS.append(",('page_sqlLibrary','button_remove','','en','Delete Library','')");
         SQLS.append(",('page_sqlLibrary','button_remove','','fr','Supprimer la librairie','')");
         SQLS.append(",('page_sqlLibrary','close_btn','','en','Close','')");
         SQLS.append(",('page_sqlLibrary','close_btn','','fr','Fermer','')");
@@ -8156,7 +8180,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_sqlLibrary','sqlLibrary_col','','fr','Nom','')");
         SQLS.append(",('page_sqlLibrary','sqlLibrary_field','','en','SQL Librairy','')");
         SQLS.append(",('page_sqlLibrary','sqlLibrary_field','','fr','Librairie SQL','')");
-        SQLS.append(",('page_sqlLibrary','title_remove','','en','Remove Library','')");
+        SQLS.append(",('page_sqlLibrary','title_remove','','en','Delete Library','')");
         SQLS.append(",('page_sqlLibrary','title_remove','','fr','Supprimer la librairie','')");
         SQLS.append(",('page_sqlLibrary','type_col','','en','Type','')");
         SQLS.append(",('page_sqlLibrary','type_col','','fr','Type','')");
@@ -8219,7 +8243,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_testbattery','testcase_tab','','fr','Cas de test','')");
         SQLS.append(",('page_testbattery','test_col','','en','Test','')");
         SQLS.append(",('page_testbattery','test_col','','fr','Test','')");
-        SQLS.append(",('page_testbattery','title_remove','','en','Remove Battery','')");
+        SQLS.append(",('page_testbattery','title_remove','','en','Delete Battery','')");
         SQLS.append(",('page_testbattery','title_remove','','fr','Supprimer la Batterie','')");
         SQLS.append(",('page_testcampaign','addtestcampaign_field','','en','Add Campaign','')");
         SQLS.append(",('page_testcampaign','addtestcampaign_field','','fr','Ajouter la Campagne','')");
@@ -8235,7 +8259,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_testcampaign','button_create','','fr','Créer une Campagne','')");
         SQLS.append(",('page_testcampaign','button_edit','','en','Edit Campaign','')");
         SQLS.append(",('page_testcampaign','button_edit','','fr','Editer la Campagne','')");
-        SQLS.append(",('page_testcampaign','button_remove','','en','Remove Campaign','')");
+        SQLS.append(",('page_testcampaign','button_remove','','en','Delete Campaign','')");
         SQLS.append(",('page_testcampaign','button_remove','','fr','Supprimer la Campagne','')");
         SQLS.append(",('page_testcampaign','button_view','','en','View Campaign','')");
         SQLS.append(",('page_testcampaign','button_view','','fr','Voir la Campagne','')");
@@ -8267,7 +8291,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_testcampaign','testcase_col','','fr','Cas de Test','')");
         SQLS.append(",('page_testcampaign','test_col','','en','Test','')");
         SQLS.append(",('page_testcampaign','test_col','','fr','Test','')");
-        SQLS.append(",('page_testcampaign','title_remove','','en','Remove Campaign','')");
+        SQLS.append(",('page_testcampaign','title_remove','','en','Delete Campaign','')");
         SQLS.append(",('page_testcampaign','title_remove','','fr','Supprimer la Campagne','')");
         SQLS.append(",('page_testcampaign','value_col','','en','Value','')");
         SQLS.append(",('page_testcampaign','value_col','','fr','Valeur','')");
@@ -8308,6 +8332,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_testcaseexecutionqueue','country_col','','fr','Pays','')");
         SQLS.append(",('page_testcaseexecutionqueue','environment_col','','en','Environment','')");
         SQLS.append(",('page_testcaseexecutionqueue','environment_col','','fr','Environement','')");
+        SQLS.append(",('page_testcaseexecutionqueue','exeId','','en','Execution ID','')");
+        SQLS.append(",('page_testcaseexecutionqueue','exeId','','fr','ID de l\\'éxécution','')");
         SQLS.append(",('page_testcaseexecutionqueue','id_col','','en','ID','')");
         SQLS.append(",('page_testcaseexecutionqueue','id_col','','fr','ID','')");
         SQLS.append(",('page_testcaseexecutionqueue','manualContextRoot_col','','en','Manual execution context root','')");
@@ -8328,8 +8354,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_testcaseexecutionqueue','platform_col','','fr','Plateforme','')");
         SQLS.append(",('page_testcaseexecutionqueue','processed_col','','en','Proceeded','')");
         SQLS.append(",('page_testcaseexecutionqueue','processed_col','','fr','Traité','')");
-        SQLS.append(",('page_testcaseexecutionqueue','requestDate_col','','en','Request date','')");
-        SQLS.append(",('page_testcaseexecutionqueue','requestDate_col','','fr','Date d\\'insertion','')");
+        SQLS.append(",('page_testcaseexecutionqueue','requestDate_col','','en','Last State Date','')");
+        SQLS.append(",('page_testcaseexecutionqueue','requestDate_col','','fr','Date du dernier Etat','')");
         SQLS.append(",('page_testcaseexecutionqueue','retries_col','','en','Retries','')");
         SQLS.append(",('page_testcaseexecutionqueue','retries_col','','fr','Tentatives','')");
         SQLS.append(",('page_testcaseexecutionqueue','robotIP_col','','en','Robot host','')");
@@ -8496,7 +8522,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_testcase_m_addPicture','error_message_empty','','en','The URL value is empty!','')");
         SQLS.append(",('page_testcase_m_addPicture','lbl_feedurl','','en','Feed URL','')");
         SQLS.append(",('page_testcase_m_addPicture','title','','en','Add URL for picture','')");
-        SQLS.append(",('page_testcase_m_showPicture','btn_remove','','en','Remove','')");
+        SQLS.append(",('page_testcase_m_showPicture','btn_remove','','en','Delete','')");
         SQLS.append(",('page_testcase_m_showPicture','title','','en','Selected Picture','')");
         SQLS.append(",('page_testdatalib','btn_create','','en','Create New Data Library','')");
         SQLS.append(",('page_testdatalib','btn_import','','en','Import from XML file','')");
@@ -8517,12 +8543,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_testdatalib','title_csv_configurations','','fr','Configuration CSV','')");
         SQLS.append(",('page_testdatalib','title_service_configurations','','en','SERVICE configurations','')");
         SQLS.append(",('page_testdatalib','title_sql_configurations','','en','SQL configurations','')");
-        SQLS.append(",('page_testdatalib','tooltip_delete','','en','Delete Data Library.','')");
-        SQLS.append(",('page_testdatalib','tooltip_duplicateEntry','','en','Duplicate this Data Library.','')");
-        SQLS.append(",('page_testdatalib','tooltip_editentry','','en','Edit Data Library.','')");
-        SQLS.append(",('page_testdatalib','tooltip_editsubdata','','en','Edit sub-data entries.','')");
-        SQLS.append(",('page_testdatalib','tooltip_gettestcases','','en','Get list of test cases that use this entry.','')");
-        SQLS.append(",('page_testdatalib','tooltip_viewsubdata','','en','View sub-data entries.','')");
+        SQLS.append(",('page_testdatalib','tooltip_delete','','en','Delete Data Library','')");
+        SQLS.append(",('page_testdatalib','tooltip_duplicateEntry','','en','Duplicate this Data Library','')");
+        SQLS.append(",('page_testdatalib','tooltip_editentry','','en','Edit Data Library','')");
+        SQLS.append(",('page_testdatalib','tooltip_editsubdata','','en','Edit sub-data entries','')");
+        SQLS.append(",('page_testdatalib','tooltip_gettestcases','','en','Get list of test cases that use this entry','')");
+        SQLS.append(",('page_testdatalib','tooltip_viewsubdata','','en','View sub-data entries','')");
         SQLS.append(",('page_testdatalib_delete','title','','en','Delete Test Data Library Entry','')");
         SQLS.append(",('page_testdatalib_m_createlib','title','','en','Create New Test Data Library Entry','')");
         SQLS.append(",('page_testdatalib_m_duplicatelib','title','','en','Duplicate Test Data Library','')");
@@ -8534,7 +8560,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_testdatalib_m_listtestdatalibdata','title','','en','List of sub-data entries','')");
         SQLS.append(",('page_testdatalib_m_managetestdatalibdata','actions','','en','Actions','<p> List of available actions  for the current user: </p><p><table border=\\'1\\'><tr><th class=\\'ex\\'>Button</th><th class=\\'ex\\'>Function</th><th class=\\'ex\\'>Description</th></tr><tr><td><span class=\\'glyphicon glyphicon-trash\\'></span></span></td><td>Delete</td><td>Allows the user to delete the sub-data entry. If the sub-data entry is a new, then it will be removed from the GUI. If the sub-data entry was loaded from the database, then it will be marked as to be deleted from the database.</td></tr><tr><td><span class=\\'glyphicon glyphicon-remove\\'></span></td><td>Mark to be deleted</td><td>Marks the sub-data entry to be deleted from the database.</td></tr></table></p>')");
         SQLS.append(",('page_testdatalib_m_managetestdatalibdata','link_add_new','','en','Add new sub-data','')");
-        SQLS.append(",('page_testdatalib_m_managetestdatalibdata','link_add_new_title','','en','Add a new row in the list of sub-data entries.','')");
+        SQLS.append(",('page_testdatalib_m_managetestdatalibdata','link_add_new_title','','en','Add a new row in the list of sub-data entries','')");
         SQLS.append(",('page_testdatalib_m_managetestdatalibdata','title','','en','Manage list of sub-data entries','')");
         SQLS.append(",('page_testdatalib_m_managetestdatalibdata','tooltip_defaultsubdata','','en','This is the default sub-data entry. It cannot be deleted nor its name can be modified.','')");
         SQLS.append(",('page_testdatalib_m_updatelib','title','','en','Edit Test Data Library Entry','')");
@@ -8550,7 +8576,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_user','button_create','','fr','Créer un Utilisateur','')");
         SQLS.append(",('page_user','button_edit','','en','Edit User','')");
         SQLS.append(",('page_user','button_edit','','fr','Editer l\\'Utilisateur','')");
-        SQLS.append(",('page_user','button_remove','','en','Remove User','')");
+        SQLS.append(",('page_user','button_remove','','en','Delete User','')");
         SQLS.append(",('page_user','button_remove','','fr','Supprimer l\\'Utilisateur','')");
         SQLS.append(",('page_user','close_btn','','en','Close','')");
         SQLS.append(",('page_user','close_btn','','fr','Fermer','')");
@@ -8596,7 +8622,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_user','team_col','','fr','Equipe','')");
         SQLS.append(",('page_user','team_field','','en','Team','')");
         SQLS.append(",('page_user','team_field','','fr','Equipe','')");
-        SQLS.append(",('page_user','title_remove','','en','Remove User','')");
+        SQLS.append(",('page_user','title_remove','','en','Delete User','')");
         SQLS.append(",('page_user','title_remove','','fr','Supprimer l\\'Utilisateur','')");
         SQLS.append(",('project','active','','en','Active','This is a boolean that define if the project is active or not.')");
         SQLS.append(",('project','active','','fr','Actif','Booléen qui défini si un projet est actif.')");
@@ -8873,15 +8899,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('user','DefaultSystem','','en','Default System','This is the default <code class=\\'doc-crbvvoca\\'>system</code> the user works on the most. It is used to default the perimeter of <code class=\\'doc-crbvvoca\\'>test case</code> or <code class=\\'doc-crbvvoca\\'>applications</code> displayed on some Cerberus pages.')");
         SQLS.append(",('user','Team','','en','Team','This is the team of the user.')");
         SQLS.append(",('usergroup','GroupName','','en','Group Name','Authorities are managed by group. In order to be granted to a set of feature, you must belong to the corresponding group.<br>Every user can of course belong to as many group as necessary in order to get access to as many feature as required.<br>In order to get the full access to the system you must belong to every group.<br>Some groups are linked together on the test perimeter and integration perimeter.<br><br><b>Test perimeter :</b><br><br><code class=\\'doc-fixed\\'>TestRO</code>: Has read only access to the information related to test cases and also has access to execution reporting options.<br><br><code class=\\'doc-fixed\\'>Test</code>: Can modify non WORKING test cases but cannot delete test cases.<br><br><code class=\\'doc-fixed\\'>TestAdmin</code>: Can modify or delete any test case (including Pre Testing test cases). Can also create or delete a test.<br><br>The minimum group you need to belong is <code class=\\'doc-fixed\\'>TestRO</code> that will give you access in read only to all test data (including its execution reporting page).<br>If you want to be able to modify the testcases (except the WORKING ones), you need <code class=\\'doc-fixed\\'>Test</code> group on top of <code class=\\'doc-fixed\\'>TestRO</code> group.<br>If you want the full access to all testcase (including beeing able to delete any testcase), you will need <code class=\\'doc-fixed\\'>TestAdmin</code> on top of <code class=\\'doc-fixed\\'>TestRO</code> and <code class=\\'doc-fixed\\'>Test</code> group.<br><br><b>Test Data perimeter :</b><br><br><code class=\\'doc-fixed\\'>TestDataManager</code>: Can modify the test data..<br><br><b>Test Execution perimeter :</b><br><br><code class=\\'doc-fixed\\'>RunTest</code>: Can run both Manual and Automated test cases from GUI.<br><br><b>Integration perimeter :</b><br><br><code class=\\'doc-fixed\\'>IntegratorRO</code>: Has access to the integration status.<br><br><code class=\\'doc-fixed\\'>Integrator</code>: Can add an application. Can change parameters of the environments.<br><br><code class=\\'doc-fixed\\'>IntegratorNewChain</code>: Can register the end of the chain execution. Has read only access to the other informations on the same page.<br><br><code class=\\'doc-fixed\\'>IntegratorDeploy</code>: Can disable or enable environments and register new build / revision.<br><br>The minimum group you need to belong is <code class=\\'doc-fixed\\'>IntegratorRO</code> that will give you access in read only to all environment data.<br>If you want to be able to modify the environment data, you need <code class=\\'doc-fixed\\'>Integrator</code> group on top of <code class=\\'doc-fixed\\'>IntegratorRO</code> group.<br><code class=\\'doc-fixed\\'>IntegratorNewChain</code> and <code class=\\'doc-fixed\\'>IntegratorDeploy</code> are used on top of <code class=\\'doc-fixed\\'>Integrator</code> Group to be able to create a new chain on an environment or perform a deploy operation.<br><br><b>Administration perimeter :</b><br><br><code class=\\'doc-fixed\\'>Administrator</code>: Can create, modify or delete users. Has access to log Event and Database Maintenance. Can change Parameter values.')");
-        SQLInstruction.add(SQLS.toString());
-
-        // Removed testcase link from testcaseexeecutionqueue.
-        //-- ------------------------ 1176
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcaseexecutionqueue` DROP FOREIGN KEY `FK_testcaseexecutionqueue_01`;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcaseexecutionqueue` ADD INDEX `IX_testcaseexecution_03` (`DateCreated` ASC);");
         SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;

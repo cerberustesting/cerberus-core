@@ -46,7 +46,7 @@
     </servlet>
     <servlet>
         <servlet-name>RunExecutionInQueue</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.testexecution</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.testexecution.RunExecutionInQueue</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GetTestCaseList</servlet-name>

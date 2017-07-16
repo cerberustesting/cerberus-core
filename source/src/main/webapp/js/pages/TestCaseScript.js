@@ -366,7 +366,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
                 });
             });
 
-            $("#runTestCase").attr("onclick", "document.location.href='./RunTests1.jsp?test=" + test + "&testcase=" + testcase + "'");
+            $("#runTestCase").attr("onclick", "document.location.href='./RunTests.jsp?test=" + test + "&testcase=" + testcase + "'");
             $("#seeLastExec").parent().attr("href", "./TestCaseExecution.jsp?test=" + test + "&testcase=" + testcase);
             $("#seeLogs").parent().attr("href", "./LogEvent.jsp?Test=" + test + "&TestCase=" + testcase);
 
@@ -376,7 +376,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
                 dataType: "json",
                 success: function (data) {
                     if (!jQuery.isEmptyObject(data.contentTable)) {
-                        $("#rerunTestCase").attr("onclick", "document.location.href='./RunTests1.jsp?test=" + test + "&testcase=" + testcase + "&country=" + data.contentTable.country + "&environment=" + data.contentTable.env + "'");
+                        $("#rerunTestCase").attr("onclick", "document.location.href='./RunTests.jsp?test=" + test + "&testcase=" + testcase + "&country=" + data.contentTable.country + "&environment=" + data.contentTable.env + "'");
                         $("#runTestCase").attr("title", "Last Execution was " + data.contentTable.controlStatus + " in " + data.contentTable.env + " in " + data.contentTable.country + " on " + data.contentTable.end)
                     } else {
                         $("#rerunTestCase").attr("disabled", true);

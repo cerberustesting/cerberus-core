@@ -1087,7 +1087,7 @@ function aoColumnsFuncTestDataLib(tableId) {
             "data": "testDataLibID",
             "bSortable": false,
             "bSearchable": false,
-            "sWidth": "200px",
+            "sWidth": "150px",
             "title": doc.getDocLabel("testdatalib", "actions"),
             "mRender": function (data, type, oObj) {
                 var hasPermissions = $("#" + tableId).attr("hasPermissions");
