@@ -27,11 +27,6 @@ where TO_DAYS(NOW()) - TO_DAYS(datecre) >= 1100 ;
 -- LOG Purges.
 -- -----------
 
--- Log History [DEPRECATED]
-DELETE FROM log
--- SELECT count(*) FROM log
-where TO_DAYS(NOW()) - TO_DAYS(datecre) >= 365 ;
-
 -- User action Log History
 DELETE FROM logevent
 -- SELECT count(*) FROM logevent
@@ -149,4 +144,19 @@ where ID < @ID100 and test = 'Performance Monitor';
 DELETE FROM testcaseexecution
 -- SELECT count(*) FROM testcaseexecution
 where  ID < @ID200 and test = 'Performance Monitor';
+
+
+
+-- EXECUTION QUEUE Purges.
+-- -----------------------
+
+-- Test Execution Queue History
+DELETE FROM testcaseexecutionqueue
+-- SELECT count(*) FROM testcaseexecutionqueue
+where TO_DAYS(NOW()) - TO_DAYS(DateCreated) >= 100 ;
+
+-- Test Execution Queue History
+DELETE FROM testcaseexecutionqueue
+-- SELECT count(*) FROM testcaseexecutionqueue
+where TO_DAYS(NOW()) - TO_DAYS(DateCreated) >= 10 and ExeId is null ;
 
