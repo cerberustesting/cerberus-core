@@ -97,7 +97,7 @@ function deleteEntryClick(entry) {
     var messageComplete = doc.getDocLabel("page_deploytype", "message_delete");
     messageComplete = messageComplete.replace("%TABLE%", doc.getDocLabel("deploytype", "deploytype"));
     messageComplete = messageComplete.replace("%ENTRY%", entry);
-    showModalConfirmation(deleteEntryHandlerClick, doc.getDocLabel("page_deploytype", "button_delete"), messageComplete, entry, "", "", "");
+    showModalConfirmation(deleteEntryHandlerClick, undefined, doc.getDocLabel("page_deploytype", "button_delete"), messageComplete, entry, "", "", "");
 }
 
 function addEntryModalSaveHandler() {

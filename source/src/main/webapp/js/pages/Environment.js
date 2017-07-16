@@ -335,7 +335,7 @@ function deleteEntryClick(system, country, environment) {
     messageComplete = messageComplete.replace("%SYSTEM%", system);
     messageComplete = messageComplete.replace("%COUNTRY%", country);
     messageComplete = messageComplete.replace("%ENVIRONMENT%", environment);
-    showModalConfirmation(deleteEntryHandlerClick, doc.getDocLabel("page_environment", "button_delete"), messageComplete, system, country, environment, "");
+    showModalConfirmation(deleteEntryHandlerClick, undefined, doc.getDocLabel("page_environment", "button_delete"), messageComplete, system, country, environment, "");
 }
 
 function addEntryModalSaveHandler() {

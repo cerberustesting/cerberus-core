@@ -106,7 +106,7 @@ function deleteEntryClick(id) {
     var doc = new Doc();
     var messageComplete = doc.getDocLabel("page_label", "message_delete");
     messageComplete = messageComplete.replace("%ENTRY%", id);
-    showModalConfirmation(deleteEntryHandlerClick, doc.getDocLabel("page_label", "button_delete"), messageComplete, id, "", "", "");
+    showModalConfirmation(deleteEntryHandlerClick, undefined, doc.getDocLabel("page_label", "button_delete"), messageComplete, id, "", "", "");
 }
 
 function addEntryModalSaveHandler() {

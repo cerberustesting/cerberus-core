@@ -100,7 +100,7 @@ function deleteEntryClick(entry) {
     var doc = new Doc();
     var messageComplete = doc.getDocLabel("page_test", "message_delete");
     messageComplete = messageComplete.replace("%ENTRY%", entry);
-    showModalConfirmation(deleteEntryHandlerClick, doc.getDocLabel("page_test", "button_delete"), messageComplete, entry, "", "", "");
+    showModalConfirmation(deleteEntryHandlerClick, undefined, doc.getDocLabel("page_test", "button_delete"), messageComplete, entry, "", "", "");
 }
 
 function addEntryModalSaveHandler() {
@@ -176,7 +176,7 @@ function aoColumnsFunc() {
             "title": doc.getDocOnline("page_global", "columnAction"),
             "mRender": function (data, type, obj) {
                 var testCaseLink = '<a id="testCaseLink" class="btn btn-primary btn-xs margin-right5"\n\
-                                    href="./TestCaseList.jsp?test=' + encodeURIComponent(obj["test"]) + '">\n\
+                                    href="./TestCaseList.jsp?test=' + encodeURIComponent(obj["test"]) + '" title="' + doc.getDocLabel("page_test", "btn_tclist") + '" >\n\
                                     <span class="glyphicon glyphicon-new-window"></span>\n\
                                     </a>';
                 var editEntry = '<button id="editEntry" onclick="editEntryClick(\'' + escapeHtml(obj["test"]) + '\');"\n\
@@ -184,11 +184,11 @@ function aoColumnsFunc() {
                                 name="editEntry" title="' + doc.getDocLabel("page_test", "btn_edit") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-pencil"></span></button>';
                 var viewEntry = '<button id="editEntry" onclick="editEntryClick(\'' + escapeHtml(obj["test"]) + '\');"\n\
-                                class="editEntry btn btn-default btn-xs margin-right5" \n\
+                                class="editEntry btn btn-default btn-xs margin-right25" \n\
                                 name="editEntry" title="' + doc.getDocLabel("page_test", "btn_edit") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-eye-open"></span></button>';
                 var deleteEntry = '<button id="deleteEntry" onclick="deleteEntryClick(\'' + escapeHtml(obj["test"]) + '\');" \n\
-                                class="deleteEntry btn btn-default btn-xs margin-right5" \n\
+                                class="deleteEntry btn btn-default btn-xs margin-right25" \n\
                                 name="deleteEntry" title="' + doc.getDocLabel("page_test", "button_delete") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-trash"></span></button>';
 

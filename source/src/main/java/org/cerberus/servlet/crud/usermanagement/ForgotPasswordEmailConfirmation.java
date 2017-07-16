@@ -22,10 +22,6 @@ package org.cerberus.servlet.crud.usermanagement;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -37,7 +33,6 @@ import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.IUserService;
 import org.cerberus.crud.service.impl.ParameterService;
 import org.cerberus.crud.service.impl.UserService;
-import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -94,7 +89,7 @@ public class ForgotPasswordEmailConfirmation extends HttpServlet {
             User user = (User) ai.getItem();
 
             if (user == null) {
-                jsonResponse.put("messageType", "Error");
+                jsonResponse.put("messageType", "KO");
                 jsonResponse.put("message", "Login submitted is unknown !");
                 response.getWriter().print(jsonResponse);
                 response.getWriter().flush();
@@ -105,7 +100,7 @@ public class ForgotPasswordEmailConfirmation extends HttpServlet {
              * Check the token
              */
             if (!userService.verifyResetPasswordToken(user, confirmation)) {
-                jsonResponse.put("messageType", "Error");
+                jsonResponse.put("messageType", "KO");
                 jsonResponse.put("message", "Token submitted is invalid !");
                 response.getWriter().print(jsonResponse);
                 response.getWriter().flush();
@@ -115,7 +110,7 @@ public class ForgotPasswordEmailConfirmation extends HttpServlet {
             /**
              * Build Response Message
              */
-            jsonResponse.put("messageType", "Success");
+            jsonResponse.put("messageType", "OK");
             jsonResponse.put("message", "Please, define your new password.");
             response.getWriter().print(jsonResponse);
             response.getWriter().flush();

@@ -76,8 +76,8 @@
                                         </div>
                                         <a><button class="btn btn-default pull-right" id="seeLastExec" style="margin-left: 1px; margin-right: 1px;"><span class="glyphicon glyphicon-fast-backward"></span> Last Executions</button></a>
                                         <a><button class="btn btn-default pull-right" id="seeLogs" style="margin-left: 1px; margin-right: 1px;"><span class="glyphicon glyphicon-book"></span> Logs</button></a>
-                                        <button class="btn btn-default pull-right" id="editTcInfo"> Edit Test Case</button>
                                         <button class="btn btn-default pull-right" id="deleteTestCase" disabled> Delete Test Case</button>
+                                        <button class="btn btn-default pull-right" id="editTcInfo">Edit Test Case Script</button>
                                         <div class="side-item pull-right"></div>
 
                                     </div>

@@ -468,7 +468,7 @@ function removeEntryClick(key) {
         });
 
         $('#confirmationModal').modal('hide');
-    }, doc.getDocLabel("page_user", "title_remove"), doc.getDocLabel("page_user", "message_remove"), id, undefined, undefined, undefined);
+    }, undefined, doc.getDocLabel("page_user", "title_remove"), doc.getDocLabel("page_user", "message_remove"), id, undefined, undefined, undefined);
 }
 
 function aoColumnsFunc(tableId) {

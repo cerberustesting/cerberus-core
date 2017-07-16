@@ -112,8 +112,8 @@ function deleteEntryClick(application, object) {
     clearResponseMessageMainPage();
     var doc = new Doc();
     var messageComplete = doc.getDocLabel("page_applicationObject", "message_delete");
-    messageComplete = messageComplete.replace("%ENTRY%", application + ", " + object);
-    showModalConfirmation(deleteEntryHandlerClick, doc.getDocLabel("page_applicationObject", "button_delete"), messageComplete, application, object, "", "");
+    messageComplete = messageComplete.replace("%ENTRY%", application + " - " + object);
+    showModalConfirmation(deleteEntryHandlerClick, undefined, doc.getDocLabel("page_applicationObject", "button_delete"), messageComplete, application, object, "", "");
 }
 
 

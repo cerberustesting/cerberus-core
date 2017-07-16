@@ -131,7 +131,7 @@ function deleteEntryClick(entry, name) {
     var messageComplete = doc.getDocLabel("page_global", "message_delete");
     messageComplete = messageComplete.replace("%TABLE%", doc.getDocLabel("robot", "robot"));
     messageComplete = messageComplete.replace("%ENTRY%", name);
-    showModalConfirmation(deleteEntryHandlerClick, doc.getDocLabel("page_robot", "button_delete"), messageComplete, entry, "", "", "");
+    showModalConfirmation(deleteEntryHandlerClick, undefined, doc.getDocLabel("page_robot", "button_delete"), messageComplete, entry, "", "", "");
 }
 
 function addEntryModalSaveHandler() {

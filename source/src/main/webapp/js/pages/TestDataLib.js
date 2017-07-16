@@ -320,7 +320,7 @@ function deleteTestDataLibClick(testDataLibID, name, system, environment, countr
 
     var messageComplete = doc.getDocLabel("page_testdatalib", "message_delete").replace("%ENTRY%", name).replace("%ID%", testDataLibID).replace("%SYSTEM%", systemLabel)
             .replace("%ENVIRONMENT%", environmentLabel).replace("%COUNTRY%", countryLabel);
-    showModalConfirmation(deleteTestDataLibHandlerClick, doc.getDocLabel("page_testdatalib_delete", "title"), messageComplete, testDataLibID, "", "", "");
+    showModalConfirmation(deleteTestDataLibHandlerClick, undefined, doc.getDocLabel("page_testdatalib_delete", "title"), messageComplete, testDataLibID, "", "", "");
 
 }
 
@@ -1104,14 +1104,13 @@ function aoColumnsFuncTestDataLib(tableId) {
                         + '\'' + oObj.type + '\');" class="btn btn-default btn-xs margin-right25 " \n\
                             name="deleteTestDataLib" title="' + doc.getDocLabel("page_testdatalib", "tooltip_delete") + '" type="button">\n\
                             <span class="glyphicon glyphicon-trash"></span></button>';
-                var duplicateEntryElement = '<button  class="btn btn-default btn-xs margin-right5" \n\
+                var duplicateEntryElement = '<button class="btn btn-default btn-xs margin-right5" \n\
                             name="duplicateTestDataLib" title="' + doc.getDocLabel("page_testdatalib", "tooltip_duplicateEntry") + '"\n\
                                  type="button" onclick="duplicateTestDataLibClick(' + data + ')">\n\
                                 <span class="glyphicon glyphicon-duplicate"></span></button>'; //TODO check if we can add this glyphicon glyphicon-duplicate
-                var viewTestCase = '<button  class="getTestCasesUsing btn  btn-default btn-xs margin-right5" \n\
+                var viewTestCase = '<button class="getTestCasesUsing btn  btn-default btn-xs margin-right5" \n\
                             name="getTestCasesUsing" title="' + doc.getDocLabel("page_testdatalib", "tooltip_gettestcases") + '" type="button" \n\
-                            onclick="getTestCasesUsing(' + data + ', \'' + oObj.name + '\', \'' + oObj.country + '\')">\n\
-                            TC</button>';
+                            onclick="getTestCasesUsing(' + data + ', \'' + oObj.name + '\', \'' + oObj.country + '\')"><span class="glyphicon glyphicon-list"></span></button>';
 
                 if (hasPermissions === "true") { //only draws the options if the user has the correct privileges
                     return '<div class="center btn-group width250">' + editElement + duplicateEntryElement + deleteElement + viewTestCase + '</div>';

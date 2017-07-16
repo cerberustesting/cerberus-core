@@ -925,7 +925,8 @@ function modalFormCleaner(event) {
 
 /**
  *
- * @param {type} handlerClickOk - method triggered when the "ok" is clicked
+ * @param {type} handlerClickOk - method triggered when the "Yes" is clicked
+ * @param {type} handlerClickNo - method triggered when the "No" is clicked
  * @param {type} title - title to be displayed
  * @param {type} message -  message to be displayed
  * @param {type} hiddenField1 -hidden value that can be added to the confirmation modal. Useful when we want to delete an item, and we can specify it in this field.
@@ -934,9 +935,10 @@ function modalFormCleaner(event) {
  * @param {type} hiddenField4 -hidden value that can be added to the confirmation modal. Useful when we want to delete an item, and we can specify it in this field.
  * @returns {undefined}
  */
-function showModalConfirmation(handlerClickOk, title, message, hiddenField1, hiddenField2, hiddenField3, hiddenField4) {
+function showModalConfirmation(handlerClickOk, handlerClickNo, title, message, hiddenField1, hiddenField2, hiddenField3, hiddenField4) {
     setDataConfirmationModal(title, message, hiddenField1, hiddenField2, hiddenField3, hiddenField4);
     $('#confirmationModal #confirmOk').unbind("click").click(handlerClickOk);
+    $('#confirmationModal #confirmNo').unbind("click").click(handlerClickNo);
     clearResponseMessageMainPage();
     $('#confirmationModal').modal('show');
 }

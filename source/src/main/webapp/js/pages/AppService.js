@@ -86,7 +86,7 @@ function removeEntryClick(service) {
         });
 
         $('#confirmationModal').modal('hide');
-    }, doc.getDocLabel("page_appservice", "title_remove"), doc.getDocLabel("page_appservice", "message_remove").replace('%SERVICE%', service), service, undefined, undefined, undefined);
+    }, undefined, doc.getDocLabel("page_appservice", "title_remove"), doc.getDocLabel("page_appservice", "message_remove").replace('%SERVICE%', service), service, undefined, undefined, undefined);
 }
 
 function aoColumnsFunc(tableId) {

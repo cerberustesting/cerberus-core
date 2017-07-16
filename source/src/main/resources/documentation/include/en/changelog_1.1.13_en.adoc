@@ -8,6 +8,7 @@
 * [GUI] Error message was sometime appearing when dispaying testcase list in campaign page.
 * [GUI] When duplicating a testcase in WORKING status, we can now change the fields value.
 * [ENGINE] Fixed a bug that was reporting an 'Unexpected error' when queuing any execution that has exotic characters in 'test' or 'testcase'.
+* [GUI] javascript error when trying to save a testcase with no steps.
 
 
 *Improvements / New features*
@@ -38,7 +39,10 @@
 * [GUI] On TestCase page: when creating a testcase, country selection can be configured with parameter : cerberus_testcase_defaultselectedcountry. Parameter can be ALL in order to select all, empty in order to select none or a coma separated list of countries in order to select some.
 * [GUI] On TestCase page: Invert button in order to be able to invert country selection in 1 click.
 * [GUI] On TestCaseScript page: Adding a property on a testcase that has no country selected now generates an error message.
+* [ENGINE] Queue execution are kept and linked to execution. A new DONE state on queue has been created for that purpose.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
 * Removed testdata table and associated getFromTestData DEPRECATED property. BEFORE applying the associated database change, you can use script TestDataToTestDataLib.sql inside tools/SQLscripts/ to backport the old data (testdata) to new data structure (testdatalib).
+* Warning for systems with hugue number of executions : execution time of SQL 1170 & SQL 1172 (column creation on testcaseexecution table)
+* Do not forget to add SQL to purge testcaseexecutionqueue table based on DateCreated column. (queue execution are no longuer automatically removed)

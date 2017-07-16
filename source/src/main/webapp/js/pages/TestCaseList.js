@@ -126,7 +126,6 @@ function displayPageLabel(doc) {
     $("[name='linkField']").html(doc.getDocLabel("page_testcaselist", "link"));
     //PREPARE MASS ACTION
     $("[name='massActionTestCaseField']").html(doc.getDocOnline("page_testcaselist", "massAction"));
-
     $("[name='testInfoField']").html(doc.getDocLabel("page_testcaselist", "testInfo"));
     $("[name='testCaseInfoField']").html(doc.getDocLabel("page_testcaselist", "testCaseInfo"));
     $("[name='testCaseParameterField']").html(doc.getDocLabel("page_testcaselist", "testCaseParameter"));
@@ -213,7 +212,7 @@ function deleteEntryClick(test, testCase) {
     var doc = new Doc();
     var messageComplete = doc.getDocLabel("page_testcase", "message_delete");
     messageComplete = messageComplete.replace("%ENTRY%", test + " / " + testCase);
-    showModalConfirmation(deleteEntryHandlerClick, "Delete", messageComplete, test, testCase, "", "");
+    showModalConfirmation(deleteEntryHandlerClick, undefined, "Delete", messageComplete, test, testCase, "", "");
 }
 
 /*
@@ -506,7 +505,7 @@ function aoColumnsFunc(countries, tableId) {
                                 name="editEntry" data-toggle="tooltip"  title="' + doc.getDocLabel("page_testcaselist", "btn_view") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-eye-open"></span></button>';
                 var deleteEntry = '<button id="deleteEntry" onclick="deleteEntryClick(\'' + escapeHtml(obj["test"]) + '\',\'' + escapeHtml(obj["testCase"]) + '\');"\n\
-                                        class="deleteEntry btn btn-default btn-xs margin-right5" \n\
+                                        class="deleteEntry btn btn-default btn-xs margin-right25" \n\
                                         name="deleteEntry" data-toggle="tooltip"  title="' + doc.getDocLabel("page_testcaselist", "btn_delete") + '" type="button">\n\
                                         <span class="glyphicon glyphicon-trash"></span></button>';
                 var duplicateEntry = '<button id="duplicateEntry" onclick="duplicateTestCaseClick(\'' + escapeHtml(obj["test"]) + '\',\'' + escapeHtml(obj["testCase"]) + '\');"\n\
@@ -517,24 +516,24 @@ function aoColumnsFunc(countries, tableId) {
                                     data-toggle="tooltip" title="' + doc.getDocLabel("page_testcaselist", "btn_editScript") + '" href="./TestCaseScript.jsp?test=' + encodeURIComponent(obj["test"]) + '&testcase=' + encodeURIComponent(obj["testCase"]) + '">\n\
                                     <span class="glyphicon glyphicon-new-window"></span>\n\
                                     </a>';
-                var runTest = '<a id="runTest" class="btn btn-default btn-xs marginRight5"\n\
+                var runTest = '<a id="runTest" class="btn btn-default btn-xs marginRight5 marginLeft20"\n\
                                     data-toggle="tooltip" title="' + doc.getDocLabel("page_testcaselist", "btn_runTest") + '" href="./RunTests1.jsp?test=' + encodeURIComponent(obj["test"]) + '&testcase=' + encodeURIComponent(obj["testCase"]) + '">\n\
                                     <span class="glyphicon glyphicon-play"></span>\n\
                                     </a>';
 
                 if (data.hasPermissionsUpdate) {
                     buttons += editEntry;
+                    buttons += editScript;
                     buttons += duplicateEntry;
                 } else {
                     buttons += viewEntry;
+                    buttons += editScript;
+                    buttons += duplicateEntry;
                 }
                 if (data.hasPermissionsDelete) {
                     buttons += deleteEntry;
                 }
                 buttons += runTest;
-                buttons += editScript;
-
-
 
                 return '<div class="center btn-group width250">' + buttons + '</div>';
             }

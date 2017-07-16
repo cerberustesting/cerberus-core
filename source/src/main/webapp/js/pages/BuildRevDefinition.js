@@ -106,7 +106,7 @@ function deleteEntryClick(system, level, seq, versionname) {
     var entry = versionname + " (level : " + level + " sequence : " + seq + ")";
     messageComplete = messageComplete.replace("%TABLE%", "Build Revision Definition");
     messageComplete = messageComplete.replace("%ENTRY%", entry);
-    showModalConfirmation(deleteEntryHandlerClick, doc.getDocLabel("page_buildrevdefinition", "button_delete"), messageComplete, system, level, seq, "");
+    showModalConfirmation(deleteEntryHandlerClick, undefined, doc.getDocLabel("page_buildrevdefinition", "button_delete"), messageComplete, system, level, seq, "");
 }
 
 function addEntryModalSaveHandler() {

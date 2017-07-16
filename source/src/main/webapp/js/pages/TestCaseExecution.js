@@ -2131,7 +2131,7 @@ function saveExecution(data) {
         showModalConfirmation(function () {
             $('#confirmationModal').modal('hide');
             saveProp();
-        }, doc.getDocLabel("page_global", "btn_savetableconfig"), doc.getDocLabel("page_testcasescript", "warning_no_country"), "", "", "", "");
+        }, undefined, doc.getDocLabel("page_global", "btn_savetableconfig"), doc.getDocLabel("page_testcasescript", "warning_no_country"), "", "", "", "");
     } else {
         saveProp();
     }

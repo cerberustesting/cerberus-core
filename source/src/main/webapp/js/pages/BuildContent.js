@@ -287,7 +287,7 @@ function deleteEntryClick(id, build, revision, release, application) {
     messageComplete = messageComplete.replace("%REVISION%", revision);
     messageComplete = messageComplete.replace("%RELEASE%", release);
     messageComplete = messageComplete.replace("%APPLI%", application);
-    showModalConfirmation(deleteEntryHandlerClick, doc.getDocLabel("page_buildcontent", "button_delete"), messageComplete, id, "", "", "");
+    showModalConfirmation(deleteEntryHandlerClick, undefined, doc.getDocLabel("page_buildcontent", "button_delete"), messageComplete, id, "", "", "");
 }
 
 function addEntryModalSaveHandler() {

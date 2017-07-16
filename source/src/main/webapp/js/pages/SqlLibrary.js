@@ -284,7 +284,7 @@ function removeEntryClick(name) {
         });
 
         $('#confirmationModal').modal('hide');
-    }, doc.getDocLabel("page_sqlLibrary", "title_remove"), doc.getDocLabel("page_sqlLibrary", "message_remove"), name, undefined, undefined, undefined);
+    }, undefined, doc.getDocLabel("page_sqlLibrary", "title_remove"), doc.getDocLabel("page_sqlLibrary", "message_remove"), name, undefined, undefined, undefined);
 }
 
 function aoColumnsFunc(tableId) {

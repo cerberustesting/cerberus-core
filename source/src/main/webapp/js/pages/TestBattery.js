@@ -315,7 +315,7 @@ function removeEntryClick(batteryTest) {
         });
 
         $('#confirmationModal').modal('hide');
-    }, doc.getDocLabel("page_testbattery", "title_remove"), doc.getDocLabel("page_testbattery", "message_remove"), batteryTest, undefined, undefined, undefined);
+    }, undefined, doc.getDocLabel("page_testbattery", "title_remove"), doc.getDocLabel("page_testbattery", "message_remove"), batteryTest, undefined, undefined, undefined);
 
 }
 

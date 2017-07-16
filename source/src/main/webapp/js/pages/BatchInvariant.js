@@ -99,7 +99,7 @@ function deleteEntryClick(batch) {
     var messageComplete = doc.getDocLabel("page_batchinvariant", "message_delete");
     messageComplete = messageComplete.replace("%TABLE%", doc.getDocLabel("batchinvariant", "batch"));
     messageComplete = messageComplete.replace("%ENTRY%", batch);
-    showModalConfirmation(deleteEntryHandlerClick, doc.getDocLabel("page_batchinvariant", "button_delete"), messageComplete, batch, "", "", "");
+    showModalConfirmation(deleteEntryHandlerClick, undefined, doc.getDocLabel("page_batchinvariant", "button_delete"), messageComplete, batch, "", "", "");
 }
 
 function addEntryModalSaveHandler() {

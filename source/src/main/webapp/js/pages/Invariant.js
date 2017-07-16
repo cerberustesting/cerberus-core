@@ -208,7 +208,7 @@ function viewEntryClick(param, value) {
 
 function removeEntryClick(param, value) {
     var doc = new Doc();
-    showModalConfirmation(deleteEntryHandlerClick, doc.getDocLabel("page_invariant", "message_remove"), doc.getDocLabel("page_invariant", "message_remove"), param, value, "", "");
+    showModalConfirmation(deleteEntryHandlerClick, undefined, doc.getDocLabel("page_invariant", "message_remove"), doc.getDocLabel("page_invariant", "message_remove"), param, value, "", "");
 }
 
 function deleteEntryHandlerClick() {
