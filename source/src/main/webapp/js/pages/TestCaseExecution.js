@@ -46,7 +46,7 @@ function loadExecutionInformation(executionId, stepList, sockets) {
                 if (parser.protocol == "https:") {
                     protocol = "wss:";
                 }
-                var path = parser.pathname.split("ExecutionDetail2")[0];
+                var path = parser.pathname.split("TestCaseExecution")[0];
                 var new_uri = protocol + parser.host + path + "execution/" + executionId;
 
                 var socket = new WebSocket(new_uri);
