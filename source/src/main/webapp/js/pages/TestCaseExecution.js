@@ -1449,7 +1449,7 @@ function updateStepStatus(idElementTrigger) {
     
     var allStepOk = true;
     
-    var controlStatus = $("#testCaseConfig").find("#controlstatus").html();
+    var controlStatus = "NE";//function call only in manual execution so the default control status is NE
     
     for (var idStep =idElementTrigger.stepId; idStep >= 0 ; idStep--){// update all the step below the element trigger
 
