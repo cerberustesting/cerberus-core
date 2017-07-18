@@ -50,7 +50,7 @@ function loadExecutionInformation(executionId, stepList, sockets) {
                 var new_uri = protocol + parser.host + path + "execution/" + executionId;
 
                 var socket = new WebSocket(new_uri);
-
+                
                 socket.onopen = function (e) {
                 } //on "écoute" pour savoir si la connexion vers le serveur websocket s'est bien faite
                 socket.onmessage = function (e) {
@@ -132,6 +132,7 @@ function initPage(id) {
 }
 
 function displayPageLabel(doc) {
+    console.log(doc)
     $("#pageTitle").text(doc.getDocLabel("page_executiondetail", "title"));
     $(".alert.alert-warning span").text(doc.getDocLabel("page_global", "beta_message"));
     $(".alert.alert-warning button").text(doc.getDocLabel("page_global", "old_page"));
@@ -238,8 +239,8 @@ function updatePage(data, stepList) {
     createStepList(data.testCaseStepExecutionList, stepList);
     createProperties(data.testCaseExecutionDataList);
     setUpClickFunctionToSaveTestCaseExecutionButton(data);
-    updateExecutionStatus();
 }
+
 
 function updateConfigPanel(data){
     
@@ -247,36 +248,12 @@ function updateConfigPanel(data){
     configPanel.find("#idlabel").text(data.id);
     configPanel.find("#test").text(data.test);
     configPanel.find("#testcase").text(data.testcase);
-    configPanel.find("#controlstatus").text(data.controlStatus);
+    
     configPanel.find("#environment").text(data.environment);
     configPanel.find("#country").text(data.country);
     configPanel.find("#tcDescription").text(data.description);
-    configPanel.find("#controlstatus").removeClass("text-primary");
-    
-    if (data.controlStatus === "PE") {
-        configPanel.find("#controlstatus").addClass("text-primary");
-        configPanel.find("#exReturnMessage").addClass("text-primary");
-    } else if (data.controlStatus === "OK") {
-        configPanel.find("#controlstatus").addClass("text-success");
-        configPanel.find("#exReturnMessage").addClass("text-success");
-        data.controlMessage ="The test case finished successfully";
-    } else if (data.controlStatus === "KO") {
-        configPanel.find("#controlstatus").addClass("text-danger");
-        configPanel.find("#exReturnMessage").addClass("text-danger");
-        data.controlMessage ="The test case failed on validations."
-    } else if (data.controlStatus === "NE") {
-        configPanel.find("#controlstatus").addClass("text-black");
-        configPanel.find("#exReturnMessage").addClass("text-black");
-         data.controlMessage ="The test case not executed";
-    } else if (data.controlStatus === "FA") {
-        configPanel.find("#controlstatus").addClass("text-black");
-        configPanel.find("#exReturnMessage").addClass("text-black");
-        data.controlMessage ="The test case failed to be executed because of an action.";
-    }else {
-        configPanel.find("#controlstatus").addClass("text-warning");
-        configPanel.find("#exReturnMessage").addClass("text-warning");
-    }
-    configPanel.find("#exReturnMessage").text(data.controlMessage);
+
+    updateExecutionControlStatue(data.controlStatus );
     
     configPanel.find("input#application").val(data.application);
     configPanel.find("input#browser").val(data.browser);
@@ -286,8 +263,7 @@ function updateConfigPanel(data){
     configPanel.find("input#environment").val(data.environment);
     configPanel.find("input#environmentData").val(data.environmentData);
     configPanel.find("input#status").val(data.status);
-    configPanel.find("input#controlstatus2").val(data.controlStatus);
-    configPanel.find("input#controlmessage").val(data.controlMessage);
+    
     configPanel.find("input#end").val(new Date(data.end));
     configPanel.find("input#finished").val(data.finished);
     configPanel.find("input#id").val(data.id);
@@ -310,8 +286,61 @@ function updateConfigPanel(data){
     configPanel.find("input#conditionVal2InitTC").val(data.conditionVal2Init);
     configPanel.find("input#conditionVal1TC").val(data.conditionVal1);
     configPanel.find("input#conditionVal2TC").val(data.conditionVal2);
+    updateLoadBar(data);
 }
 
+function updateExecutionControlStatue(controlStatus){
+    
+    var configPanel = $("#testCaseConfig");
+    configPanel.find("#controlstatus").text(controlStatus);
+    
+    removeColorClass(configPanel.find("#controlstatus") );
+    removeColorClass(configPanel.find("#exReturnMessage") );
+    
+    var controlMessage;
+    var updateDataBarPossible =true;
+    if (controlStatus === "PE") {
+        configPanel.find("#controlstatus").addClass("text-primary");
+        configPanel.find("#exReturnMessage").addClass("text-primary");
+        controlMessage = "";
+    } else if (controlStatus === "OK") {
+        configPanel.find("#controlstatus").addClass("text-success");
+        configPanel.find("#exReturnMessage").addClass("text-success");
+        controlMessage ="The test case finished successfully";
+    } else if (controlStatus === "KO") {
+        configPanel.find("#controlstatus").addClass("text-danger");
+        configPanel.find("#exReturnMessage").addClass("text-danger");
+        controlMessage ="The test case failed on validations."
+    } else if (controlStatus === "NE") {
+        configPanel.find("#controlstatus").addClass("text-black");
+        configPanel.find("#exReturnMessage").addClass("text-black");
+         controlMessage ="The test case not executed";
+    } else if (controlStatus === "FA") {
+        configPanel.find("#controlstatus").addClass("text-black");
+        configPanel.find("#exReturnMessage").addClass("text-black");
+        controlMessage ="The test case failed to be executed because of an action.";
+    }else {
+        configPanel.find("#controlstatus").addClass("text-warning");
+        configPanel.find("#exReturnMessage").addClass("text-warning");
+        controlMessage = "";
+        updateDataBarPossible =false;
+    }
+    
+    configPanel.find("#controlstatus").text(controlStatus);
+    configPanel.find("#exReturnMessage").text(controlMessage);
+    configPanel.find("input#controlstatus2").val(controlStatus);
+    
+    if ( updateDataBarPossible )
+        updateDataBarVisual(controlStatus);
+}
+
+function removeColorClass(element){
+    element.removeClass("text-black");
+    element.removeClass("text-warning");
+    element.removeClass("text-danger");
+    element.removeClass("text-success");
+    element.removeClass("text-primary");
+}
 
 /*
  * show the save button call if an action step or control have a controlStatus NE
@@ -373,28 +402,35 @@ function updateLoadBar(data) {
             }
         }
     }
+    
     var progress = ended / total * 100;
+    updateDataBarVisual(data.controlStatus , progress);
+    
+}
+/** DATA AGREGATION **/
 
+function updateDataBarVisual(controlStatus, progress=100){
+    
     $("#progress-bar").removeClass(function (index, className) {
         return (className.match(/(^|\s)progress-bar-\S+/g) || []).join(' ');
     });
 
-    if (data.controlStatus != "PE") {
-        if (data.controlStatus === "OK") {
+    if (controlStatus != "PE") {
+        if (controlStatus === "OK") {
             $("#progress-bar").addClass("progress-bar-success");
-        } else if (data.controlStatus === "KO") {
+        } else if (controlStatus === "KO") {
             $("#progress-bar").addClass("progress-bar-danger");
-        } else if (data.controlStatus === "NE") {
+        } else if (controlStatus === "NE") {
             $("#progress-bar").addClass("progress-bar-black");
         } else {
             $("#progress-bar").addClass("progress-bar-warning");
         }
-        $("#progress-bar").empty().append($("<span style='font-weight:900;'>").append(data.controlStatus));
+        $("#progress-bar").empty().append($("<span style='font-weight:900;'>").append(controlStatus));
         progress = 100;
     }
     $("#progress-bar").css("width", progress + "%").attr("aria-valuenow", progress);
 }
-/** DATA AGREGATION **/
+
 
 function sortStep(step) {
 
@@ -1304,21 +1340,11 @@ Action.prototype.generateHeader = function (id) {
             event.preventDefault();
             event.stopPropagation();
             triggerActionExecution(this, id, "OK");
-            //toggle style of both buttons
-//            if (  ($(this).attr("class").indexOf("btn-inverse") !== -1)  !==   ($(buttonFA).attr("class").indexOf("btn-inverse") !== -1) ){
-//                $(buttonFA).toggleClass("btn-inverse ");
-//            }
-//            $(this).toggleClass(" btn-inverse ");
         });
         buttonFA.click(function (event) {
             event.preventDefault();
             event.stopPropagation();
             triggerActionExecution(this, id, "FA");
-//            //toggle style of both buttons
-//            if (  ($(this).attr("class").indexOf("btn-inverse") !== -1)  !==   ($(buttonOK).attr("class").indexOf("btn-inverse") !== -1) ){
-//                $(buttonOK).toggleClass("btn-inverse ");
-//            }
-//            $(this).toggleClass(" btn-inverse ");
             
         });
         contentField.append($("<div class='col-sm-2'>").addClass("btn-group btn-group-xs").attr("role", "group").append(buttonOK).append(buttonFA));
@@ -1421,26 +1447,39 @@ function updateReturnCode(idElementTriggers, newReturnCode){
 
 function updateStepStatus(idElementTrigger) {
     
+    var allStepOk = true;
+    
+    var controlStatus = "NE";//function call only in manual execution so the default control status is NE
+    
     for (var idStep =idElementTrigger.stepId; idStep >= 0 ; idStep--){// update all the step below the element trigger
 
         var stepElementTriggerBelongTo = $("#stepList").data("listOfStep")[ idStep ];
         stepElementTriggerBelongTo.updateReturnCode();
         var returnCodeStep = stepElementTriggerBelongTo.html.data("item").returnCode;
         
+        var glyphiconColor = "text-black";
         var className = "list-group-item-black";
         var glyphiconName = "glyphicon-question-sign";
         if (returnCodeStep ==="OK") {
             className = "list-group-item-success";
             glyphiconName = "glyphicon-ok";
+            glyphiconColor = "text-success";
         }
         if (returnCodeStep ==="FA") {
             className = "list-group-item-warning";
             glyphiconName = "glyphicon-alert";
+            glyphiconColor = "text-warning";
+            if (controlStatus !=="KO")
+                controlStatus ="FA"
         }
         if (returnCodeStep ==="KO") {
             className = "list-group-item-danger";
             glyphiconName = "glyphicon-remove";
+            glyphiconColor = "text-danger";
+            controlStatus ="KO"
         }
+        if (returnCodeStep !== "OK")
+            allStepOk =false;
         
         $($("#steps").find("a")[idStep]).removeClass(function (index, className) {
             return (className.match(/(^|\s)list-group-item-\S+/g) || []).join(' ');
@@ -1453,36 +1492,21 @@ function updateStepStatus(idElementTrigger) {
         //if is the step focus
         if (idStep === idElementTrigger.stepId){     
             
-            $($("#stepInfo h2")[0]).removeClass(function (index, className) {
+            var glyphIcon = $($("#stepInfo h2")[0]).removeClass(function (index, className) {
                 return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
-            }).addClass(glyphiconName);
+            })
+            removeColorClass( glyphIcon );
+            glyphIcon.addClass(glyphiconColor);
+            glyphIcon.addClass(glyphiconName);
         }
         
     }
-    updateExecutionStatus();
+    if (allStepOk ===true)
+        controlStatus ="OK";
+    
+    updateExecutionControlStatue(controlStatus);
 }
 
-function updateExecutionStatus() {
-    var globalStatus = "OK";
-    //update step
-    $("#stepList a").each(function (index, element) {
-        var stepStatus = $($("#stepList a")[index]).data("item").returnCode;
-        if (globalStatus === "OK" && stepStatus === "NE") {
-            globalStatus = "NE";
-        }
-        if (stepStatus === "FA") {
-            globalStatus = "FA";
-        }
-        if (stepStatus === "KO") {
-            globalStatus = "KO";
-        }
-        
-    });
-    var data = {controlStatus: globalStatus};
-    updateLoadBar(data); 
-    updateConfigPanel(data);
-    updateLoadBar(data); 
-}
 
 Action.prototype.generateContent = function () {
     var obj = this;
@@ -1496,7 +1520,6 @@ Action.prototype.generateContent = function () {
     var row6 = $("<div></div>").addClass("row");
     var row7 = $("<div></div>").addClass("row");
     var container = $("<div id='content-container'></div>").addClass("action-group row list-group-item");
-
     var actionList = $("<input type='text' class='form-control' id='action'>").prop("readonly", true);
     var descField = $("<textarea type='text' rows='1' class='form-control' id='description'>").prop("readonly", true);
     var value1Field = $("<textarea type='text' rows='1' class='form-control' id='value1'>").prop("readonly", true);
