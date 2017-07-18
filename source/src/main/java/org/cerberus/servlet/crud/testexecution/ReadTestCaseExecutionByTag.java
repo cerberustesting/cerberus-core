@@ -148,6 +148,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
     private JSONObject testCaseExecutionToJSONObject(TestCaseExecution testCaseExecution) throws JSONException {
         JSONObject result = new JSONObject();
         result.put("ID", String.valueOf(testCaseExecution.getId()));
+        result.put("QueueID", String.valueOf(testCaseExecution.getQueueID()));
         result.put("Test", JavaScriptUtils.javaScriptEscape(testCaseExecution.getTest()));
         result.put("TestCase", JavaScriptUtils.javaScriptEscape(testCaseExecution.getTestCase()));
         result.put("Environment", JavaScriptUtils.javaScriptEscape(testCaseExecution.getEnvironment()));

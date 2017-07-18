@@ -19,13 +19,13 @@
  */
 package org.cerberus.crud.service;
 
+import java.util.List;
+import java.util.Map;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionQueue;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * Service layer to handle {@link TestCaseExecutionQueue} instances
@@ -33,6 +33,13 @@ import java.util.Map;
  * @author abourdon
  */
 public interface ITestCaseExecutionQueueService {
+
+    /**
+     *
+     * @param queueId
+     * @return
+     */
+    AnswerItem<TestCaseExecutionQueue> readByKey(Long queueId);
 
     /**
      * Inserts the given {@link TestCaseExecutionQueue} to the execution queue

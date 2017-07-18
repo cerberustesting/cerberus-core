@@ -28,6 +28,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import org.cerberus.util.answer.AnswerItem;
 
 /**
  * {@link TestCaseExecutionQueue} DAO
@@ -39,10 +40,17 @@ public interface ITestCaseExecutionQueueDAO {
     int UNLIMITED_FETCH_SIZE = -1;
 
     /**
+     *
+     * @param queueId
+     * @return
+     */
+    AnswerItem<TestCaseExecutionQueue> readByKey(Long queueId);
+
+    /**
      * Inserts the given {@link TestCaseExecutionQueue} to the execution queue
      *
      * @param inQueue the {@link TestCaseExecutionQueue} to insert to the
-     *                execution queue
+     * execution queue
      * @throws CerberusException if an exception occurs
      */
     void insert(TestCaseExecutionQueue inQueue) throws CerberusException;
@@ -91,17 +99,19 @@ public interface ITestCaseExecutionQueueDAO {
     void toError(long id, String comment) throws CerberusException;
 
     void toDone(long id, String comment, long exeId) throws CerberusException;
-    
+
     void toCancelled(long id) throws CerberusException;
 
     List<Long> toCancelled(List<Long> ids) throws CerberusException;
 
     public AnswerList readByTagByCriteria(String tag, int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException;
-    
+
     /**
      * Read TestCaseExecutionInQueue By Tag
+     *
      * @param tag Tag used to filter execution
-     * @return AnswerList that contains a list of TestCaseExecutionInQueue object enriched with TestCase and Application objects
+     * @return AnswerList that contains a list of TestCaseExecutionInQueue
+     * object enriched with TestCase and Application objects
      * @throws CerberusException
      */
     public AnswerList readByTag(String tag) throws CerberusException;
@@ -121,10 +131,11 @@ public interface ITestCaseExecutionQueueDAO {
     /**
      * Uses data of ResultSet to create object {@link TestCaseExecutionQueue}
      *
-     * @param resultSet ResultSet relative to select from table TestCaseExecutionInQueue
+     * @param resultSet ResultSet relative to select from table
+     * TestCaseExecutionInQueue
      * @return object {@link TestCaseExecutionQueue}
      * @throws SQLException when trying to get value from
-     *                      {@link java.sql.ResultSet#getString(String)}
+     * {@link java.sql.ResultSet#getString(String)}
      * @see TestCaseExecutionQueue
      */
     TestCaseExecutionQueue loadFromResultSet(ResultSet resultSet) throws SQLException, FactoryCreationException;

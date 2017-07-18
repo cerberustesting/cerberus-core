@@ -20,28 +20,6 @@
 package org.cerberus.crud.dao.impl;
 
 import com.google.common.base.Strings;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.cerberus.crud.dao.IApplicationDAO;
-import org.cerberus.crud.dao.ITestCaseDAO;
-import org.cerberus.crud.entity.Application;
-import org.cerberus.crud.entity.TestCaseExecutionQueue;
-import org.cerberus.crud.factory.IFactoryApplication;
-import org.cerberus.database.DatabaseSpring;
-import org.cerberus.engine.entity.MessageEvent;
-import org.cerberus.engine.entity.MessageGeneral;
-import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.enums.MessageGeneralEnum;
-import org.cerberus.exception.CerberusException;
-import org.cerberus.exception.FactoryCreationException;
-import org.cerberus.log.MyLogger;
-import org.cerberus.util.SqlUtil;
-import org.cerberus.util.StringUtil;
-import org.cerberus.util.answer.AnswerList;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -53,10 +31,30 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import org.cerberus.crud.entity.AppServiceContent;
-import org.cerberus.crud.factory.IFactoryTestCaseExecutionQueue;
-import org.cerberus.util.answer.Answer;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.cerberus.crud.dao.IApplicationDAO;
+import org.cerberus.crud.dao.ITestCaseDAO;
 import org.cerberus.crud.dao.ITestCaseExecutionQueueDAO;
+import org.cerberus.crud.entity.Application;
+import org.cerberus.crud.entity.TestCaseExecutionQueue;
+import org.cerberus.crud.factory.IFactoryApplication;
+import org.cerberus.crud.factory.IFactoryTestCaseExecutionQueue;
+import org.cerberus.database.DatabaseSpring;
+import org.cerberus.engine.entity.MessageEvent;
+import org.cerberus.engine.entity.MessageGeneral;
+import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.enums.MessageGeneralEnum;
+import org.cerberus.exception.CerberusException;
+import org.cerberus.exception.FactoryCreationException;
+import org.cerberus.log.MyLogger;
+import org.cerberus.util.SqlUtil;
+import org.cerberus.util.StringUtil;
+import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 @Repository
 public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
@@ -180,6 +178,70 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
 
     private final String OBJECT_NAME = "TestCaseExecutionQueue";
 
+    @Override
+    public AnswerItem<TestCaseExecutionQueue> readByKey(Long queueid) {
+        AnswerItem<TestCaseExecutionQueue> ans = new AnswerItem<>();
+        TestCaseExecutionQueue result = null;
+        final String query = "SELECT * FROM `testcaseexecutionqueue` WHERE `ID` = ?";
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setLong(1, queueid);
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    if (resultSet.first()) {
+                        result = loadFromResultSet(resultSet);
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+                        ans.setItem(result);
+                    } else {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                    }
+                } catch (SQLException exception) {
+                    LOG.error("Unable to execute query : " + exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+                } catch (FactoryCreationException ex) {
+                    LOG.error("Error in factory : " + ex.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ex.toString()));
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
+            }
+        }
+
+        //sets the message
+        ans.setResultMessage(msg);
+        return ans;
+    }
+    
     @Override
     public void insert(TestCaseExecutionQueue inQueue) throws CerberusException {
         Connection connection = this.databaseSpring.connect();

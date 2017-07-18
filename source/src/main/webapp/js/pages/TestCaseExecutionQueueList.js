@@ -32,7 +32,7 @@ function initPage() {
     drawQueueInformation();
 
     // Display table
-    var configurations = new TableConfigurationsServerSide("executionsTable", "ReadExecutionInQueue", "contentTable", aoColumnsFunc("executionsTable"), [1, 'desc']);
+    var configurations = new TableConfigurationsServerSide("executionsTable", "ReadTestCaseExecutionQueue", "contentTable", aoColumnsFunc("executionsTable"), [1, 'desc']);
     var table = createDataTableWithPermissions(configurations, renderOptionsForApplication, "#executionList", undefined, true);
 
     if (searchS !== null) {
@@ -122,6 +122,42 @@ function aoColumnsFunc(tableId) {
                 }
                 return '<div class="center btn-group width50"></div>';
 
+            }
+        },
+        {
+            "sName": "id",
+            "data": "id",
+            "bSortable": false,
+            "bSearchable": false,
+            "sWidth": "150px",
+            "title": doc.getDocLabel("testdatalib", "actions"),
+            "mRender": function (data, type, oObj) {
+//                var hasPermissions = $("#" + tableId).attr("hasPermissions");
+                var hasPermissions = true;
+                var submitElement = '<button id="submitExeQ' + data + '"  onclick="submitExecutionQueueClick(' + data + ');" \n\
+                                class="submitExecutionQueue btn btn-default btn-xs margin-right5" \n\
+                            name="submitExecutionQueue" title="' + doc.getDocLabel("page_testdatalib", "tooltip_editentry") + '" type="button">\n\
+                            <span class="glyphicon glyphicon-play"></span></button>';
+                var copyElement = '<button id="copyExeQ' + data + '"  onclick="copyExecutionQueueClick(' + data + ');" \n\
+                                class="copyExecutionQueueLib btn btn-default btn-xs margin-right5" \n\
+                            name="copyExecutionQueue" title="' + doc.getDocLabel("page_testdatalib", "tooltip_editentry") + '" type="button">\n\
+                            <span class="glyphicon glyphicon-plus"></span></button>';
+                var cancelElement = '<button onclick="cancelExecutionQueueClick(' + data + ');" class="btn btn-default btn-xs margin-right25 " \n\
+                            name="cancelExecutionQueue" title="' + doc.getDocLabel("page_testdatalib", "tooltip_delete") + '" type="button">\n\
+                            <span class="glyphicon glyphicon-stop"></span></button>';
+
+                var buttons = "";
+//                if ((oObj.state === "WAITING") || (oObj.state === "EXECUTING") || (oObj.state === "DONE")) { //only draws the options if the user has the correct privileges
+//                    buttons += copyElement;
+//                }
+//                if ((oObj.state === "ERROR") || (oObj.state === "CANCELLED")) { //only draws the options if the user has the correct privileges
+//                    buttons += submitElement;
+//                }
+//                if ((oObj.state === "WAITING") || (oObj.state === "ERROR")) { //only draws the options if the user has the correct privileges
+//                    buttons += cancelElement;
+//                }
+                buttons += submitElement;
+                return '<div class="center btn-group width250">' + buttons + '</div>';
             }
         },
         {
