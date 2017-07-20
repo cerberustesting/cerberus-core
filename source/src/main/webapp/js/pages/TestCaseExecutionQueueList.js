@@ -99,319 +99,6 @@ function renderOptionsForApplication(data) {
     }
 }
 
-function aoColumnsFunc(tableId) {
-    var doc = new Doc();
-    var aoColumns = [
-        {
-            "data": null,
-            "sName": "selectAll",
-            "title": '<input id="selectAll" title="' + doc.getDocLabel("page_global", "tooltip_massAction") + '" type="checkbox"/>',
-            "sWidth": "30px",
-            "bSortable": false,
-            "bSearchable": false,
-            "sClass": "overflowVisible", //change the overflow style for a display bug on chrome
-            "mRender": function (data, type, obj) {
-                var hasPermissions = $("#" + tableId).attr("hasPermissions");
-
-                var selectBrp = '<input id="selectLine" \n\
-                                class="selectBrp margin-right5" \n\
-                                name="ids" value=' + obj["id"] + ' data-line="select" data-id="' + obj["id"] + '" title="' + doc.getDocLabel("page_global", "tooltip_massActionLine") + '" type="checkbox">\n\
-                                </input>';
-                if (hasPermissions === "true") { //only draws the options if the user has the correct privileges
-                    return '<div class="center btn-group width50">' + selectBrp + '</div>';
-                }
-                return '<div class="center btn-group width50"></div>';
-
-            }
-        },
-        {
-            "sName": "id",
-            "data": "id",
-            "bSortable": false,
-            "bSearchable": false,
-            "sWidth": "150px",
-            "title": doc.getDocLabel("testdatalib", "actions"),
-            "mRender": function (data, type, oObj) {
-//                var hasPermissions = $("#" + tableId).attr("hasPermissions");
-                var hasPermissions = true;
-                var submitElement = '<button id="submitExeQ' + data + '"  onclick="submitExecutionQueueClick(' + data + ');" \n\
-                                class="submitExecutionQueue btn btn-default btn-xs margin-right5" \n\
-                            name="submitExecutionQueue" title="' + doc.getDocLabel("page_testdatalib", "tooltip_editentry") + '" type="button">\n\
-                            <span class="glyphicon glyphicon-play"></span></button>';
-                var copyElement = '<button id="copyExeQ' + data + '"  onclick="copyExecutionQueueClick(' + data + ');" \n\
-                                class="copyExecutionQueueLib btn btn-default btn-xs margin-right5" \n\
-                            name="copyExecutionQueue" title="' + doc.getDocLabel("page_testdatalib", "tooltip_editentry") + '" type="button">\n\
-                            <span class="glyphicon glyphicon-plus"></span></button>';
-                var cancelElement = '<button onclick="cancelExecutionQueueClick(' + data + ');" class="btn btn-default btn-xs margin-right25 " \n\
-                            name="cancelExecutionQueue" title="' + doc.getDocLabel("page_testdatalib", "tooltip_delete") + '" type="button">\n\
-                            <span class="glyphicon glyphicon-stop"></span></button>';
-
-                var buttons = "";
-//                if ((oObj.state === "WAITING") || (oObj.state === "EXECUTING") || (oObj.state === "DONE")) { //only draws the options if the user has the correct privileges
-//                    buttons += copyElement;
-//                }
-//                if ((oObj.state === "ERROR") || (oObj.state === "CANCELLED")) { //only draws the options if the user has the correct privileges
-//                    buttons += submitElement;
-//                }
-//                if ((oObj.state === "WAITING") || (oObj.state === "ERROR")) { //only draws the options if the user has the correct privileges
-//                    buttons += cancelElement;
-//                }
-                buttons += submitElement;
-                return '<div class="center btn-group width250">' + buttons + '</div>';
-            }
-        },
-        {
-            "data": "id",
-            "sName": "id",
-            "title": doc.getDocLabel("page_testcaseexecutionqueue", "id_col"),
-            "sWidth": "40px"
-        },
-        {
-            "data": "tag",
-            "sName": "tag",
-            "title": doc.getDocLabel("page_testcaseexecutionqueue", "tag_col"),
-            "sWidth": "150px",
-            "mRender": function (data, type, obj) {
-                if (isEmpty(obj["tag"])) {
-                    return "";
-                } else {
-                    return '<a href="ReportingExecutionByTag.jsp?Tag=' + obj["tag"] + '">' + obj["tag"] + '</div>';
-                }
-            }
-        },
-        {
-            "data": "requestDate",
-            "sName": "requestDate",
-            "title": doc.getDocLabel("page_testcaseexecutionqueue", "requestDate_col"),
-            "sWidth": "110px"
-        },
-        {
-            "data": "state",
-            "sName": "state",
-            "title": doc.getDocLabel("page_testcaseexecutionqueue", "state_col"),
-            "sWidth": "70px"
-        },
-        {
-            "data": "comment",
-            "sName": "comment",
-            "title": doc.getDocLabel("page_testcaseexecutionqueue", "comment_col"),
-            "sWidth": "200px",
-            "defaultContent": ""
-        },
-        {
-            "data": "exeId",
-            "sName": "exeId",
-            "title": doc.getDocLabel("page_testcaseexecutionqueue", "exeId"),
-            "sWidth": "40px",
-            "defaultContent": "",
-            "mRender": function (data, type, obj) {
-                if (obj["exeId"] <= 0) {
-                    return "";
-                } else {
-                    return '<a href="TestCaseExecution.jsp?executionId=' + obj["exeId"] + '">' + obj["exeId"] + '</div>';
-                }
-            }
-        },
-        {
-            "data": "UsrCreated",
-            "sName": "UsrCreated",
-            "sWidth": "70px",
-            "defaultContent": "",
-            "title": doc.getDocOnline("transversal", "UsrCreated")
-        },
-        {
-            "data": "DateCreated",
-            "sName": "DateCreated",
-            "sWidth": "110px",
-            "defaultContent": "",
-            "title": doc.getDocOnline("transversal", "DateCreated")
-        },
-        {
-            "data": "test",
-            "sName": "test",
-            "title": doc.getDocLabel("page_testcaseexecutionqueue", "test_col"),
-            "sWidth": "70px"
-        },
-        {
-            "data": "testCase",
-            "sName": "testcase",
-            "title": doc.getDocLabel("page_testcaseexecutionqueue", "testcase_col"),
-            "sWidth": "70px"
-        },
-        {
-            "data": "country",
-            "sName": "country",
-            "title": doc.getDocLabel("page_testcaseexecutionqueue", "country_col"),
-            "sWidth": "70px"
-        },
-        {
-            "data": "environment",
-            "sName": "environment",
-            "title": doc.getDocLabel("page_testcaseexecutionqueue", "environment_col"),
-            "sWidth": "70px"
-        },
-        {
-            "data": "robot",
-            "sName": "robot",
-            "title": doc.getDocLabel("page_testcaseexecutionqueue", "robot_col"),
-            "sWidth": "70px",
-            "defaultContent": "",
-            "visible": false
-        },
-        {
-            "data": "robotIP",
-            "sName": "robotIP",
-            "title": doc.getDocLabel("page_testcaseexecutionqueue", "robotIP_col"),
-            "sWidth": "70px",
-            "defaultContent": "",
-            "visible": false
-        },
-        {
-            "data": "robotPort",
-            "sName": "robotPort",
-            "title": doc.getDocLabel("page_testcaseexecutionqueue", "robotPort_col"),
-            "sWidth": "70px",
-            "defaultContent": "",
-            "visible": false
-        },
-        {
-            "data": "browser",
-            "sName": "browser",
-            "title": doc.getDocLabel("page_testcaseexecutionqueue", "browser_col"),
-            "sWidth": "70px",
-            "defaultContent": "",
-            "visible": false
-        },
-        {
-            "data": "browserVersion",
-            "sName": "browserVersion",
-            "title": doc.getDocLabel("page_testcaseexecutionqueue", "browserVersion_col"),
-            "sWidth": "70px",
-            "defaultContent": "",
-            "visible": false
-        },
-        {
-            "data": "platform",
-            "sName": "platform",
-            "title": doc.getDocLabel("page_testcaseexecutionqueue", "platform_col"),
-            "sWidth": "70px",
-            "defaultContent": "",
-            "visible": false
-        },
-        {
-            "data": "manualExecution",
-            "sName": "manualExecution",
-            "title": doc.getDocLabel("page_testcaseexecutionqueue", "manualExecution_col"),
-            "sWidth": "70px",
-            "defaultContent": "",
-            "visible": false
-        },
-        {
-            "data": "manualURL",
-            "sName": "manualURL",
-            "title": doc.getDocLabel("page_testcaseexecutionqueue", "manualURL_col"),
-            "sWidth": "70px",
-            "defaultContent": "",
-            "visible": false
-        },
-        {
-            "data": "manualHost",
-            "sName": "manualHost",
-            "title": doc.getDocLabel("page_testcaseexecutionqueue", "manualHost_col"),
-            "sWidth": "70px",
-            "defaultContent": "",
-            "visible": false
-        },
-        {
-            "data": "manualContextRoot",
-            "sName": "manualContextRoot",
-            "title": doc.getDocLabel("page_testcaseexecutionqueue", "manualContextRoot_col"),
-            "sWidth": "70px",
-            "defaultContent": "",
-            "visible": false
-        },
-        {
-            "data": "manualLoginRelativeURL",
-            "sName": "manualLoginRelativeURL",
-            "title": doc.getDocLabel("page_testcaseexecutionqueue", "manualLoginRelativeURL_col"),
-            "sWidth": "70px",
-            "defaultContent": "",
-            "visible": false
-        },
-        {
-            "data": "manualEnvData",
-            "sName": "manualEnvData",
-            "title": doc.getDocLabel("page_testcaseexecutionqueue", "manualEnvData_col"),
-            "sWidth": "70px",
-            "defaultContent": "",
-            "visible": false
-        },
-        {
-            "data": "screenshot",
-            "sName": "screenshot",
-            "title": doc.getDocLabel("page_testcaseexecutionqueue", "screenshot_col"),
-            "sWidth": "70px",
-            "defaultContent": "",
-            "visible": false
-        },
-        {
-            "data": "pageSource",
-            "sName": "pageSource",
-            "title": doc.getDocLabel("page_testcaseexecutionqueue", "pageSource_col"),
-            "sWidth": "70px",
-            "defaultContent": "",
-            "visible": false
-        },
-        {
-            "data": "seleniumLog",
-            "sName": "seleniumLog",
-            "title": doc.getDocLabel("page_testcaseexecutionqueue", "seleniumLog_col"),
-            "sWidth": "70px",
-            "defaultContent": "",
-            "visible": false
-        },
-        {
-            "data": "verbose",
-            "sName": "verbose",
-            "title": doc.getDocLabel("page_testcaseexecutionqueue", "verbose_col"),
-            "sWidth": "70px",
-            "defaultContent": "",
-            "visible": false
-        },
-        {
-            "data": "retries",
-            "sName": "retries",
-            "title": doc.getDocLabel("page_testcaseexecutionqueue", "retries_col"),
-            "sWidth": "70px",
-            "defaultContent": "",
-            "visible": false
-        },
-        {
-            "data": "timeout",
-            "sName": "timeout",
-            "title": doc.getDocLabel("page_testcaseexecutionqueue", "timeout_col"),
-            "sWidth": "70px",
-            "defaultContent": "",
-            "visible": false
-        },
-        {
-            "data": "UsrModif",
-            "sName": "UsrModif",
-            "sWidth": "70px",
-            "defaultContent": "",
-            "title": doc.getDocOnline("transversal", "UsrModif")
-        },
-        {
-            "data": "DateModif",
-            "sName": "DateModif",
-            "sWidth": "110px",
-            "defaultContent": "",
-            "title": doc.getDocOnline("transversal", "DateModif")
-        }
-    ];
-    return aoColumns;
-}
-
 function selectAll() {
     if ($(this).prop("checked")) {
         $("[data-line='select']").prop("checked", true);
@@ -738,3 +425,318 @@ function generatePie(root, id, data) {
             });
 
 }
+
+
+function aoColumnsFunc(tableId) {
+    var doc = new Doc();
+    var aoColumns = [
+        {
+            "data": null,
+            "sName": "selectAll",
+            "title": '<input id="selectAll" title="' + doc.getDocLabel("page_global", "tooltip_massAction") + '" type="checkbox"/>',
+            "sWidth": "30px",
+            "bSortable": false,
+            "bSearchable": false,
+            "sClass": "overflowVisible", //change the overflow style for a display bug on chrome
+            "mRender": function (data, type, obj) {
+                var hasPermissions = $("#" + tableId).attr("hasPermissions");
+
+                var selectBrp = '<input id="selectLine" \n\
+                                class="selectBrp margin-right5" \n\
+                                name="ids" value=' + obj["id"] + ' data-line="select" data-id="' + obj["id"] + '" title="' + doc.getDocLabel("page_global", "tooltip_massActionLine") + '" type="checkbox">\n\
+                                </input>';
+                if (hasPermissions === "true") { //only draws the options if the user has the correct privileges
+                    return '<div class="center btn-group width50">' + selectBrp + '</div>';
+                }
+                return '<div class="center btn-group width50"></div>';
+
+            }
+        },
+        {
+            "sName": "id",
+            "data": "id",
+            "bSortable": false,
+            "bSearchable": false,
+            "sWidth": "150px",
+            "title": doc.getDocLabel("testdatalib", "actions"),
+            "mRender": function (data, type, oObj) {
+//                var hasPermissions = $("#" + tableId).attr("hasPermissions");
+                var hasPermissions = true;
+                var submitElement = '<button id="submitExeQ' + data + '"  onclick="submitExecutionQueueClick(' + data + ');" \n\
+                                class="submitExecutionQueue btn btn-default btn-xs margin-right5" \n\
+                            name="submitExecutionQueue" title="' + doc.getDocLabel("page_testdatalib", "tooltip_editentry") + '" type="button">\n\
+                            <span class="glyphicon glyphicon-eye-open"></span></button>';
+                var copyElement = '<button id="copyExeQ' + data + '"  onclick="copyExecutionQueueClick(' + data + ');" \n\
+                                class="copyExecutionQueueLib btn btn-default btn-xs margin-right5" \n\
+                            name="copyExecutionQueue" title="' + doc.getDocLabel("page_testdatalib", "tooltip_editentry") + '" type="button">\n\
+                            <span class="glyphicon glyphicon-plus"></span></button>';
+                var cancelElement = '<button onclick="cancelExecutionQueueClick(' + data + ');" class="btn btn-default btn-xs margin-right25 " \n\
+                            name="cancelExecutionQueue" title="' + doc.getDocLabel("page_testdatalib", "tooltip_delete") + '" type="button">\n\
+                            <span class="glyphicon glyphicon-stop"></span></button>';
+
+                var buttons = "";
+//                if ((oObj.state === "WAITING") || (oObj.state === "EXECUTING") || (oObj.state === "DONE")) { //only draws the options if the user has the correct privileges
+//                    buttons += copyElement;
+//                }
+//                if ((oObj.state === "ERROR") || (oObj.state === "CANCELLED")) { //only draws the options if the user has the correct privileges
+//                    buttons += submitElement;
+//                }
+//                if ((oObj.state === "WAITING") || (oObj.state === "ERROR")) { //only draws the options if the user has the correct privileges
+//                    buttons += cancelElement;
+//                }
+                buttons += submitElement;
+                return '<div class="center btn-group width250">' + buttons + '</div>';
+            }
+        },
+        {
+            "data": "id",
+            "sName": "id",
+            "title": doc.getDocLabel("page_testcaseexecutionqueue", "id_col"),
+            "sWidth": "40px"
+        },
+        {
+            "data": "tag",
+            "sName": "tag",
+            "title": doc.getDocLabel("page_testcaseexecutionqueue", "tag_col"),
+            "sWidth": "150px",
+            "mRender": function (data, type, obj) {
+                if (isEmpty(obj["tag"])) {
+                    return "";
+                } else {
+                    return '<a href="ReportingExecutionByTag.jsp?Tag=' + obj["tag"] + '">' + obj["tag"] + '</div>';
+                }
+            }
+        },
+        {
+            "data": "requestDate",
+            "sName": "requestDate",
+            "title": doc.getDocLabel("page_testcaseexecutionqueue", "requestDate_col"),
+            "sWidth": "110px"
+        },
+        {
+            "data": "state",
+            "sName": "state",
+            "title": doc.getDocLabel("page_testcaseexecutionqueue", "state_col"),
+            "sWidth": "70px"
+        },
+        {
+            "data": "comment",
+            "sName": "comment",
+            "title": doc.getDocLabel("page_testcaseexecutionqueue", "comment_col"),
+            "sWidth": "200px",
+            "defaultContent": ""
+        },
+        {
+            "data": "exeId",
+            "sName": "exeId",
+            "title": doc.getDocLabel("page_testcaseexecutionqueue", "exeId"),
+            "sWidth": "40px",
+            "defaultContent": "",
+            "mRender": function (data, type, obj) {
+                if (obj["exeId"] <= 0) {
+                    return "";
+                } else {
+                    return '<a href="TestCaseExecution.jsp?executionId=' + obj["exeId"] + '">' + obj["exeId"] + '</div>';
+                }
+            }
+        },
+        {
+            "data": "UsrCreated",
+            "sName": "UsrCreated",
+            "sWidth": "70px",
+            "defaultContent": "",
+            "title": doc.getDocOnline("transversal", "UsrCreated")
+        },
+        {
+            "data": "DateCreated",
+            "sName": "DateCreated",
+            "sWidth": "110px",
+            "defaultContent": "",
+            "title": doc.getDocOnline("transversal", "DateCreated")
+        },
+        {
+            "data": "test",
+            "sName": "test",
+            "title": doc.getDocLabel("page_testcaseexecutionqueue", "test_col"),
+            "sWidth": "70px"
+        },
+        {
+            "data": "testCase",
+            "sName": "testcase",
+            "title": doc.getDocLabel("page_testcaseexecutionqueue", "testcase_col"),
+            "sWidth": "70px"
+        },
+        {
+            "data": "country",
+            "sName": "country",
+            "title": doc.getDocLabel("page_testcaseexecutionqueue", "country_col"),
+            "sWidth": "70px"
+        },
+        {
+            "data": "environment",
+            "sName": "environment",
+            "title": doc.getDocLabel("page_testcaseexecutionqueue", "environment_col"),
+            "sWidth": "70px"
+        },
+        {
+            "data": "robot",
+            "sName": "robot",
+            "title": doc.getDocLabel("page_testcaseexecutionqueue", "robot_col"),
+            "sWidth": "70px",
+            "defaultContent": "",
+            "visible": false
+        },
+        {
+            "data": "robotIP",
+            "sName": "robotIP",
+            "title": doc.getDocLabel("page_testcaseexecutionqueue", "robotIP_col"),
+            "sWidth": "70px",
+            "defaultContent": "",
+            "visible": false
+        },
+        {
+            "data": "robotPort",
+            "sName": "robotPort",
+            "title": doc.getDocLabel("page_testcaseexecutionqueue", "robotPort_col"),
+            "sWidth": "70px",
+            "defaultContent": "",
+            "visible": false
+        },
+        {
+            "data": "browser",
+            "sName": "browser",
+            "title": doc.getDocLabel("page_testcaseexecutionqueue", "browser_col"),
+            "sWidth": "70px",
+            "defaultContent": "",
+            "visible": false
+        },
+        {
+            "data": "browserVersion",
+            "sName": "browserVersion",
+            "title": doc.getDocLabel("page_testcaseexecutionqueue", "browserVersion_col"),
+            "sWidth": "70px",
+            "defaultContent": "",
+            "visible": false
+        },
+        {
+            "data": "platform",
+            "sName": "platform",
+            "title": doc.getDocLabel("page_testcaseexecutionqueue", "platform_col"),
+            "sWidth": "70px",
+            "defaultContent": "",
+            "visible": false
+        },
+        {
+            "data": "manualExecution",
+            "sName": "manualExecution",
+            "title": doc.getDocLabel("page_testcaseexecutionqueue", "manualExecution_col"),
+            "sWidth": "70px",
+            "defaultContent": "",
+            "visible": false
+        },
+        {
+            "data": "manualURL",
+            "sName": "manualURL",
+            "title": doc.getDocLabel("page_testcaseexecutionqueue", "manualURL_col"),
+            "sWidth": "70px",
+            "defaultContent": "",
+            "visible": false
+        },
+        {
+            "data": "manualHost",
+            "sName": "manualHost",
+            "title": doc.getDocLabel("page_testcaseexecutionqueue", "manualHost_col"),
+            "sWidth": "70px",
+            "defaultContent": "",
+            "visible": false
+        },
+        {
+            "data": "manualContextRoot",
+            "sName": "manualContextRoot",
+            "title": doc.getDocLabel("page_testcaseexecutionqueue", "manualContextRoot_col"),
+            "sWidth": "70px",
+            "defaultContent": "",
+            "visible": false
+        },
+        {
+            "data": "manualLoginRelativeURL",
+            "sName": "manualLoginRelativeURL",
+            "title": doc.getDocLabel("page_testcaseexecutionqueue", "manualLoginRelativeURL_col"),
+            "sWidth": "70px",
+            "defaultContent": "",
+            "visible": false
+        },
+        {
+            "data": "manualEnvData",
+            "sName": "manualEnvData",
+            "title": doc.getDocLabel("page_testcaseexecutionqueue", "manualEnvData_col"),
+            "sWidth": "70px",
+            "defaultContent": "",
+            "visible": false
+        },
+        {
+            "data": "screenshot",
+            "sName": "screenshot",
+            "title": doc.getDocLabel("page_testcaseexecutionqueue", "screenshot_col"),
+            "sWidth": "70px",
+            "defaultContent": "",
+            "visible": false
+        },
+        {
+            "data": "pageSource",
+            "sName": "pageSource",
+            "title": doc.getDocLabel("page_testcaseexecutionqueue", "pageSource_col"),
+            "sWidth": "70px",
+            "defaultContent": "",
+            "visible": false
+        },
+        {
+            "data": "seleniumLog",
+            "sName": "seleniumLog",
+            "title": doc.getDocLabel("page_testcaseexecutionqueue", "seleniumLog_col"),
+            "sWidth": "70px",
+            "defaultContent": "",
+            "visible": false
+        },
+        {
+            "data": "verbose",
+            "sName": "verbose",
+            "title": doc.getDocLabel("page_testcaseexecutionqueue", "verbose_col"),
+            "sWidth": "70px",
+            "defaultContent": "",
+            "visible": false
+        },
+        {
+            "data": "retries",
+            "sName": "retries",
+            "title": doc.getDocLabel("page_testcaseexecutionqueue", "retries_col"),
+            "sWidth": "70px",
+            "defaultContent": "",
+            "visible": false
+        },
+        {
+            "data": "timeout",
+            "sName": "timeout",
+            "title": doc.getDocLabel("page_testcaseexecutionqueue", "timeout_col"),
+            "sWidth": "70px",
+            "defaultContent": "",
+            "visible": false
+        },
+        {
+            "data": "UsrModif",
+            "sName": "UsrModif",
+            "sWidth": "70px",
+            "defaultContent": "",
+            "title": doc.getDocOnline("transversal", "UsrModif")
+        },
+        {
+            "data": "DateModif",
+            "sName": "DateModif",
+            "sWidth": "110px",
+            "defaultContent": "",
+            "title": doc.getDocOnline("transversal", "DateModif")
+        }
+    ];
+    return aoColumns;
+}
+

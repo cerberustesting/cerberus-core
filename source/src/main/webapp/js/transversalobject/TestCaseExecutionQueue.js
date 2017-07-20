@@ -54,10 +54,10 @@ function submitExecutionQueueClick(queueID) {
 
 //    $('#submitExecutionQueueButton').attr('class', 'btn btn-primary');
 //    $('#submitExecutionQueueButton').removeProp('hidden');
-    
+
     $('#submitExecutionQueueButton').attr('class', '');
     $('#submitExecutionQueueButton').attr('hidden', 'hidden');
-    
+
     $('#copyExecutionQueueButton').attr('class', '');
     $('#copyExecutionQueueButton').attr('hidden', 'hidden');
     $('#cancelExecutionQueueButton').attr('class', '');
@@ -270,8 +270,84 @@ function feedExecutionQueueModalData(exeQ, modalId, mode, hasPermissionsUpdate) 
     var formEdit = $('#' + modalId);
     var doc = new Doc();
 
-    //Destroy the previous Ace object.
-    ace.edit($("#editSoapLibraryModal #srvRequest")[0]).destroy();
+    $("#test").empty();
+    $("#testCase").empty();
+
+    var jqxhr = $.getJSON("ReadTest", "");
+    $.when(jqxhr).then(function (data) {
+        var testList = $("#test");
+
+        for (var index = 0; index < data.contentTable.length; index++) {
+            testList.append($('<option></option>').text(data.contentTable[index].test).val(data.contentTable[index].test));
+        }
+        $("#test").prop("value", exeQ.test);
+
+        var jqxhr = $.getJSON("ReadTestCase", "test=" + exeQ.test);
+        $.when(jqxhr).then(function (data) {
+            var testCList = $("#testCase");
+
+            for (var index = 0; index < data.contentTable.length; index++) {
+                testCList.append($('<option></option>').text(data.contentTable[index].testCase + " - " + data.contentTable[index].description).val(data.contentTable[index].testCase));
+            }
+            $("#testCase").prop("value", exeQ.testCase);
+        });
+
+    });
+
+    $("#robot").empty();
+    var jqxhr = $.getJSON("ReadRobot", "");
+    $.when(jqxhr).then(function (data) {
+        var robotList = $("#robot");
+
+        for (var index = 0; index < data.contentTable.length; index++) {
+            robotList.append($('<option></option>').text(data.contentTable[index].robot).val(data.contentTable[index].robot));
+        }
+        $("#robot").prop("value", exeQ.robot);
+
+    });
+
+    $("#country").empty();
+    displayInvariantList("country", "COUNTRY", false, exeQ.country);
+    $("#environment").empty();
+    displayInvariantList("environment", "ENVIRONMENT", false, exeQ.environment);
+    $("#browser").empty();
+    displayInvariantList("browser", "BROWSER", false);
+    $("#platform").empty();
+    displayInvariantList("platform", "PLATFORM", false, exeQ.platform);
+
+    $("#verbose").empty();
+    displayInvariantList("verbose", "VERBOSE", false, exeQ.verbose);
+    $("#screenshot").empty();
+    displayInvariantList("screenshot", "SCREENSHOT", false, exeQ.screenshot);
+    $("#pageSource").empty();
+    displayInvariantList("pageSource", "PAGESOURCE", false, exeQ.pageSource);
+    $("#seleniumLog").empty();
+    displayInvariantList("seleniumLog", "SELENIUMLOG", false, exeQ.seleniumLog);
+    $("#retries").empty();
+    displayInvariantList("retries", "RETRIES", false, exeQ.retries);
+
+    var manualExe = exeQ.manualExecution ? "Y" : "N";
+    $("#manualExecution").empty();
+    displayInvariantList("manualExecution", "MANUALEXECUTION", false, manualExe);
+
+
+    var manualUrl = exeQ.manualURL ? "Y" : "N";
+    $("#manualURL").empty();
+    displayInvariantList("manualURL", "TCACTIVE", false, manualUrl);
+    if (exeQ.manualURL) {
+        formEdit.find("#manualHost").prop("value", exeQ.manualHost);
+        formEdit.find("#manualContextRoot").prop("value", exeQ.manualContextRoot);
+        formEdit.find("#manualLoginRelativeURL").prop("value", exeQ.manualLoginRelativeURL);
+        $("#manualEnvData").empty();
+        displayInvariantList("manualEnvData", "ENVIRONMENT", false, exeQ.manualEnvData);
+    } else {
+        formEdit.find("#manualHost").prop("value", "");
+        formEdit.find("#manualContextRoot").prop("value", "");
+        formEdit.find("#manualLoginRelativeURL").prop("value", "");
+        $("#manualEnvData").empty();
+        displayInvariantList("manualEnvData", "ENVIRONMENT", false, "");
+    }
+
 
     // Data Feed.
     if (mode === "EDIT") {
@@ -315,7 +391,12 @@ function feedExecutionQueueModalData(exeQ, modalId, mode, hasPermissionsUpdate) 
         formEdit.find("#testCase").prop("value", exeQ.testCase);
         formEdit.find("#country").prop("value", exeQ.country);
         formEdit.find("#environment").prop("value", exeQ.environment);
-
+        formEdit.find("#platform").prop("value", exeQ.browsr);
+        formEdit.find("#robotIP").prop("value", exeQ.robotIP);
+        formEdit.find("#robotPort").prop("value", exeQ.robotPort);
+        formEdit.find("#browserVersion").prop("value", exeQ.browserVersion);
+        formEdit.find("#screenSize").prop("value", exeQ.screenSize);
+        formEdit.find("#timeout").prop("value", exeQ.timeout);
     }
     //Highlight envelop on modal loading
     var editor = ace.edit($("#editSoapLibraryModal #srvRequest")[0]);
@@ -363,8 +444,4 @@ function feedExecutionQueueModalData(exeQ, modalId, mode, hasPermissionsUpdate) 
         formEdit.find("#srvRequest").removeProp("readonly");
         formEdit.find("#description").removeProp("disabled");
     }
-
-
 }
-
-

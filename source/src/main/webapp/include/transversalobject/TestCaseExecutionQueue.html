@@ -36,8 +36,8 @@
                         <!-- tabs definition-->
                         <ul id="tabsEdit" class="nav nav-tabs" data-tabs="tabs">
                             <li class="active"><a data-toggle="tab" href="#tabsEdit-1" id="tab1Text" name="tabsEdit1">Definition</a></li>
-<!--                            <li><a data-toggle="tab" href="#tabsEdit-2" id="tab2Text" name="tabsEdit2">Robot Settings</a></li>
-                            <li><a data-toggle="tab" href="#tabsEdit-3" id="tab3Text" name="tabsEdit3">Execution Setting</a></li>-->
+                            <li><a data-toggle="tab" href="#tabsEdit-2" id="tab2Text" name="tabsEdit2">Robot Settings</a></li>
+                            <li><a data-toggle="tab" href="#tabsEdit-3" id="tab3Text" name="tabsEdit3">Execution Setting</a></li>
                             <li><a data-toggle="tab" href="#tabsEdit-5" id="tab5Text" name="tabsEdit5">Tracability</a></li>
                         </ul>
                         <div class="tab-content">
@@ -65,73 +65,97 @@
                                 <div class="row">
                                     <div class="form-group col-xs-6">
                                         <label for="test" name="testField">Test</label>
-                                        <select class="form-control"  id="test" name="test">
+                                        <select class="form-control"  id="test" name="test" disabled="">
                                         </select>
                                     </div>
                                     <div class="form-group col-xs-6">
                                         <label for="testCase" name="testCaseField">TestCase</label>
-                                        <select class="form-control"  id="testCase" name="testCase">
+                                        <select class="form-control"  id="testCase" name="testCase" disabled="">
                                         </select>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="form-group col-xs-6">
-                                        <label for="type" name="typeField">Environment</label>
-                                        <select class="form-control"  id="type" name="type">
+                                        <label for="environment" name="typeField">Environment</label>
+                                        <select class="form-control"  id="environment" name="environment" disabled="">
                                         </select>
                                     </div>
                                     <div class="form-group col-xs-6">
-                                        <label for="type" name="typeField">Country</label>
-                                        <select class="form-control"  id="type" name="type">
+                                        <label for="country" name="typeField">Country</label>
+                                        <select class="form-control"  id="country" name="country" disabled="">
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-xs-2">
+                                        <label for="manualURL" name="manualURLField">Manual URL</label>
+                                        <select class="form-control"  id="manualURL" name="manualURL" disabled="">
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-xs-4">
+                                        <label for="manualHost" name="manualHostField">Host</label>
+                                        <input type="text" class="form-control" name="manualHost" id="manualHost" aria-describedby="basic-editon1" readonly="readonly" />
+                                    </div>
+                                    <div class="form-group col-xs-3">
+                                        <label for="manualContextRoot" name="manualContextRootField">Context Root</label>
+                                        <input type="text" class="form-control" name="manualContextRoot" id="manualContextRoot" aria-describedby="basic-editon1" readonly="readonly" />
+                                    </div>
+                                    <div class="form-group col-xs-3">
+                                        <label for="manualLoginRelativeURL" name="manualLoginRelativeURLField">Login Relative URL</label>
+                                        <input type="text" class="form-control" name="manualLoginRelativeURL" id="manualLoginRelativeURL" aria-describedby="basic-editon1" readonly="readonly" />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-xs-6">
+                                        <label for="manualEnvData" name="ManualEnvDataField">Environment Data</label>
+                                        <select class="form-control"  id="manualEnvData" name="manualEnvData" disabled="">
                                         </select>
                                     </div>
                                 </div>
 
                             </div>
                             <div class="center marginTop25 tab-pane fade in" id="tabsEdit-2">
-
-
                                 <div class="row">
                                     <div class="form-group">
                                         <label for="robot" class="col-sm-3 control-label bold">Select Robot Config</label>
                                         <div class="col-sm-9">
-                                            <select class="form-control input-sm" id="robot" name="robot"></select>
+                                            <select class="form-control input-sm" id="robot" name="robot" disabled=""></select>
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <label for="seleniumIP" class="col-sm-3 control-label bold">Selenium Server IP</label>
+                                        <label for="robotIP" class="col-sm-3 control-label bold">Selenium Server IP</label>
                                         <div class="col-sm-9">
-                                            <input type="text" class="form-control input-sm" id="seleniumIP" name="ss_ip"/>
+                                            <input type="text" class="form-control input-sm" id="robotIP" name="robotIP" readonly="readonly" />
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <label for="seleniumPort" class="col-sm-3 control-label bold">Selenium Server Port</label>
+                                        <label for="robotPort" class="col-sm-3 control-label bold">Selenium Server Port</label>
                                         <div class="col-sm-9">
-                                            <input type="text" class="form-control input-sm" id="seleniumPort" name="ss_p"/>
+                                            <input type="text" class="form-control input-sm" id="robotPort" name="robotPort" readonly="readonly" />
                                         </div>
                                     </div>
                                     <div class="form-group">
                                         <label for="browser" class="col-sm-3 control-label bold">Browser</label>
                                         <div class="col-sm-9">
-                                            <select class="form-control input-sm" id="browser" name="browser" multiple></select>
+                                            <select class="form-control input-sm" id="browser" name="browser" disabled=""></select>
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <label for="version" class="col-sm-3 control-label">Version (Optional)</label>
+                                        <label for="browserVersion" class="col-sm-3 control-label">Version (Optional)</label>
                                         <div class="col-sm-9">
-                                            <input type="text" class="form-control input-sm" id="version" name="BrowserVersion"/>
-                                        </div>
+                                            <input type="text" class="form-control input-sm" id="browserVersion" name="browserVersion" readonly="readonly" />
+                                        </div> 
                                     </div>
                                     <div class="form-group">
                                         <label for="platform" class="col-sm-3 control-label">Platform (Optional)</label>
                                         <div class="col-sm-9">
-                                            <select class="form-control input-sm" id="platform" name="Platform"></select>
+                                            <select class="form-control input-sm" id="platform" name="platform" disabled=""></select>
                                         </div>
                                     </div>
                                     <div class="form-group">
                                         <label for="screenSize" class="col-sm-3 control-label bold">Screen Size</label>
                                         <div class="col-sm-9">
-                                            <input type="text" class="form-control" name="screenSize" id="screenSize" aria-describedby="basic-addon1" maxlength="250">
+                                            <input type="text" class="form-control" name="screenSize" id="screenSize" aria-describedby="basic-addon1" maxlength="250" readonly="readonly" />
                                         </div>
                                     </div>
                                 </div>
@@ -142,43 +166,43 @@
                                 <div class="form-group">
                                     <label for="verbose" class="col-sm-3 control-label bold">Verbose</label>
                                     <div class="col-sm-9">
-                                        <select class="form-control input-sm" id="verbose" name="Verbose"></select>
+                                        <select class="form-control input-sm" id="verbose" name="verbose" disabled=""></select>
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label for="screenshot" class="col-sm-3 control-label bold">Screenshot</label>
                                     <div class="col-sm-9">
-                                        <select class="form-control input-sm" id="screenshot" name="Screenshot"></select>
+                                        <select class="form-control input-sm" id="screenshot" name="screenshot" disabled=""></select>
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label for="pageSource" class="col-sm-3 control-label bold">Page Source</label>
                                     <div class="col-sm-9">
-                                        <select class="form-control input-sm" id="pageSource" name="PageSource"></select>
+                                        <select class="form-control input-sm" id="pageSource" name="pageSource" disabled=""></select>
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label for="seleniumLog" class="col-sm-3 control-label bold">Selenium Log</label>
                                     <div class="col-sm-9">
-                                        <select class="form-control input-sm" id="seleniumLog" name="SeleniumLog"></select>
+                                        <select class="form-control input-sm" id="seleniumLog" name="seleniumLog" disabled=""></select>
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label for="timeout" class="col-sm-3 control-label bold">Timeout</label>
                                     <div class="col-sm-9">
-                                        <input type="text" class="form-control input-sm" id="timeout" name="timeout"/>
+                                        <input type="text" class="form-control input-sm" id="timeout" name="timeout" readonly="readonly"/>
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label for="retries" class="col-sm-3 control-label bold">Retries</label>
                                     <div class="col-sm-9">
-                                        <select class="form-control input-sm" id="retries" name="retries"></select>
+                                        <select class="form-control input-sm" id="retries" name="retries" disabled=""></select>
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label for="manualExecution" class="col-sm-3 control-label bold">Manual Execution</label>
                                     <div class="col-sm-9">
-                                        <select class="form-control input-sm" id="manualExecution" name="manualExecution"></select>
+                                        <select class="form-control input-sm" id="manualExecution" name="manualExecution" disabled=""></select>
                                     </div>
                                 </div>
 

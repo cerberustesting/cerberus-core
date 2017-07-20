@@ -90,10 +90,10 @@ function aoColumnsFunc() {
             "mRender": function (data, type, obj) {
                 var buttons = "";
 
-                var viewExecution = '<a id="viewExecution" class="btn btn-primary btn-xs marginRight5"\n\
-                                    data-toggle="tooltip" title="' + doc.getDocLabel("page_executiondetail", "viewExecution") + '" href="./TestCaseExecution.jsp?executionId=' + obj.id + '">\n\
-                                    <span class="glyphicon glyphicon-eye-open"></span>\n\
-                                    </a>';
+                var viewExecution = '<button id="viewExecution" onclick="window.location = \'./TestCaseExecution.jsp?executionId=' + obj.id + '\';"\n\
+                                class="btn btn-primary btn-xs margin-right25" \n\
+                                data-toggle="tooltip"  title="' + doc.getDocLabel("page_executiondetail", "viewExecution") + '" type="button">\n\
+                                <span class="glyphicon glyphicon-eye-open"></span></button>';
                 var editScript = '<a id="testCaseBetaLink" class="btn btn-primary btn-xs marginRight5"\n\
                                     data-toggle="tooltip" title="' + doc.getDocLabel("page_executiondetail", "edittc") + '" href="./TestCaseScript.jsp?test=' + encodeURIComponent(obj["test"]) + '&testcase=' + encodeURIComponent(obj["testcase"]) + '">\n\
                                     <span class="glyphicon glyphicon-new-window"></span>\n\
@@ -119,7 +119,7 @@ function aoColumnsFunc() {
                 }
                 buttons += runTest;
 
-                return '<div class="center btn-group width300">' + buttons + '</div>';
+                return '<div class="center btn-group width250">' + buttons + '</div>';
             }
         },
         {
