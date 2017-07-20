@@ -277,11 +277,13 @@ $.when($.getScript("js/global/global.js")).then(function () {
                             // Store the current saveScript button status and disable it
                             var saveScriptOldStatus = $("#saveScript").attr("disabled");
                             $("#saveScript").attr("disabled", true);
-
+                            //clone the country list
+                            var newCountryList = myCountry.slice(0);
+                            
                             var newProperty = {
                                 property: "",
                                 description: "",
-                                country: myCountry,
+                                country: newCountryList,
                                 type: "text",
                                 database: "",
                                 value1: "",
