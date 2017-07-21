@@ -886,16 +886,16 @@ function aoColumnsFunc(Columns) {
                     var executionLink = generateExecutionLink(data.ControlStatus, data.ID, tag);
                     var glyphClass = getRowClass(data.ControlStatus);
                     var tooltip = generateTooltip(data);
-                    var cell = '<div class="progress-bar status' + data.ControlStatus + '" \n\
-                                role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;cursor: pointer; height: 40px;" \n\
-                                data-toggle="tooltip" data-html="true" title="' + tooltip + '"\n\'';
+                    var cell = '<div class="progress-bar status' + data.ControlStatus+ '"';
+                        cell += 'role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;cursor: pointer; height: 40px;"';
+                        cell += 'data-toggle="tooltip" data-html="true" title="' + tooltip + '"';
                     if (data.ControlStatus === "QU") {
-                        cell = cell + ' onclick="submitExecutionQueueClick(' + data.QueueID + ');">\n\' ';
+                        cell = cell + ' onclick="submitExecutionQueueClick(' + data.QueueID + ');">';
                     } else {
-                        cell = cell + ' onclick="window.open(\'' + executionLink + '\')">\n\' ';
+                        cell = cell + ' onclick="window.open(\'' + executionLink + '\')">';
                     }
-                    cell = cell + '<span class="' + glyphClass.glyph + ' marginRight5"></span>\n\
-                                 <span>' + data.ControlStatus + '<span></div>';
+                    cell = cell + '<span class="' + glyphClass.glyph + ' marginRight5"></span>';
+                    cell += '<span>' + data.ControlStatus + '<span></div>';
                     return cell;
                 } else {
                     return data;
