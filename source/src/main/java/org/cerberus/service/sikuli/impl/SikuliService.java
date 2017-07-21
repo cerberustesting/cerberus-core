@@ -198,6 +198,12 @@ public class SikuliService implements ISikuliService {
         if (action.equals(TestCaseStepAction.ACTION_CLICK)) {
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLICK);
             message.setDescription(message.getDescription().replace("%ELEMENT%", locator));
+        } else if (action.equals(TestCaseStepAction.ACTION_OPENAPP)) {
+            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_OPENAPP);
+            message.setDescription(message.getDescription().replace("%APP%", text));
+        } else if (action.equals(TestCaseStepAction.ACTION_CLOSEAPP)) {
+            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLOSEAPP);
+            message.setDescription(message.getDescription().replace("%APP%", text));
         } else if (action.equals(TestCaseStepAction.ACTION_RIGHTCLICK)) {
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_RIGHTCLICK);
             message.setDescription(message.getDescription().replace("%ELEMENT%", locator));
@@ -216,6 +222,9 @@ public class SikuliService implements ISikuliService {
             message.setDescription(message.getDescription().replace("%ELEMENT%", locator));
         } else if (action.equals(TestCaseStepAction.ACTION_WAIT)) {
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT);
+            message.setDescription(message.getDescription().replace("%ELEMENT%", locator));
+        } else if (action.equals(TestCaseStepAction.ACTION_WAITVANISH)) {
+            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAITVANISH_ELEMENT);
             message.setDescription(message.getDescription().replace("%ELEMENT%", locator));
         } else if (action.equals(TestCaseStepActionControl.CONTROL_VERIFYELEMENTPRESENT)) {
             message = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_PRESENT);
@@ -263,7 +272,7 @@ public class SikuliService implements ISikuliService {
 
     @Override
     public MessageEvent doSikuliActionType(Session session, String locator, String property) {
-        AnswerItem<JSONObject> actionResult = doSikuliAction(session, "type", locator, "");
+        AnswerItem<JSONObject> actionResult = doSikuliAction(session, "paste", locator, "");
         return actionResult.getResultMessage();
     }
 
@@ -287,7 +296,7 @@ public class SikuliService implements ISikuliService {
 
     @Override
     public MessageEvent doSikuliActionKeyPress(Session session, String locator, String property) {
-        AnswerItem<JSONObject> actionResult = doSikuliAction(session, "keyPress", locator, "");
+        AnswerItem<JSONObject> actionResult = doSikuliAction(session, "type", locator, "");
         return actionResult.getResultMessage();
     }
 

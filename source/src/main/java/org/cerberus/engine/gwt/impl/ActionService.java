@@ -238,6 +238,12 @@ public class ActionService implements IActionService {
                 case TestCaseStepAction.ACTION_OPENURL:
                     res = this.doActionOpenURL(tCExecution, value1, value2, false);
                     break;
+                case TestCaseStepAction.ACTION_OPENAPP:
+                    res = this.doActionOpenApp(tCExecution, value1);
+                    break;
+                case TestCaseStepAction.ACTION_CLOSEAPP:
+                    res = this.doActionCloseApp(tCExecution, value1);
+                    break;
                 case TestCaseStepAction.ACTION_SELECT:
                     res = this.doActionSelect(tCExecution, value1, value2);
                     break;
@@ -246,6 +252,9 @@ public class ActionService implements IActionService {
                     break;
                 case TestCaseStepAction.ACTION_WAIT:
                     res = this.doActionWait(tCExecution, value1, value2);
+                    break;
+                case TestCaseStepAction.ACTION_WAITVANISH:
+                    res = this.doActionWaitVanish(tCExecution, value1);
                     break;
                 case TestCaseStepAction.ACTION_CALLSERVICE:
                     res = this.doActionCallService(testCaseStepActionExecution, value1);
@@ -828,6 +837,80 @@ public class ActionService implements IActionService {
             return message;
         } catch (CerberusEventException ex) {
             LOG.fatal("Error doing Action OpenUrl :" + ex);
+            return ex.getMessageError();
+        }
+    }
+
+    private MessageEvent doActionOpenApp(TestCaseExecution tCExecution, String value1) {
+        MessageEvent message;
+
+        /**
+         * Check value1 is not null or empty
+         */
+        if (value1 == null || "".equals(value1)) {
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED_OPENAPP);
+        }
+
+        if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
+            return sikuliService.doSikuliActionOpenApp(tCExecution.getSession(), value1);
+        }
+        message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+        message.setDescription(message.getDescription().replace("%ACTION%", "OpenApp"));
+        message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
+        return message;
+    }
+
+    private MessageEvent doActionCloseApp(TestCaseExecution tCExecution, String value1) {
+        MessageEvent message;
+
+        /**
+         * Check value1 is not null or empty
+         */
+        if (value1 == null || "".equals(value1)) {
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED_CLOSEAPP);
+        }
+
+        if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
+            return sikuliService.doSikuliActionCloseApp(tCExecution.getSession(), value1);
+        }
+        message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+        message.setDescription(message.getDescription().replace("%ACTION%", "CloseApp"));
+        message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
+        return message;
+    }
+
+    private MessageEvent doActionWaitVanish(TestCaseExecution tCExecution, String value1) {
+        try {
+            /**
+             * Check value1 is not null or empty
+             */
+            if (value1 == null || "".equals(value1)) {
+                return new MessageEvent(MessageEventEnum.ACTION_FAILED_CLOSEAPP);
+            }
+            /**
+             * Get Identifier (identifier, locator)
+             */
+            Identifier identifier = identifierService.convertStringToIdentifier(value1);
+            identifierService.checkWebElementIdentifier(identifier.getIdentifier());
+
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
+                if (identifier.getIdentifier().equals("picture")) {
+                    return sikuliService.doSikuliActionWaitVanish(tCExecution.getSession(), identifier.getLocator());
+                } else {
+                    return webdriverService.doSeleniumActionWaitVanish(tCExecution.getSession(), identifier);
+                }
+            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
+                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
+                return webdriverService.doSeleniumActionWaitVanish(tCExecution.getSession(), identifier);
+            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
+                return sikuliService.doSikuliActionWaitVanish(tCExecution.getSession(), identifier.getLocator());
+            } else {
+                return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION)
+                        .resolveDescription("ACTION", "WaitVanish")
+                        .resolveDescription("APPLICATIONTYPE", tCExecution.getApplicationObj().getType());
+            }
+        } catch (CerberusEventException ex) {
+            LOG.fatal("Error doing Action KeyPress :" + ex);
             return ex.getMessageError();
         }
     }

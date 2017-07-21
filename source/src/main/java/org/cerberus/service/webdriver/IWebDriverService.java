@@ -101,6 +101,8 @@ public interface IWebDriverService {
     MessageEvent doSeleniumActionMouseOver(Session session, Identifier identifier);
 
     MessageEvent doSeleniumActionWait(Session session, Identifier identifier);
+    
+    MessageEvent doSeleniumActionWaitVanish(Session session, Identifier identifier);
 
     MessageEvent doSeleniumActionKeyPress(Session session, Identifier identifier, String property);
 
