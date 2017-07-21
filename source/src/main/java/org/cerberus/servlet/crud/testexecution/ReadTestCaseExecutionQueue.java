@@ -22,14 +22,17 @@ package org.cerberus.servlet.crud.testexecution;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionQueue;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.engine.entity.MessageEvent;
@@ -43,18 +46,20 @@ import org.cerberus.util.servlet.ServletUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.owasp.html.PolicyFactory;
+import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  * @author foudro
  */
-@WebServlet(name = "ReadExecutionInQueue", urlPatterns = {"/ReadExecutionInQueue"})
-public class ReadExecutionInQueue extends HttpServlet {
+@WebServlet(name = "ReadTestCaseExecutionQueue", urlPatterns = {"/ReadTestCaseExecutionQueue"})
+public class ReadTestCaseExecutionQueue extends HttpServlet {
 
     private ITestCaseExecutionQueueService executionService;
 
-    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(ReadExecutionInQueue.class);
+    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(ReadTestCaseExecutionQueue.class);
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -70,6 +75,7 @@ public class ReadExecutionInQueue extends HttpServlet {
             throws ServletException, IOException, CerberusException {
         String echo = request.getParameter("sEcho");
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+        PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
         response.setContentType("application/json");
         response.setCharacterEncoding("utf8");
@@ -82,14 +88,37 @@ public class ReadExecutionInQueue extends HttpServlet {
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
         // Init Answer with potencial error from Parsing parameter.
+        String queueId = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("queueid"), "");
+        Long queueid = Long.valueOf(0);
+        boolean queueid_error = false;
+        if (request.getParameter("queueid") != null) {
+            try {
+                if (request.getParameter("queueid") != null && !request.getParameter("queueid").equals("")) {
+                    queueid = Long.valueOf(policy.sanitize(request.getParameter("queueid")));
+                    queueid_error = false;
+                }
+            } catch (Exception ex) {
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "Test Case Execution Queue"));
+                msg.setDescription(msg.getDescription().replace("%OPERATION%", "Read"));
+                msg.setDescription(msg.getDescription().replace("%REASON%", "queueid must be an integer value."));
+                queueid_error = true;
+            }
+        }
         AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
 
+        // Global boolean on the servlet that define if the user has permition to edit and delete object.
+        boolean userHasPermissions = request.isUserInRole("RunTest");
+        
         try {
             JSONObject jsonResponse;
 
             if (!Strings.isNullOrEmpty(request.getParameter("columnName"))) {
                 answer = findDistinctValuesOfColumn(appContext, request, request.getParameter("columnName"));
                 jsonResponse = (JSONObject) answer.getItem();
+            } else if (queueid != 0) {
+                    answer = findExecutionQueueByKeyTech(queueid, appContext, userHasPermissions);
+                    jsonResponse = (JSONObject) answer.getItem();
             } else {
                 answer = findExecutionInQueueList(appContext, true, request);
                 jsonResponse = (JSONObject) answer.getItem();
@@ -102,7 +131,7 @@ public class ReadExecutionInQueue extends HttpServlet {
             response.getWriter().print(jsonResponse.toString());
 
         } catch (JSONException e) {
-            org.apache.log4j.Logger.getLogger(ReadExecutionInQueue.class.getName()).log(org.apache.log4j.Level.ERROR, null, e);
+            org.apache.log4j.Logger.getLogger(ReadTestCaseExecutionQueue.class.getName()).log(org.apache.log4j.Level.ERROR, null, e);
             //returns a default error message with the json format that is able to be parsed by the client-side
             response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
         }
@@ -122,7 +151,7 @@ public class ReadExecutionInQueue extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(ReadExecutionInQueue.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            Logger.getLogger(ReadTestCaseExecutionQueue.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
     }
 
@@ -140,8 +169,31 @@ public class ReadExecutionInQueue extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(ReadExecutionInQueue.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            Logger.getLogger(ReadTestCaseExecutionQueue.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+    }
+
+    private AnswerItem findExecutionQueueByKeyTech(Long queueid, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
+        AnswerItem item = new AnswerItem();
+        JSONObject object = new JSONObject();
+
+        ITestCaseExecutionQueueService queueService = appContext.getBean(ITestCaseExecutionQueueService.class);
+
+        //finds the project     
+        AnswerItem answer = queueService.readByKey(queueid);
+
+        if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            //if the service returns an OK message then we can get the item and convert it to JSONformat
+            TestCaseExecutionQueue lib = (TestCaseExecutionQueue) answer.getItem();
+            JSONObject response = convertTestCaseExecutionInQueueToJSONObject(lib);
+            object.put("contentTable", response);
+        }
+
+        object.put("hasPermissions", userHasPermissions);
+        item.setItem(object);
+        item.setResultMessage(answer.getResultMessage());
+
+        return item;
     }
 
     private AnswerItem findExecutionInQueueList(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {

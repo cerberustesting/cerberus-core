@@ -2439,10 +2439,7 @@ function escapeHtml(unsafe) {
 
 function generateExecutionLink(status, id, tag) {
     var result = "";
-    if (status === "QU") {
-        // If in queue, we redirect to queue management in order to be able the see the error and restart the execution from the queue.
-        result = "./TestCaseExecutionQueue.jsp?search=" + tag;
-    } else if (status === "NE") {
+    if (status === "NE") {
         // Not executed (means manual execution).
         result = "./TestCaseExecution.jsp?executionId=" + id;
     } else {

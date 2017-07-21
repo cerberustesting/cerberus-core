@@ -365,7 +365,7 @@ function appendPanelStatus(status, total, selectTag) {
     if (rowClass.panel === "panelQU") {
         // When we display the QU status, we add a link to all executions in the queue on the queue page.
         $("#ReportByStatusTable").append(
-                $("<a href='./TestCaseExecutionQueue.jsp?search=" + selectTag + "'></a>").append(
+                $("<a href='./TestCaseExecutionQueueList.jsp?search=" + selectTag + "'></a>").append(
                 $("<div class='panel " + rowClass.panel + "'></div>").append(
                 $('<div class="panel-heading"></div>').append(
                 $('<div class="row"></div>').append(
@@ -835,6 +835,7 @@ function aoColumnsFunc(Columns) {
     var nbColumn = colLen + 5;
     var testCaseInfoWidth = (1 / 5) * 30;
     var testExecWidth = (1 / nbColumn) * 70;
+    var tag = $('#selectTag').val();
 
 
     var aoColumns = [
@@ -882,14 +883,17 @@ function aoColumnsFunc(Columns) {
             "mRender": function (data) {
                 if (data !== "") {
                     // Getting selected Tag;
-                    var tag = $('#selectTag').val();
                     var executionLink = generateExecutionLink(data.ControlStatus, data.ID, tag);
                     var glyphClass = getRowClass(data.ControlStatus);
                     var tooltip = generateTooltip(data);
                     var cell = '<div class="progress-bar status' + data.ControlStatus + '" \n\
                                 role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;cursor: pointer; height: 40px;" \n\
                                 data-toggle="tooltip" data-html="true" title="' + tooltip + '"\n\'';
-                    cell = cell + ' onclick="window.open(\'' + executionLink + '\')">\n\' ';
+                    if (data.ControlStatus === "QU") {
+                        cell = cell + ' onclick="submitExecutionQueueClick(' + data.QueueID + ');">\n\' ';
+                    } else {
+                        cell = cell + ' onclick="window.open(\'' + executionLink + '\')">\n\' ';
+                    }
                     cell = cell + '<span class="' + glyphClass.glyph + ' marginRight5"></span>\n\
                                  <span>' + data.ControlStatus + '<span></div>';
                     return cell;

@@ -21,17 +21,12 @@
     Author     : Ronpiche
 */
 
-/* set the color for everything exept the page-layout and the topbar*/
-.navbar,
-.navbar-default{
-    background-color:#2a4d69;
-}
 /*remove the border and set the z-index*/
 .navbar {
     border: 0px;
 }
 
-/* side navbarbar text color */
+/* side navbarbar */
 .nav-second-level>li>a,
 .nav-second-level>li>a,
 #side-menu>li>a,
@@ -39,17 +34,7 @@
 .sidebar ul li a.active {
     font-family: "open sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-weight: 600;
-    color: #a7b1c2;
     padding: 14px 20px 14px 18px;
-}
-/* side navbarbar text color */
-.nav-second-level>li>a:focus,
-.nav-second-level>li>a:hover,
-#side-menu>li>a:focus,
-#side-menu>li>a:hover,
-.sidebar ul li a.active {
-    background-color: #293846;
-    color: white;
 }
 
 /*title padding style*/
@@ -57,24 +42,10 @@
     padding: 10px 20px 14px 18px;
 }
 
-.navbar-static-top {
-    color: #008CDA;
-}
 .navbar-right a {
-    color: #008CDA;
     cursor:pointer
 }
 
-/* side navbarbar hover text color */
-.navbar-right a:hover{
-    color: #333;
-}
-
-.navbar-side-choice.active{
-    border-left: 4px solid #008CDA;
-    background: #293846;
-    color: white;
-}
 /* glyphicon position */
 .navbar-right .marginRight3px{
     margin-left: 3px;
@@ -109,9 +80,6 @@
     padding: 8px 0;
     font-size: 20px;
     height: 42px;
-    background-color:#2a4d69;
-    color: white !important;
-    
 }
 
 /* =side navbar config= */
@@ -143,14 +111,11 @@
     margin-left: 15px;
 }
 
-/* resize the top bar */
-
 /* screen IS NOT width enought to display the side-navbar at the left of the screen*/
 
 .navbar-static-top {
     margin: 0 0 0 250px;
     font-size: 16px;
-    background-color: #f5f5f5;
 }
 .navbar-static-top.collapsed{
     margin: 0 0 0 60px;
@@ -178,9 +143,6 @@
 }
 /* button to toggle navbar style */
 .navbar-default .controlToggle {
-    border-bottom: 1px solid #302F2F;
-    background: #293846;
-    color: #a7b1c2;
     text-align: center;
     padding: 0;
     width: 36px;
@@ -196,6 +158,8 @@
     cursor: pointer;
     margin-top: 20px;
     font-size: 19px;
+    
+    border-bottom: 1px solid black;
     /*transition: all .1s linear 0s;*/
 }
 /*display the button if the screen is width enought*/
@@ -209,7 +173,6 @@
     /*right: -3px;*/
     left:217px;
     width: 40px;
-    color: #fff;
 }
 .navbar-default.collapsed .controlToggle {
     left: 28px;
@@ -262,10 +225,10 @@
     left: 54px;
     min-width: 220px;
     top: 0;
-    background-color: #2f4050;
     font-size: 12px;
     padding-left: 0px;
     padding: 10px 10px 10px 10px;
+    border-radius: 0px 4px 4px 0px;
 }
 /* fix a display bug */
 .nav nav-second-level{
@@ -290,4 +253,65 @@
 }
 .sidebar .active>a>.fa.arrow:before {
     content: "\f105";/*angle right*/
+}
+
+/*==Color setting==*/
+
+/* set the color for everything exept the page-layout and the topbar*/
+
+.navbar,
+.navbar-default{
+    background-color: #1e2124;
+}
+
+/* side navbarbar text color */
+.nav-second-level>li>a,
+.nav-second-level>li>a,
+#side-menu>li>a,
+#side-menu>li>a,
+.navbar-default .controlToggle {
+    color: #868a91;
+}
+
+/* side navbarbar text color when hover*/
+.nav-second-level>li>a:focus,
+.nav-second-level>li>a:hover,
+#side-menu>li>a:focus,
+#side-menu>li>a:hover{
+    background-color: rgba(79,84,92,.6);
+    color: whitesmoke;
+}
+/* title color */
+.titleCase{
+    color: whitesmoke !important;
+}
+/* current link */
+.sidebar ul li a.active{
+    background-color: rgba(79,84,92,.6) !important;
+    color: whitesmoke;
+}
+
+.navbar-side-choice.active,
+.navbar-default.collapsed .nav-second-level,
+.navbar-default .controlToggle{
+    background: #282b30;
+}
+
+.navbar-side-choice.active{
+    border-left: 4px solid whitesmoke;
+}
+
+/*  button to toggle style when hover */
+.navbar-default .controlToggle:hover {
+    color: whitesmoke;
+}
+
+/* color topbar */
+.navbar-static-top {
+    background-color: #f5f5f5;
+}
+/* color text topbar */
+.navbar-static-top ,
+.navbar-right a {
+    color: #1e2124;
 }

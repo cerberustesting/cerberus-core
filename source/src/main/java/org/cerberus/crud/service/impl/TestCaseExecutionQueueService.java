@@ -19,20 +19,20 @@
  */
 package org.cerberus.crud.service.impl;
 
+import java.util.List;
+import java.util.Map;
+import org.cerberus.crud.dao.ITestCaseExecutionQueueDAO;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionQueue;
 import org.cerberus.crud.factory.IFactoryTestCaseExecution;
+import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Map;
-import org.cerberus.crud.service.ITestCaseExecutionQueueService;
-import org.cerberus.crud.dao.ITestCaseExecutionQueueDAO;
 
 /**
  * Default {@link ITestCaseExecutionQueueService} implementation
@@ -47,6 +47,11 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
 
     @Autowired
     private IFactoryTestCaseExecution factoryTestCaseExecution;
+
+    @Override
+    public AnswerItem<TestCaseExecutionQueue> readByKey(Long queueId) {
+        return testCaseExecutionInQueueDAO.readByKey(queueId);
+    }
 
     @Override
     public void insert(TestCaseExecutionQueue inQueue) throws CerberusException {
@@ -127,7 +132,7 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
     public AnswerList readByTagByCriteria(String tag, int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException {
         return testCaseExecutionInQueueDAO.readByTagByCriteria(tag, start, amount, sort, searchTerm, individualSearch);
     }
-    
+
     @Override
     public AnswerList readByTag(String tag) throws CerberusException {
         return testCaseExecutionInQueueDAO.readByTag(tag);
@@ -178,7 +183,7 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
         long start = testCaseExecutionInQueue.getRequestDate() != null ? testCaseExecutionInQueue.getRequestDate().getTime() : 0;
         long end = 0;
         String controlStatus = TestCaseExecution.CONTROLSTATUS_QU;
-        String controlMessage = "In Queue";
+        String controlMessage = "Queued with State : " + testCaseExecutionInQueue.getState().name();
         Application applicationObj = testCaseExecutionInQueue.getApplicationObj();
         String application = testCaseExecutionInQueue.getApplicationObj() != null ? testCaseExecutionInQueue.getApplicationObj().getApplication() : "";
         String ip = testCaseExecutionInQueue.getRobotIP();

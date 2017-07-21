@@ -29,8 +29,8 @@
         <link rel="stylesheet" type="text/css" href="css/pages/TestCaseExecutionQueue.css"/>
         <script type="text/javascript" src="dependencies/D3js-3.x.x/js/d3.min.js"></script>
         <script type="text/javascript" src="dependencies/D3-tip-0.6.7/js/index.js"></script>
-        <script type="text/javascript" src="js/pages/TestCaseExecutionQueue.js"></script>
-
+        <script type="text/javascript" src="js/pages/TestCaseExecutionQueueList.js"></script>
+        <script type="text/javascript" src="js/transversalobject/TestCaseExecutionQueue.js"></script>
     </head>
     <body>
         <%@ include file="include/global/header.html" %>
@@ -38,6 +38,7 @@
             <%@ include file="include/global/messagesArea.html"%>
             <%@ include file="include/utils/modal-confirmation.html"%>
             <%@ include file="include/pages/testcaseexecutionqueue/massActionExecutionPending.html"%>
+            <%@ include file="include/transversalobject/TestCaseExecutionQueue.html"%>
 
             <h1 class="page-title-line" id="title">Executions in Queue</h1>
             <div class="panel panel-default">

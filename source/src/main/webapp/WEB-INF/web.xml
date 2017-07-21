@@ -805,7 +805,7 @@
     </servlet>
     <servlet>
         <servlet-name>ReadExecutionInQueue</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.testexecution.ReadExecutionInQueue</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.testexecution.ReadTestCaseExecutionQueue</servlet-class>
     </servlet>
     <servlet>
         <description>Execute the next record from the execution queue.</description>
@@ -1981,7 +1981,7 @@
             <url-pattern>/TestCaseExecution.jsp</url-pattern>
             <url-pattern>/TestCaseExecutionList.jsp</url-pattern>
             <url-pattern>/ReportingExecutionByTag.jsp</url-pattern>
-            <url-pattern>/TestCaseExecutionQueue.jsp</url-pattern>
+            <url-pattern>/TestCaseExecutionQueueList.jsp</url-pattern>
             <url-pattern>/Test.jsp</url-pattern>
             <url-pattern>/TestCaseScript.jsp</url-pattern>
             <url-pattern>/TestCaseList.jsp</url-pattern>

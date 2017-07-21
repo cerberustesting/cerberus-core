@@ -35,12 +35,15 @@
         <script type="text/javascript" src="dependencies/D3js-3.x.x/js/d3.min.js"></script>
         <script type="text/javascript" src="dependencies/D3-tip-0.6.7/js/index.js"></script>
         <script type="text/javascript" src="js/pages/ReportingExecutionByTag.js"></script>
+        <script type="text/javascript" src="js/transversalobject/TestCaseExecutionQueue.js"></script>
         <title id="pageTitle">Campaign Reporting</title>
     </head>
     <body>
         <%@ include file="include/global/header.html" %>
         <div class="container-fluid center" id="page-layout">
             <%@ include file="include/global/messagesArea.html"%>
+            <%@ include file="include/transversalobject/TestCaseExecutionQueue.html"%>
+            
             <h1 class="page-title-line" id="title">Execution reporting by tag</h1>
             <div class="row">
                 <div class="col-lg-6" id="FiltersPanel">
