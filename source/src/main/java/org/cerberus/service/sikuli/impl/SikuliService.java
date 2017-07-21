@@ -21,6 +21,7 @@ package org.cerberus.service.sikuli.impl;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,8 +32,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.tika.mime.MimeType;
 import org.apache.tika.mime.MimeTypeException;
@@ -43,6 +44,7 @@ import org.cerberus.crud.entity.TestCaseStepAction;
 import org.cerberus.crud.entity.TestCaseStepActionControl;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.service.sikuli.ISikuliService;
+import org.cerberus.util.answer.AnswerItem;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
@@ -53,6 +55,8 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class SikuliService implements ISikuliService {
+    
+    private static final Logger LOG = Logger.getLogger(SikuliService.class);
 
     private JSONObject generatePostParameters(String action, String locator, String text, long defaultWait) throws JSONException, IOException, MalformedURLException, MimeTypeException {
         JSONObject result = new JSONObject();
@@ -61,7 +65,7 @@ public class SikuliService implements ISikuliService {
         /**
          * Get Picture from URL and convert to Base64
          */
-        if (locator != null) {
+        if (locator != null && !"".equals(locator)) {
             URL url = new URL(locator);
             URLConnection connection = url.openConnection();
 
@@ -96,7 +100,10 @@ public class SikuliService implements ISikuliService {
     }
 
     @Override
-    public MessageEvent doSikuliAction(Session session, String action, String locator, String text) {
+    public AnswerItem<JSONObject> doSikuliAction(Session session, String action, String locator, String text) {
+        AnswerItem<JSONObject> answer = new AnswerItem<JSONObject>();
+        MessageEvent msg;
+        
         URL url;
         String urlToConnect = "";
         try {
@@ -113,14 +120,14 @@ public class SikuliService implements ISikuliService {
 
             JSONObject postParameters = generatePostParameters(action, locator, text, session.getCerberus_selenium_wait_element());
             connection.setDoOutput(true);
-
+            
             // Send post request
             PrintStream os = new PrintStream(connection.getOutputStream());
             os.println(postParameters.toString());
             os.println("|ENDS|");
 
             if (connection == null || connection.getResponseCode() != 200) {
-                return new MessageEvent(MessageEventEnum.ACTION_FAILED_SIKULI_SERVER_NOT_REACHABLE);
+                msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SIKULI_SERVER_NOT_REACHABLE);
             }
 
             BufferedReader in = new BufferedReader(
@@ -136,45 +143,54 @@ public class SikuliService implements ISikuliService {
             }
 
             /**
-             * If response contains Failed, return failed message
+             * Convert received string into JSONObject
+             * 
              */
-            if (response.toString().contains("Failed")) {
+            JSONObject objReceived = new JSONObject(response.toString());
+            answer.setItem(objReceived);
+            
+            if ("Failed".equals(objReceived.getString("status"))) {
                 if (!action.equals("verifyElementPresent")) {
                     MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_SIKULI_ELEMENT_NOT_FOUND);
                     mes.setDescription(mes.getDescription().replace("%ACTION%", action));
                     mes.setDescription(mes.getDescription().replace("%ELEMENT%", locator));
-                    return mes;
+                    msg = mes;
                 } else {
                     MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_PRESENT);
                     mes.setDescription(mes.getDescription().replace("%STRING1%", locator));
-                    return mes;
+                    msg = mes;
                 }
+            } else {
+            msg = getResultMessage(action, locator, text);
             }
             in.close();
             os.close();
+            
         } catch (MalformedURLException ex) {
-            Logger.getLogger(SikuliService.class.getName()).log(Level.FATAL, ex);
+            LOG.warn(ex);
             MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_SIKULI_SERVER_NOT_REACHABLE);
             mes.setDescription(mes.getDescription().replace("%URL%", urlToConnect));
-            return mes;
+            msg = mes;
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(SikuliService.class.getName()).log(Level.FATAL, ex);
+            LOG.warn(ex);
             MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_SIKULI_FILE_NOT_FOUND);
             mes.setDescription(mes.getDescription().replace("%FILE%", locator));
-            return mes;
+            msg = mes;
         } catch (IOException ex) {
-            Logger.getLogger(SikuliService.class.getName()).log(Level.FATAL, ex);
-            return new MessageEvent(MessageEventEnum.ACTION_FAILED);
+            LOG.warn(ex);
+            msg = new MessageEvent(MessageEventEnum.ACTION_FAILED);
         } catch (JSONException ex) {
-            Logger.getLogger(SikuliService.class.getName()).log(Level.FATAL, ex);
-            return new MessageEvent(MessageEventEnum.ACTION_FAILED);
+            LOG.warn(ex);
+            msg = new MessageEvent(MessageEventEnum.ACTION_FAILED);
         } catch (MimeTypeException ex) {
-            Logger.getLogger(SikuliService.class.getName()).log(Level.FATAL, ex);
-            return new MessageEvent(MessageEventEnum.ACTION_FAILED);
+            LOG.warn(ex);
+            msg = new MessageEvent(MessageEventEnum.ACTION_FAILED);
         } finally {
 
         }
-        return getResultMessage(action, locator, text);
+        
+        answer.setResultMessage(msg);
+        return answer;
     }
 
     private MessageEvent getResultMessage(String action, String locator, String text) {
@@ -207,6 +223,112 @@ public class SikuliService implements ISikuliService {
         }
         return message;
 
+    }
+    
+    @Override
+    public MessageEvent doSikuliActionOpenApp(Session session, String appName) {
+        AnswerItem<JSONObject> actionResult = doSikuliAction(session, "openApp", null, appName);
+        return actionResult.getResultMessage();
+    }
+    
+    @Override
+    public MessageEvent doSikuliActionCloseApp(Session session, String appName) {
+        AnswerItem<JSONObject> actionResult = doSikuliAction(session, "closeApp", null, appName);
+        return actionResult.getResultMessage();
+    }
+    
+    @Override
+    public MessageEvent doSikuliActionClick(Session session, String locator) {
+        AnswerItem<JSONObject> actionResult = doSikuliAction(session, "click", locator, "");
+        return actionResult.getResultMessage();
+    }
+    
+    @Override
+    public MessageEvent doSikuliActionRightClick(Session session, String locator) {
+        AnswerItem<JSONObject> actionResult = doSikuliAction(session, "rightClick", locator, "");
+        return actionResult.getResultMessage();
+    }
+
+    @Override
+    public MessageEvent doSikuliActionSwitchApp(Session session, String locator) {
+        AnswerItem<JSONObject> actionResult = doSikuliAction(session, "switchApp", locator, "");
+        return actionResult.getResultMessage();
+    }
+
+    @Override
+    public MessageEvent doSikuliActionDoubleClick(Session session, String locator) {
+        AnswerItem<JSONObject> actionResult = doSikuliAction(session, "doubleClick", locator, "");
+        return actionResult.getResultMessage();
+    }
+
+    @Override
+    public MessageEvent doSikuliActionType(Session session, String locator, String property) {
+        AnswerItem<JSONObject> actionResult = doSikuliAction(session, "type", locator, "");
+        return actionResult.getResultMessage();
+    }
+
+    @Override
+    public MessageEvent doSikuliActionMouseOver(Session session, String locator) {
+        AnswerItem<JSONObject> actionResult = doSikuliAction(session, "mouseOver", locator, "");
+        return actionResult.getResultMessage();
+    }
+
+    @Override
+    public MessageEvent doSikuliActionWait(Session session, String locator) {
+        AnswerItem<JSONObject> actionResult = doSikuliAction(session, "wait", locator, "");
+        return actionResult.getResultMessage();
+    }
+    
+    @Override
+    public MessageEvent doSikuliActionWaitVanish(Session session, String locator) {
+        AnswerItem<JSONObject> actionResult = doSikuliAction(session, "waitVanish", locator, "");
+        return actionResult.getResultMessage();
+    }
+
+    @Override
+    public MessageEvent doSikuliActionKeyPress(Session session, String locator, String property) {
+        AnswerItem<JSONObject> actionResult = doSikuliAction(session, "keyPress", locator, "");
+        return actionResult.getResultMessage();
+    }
+
+    @Override
+    public MessageEvent doSikuliVerifyElementPresent(Session session, String locator) {
+        AnswerItem<JSONObject> actionResult = doSikuliAction(session, "exists", locator, "");
+        return actionResult.getResultMessage();
+    }
+    
+    @Override
+    public MessageEvent doSikuliVerifyTextInPage(Session session, String locator) {
+        AnswerItem<JSONObject> actionResult = doSikuliAction(session, "findText", locator, "");
+        return actionResult.getResultMessage();
+    }
+
+    @Override
+    public File takeScreenShotFile(Session session) {
+        File image = null;
+        long timeout = System.currentTimeMillis() + (session.getCerberus_selenium_wait_element());
+        
+         try {
+                AnswerItem<JSONObject> actionResult = doSikuliAction(session, "capture", null, "");
+                String screenshotInBase64 = ((JSONObject) actionResult.getItem()).getString("screenshot");
+                byte[] data = Base64.decodeBase64(screenshotInBase64);
+                
+                image = new File("temp.png");
+                FileUtils.writeByteArrayToFile(image, data);
+                
+                if (image != null) {
+                    //logs for debug purposes
+                    LOG.info("screen-shot taken with succes: " + image.getName() + "(size" + image.length() + ")");
+                } else {
+                    LOG.warn("screen-shot returned null: ");
+                }
+                
+            } catch (JSONException ex) {
+                java.util.logging.Logger.getLogger(SikuliService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                java.util.logging.Logger.getLogger(SikuliService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            } 
+        return image;
     }
 
 }

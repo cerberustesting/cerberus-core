@@ -505,7 +505,7 @@ public class ControlService implements IControlService {
 
                 try {
                     if (identifier.getIdentifier().equals("picture")) {
-                        return sikuliService.doSikuliAction(tCExecution.getSession(), "verifyElementPresent", identifier.getLocator(), "");
+                        return sikuliService.doSikuliVerifyElementPresent(tCExecution.getSession(), identifier.getLocator());
                     } else if (this.webdriverService.isElementPresent(tCExecution.getSession(), identifier)) {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_PRESENT);
                         mes.setDescription(mes.getDescription().replace("%STRING1%", elementPath));
@@ -565,7 +565,7 @@ public class ControlService implements IControlService {
                 }
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
 
-                return sikuliService.doSikuliAction(tCExecution.getSession(), "verifyElementPresent", identifier.getLocator(), "");
+                return sikuliService.doSikuliVerifyElementPresent(tCExecution.getSession(), identifier.getLocator());
 
             } else {
                 mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
@@ -1447,7 +1447,8 @@ public class ControlService implements IControlService {
         MessageEvent message;
         if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
                 || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
-                || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
+                || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)
+                || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
             TestCaseExecutionFile file = recorderService.recordScreenshot(tCExecution, testCaseStepActionExecution, testCaseStepActionControlExecution.getControlSequence());
             testCaseStepActionControlExecution.addFileList(file);
             message = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TAKESCREENSHOT);

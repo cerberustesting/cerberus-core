@@ -47,6 +47,7 @@ import org.cerberus.engine.entity.Recorder;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.engine.execution.IRecorderService;
 import org.cerberus.service.datalib.IDataLibService;
+import org.cerberus.service.sikuli.ISikuliService;
 import org.cerberus.service.webdriver.impl.WebDriverService;
 import org.cerberus.util.StringUtil;
 import org.cerberus.version.Infos;
@@ -69,6 +70,8 @@ public class RecorderService implements IRecorderService {
     ITestCaseExecutionFileService testCaseExecutionFileService;
     @Autowired
     WebDriverService webdriverService;
+    @Autowired
+    ISikuliService sikuliService;
     @Autowired
     IDataLibService dataLibService;
     @Autowired
@@ -115,7 +118,8 @@ public class RecorderService implements IRecorderService {
 
             if (applicationType.equals(Application.TYPE_GUI)
                     || applicationType.equals(Application.TYPE_APK)
-                    || applicationType.equals(Application.TYPE_IPA)) {
+                    || applicationType.equals(Application.TYPE_IPA)
+                    || applicationType.equals(Application.TYPE_FAT)) {
                 /**
                  * Only if the return code is not equal to Cancel, meaning lost
                  * connectivity with selenium.
@@ -129,7 +133,7 @@ public class RecorderService implements IRecorderService {
                     LOG.debug(logPrefix + "Not Doing screenshot because connectivity with selenium server lost.");
                 }
 
-            }
+            } 
         } else {
             LOG.debug(logPrefix + "Not Doing screenshot because of the screenshot parameter or flag on the last Action result.");
         }
@@ -197,6 +201,7 @@ public class RecorderService implements IRecorderService {
         String sequence = String.valueOf(testCaseStepActionExecution.getSequence());
         String controlString = control.equals(0) ? null : String.valueOf(control);
         long runId = testCaseExecution.getId();
+        String applicationType = testCaseExecution.getApplicationObj().getType();
 
         // Used for logging purposes
         String logPrefix = Infos.getInstance().getProjectNameAndVersion() + " - [" + test + " - " + testCase + " - step: " + step + " action: " + sequence + "] ";
@@ -206,7 +211,15 @@ public class RecorderService implements IRecorderService {
         /**
          * Take Screenshot and write it
          */
-        File newImage = this.webdriverService.takeScreenShotFile(testCaseExecution.getSession());
+        File newImage = null;
+        if (applicationType.equals(Application.TYPE_GUI)
+                    || applicationType.equals(Application.TYPE_APK)
+                    || applicationType.equals(Application.TYPE_IPA)) { 
+        newImage = this.webdriverService.takeScreenShotFile(testCaseExecution.getSession());
+        } else if (applicationType.equals(Application.TYPE_FAT)) {
+        newImage = this.sikuliService.takeScreenShotFile(testCaseExecution.getSession());
+        }
+        
         if (newImage != null) {
             try {
                 Recorder recorder = this.initFilenames(runId, test, testCase, step, index, sequence, controlString, null, 0, "screenshot", "png");

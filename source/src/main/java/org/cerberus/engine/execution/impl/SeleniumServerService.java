@@ -243,7 +243,9 @@ public class SeleniumServerService implements ISeleniumServerService {
                 }
                 driver = (WebDriver) appiumDriver;
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
-                sikuliService.doSikuliAction(session, "openApp", null, tCExecution.getCountryEnvironmentParameters().getIp());
+                if (!tCExecution.getCountryEnvironmentParameters().getIp().isEmpty()) {
+                    sikuliService.doSikuliAction(session, "openApp", null, tCExecution.getCountryEnvironmentParameters().getIp());
+                }
             }
 
             /**

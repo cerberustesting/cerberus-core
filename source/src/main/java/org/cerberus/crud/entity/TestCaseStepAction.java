@@ -73,9 +73,12 @@ public class TestCaseStepAction {
     public static final String ACTION_OPENURLWITHBASE = "openUrlWithBase";
     public static final String ACTION_OPENURLLOGIN = "openUrlLogin";
     public static final String ACTION_OPENURL = "openUrl";
+    public static final String ACTION_OPENAPP = "openApp";
+    public static final String ACTION_CLOSEAPP = "closeApp";
     public static final String ACTION_SELECT = "select";
     public static final String ACTION_TYPE = "type";
     public static final String ACTION_WAIT = "wait";
+    public static final String ACTION_WAITVANISH = "waitVanish";
     public static final String ACTION_CALLSERVICE = "callService";
     public static final String ACTION_REMOVEDIFFERENCE = "removeDifference";
     public static final String ACTION_EXECUTESQLUPDATE = "executeSqlUpdate";
