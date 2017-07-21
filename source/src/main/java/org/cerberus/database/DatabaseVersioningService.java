@@ -8904,7 +8904,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // Add 3 new Action into invariant
         //-- ------------------------ 1180
         SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `cerberus`.`invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ");
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ");
         SQLS.append("('ACTION', 'openApp', '6600', 'Open Application', ''),");
         SQLS.append("('ACTION', 'closeApp', '6700', 'Close Application', ''),");
         SQLS.append("('ACTION', 'waitVanish', '16500', 'Wait for an element that disapear', '')");
