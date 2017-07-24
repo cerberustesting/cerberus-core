@@ -25,7 +25,7 @@
 
     <groupId>org.cerberus</groupId>
     <artifactId>cerberus</artifactId>
-    <version>1.1.13</version>
+    <version>1.1.14-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <name>Cerberus</name>
@@ -639,7 +639,7 @@
                                                 3. Restarting current cluster.
                                         -->
                                         <echo message="Deploying..." />
-                                        <sshexec host="${cerberus.demo.host}" username="${cerberus.demo.qa.username}" password="${cerberus.demo.qa.password}" trust="yes" command="                                             unzip -o ${cerberus.demo.upload.path}/${project.build.finalName}.zip -d ${cerberus.demo.upload.path} &amp;&amp;                                             (                                                 ${cerberus.demo.glassfish.asadmin-path} undeploy --target ${cerberus.demo.glassfish.cluster} --cascade=true ${cerberus.demo.glassfish.application}  ;                                                 ${cerberus.demo.glassfish.asadmin-path} deploy --target ${cerberus.demo.glassfish.cluster} --name ${cerberus.demo.glassfish.application} --contextroot ${cerberus.demo.glassfish.context-root} --availabilityenabled=true ${cerberus.demo.upload.path}/${project.build.finalName}/${project.build.finalName}.war                                             ) &amp;&amp;                                             (                                                 ${cerberus.demo.glassfish.asadmin-path} stop-cluster ${cerberus.demo.glassfish.cluster} ;                                                 ${cerberus.demo.glassfish.asadmin-path} start-cluster ${cerberus.demo.glassfish.cluster}                                             )                                         " />
+                                        <sshexec host="${cerberus.demo.host}" username="${cerberus.demo.qa.username}" password="${cerberus.demo.qa.password}" trust="yes" command=" unzip -o ${cerberus.demo.upload.path}/${project.build.finalName}.zip -d ${cerberus.demo.upload.path} &amp;&amp;                                             (                                                 ${cerberus.demo.glassfish.asadmin-path} undeploy --target ${cerberus.demo.glassfish.cluster} --cascade=true ${cerberus.demo.glassfish.application}  ;                                                 ${cerberus.demo.glassfish.asadmin-path} deploy --target ${cerberus.demo.glassfish.cluster} --name ${cerberus.demo.glassfish.application} --contextroot ${cerberus.demo.glassfish.context-root} --availabilityenabled=true ${cerberus.demo.upload.path}/${project.build.finalName}/${project.build.finalName}.war                                             ) &amp;&amp;                                             (                                                 ${cerberus.demo.glassfish.asadmin-path} stop-cluster ${cerberus.demo.glassfish.cluster} ;                                                 ${cerberus.demo.glassfish.asadmin-path} start-cluster ${cerberus.demo.glassfish.cluster}                                             )                                         " />
                                     </target>
                                 </configuration>
                             </execution>
