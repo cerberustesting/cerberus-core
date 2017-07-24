@@ -19,14 +19,13 @@
     along with Cerberus.  If not, see <http://www.gnu.org/licenses />.
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.cerberus</groupId>
     <artifactId>cerberus-testing</artifactId>
-    <version>1.1.13-SNAPSHOT</version>
+    <version>1.1.13</version>
     <packaging>pom</packaging>
 
     <name>Cerberus Testing</name>
@@ -38,7 +37,7 @@
 
     <scm>
         <developerConnection>scm:git:https://github.com/cerberustesting/cerberus-source.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>cerberus-testing-1.1.13</tag>
     </scm>
 
     <modules>
