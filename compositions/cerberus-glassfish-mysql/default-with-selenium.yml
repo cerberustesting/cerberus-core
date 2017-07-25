@@ -52,6 +52,8 @@ services:
       - "13306:3306"
     volumes:
       - ./localdata/mysql-db:/var/lib/mysql
+      - /etc/localtime:/etc/localtime:ro
+    restart: always
   cerberus-as-glassfish:
     image: cerberustesting/cerberus-as-glassfish:latest
     environment:
@@ -61,13 +63,15 @@ services:
       - "18080:8080"
       - "14848:4848"
     volumes:
-      - ./localdata/screenshots:/usr/local/glassfish4/glassfish/domains/domain1/docroot/CerberusPictures
+      - ./localdata/screenshots:/opt/cerberus-screenshots/
+      - ./localdata/object:/opt/cerberus-object/
       - ./localdata/logs:/usr/local/glassfish4/glassfish/domains/domain1/logs
+      - /etc/localtime:/etc/localtime:ro
     depends_on:
       - cerberus-db-mysql
     links:
       - cerberus-db-mysql
-
+    restart: always
   # Selenium-related services
   selenium-hub:
     image: selenium/hub:2.53.0
@@ -75,6 +79,9 @@ services:
       - "4444"
     ports:
       - "14444:4444"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    restart: always
   selenium-node-firefox:
     image: selenium/node-firefox-debug:2.53.0
     environment:
@@ -83,6 +90,9 @@ services:
       - "5900"
     ports:
       - "15900:5900"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    restart: always
   selenium-node-chrome:
     image: selenium/node-chrome-debug:2.53.0
     environment:
@@ -91,3 +101,6 @@ services:
       - "5900"
     ports:
       - "15901:5900"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    restart: always
