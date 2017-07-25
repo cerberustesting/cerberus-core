@@ -29,7 +29,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
         var doc = new Doc();
         var stepList = [];
 
-        initPageModal("testCaseScript");
+        initPageModalToAddObject("testCaseScript");
 
         // Load invariant list into local storage.
         getSelectInvariant("ACTION", false, true);
