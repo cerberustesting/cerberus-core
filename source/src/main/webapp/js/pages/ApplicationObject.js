@@ -159,7 +159,7 @@ function aoColumnsFunc(tableId) {
             "sName": "screenshotfilename",
             "title": doc.getDocOnline("page_applicationObject", "ScreenshotFileName"),
             "mRender": function(data, type, obj) {
-                return "<image src='ReadApplicationObjectImage?application=" + obj["application"] + "&object=" + obj["object"] + "&time=" + new Date().getTime() + "'></image>"
+                return "<image "+ "style ='height: 25px;'" + "src='ReadApplicationObjectImage?application=" + obj["application"] + "&object=" + obj["object"] + "&time=" + new Date().getTime() + "'></image>"
             }
         },
         {"data": "usrcreated",

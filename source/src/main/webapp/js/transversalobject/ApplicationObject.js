@@ -53,7 +53,7 @@ function initPageModalToEditObject(){
     });
     setUpDragAndDrop('#editApplicationObjectModal');
     
-    hidePasteMessageIfNotOnFirefox()
+    hidePasteMessageIfNotOnFirefox();
 }
 
 /*
@@ -85,7 +85,6 @@ function addApplicationObjectModalSaveHandler(page) {
     var sa = formAdd.serializeArray();
     var formData = new FormData();
     
-    var data = {}
     for (var i in sa) {
         formData.append(sa[i].name, sa[i].value);
     }
@@ -211,6 +210,7 @@ function editApplicationObjectModalSaveHandler() {
                 $('#editApplicationObjectModal').modal('hide');
                 showMessage(data);
             } else {
+                console.log(data)
                 showMessage(data, $('#editApplicationObjectModal'));
             }
         },
@@ -283,19 +283,25 @@ function editApplicationObjectClick(application, object) {
 function listennerForInputTypeFile(idModal){
     
     if (idModal === "#editApplicationObjectModal")
-        var inputs = $(idModal).find("#inputFile_editObject")[0];
+        var inputs = $(idModal).find("#inputFile_editObject");
     else
-        var inputs = $(idModal).find("#inputFile")[0];
-    
-    inputs.addEventListener( 'change', function( e ){
-        var fileName = '';
-        if( this.files && this.files.length > 1 )
-            fileName = ( this.getAttribute( 'data-multiple-caption' ) || '' ).replace( '{count}', this.files.length );
-        else
-            fileName = e.target.value.split( '\\' ).pop();
+        var inputs = $(idModal).find("#inputFile");
 
-        if( fileName ){
-            updateDropzone(fileName, idModal);
+    inputs[0].addEventListener( 'change', function( e ){
+        //check if the input is an image
+        if(  inputs[0].files[0].type.indexOf("image") !== -1 ){
+            var fileName = '';
+            if( this.files && this.files.length > 1 )
+                fileName = ( this.getAttribute( 'data-multiple-caption' ) || '' ).replace( '{count}', this.files.length );
+            else
+                fileName = e.target.value.split( '\\' ).pop();
+
+            if( fileName ){
+                updateDropzone(fileName, idModal);
+            }
+        }else{//not an image 
+            var message = new Message("danger", "The file input is not a picture");
+            showMessage(message, $(idModal));
         }
     });
     
@@ -400,17 +406,19 @@ function handlePictureSend(items,idModal){
     if (!items) return false;
     //access data directly
     for (var i = 0; i < items.length; i++) {
+        ///check if the input is an image
         if (items[i].type.indexOf("image") !== -1) {
             //image from clipboard found
             var blob = items[i].getAsFile();
             imagePasteFromClipboard =blob;
-            console.log( imagePasteFromClipboard );
             var URLObj = window.URL || window.webkitURL;
             var source = URLObj.createObjectURL(blob);
-            var nameToDisplay =source.split("/")[source.split("/").length-1]+".png";
+            var nameToDisplay =source.split("/")[source.split("/").length-1];
             updateDropzone(nameToDisplay, idModal);
-            
             return true;
+        }else{
+            var message = new Message("danger", "The file input is not a picture");
+            showMessage(message, $(idModal));
         }
     }
 }
