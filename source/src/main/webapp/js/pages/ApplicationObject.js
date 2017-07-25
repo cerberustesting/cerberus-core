@@ -17,13 +17,15 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-var imagePasteFromClipboard = undefined;//stock the picture if the user chose to upload it from his clipboard
+
 $.when($.getScript("js/global/global.js")).then(function () {
     
     $(document).ready(function () {
         initPage();
-        initPageModal("applicationObject");     
-        pasteListennerForClipboardPicture();
+        initPageModalToAddObject("applicationObject");   
+        initPageModalToEditObject();  
+        
+        displayModalLabel();
     });
     
 });
@@ -33,13 +35,6 @@ function initPage() {
 
     var application = GetURLParameter("application");
 
-    // handle the click for specific action buttons
-    $("#editApplicationObjectButton").click( editApplicationObjectModalSaveHandler );
-    
-    
-    //clear the modals fields when closed
-    $('#editApplicationObjectModal').on('hidden.bs.modal', editApplicationObjectModalCloseHandler);
-
     //configure and create the dataTable
     var configurations = new TableConfigurationsServerSide("applicationObjectsTable", "ReadApplicationObject?system=" + getUser().defaultSystem, "contentTable", aoColumnsFunc("applicationObjectsTable"), [1, 'asc']);
     createDataTableWithPermissions(configurations, renderOptionsForApplicationObject, "#applicationObjectList", undefined, true);
@@ -47,15 +42,6 @@ function initPage() {
     if(application != null) {
         clearIndividualFilter("applicationObjectsTable",undefined,true);
         filterOnColumn("applicationObjectsTable", "application", application);
-    }
-    
-    //drag and drop setUp
-    setUpDragAndDrop();
-    
-    //hide the message to paste from clipboard when the user does not use firefox
-    var isFirefox = typeof InstallTrigger !== 'undefined';
-    if ( !isFirefox ){
-        document.getElementById('DropzoneClipboardPasteMessage').style.display = 'none';
     }
 }
 
@@ -70,6 +56,19 @@ function displayPageLabel() {
     displayFooter(doc);
 }
 
+function displayModalLabel() {
+    var doc = new Doc();
+
+    $("[name='createApplicationObjectField']").html(doc.getDocLabel("page_applicationObject", "createapplicationobjectfield"));
+    $("[name='applicationField']").html(doc.getDocLabel("page_applicationObject", "applicationfield"));
+    $("[name='objectField']").html(doc.getDocLabel("page_applicationObject", "objectfield"));
+    $("[name='valueField']").html(doc.getDocLabel("page_applicationObject", "valuefield"));
+    $("[name='screenshotfilenameField']").html(doc.getDocLabel("page_applicationObject", "screenshotfilenamefield"));
+    $("[name='buttonClose']").html(doc.getDocLabel("page_applicationObject", "button_close"));
+    $("[name='buttonAdd']").html(doc.getDocLabel("page_applicationObject", "button_add"));
+
+}
+
 function renderOptionsForApplicationObject(data) {
     var doc = new Doc();
     //check if user has permissions to perform the add and import operations
@@ -79,7 +78,10 @@ function renderOptionsForApplicationObject(data) {
             <span class='glyphicon glyphicon-plus-sign'></span> " + doc.getDocLabel("page_applicationObject", "button_create") + "</button></div>";
 
             $("#applicationObjectsTable_wrapper div#applicationObjectsTable_length").before(contentToAdd);
-            $('#applicationObjectList #createApplicationObjectButton').click(addApplicationObjectModalClick);
+            
+            $('#applicationObjectList #createApplicationObjectButton').click(function() {
+                addApplicationObjectModalClick();
+            });
         }
     }
 }
@@ -114,95 +116,6 @@ function deleteEntryClick(application, object) {
     var messageComplete = doc.getDocLabel("page_applicationObject", "message_delete");
     messageComplete = messageComplete.replace("%ENTRY%", application + " - " + object);
     showModalConfirmation(deleteEntryHandlerClick, undefined, doc.getDocLabel("page_applicationObject", "button_delete"), messageComplete, application, object, "", "");
-}
-
-
-function editApplicationObjectModalSaveHandler() {
-    clearResponseMessage($('#editApplicationObjectModal'));
-    $('#editApplicationObjectModal #editApplicationObjectModalForm select#application').attr("disabled",false);
-    var formEdit = $('#editApplicationObjectModal #editApplicationObjectModalForm');
-    var file = $("#editApplicationObjectModal input[type=file]");
-    
-    // Get the header data from the form.
-    var sa = formEdit.serializeArray();
-    var formData = new FormData();
-    var data = {}
-    for (var i in sa) {
-        formData.append(sa[i].name, sa[i].value);
-    }
-    
-    if( imagePasteFromClipboard !== undefined ){//imagePasteFromClipboard is undefined, the picture to upload should be taken inside the input
-        formData.append("file",imagePasteFromClipboard);
-    }else{
-        var file = $("#editApplicationObjectModal input[type=file]");
-        formData.append("file",file.prop("files")[0]);
-    }
-    showLoaderInModal('#editApplicationObjectModal');  
-    $.ajax({
-        type: "POST",
-        url: "UpdateApplicationObject",
-        data: formData,
-        async: true,
-        processData: false,
-        contentType: false,
-        success: function (data) {
-            hideLoaderInModal('#editApplicationObjectModal');
-            if (getAlertType(data.messageType) === "success") {
-                var oTable = $("#applicationObjectsTable").dataTable();
-                oTable.fnDraw(true);
-                $('#editApplicationObjectModal').modal('hide');
-                showMessage(data);
-            } else {
-                showMessage(data, $('#editApplicationObjectModal'));
-            }
-        },
-        error: showUnexpectedError
-    });
-
-}
-
-function editApplicationObjectModalCloseHandler() {
-    // reset form values
-    $('#editApplicationObjectModal #editApplicationObjectModalForm')[0].reset();
-    // remove all errors on the form fields
-    $(this).find('div.has-error').removeClass("has-error");
-    // clear the response messages of the modal
-    clearResponseMessage($('#editApplicationObjectModal'));
-    //Reset label button text
-    updateDropzone("Drag and drop Files ");
-}
-
-function editApplicationObjectClick(application, object) {
-    clearResponseMessageMainPage();
-    $('#editApplicationObjectModal #application').empty();
-    displayApplicationList("application","",application);
-    var jqxhr = $.getJSON("ReadApplicationObject", "application=" + application + "&object=" + object);
-    $.when(jqxhr).then(function (data) {
-
-        var obj = data["contentTable"];
-        var formEdit = $('#editApplicationObjectModal');
-
-        formEdit.find("#application option[value='" + obj["application"] + "']").prop("selected", true);
-        formEdit.find("#object").prop("value", obj["object"]);
-        formEdit.find("#value").prop("value", obj["value"]);
-        //formEdit.find("#screenshotfilename").prop("value", obj["screenshotfilename"]);
-
-        formEdit.find("#object").prop("readonly", "readonly");
-        formEdit.find("#application").prop("disabled", "disabled");
-
-        if (!(data["hasPermissions"])) { // If readonly, we only readonly all fields
-
-            formEdit.find("#screenshotfilename").prop("readonly", "readonly");
-            formEdit.find("#application").prop("readonly", "readonly");
-            
-            $('#editApplicationObjectButton').attr('class', '');
-            $('#editApplicationObjectButton').attr('hidden', 'hidden');
-        }
-
-        formEdit.modal('show');
-        listennerForInputTypeFile("inputFile");
-    });
-
 }
 
 function aoColumnsFunc(tableId) {
@@ -268,134 +181,5 @@ function aoColumnsFunc(tableId) {
 }
 
 
-/**
- * add a listenner for a paste event to catch clipboard if it's a picture
- * @returns {void}
- */
-function pasteListennerForClipboardPicture() {
-    var _self = this;
 
-    //handlers
-    document.addEventListener('paste', function (e) { _self.paste_auto(e); }, false);
 
-    //on paste
-    this.paste_auto = function (e) {
-        if (e.clipboardData) {
-            var items = e.clipboardData.items;
-            handlePictureSend(items);
-            e.preventDefault();
-        }
-    };
-    
-}
-/**
- * add a listenner for an input type file
- * @returns {void}
- */
-function listennerForInputTypeFile(inputId){
-    
-    var inputs = document.getElementById(inputId);
-    var label	 = inputs.nextElementSibling;
-    
-    inputs.addEventListener( 'change', function( e ){
-        var fileName = '';
-        if( this.files && this.files.length > 1 )
-            fileName = ( this.getAttribute( 'data-multiple-caption' ) || '' ).replace( '{count}', this.files.length );
-        else
-            fileName = e.target.value.split( '\\' ).pop();
-
-        if( fileName ){
-            updateDropzone(fileName);
-        }
-    });
-    
-}
-/**
- * change the text inside the label specified and add the attribute uploadSources
- * @param {string} id of the input the label link to
- * @param {string} message that will put inside the label
- * @param {boolean} is the picture upload should be taken from the clipboard
- * @returns {void}
- */
-function updateDropzone(messageToDisplay){
-    
-    var dropzoneText = document.getElementById('dropzoneText');
-    
-    var glyphIconUpload = "<span class='glyphicon glyphicon-download-alt'></span>";
-    dropzoneText.innerHTML = messageToDisplay +" "+ glyphIconUpload;
-    
-    if( imagePasteFromClipboard !== undefined ){
-        //reset value inside the input
-        document.getElementById("inputFile").value = "";
-    }
-    else{
-        //reset value for the var that stock the picture inside the clipboard
-        imagePasteFromClipboard = undefined;
-    }
-}
-
-/**
- * set up the event listenner to make a drag and drop dropzone
- * @returns {void}
- */
-function setUpDragAndDrop(){
-    var dropzone = document.getElementById("dropzone");
-    
-    dropzone.addEventListener("dragenter", dragenter, false);
-    dropzone.addEventListener("dragover", dragover, false);
-    dropzone.addEventListener("drop", drop, false);
-}
-/**
- * prevent the browser to open the file drag into an other tab
- * @returns {void}
- */
-function dragenter(e) {
-    e.stopPropagation();
-    e.preventDefault();
-  }
-/**
- * prevent the browser to open the file drag into an other tab
- * @returns {void}
- */
-function dragover(e) {
-  e.stopPropagation();
-  e.preventDefault();
-}
-/**
- * prevent the browser to open the file drag into an other tab and handle the file when the user put his file
- * @returns {void}
- */
-function drop(e) {
-  e.stopPropagation();
-  e.preventDefault();
-
-  var dt = e.dataTransfer;
-  var items = dt.items;
-
-  handlePictureSend(items);
-}
-
-/**
- * get the picture from items and update the label with the name of the 
- * return a boolean if whether or not it succeed to handle the file 
- * @param {DataTransferItemList} items 
- * @returns {boolean}
- */
-function handlePictureSend(items){
-    if (!items) return false;
-    //access data directly
-    for (var i = 0; i < items.length; i++) {
-        if (items[i].type.indexOf("image") !== -1) {
-            //image from clipboard found
-            var blob = items[i].getAsFile();
-            imagePasteFromClipboard =blob;
-            
-            var URLObj = window.URL || window.webkitURL;
-            var source = URLObj.createObjectURL(blob);
-            var nameToDisplay =source.split("/")[source.split("/").length-1]+".png";
-            updateDropzone(nameToDisplay);
-            
-            return true;
-        }
-    }
-}
