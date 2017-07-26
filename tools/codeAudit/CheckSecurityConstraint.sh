@@ -53,7 +53,7 @@ log "----------   List of servlet that exist in the project source servlet"
 log "----------              folder that does not appear (or appear twice)"
 log "----------                 in <security-constraint> in web.xml file :"
 log "---------------------------------------------------------------------"
-find $PROJECTROOT -type f -wholename *servlet*java -exec basename {} \; > $TMP_SERVLET
+find $PROJECTROOT -type f -wholename */main/java/org/cerberus/servlet/*java -exec basename {} \; > $TMP_SERVLET
 #cat $TMP_SERVLET
 servlet_to_fix=0
 for j in `cat $TMP_SERVLET`
