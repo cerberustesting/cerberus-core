@@ -375,6 +375,7 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
     } else {
         formEdit.find("#service").removeAttr("readonly");
         formEdit.find("#service").removeProp("readonly");
+        formEdit.find("#service").removeAttr("disabled");
     }
     //We desactivate or activate the access to the fields depending on if user has the credentials to edit.
     if (!(hasPermissionsUpdate)) { // If readonly, we readonly all fields

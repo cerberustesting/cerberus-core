@@ -19,8 +19,11 @@
  */
 package org.cerberus.service.sikuli;
 
+import java.io.File;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.Session;
+import org.cerberus.util.answer.AnswerItem;
+import org.json.JSONObject;
 
 /**
  *
@@ -36,5 +39,33 @@ public interface ISikuliService {
      * @param text
      * @return
      */
-    public MessageEvent doSikuliAction(Session session, String action, String locator, String text);
+    public AnswerItem<JSONObject> doSikuliAction(Session session, String action, String locator, String text);
+    
+    public MessageEvent doSikuliActionClick(Session session, String locator);
+    
+    public MessageEvent doSikuliActionOpenApp(Session session, String locator);
+    
+    public MessageEvent doSikuliActionCloseApp(Session session, String locator);
+    
+    public File takeScreenShotFile(Session session);
+
+    public MessageEvent doSikuliActionRightClick(Session session, String locator);
+
+    public MessageEvent doSikuliActionSwitchApp(Session session, String locator);
+
+    public MessageEvent doSikuliActionDoubleClick(Session session, String locator);
+
+    public MessageEvent doSikuliActionType(Session session, String locator, String property);
+
+    public MessageEvent doSikuliActionMouseOver(Session session, String locator);
+
+    public MessageEvent doSikuliActionWait(Session session, String locator);
+    
+    public MessageEvent doSikuliActionWaitVanish(Session session, String locator);
+
+    public MessageEvent doSikuliActionKeyPress(Session session, String locator, String property);
+
+    public MessageEvent doSikuliVerifyElementPresent(Session session, String locator);
+    
+    public MessageEvent doSikuliVerifyTextInPage(Session session, String locator);
 }

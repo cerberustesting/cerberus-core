@@ -256,18 +256,18 @@ public class ControlService implements IControlService {
 
         testCaseStepActionControlExecution.setControlResultMessage(res);
         /**
-         * Updating Control result message only if control is not
-         * successful. This is to keep the last KO information and
-         * preventing KO to be transformed to OK.
+         * Updating Control result message only if control is not successful.
+         * This is to keep the last KO information and preventing KO to be
+         * transformed to OK.
          */
         if (!(res.equals(new MessageEvent(MessageEventEnum.CONTROL_SUCCESS)))) {
             testCaseStepActionControlExecution.setExecutionResultMessage(new MessageGeneral(res.getMessage()));
         }
 
         /**
-         * We only stop the test if Control Event message is in stop status
-         * AND the control is FATAL. If control is not fatal, we continue
-         * the test but refresh the Execution status.
+         * We only stop the test if Control Event message is in stop status AND
+         * the control is FATAL. If control is not fatal, we continue the test
+         * but refresh the Execution status.
          */
         if (res.isStopTest()) {
             if (testCaseStepActionControlExecution.getFatal().equals("Y")) {
@@ -505,7 +505,7 @@ public class ControlService implements IControlService {
 
                 try {
                     if (identifier.getIdentifier().equals("picture")) {
-                        return sikuliService.doSikuliAction(tCExecution.getSession(), "verifyElementPresent", identifier.getLocator(), "");
+                        return sikuliService.doSikuliVerifyElementPresent(tCExecution.getSession(), identifier.getLocator());
                     } else if (this.webdriverService.isElementPresent(tCExecution.getSession(), identifier)) {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_PRESENT);
                         mes.setDescription(mes.getDescription().replace("%STRING1%", elementPath));
@@ -565,7 +565,7 @@ public class ControlService implements IControlService {
                 }
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
 
-                return sikuliService.doSikuliAction(tCExecution.getSession(), "verifyElementPresent", identifier.getLocator(), "");
+                return sikuliService.doSikuliVerifyElementPresent(tCExecution.getSession(), identifier.getLocator());
 
             } else {
                 mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
@@ -1207,6 +1207,8 @@ public class ControlService implements IControlService {
                 return parseWebDriverException(exception);
             }
 
+        } else if (Application.TYPE_FAT.equalsIgnoreCase(tCExecution.getApplicationObj().getType())) {
+            return sikuliService.doSikuliVerifyTextInPage(tCExecution.getSession(), regex);
         } else {
 
             mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
@@ -1447,7 +1449,8 @@ public class ControlService implements IControlService {
         MessageEvent message;
         if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
                 || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
-                || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
+                || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)
+                || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
             TestCaseExecutionFile file = recorderService.recordScreenshot(tCExecution, testCaseStepActionExecution, testCaseStepActionControlExecution.getControlSequence());
             testCaseStepActionControlExecution.addFileList(file);
             message = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TAKESCREENSHOT);

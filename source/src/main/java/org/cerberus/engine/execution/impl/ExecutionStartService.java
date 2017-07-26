@@ -440,8 +440,10 @@ public class ExecutionStartService implements IExecutionStartService {
             if (runID != 0) {
                 tCExecution.setId(runID);
                 executionUUIDObject.setExecutionUUID(tCExecution.getExecutionUUID(), tCExecution);
-                // Update Queue Execution here.
-                inQueueService.updateToDone(tCExecution.getQueueID(), "", runID);
+                // Update Queue Execution here if QueueID =! 0.
+                if (tCExecution.getQueueID() != 0) {
+                    inQueueService.updateToDone(tCExecution.getQueueID(), "", runID);
+                }
 
             } else {
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_COULDNOTCREATE_RUNID);

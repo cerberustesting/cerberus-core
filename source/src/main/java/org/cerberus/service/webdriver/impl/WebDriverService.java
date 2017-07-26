@@ -797,6 +797,24 @@ public class WebDriverService implements IWebDriverService {
             return message;
         }
     }
+    
+    
+    @Override
+    public MessageEvent doSeleniumActionWaitVanish(Session session, Identifier identifier) {
+        MessageEvent message;
+        try {
+            WebDriverWait wait = new WebDriverWait(session.getDriver(), TIMEOUT_WEBELEMENT);
+            wait.until(ExpectedConditions.invisibilityOfElementLocated(this.getBy(identifier)));
+            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAITVANISH_ELEMENT);
+            message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
+            return message;
+        } catch (TimeoutException exception) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_WAIT_NO_SUCH_ELEMENT);
+            message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
+            MyLogger.log(WebDriverService.class.getName(), Level.DEBUG, exception.toString());
+            return message;
+        }
+    }
 
     @Override
     public MessageEvent doSeleniumActionKeyPress(Session session, Identifier identifier, String property) {
