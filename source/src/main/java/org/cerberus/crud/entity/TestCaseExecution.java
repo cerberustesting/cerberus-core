@@ -95,6 +95,7 @@ public class TestCaseExecution {
     private boolean synchroneous;
     private String timeout;
     // Objects.
+    private TestCaseExecutionQueue testCaseExecutionQueue; 
     private Application applicationObj;
     private Invariant CountryObj;
     private Test testObj;
@@ -135,6 +136,14 @@ public class TestCaseExecution {
     public static final String CONTROLSTATUS_CA = "CA";
     public static final String CONTROLSTATUS_FA = "FA";
     public static final String CONTROLSTATUS_QU = "QU";
+
+    public TestCaseExecutionQueue getTestCaseExecutionQueue() {
+        return testCaseExecutionQueue;
+    }
+
+    public void setTestCaseExecutionQueue(TestCaseExecutionQueue testCaseExecutionQueue) {
+        this.testCaseExecutionQueue = testCaseExecutionQueue;
+    }
 
     public String getUsrCreated() {
         return UsrCreated;
