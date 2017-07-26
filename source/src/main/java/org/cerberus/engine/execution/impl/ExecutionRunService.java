@@ -52,7 +52,6 @@ import org.cerberus.crud.service.ITestCaseCountryPropertiesService;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.crud.service.ITestCaseExecutionService;
 import org.cerberus.crud.service.ITestCaseExecutionSysVerService;
-import org.cerberus.crud.service.ITestCaseExecutionwwwSumService;
 import org.cerberus.crud.service.ITestCaseService;
 import org.cerberus.crud.service.ITestCaseStepActionControlExecutionService;
 import org.cerberus.crud.service.ITestCaseStepActionExecutionService;
@@ -654,7 +653,9 @@ public class ExecutionRunService implements IExecutionRunService {
              * Retry maagement, in case the result is not OK, we execute the job
              * again reducing the retry to 1.
              */
-            if (tCExecution.getNumberOfRetries() > 0 && !tCExecution.getResultMessage().getCodeString().equals("OK")) {
+            if (tCExecution.getNumberOfRetries() > 0 
+                    && !tCExecution.getResultMessage().getCodeString().equals("OK")
+                    && !tCExecution.getResultMessage().getCodeString().equals("NE")) {
                 TestCaseExecutionQueue newExeQueue = tCExecution.getTestCaseExecutionQueue();
                 newExeQueue.setId(0);
                 newExeQueue.setRetries(newExeQueue.getRetries() - 1);

@@ -95,13 +95,13 @@
                                         </ul>
                                     </div>
                                     <div class="btn-group pull-right">
-                                        <a href="#" class="btn btn-default pull-left" id="ExecutionQueue"><span class="glyphicon glyphicon-fast-backward"></span> See Queue Parameters</a>
+                                        <a href="#" class="btn btn-default pull-left" id="ExecutionQueue"><span class="glyphicon glyphicon-tasks"></span> See Queue Parameters</a>
                                         <a type="button" id="editTcToggleButton" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             <span class="caret"></span>
                                             <span class="sr-only">Toggle Dropdown</span>
                                         </a>
                                         <ul class="dropdown-menu">
-                                            <li><a href="#" class="btn btn-default" id="ExecutionQueueDup"><span class="glyphicon glyphicon-fast-backward"></span> Duplicate new Execution</a></li>
+                                            <li><a href="#" class="btn btn-default" id="ExecutionQueueDup"><span class="glyphicon glyphicon-tasks"></span> Duplicate new Execution</a></li>
                                         </ul>
                                     </div>
                                     <a href="#" class="btn btn-default pull-right" id="ExecutionByTag" style="margin-left: 1px; margin-right: 1px;"><span class="glyphicon glyphicon-tasks"></span> See Execution By Tag</a>

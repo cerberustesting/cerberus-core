@@ -8932,6 +8932,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ALTER TABLE `testcaseexecutionqueue` ADD INDEX `IX_testcaseexecution_04` (`State` ASC);");
         SQLInstruction.add(SQLS.toString());
 
+        // Adding index to Execution Queue
+        //-- ------------------------ 1184
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `robot` ADD COLUMN `poolsize` INT(11) NOT NULL DEFAULT 0 AFTER `description`;");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 
