@@ -230,11 +230,11 @@ public interface ITestCaseExecutionService {
     public AnswerList readDistinctValuesByCriteria(String system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 
     /**
-     * Read TestCaseExecution and TestCaseExecutionInQueue By Tag and return Last Execution for Test, Testcase, Country, Environment, Browser
+     *
      * @param tag
-     * @return List<TestCaseExecution>
+     * @return
      * @throws ParseException
-     * @throws CerberusException 
+     * @throws CerberusException
      */
     public List<TestCaseExecution> readLastExecutionAndExecutionInQueueByTag(String tag) throws ParseException, CerberusException;
    

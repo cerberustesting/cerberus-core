@@ -87,16 +87,14 @@ public class AddToExecutionQueueV001 extends HttpServlet {
     private static final String PARAMETER_RETRIES = "retries";
     private static final String PARAMETER_MANUAL_EXECUTION = "manualexecution";
 
-    private static final String DEFAULT_VALUE_OUTPUT_FORMAT = "compact";
     private static final int DEFAULT_VALUE_SCREENSHOT = 0;
-    private static final boolean DEFAULT_VALUE_MANUAL_URL = false;
+    private static final int DEFAULT_VALUE_MANUAL_URL = 0;
     private static final int DEFAULT_VALUE_VERBOSE = 0;
     private static final long DEFAULT_VALUE_TIMEOUT = 300;
-    private static final boolean DEFAULT_VALUE_SYNCHRONEOUS = true;
     private static final int DEFAULT_VALUE_PAGE_SOURCE = 1;
     private static final int DEFAULT_VALUE_SELENIUM_LOG = 1;
     private static final int DEFAULT_VALUE_RETRIES = 0;
-    private static final boolean DEFAULT_VALUE_MANUAL_EXECUTION = false;
+    private static final String DEFAULT_VALUE_MANUAL_EXECUTION = "N";
 
     private static final String LINE_SEPARATOR = "\n";
 
@@ -163,20 +161,18 @@ public class AddToExecutionQueueV001 extends HttpServlet {
         String browserVersion = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter(PARAMETER_BROWSER_VERSION), null, charset);
         String platform = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter(PARAMETER_PLATFORM), null, charset);
         String screenSize = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter(PARAMETER_SCREENSIZE), null, charset);
-        boolean manualURL = ParameterParserUtil.parseBooleanParamAndDecode(request.getParameter(PARAMETER_MANUAL_URL), DEFAULT_VALUE_MANUAL_URL, charset);
+        int manualURL = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_MANUAL_URL), DEFAULT_VALUE_MANUAL_URL, charset);
         String manualHost = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter(PARAMETER_MANUAL_HOST), null, charset);
         String manualContextRoot = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter(PARAMETER_MANUAL_CONTEXT_ROOT), null, charset);
         String manualLoginRelativeURL = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter(PARAMETER_MANUAL_LOGIN_RELATIVE_URL), null, charset);
         String manualEnvData = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter(PARAMETER_MANUAL_ENV_DATA), null, charset);
-        String outputFormat = DEFAULT_VALUE_OUTPUT_FORMAT;
         int screenshot = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_SCREENSHOT), DEFAULT_VALUE_SCREENSHOT, charset);
         int verbose = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_VERBOSE), DEFAULT_VALUE_VERBOSE, charset);
         String timeout = request.getParameter(PARAMETER_TIMEOUT);
-        boolean synchroneous = DEFAULT_VALUE_SYNCHRONEOUS;
         int pageSource = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_PAGE_SOURCE), DEFAULT_VALUE_PAGE_SOURCE, charset);
         int seleniumLog = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_SELENIUM_LOG), DEFAULT_VALUE_SELENIUM_LOG, charset);
         int retries = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_RETRIES), DEFAULT_VALUE_RETRIES, charset);
-        boolean manualExecution = ParameterParserUtil.parseBooleanParamAndDecode(request.getParameter(PARAMETER_MANUAL_EXECUTION), DEFAULT_VALUE_MANUAL_EXECUTION, charset);
+        String manualExecution = ParameterParserUtil.parseStringParamAndDecode(request.getParameter(PARAMETER_MANUAL_EXECUTION), DEFAULT_VALUE_MANUAL_EXECUTION, charset);
 
         // Defining help message.
         String helpMessage = "\nThis servlet is used to add to Cerberus execution queue a list of execution. Execution list will be calculated from cartesian product of "
@@ -194,7 +190,7 @@ public class AddToExecutionQueueV001 extends HttpServlet {
                 + "- " + PARAMETER_BROWSER_VERSION + " : Browser Version that will be used for every execution triggered. [" + browserVersion + "]\n"
                 + "- " + PARAMETER_PLATFORM + " : Platform that will be used for every execution triggered. [" + platform + "]\n"
                 + "- " + PARAMETER_SCREENSIZE + " : Size of the screen that will be used for every execution triggered. [" + screenSize + "]\n"
-                + "- " + PARAMETER_MANUAL_URL + " : Activate or not the Manual URL of the application to execute. If activated the 4 parameters after are necessary. [" + manualURL + "]\n"
+                + "- " + PARAMETER_MANUAL_URL + " : Activate (1) or not (0) the Manual URL of the application to execute. If activated the 4 parameters after are necessary. [" + manualURL + "]\n"
                 + "- " + PARAMETER_MANUAL_HOST + " : Host of the application to test (only used when " + PARAMETER_MANUAL_URL + " is activated). [" + manualHost + "]\n"
                 + "- " + PARAMETER_MANUAL_CONTEXT_ROOT + " : Context root of the application to test (only used when " + PARAMETER_MANUAL_URL + " is activated). [" + manualContextRoot + "]\n"
                 + "- " + PARAMETER_MANUAL_LOGIN_RELATIVE_URL + " : Relative login URL of the application (only used when " + PARAMETER_MANUAL_URL + " is activated). [" + manualLoginRelativeURL + "]\n"
@@ -255,7 +251,7 @@ public class AddToExecutionQueueV001 extends HttpServlet {
             out.println("Error - No TestCases defined. You can either feed it with parameter '" + PARAMETER_SELECTED_TEST + "' or add it into the campaign definition.");
             error = true;
         }
-        if (manualURL) {
+        if (manualURL >= 1) {
             if (manualHost == null || manualEnvData == null) {
                 out.println("Error - ManualURL has been activated but no ManualHost or Manual Environment defined.");
                 error = true;
@@ -277,33 +273,9 @@ public class AddToExecutionQueueV001 extends HttpServlet {
                     for (String environment : environments) {
                         for (String browser : browsers) {
                             try {
-                                toInserts.add(inQueueFactoryService.create(test,
-                                        testCase,
-                                        country,
-                                        environment,
-                                        robot,
-                                        robotIP,
-                                        robotPort,
-                                        browser,
-                                        browserVersion,
-                                        platform,
-                                        screenSize,
-                                        manualURL,
-                                        manualHost,
-                                        manualContextRoot,
-                                        manualLoginRelativeURL,
-                                        manualEnvData,
-                                        tag,
-                                        screenshot,
-                                        verbose,
-                                        timeout,
-                                        pageSource,
-                                        seleniumLog,
-                                        requestDate,
-                                        retries,
-                                        manualExecution,
-                                        request.getRemoteUser(),
-                                        null, null, null));
+                                toInserts.add(inQueueFactoryService.create(test, testCase, country, environment, robot, robotIP, robotPort, browser, browserVersion,
+                                        platform, screenSize, manualURL, manualHost, manualContextRoot, manualLoginRelativeURL, manualEnvData, tag, screenshot, verbose,
+                                        timeout, pageSource, seleniumLog, 0, retries, manualExecution, request.getRemoteUser(), null, null, null));
                             } catch (FactoryCreationException e) {
                                 LOG.error("Unable to insert record due to: " + e);
                                 LOG.error("test: " + test + "-" + testCase + "-" + country + "-" + environment + "-" + robot);
@@ -318,7 +290,7 @@ public class AddToExecutionQueueV001 extends HttpServlet {
             List<String> errorMessages = new ArrayList<String>();
             for (TestCaseExecutionQueue toInsert : toInserts) {
                 try {
-                    inQueueService.insert(toInsert);
+                    inQueueService.convert(inQueueService.create(toInsert));
                     nbExe++;
                 } catch (CerberusException e) {
                     String errorMessage = "Unable to insert " + toInsert.toString() + " due to " + e.getMessage();

@@ -39,14 +39,12 @@ import org.cerberus.crud.service.*;
 import org.cerberus.engine.entity.ExecutionUUID;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.crud.factory.IFactoryTestCaseExecution;
-import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.engine.execution.IRunTestCaseService;
 import org.cerberus.util.DateUtil;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
-import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.version.Infos;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -123,7 +121,7 @@ public class RunTestCase extends HttpServlet {
         boolean synchroneous = true;
         int getPageSource = 0;
         int getSeleniumLog = 0;
-        boolean manualExecution = false;
+        String manualExecution = "N";
         List<RobotCapability> capabilities = null;
 
         //Test
@@ -150,7 +148,7 @@ public class RunTestCase extends HttpServlet {
         synchroneous = ParameterParserUtil.parseBooleanParam(request.getParameter("synchroneous"), true);
         getPageSource = ParameterParserUtil.parseIntegerParam(request.getParameter("pageSource"), 1);
         getSeleniumLog = ParameterParserUtil.parseIntegerParam(request.getParameter("seleniumLog"), 1);
-        manualExecution = ParameterParserUtil.parseBooleanParam(request.getParameter("manualExecution"), false);
+        manualExecution = ParameterParserUtil.parseStringParam(request.getParameter("manualExecution"), "N");
         int numberOfRetries = ParameterParserUtil.parseIntegerParam(request.getParameter("retries"), 0);
         screenSize = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("screenSize"), "");
 
@@ -195,31 +193,32 @@ public class RunTestCase extends HttpServlet {
                 + "- retries : Number of tries if the result is not OK. [" + numberOfRetries + "]\n";
 
         boolean error = false;
+        String errorMessage = "";
 
         // -- Checking the parameter validity. --
         // test, testcase and country parameters are mandatory
         if (StringUtils.isBlank(test)) {
-            out.println("Error - Parameter test is mandatory.");
+            errorMessage += "Error - Parameter test is mandatory. ";
             error = true;
         }
         if (StringUtils.isBlank(testCase)) {
-            out.println("Error - Parameter testCase is mandatory.");
+            errorMessage += "Error - Parameter testCase is mandatory. ";
             error = true;
         }
         if (StringUtils.isBlank(country)) {
-            out.println("Error - Parameter country is mandatory.");
+            errorMessage += "Error - Parameter country is mandatory. ";
             error = true;
         }
         // environment is mandatory when manualURL is not activated.
         if (StringUtils.isBlank(environment) && !manualURL) {
-            out.println("Error - Parameter environment is mandatory (or use the manualURL parameter).");
+            errorMessage += "Error - Parameter environment is mandatory (or use the manualURL parameter). ";
             error = true;
         }
 
         // We check that execution is not desactivated by cerberus_automaticexecution_enable parameter.
         IParameterService parameterService = appContext.getBean(IParameterService.class);
         if (!(parameterService.getParameterBooleanByKey("cerberus_automaticexecution_enable", "", true))) {
-            out.println("Error - Execution disable by configuration (cerberus_automaticexecution_enable <> Y).");
+            errorMessage += "Error - Execution disable by configuration (cerberus_automaticexecution_enable <> Y). ";
             error = true;
             LOG.info("Execution request ignored by cerberus_automaticexecution_enable parameter. " + test + " / " + testCase);
         }
@@ -240,20 +239,20 @@ public class RunTestCase extends HttpServlet {
                 capabilities = robObj.getCapabilities();
                 screenSize = robObj.getScreenSize();
             } catch (CerberusException ex) {
-                out.println("Error - Robot [" + robot + "] does not exist.");
+                errorMessage += "Error - Robot [" + robot + "] does not exist. ";
                 error = true;
             }
         }
         // We cannot execute a testcase on a desactivated Robot.
         if (active.equals("N")) {
-            out.println("Error - Robot is not Active.");
+            errorMessage += "Error - Robot is not Active. ";
             error = true;
         }
 
         //verify the format of the ScreenSize. It must be 2 integer separated by a *. For example : 1024*768
         if (!"".equals(screenSize)) {
             if (!screenSize.contains("*")) {
-                out.println("Error - ScreenSize format is not Correct. It must be 2 Integer separated by a *.");
+                errorMessage += "Error - ScreenSize format is not Correct. It must be 2 Integer separated by a *. ";
                 error = true;
             } else {
                 try {
@@ -262,208 +261,241 @@ public class RunTestCase extends HttpServlet {
                     Integer.parseInt(screenWidth);
                     Integer.parseInt(screenLength);
                 } catch (Exception e) {
-                    out.println("Error - ScreenSize format is not Correct. It must be 2 Integer separated by a *.");
+                    errorMessage += "Error - ScreenSize format is not Correct. It must be 2 Integer separated by a *. ";
                     error = true;
                 }
             }
         }
 
-        if (!error) {
-            //check if the test case is to be executed in the specific parameters            
-            boolean exists = false;
-            try {
-                ITestCaseCountryService tccService = appContext.getBean(ITestCaseCountryService.class);
+        //check if the test case is to be executed in the specific parameters            
+        try {
+            ITestCaseCountryService tccService = appContext.getBean(ITestCaseCountryService.class);
+            TestCaseCountry tcc = tccService.findTestCaseCountryByKey(test, testCase, country);
+            if (tcc == null) {
+                error = true;
+            }
+        } catch (CerberusException ex) {
+            error = true;
+            errorMessage += "Error - Test Case is not selected for country. ";
+        }
 
-                TestCaseCountry tcc = tccService.findTestCaseCountryByKey(test, testCase, country);
-                if (tcc != null) {
-                    exists = true;
+        if (!error) {
+            //TODO:FN debug messages to be removed
+            LOG.debug("STARTED: Test " + test + "-" + testCase);
+
+            IRunTestCaseService runTestCaseService = appContext.getBean(IRunTestCaseService.class);
+            IFactoryTestCase factoryTCase = appContext.getBean(IFactoryTestCase.class);
+            IFactoryTestCaseExecution factoryTCExecution = appContext.getBean(IFactoryTestCaseExecution.class);
+            ITestCaseExecutionService tces = appContext.getBean(ITestCaseExecutionService.class);
+            TestCase tCase = factoryTCase.create(test, testCase);
+
+            TestCaseExecution tCExecution = factoryTCExecution.create(0, test, testCase, null, null, null, environment, country, browser, version, platform, "",
+                    0, 0, "", "", "", null, ss_ip, null, ss_p, tag, verbose, screenshot, getPageSource, getSeleniumLog, synchroneous, timeout, outputFormat, null,
+                    Infos.getInstance().getProjectNameAndVersion(), tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL, myEnvData, ss_ip, ss_p,
+                    null, new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED), executor, numberOfRetries, screenSize, capabilities,
+                    "", "", "", "", "", manualExecution, userAgent);
+
+            /**
+             * Set UUID
+             */
+            ExecutionUUID executionUUIDObject = appContext.getBean(ExecutionUUID.class);
+            UUID executionUUID = UUID.randomUUID();
+            executionUUIDObject.setExecutionUUID(executionUUID.toString(), tCExecution);
+            tCExecution.setExecutionUUID(executionUUID.toString());
+            LOG.info("Execution Requested : UUID=" + executionUUID);
+
+            /**
+             * Set IdFromQueue
+             */
+            tCExecution.setQueueID(idFromQueue);
+
+            /**
+             * Loop on the execution of the testcase until we get an OK or
+             * reached the number of retries.
+             */
+            while (tCExecution.getNumberOfRetries() >= 0 && !tCExecution.getResultMessage().getCodeString().equals("OK")) {
+                try {
+                    LOG.debug("Start execution " + tCExecution.getId());
+                    tCExecution = runTestCaseService.runTestCase(tCExecution);
+                    if (!synchroneous && tCExecution.getNumberOfRetries() > 0) {
+                        LOG.error("Retries is not activated for asynchroneous execution! Testcase will be executed once.");
+                        break;
+                    }
+                    tCExecution.decreaseNumberOfRetries();
+                } catch (Exception ex) {
+                    LOG.error("Error while executing RunTestCase ", ex);
+                    break;
                 }
-            } catch (CerberusException ex) {
+            }
+
+            /**
+             * Clean memory in case testcase has not been launched(Remove all
+             * object put in memory)
+             */
+            try {
+                if (tCExecution.getId() == 0) {
+                    executionUUIDObject.removeExecutionUUID(tCExecution.getExecutionUUID());
+                    LOG.debug("Clean ExecutionUUID");
+
+                }
+            } catch (Exception ex) {
+                LOG.error("Exception cleaning Memory: ", ex);
+            }
+
+            /**
+             * Execution is finished we report the result.
+             */
+            long runID = tCExecution.getId();
+            if (outputFormat.equalsIgnoreCase("gui")) { // HTML GUI output. either the detailed execution page or an error page when the execution is not created.
+                if (runID > 0) { // Execution has been created.
+                    response.sendRedirect("TestCaseExecution.jsp?executionId=" + runID);
+                } else { // Execution was not even created.
+                    response.setContentType("text/html");
+                    out.println("<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><title>Test Execution Result</title></head>");
+                    out.println("<body>");
+                    out.println("<table>");
+                    out.println("<tr><td>RunID</td><td><span id='RunID'>" + runID + "</span></td></tr>");
+                    out.println("<tr><td>IdFromQueue</td><td><b><span id='IdFromQueue'>" + tCExecution.getQueueID() + "</span></b></td></tr>");
+                    out.println("<tr><td>Test</td><td><span id='Test'>" + test + "</span></td></tr>");
+                    out.println("<tr><td>TestCase</td><td><span id='TestCase'>" + testCase + "</span></td></tr>");
+                    out.println("<tr><td>Country</td><td><span id='Country'>" + country + "</span></td></tr>");
+                    out.println("<tr><td>Environment</td><td><span id='Environment'>" + environment + "</span></td></tr>");
+                    out.println("<tr><td>TimestampStart</td><td><span id='TimestampStart'>" + new Timestamp(tCExecution.getStart()) + "</span></td></tr>");
+                    out.println("<tr><td>TimestampEnd</td><td><span id='TimestampEnd'>" + new Timestamp(tCExecution.getEnd()) + "</span></td></tr>");
+                    out.println("<tr><td>OutputFormat</td><td><span id='OutputFormat'>" + outputFormat + "</span></td></tr>");
+                    out.println("<tr><td>Verbose</td><td><span id='Verbose'>" + verbose + "</span></td></tr>");
+                    out.println("<tr><td>Screenshot</td><td><span id='Screenshot'>" + screenshot + "</span></td></tr>");
+                    out.println("<tr><td>PageSource</td><td><span id='PageSource'>" + getPageSource + "</span></td></tr>");
+                    out.println("<tr><td>SeleniumLog</td><td><span id='SeleniumLog'>" + getSeleniumLog + "</span></td></tr>");
+                    out.println("<tr><td>Robot</td><td><span id='Robot'>" + robot + "</span></td></tr>");
+                    out.println("<tr><td>Selenium Server IP</td><td><span id='SeleniumIP'>" + ss_ip + "</span></td></tr>");
+                    out.println("<tr><td>Selenium Server Port</td><td><span id='SeleniumPort'>" + ss_p + "</span></td></tr>");
+                    out.println("<tr><td>Timeout</td><td><span id='Timeout'>" + timeout + "</span></td></tr>");
+                    out.println("<tr><td>Synchroneous</td><td><span id='Synchroneous'>" + synchroneous + "</span></td></tr>");
+                    out.println("<tr><td>Browser</td><td><span id='Browser'>" + browser + "</span></td></tr>");
+                    out.println("<tr><td>Version</td><td><span id='Version'>" + version + "</span></td></tr>");
+                    out.println("<tr><td>Platform</td><td><span id='Platform'>" + platform + "</span></td></tr>");
+                    out.println("<tr><td>Screen Size</td><td><span id='screenSize'>" + screenSize + "</span></td></tr>");
+                    out.println("<tr><td>Number of Retry</td><td><span id='nbretry'>" + numberOfRetries + "</span></td></tr>");
+                    out.println("<tr><td>ManualURL</td><td><span id='ManualURL'>" + tCExecution.isManualURL() + "</span></td></tr>");
+                    out.println("<tr><td>MyHost</td><td><span id='MyHost'>" + tCExecution.getMyHost() + "</span></td></tr>");
+                    out.println("<tr><td>MyContextRoot</td><td><span id='MyContextRoot'>" + tCExecution.getMyContextRoot() + "</span></td></tr>");
+                    out.println("<tr><td>MyLoginRelativeURL</td><td><span id='MyLoginRelativeURL'>" + tCExecution.getMyLoginRelativeURL() + "</span></td></tr>");
+                    out.println("<tr><td>myEnvironmentData</td><td><span id='myEnvironmentData'>" + tCExecution.getEnvironmentData() + "</span></td></tr>");
+                    out.println("<tr><td>ReturnCode</td><td><b><span id='ReturnCodeDescription'>" + tCExecution.getResultMessage().getCode() + "</span></b></td></tr>");
+                    out.println("<tr><td>ReturnCodeDescription</td><td><b><span id='ReturnCodeDescription'>" + tCExecution.getResultMessage().getDescription() + "</span></b></td></tr>");
+                    out.println("<tr><td>ControlStatus</td><td><b><span id='ReturnCodeMessage'>" + tCExecution.getResultMessage().getCodeString() + "</span></b></td></tr>");
+                    out.println("<tr><td></td><td></td></tr>");
+                    out.println("</table><br><br>");
+                    out.println("<table border>");
+                    out.println("<tr>"
+                            + "<td><input id=\"ButtonRetry\" type=\"button\" value=\"Retry\" onClick=\"window.location.reload()\"></td>"
+                            + "<td><input id=\"ButtonBack\" type=\"button\" value=\"Go Back\" onClick=\"window.history.back()\"></td>"
+                            + "<td><input id=\"ButtonOpenTC\" type=\"button\" value=\"Open Test Case\" onClick=\"window.open('TestCaseScript.jsp?test=" + test + "&testcase=" + testCase + "')\"></td>"
+                            + "</tr>");
+                    out.println("</table>");
+                    out.println("</body>");
+                    out.println("</html>");
+                }
+            } else if (outputFormat.equalsIgnoreCase("redirectToReport")) { // Redirect to the reporting page by tag.
+                response.sendRedirect("./ReportingExecutionByTag.jsp?Tag=" + StringUtil.encodeAsJavaScriptURIComponent(tag));
+            } else if (outputFormat.equalsIgnoreCase("verbose-txt")) { // Text verbose output.
+                response.setContentType("text/plain");
+                String separator = " = ";
+                out.println("RunID" + separator + runID);
+                out.println("Test" + separator + test);
+                out.println("TestCase" + separator + testCase);
+                out.println("Country" + separator + country);
+                out.println("Environment" + separator + environment);
+                out.println("Time Start" + separator + new Timestamp(tCExecution.getStart()));
+                out.println("Time End" + separator + new Timestamp(tCExecution.getEnd()));
+                out.println("OutputFormat" + separator + outputFormat);
+                out.println("Verbose" + separator + verbose);
+                out.println("Screenshot" + separator + screenshot);
+                out.println("PageSource" + separator + getPageSource);
+                out.println("SeleniumLog" + separator + getSeleniumLog);
+                out.println("Robot" + separator + robot);
+                out.println("Selenium Server IP" + separator + ss_ip);
+                out.println("Selenium Server Port" + separator + ss_p);
+                out.println("Timeout" + separator + timeout);
+                out.println("Synchroneous" + separator + synchroneous);
+                out.println("Browser" + separator + browser);
+                out.println("Version" + separator + version);
+                out.println("Platform" + separator + platform);
+                out.println("ScreenSize" + separator + screenSize);
+                out.println("Nb Of Retry" + separator + numberOfRetries);
+                out.println("ManualURL" + separator + tCExecution.isManualURL());
+                out.println("MyHost" + separator + tCExecution.getMyHost());
+                out.println("MyContextRoot" + separator + tCExecution.getMyContextRoot());
+                out.println("MyLoginRelativeURL" + separator + tCExecution.getMyLoginRelativeURL());
+                out.println("myEnvironmentData" + separator + tCExecution.getEnvironmentData());
+                out.println("ReturnCode" + separator + tCExecution.getResultMessage().getCode());
+                out.println("ReturnCodeDescription" + separator + tCExecution.getResultMessage().getDescription());
+                out.println("ControlStatus" + separator + tCExecution.getResultMessage().getCodeString());
+            } else if (outputFormat.equalsIgnoreCase("verbose-json")) { // JSON verbose output.
+                response.setContentType("application/json");
+                TestCaseExecution t = (TestCaseExecution) tces.readByKeyWithDependency(tCExecution.getId()).getItem();
+                out.print(tCExecution.toJson(true).toString());
+            } else { // Default behaviour when not outputformat is defined : compact mode.
                 response.setContentType("text/plain");
                 DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_DISPLAY);
-                String errorMessage = df.format(new Date()) + " - " + 0
+                out.println(df.format(tCExecution.getStart()) + " - " + runID
                         + " [" + test
                         + "|" + testCase
                         + "|" + country
                         + "|" + environment
-                        + "] : Test Case is not selected for country!' ";
-                out.println(errorMessage);
-            }
-            //there is no need to lauch the execution if the test case does not exist for the country
-            if (exists) {
-                //TODO:FN debug messages to be removed
-                LOG.debug("STARTED: Test " + test + "-" + testCase);
-
-                IRunTestCaseService runTestCaseService = appContext.getBean(IRunTestCaseService.class);
-                IFactoryTestCase factoryTCase = appContext.getBean(IFactoryTestCase.class);
-                IFactoryTestCaseExecution factoryTCExecution = appContext.getBean(IFactoryTestCaseExecution.class);
-                ITestCaseExecutionService tces = appContext.getBean(ITestCaseExecutionService.class);
-                TestCase tCase = factoryTCase.create(test, testCase);
-
-                TestCaseExecution tCExecution = factoryTCExecution.create(0, test, testCase, null, null, null, environment, country, browser, version, platform, "",
-                        0, 0, "", "", "", null, ss_ip, null, ss_p, tag, verbose, screenshot, getPageSource, getSeleniumLog, synchroneous, timeout, outputFormat, null,
-                        Infos.getInstance().getProjectNameAndVersion(), tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL, myEnvData, ss_ip, ss_p,
-                        null, new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED), executor, numberOfRetries, screenSize, capabilities,
-                        "", "", "", "", "", manualExecution, userAgent);
-
-                /**
-                 * Set UUID
-                 */
-                ExecutionUUID executionUUIDObject = appContext.getBean(ExecutionUUID.class);
-                UUID executionUUID = UUID.randomUUID();
-                executionUUIDObject.setExecutionUUID(executionUUID.toString(), tCExecution);
-                tCExecution.setExecutionUUID(executionUUID.toString());
-                LOG.info("Execution Requested : UUID=" + executionUUID);
-
-                /**
-                 * Set IdFromQueue
-                 */
-                tCExecution.setQueueID(idFromQueue);
-
-                /**
-                 * Loop on the execution of the testcase until we get an OK or
-                 * reached the number of retries.
-                 */
-                while (tCExecution.getNumberOfRetries() >= 0 && !tCExecution.getResultMessage().getCodeString().equals("OK")) {
-                    try {
-                        LOG.debug("Start execution " + tCExecution.getId());
-                        tCExecution = runTestCaseService.runTestCase(tCExecution);
-                        if (!synchroneous && tCExecution.getNumberOfRetries() > 0) {
-                            LOG.error("Retries is not activated for asynchroneous execution! Testcase will be executed once.");
-                            break;
-                        }
-                        tCExecution.decreaseNumberOfRetries();
-                    } catch (Exception ex) {
-                        LOG.error("Error while executing RunTestCase ", ex);
-                        break;
-                    }
-                }
-
-                /**
-                 * Clean memory in case testcase has not been launched(Remove
-                 * all object put in memory)
-                 */
-                try {
-                    if (tCExecution.getId() == 0) {
-                        executionUUIDObject.removeExecutionUUID(tCExecution.getExecutionUUID());
-                        LOG.debug("Clean ExecutionUUID");
-
-                    }
-                } catch (Exception ex) {
-                    LOG.error("Exception cleaning Memory: ", ex);
-                }
-
-                /**
-                 * Execution is finished we report the result.
-                 */
-                long runID = tCExecution.getId();
-                if (outputFormat.equalsIgnoreCase("gui")) { // HTML GUI output. either the detailed execution page or an error page when the execution is not created.
-                    if (runID > 0) { // Execution has been created.
-                        response.sendRedirect("TestCaseExecution.jsp?executionId=" + runID);
-                    } else { // Execution was not even created.
-                        response.setContentType("text/html");
-                        out.println("<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><title>Test Execution Result</title></head>");
-                        out.println("<body>");
-                        out.println("<table>");
-                        out.println("<tr><td>RunID</td><td><span id='RunID'>" + runID + "</span></td></tr>");
-                        out.println("<tr><td>IdFromQueue</td><td><b><span id='IdFromQueue'>" + tCExecution.getQueueID() + "</span></b></td></tr>");
-                        out.println("<tr><td>Test</td><td><span id='Test'>" + test + "</span></td></tr>");
-                        out.println("<tr><td>TestCase</td><td><span id='TestCase'>" + testCase + "</span></td></tr>");
-                        out.println("<tr><td>Country</td><td><span id='Country'>" + country + "</span></td></tr>");
-                        out.println("<tr><td>Environment</td><td><span id='Environment'>" + environment + "</span></td></tr>");
-                        out.println("<tr><td>TimestampStart</td><td><span id='TimestampStart'>" + new Timestamp(tCExecution.getStart()) + "</span></td></tr>");
-                        out.println("<tr><td>TimestampEnd</td><td><span id='TimestampEnd'>" + new Timestamp(tCExecution.getEnd()) + "</span></td></tr>");
-                        out.println("<tr><td>OutputFormat</td><td><span id='OutputFormat'>" + outputFormat + "</span></td></tr>");
-                        out.println("<tr><td>Verbose</td><td><span id='Verbose'>" + verbose + "</span></td></tr>");
-                        out.println("<tr><td>Screenshot</td><td><span id='Screenshot'>" + screenshot + "</span></td></tr>");
-                        out.println("<tr><td>PageSource</td><td><span id='PageSource'>" + getPageSource + "</span></td></tr>");
-                        out.println("<tr><td>SeleniumLog</td><td><span id='SeleniumLog'>" + getSeleniumLog + "</span></td></tr>");
-                        out.println("<tr><td>Robot</td><td><span id='Robot'>" + robot + "</span></td></tr>");
-                        out.println("<tr><td>Selenium Server IP</td><td><span id='SeleniumIP'>" + ss_ip + "</span></td></tr>");
-                        out.println("<tr><td>Selenium Server Port</td><td><span id='SeleniumPort'>" + ss_p + "</span></td></tr>");
-                        out.println("<tr><td>Timeout</td><td><span id='Timeout'>" + timeout + "</span></td></tr>");
-                        out.println("<tr><td>Synchroneous</td><td><span id='Synchroneous'>" + synchroneous + "</span></td></tr>");
-                        out.println("<tr><td>Browser</td><td><span id='Browser'>" + browser + "</span></td></tr>");
-                        out.println("<tr><td>Version</td><td><span id='Version'>" + version + "</span></td></tr>");
-                        out.println("<tr><td>Platform</td><td><span id='Platform'>" + platform + "</span></td></tr>");
-                        out.println("<tr><td>Screen Size</td><td><span id='screenSize'>" + screenSize + "</span></td></tr>");
-                        out.println("<tr><td>Number of Retry</td><td><span id='nbretry'>" + numberOfRetries + "</span></td></tr>");
-                        out.println("<tr><td>ManualURL</td><td><span id='ManualURL'>" + tCExecution.isManualURL() + "</span></td></tr>");
-                        out.println("<tr><td>MyHost</td><td><span id='MyHost'>" + tCExecution.getMyHost() + "</span></td></tr>");
-                        out.println("<tr><td>MyContextRoot</td><td><span id='MyContextRoot'>" + tCExecution.getMyContextRoot() + "</span></td></tr>");
-                        out.println("<tr><td>MyLoginRelativeURL</td><td><span id='MyLoginRelativeURL'>" + tCExecution.getMyLoginRelativeURL() + "</span></td></tr>");
-                        out.println("<tr><td>myEnvironmentData</td><td><span id='myEnvironmentData'>" + tCExecution.getEnvironmentData() + "</span></td></tr>");
-                        out.println("<tr><td>ReturnCode</td><td><b><span id='ReturnCodeDescription'>" + tCExecution.getResultMessage().getCode() + "</span></b></td></tr>");
-                        out.println("<tr><td>ReturnCodeDescription</td><td><b><span id='ReturnCodeDescription'>" + tCExecution.getResultMessage().getDescription() + "</span></b></td></tr>");
-                        out.println("<tr><td>ControlStatus</td><td><b><span id='ReturnCodeMessage'>" + tCExecution.getResultMessage().getCodeString() + "</span></b></td></tr>");
-                        out.println("<tr><td></td><td></td></tr>");
-                        out.println("</table><br><br>");
-                        out.println("<table border>");
-                        out.println("<tr>"
-                                + "<td><input id=\"ButtonRetry\" type=\"button\" value=\"Retry\" onClick=\"window.location.reload()\"></td>"
-                                + "<td><input id=\"ButtonBack\" type=\"button\" value=\"Go Back\" onClick=\"window.history.back()\"></td>"
-                                + "<td><input id=\"ButtonOpenTC\" type=\"button\" value=\"Open Test Case\" onClick=\"window.open('TestCaseScript.jsp?test=" + test + "&testcase=" + testCase + "')\"></td>"
-                                + "</tr>");
-                        out.println("</table>");
-                        out.println("</body>");
-                        out.println("</html>");
-                    }
-                } else if (outputFormat.equalsIgnoreCase("redirectToReport")) { // Redirect to the reporting page by tag.
-                    response.sendRedirect("./ReportingExecutionByTag.jsp?Tag=" + StringUtil.encodeAsJavaScriptURIComponent(tag));
-                } else if (outputFormat.equalsIgnoreCase("verbose-txt")) { // Text verbose output.
-                    response.setContentType("text/plain");
-                    String separator = " = ";
-                    out.println("RunID" + separator + runID);
-                    out.println("Test" + separator + test);
-                    out.println("TestCase" + separator + testCase);
-                    out.println("Country" + separator + country);
-                    out.println("Environment" + separator + environment);
-                    out.println("Time Start" + separator + new Timestamp(tCExecution.getStart()));
-                    out.println("Time End" + separator + new Timestamp(tCExecution.getEnd()));
-                    out.println("OutputFormat" + separator + outputFormat);
-                    out.println("Verbose" + separator + verbose);
-                    out.println("Screenshot" + separator + screenshot);
-                    out.println("PageSource" + separator + getPageSource);
-                    out.println("SeleniumLog" + separator + getSeleniumLog);
-                    out.println("Robot" + separator + robot);
-                    out.println("Selenium Server IP" + separator + ss_ip);
-                    out.println("Selenium Server Port" + separator + ss_p);
-                    out.println("Timeout" + separator + timeout);
-                    out.println("Synchroneous" + separator + synchroneous);
-                    out.println("Browser" + separator + browser);
-                    out.println("Version" + separator + version);
-                    out.println("Platform" + separator + platform);
-                    out.println("ScreenSize" + separator + screenSize);
-                    out.println("Nb Of Retry" + separator + numberOfRetries);
-                    out.println("ManualURL" + separator + tCExecution.isManualURL());
-                    out.println("MyHost" + separator + tCExecution.getMyHost());
-                    out.println("MyContextRoot" + separator + tCExecution.getMyContextRoot());
-                    out.println("MyLoginRelativeURL" + separator + tCExecution.getMyLoginRelativeURL());
-                    out.println("myEnvironmentData" + separator + tCExecution.getEnvironmentData());
-                    out.println("ReturnCode" + separator + tCExecution.getResultMessage().getCode());
-                    out.println("ReturnCodeDescription" + separator + tCExecution.getResultMessage().getDescription());
-                    out.println("ControlStatus" + separator + tCExecution.getResultMessage().getCodeString());
-                } else if (outputFormat.equalsIgnoreCase("verbose-json")) { // JSON verbose output.
-                    response.setContentType("application/json");
-                    TestCaseExecution t = (TestCaseExecution) tces.readByKeyWithDependency(tCExecution.getId()).getItem();
-                    out.print(tCExecution.toJson(true).toString());
-                } else { // Default behaviour when not outputformat is defined : compact mode.
-                    response.setContentType("text/plain");
-                    DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_DISPLAY);
-                    out.println(df.format(tCExecution.getStart()) + " - " + runID
-                            + " [" + test
-                            + "|" + testCase
-                            + "|" + country
-                            + "|" + environment
-                            + "] : '" + tCExecution.getResultMessage().getCodeString() + "' - "
-                            + tCExecution.getResultMessage().getCode()
-                            + " " + tCExecution.getResultMessage().getDescription());
-                }
+                        + "] : '" + tCExecution.getResultMessage().getCodeString() + "' - "
+                        + tCExecution.getResultMessage().getCode()
+                        + " " + tCExecution.getResultMessage().getDescription());
             }
 
         } else {
-            // In case of errors, we display the help message.
-            out.println(helpMessage);
+            if (outputFormat.equalsIgnoreCase("verbose-txt")) { // Text verbose output.
+                response.setContentType("text/plain");
+                String separator = " = ";
+                out.println("RunID" + separator + 0);
+                out.println("Test" + separator + test);
+                out.println("TestCase" + separator + testCase);
+                out.println("Country" + separator + country);
+                out.println("Environment" + separator + environment);
+                out.println("OutputFormat" + separator + outputFormat);
+                out.println("Verbose" + separator + verbose);
+                out.println("Screenshot" + separator + screenshot);
+                out.println("PageSource" + separator + getPageSource);
+                out.println("SeleniumLog" + separator + getSeleniumLog);
+                out.println("Robot" + separator + robot);
+                out.println("Selenium Server IP" + separator + ss_ip);
+                out.println("Selenium Server Port" + separator + ss_p);
+                out.println("Timeout" + separator + timeout);
+                out.println("Synchroneous" + separator + synchroneous);
+                out.println("Browser" + separator + browser);
+                out.println("Version" + separator + version);
+                out.println("Platform" + separator + platform);
+                out.println("ScreenSize" + separator + screenSize);
+                out.println("Nb Of Retry" + separator + numberOfRetries);
+                out.println("ManualURL" + separator + manualURL);
+                out.println("MyHost" + separator + myHost);
+                out.println("MyContextRoot" + separator + myContextRoot);
+                out.println("MyLoginRelativeURL" + separator + myLoginRelativeURL);
+                out.println("myEnvironmentData" + separator + myEnvData);
+                out.println("ReturnCode" + separator + MessageGeneralEnum.EXECUTION_FA_SERVLETVALIDATONS.getCode());
+                out.println("ReturnCodeDescription" + separator + MessageGeneralEnum.EXECUTION_FA_SERVLETVALIDATONS.getDescription() + " " + errorMessage);
+                out.println("ControlStatus" + separator + MessageGeneralEnum.EXECUTION_FA_SERVLETVALIDATONS.getCodeString());
+            } else {
+                // In case of errors, we display the help message.
+                response.setContentType("text/plain");
+                DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_DISPLAY);
+                String errorMessageFinal = df.format(new Date()) + " - " + 0
+                        + " [" + test
+                        + "|" + testCase
+                        + "|" + country
+                        + "|" + environment
+                        + "] : '" + MessageGeneralEnum.EXECUTION_FA_SERVLETVALIDATONS.getCodeString() + "' - "
+                        + MessageGeneralEnum.EXECUTION_FA_SERVLETVALIDATONS.getCode()
+                        + " " + MessageGeneralEnum.EXECUTION_FA_SERVLETVALIDATONS.getDescription() + " " + errorMessage;
+                out.println(errorMessageFinal);
+//            out.println(helpMessage);
+            }
         }
 
     }

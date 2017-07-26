@@ -28,6 +28,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 
 /**
@@ -44,24 +45,7 @@ public interface ITestCaseExecutionQueueDAO {
      * @param queueId
      * @return
      */
-    AnswerItem<TestCaseExecutionQueue> readByKey(Long queueId);
-
-    /**
-     * Inserts the given {@link TestCaseExecutionQueue} to the execution queue
-     *
-     * @param inQueue the {@link TestCaseExecutionQueue} to insert to the
-     * execution queue
-     * @throws CerberusException if an exception occurs
-     */
-    void insert(TestCaseExecutionQueue inQueue) throws CerberusException;
-
-    /**
-     * Removes a {@link TestCaseExecutionQueue} record from the database.
-     *
-     * @param id the {@link TestCaseExecutionQueue#getId()} to remove
-     * @throws CerberusException if an exception occurs
-     */
-    void remove(long id) throws CerberusException;
+    AnswerItem<TestCaseExecutionQueue> readByKey(long queueId);
 
     /**
      * Find a list of {@link TestCaseExecutionQueue}
@@ -73,37 +57,16 @@ public interface ITestCaseExecutionQueueDAO {
     List<TestCaseExecutionQueue> findTestCaseExecutionInQueuebyTag(String tag) throws CerberusException;
 
     /**
-     * Fing a {@link TestCaseExecutionQueue} record from the database knowing
-     * the key
      *
-     * @param id
+     * @param tag
+     * @param start
+     * @param amount
+     * @param sort
+     * @param searchTerm
+     * @param individualSearch
      * @return
      * @throws CerberusException
      */
-    TestCaseExecutionQueue findByKey(long id) throws CerberusException;
-
-    TestCaseExecutionQueue findByKeyWithDependencies(long id) throws CerberusException;
-
-    public List<TestCaseExecutionQueue> findAll() throws CerberusException;
-
-    List<TestCaseExecutionQueue> toQueued(int maxFetchSize) throws CerberusException;
-
-    List<TestCaseExecutionQueue> toQueued(List<Long> ids) throws CerberusException;
-
-    void toExecuting(long id) throws CerberusException;
-
-    void toWaiting(long id) throws CerberusException;
-
-    List<Long> toWaiting(List<Long> ids) throws CerberusException;
-
-    void toError(long id, String comment) throws CerberusException;
-
-    void toDone(long id, String comment, long exeId) throws CerberusException;
-
-    void toCancelled(long id) throws CerberusException;
-
-    List<Long> toCancelled(List<Long> ids) throws CerberusException;
-
     public AnswerList readByTagByCriteria(String tag, int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException;
 
     /**
@@ -116,17 +79,197 @@ public interface ITestCaseExecutionQueueDAO {
      */
     public AnswerList readByTag(String tag) throws CerberusException;
 
+    /**
+     *
+     * @param start
+     * @param amount
+     * @param column
+     * @param dir
+     * @param searchTerm
+     * @param individualSearch
+     * @return
+     */
     public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
-    public AnswerList readDistinctEnvCoutnryBrowserByTag(String tag);
+    /**
+     *
+     * @param tag
+     * @return
+     */
+    public AnswerList readDistinctEnvCountryBrowserByTag(String tag);
 
+    /**
+     *
+     * @param tag
+     * @param env
+     * @param country
+     * @param browser
+     * @param app
+     * @return
+     */
     public AnswerList readDistinctColumnByTag(String tag, boolean env, boolean country, boolean browser, boolean app);
 
+    /**
+     *
+     * @param columnName
+     * @param sort
+     * @param searchParameter
+     * @param individualSearch
+     * @param column
+     * @return
+     */
+    public AnswerList readDistinctValuesByCriteria(String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch, String column);
+
+    /**
+     *
+     * @param tagnumber
+     * @return
+     */
     public AnswerList findTagList(int tagnumber);
 
+    /**
+     *
+     * @param system
+     * @param testList
+     * @param applicationList
+     * @param projectList
+     * @param tcstatusList
+     * @param groupList
+     * @param tcactiveList
+     * @param priorityList
+     * @param targetsprintList
+     * @param targetrevisionList
+     * @param creatorList
+     * @param implementerList
+     * @param buildList
+     * @param revisionList
+     * @param environmentList
+     * @param countryList
+     * @param browserList
+     * @param tcestatusList
+     * @param ip
+     * @param port
+     * @param tag
+     * @param browserversion
+     * @param comment
+     * @param bugid
+     * @param ticket
+     * @return
+     */
     public AnswerList readBySystemByVarious(String system, List<String> testList, List<String> applicationList, List<String> projectList, List<String> tcstatusList, List<String> groupList, List<String> tcactiveList, List<String> priorityList, List<String> targetsprintList, List<String> targetrevisionList, List<String> creatorList, List<String> implementerList, List<String> buildList, List<String> revisionList, List<String> environmentList, List<String> countryList, List<String> browserList, List<String> tcestatusList, String ip, String port, String tag, String browserversion, String comment, String bugid, String ticket);
 
-    public AnswerList readDistinctValuesByCriteria(String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch, String column);
+    TestCaseExecutionQueue findByKeyWithDependencies(long id) throws CerberusException;
+
+    /**
+     * @param object the {@link AppService} to Create
+     * @return {@link AnswerItem}
+     */
+    Answer create(TestCaseExecutionQueue object);
+
+    /**
+     * @param object the {@link AppService} to Update
+     * @return {@link AnswerItem}
+     */
+    Answer update(TestCaseExecutionQueue object);
+
+    /**
+     *
+     * @param id
+     * @throws CerberusException
+     */
+    void updateToWaiting(long id) throws CerberusException;
+
+    /**
+     *
+     * @param ids
+     * @return
+     * @throws CerberusException
+     */
+    List<Long> updateToWaiting(List<Long> ids) throws CerberusException;
+
+    /**
+     *
+     * @param id
+     * @param comment
+     * @return
+     */
+    Answer updateToWaiting(long id, String comment);
+
+    /**
+     *
+     * @param maxFetchSize
+     * @return
+     * @throws CerberusException
+     */
+    List<TestCaseExecutionQueue> updateToQueued(int maxFetchSize) throws CerberusException;
+
+    /**
+     *
+     * @param ids
+     * @return
+     * @throws CerberusException
+     */
+    List<TestCaseExecutionQueue> updateToQueued(List<Long> ids) throws CerberusException;
+
+    /**
+     *
+     * @param id
+     * @throws CerberusException
+     */
+    void updateToExecuting(long id) throws CerberusException;
+
+    /**
+     *
+     * @param id
+     * @param comment
+     * @throws CerberusException
+     */
+    void updateToError(long id, String comment) throws CerberusException;
+
+    /**
+     *
+     * @param id
+     * @param comment
+     * @param exeId
+     * @throws CerberusException
+     */
+    void updateToDone(long id, String comment, long exeId) throws CerberusException;
+
+    /**
+     *
+     * @param id
+     * @param comment
+     * @throws CerberusException
+     */
+    void updateToCancelled1(long id, String comment) throws CerberusException;
+
+    /**
+     *
+     * @param ids
+     * @return
+     * @throws CerberusException
+     */
+    List<Long> updateToCancelled(List<Long> ids) throws CerberusException;
+
+    /**
+     *
+     * @param id
+     * @param comment
+     * @return
+     */
+    Answer updateToCancelled(long id, String comment);
+
+    /**
+     * @param object the {@link AppService} to Delete
+     * @return {@link AnswerItem}
+     */
+    Answer delete(TestCaseExecutionQueue object);
+
+    /**
+     * @param id the {@link AppService} to Delete
+     * @return {@link AnswerItem}
+     */
+    Answer delete(Long id);
 
     /**
      * Uses data of ResultSet to create object {@link TestCaseExecutionQueue}

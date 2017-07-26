@@ -76,31 +76,28 @@ public class GetExecutionQueue extends HttpServlet {
     private static final String PARAMETER_SCREENSIZE = "screenSize";
 
     private static final String PARAMETER_TAG = "Tag";
-    private static final String PARAMETER_OUTPUT_FORMAT = "OutputFormat";
     private static final String PARAMETER_SCREENSHOT = "Screenshot";
     private static final String PARAMETER_VERBOSE = "Verbose";
     private static final String PARAMETER_TIMEOUT = "timeout";
-    private static final String PARAMETER_SYNCHRONEOUS = "Synchroneous";
     private static final String PARAMETER_PAGE_SOURCE = "PageSource";
     private static final String PARAMETER_SELENIUM_LOG = "SeleniumLog";
     private static final String PARAMETER_RETRIES = "retries";
     private static final String PARAMETER_MANUAL_EXECUTION = "manualExecution";
 
-    private static final String DEFAULT_VALUE_OUTPUT_FORMAT = "compact";
-    private static final int DEFAULT_VALUE_SCREENSHOT = 0;
-    private static final boolean DEFAULT_VALUE_MANUAL_URL = false;
-    private static final int DEFAULT_VALUE_VERBOSE = 0;
-    private static final long DEFAULT_VALUE_TIMEOUT = 300;
-    private static final boolean DEFAULT_VALUE_SYNCHRONEOUS = true;
-    private static final int DEFAULT_VALUE_PAGE_SOURCE = 1;
-    private static final int DEFAULT_VALUE_SELENIUM_LOG = 1;
-    private static final int DEFAULT_VALUE_RETRIES = 0;
-    private static final boolean DEFAULT_VALUE_MANUAL_EXECUTION = false;
-
     private static final String PARAMETER_MANUAL_HOST = "ManualHost";
     private static final String PARAMETER_MANUAL_CONTEXT_ROOT = "ManualContextRoot";
     private static final String PARAMETER_MANUAL_LOGIN_RELATIVE_URL = "ManualLoginRelativeURL";
     private static final String PARAMETER_MANUAL_ENV_DATA = "ManualEnvData";
+
+    private static final String DEFAULT_VALUE_BROWSER = "firefox";
+    private static final int DEFAULT_VALUE_SCREENSHOT = 0;
+    private static final int DEFAULT_VALUE_VERBOSE = 0;
+    private static final long DEFAULT_VALUE_TIMEOUT = 0;
+    private static final int DEFAULT_VALUE_PAGE_SOURCE = 1;
+    private static final int DEFAULT_VALUE_SELENIUM_LOG = 1;
+    private static final int DEFAULT_VALUE_RETRIES = 0;
+    private static final String DEFAULT_VALUE_MANUAL_EXECUTION = "N";
+    private static final boolean DEFAULT_VALUE_MANUAL_URL = false;
 
     private ITestCaseExecutionService testCaseExecutionService;
 
@@ -229,7 +226,10 @@ public class GetExecutionQueue extends HttpServlet {
                     exception = true;
                 }
 
-                execution.setBrowser("firefox");
+                String browser = ParameterParserUtil.parseStringParam(request.getParameter(PARAMETER_BROWSER), DEFAULT_VALUE_BROWSER);
+                execution.setBrowser(browser);
+                String manualExecution = ParameterParserUtil.parseStringParam(request.getParameter(PARAMETER_MANUAL_EXECUTION), DEFAULT_VALUE_MANUAL_EXECUTION);
+                execution.setManualExecution(manualExecution);
 
                 if (exception == false) {
                     /**
@@ -283,7 +283,6 @@ public class GetExecutionQueue extends HttpServlet {
             String browserVersion = ParameterParserUtil.parseStringParam(request.getParameter(PARAMETER_BROWSER_VERSION), null);
             String platform = ParameterParserUtil.parseStringParam(request.getParameter(PARAMETER_PLATFORM), null);
             String screenSize = ParameterParserUtil.parseStringParam(request.getParameter(PARAMETER_SCREENSIZE), null);
-            String outputFormat = ParameterParserUtil.parseStringParam(request.getParameter(PARAMETER_OUTPUT_FORMAT), DEFAULT_VALUE_OUTPUT_FORMAT);
             /**
              * RETRIEVING EXECUTION SETTINGS *
              */
@@ -291,11 +290,10 @@ public class GetExecutionQueue extends HttpServlet {
             int screenshot = ParameterParserUtil.parseIntegerParam(request.getParameter(PARAMETER_SCREENSHOT), DEFAULT_VALUE_SCREENSHOT);
             int verbose = ParameterParserUtil.parseIntegerParam(request.getParameter(PARAMETER_VERBOSE), DEFAULT_VALUE_VERBOSE);
             String timeout = request.getParameter(PARAMETER_TIMEOUT);
-            boolean synchroneous = ParameterParserUtil.parseBooleanParam(request.getParameter(PARAMETER_SYNCHRONEOUS), DEFAULT_VALUE_SYNCHRONEOUS);
             int pageSource = ParameterParserUtil.parseIntegerParam(request.getParameter(PARAMETER_PAGE_SOURCE), DEFAULT_VALUE_PAGE_SOURCE);
             int seleniumLog = ParameterParserUtil.parseIntegerParam(request.getParameter(PARAMETER_SELENIUM_LOG), DEFAULT_VALUE_SELENIUM_LOG);
             int retries = ParameterParserUtil.parseIntegerParam(request.getParameter(PARAMETER_RETRIES), DEFAULT_VALUE_RETRIES);
-            boolean manualExecution = ParameterParserUtil.parseBooleanParam(request.getParameter(PARAMETER_MANUAL_EXECUTION), DEFAULT_VALUE_MANUAL_EXECUTION);
+            String manualExecution = ParameterParserUtil.parseStringParam(request.getParameter(PARAMETER_MANUAL_EXECUTION), DEFAULT_VALUE_MANUAL_EXECUTION);
             /**
              * RETRIEVING MANUAL ENVIRONMENT SETTINGS *
              */
@@ -306,9 +304,9 @@ public class GetExecutionQueue extends HttpServlet {
 
             for (int index = 0; index < toAddList.length(); index++) {
                 JSONObject toAdd = toAddList.getJSONObject(index);
-                boolean manualURL = false;
+                int manualURL = 0;
                 if (toAdd.getString("env").equals("MANUAL")) {
-                    manualURL = true;
+                    manualURL = 1;
                 }
 
                 try {
@@ -336,7 +334,7 @@ public class GetExecutionQueue extends HttpServlet {
                             timeout,
                             pageSource,
                             seleniumLog,
-                            requestDate,
+                            0,
                             retries,
                             manualExecution,
                             request.getRemoteUser(),
@@ -344,14 +342,14 @@ public class GetExecutionQueue extends HttpServlet {
 
                     // Then fill it with either no browser
                     if (browsers.length() == 0) {
-                        inQueueService.insert(tceiq);
+                        inQueueService.convert(inQueueService.create(tceiq));
                         addedToQueue++;
                     } // Or with required browsers
                     else {
                         for (int iterBrowser = 0; iterBrowser < browsers.length(); iterBrowser++) {
                             tceiq.setBrowser(browsers.getString(iterBrowser));
                             try {
-                                inQueueService.insert(tceiq);
+                                inQueueService.convert(inQueueService.create(tceiq));
                                 addedToQueue++;
                             } catch (CerberusException e) {
                                 LOG.warn("Unable to insert execution in queue " + tceiq, e);

@@ -41,6 +41,7 @@
 * [GUI] On TestCaseScript page: Adding a property on a testcase that has no country selected now generates an error message.
 * [ENGINE] Queue execution are kept and linked to execution. A new DONE state on queue has been created for that purpose.
 
+
 *Warning to be considered before applying the version (deprecated features)*
 [square]
 * Removed testdata table and associated getFromTestData DEPRECATED property. BEFORE applying the associated database change, you can use script TestDataToTestDataLib.sql inside tools/SQLscripts/ to backport the old data (testdata) to new data structure (testdatalib).

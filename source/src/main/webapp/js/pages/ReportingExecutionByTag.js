@@ -890,7 +890,7 @@ function aoColumnsFunc(Columns) {
                                 role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;cursor: pointer; height: 40px;" \n\
                                 data-toggle="tooltip" data-html="true" title="' + tooltip + '"\n\'';
                     if (data.ControlStatus === "QU") {
-                        cell = cell + ' onclick="submitExecutionQueueClick(' + data.QueueID + ');">\n\' ';
+                        cell = cell + ' onclick="openModalTestCaseExecutionQueue(' + data.QueueID + ', \'EDIT\');">\n\' ';
                     } else {
                         cell = cell + ' onclick="window.open(\'' + executionLink + '\')">\n\' ';
                     }

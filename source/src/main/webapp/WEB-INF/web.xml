@@ -785,11 +785,6 @@
         <servlet-class>org.cerberus.servlet.crud.test.GetStepInLibrary</servlet-class>
     </servlet>
     <servlet>
-        <description>Find execution that are in Execution Queue.</description>
-        <servlet-name>FindExecutionInQueue</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.testexecution.FindExecutionInQueue</servlet-class>
-    </servlet>
-    <servlet>
         <description>Add a test case to the execution queue.</description>
         <servlet-name>AddToExecutionQueue</servlet-name>
         <servlet-class>org.cerberus.servlet.zzpublic.AddToExecutionQueue</servlet-class>
@@ -1708,10 +1703,6 @@
     <servlet-mapping>
         <servlet-name>GetStepInLibrary</servlet-name>
         <url-pattern>/GetStepInLibrary</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>FindExecutionInQueue</servlet-name>
-        <url-pattern>/FindExecutionInQueue</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ReadExecutionInQueue</servlet-name>

@@ -1,0 +1,12 @@
+*Bug fixes*
+[square]
+
+
+*Improvements / New features*
+[square]
+* [ENGINE] new parameter : cerberus_queueexecution_timeout in order to set the timeout when execution is triggered from the queue.
+* [ENGINE] Queue can now be administered from the GUI. Every queue execution can be CANCELLED or modified and resubmitted to WAITING. State workflow documented in doc folder.
+
+
+*Warning to be considered before applying the version (deprecated features)*
+[square]

@@ -298,7 +298,7 @@ public class ExecutionRunService implements IExecutionRunService {
              * If execution is not manual, evaluate the condition at the step
              * level
              */
-            if (!tCExecution.isManualExecution()) {
+            if (!tCExecution.getManualExecution().equals("Y")) {
                 try {
                     answerDecode = variableService.decodeStringCompletly(tCExecution.getConditionVal1(), tCExecution, null, false);
                     tCExecution.setConditionVal1((String) answerDecode.getItem());
@@ -338,7 +338,7 @@ public class ExecutionRunService implements IExecutionRunService {
                 conditionAnswerTc = this.conditionService.evaluateCondition(tCExecution.getConditionOper(), tCExecution.getConditionVal1(), tCExecution.getConditionVal2(), tCExecution);
                 boolean execute_TestCase = (boolean) conditionAnswerTc.getItem();
 
-                if (execute_TestCase || tCExecution.isManualExecution()) {
+                if (execute_TestCase || tCExecution.getManualExecution().equals("Y")) {
 
                     for (TestCaseStep testCaseStep : mainExecutionTestCaseStepList) {
 
@@ -741,7 +741,7 @@ public class ExecutionRunService implements IExecutionRunService {
              */
             AnswerItem<Boolean> conditionAnswer;
             boolean conditionDecodeError = false;
-            if (!tcExecution.isManualExecution()) {
+            if (!tcExecution.getManualExecution().equals("Y")) {
 
                 try {
                     answerDecode = variableService.decodeStringCompletly(testCaseStepActionExecution.getConditionVal1(), tcExecution, null, false);
@@ -785,10 +785,10 @@ public class ExecutionRunService implements IExecutionRunService {
                  * action
                  */
                 if (conditionAnswer.getResultMessage().getMessage().getCodeString().equals("PE")
-                        || tcExecution.isManualExecution()) {
+                        || tcExecution.getManualExecution().equals("Y")) {
 
                     // Execute or not the action here.
-                    if (execute_Action || tcExecution.isManualExecution()) {
+                    if (execute_Action || tcExecution.getManualExecution().equals("Y")) {
                         LOG.debug("Executing action : " + testCaseStepActionExecution.getAction() + " with val1 : " + testCaseStepActionExecution.getValue1()
                                 + " and val2 : " + testCaseStepActionExecution.getValue2());
 
@@ -898,7 +898,7 @@ public class ExecutionRunService implements IExecutionRunService {
         /**
          * If execution is not manual, do action and record files
          */
-        if (!tcExecution.isManualExecution()) {
+        if (!tcExecution.getManualExecution().equals("Y")) {
             testCaseStepActionExecution = this.actionService.doAction(testCaseStepActionExecution);
 
             /**
@@ -968,7 +968,7 @@ public class ExecutionRunService implements IExecutionRunService {
             // Evaluate the condition at the control level.
             AnswerItem<Boolean> conditionAnswer;
             boolean conditionDecodeError = false;
-            if (tcExecution.isManualExecution()) {
+            if (tcExecution.getManualExecution().equals("Y")) {
                 try {
                     answerDecode = variableService.decodeStringCompletly(testCaseStepActionControlExecution.getConditionVal1(), tcExecution, null, false);
                     testCaseStepActionControlExecution.setConditionVal1((String) answerDecode.getItem());
@@ -1011,9 +1011,9 @@ public class ExecutionRunService implements IExecutionRunService {
                  * control
                  */
                 if (conditionAnswer.getResultMessage().getMessage().getCodeString().equals("PE")
-                        || tcExecution.isManualExecution()) {
+                        || tcExecution.getManualExecution().equals("Y")) {
 
-                    if (execute_Control || tcExecution.isManualExecution()) {
+                    if (execute_Control || tcExecution.getManualExecution().equals("Y")) {
 
                         /**
                          * We execute the control
@@ -1141,7 +1141,7 @@ public class ExecutionRunService implements IExecutionRunService {
         /**
          * If execution is not manual, do control and record files
          */
-        if (!tcExecution.isManualExecution()) {
+        if (!tcExecution.getManualExecution().equals("Y")) {
             testCaseStepActionControlExecution = this.controlService.doControl(testCaseStepActionControlExecution);
 
             /**

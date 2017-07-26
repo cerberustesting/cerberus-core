@@ -1,5 +1,5 @@
 <!--Mass Action on a Build Content List -->
-<div data-backdrop="static" class="modal fade center" id="massActionBrpModal" tabindex="-1" role="dialog" aria-labelledby="massActionBrpModalLabel" aria-hidden="true">
+<div data-backdrop="static" class="modal fade center" id="massActionExeQModal" tabindex="-1" role="dialog" aria-labelledby="massActionBrpModalLabel" aria-hidden="true">
     <div class="modal-dialog nomargintop nomarginbottom modal-md">
         <div class="modal-content">
             <div class="modal-header">
@@ -9,7 +9,7 @@
             <div class="modal-body">
 
                 <!--add form-->
-                <form id="massActionBrpModalForm" name="massActionBrpModalForm"  title="Massive Update" role="form">
+                <form id="massActionExeQModalForm" name="massActionBrpModalForm"  title="Massive Update" role="form">
                     <div class="container-fluid center">
                         <!-- messages area-->
                         <div id="DialogMessagesArea">
@@ -22,35 +22,18 @@
                         </div>
                         <ul id="tabsMassActions" class="nav nav-tabs" data-tabs="tabs">
                             <li class="active"><a data-toggle="tab" href="#tabsMass-1" id="massTab1Text" name="tabState">Set state</a></li>
-                            <li><a data-toggle="tab" href="#tabsMass-2" id="massTab2Text" name="tabRun">Run in waiting executions</a></li>
-                            <li><a data-toggle="tab" href="#tabsMass-3" id="massTab3Text" name="tabDelete">Delete</a></li>
                         </ul>
                         <div class="tab-content">
                             <div class="center marginTop25 tab-pane fade in active" id="tabsMass-1">
                                 <div class="row">
-                                    <div class="form-group col-xs-6">
-                                        <label for="state" name="stateField">State</label>
-                                        <select class="form-control"  id="massState" name="state">
-                                        </select>
+                                    <div class="form-group col-xs-4">
+                                        <button type="button" id="massActionExeQButtonSubmit" class="btn btn-primary" name="buttonStateSubmit">Submit</button>
                                     </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group col-xs-12">
-                                        <button type="button" id="massActionBrpButtonSetState" class="btn btn-primary" name="buttonState">Set state</button>
+                                    <div class="form-group col-xs-4">
+                                        <button type="button" id="massActionExeQButtonCancel" class="btn btn-primary" name="buttonStateCancel">Cancel</button>
                                     </div>
-                                </div>
-                            </div>
-                            <div class="center marginTop25 tab-pane fade" id="tabsMass-2">
-                                <div class="row">
-                                    <div class="form-group col-xs-2">
-                                        <button type="button" id="massActionBrpButtonRun" class="btn btn-primary" name="buttonRun">Run in waiting executions</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="center marginTop25 tab-pane fade" id="tabsMass-3">
-                                <div class="row">
-                                    <div class="form-group col-xs-2">
-                                        <button type="button" id="massActionBrpButtonDelete" class="btn btn-primary" name="buttonDelete">Delete</button>
+                                    <div class="form-group col-xs-4">
+                                        <button type="button" id="massActionExeQButtonCopy" class="btn btn-primary" name="buttonStateCopy">Copy and Submit</button>
                                     </div>
                                 </div>
                             </div>

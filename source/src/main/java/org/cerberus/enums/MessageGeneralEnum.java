@@ -75,6 +75,7 @@ public enum MessageGeneralEnum {
     EXECUTION_OK(1, "OK", "The test case finished successfully"),
     EXECUTION_KO(2, "KO", "The test case finished, but failed on validations."),
     EXECUTION_FA(3, "FA", "The test case failed to be executed. More lickely due to an error in the test or in cerberus configuration."),
+    EXECUTION_FA_SERVLETVALIDATONS(14, "FA", "The test case failed to be submitted."),
     EXECUTION_FA_ACTION(4, "FA", "The test case failed to be executed because of an action."),
     EXECUTION_FA_SELENIUM(8, "FA", "The test case failed to be executed. Could not start Selenium. %MES%."),
     EXECUTION_FA_CONNECTIVITY(10, "FA", "The test case failed to be executed. Connectivity issues were found."),

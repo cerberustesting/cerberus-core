@@ -1465,9 +1465,9 @@ function showTitleWhenTextOverflow() {
 //    });
 
 }
-///////////////////////////////////////////////////////////////////////////////
-/////////////////////SEARCH/FILTERS////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
+
+/***************************SEARCH/FILTERS**************************************/
+
 /**
  * Function that allow to reset the filter selected
  * @param {type} oTable datatable object
@@ -1609,6 +1609,7 @@ function clearIndividualFilter(tableId, columnNumber, clearGlobalSearch) {
     var oTable = $('#' + tableId).dataTable();
     resetFilters(oTable, columnNumber, clearGlobalSearch);
 }
+
 /**
  * Function that allow to clear filter individually
  * @param {type} tableId >> ID of the datatable
@@ -1621,6 +1622,7 @@ function clearIndividualFilterForClientSide(tableId, columnNumber, clearGlobalSe
     var oTable = $('#' + tableId).dataTable();
     resetFilters(oTable, columnNumber, clearGlobalSearch);
 }
+
 /**
  * Function that allow display of individual column when the table is created client side
  * @param {type} tableId >> ID of the datatable
@@ -1848,6 +1850,7 @@ function displayColumnSearchForClientSideTable(tableData, tableId, oSettings) {
 
     });
 }
+
 /**
  * Function that allow display of individual column searching on datatable
  * @param {type} tableId >> ID of the datatable

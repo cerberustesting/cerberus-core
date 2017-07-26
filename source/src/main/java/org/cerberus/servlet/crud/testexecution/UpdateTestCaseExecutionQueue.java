@@ -1,0 +1,291 @@
+/**
+ * Cerberus Copyright (C) 2013 - 2017 cerberustesting
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ * This file is part of Cerberus.
+ *
+ * Cerberus is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Cerberus is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package org.cerberus.servlet.crud.testexecution;
+
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import org.cerberus.crud.entity.TestCaseExecutionQueue;
+import org.cerberus.crud.service.ILogEventService;
+import org.cerberus.crud.service.ITestCaseExecutionQueueService;
+import org.cerberus.crud.service.impl.LogEventService;
+import org.cerberus.engine.entity.MessageEvent;
+import org.cerberus.engine.threadpool.IExecutionThreadPoolService;
+import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.exception.CerberusException;
+import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.StringUtil;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerUtil;
+import org.cerberus.util.servlet.ServletUtil;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.owasp.html.PolicyFactory;
+import org.owasp.html.Sanitizers;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+
+/**
+ *
+ * @author bcivel
+ */
+@WebServlet(name = "UpdateTestCaseExecutionQueue", urlPatterns = {"/UpdateTestCaseExecutionQueue"})
+public class UpdateTestCaseExecutionQueue extends HttpServlet {
+
+    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(UpdateTestCaseExecutionQueue.class);
+
+    /**
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException, CerberusException, JSONException {
+        JSONObject jsonResponse = new JSONObject();
+        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+        Answer ans = new Answer();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+        ans.setResultMessage(msg);
+        PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
+        String charset = request.getCharacterEncoding();
+
+        response.setContentType("application/json");
+
+        // Calling Servlet Transversal Util.
+        ServletUtil.servletStart(request);
+
+        /**
+         * Parsing and securing all required parameters.
+         */
+        // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
+        String actionState = policy.sanitize(request.getParameter("actionState"));
+        String actionSave = policy.sanitize(request.getParameter("actionSave"));
+        String environment = policy.sanitize(request.getParameter("environment"));
+        String country = policy.sanitize(request.getParameter("country"));
+        String manualEnvData = policy.sanitize(request.getParameter("manualEnvData"));
+        // Parameter that needs to be secured --> We SECURE+DECODE them
+        String test = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("test"), "", charset);
+        String testcase = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("testCase"), "", charset);
+        int manualURL = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("manualURL"), 0, charset);
+        String manualHost = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("manualHost"), "", charset);
+        String manualContextRoot = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("manualContextRoot"), "", charset);
+        String manualLoginRelativeURL = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("manualLoginRelativeURL"), "", charset);
+        String tag = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("tag"), "", charset);
+        String robot = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("robot"), "", charset);
+        String robotIP = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("robotIP"), "", charset);
+        String robotPort = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("robotPort"), "", charset);
+        String browser = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("browser"), "", charset);
+        String browserVersion = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("browserVersion"), "", charset);
+        String platform = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("platform"), "", charset);
+        String screenSize = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("screenSize"), "", charset);
+
+        int verbose = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("verbose"), 1, charset);
+        int screenshot = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("screenshot"), 0, charset);
+        int pageSource = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("pageSource"), 0, charset);
+        int seleniumLog = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("seleniumLog"), 0, charset);
+        String timeout = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("timeout"), "", charset);
+        int retries = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("retries"), 0, charset);
+        String manualExecution = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("manualExecution"), "", charset);
+
+        // Parameter that we cannot secure as we need the html --> We DECODE them
+        String[] myIds = request.getParameterValues("id");
+        long id = 0;
+
+        // Prepare the final answer.
+        MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
+        Answer finalAnswer = new Answer(msg1);
+
+        boolean id_error = false;
+        for (String myId : myIds) {
+            
+            id_error = false;
+            try {
+                id = Long.valueOf(myId);
+            } catch (NumberFormatException ex) {
+                id_error = true;
+            }
+
+            /**
+             * Checking all constrains before calling the services.
+             */
+            if (id_error) {
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "Execution Queue")
+                        .replace("%OPERATION%", "Update")
+                        .replace("%REASON%", "Could not manage to convert id to an integer value."));
+                ans.setResultMessage(msg);
+                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+            } else {
+                /**
+                 * All data seems cleans so we can call the services.
+                 */
+                ITestCaseExecutionQueueService executionQueueService = appContext.getBean(ITestCaseExecutionQueueService.class);
+                IExecutionThreadPoolService executionThreadPoolService = appContext.getBean(IExecutionThreadPoolService.class);
+
+                AnswerItem resp = executionQueueService.readByKey(id);
+                if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem() != null)) {
+                    /**
+                     * Object could not be found. We stop here and report the
+                     * error.
+                     */
+                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) resp);
+
+                } else {
+
+                    if (actionSave.equals("save")) {
+                        /**
+                         * The service was able to perform the query and confirm
+                         * the object exist, then we can update it.
+                         */
+                        TestCaseExecutionQueue executionQueueData = (TestCaseExecutionQueue) resp.getItem();
+                        executionQueueData.setTest(test);
+                        executionQueueData.setTestCase(testcase);
+                        executionQueueData.setTag(tag);
+                        executionQueueData.setEnvironment(environment);
+                        executionQueueData.setCountry(country);
+                        executionQueueData.setManualURL(manualURL);
+                        executionQueueData.setManualHost(manualHost);
+                        executionQueueData.setManualContextRoot(manualContextRoot);
+                        executionQueueData.setManualLoginRelativeURL(manualLoginRelativeURL);
+                        executionQueueData.setManualEnvData(manualEnvData);
+                        executionQueueData.setRobot(robot);
+                        executionQueueData.setRobotIP(robotIP);
+                        executionQueueData.setRobotPort(robotPort);
+                        executionQueueData.setBrowser(browser);
+                        executionQueueData.setBrowserVersion(browserVersion);
+                        executionQueueData.setPlatform(platform);
+                        executionQueueData.setScreenSize(screenSize);
+                        executionQueueData.setVerbose(verbose);
+                        executionQueueData.setScreenshot(screenshot);
+                        executionQueueData.setPageSource(pageSource);
+                        executionQueueData.setSeleniumLog(seleniumLog);
+                        executionQueueData.setTimeout(timeout);
+                        executionQueueData.setRetries(retries);
+                        executionQueueData.setManualExecution(manualExecution);
+                        executionQueueData.setUsrModif(request.getRemoteUser());
+                        ans = executionQueueService.update(executionQueueData);
+                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+
+                        if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                            /**
+                             * Update was successfull. Adding Log entry.
+                             */
+                            ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                            logEventService.createForPrivateCalls("/UpdateTestCaseExecutionQueue", "UPDATE", "Updated ExecutionQueue : ['" + id + "']", request);
+                        }
+
+                    }
+
+                    // Update is done, we now check what action needs to be performed.
+                    if (actionState.equals("toWAITING")) {
+                        LOG.debug("toWAITING");
+                        ans = executionQueueService.updateToWaiting(id, "Trigered by user " + request.getRemoteUser() + ".");
+                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                        executionThreadPoolService.executeNextInQueue(id);
+                    }
+
+                    // Update is done, we now check what action needs to be performed.
+                    if (actionState.equals("toCANCELLED")) {
+                        LOG.debug("toCANCELLED");
+                        ans = executionQueueService.updateToCancelled(id, "Cancelled by user " + request.getRemoteUser() + ".");
+                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+
+                    }
+
+                }
+            }
+        }
+
+        /**
+         * Formating and returning the json result.
+         */
+        jsonResponse.put("messageType", finalAnswer.getResultMessage().getMessage().getCodeString());
+        jsonResponse.put("message", finalAnswer.getResultMessage().getDescription());
+
+        response.getWriter().print(jsonResponse);
+        response.getWriter().flush();
+    }
+
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+    /**
+     * Handles the HTTP <code>GET</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        try {
+            processRequest(request, response);
+
+        } catch (CerberusException ex) {
+            Logger.getLogger(UpdateTestCaseExecutionQueue.class
+                    .getName()).log(Level.SEVERE, null, ex);
+        } catch (JSONException ex) {
+            Logger.getLogger(UpdateTestCaseExecutionQueue.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    /**
+     * Handles the HTTP <code>POST</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        try {
+            processRequest(request, response);
+
+        } catch (CerberusException ex) {
+            Logger.getLogger(UpdateTestCaseExecutionQueue.class
+                    .getName()).log(Level.SEVERE, null, ex);
+        } catch (JSONException ex) {
+            Logger.getLogger(UpdateTestCaseExecutionQueue.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    /**
+     * Returns a short description of the servlet.
+     *
+     * @return a String containing servlet description
+     */
+    @Override
+    public String getServletInfo() {
+        return "Short description";
+    }// </editor-fold>
+}

@@ -392,7 +392,7 @@ public class ExecutionStartService implements IExecutionStartService {
         /**
          * Start server if execution is not manual
          */
-        if (!tCExecution.isManualExecution()) {
+        if (!tCExecution.getManualExecution().equals("Y")) {
             tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_STARTINGROBOTSERVER));
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
                     || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
@@ -441,7 +441,7 @@ public class ExecutionStartService implements IExecutionStartService {
                 tCExecution.setId(runID);
                 executionUUIDObject.setExecutionUUID(tCExecution.getExecutionUUID(), tCExecution);
                 // Update Queue Execution here.
-                inQueueService.toDone(tCExecution.getQueueID(), "", runID);
+                inQueueService.updateToDone(tCExecution.getQueueID(), "", runID);
 
             } else {
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_COULDNOTCREATE_RUNID);
@@ -462,7 +462,7 @@ public class ExecutionStartService implements IExecutionStartService {
          * Stop the browser if executionID is equal to zero (to prevent database
          * instabilities)
          */
-        if (!tCExecution.isManualExecution()) {
+        if (!tCExecution.getManualExecution().equals("Y")) {
             try {
                 if (tCExecution.getId() == 0) {
                     LOG.debug("Starting to Stop the Selenium Server.");

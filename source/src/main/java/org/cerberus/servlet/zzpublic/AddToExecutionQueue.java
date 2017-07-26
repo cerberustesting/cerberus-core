@@ -110,16 +110,14 @@ public class AddToExecutionQueue extends HttpServlet {
     private static final String PARAMETER_RETRIES = "retries";
     private static final String PARAMETER_MANUAL_EXECUTION = "manualExecution";
 
-    private static final String DEFAULT_VALUE_OUTPUT_FORMAT = "compact";
     private static final int DEFAULT_VALUE_SCREENSHOT = 0;
-    private static final boolean DEFAULT_VALUE_MANUAL_URL = false;
+    private static final int DEFAULT_VALUE_MANUAL_URL = 0;
     private static final int DEFAULT_VALUE_VERBOSE = 0;
     private static final long DEFAULT_VALUE_TIMEOUT = 300;
-    private static final boolean DEFAULT_VALUE_SYNCHRONEOUS = true;
     private static final int DEFAULT_VALUE_PAGE_SOURCE = 1;
     private static final int DEFAULT_VALUE_SELENIUM_LOG = 1;
     private static final int DEFAULT_VALUE_RETRIES = 0;
-    private static final boolean DEFAULT_VALUE_MANUAL_EXECUTION = false;
+    private static final String DEFAULT_VALUE_MANUAL_EXECUTION = "N";
 
     private static final String LINE_SEPARATOR = "\n";
 
@@ -214,7 +212,7 @@ public class AddToExecutionQueue extends HttpServlet {
             List<String> errorMessages = new ArrayList<String>();
             for (TestCaseExecutionQueue toInsert : toInserts) {
                 try {
-                    inQueueService.insert(toInsert);
+                    inQueueService.convert(inQueueService.create(toInsert));
                 } catch (CerberusException e) {
                     String errorMessage = "Unable to insert " + toInsert.toString() + " due to " + e.getMessage();
                     LOG.warn(errorMessage);
@@ -329,20 +327,18 @@ public class AddToExecutionQueue extends HttpServlet {
         String robotPort = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter(PARAMETER_ROBOT_PORT), null, charset);
         String browserVersion = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter(PARAMETER_BROWSER_VERSION), null, charset);
         String platform = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter(PARAMETER_PLATFORM), null, charset);
-        boolean manualURL = ParameterParserUtil.parseBooleanParamAndDecode(request.getParameter(PARAMETER_MANUAL_URL), DEFAULT_VALUE_MANUAL_URL, charset);
+        int manualURL = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_MANUAL_URL), DEFAULT_VALUE_MANUAL_URL, charset);
         String manualHost = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter(PARAMETER_MANUAL_HOST), null, charset);
         String manualContextRoot = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter(PARAMETER_MANUAL_CONTEXT_ROOT), null, charset);
         String manualLoginRelativeURL = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter(PARAMETER_MANUAL_LOGIN_RELATIVE_URL), null, charset);
         String manualEnvData = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter(PARAMETER_MANUAL_ENV_DATA), null, charset);
-        String outputFormat = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter(PARAMETER_OUTPUT_FORMAT), DEFAULT_VALUE_OUTPUT_FORMAT, charset);
         int screenshot = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_SCREENSHOT), DEFAULT_VALUE_SCREENSHOT, charset);
         int verbose = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_VERBOSE), DEFAULT_VALUE_VERBOSE, charset);
         String timeout = request.getParameter(PARAMETER_TIMEOUT);
-        boolean synchroneous = ParameterParserUtil.parseBooleanParamAndDecode(request.getParameter(PARAMETER_SYNCHRONEOUS), DEFAULT_VALUE_SYNCHRONEOUS, charset);
         int pageSource = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_PAGE_SOURCE), DEFAULT_VALUE_PAGE_SOURCE, charset);
         int seleniumLog = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_SELENIUM_LOG), DEFAULT_VALUE_SELENIUM_LOG, charset);
         int retries = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_RETRIES), DEFAULT_VALUE_RETRIES, charset);
-        boolean manualExecution = ParameterParserUtil.parseBooleanParamAndDecode(request.getParameter(PARAMETER_MANUAL_EXECUTION), DEFAULT_VALUE_MANUAL_EXECUTION, charset);
+        String manualExecution = ParameterParserUtil.parseStringParamAndDecode(request.getParameter(PARAMETER_MANUAL_EXECUTION), DEFAULT_VALUE_MANUAL_EXECUTION, charset);
 
         List<TestCaseExecutionQueue> inQueues = new ArrayList<TestCaseExecutionQueue>();
         for (Map<String, String> selectedTest : selectedTests) {
@@ -352,33 +348,9 @@ public class AddToExecutionQueue extends HttpServlet {
                 for (String environment : environments) {
                     for (String browser : browsers) {
                         try {
-                            inQueues.add(inQueueFactoryService.create(test,
-                                    testCase,
-                                    country,
-                                    environment,
-                                    robot,
-                                    robotIP,
-                                    robotPort,
-                                    browser,
-                                    browserVersion,
-                                    platform,
-                                    "",
-                                    manualURL,
-                                    manualHost,
-                                    manualContextRoot,
-                                    manualLoginRelativeURL,
-                                    manualEnvData,
-                                    tag,
-                                    screenshot,
-                                    verbose,
-                                    timeout,
-                                    pageSource,
-                                    seleniumLog,
-                                    requestDate,
-                                    retries,
-                                    manualExecution,
-                                    request.getRemoteUser(),
-                                    null, null, null));
+                            inQueues.add(inQueueFactoryService.create(test, testCase, country, environment, robot, robotIP, robotPort, browser, browserVersion,
+                                    platform, "", manualURL, manualHost, manualContextRoot, manualLoginRelativeURL, manualEnvData, tag, screenshot, verbose, timeout, pageSource,
+                                    seleniumLog, 0, retries, manualExecution, request.getRemoteUser(), null, null, null));
                         } catch (FactoryCreationException e) {
                             throw new ParameterException("Unable to insert record due to: " + e.getMessage(), e);
                         }

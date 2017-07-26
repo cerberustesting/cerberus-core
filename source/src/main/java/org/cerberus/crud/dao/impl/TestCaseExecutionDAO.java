@@ -115,7 +115,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 preStat.setString(i++, tCExecution.getConditionVal2Init());
                 preStat.setString(i++, tCExecution.getConditionVal1());
                 preStat.setString(i++, tCExecution.getConditionVal2());
-                preStat.setString(i++, tCExecution.isManualExecution() ? "Y" : "N");
+                preStat.setString(i++, tCExecution.getManualExecution());
                 preStat.setString(i++, tCExecution.getUserAgent());
                 preStat.setLong(i++, tCExecution.getQueueID());
 
@@ -204,7 +204,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 preStat.setString(i++, tCExecution.getConditionVal2Init());
                 preStat.setString(i++, tCExecution.getConditionVal1());
                 preStat.setString(i++, tCExecution.getConditionVal2());
-                preStat.setString(i++, tCExecution.isManualExecution() ? "Y" : "N");
+                preStat.setString(i++, tCExecution.getManualExecution());
                 preStat.setString(i++, tCExecution.getUserAgent());
                 preStat.setLong(i++, tCExecution.getQueueID());
                 preStat.setLong(i++, tCExecution.getId());
@@ -1850,7 +1850,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         String conditionVal1Init = ParameterParserUtil.parseStringParam(resultSet.getString("exe.conditionVal1Init"), "");
         String conditionVal2 = ParameterParserUtil.parseStringParam(resultSet.getString("exe.conditionVal2"), "");
         String conditionVal2Init = ParameterParserUtil.parseStringParam(resultSet.getString("exe.conditionVal2Init"), "");
-        boolean manualExecution = ParameterParserUtil.parseBooleanParam(resultSet.getString("exe.manualExecution"), false);
+        String manualExecution = ParameterParserUtil.parseStringParam(resultSet.getString("exe.manualExecution"), "N");
         String userAgent = ParameterParserUtil.parseStringParam(resultSet.getString("exe.userAgent"), "");
         long queueId = ParameterParserUtil.parseLongParam(resultSet.getString("exe.queueId"), 0);
         TestCaseExecution result = factoryTCExecution.create(id, test, testcase, description, build, revision, environment,

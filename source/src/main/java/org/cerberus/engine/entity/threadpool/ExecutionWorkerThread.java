@@ -31,13 +31,13 @@ import org.apache.http.client.fluent.Request;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.entity.CountryEnvironmentParameters;
 import org.cerberus.crud.entity.TestCaseExecutionQueue;
+import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.servlet.zzpublic.RunTestCase;
 import org.cerberus.util.ParamRequestMaker;
 import org.cerberus.util.ParameterParserUtil;
-import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 
 /**
  * Execute a {@link TestCaseExecutionQueue}
@@ -110,6 +110,7 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
             add(MessageGeneralEnum.VALIDATION_FAILED_URL_MALFORMED.getCode());
             add(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_COULDNOTCONNECT.getCode());
             add(MessageGeneralEnum.EXECUTION_FA_SELENIUM.getCode());
+            add(MessageGeneralEnum.EXECUTION_FA_SERVLETVALIDATONS.getCode());
 
             // Pre-execution checks (from SikuliService)
             add(MessageEventEnum.ACTION_FAILED_SIKULI_SERVER_NOT_REACHABLE.getCode());
@@ -212,7 +213,7 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
                 paramRequestMaker.addParam(RunTestCase.PARAMETER_BROWSER_VERSION, executionWorkerThread.getToExecute().getBrowserVersion());
                 paramRequestMaker.addParam(RunTestCase.PARAMETER_PLATFORM, executionWorkerThread.getToExecute().getPlatform());
                 paramRequestMaker.addParam(RunTestCase.PARAMETER_SCREEN_SIZE, executionWorkerThread.getToExecute().getScreenSize());
-                if (executionWorkerThread.getToExecute().isManualURL()) {
+                if (executionWorkerThread.getToExecute().getManualURL() >= 1) {
                     paramRequestMaker.addParam(RunTestCase.PARAMETER_MANUAL_URL, ParameterParserUtil.DEFAULT_BOOLEAN_TRUE_VALUE);
                     paramRequestMaker.addParam(RunTestCase.PARAMETER_MANUAL_HOST, URLEncoder.encode(executionWorkerThread.getToExecute().getManualHost(), "UTF-8"));
                     paramRequestMaker.addParam(RunTestCase.PARAMETER_MANUAL_CONTEXT_ROOT, URLEncoder.encode(executionWorkerThread.getToExecute().getManualContextRoot(), "UTF-8"));
@@ -230,11 +231,7 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
                 paramRequestMaker.addParam(RunTestCase.PARAMETER_EXECUTION_QUEUE_ID, Long.toString(executionWorkerThread.getToExecute().getId()));
                 paramRequestMaker.addParam(RunTestCase.PARAMETER_NUMBER_OF_RETRIES, Long.toString(executionWorkerThread.getToExecute().getRetries()));
                 paramRequestMaker.addParam(RunTestCase.PARAMETER_EXECUTOR, executionWorkerThread.getToExecute().getUsrCreated());
-                String manual = "N";
-                if (executionWorkerThread.getToExecute().isManualExecution()) {
-                    manual = "Y";
-                }
-                paramRequestMaker.addParam(RunTestCase.PARAMETER_MANUAL_EXECUTION, manual);
+                paramRequestMaker.addParam(RunTestCase.PARAMETER_MANUAL_EXECUTION, executionWorkerThread.getToExecute().getManualExecution());
             } catch (UnsupportedEncodingException ex) {
                 LOG.error("Error when encoding string in URL : ", ex);
             }
@@ -345,14 +342,13 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
                 return;
             }
             runParseAnswer(runExecution());
-//            runRemoveExecutionInQueue();
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Execution in queue " + toExecute.getId() + " has been successfully executed");
             }
         } catch (RunProcessException e) {
             LOG.warn("Execution in queue " + toExecute.getId() + " has finished with error", e);
             try {
-                inQueueService.toError(toExecute.getId(), e.getMessage());
+                inQueueService.updateToError(toExecute.getId(), e.getMessage());
             } catch (CerberusException again) {
                 LOG.warn("Unable to mark execution in queue " + toExecute.getId() + " as in error", again);
             }
@@ -368,7 +364,7 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
      */
     private boolean runFromQueuedToExecuting() {
         try {
-            inQueueService.toExecuting(toExecute.getId());
+            inQueueService.updateToExecuting(toExecute.getId());
             return true;
         } catch (CerberusException e) {
             LOG.warn("Unable to mark execution in queue " + toExecute.getId() + " as executing. Is execution in queue currently marked as queued?", e);
@@ -386,6 +382,8 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
      */
     private String runExecution() {
         try {
+            LOG.debug("Trigger Execution to URL : " + toExecuteUrl);
+            LOG.debug("Trigger Execution with TimeOut : " + toExecuteTimeout);
             return Request
                     .Get(toExecuteUrl)
                     .connectTimeout(toExecuteTimeout)
@@ -418,6 +416,8 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
      */
     private void runParseAnswer(String answer) {
         // Check answer format
+        LOG.debug("Parsing Execution result : " + answer);
+
         Matcher matcher = RETURN_CODE_FROM_ANSWER_PATTERN.matcher(answer);
         if (!matcher.find()) {
             LOG.warn("Bad answer format: " + answer);
@@ -440,21 +440,6 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
                 throw new RunProcessException("Bad answer format. Expected " + PARAMETER_OUTPUT_FORMAT_VALUE + ". Check server logs");
             }
             throw new RunProcessException(descriptionMatcher.group(1));
-        }
-    }
-
-    /**
-     * Remove the inner execution in queue from the execution in queue table
-     *
-     * @throws RunProcessException if an error occurred during execution in
-     * queue removal
-     * @see #run()
-     */
-    private void runRemoveExecutionInQueue() {
-        try {
-            inQueueService.remove(toExecute.getId());
-        } catch (CerberusException e) {
-            throw new RunProcessException("Unable to remove execution in queue " + toExecute.getId() + " due to " + e.getMessageError(), e);
         }
     }
 
