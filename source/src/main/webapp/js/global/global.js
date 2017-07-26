@@ -1373,7 +1373,7 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
     }
     $("#" + tableConfigurations.divId + "_length").addClass("marginBottom10").addClass("width80").addClass("pull-left");
     $("#" + tableConfigurations.divId + "_filter").addClass("marginBottom10").addClass("width150").addClass("pull-left");
-
+    
     return oTable;
 }
 
@@ -1463,7 +1463,7 @@ function showTitleWhenTextOverflow() {
 //            });
 //        }
 //    });
-
+    
 }
 
 /***************************SEARCH/FILTERS**************************************/
@@ -2714,6 +2714,7 @@ function showPicture(title, pictureUrl) {
     $('#modalContent').empty();
     //set the translations
     $('#modalContent').append($('<img>').addClass("selectedPicture").attr("src", pictureUrl + "&h=400&w=800"));
+    $('#modalContent').css("overflow","auto");
     if ($("#btnFullPicture").length > 0) {
         $("#btnFullPicture").remove();
     }
