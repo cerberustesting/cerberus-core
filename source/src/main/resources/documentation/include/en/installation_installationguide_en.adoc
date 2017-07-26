@@ -1,5 +1,36 @@
 === Manual installation
 
+. *[RED]#For Linux#* :
+.. Requirments :
+... MySQL/MariaDB server and client (MySQL 5.6.x preferred but depending on your ditstribution, you'll not be able to get it)
+... Java 1.8 (package name : openjdk-8-java)
+... glassfish server (4.1.1) : you can download it on their website (if you are on CLI, just use wget on the download url)
+.... You'll have to add MySQL JDBC connector drivers that you can get there : http://dev.mysql.com/downloads/connector/j/
+.... You must add AS_JAVA="path/to/java/folder/" in glassfish/config/asenv.conf
+.. Cerberus installation :
+... Download the last release of Cerberus Testing on the sourceforge : https://sourceforge.net/projects/cerberus-source/files/
+... Setup your MySQL/MariaDB database :
+.... Connect on your MySQL/MariaDB server (Default : mysql -u root -proot)
+.... Type these commands :
+..... CREATE USER 'cerberus'@'%' IDENTIFIED BY 'toto';
+..... GRANT USAGE ON * . * TO 'cerberus'@'%' IDENTIFIED BY 'toto';
+..... GRANT USAGE ON * . * TO 'cerberus'@'localhost' IDENTIFIED BY 'toto';
+..... CREATE DATABASE IF NOT EXISTS `cerberus` ;
+..... GRANT ALL PRIVILEGES ON `cerberus` . * TO 'cerberus'@'%';
+... Edit the file 00Config.sh (CerberusFolder/bin/) with your connection parameters and set the GLASSFISHPATH to the path to the bin folder of glassfish 
+... Run 01AppServerConfig.sh (CerberusFolder/bin/) it will set the default configs of Cerberus Testing like the connection to the Cerberus database
+... Run 02DeployApp.sh (CerberusFolder/bin/) it will check that there's no deployed Cerberus App and deploy the Cerberus App in the contextroot specified (Default : /Cerberus)
+... You're done ! You should be able to access to your Cerberus App from your website (example : http://localhost:8080/Cerberus)
+.. Selenium installation :
+... Download the Selenium Standalone : http://selenium-release.storage.googleapis.com/2.53/selenium-server-standalone-2.53.1.jar (I recommand this version for a stable usage with Cerberus)
+... Download the JSON configuration file for the node that will manage your browsers : https://github.com/SeleniumHQ/selenium/blob/selenium-2.53.0/java/server/src/org/openqa/grid/common/defaults/DefaultNode.json
+... Download the package firefox-esr
+... To launch Selenium type these commands :
+.... java -jar (path/to/)selenium-server-standalone-2.53.1.jar -role hub
+.... java -jar (path/to/)selenium-server-standalone-2.53.1.jar -role node -nodeConfig (path/to/)DefaultNode.json
+... Your selenium server is now running !
+
+
 === Docker
 
 . *[RED]#For Windows#* :
