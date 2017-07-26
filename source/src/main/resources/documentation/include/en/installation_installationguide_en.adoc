@@ -1,7 +1,7 @@
 === Manual installation
 
 . *[RED]#For Linux#* :
-.. Requirments :
+.. Requirements :
 ... MySQL/MariaDB server and client (MySQL 5.6.x preferred but depending on your ditstribution, you'll not be able to get it)
 ... Java 1.8 (package name : openjdk-8-java)
 ... glassfish server (4.1.1) : you can download it on their website (if you are on CLI, just use wget on the download url)
@@ -17,9 +17,10 @@
 ..... GRANT USAGE ON * . * TO 'cerberus'@'localhost' IDENTIFIED BY 'toto';
 ..... CREATE DATABASE IF NOT EXISTS `cerberus` ;
 ..... GRANT ALL PRIVILEGES ON `cerberus` . * TO 'cerberus'@'%';
-... Edit the file 00Config.sh (CerberusFolder/bin/) with your connection parameters and set the GLASSFISHPATH to the path to the bin folder of glassfish 
-... Run 01AppServerConfig.sh (CerberusFolder/bin/) it will set the default configs of Cerberus Testing like the connection to the Cerberus database
-... Run 02DeployApp.sh (CerberusFolder/bin/) it will check that there's no deployed Cerberus App and deploy the Cerberus App in the contextroot specified (Default : /Cerberus)
+... Edit the file (CerberusFolder/bin/)00Config.sh with your connection parameters and set the GLASSFISHPATH to the path to the bin folder of glassfish 
+... If you are using MariaDB, you'll have to edit (CerberusFolder/bin/)01AppServerConfig.sh, comment the line under MySQL and uncomment the line under MariaDB.
+... Run (CerberusFolder/bin/)01AppServerConfig.sh it will set the default configs of Cerberus Testing like the connection to the Cerberus database
+... Run (CerberusFolder/bin/)02DeployApp.sh it will check that there's no deployed Cerberus App and deploy the Cerberus App in the contextroot specified (Default : /Cerberus)
 ... You're done ! You should be able to access to your Cerberus App from your website (example : http://localhost:8080/Cerberus)
 .. Selenium installation :
 ... Download the Selenium Standalone : http://selenium-release.storage.googleapis.com/2.53/selenium-server-standalone-2.53.1.jar (I recommand this version for a stable usage with Cerberus)
