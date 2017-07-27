@@ -110,8 +110,11 @@ $.when($.getScript("js/global/global.js")).then(function () {
         loadTagExec();
 
         loadBuildRevTable();
-
+        
+        //close all sidebar menu
+        closeEveryNavbarMenu();
     });
+    
 });
 
 function displayPageLabel() {
