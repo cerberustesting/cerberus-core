@@ -118,7 +118,7 @@ public class SikuliService implements ISikuliService {
     @Override
     public AnswerItem<JSONObject> doSikuliAction(Session session, String action, String locator, String text) {
         AnswerItem<JSONObject> answer = new AnswerItem<JSONObject>();
-        MessageEvent msg;
+        MessageEvent msg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
 
         URL url;
         String urlToConnect = "";
@@ -165,10 +165,14 @@ public class SikuliService implements ISikuliService {
             JSONObject objReceived = new JSONObject(response.toString());
             answer.setItem(objReceived);
 
-            if ("Failed".equals(objReceived.getString("status"))) {
-                msg = new MessageEvent(MessageEventEnum.ACTION_FAILED);
+            if (objReceived.has("status")) {
+                if ("Failed".equals(objReceived.getString("status"))) {
+                    msg = new MessageEvent(MessageEventEnum.ACTION_FAILED);
+                } else {
+                    msg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
+                }
             } else {
-                msg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
+                msg = new MessageEvent(MessageEventEnum.ACTION_FAILED);
             }
             in.close();
             os.close();
@@ -203,13 +207,13 @@ public class SikuliService implements ISikuliService {
     @Override
     public MessageEvent doSikuliActionOpenApp(Session session, String appName) {
         AnswerItem<JSONObject> actionResult = doSikuliAction(session, this.SIKULI_OPENAPP, null, appName);
-        
-        if (actionResult.getResultMessage().equals(MessageEventEnum.ACTION_SUCCESS)) {
+
+        if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_SUCCESS).getCodeString())) {
             MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_OPENAPP);
             message.setDescription(message.getDescription().replace("%APP%", appName));
             return message;
         }
-        if (actionResult.getResultMessage().equals(MessageEventEnum.ACTION_FAILED)) {
+        if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_FAILED).getCodeString())) {
             MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_OPENAPP);
             mes.setDescription(mes.getDescription().replace("%STRING1%", appName));
             return mes;
@@ -221,13 +225,13 @@ public class SikuliService implements ISikuliService {
     @Override
     public MessageEvent doSikuliActionCloseApp(Session session, String appName) {
         AnswerItem<JSONObject> actionResult = doSikuliAction(session, this.SIKULI_CLOSEAPP, null, appName);
-        
-        if (actionResult.getResultMessage().equals(MessageEventEnum.ACTION_SUCCESS)) {
+
+        if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_SUCCESS).getCodeString())) {
             MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLOSEAPP);
             message.setDescription(message.getDescription().replace("%APP%", appName));
             return message;
         }
-        if (actionResult.getResultMessage().equals(MessageEventEnum.ACTION_FAILED)) {
+        if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_FAILED).getCodeString())) {
             MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_CLOSEAPP);
             mes.setDescription(mes.getDescription().replace("%STRING1%", appName));
             return mes;
@@ -241,12 +245,12 @@ public class SikuliService implements ISikuliService {
 
         AnswerItem<JSONObject> actionResult = doSikuliAction(session, this.SIKULI_CLICK, locator, "");
 
-        if (actionResult.getResultMessage().equals(MessageEventEnum.ACTION_SUCCESS)) {
+        if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_SUCCESS).getCodeString())) {
             MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLICK);
             message.setDescription(message.getDescription().replace("%ELEMENT%", locator));
             return message;
         }
-        if (actionResult.getResultMessage().equals(MessageEventEnum.ACTION_FAILED)) {
+        if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_FAILED).getCodeString())) {
             MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_CLICK_NO_SUCH_ELEMENT);
             mes.setDescription(mes.getDescription().replace("%ELEMENT%", locator));
             return mes;
@@ -258,13 +262,13 @@ public class SikuliService implements ISikuliService {
     @Override
     public MessageEvent doSikuliActionRightClick(Session session, String locator) {
         AnswerItem<JSONObject> actionResult = doSikuliAction(session, this.SIKULI_RIGHTCLICK, locator, "");
-        
-        if (actionResult.getResultMessage().equals(MessageEventEnum.ACTION_SUCCESS)) {
+
+        if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_SUCCESS).getCodeString())) {
             MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_RIGHTCLICK);
             message.setDescription(message.getDescription().replace("%ELEMENT%", locator));
             return message;
         }
-        if (actionResult.getResultMessage().equals(MessageEventEnum.ACTION_FAILED)) {
+        if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_FAILED).getCodeString())) {
             MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_RIGHTCLICK_NO_SUCH_ELEMENT);
             mes.setDescription(mes.getDescription().replace("%ELEMENT%", locator));
             return mes;
@@ -282,13 +286,13 @@ public class SikuliService implements ISikuliService {
     @Override
     public MessageEvent doSikuliActionDoubleClick(Session session, String locator) {
         AnswerItem<JSONObject> actionResult = doSikuliAction(session, this.SIKULI_DOUBLECLICK, locator, "");
-        
-        if (actionResult.getResultMessage().equals(MessageEventEnum.ACTION_SUCCESS)) {
+
+        if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_SUCCESS).getCodeString())) {
             MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_DOUBLECLICK);
             message.setDescription(message.getDescription().replace("%ELEMENT%", locator));
             return message;
         }
-        if (actionResult.getResultMessage().equals(MessageEventEnum.ACTION_FAILED)) {
+        if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_FAILED).getCodeString())) {
             MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_DOUBLECLICK_NO_SUCH_ELEMENT);
             mes.setDescription(mes.getDescription().replace("%ELEMENT%", locator));
             return mes;
@@ -300,13 +304,14 @@ public class SikuliService implements ISikuliService {
     @Override
     public MessageEvent doSikuliActionType(Session session, String locator, String text) {
         AnswerItem<JSONObject> actionResult = doSikuliAction(session, this.SIKULI_TYPE, locator, text);
-        
-        if (actionResult.getResultMessage().equals(MessageEventEnum.ACTION_SUCCESS)) {
+
+        if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_SUCCESS).getCodeString())) {
             MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_TYPE);
             message.setDescription(message.getDescription().replace("%ELEMENT%", locator));
+            message.setDescription(message.getDescription().replace("%DATA%", text));
             return message;
         }
-        if (actionResult.getResultMessage().equals(MessageEventEnum.ACTION_FAILED)) {
+        if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_FAILED).getCodeString())) {
             MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_TYPE_NO_SUCH_ELEMENT);
             mes.setDescription(mes.getDescription().replace("%ELEMENT%", locator));
             return mes;
@@ -318,13 +323,13 @@ public class SikuliService implements ISikuliService {
     @Override
     public MessageEvent doSikuliActionMouseOver(Session session, String locator) {
         AnswerItem<JSONObject> actionResult = doSikuliAction(session, this.SIKULI_MOUSEOVER, locator, "");
-        
-        if (actionResult.getResultMessage().equals(MessageEventEnum.ACTION_SUCCESS)) {
+
+        if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_SUCCESS).getCodeString())) {
             MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_MOUSEOVER);
             message.setDescription(message.getDescription().replace("%ELEMENT%", locator));
             return message;
         }
-        if (actionResult.getResultMessage().equals(MessageEventEnum.ACTION_FAILED)) {
+        if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_FAILED).getCodeString())) {
             MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_MOUSEOVER_NO_SUCH_ELEMENT);
             mes.setDescription(mes.getDescription().replace("%ELEMENT%", locator));
             return mes;
@@ -336,13 +341,13 @@ public class SikuliService implements ISikuliService {
     @Override
     public MessageEvent doSikuliActionWait(Session session, String locator) {
         AnswerItem<JSONObject> actionResult = doSikuliAction(session, this.SIKULI_WAIT, locator, "");
-        
-        if (actionResult.getResultMessage().equals(MessageEventEnum.ACTION_SUCCESS)) {
+
+        if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_SUCCESS).getCodeString())) {
             MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT);
             message.setDescription(message.getDescription().replace("%ELEMENT%", locator));
             return message;
         }
-        if (actionResult.getResultMessage().equals(MessageEventEnum.ACTION_FAILED)) {
+        if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_FAILED).getCodeString())) {
             MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_WAIT_NO_SUCH_ELEMENT);
             mes.setDescription(mes.getDescription().replace("%ELEMENT%", locator));
             return mes;
@@ -354,13 +359,13 @@ public class SikuliService implements ISikuliService {
     @Override
     public MessageEvent doSikuliActionWaitVanish(Session session, String locator) {
         AnswerItem<JSONObject> actionResult = doSikuliAction(session, this.SIKULI_WAITVANISH, locator, "");
-        
-        if (actionResult.getResultMessage().equals(MessageEventEnum.ACTION_SUCCESS)) {
+
+        if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_SUCCESS).getCodeString())) {
             MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAITVANISH_ELEMENT);
             message.setDescription(message.getDescription().replace("%ELEMENT%", locator));
             return message;
         }
-        if (actionResult.getResultMessage().equals(MessageEventEnum.ACTION_FAILED)) {
+        if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_FAILED).getCodeString())) {
             MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_RIGHTCLICK_NO_SUCH_ELEMENT);
             mes.setDescription(mes.getDescription().replace("%ELEMENT%", locator));
             return mes;
@@ -372,13 +377,13 @@ public class SikuliService implements ISikuliService {
     @Override
     public MessageEvent doSikuliActionKeyPress(Session session, String locator, String text) {
         AnswerItem<JSONObject> actionResult = doSikuliAction(session, this.SIKULI_KEYPRESS, locator, text);
-        
-        if (actionResult.getResultMessage().equals(MessageEventEnum.ACTION_SUCCESS)) {
+
+        if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_SUCCESS).getCodeString())) {
             MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_KEYPRESS);
             message.setDescription(message.getDescription().replace("%ELEMENT%", locator));
             return message;
         }
-        if (actionResult.getResultMessage().equals(MessageEventEnum.ACTION_FAILED)) {
+        if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_FAILED).getCodeString())) {
             MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_KEYPRESS_OTHER);
             mes.setDescription(mes.getDescription().replace("%KEY%", text));
             return mes;
@@ -390,13 +395,13 @@ public class SikuliService implements ISikuliService {
     @Override
     public MessageEvent doSikuliVerifyElementPresent(Session session, String locator) {
         AnswerItem<JSONObject> actionResult = doSikuliAction(session, this.SIKULI_VERIFYELEMENTPRESENT, locator, "");
-        
-        if (actionResult.getResultMessage().equals(MessageEventEnum.ACTION_SUCCESS)) {
+
+        if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_SUCCESS).getCodeString())) {
             MessageEvent message = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_PRESENT);
             message.setDescription(message.getDescription().replace("%STRING1%", locator));
             return message;
         }
-        if (actionResult.getResultMessage().equals(MessageEventEnum.ACTION_FAILED)) {
+        if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_FAILED).getCodeString())) {
             MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTPRESENT);
             mes.setDescription(mes.getDescription().replace("%STRING1%", locator));
             return mes;
@@ -408,13 +413,13 @@ public class SikuliService implements ISikuliService {
     @Override
     public MessageEvent doSikuliVerifyTextInPage(Session session, String locator) {
         AnswerItem<JSONObject> actionResult = doSikuliAction(session, this.SIKULI_VERIFYTEXTINPAGE, locator, "");
-        
-        if (actionResult.getResultMessage().equals(MessageEventEnum.ACTION_SUCCESS)) {
+
+        if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_SUCCESS).getCodeString())) {
             MessageEvent message = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TEXTINPAGE);
             message.setDescription(message.getDescription().replace("%STRING1%", locator));
             return message;
         }
-        if (actionResult.getResultMessage().equals(MessageEventEnum.ACTION_FAILED)) {
+        if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_FAILED).getCodeString())) {
             MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTINPAGE);
             mes.setDescription(mes.getDescription().replace("%STRING1%", locator));
             return mes;
