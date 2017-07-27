@@ -32,6 +32,7 @@ import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionData;
+import org.cerberus.crud.entity.TestCaseExecutionQueue;
 import org.cerberus.crud.entity.TestCaseExecutionSysVer;
 import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.crud.entity.TestCaseStepAction;
@@ -48,9 +49,9 @@ import org.cerberus.crud.service.ICountryEnvParamService;
 import org.cerberus.crud.service.ILoadTestCaseService;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ITestCaseCountryPropertiesService;
+import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.crud.service.ITestCaseExecutionService;
 import org.cerberus.crud.service.ITestCaseExecutionSysVerService;
-import org.cerberus.crud.service.ITestCaseExecutionwwwSumService;
 import org.cerberus.crud.service.ITestCaseService;
 import org.cerberus.crud.service.ITestCaseStepActionControlExecutionService;
 import org.cerberus.crud.service.ITestCaseStepActionExecutionService;
@@ -65,6 +66,7 @@ import org.cerberus.engine.execution.ISeleniumServerService;
 import org.cerberus.engine.gwt.IActionService;
 import org.cerberus.engine.gwt.IControlService;
 import org.cerberus.engine.gwt.IVariableService;
+import org.cerberus.engine.threadpool.IExecutionThreadPoolService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusEventException;
@@ -110,7 +112,9 @@ public class ExecutionRunService implements IExecutionRunService {
     @Autowired
     private ICountryEnvLinkService countryEnvLinkService;
     @Autowired
-    private ITestCaseExecutionwwwSumService testCaseExecutionwwwSumService;
+    private ITestCaseExecutionQueueService executionQueueService;
+    @Autowired
+    private IExecutionThreadPoolService executionThreadPoolService;
     @Autowired
     private ITestCaseCountryPropertiesService testCaseCountryPropertiesService;
     @Autowired
@@ -644,6 +648,22 @@ public class ExecutionRunService implements IExecutionRunService {
                     + "TestName=" + tCExecution.getEnvironment() + "." + tCExecution.getCountry() + "."
                     + tCExecution.getBuild() + "." + tCExecution.getRevision() + "." + tCExecution.getTest() + "_"
                     + tCExecution.getTestCase() + "_" + tCExecution.getTestCaseObj().getDescription().replace(".", ""));
+
+            /**
+             * Retry maagement, in case the result is not OK, we execute the job
+             * again reducing the retry to 1.
+             */
+            if (tCExecution.getNumberOfRetries() > 0 
+                    && !tCExecution.getResultMessage().getCodeString().equals("OK")
+                    && !tCExecution.getResultMessage().getCodeString().equals("NE")) {
+                TestCaseExecutionQueue newExeQueue = tCExecution.getTestCaseExecutionQueue();
+                newExeQueue.setId(0);
+                newExeQueue.setRetries(newExeQueue.getRetries() - 1);
+                // Insert execution to the Queue.
+                executionQueueService.create(newExeQueue);
+                // Trigger the consumtion of the queue.
+                executionThreadPoolService.executeNextInQueue();
+            }
 
         }
 

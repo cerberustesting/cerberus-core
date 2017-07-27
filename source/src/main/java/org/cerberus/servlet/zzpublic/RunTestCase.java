@@ -49,6 +49,8 @@ import org.cerberus.version.Infos;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.cerberus.crud.factory.IFactoryTestCase;
+import org.cerberus.crud.factory.IFactoryTestCaseExecutionQueue;
+import org.cerberus.exception.FactoryCreationException;
 
 /**
  * {Insert class description here}
@@ -286,14 +288,30 @@ public class RunTestCase extends HttpServlet {
             IRunTestCaseService runTestCaseService = appContext.getBean(IRunTestCaseService.class);
             IFactoryTestCase factoryTCase = appContext.getBean(IFactoryTestCase.class);
             IFactoryTestCaseExecution factoryTCExecution = appContext.getBean(IFactoryTestCaseExecution.class);
+            IFactoryTestCaseExecutionQueue factoryTCExecutionQueue = appContext.getBean(IFactoryTestCaseExecutionQueue.class);
             ITestCaseExecutionService tces = appContext.getBean(ITestCaseExecutionService.class);
             TestCase tCase = factoryTCase.create(test, testCase);
 
+            // Building Execution Object.
             TestCaseExecution tCExecution = factoryTCExecution.create(0, test, testCase, null, null, null, environment, country, browser, version, platform, "",
                     0, 0, "", "", "", null, ss_ip, null, ss_p, tag, verbose, screenshot, getPageSource, getSeleniumLog, synchroneous, timeout, outputFormat, null,
                     Infos.getInstance().getProjectNameAndVersion(), tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL, myEnvData, ss_ip, ss_p,
                     null, new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED), executor, numberOfRetries, screenSize, capabilities,
                     "", "", "", "", "", manualExecution, userAgent);
+
+            /**
+             * Set IdFromQueue
+             */
+            try {
+                tCExecution.setQueueID(idFromQueue);
+
+                TestCaseExecutionQueue queueExecution = factoryTCExecutionQueue.create(idFromQueue, test, testCase, country, environment, robot, ss_ip, ss_p, browser, version,
+                        platform, screenSize, 0, myHost, myContextRoot, myLoginRelativeURL, myEnvData, tag, screenshot, verbose, timeout, getPageSource, getSeleniumLog, 0, numberOfRetries,
+                        manualExecution, executor, null, null, null);
+                tCExecution.setTestCaseExecutionQueue(queueExecution);
+            } catch (FactoryCreationException ex) {
+                LOG.error(ex);
+            }
 
             /**
              * Set UUID
@@ -305,28 +323,11 @@ public class RunTestCase extends HttpServlet {
             LOG.info("Execution Requested : UUID=" + executionUUID);
 
             /**
-             * Set IdFromQueue
-             */
-            tCExecution.setQueueID(idFromQueue);
-
-            /**
              * Loop on the execution of the testcase until we get an OK or
              * reached the number of retries.
              */
-            while (tCExecution.getNumberOfRetries() >= 0 && !tCExecution.getResultMessage().getCodeString().equals("OK")) {
-                try {
-                    LOG.debug("Start execution " + tCExecution.getId());
-                    tCExecution = runTestCaseService.runTestCase(tCExecution);
-                    if (!synchroneous && tCExecution.getNumberOfRetries() > 0) {
-                        LOG.error("Retries is not activated for asynchroneous execution! Testcase will be executed once.");
-                        break;
-                    }
-                    tCExecution.decreaseNumberOfRetries();
-                } catch (Exception ex) {
-                    LOG.error("Error while executing RunTestCase ", ex);
-                    break;
-                }
-            }
+            LOG.debug("Start execution " + tCExecution.getId());
+            tCExecution = runTestCaseService.runTestCase(tCExecution);
 
             /**
              * Clean memory in case testcase has not been launched(Remove all
@@ -450,6 +451,7 @@ public class RunTestCase extends HttpServlet {
             }
 
         } else {
+            // Error occured in the servlet.
             if (outputFormat.equalsIgnoreCase("verbose-txt")) { // Text verbose output.
                 response.setContentType("text/plain");
                 String separator = " = ";

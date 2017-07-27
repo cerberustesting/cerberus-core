@@ -6,6 +6,8 @@
 [square]
 * [ENGINE] new parameter : cerberus_queueexecution_timeout in order to set the timeout when execution is triggered from the queue.
 * [ENGINE] Queue can now be administered from the GUI. Every queue execution can be CANCELLED or modified and resubmitted to WAITING. State workflow documented in doc folder.
+* [ENGINE] Retry on an execution now generate new execution on the queue. That allow the feature to work on sync and async mode.
+* [ENGINE] Added 2 buttons on TestCaseExecution page in order to view the prameters of the corresponding Queue and create a new queue from the existing one.
 
 
 *Warning to be considered before applying the version (deprecated features)*
