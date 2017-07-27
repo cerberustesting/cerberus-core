@@ -3,7 +3,7 @@
 . *[RED]#For Linux#* :
 .. Requirements :
 ... MySQL/MariaDB server and client (MySQL 5.6.x preferred but depending on your ditstribution, you'll not be able to get it)
-... Java 1.8 (package name : openjdk-8-java)
+... Java 1.8 (package name on debian/ubuntu : openjdk-8-java)
 ... glassfish server (4.1.1) : you can download it on their website (if you are on CLI, just use wget on the download url)
 .... You'll have to add MySQL JDBC connector drivers that you can get there : http://dev.mysql.com/downloads/connector/j/
 .... You must add AS_JAVA="path/to/java/folder/" in glassfish/config/asenv.conf
