@@ -22,6 +22,8 @@ $.when($.getScript("js/global/global.js")).then(function () {
         initPage();
         //correct the overflow display when everything is loaded (workaround)
         $('.dataTable').DataTable().draw();
+        //open navbar menu Data
+        openNavbarMenu("navMenuData");
     });
 });
 

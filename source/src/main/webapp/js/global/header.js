@@ -63,15 +63,56 @@ $(document).ready(function () {
  */
 function currentPageLinkHighlight() {
     for (var i in document.getElementsByClassName("nav nav-second-level collapse in")) {
+        
         if (document.getElementsByClassName("nav nav-second-level collapse in")[i].parentElement !== undefined) {
             if (!$("#page-layout").hasClass("extended")) {
                 document.getElementsByClassName("nav nav-second-level collapse in")[i].parentElement.className += " active";
                 document.getElementsByClassName("nav nav-second-level collapse in")[i].parentElement.style.color = "white";
             } else {
-                console.log(document.getElementsByClassName("nav nav-second-level collapse in")[i]);
                 document.getElementsByClassName("nav nav-second-level collapse in")[i].className = "nav nav-second-level collapse";
             }
         }
+    }
+}
+
+/*
+ * close all the submenu on the side bar
+ * @returns {undefined}
+ */
+function closeEveryNavbarMenu() {
+    
+    $('.sidebar-nav .navbar-side-choice').each(function(i, obj) {
+        $(obj).removeClass("active");
+    });
+    $('.sidebar-nav .nav-second-level').each(function(i, obj) {
+        $(obj).removeClass("in");
+    });
+}
+
+/*
+ * open the one sub menu
+ * @param {type} classSelector
+ * @returns {undefined}
+ */
+function openNavbarMenu(idNavMenu){
+    //close all other navbar menu
+    closeEveryNavbarMenu();
+    //correct a display bug on the testDataLib page
+    if ( idNavMenu ==="navMenuData"){
+        $('.sidebar-nav a').each(function(i, obj) {
+            $(obj).removeClass("active");
+        });
+    }
+    //onpen the menu selected if the navbar is active
+    if ( !$("#page-layout").hasClass("extended") ){
+        $('.sidebar-nav .navbar-side-choice').each(function(i, obj) {
+            if ($(obj).attr('id') === idNavMenu){
+                $(obj).addClass("active")
+                var subMenuList = $(obj).find( $(".nav-second-level") );
+                subMenuList.removeClass("collaspe");
+                subMenuList.addClass("in");
+            }
+        });
     }
 }
 
@@ -341,7 +382,7 @@ function displayMenuItem(doc) {
     var user = getUser();
     if (user !== null) {
         for (var group in user.group) {
-            $('#navlist' + '.' + user.group[group]).removeAttr('style');
+            $( '.' + user.group[group] + '.navlist').removeAttr('style');
         }
     }
 

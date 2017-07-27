@@ -411,6 +411,8 @@ $.when($.getScript("js/global/global.js")).then(function () {
                 $("a[name='" + tabactive + "']").click();
             }
         }
+        //close all Navbar menu
+        closeEveryNavbarMenu();
     });
 });
 

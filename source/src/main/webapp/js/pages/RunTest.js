@@ -136,7 +136,9 @@ $.when($.getScript("js/global/global.js")).then(function () {
             $("#countryList input").prop('checked', false);
             updatePotentialNumber();
         });
-
+        
+        //open Run navbar Menu
+        openNavbarMenu("navMenuRun");
     });
 });
 

@@ -7,3 +7,15 @@ A battery is a list of testcase.
 === Test campaign
 
 A campaign is a list of test battery for one(several) country(ies) on one(several) environment(s).
+
+=== Create campaign
+. Go to menu *[red]#Run -> TestCampaign#*
+. Click on *[red]#Create Campaign#* button.
+.. Go to the *[red]#Parameter#* tab:
+.. Select the *[red]#Environnement#* and *[red]#Country#* on which the campaign will run and click on *[red]#Add#* button.
+Note: one can add environnement and country one by one, so that operation may need to be repeated.
+.. Feed the *[red]#Battery#* tab with the appropriate test battery
+.. OR use labels, choose from the *[red]#Label#* tab to apply defined label.
+Note: you need to create appropriate label and apply to your tests beforehand.
+.. Feed the *[red]#Description#* tab with a short description of the campaign.
+.. Click on *[red]#Save#*.

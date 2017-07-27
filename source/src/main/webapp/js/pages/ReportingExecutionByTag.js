@@ -60,6 +60,8 @@ $.when($.getScript("js/global/global.js")).then(function () {
         $('body').tooltip({
             selector: '[data-toggle="tooltip"]'
         });
+        //open Run navbar Menu
+        openNavbarMenu("navMenuExecutionReporting");
     });
 });
 
