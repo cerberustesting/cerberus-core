@@ -13,111 +13,111 @@
             <li class ="navbar-side-choice TestRO" id="navlist" style="display: none">
                 <a href="#">
                   <i class="glyphicon glyphicon-edit"></i>
-                  <span class="nav-text">Test</span>
+                  <span name="menu" id ="menuTest" class="nav-text">Test</span>
                   <span class="fa arrow"></span>
                 </a>
                 <!-- dropdown menu -->
-                <ul class="nav nav-second-level" id="sidenavbar-subnavlist">
-                    <li><a href="Test.jsp">Test</a></li>
-                    <li><a href="TestCaseList.jsp">TestCase</a></li>
-                    <li><a href="TestCaseScript.jsp">Edit TestCase</a></li>
-                    <li><a href="TestBattery.jsp">Test Battery</a></li>
-                    <li><a href="Label.jsp" >Label</a></li>
+                <ul class="nav nav-second-level" id="subnavlist">
+                    <li><a name="menu" id="menuEditTest" href="Test.jsp">Test</a></li>
+                    <li><a name="menu" id="menuTestCaseList" href="TestCaseList.jsp">TestCase</a></li>
+                    <li><a name="menu" id="menuEditTestCase" href="TestCaseScript.jsp">Edit TestCase</a></li>
+                    <li><a name="menu" id="menuTestBattery" href="TestBattery.jsp">Test Battery</a></li>
+                    <li><a name="menu" id="menuLabel" href="Label.jsp" >Label</a></li>
                 </ul>
             </li>
             <li class ="navbar-side-choice TestDataManager" id="navlist" style="display: none">
                 <a href="TestDataLib.jsp">
                   <i class="fa fa-database"></i>
-                  <span class="nav-text">Data </span>
+                  <span name="menu" id="menuData" class="nav-text">Data </span>
                   <span class="fa arrow"></span>
                 </a>
                 <ul class="nav nav-second-level" id="sidenavbar-subnavlist">
-                    <li><a href="TestDataLib.jsp">Test Data Lib</a></li>
+                    <li><a name="menu" id="menuTestDataLib" href="TestDataLib.jsp">Test Data Lib</a></li>
                 </ul>
             </li>
             <li class ="navbar-side-choice RunTest" id="navlist" style="display:none">
                 <a href="TestDataLib.jsp">
                   <i class="fa fa-play-circle"></i>
-                  <span class="nav-text">Run </span>
+                  <span name="menu" id="menuRun" class="nav-text">Run</span>
                   <span class="fa arrow"></span>
                 </a>
                 <!-- dropdown menu -->
                 <ul class="nav nav-second-level" id="sidenavbar-subnavlist">
-                    <li><a  href="RunTests.jsp">Run Tests</a></li>
-                    <li><a  href="TestCaseExecutionQueueList.jsp">See Execution In Queue</a></li>
-                    <li><a  href="Robot.jsp">Robot</a></li>
-                    <li><a  href="TestCampaign.jsp">Test Campaign</a></li>
+                    <li><a name="menu" id="menuRunTestCase" href="RunTests.jsp">Run Tests</a></li>
+                    <li><a name="menu" id="menuRunTestSeePendingExecution" href="TestCaseExecutionQueueList.jsp">See Execution In Queue</a></li>
+                    <li><a name="menu" id="menuRobot" href="Robot.jsp">Robot</a></li>
+                    <li><a name="menu" id="menuTestCampaign" href="TestCampaign.jsp">Test Campaign</a></li>
                 </ul>
             </li>
             <li class ="navbar-side-choice TestRO" id="navlist" style="display:none">
                 <a href="TestDataLib.jsp">
                   <i class="fa fa-pie-chart"></i>
-                  <span class="nav-text">Execution Reporting </span>
+                  <span class="nav-text">Execution Reporting</span>
                   <span class="fa arrow"></span>
                 </a>
                 <!-- dropdown menu -->
                 <ul class="nav nav-second-level" id="sidenavbar-subnavlist">
-                    <li><a  href="TestCaseExecutionList.jsp">Execution List</a></li>
-                    <li><a  href="ReportingExecutionByTag.jsp">Execution Report By Tag</a></li>
+                    <li><a name="menu" id="menuReportingExecutionList" href="TestCaseExecutionList.jsp">Execution List</a></li>
+                    <li><a name="menu" id="menuReportingExecutionByTag" href="ReportingExecutionByTag.jsp">Execution Report By Tag</a></li>
                 </ul>
             </li>
             <li class ="navbar-side-choice IntegratorRO" id="navlist" style="display:none">
                 <a href="TestDataLib.jsp">
                   <i class="fa fa-laptop"></i>
-                  <span class="nav-text">Application  </span>
+                  <span name="menu" id="menuApplications" class="nav-text">Application</span>
                   <span class="fa arrow"></span>
                 </a>
                 <!-- dropdown menu -->
                 <ul class="nav nav-second-level" id="sidenavbar-subnavlist">
-                    <li><a  href="Application.jsp">Applications</a></li>
-                    <li><a  href="ApplicationObject.jsp">Application Objects</a></li>
-                    <li><a  href="AppService.jsp">Service Library</a></li>
-                    <li><a  href="SqlLibrary.jsp">SQL Library</a></li>
-                    <li><a  href="DeployType.jsp">Deploy Type</a></li>
+                    <li><a name="menu" id="menuApplications" href="Application.jsp">Applications</a></li>
+                    <li><a name="menu" id="menuApplicationObjects" href="ApplicationObject.jsp">Application Objects</a></li>
+                    <li><a name="menu" id="menuAppService" href="AppService.jsp">Service Library</a></li>
+                    <li><a name="menu" id="menuSqlLibrary" href="SqlLibrary.jsp">SQL Library</a></li>
+                    <li><a name="menu" id="menuDeployType" href="DeployType.jsp">Deploy Type</a></li>
                 </ul>
             </li>
             <li class ="navbar-side-choice IntegratorRO" id="navlist" style="display:none">
                 <a href="TestDataLib.jsp">
                   <i class="fa fa-sitemap"></i>
-                  <span class="nav-text">Integration   </span>
+                  <span name="menu" id="menuIntegration" class="nav-text">Integration </span>
                   <span class="fa arrow"></span>
                 </a>
                 <!-- dropdown menu -->
                 <ul class="nav nav-second-level" id="sidenavbar-subnavlist">
-                    <li><a  href="IntegrationStatus.jsp">Integration Status</a></li>
-                    <li><a  href="Environment.jsp">Environments</a></li>
-                    <li><a  href="BuildRevDefinition.jsp">Build/Rev Definition</a></li>
-                    <li><a  href="BuildContent.jsp">Build Content</a></li>
-                    <li><a  href="Project.jsp">Project</a></li>
-                    <li><a  href="BatchInvariant.jsp">Batch</a></li>
+                    <li><a name="menu" id="menuIntegrationStatus" href="IntegrationStatus.jsp">Integration Status</a></li>
+                    <li><a name="menu" id="menuEnvironments" href="Environment.jsp">Environments</a></li>
+                    <li><a name="menu" id="menuBuildContent" href="BuildRevDefinition.jsp">Build/Rev Definition</a></li>
+                    <li><a name="menu" id="menuBuildContent" href="BuildContent.jsp">Build Content</a></li>
+                    <li><a name="menu" id="menuProject" href="Project.jsp">Project</a></li>
+                    <li><a name="menu" id="menuBatchInvariant" href="BatchInvariant.jsp">Batch</a></li>
                 </ul>
             </li>
             <!-- admin-->
             <li class ="navbar-side-choice Administrator" id="navlist" style="display:none">
                 <a href="TestDataLib.jsp" id="menuIntegration">
                   <i class="fa fa-cogs"></i>
-                  <span class="nav-text">Admin </span>
+                  <span name="menu" id="menuAdmin" class="nav-text">Admin </span>
                   <span class="fa arrow"></span>
                 </a>
                 <!-- dropdown menu -->
                 <ul class="nav nav-second-level" id="sidenavbar-subnavlist">
-                    <li><a href="UserManager.jsp">Users Manager</a></li>
-                    <li><a href="LogEvent.jsp">Log Viewer</a></li>
-                    <li><a href="DatabaseMaintenance.jsp">Database Maintenance</a></li>
-                    <li><a href="Parameter.jsp">Parameters</a></li>
-                    <li><a href="Invariant.jsp">Invariants</a></li>
-                    <li><a href="CerberusInformation.jsp">Monitoring</a></li>
+                    <li><a name="menu" id="menuUsersManager" href="UserManager.jsp">Users Manager</a></li>
+                    <li><a name="menu" id="menuLogViewer" href="LogEvent.jsp">Log Viewer</a></li>
+                    <li><a name="menu" id="menuDatabaseMaintenance" href="DatabaseMaintenance.jsp">Database Maintenance</a></li>
+                    <li><a name="menu" id="menuParameter" href="Parameter.jsp">Parameters</a></li>
+                    <li><a name="menu" id="menuInvariants" href="Invariant.jsp">Invariants</a></li>
+                    <li><a name="menu" id="menuReportingExecutionThreadMonitoring" href="CerberusInformation.jsp">Monitoring</a></li>
                 </ul>
             </li>
             <li class ="navbar-side-choice TestRO" id="navlist" style="display:none">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="TestDataLib.jsp">
                   <i class="fa fa-question-circle"></i>
-                  <span class="nav-text">Help    </span>
+                  <span name="menu" id="menuHelp" class="nav-text"> Help </span>
                   <span class="fa arrow"></span>
                 </a>
                 <!-- dropdown menu -->
                 <ul class="nav nav-second-level" id="sidenavbar-subnavlist">
-                    <li><a  href="Documentation1.jsp">Documentation</a></li>
+                    <li><a name="menu" id="menuDocumentation" href="Documentation1.jsp">Documentation</a></li>
                 </ul>
             </li>
             <!-- navbar toggle button -->
@@ -159,7 +159,7 @@
                 <i class="fa fa-caret-down"></i>
             </a>
             <ul class="dropdown-menu">
-                <li><a id="Logout" href="Logout.jsp"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
+                <li><a name="menu" id="logout" href="Logout.jsp"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
                 </li>
             </ul>
         </li>
