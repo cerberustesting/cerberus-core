@@ -31,6 +31,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.logging.Level;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -116,19 +117,54 @@ public class SikuliService implements ISikuliService {
     }
 
     @Override
-    public AnswerItem<JSONObject> doSikuliAction(Session session, String action, String locator, String text) {
-        AnswerItem<JSONObject> answer = new AnswerItem<JSONObject>();
-        MessageEvent msg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
+    public boolean isSikuliServerReachable(Session session) {
+        HttpURLConnection connection = null;
+        BufferedReader in = null;
+        PrintStream os = null;
 
         URL url;
-        String urlToConnect = "";
+        String urlToConnect = "http://" + session.getHost() + ":" + session.getPort() + "/extra/ExecuteSikuliAction";
         try {
-            urlToConnect = "http://" + session.getHost() + ":" + session.getPort() + "/extra/ExecuteSikuliAction";
             /**
              * Connect to ExecuteSikuliAction Servlet Through SeleniumServer
              */
             url = new URL(urlToConnect);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection = (HttpURLConnection) url.openConnection();
+
+            if (connection == null || connection.getResponseCode() != 200) {
+                return false;
+            }
+
+        } catch (IOException ex) {
+            LOG.warn(ex);
+            return false;
+        } finally {
+            if (os != null) {
+                os.close();
+            }
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public AnswerItem<JSONObject> doSikuliAction(Session session, String action, String locator, String text) {
+        AnswerItem<JSONObject> answer = new AnswerItem<JSONObject>();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
+        HttpURLConnection connection = null;
+        BufferedReader in = null;
+        PrintStream os = null;
+
+        URL url;
+        String urlToConnect = "http://" + session.getHost() + ":" + session.getPort() + "/extra/ExecuteSikuliAction";
+        try {
+            /**
+             * Connect to ExecuteSikuliAction Servlet Through SeleniumServer
+             */
+            url = new URL(urlToConnect);
+            connection = (HttpURLConnection) url.openConnection();
 
             connection.setRequestMethod("POST");
             connection.setRequestProperty("User-Agent", "Mozilla/5.0");
@@ -138,7 +174,7 @@ public class SikuliService implements ISikuliService {
             connection.setDoOutput(true);
 
             // Send post request
-            PrintStream os = new PrintStream(connection.getOutputStream());
+            os = new PrintStream(connection.getOutputStream());
             os.println(postParameters.toString());
             os.println("|ENDS|");
 
@@ -146,7 +182,7 @@ public class SikuliService implements ISikuliService {
                 msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SIKULI_SERVER_NOT_REACHABLE);
             }
 
-            BufferedReader in = new BufferedReader(
+            in = new BufferedReader(
                     new InputStreamReader(connection.getInputStream()));
             String inputLine;
             StringBuilder response = new StringBuilder();
@@ -175,8 +211,6 @@ public class SikuliService implements ISikuliService {
                 msg = new MessageEvent(MessageEventEnum.ACTION_FAILED);
             }
             in.close();
-            os.close();
-
         } catch (MalformedURLException ex) {
             LOG.warn(ex);
             MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_SIKULI_SERVER_NOT_REACHABLE);
@@ -197,7 +231,12 @@ public class SikuliService implements ISikuliService {
             LOG.warn(ex);
             msg = new MessageEvent(MessageEventEnum.ACTION_FAILED);
         } finally {
-
+            if (os != null) {
+                os.close();
+            }
+            if (connection != null) {
+                connection.disconnect();
+            }
         }
 
         answer.setResultMessage(msg);

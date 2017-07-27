@@ -31,6 +31,8 @@ import org.json.JSONObject;
  */
 public interface ISikuliService {
     
+    public boolean isSikuliServerReachable(Session session);
+    
     /**
      *
      * @param session
