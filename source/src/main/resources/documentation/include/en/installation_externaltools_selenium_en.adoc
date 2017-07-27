@@ -1,0 +1,7 @@
+Installation :
+. Download the Selenium Standalone : http://selenium-release.storage.googleapis.com/2.53/selenium-server-standalone-2.53.1.jar (I recommand this version for a stable usage with Cerberus)
+. Download the JSON configuration file for the node that will manage your browsers : https://github.com/SeleniumHQ/selenium/blob/selenium-2.53.0/java/server/src/org/openqa/grid/common/defaults/DefaultNode.json
+. Download the package firefox-esr
+. To launch Selenium type these commands :
+.. java -jar (path/to/)selenium-server-standalone-2.53.1.jar -role hub
+.. java -jar (path/to/)selenium-server-standalone-2.53.1.jar -role node -nodeConfig (path/to/)DefaultNode.json
