@@ -103,15 +103,17 @@ function openNavbarMenu(idNavMenu){
             $(obj).removeClass("active");
         });
     }
-    //onpen the menu selected
-    $('.sidebar-nav .navbar-side-choice').each(function(i, obj) {
-        if ($(obj).attr('id') === idNavMenu){
-            $(obj).addClass("active")
-            var subMenuList = $(obj).find( $(".nav-second-level") );
-            subMenuList.removeClass("collaspe");
-            subMenuList.addClass("in");
-        }
-    });
+    //onpen the menu selected if the navbar is active
+    if ( !$("#page-layout").hasClass("extended") ){
+        $('.sidebar-nav .navbar-side-choice').each(function(i, obj) {
+            if ($(obj).attr('id') === idNavMenu){
+                $(obj).addClass("active")
+                var subMenuList = $(obj).find( $(".nav-second-level") );
+                subMenuList.removeClass("collaspe");
+                subMenuList.addClass("in");
+            }
+        });
+    }
 }
 
 
