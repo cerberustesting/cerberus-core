@@ -124,7 +124,7 @@ public class DeleteExecutionInQueue extends PostableHttpServlet<DeleteExecutionI
         Response response = new Response();
         for (long idToRemove : request.getIds()) {
             try {
-                executionInQueueService.remove(idToRemove);
+                executionInQueueService.convert(executionInQueueService.delete(idToRemove));
             } catch (CerberusException e) {
                 LOGGER.warn("Unable to remove execution in queue #" + idToRemove, e);
                 response.getInError().add(idToRemove);

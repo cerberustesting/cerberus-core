@@ -21,7 +21,7 @@ package org.cerberus.crud.service.impl;
 
 import java.util.List;
 import java.util.Map;
-import org.cerberus.crud.dao.impl.AppServiceDAO;
+import org.cerberus.crud.dao.IAppServiceDAO;
 import org.cerberus.crud.entity.AppService;
 import org.cerberus.crud.entity.AppServiceContent;
 import org.cerberus.crud.entity.AppServiceHeader;
@@ -49,7 +49,7 @@ public class AppServiceService implements IAppServiceService {
     private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(AppServiceService.class);
 
     @Autowired
-    AppServiceDAO appServiceDao;
+    IAppServiceDAO appServiceDao;
     @Autowired
     private IAppServiceContentService appServiceContentService;
     @Autowired

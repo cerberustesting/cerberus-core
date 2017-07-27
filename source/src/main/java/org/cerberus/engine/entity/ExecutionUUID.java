@@ -30,21 +30,22 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class ExecutionUUID {
+
     private HashMap executionHashMap;
-    
+
     @PostConstruct
-    public void init(){
-    executionHashMap = new HashMap<String, TestCaseExecution>();
+    public void init() {
+        executionHashMap = new HashMap<String, TestCaseExecution>();
     }
-    
-    public HashMap getExecutionUUIDList(){
-    return executionHashMap;
+
+    public HashMap getExecutionUUIDList() {
+        return executionHashMap;
     }
-    
-    public void setExecutionUUID(String UUID, TestCaseExecution execution){
-    executionHashMap.put(UUID, execution);
+
+    public void setExecutionUUID(String UUID, TestCaseExecution execution) {
+        executionHashMap.put(UUID, execution);
     }
-    
+
     public void removeExecutionUUID(String uuid) {
         executionHashMap.remove(uuid);
     }
@@ -53,12 +54,12 @@ public class ExecutionUUID {
         TestCaseExecution t = (TestCaseExecution) executionHashMap.get(uuid);
         return t.getId();
     }
-    
-    public TestCaseExecution getTestCaseExecution(String uuid){
+
+    public TestCaseExecution getTestCaseExecution(String uuid) {
         return (TestCaseExecution) executionHashMap.get(uuid);
     }
-    
-    public int size(){
+
+    public int size() {
         return executionHashMap.size();
     }
 }

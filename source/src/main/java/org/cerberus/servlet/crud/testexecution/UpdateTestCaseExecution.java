@@ -165,7 +165,7 @@ public class UpdateTestCaseExecution extends HttpServlet {
             String conditionVal2Init = currentStep.getString("conditionVal2Init");
             String conditionVal1 = currentStep.getString("conditionVal1");
             String conditionVal2 = currentStep.getString("conditionVal2");
-            String batNumExe = null;
+            String batNumExe = "NULL";
             long start = currentStep.getLong("start");
             long end = currentStep.getLong("end");
             long fullStart = currentStep.getLong("fullStart");
@@ -216,7 +216,7 @@ public class UpdateTestCaseExecution extends HttpServlet {
             String conditionVal2Init = currentAction.getString("conditionVal2Init");
             String conditionVal1 = currentAction.getString("conditionVal1");
             String conditionVal2 = currentAction.getString("conditionVal2");
-            String action = null;//to change
+            String action = currentAction.getString("action");
             String value1Init = currentAction.getString("value1init");
             String value2Init = currentAction.getString("value2init");
             String value1 = currentAction.getString("value1");
@@ -224,9 +224,11 @@ public class UpdateTestCaseExecution extends HttpServlet {
             String forceExeStatus = currentAction.getString("forceExeStatus");
             String description = currentAction.getString("description");
             String returnCode = currentAction.getString("returnCode");
+            
             //String wrote by the user
             String returnMessage = StringUtil.sanitize( currentAction.getString("returnMessage") );
-            if (returnMessage == "Action not executed")//default message unchanged
+            //default message unchanged
+            if ( returnMessage.equals("Action not executed") )
                 returnMessage = "Action executed manually";
             
             long start = currentAction.getLong("start");
@@ -237,6 +239,7 @@ public class UpdateTestCaseExecution extends HttpServlet {
             //create this testCaseStepActionExecution and update the bdd with it
             TestCaseStepActionExecution currentTestCaseStepActionExecution = createTestCaseStepActionExecution(id, test, testCase, step, index, sequence, sort, returnCode, returnMessage, conditionOper, conditionVal1Init, conditionVal2Init, conditionVal1, conditionVal2, action, value1Init, value2Init, value1, value2, forceExeStatus, start, end, fullStart, fullEnd, null, description, null, null);
             ITestCaseStepActionExecutionService testCaseStepActionExecutionService = appContext.getBean(ITestCaseStepActionExecutionService.class);
+            
             testCaseStepActionExecutionService.updateTestCaseStepActionExecution(currentTestCaseStepActionExecution);
             //update the control list belonging to the current Action
             updateTestCaseStepActionControlExecutionFromJsonArray( currentAction.getJSONArray("controlArr"), appContext);
@@ -245,7 +248,7 @@ public class UpdateTestCaseExecution extends HttpServlet {
     }
     
     /**
-     * update action execution with testCaseStepActionJson
+     * update control execution with testCaseStepActionControlJson
      * @param JSONObject testCaseJson
      * @param ApplicationContext appContext
      * @throws JSONException 
@@ -279,7 +282,7 @@ public class UpdateTestCaseExecution extends HttpServlet {
             String returnCode = currentControl.getString("returnCode");
             //String wrote by the user
             String returnMessage = StringUtil.sanitize( currentControl.getString("returnMessage") );
-            if (returnMessage == "Control not executed")//default message unchanged
+            if ( returnMessage.equals("Control executed manually") )//default message unchanged
                 returnMessage = "Control executed manually";
             
             long start = currentControl.getLong("start");

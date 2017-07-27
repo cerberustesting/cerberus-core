@@ -17,8 +17,31 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-function displayExecutionQueueLabel(doc) {
 
+/***
+ * Open the modal with testcase information.
+ * @param {String} queueID - id of the queue to open the modal
+ * @param {String} mode - mode to open the modal. Can take the values : ADD, DUPLICATE, EDIT
+ * @returns {null}
+ */
+function openModalTestCaseExecutionQueue(queueID, mode) {
+
+    // We only load the Labels and bind the events once for performance optimisations.
+    if ($('#editExecutionQueueModal').data("initLabel") === undefined) {
+        initModalTestcaseExecutionQueue();
+        $('#editExecutionQueueModal').data("initLabel", true);
+    }
+
+    if (mode === "EDIT") {
+        editExecutionQueueClick(queueID);
+    } else {
+        duplicateExecutionQueueClick(queueID);
+    }
+}
+
+function initModalTestcaseExecutionQueue() {
+
+    var doc = new Doc();
     $("[name='soapLibraryField']").html(doc.getDocLabel("appservice", "service"));
     $("[name='typeField']").html(doc.getDocLabel("appservice", "type"));
     $("[name='descriptionField']").html(doc.getDocLabel("appservice", "description"));
@@ -32,36 +55,56 @@ function displayExecutionQueueLabel(doc) {
     $("[name='lbl_creator']").html(doc.getDocOnline("transversal", "UsrCreated"));
     $("[name='lbl_lastModified']").html(doc.getDocOnline("transversal", "DateModif"));
     $("[name='lbl_lastModifier']").html(doc.getDocOnline("transversal", "UsrModif"));
+
+    $("[name='editExecutionQueueField']").html(doc.getDocLabel("page_appservice", "editSoapLibrary_field"));
+
+    $("#submitExecutionQueueButton").off("click");
+    $("#submitExecutionQueueButton").click(function () {
+        confirmExecutionQueueModalHandler("EDIT", "toWAITING", "save");
+    });
+
+    $("#saveExecutionQueueButton").off("click");
+    $("#saveExecutionQueueButton").click(function () {
+        confirmExecutionQueueModalHandler("EDIT", "", "save");
+    });
+
+    $("#cancelExecutionQueueButton").off("click");
+    $("#cancelExecutionQueueButton").click(function () {
+        confirmExecutionQueueModalHandler("EDIT", "toCANCELLED", "");
+    });
+
+    $("#duplicateExecutionQueueButton").off("click");
+    $("#duplicateExecutionQueueButton").click(function () {
+        confirmExecutionQueueModalHandler("DUPLICATE", "toWAITING", "save");
+    });
+
+    $("#test").bind("change", function (event) {
+        feedTestCase($(this).val(), "#testCase");
+//                    window.location.href = "./TestCaseScript.jsp?test=" + $(this).val();
+    });
 }
+
 
 /***
  * Open the modal with testcase information.
  * @param {String} queueID - type selected
  * @returns {null}
  */
-function submitExecutionQueueClick(queueID) {
-    console.info(queueID);
-    var doc = new Doc();
-    $("[name='editExecutionQueueField']").html(doc.getDocLabel("page_appservice", "editSoapLibrary_field"));
+function editExecutionQueueClick(queueID) {
 
-    $("#submitExecutionQueueButton").off("click");
-    $("#submitExecutionQueueButton").click(function () {
-        confirmExecutionQueueModalHandler("EDIT");
-    });
+    clearResponseMessage($('#editExecutionQueueModal'));
 
-    // Prepare all Events handler of the modal.
-    prepareExecutionQueueModal();
+    // When editing the execution queue, we can modify, modify and run or cancel.
+    $('#submitExecutionQueueButton').attr('class', 'btn btn-primary');
+    $('#submitExecutionQueueButton').removeProp('hidden');
+    $('#saveExecutionQueueButton').attr('class', 'btn btn-primary');
+    $('#saveExecutionQueueButton').removeProp('hidden');
+    $('#cancelExecutionQueueButton').attr('class', 'btn btn-primary');
+    $('#cancelExecutionQueueButton').removeProp('hidden');
 
-//    $('#submitExecutionQueueButton').attr('class', 'btn btn-primary');
-//    $('#submitExecutionQueueButton').removeProp('hidden');
-
-    $('#submitExecutionQueueButton').attr('class', '');
-    $('#submitExecutionQueueButton').attr('hidden', 'hidden');
-
-    $('#copyExecutionQueueButton').attr('class', '');
-    $('#copyExecutionQueueButton').attr('hidden', 'hidden');
-    $('#cancelExecutionQueueButton').attr('class', '');
-    $('#cancelExecutionQueueButton').attr('hidden', 'hidden');
+    // We cannot duplicate.
+    $('#duplicateExecutionQueueButton').attr('class', '');
+    $('#duplicateExecutionQueueButton').attr('hidden', 'hidden');
 
     feedExecutionQueueModal(queueID, "editExecutionQueueModal", "EDIT");
 }
@@ -71,138 +114,101 @@ function submitExecutionQueueClick(queueID) {
  * @param {String} service - type selected
  * @returns {null}
  */
-function duplicateExecutionQueueClick(service) {
-    $("#duplicateSoapLibraryButton").off("click");
-    $("#duplicateSoapLibraryButton").click(function () {
-        confirmExecutionQueueModalHandler("DUPLICATE");
-    });
+function duplicateExecutionQueueClick(queueID) {
 
-    // Prepare all Events handler of the modal.
-    prepareExecutionQueueModal();
+    clearResponseMessage($('#editExecutionQueueModal'));
 
-    $('#editSoapLibraryButton').attr('class', '');
-    $('#editSoapLibraryButton').attr('hidden', 'hidden');
-    $('#duplicateSoapLibraryButton').attr('class', 'btn btn-primary');
-    $('#duplicateSoapLibraryButton').removeProp('hidden');
-    $('#addSoapLibraryButton').attr('class', '');
-    $('#addSoapLibraryButton').attr('hidden', 'hidden');
+    $('#submitExecutionQueueButton').attr('class', '');
+    $('#submitExecutionQueueButton').attr('hidden', 'hidden');
+    $('#saveExecutionQueueButton').attr('class', '');
+    $('#saveExecutionQueueButton').attr('hidden', 'hidden');
+    $('#cancelExecutionQueueButton').attr('class', '');
+    $('#cancelExecutionQueueButton').attr('hidden', 'hidden');
 
-    feedExecutionQueueModal(service, "editSoapLibraryModal", "DUPLICATE");
-}
+    $('#duplicateExecutionQueueButton').attr('class', 'btn btn-primary');
+    $('#duplicateExecutionQueueButton').removeProp('hidden');
 
-/***
- * Open the modal in order to create a new testcase.
- * @returns {null}
- */
-function addExecutionQueueClick() {
-    $("#addSoapLibraryButton").off("click");
-    $("#addSoapLibraryButton").click(function () {
-        confirmExecutionQueueModalHandler("ADD");
-    });
-
-    // Prepare all Events handler of the modal.
-    prepareExecutionQueueModal();
-
-    $('#editSoapLibraryButton').attr('class', '');
-    $('#editSoapLibraryButton').attr('hidden', 'hidden');
-    $('#duplicateSoapLibraryButton').attr('class', '');
-    $('#duplicateSoapLibraryButton').attr('hidden', 'hidden');
-    $('#addSoapLibraryButton').attr('class', 'btn btn-primary');
-    $('#addSoapLibraryButton').removeProp('hidden');
-
-    feedNewExecutionQueueModal("editSoapLibraryModal");
-}
-
-/***
- * Function that initialise the modal with event handlers.
- * @returns {null}
- */
-function prepareExecutionQueueModal() {
-
-    // No events on Modal.
-
+    feedExecutionQueueModal(queueID, "editExecutionQueueModal", "DUPLICATE");
 }
 
 
 /***
  * Function that support the modal confirmation. Will call servlet to comit the transaction.
  * @param {String} mode - either ADD, EDIT or DUPLICATE in order to define the purpose of the modal.
+ * @param {String} queueAction - will be sent in actionState of the servlet in order to trigger the change of state to the Execution queue. ex : "toWaiting"
+ * @param {String} saveAction - will be sent in actionSave of the servlet in order to trigger the save of the data. ex : "save"
  * @returns {null}
  */
-function confirmExecutionQueueModalHandler(mode) {
-    clearResponseMessage($('#editSoapLibraryModal'));
+function confirmExecutionQueueModalHandler(mode, queueAction, saveAction) {
+    clearResponseMessage($('#editExecutionQueueModal'));
 
-    var formEdit = $('#editSoapLibraryModal #editSoapLibraryModalForm');
+    var formEdit = $('#editExecutionQueueModal #editExecutionQueueModalForm');
 
-    showLoaderInModal('#editSoapLibraryModal');
+    showLoaderInModal('#editExecutionQueueModal');
 
     // Enable the test combo before submit the form.
     if (mode === 'EDIT') {
-        formEdit.find("#service").removeAttr("disabled");
+        formEdit.find("#id").removeAttr("disabled");
     }
     // Calculate servlet name to call.
-    var myServlet = "UpdateExecutionQueue";
+    var myServlet = "UpdateTestCaseExecutionQueue";
     if ((mode === "ADD") || (mode === "DUPLICATE")) {
-        myServlet = "CreateExecutionQueue";
+        myServlet = "CreateTestCaseExecutionQueue";
     }
 
     // Get the header data from the form.
     var data = convertSerialToJSONObject(formEdit.serialize());
 
-    //Add envelope, not in the form
-    var editor = ace.edit($("#editSoapLibraryModal #srvRequest")[0]);
-    data.srvRequest = encodeURIComponent(editor.getSession().getDocument().getValue());
-
-    // Getting Data from Content TAB
-    var table1 = $("#contentTableBody tr");
-    var table_content = [];
-    for (var i = 0; i < table1.length; i++) {
-        table_content.push($(table1[i]).data("content"));
-    }
-    // Getting Data from Header TAB
-    var table2 = $("#headerTableBody tr");
-    var table_header = [];
-    for (var i = 0; i < table2.length; i++) {
-        table_header.push($(table2[i]).data("header"));
-    }
-
-
-    showLoaderInModal('#editTestCaseModal');
     $.ajax({
         url: myServlet,
         async: true,
         method: "POST",
         data: {
-            service: data.service,
-            application: data.application,
-            type: data.type,
-            method: data.method,
-            servicePath: data.servicePath,
-            operation: data.operation,
-            attachementurl: data.attachementurl,
-            description: data.description,
-            group: data.group,
-            serviceRequest: data.srvRequest,
-            contentList: JSON.stringify(table_content),
-            headerList: JSON.stringify(table_header)
+            id: data.id,
+            tag: data.tag,
+            test: data.test,
+            testCase: data.testCase,
+            environment: data.environment,
+            country: data.country,
+            manualURL: data.manualURL,
+            manualHost: data.manualHost,
+            manualContextRoot: data.manualContextRoot,
+            manualLoginRelativeURL: data.manualLoginRelativeURL,
+            manualEnvData: data.manualEnvData,
+            robot: data.robot,
+            robotIP: data.robotIP,
+            robotPort: data.robotPort,
+            browser: data.browser,
+            browserVersion: data.browserVersion,
+            platform: data.platform,
+            screenSize: data.screenSize,
+            verbose: data.verbose,
+            screenshot: data.screenshot,
+            pageSource: data.pageSource,
+            seleniumLog: data.seleniumLog,
+            timeout: data.timeout,
+            retries: data.retries,
+            manualExecution: data.manualExecution,
+            actionState: queueAction,
+            actionSave: saveAction
         },
         success: function (data) {
-            data = JSON.parse(data);
-            hideLoaderInModal('#editSoapLibraryModal');
+//            data = JSON.parse(data);
+            hideLoaderInModal('#editExecutionQueueModal');
             if (getAlertType(data.messageType) === "success") {
-                var oTable = $("#soapLibrarysTable").dataTable();
+                var oTable = $("#executionsTable").dataTable();
                 oTable.fnDraw(true);
-                $('#editSoapLibraryModal').data("Saved", true);
-                $('#editSoapLibraryModal').modal('hide');
+                $('#editExecutionQueueModal').data("Saved", true);
+                $('#editExecutionQueueModal').modal('hide');
                 showMessage(data);
             } else {
-                showMessage(data, $('#editSoapLibraryModal'));
+                showMessage(data, $('#editExecutionQueueModal'));
             }
         },
         error: showUnexpectedError
     });
     if (mode === 'EDIT') { // Disable back the test combo before submit the form.
-        formEdit.find("#service").prop("disabled", "disabled");
+        formEdit.find("#id").prop("disabled", "disabled");
     }
 
 }
@@ -245,7 +251,25 @@ function feedExecutionQueueModal(queueid, modalId, mode) {
 
                 // Feed the data to the screen and manage authorities.
                 var exeQ = data.contentTable;
-                feedExecutionQueueModalData(exeQ, modalId, mode, true);
+                var hasPermissions = data.hasPermissions;
+
+                if (mode === "EDIT") {
+                    if (exeQ.state === "CANCELLED") {
+                        $('#cancelExecutionQueueButton').attr('class', '');
+                        $('#cancelExecutionQueueButton').prop('hidden', 'hidden');
+                    }
+                    if ((exeQ.state === "QUEUED") || (exeQ.state === "WAITING") || (exeQ.state === "EXECUTING") || (exeQ.state === "DONE")) {
+                        $('#cancelExecutionQueueButton').attr('class', '');
+                        $('#cancelExecutionQueueButton').prop('hidden', 'hidden');
+                        $('#saveExecutionQueueButton').attr('class', '');
+                        $('#saveExecutionQueueButton').prop('hidden', 'hidden');
+                        $('#submitExecutionQueueButton').attr('class', '');
+                        $('#submitExecutionQueueButton').prop('hidden', 'hidden');
+                        hasPermissions = false;
+                    }
+                }
+
+                feedExecutionQueueModalData(exeQ, modalId, mode, hasPermissions);
 
                 formEdit.modal('show');
             } else {
@@ -258,6 +282,29 @@ function feedExecutionQueueModal(queueid, modalId, mode) {
 }
 
 
+/***
+ * Feed the TestCase select with all the testcase from test defined.
+ * @param {String} test - test in order to filter the testcase values.
+ * @param {String} modalId - id of select to refresh.
+ * @returns {null}
+ */
+function feedTestCase(test, selectElement, defaultTestCase) {
+
+    var testCList = $(selectElement);
+    testCList.empty();
+
+    var jqxhr = $.getJSON("ReadTestCase", "test=" + test);
+    $.when(jqxhr).then(function (data) {
+
+        for (var index = 0; index < data.contentTable.length; index++) {
+            testCList.append($('<option></option>').text(data.contentTable[index].testCase + " - " + data.contentTable[index].description).val(data.contentTable[index].testCase));
+        }
+        if (!isEmpty(defaultTestCase)) {
+            testCList.prop("value", defaultTestCase);
+        }
+    });
+
+}
 /***
  * Feed the TestCase modal with all the data from the TestCase.
  * @param {String} exeQ - service object to be loaded.
@@ -282,15 +329,7 @@ function feedExecutionQueueModalData(exeQ, modalId, mode, hasPermissionsUpdate) 
         }
         $("#test").prop("value", exeQ.test);
 
-        var jqxhr = $.getJSON("ReadTestCase", "test=" + exeQ.test);
-        $.when(jqxhr).then(function (data) {
-            var testCList = $("#testCase");
-
-            for (var index = 0; index < data.contentTable.length; index++) {
-                testCList.append($('<option></option>').text(data.contentTable[index].testCase + " - " + data.contentTable[index].description).val(data.contentTable[index].testCase));
-            }
-            $("#testCase").prop("value", exeQ.testCase);
-        });
+        feedTestCase(exeQ.test, "#testCase", exeQ.testCase);
 
     });
 
@@ -299,6 +338,7 @@ function feedExecutionQueueModalData(exeQ, modalId, mode, hasPermissionsUpdate) 
     $.when(jqxhr).then(function (data) {
         var robotList = $("#robot");
 
+        robotList.append($('<option></option>').text("").val(""));
         for (var index = 0; index < data.contentTable.length; index++) {
             robotList.append($('<option></option>').text(data.contentTable[index].robot).val(data.contentTable[index].robot));
         }
@@ -311,9 +351,9 @@ function feedExecutionQueueModalData(exeQ, modalId, mode, hasPermissionsUpdate) 
     $("#environment").empty();
     displayInvariantList("environment", "ENVIRONMENT", false, exeQ.environment);
     $("#browser").empty();
-    displayInvariantList("browser", "BROWSER", false);
+    displayInvariantList("browser", "BROWSER", false, exeQ.browser, "");
     $("#platform").empty();
-    displayInvariantList("platform", "PLATFORM", false, exeQ.platform);
+    displayInvariantList("platform", "PLATFORM", false, exeQ.platform, "");
 
     $("#verbose").empty();
     displayInvariantList("verbose", "VERBOSE", false, exeQ.verbose);
@@ -326,33 +366,24 @@ function feedExecutionQueueModalData(exeQ, modalId, mode, hasPermissionsUpdate) 
     $("#retries").empty();
     displayInvariantList("retries", "RETRIES", false, exeQ.retries);
 
-    var manualExe = exeQ.manualExecution ? "Y" : "N";
     $("#manualExecution").empty();
-    displayInvariantList("manualExecution", "MANUALEXECUTION", false, manualExe);
+    displayInvariantList("manualExecution", "MANUALEXECUTION", false, exeQ.manualExecution);
 
 
-    var manualUrl = exeQ.manualURL ? "Y" : "N";
     $("#manualURL").empty();
-    displayInvariantList("manualURL", "TCACTIVE", false, manualUrl);
-    if (exeQ.manualURL) {
-        formEdit.find("#manualHost").prop("value", exeQ.manualHost);
-        formEdit.find("#manualContextRoot").prop("value", exeQ.manualContextRoot);
-        formEdit.find("#manualLoginRelativeURL").prop("value", exeQ.manualLoginRelativeURL);
-        $("#manualEnvData").empty();
-        displayInvariantList("manualEnvData", "ENVIRONMENT", false, exeQ.manualEnvData);
-    } else {
-        formEdit.find("#manualHost").prop("value", "");
-        formEdit.find("#manualContextRoot").prop("value", "");
-        formEdit.find("#manualLoginRelativeURL").prop("value", "");
-        $("#manualEnvData").empty();
-        displayInvariantList("manualEnvData", "ENVIRONMENT", false, "");
-    }
+    displayInvariantList("manualURL", "MANUALURL", false, exeQ.manualURL);
+    formEdit.find("#manualHost").prop("value", exeQ.manualHost);
+    formEdit.find("#manualContextRoot").prop("value", exeQ.manualContextRoot);
+    formEdit.find("#manualLoginRelativeURL").prop("value", exeQ.manualLoginRelativeURL);
+    $("#manualEnvData").empty();
+    displayInvariantList("manualEnvData", "ENVIRONMENT", true, exeQ.manualEnvData, "");
 
+    formEdit.find("#originalId").prop("value", exeQ.id);
 
     // Data Feed.
     if (mode === "EDIT") {
         $("[name='editSoapLibraryField']").html(doc.getDocOnline("page_appservice", "button_edit"));
-        formEdit.find("#ID").prop("value", exeQ.id);
+        formEdit.find("#id").prop("value", exeQ.id);
         formEdit.find("#usrcreated").prop("value", exeQ.UsrCreated);
         formEdit.find("#datecreated").prop("value", exeQ.DateCreated);
         formEdit.find("#usrmodif").prop("value", exeQ.UsrModif);
@@ -364,10 +395,10 @@ function feedExecutionQueueModalData(exeQ, modalId, mode, hasPermissionsUpdate) 
         formEdit.find("#datemodif").prop("value", "");
         if (mode === "ADD") {
             $("[name='editSoapLibraryField']").html(doc.getDocOnline("page_appservice", "button_create"));
-            formEdit.find("#ID").prop("value", "");
+            formEdit.find("#id").prop("value", "");
         } else { // DUPLICATE
             $("[name='editSoapLibraryField']").html(doc.getDocOnline("page_appservice", "button_duplicate"));
-            formEdit.find("#ID").prop("value", exeQ.id);
+            formEdit.find("#id").prop("value", exeQ.id);
         }
     }
     if (isEmpty(exeQ)) {
@@ -391,57 +422,66 @@ function feedExecutionQueueModalData(exeQ, modalId, mode, hasPermissionsUpdate) 
         formEdit.find("#testCase").prop("value", exeQ.testCase);
         formEdit.find("#country").prop("value", exeQ.country);
         formEdit.find("#environment").prop("value", exeQ.environment);
-        formEdit.find("#platform").prop("value", exeQ.browsr);
         formEdit.find("#robotIP").prop("value", exeQ.robotIP);
         formEdit.find("#robotPort").prop("value", exeQ.robotPort);
         formEdit.find("#browserVersion").prop("value", exeQ.browserVersion);
         formEdit.find("#screenSize").prop("value", exeQ.screenSize);
         formEdit.find("#timeout").prop("value", exeQ.timeout);
     }
-    //Highlight envelop on modal loading
-    var editor = ace.edit($("#editSoapLibraryModal #srvRequest")[0]);
-    editor.setTheme("ace/theme/chrome");
-    editor.getSession().setMode(defineAceMode(editor.getSession().getDocument().getValue()));
-    editor.setOptions({
-        maxLines: Infinity
-    });
-
-    //On ADD, try to autodetect Ace mode until it is defined
-    if (mode === "ADD") {
-        $($("#editSoapLibraryModal #srvRequest").get(0)).keyup(function () {
-            if (editor.getSession().getMode().$id === "ace/mode/text") {
-                editor.getSession().setMode(defineAceMode(editor.getSession().getDocument().getValue()));
-            }
-        });
-
-    }
 
     // Authorities
-    if (mode === "EDIT") {
-        formEdit.find("#service").prop("readonly", "readonly");
-    } else {
-        formEdit.find("#service").removeAttr("readonly");
-        formEdit.find("#service").removeProp("readonly");
-    }
+    formEdit.find("#id").prop("disabled", "disabled");
+
     //We desactivate or activate the access to the fields depending on if user has the credentials to edit.
-    if (!(hasPermissionsUpdate)) { // If readonly, we readonly all fields
-        formEdit.find("#application").prop("readonly", "readonly");
-        formEdit.find("#type").prop("disabled", "disabled");
-        formEdit.find("#method").prop("disabled", "disabled");
-        formEdit.find("#servicePath").prop("readonly", true);
-        formEdit.find("#attachementurl").prop("readonly", true);
-        formEdit.find("#srvRequest").prop("readonly", "readonly");
-        formEdit.find("#description").prop("readonly", "readonly");
-        // We hide Save button.
-        $('#editSoapLibraryButton').attr('class', '');
-        $('#editSoapLibraryButton').attr('hidden', 'hidden');
+    if ((!(hasPermissionsUpdate)) && (exeQ.state !== "DUPLICATE")) { // If readonly, we readonly all fields
+        formEdit.find("#tag").prop("readonly", "readonly");
+        formEdit.find("#test").prop("disabled", "disabled");
+        formEdit.find("#testCase").prop("disabled", "disabled");
+        formEdit.find("#environment").prop("disabled", "disabled");
+        formEdit.find("#country").prop("disabled", "disabled");
+        formEdit.find("#manualURL").prop("disabled", "disabled");
+        formEdit.find("#manualHost").prop("readonly", "readonly");
+        formEdit.find("#manualContextRoot").prop("readonly", "readonly");
+        formEdit.find("#manualLoginRelativeURL").prop("readonly", "readonly");
+        formEdit.find("#manualEnvData").prop("disabled", "disabled");
+        formEdit.find("#robot").prop("disabled", "disabled");
+        formEdit.find("#robotIP").prop("readonly", "readonly");
+        formEdit.find("#robotPort").prop("readonly", "readonly");
+        formEdit.find("#browser").prop("disabled", "disabled");
+        formEdit.find("#browserVersion").prop("readonly", "readonly");
+        formEdit.find("#platform").prop("disabled", "disabled");
+        formEdit.find("#screenSize").prop("readonly", "readonly");
+        formEdit.find("#verbose").prop("disabled", "disabled");
+        formEdit.find("#screenshot").prop("disabled", "disabled");
+        formEdit.find("#pageSource").prop("disabled", "disabled");
+        formEdit.find("#seleniumLog").prop("disabled", "disabled");
+        formEdit.find("#timeout").prop("readonly", "readonly");
+        formEdit.find("#retries").prop("disabled", "disabled");
+        formEdit.find("#manualExecution").prop("disabled", "disabled");
     } else {
-        formEdit.find("#application").removeProp("readonly");
-        formEdit.find("#type").removeProp("disabled");
-        formEdit.find("#method").removeProp("disabled");
-        formEdit.find("#servicePath").prop("readonly", false);
-        formEdit.find("#attachementurl").prop("readonly", false);
-        formEdit.find("#srvRequest").removeProp("readonly");
-        formEdit.find("#description").removeProp("disabled");
+        formEdit.find("#tag").prop("readonly", false);
+        formEdit.find("#test").removeAttr("disabled");
+        formEdit.find("#testCase").removeAttr("disabled");
+        formEdit.find("#environment").removeAttr("disabled");
+        formEdit.find("#country").removeAttr("disabled");
+        formEdit.find("#manualURL").removeAttr("disabled");
+        formEdit.find("#manualHost").prop("readonly", false);
+        formEdit.find("#manualContextRoot").prop("readonly", false);
+        formEdit.find("#manualLoginRelativeURL").prop("readonly", false);
+        formEdit.find("#manualEnvData").removeAttr("disabled");
+        formEdit.find("#robot").removeAttr("disabled");
+        formEdit.find("#robotIP").prop("readonly", false);
+        formEdit.find("#robotPort").prop("readonly", false);
+        formEdit.find("#browser").removeAttr("disabled");
+        formEdit.find("#browserVersion").prop("readonly", false);
+        formEdit.find("#platform").removeAttr("disabled");
+        formEdit.find("#screenSize").prop("readonly", false);
+        formEdit.find("#verbose").removeAttr("disabled");
+        formEdit.find("#screenshot").removeAttr("disabled");
+        formEdit.find("#pageSource").removeAttr("disabled");
+        formEdit.find("#seleniumLog").removeAttr("disabled");
+        formEdit.find("#timeout").prop("readonly", false);
+        formEdit.find("#retries").removeAttr("disabled");
+        formEdit.find("#manualExecution").removeAttr("disabled");
     }
 }

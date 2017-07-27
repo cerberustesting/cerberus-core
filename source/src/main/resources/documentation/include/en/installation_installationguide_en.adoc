@@ -1,5 +1,29 @@
 === Manual installation
 
+. *[RED]#For Linux#* :
+.. Requirements :
+... MySQL/MariaDB server and client (If you want to use MySQL, you must get the 5.6.x version)
+... Java 1.8 (package name on debian/ubuntu : openjdk-8-java)
+... glassfish server (4.1.1) : you can download it on their website (if you are on CLI, just use wget on the download url)
+.... You'll have to add MySQL JDBC connector drivers that you can get there : http://dev.mysql.com/downloads/connector/j/
+.... You must add AS_JAVA="path/to/java/folder/" in glassfish/config/asenv.conf
+.. Cerberus installation :
+... Download the last release of Cerberus Testing on the sourceforge : https://sourceforge.net/projects/cerberus-source/files/
+... Setup your MySQL/MariaDB database :
+.... Connect on your MySQL/MariaDB server (Default : mysql -u root -proot)
+.... Type these commands :
+..... CREATE USER 'cerberus'@'%' IDENTIFIED BY 'toto';
+..... GRANT USAGE ON * . * TO 'cerberus'@'%' IDENTIFIED BY 'toto';
+..... GRANT USAGE ON * . * TO 'cerberus'@'localhost' IDENTIFIED BY 'toto';
+..... CREATE DATABASE IF NOT EXISTS `cerberus` ;
+..... GRANT ALL PRIVILEGES ON `cerberus` . * TO 'cerberus'@'%';
+... Edit the file (CerberusFolder/bin/)00Config.sh with your connection parameters and set the GLASSFISHPATH to the path to the bin folder of glassfish 
+... If you are using MariaDB, you'll have to edit (CerberusFolder/bin/)01AppServerConfig.sh, comment the line under MySQL and uncomment the line under MariaDB.
+... Run (CerberusFolder/bin/)01AppServerConfig.sh it will set the default configs of Cerberus Testing like the connection to the Cerberus database
+... Run (CerberusFolder/bin/)02DeployApp.sh it will check that there's no deployed Cerberus App and deploy the Cerberus App in the contextroot specified (Default : /Cerberus)
+... You're done ! You should be able to access to your Cerberus App from your website (example : http://localhost:8080/Cerberus)
+
+
 === Docker
 
 . *[RED]#For Windows#* :

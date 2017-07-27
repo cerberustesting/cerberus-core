@@ -31,24 +31,32 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Manage a set of {@link ExecutionThreadPool} to support multiple Cerberus test case executions
+ * Manage a set of {@link ExecutionThreadPool} to support multiple Cerberus test
+ * case executions
  *
  * @author abourdon
  */
 public interface IExecutionThreadPoolService {
 
     /**
-     * Search any {@link org.cerberus.crud.entity.TestCaseExecutionInQueue} which are currently waiting for execution and trigger their executions
+     * Search any {@link org.cerberus.crud.entity.TestCaseExecutionInQueue}
+     * which are currently waiting for execution and trigger their executions
      *
-     * @throws CerberusException if an error occurred during search or trigger process
+     * @throws CerberusException if an error occurred during search or trigger
+     * process
      */
     void executeNextInQueue() throws CerberusException;
 
     /**
-     * Search at most #limit {@link org.cerberus.crud.entity.TestCaseExecutionInQueue} which are currently waiting for execution and trigger their executions
+     * Search at most #limit
+     * {@link org.cerberus.crud.entity.TestCaseExecutionInQueue} which are
+     * currently waiting for execution and trigger their executions
      *
-     * @param limit the limit size of {@link org.cerberus.crud.entity.TestCaseExecutionInQueue} in waiting state to execute
-     * @throws CerberusException if an error occurred during search or trigger process
+     * @param limit the limit size of
+     * {@link org.cerberus.crud.entity.TestCaseExecutionInQueue} in waiting
+     * state to execute
+     * @throws CerberusException if an error occurred during search or trigger
+     * process
      */
     void executeNextInQueue(int limit) throws CerberusException;
 
@@ -61,38 +69,62 @@ public interface IExecutionThreadPoolService {
     void executeNextInQueue(List<Long> ids) throws CerberusException;
 
     /**
-     * Get an quasi-accurate (not atomic) statistics of the current execution pools
+     * Start execution of the given list of executions in queue id
+     *
+     * @param id executions in queue to start
+     * @throws CerberusException if an error occurred
+     */
+    void executeNextInQueue(Long id) throws CerberusException;
+
+    /**
+     * Get an quasi-accurate (not atomic) statistics of the current execution
+     * pools
      *
      * @return a collection of {@link ExecutionThreadPoolStats}
      */
     Collection<ExecutionThreadPoolStats> getStats();
 
     /**
-     * Get the currently queued and executing task registered to the {@link ExecutionThreadPool} identified by the given {@link org.cerberus.crud.entity.CountryEnvironmentParameters.Key}
+     * Get the currently queued and executing task registered to the
+     * {@link ExecutionThreadPool} identified by the given
+     * {@link org.cerberus.crud.entity.CountryEnvironmentParameters.Key}
      *
-     * @param key the {@link org.cerberus.crud.entity.CountryEnvironmentParameters.Key} to identify the {@link ExecutionThreadPool} from which getting tasks
-     * @return the currently queued and executing task registered to the {@link ExecutionThreadPool} identified by the given {@link org.cerberus.crud.entity.CountryEnvironmentParameters.Key}
+     * @param key the
+     * {@link org.cerberus.crud.entity.CountryEnvironmentParameters.Key} to
+     * identify the {@link ExecutionThreadPool} from which getting tasks
+     * @return the currently queued and executing task registered to the
+     * {@link ExecutionThreadPool} identified by the given
+     * {@link org.cerberus.crud.entity.CountryEnvironmentParameters.Key}
      */
     Map<ManageableThreadPoolExecutor.TaskState, List<ExecutionWorkerThread>> getTasks(CountryEnvironmentParameters.Key key);
 
     /**
-     * Pause the {@link ExecutionThreadPool} identified by the given {@link org.cerberus.crud.entity.CountryEnvironmentParameters.Key}
+     * Pause the {@link ExecutionThreadPool} identified by the given
+     * {@link org.cerberus.crud.entity.CountryEnvironmentParameters.Key}
      *
-     * @param key the {@link org.cerberus.crud.entity.CountryEnvironmentParameters.Key} to identify the {@link ExecutionThreadPool} to pause
+     * @param key the
+     * {@link org.cerberus.crud.entity.CountryEnvironmentParameters.Key} to
+     * identify the {@link ExecutionThreadPool} to pause
      */
     void pauseExecutionThreadPool(CountryEnvironmentParameters.Key key);
 
     /**
-     * Resume the {@link ExecutionThreadPool} identified by the given {@link org.cerberus.crud.entity.CountryEnvironmentParameters.Key}
+     * Resume the {@link ExecutionThreadPool} identified by the given
+     * {@link org.cerberus.crud.entity.CountryEnvironmentParameters.Key}
      *
-     * @param key the {@link org.cerberus.crud.entity.CountryEnvironmentParameters.Key} to identify the {@link ExecutionThreadPool} to resume
+     * @param key the
+     * {@link org.cerberus.crud.entity.CountryEnvironmentParameters.Key} to
+     * identify the {@link ExecutionThreadPool} to resume
      */
     void resumeExecutionThreadPool(CountryEnvironmentParameters.Key key);
 
     /**
-     * Remove the {@link ExecutionThreadPool} identified by the given {@link org.cerberus.crud.entity.CountryEnvironmentParameters.Key}
+     * Remove the {@link ExecutionThreadPool} identified by the given
+     * {@link org.cerberus.crud.entity.CountryEnvironmentParameters.Key}
      *
-     * @param key the {@link org.cerberus.crud.entity.CountryEnvironmentParameters.Key} to identify the {@link ExecutionThreadPool} to remove
+     * @param key the
+     * {@link org.cerberus.crud.entity.CountryEnvironmentParameters.Key} to
+     * identify the {@link ExecutionThreadPool} to remove
      */
     void removeExecutionThreadPool(CountryEnvironmentParameters.Key key);
 

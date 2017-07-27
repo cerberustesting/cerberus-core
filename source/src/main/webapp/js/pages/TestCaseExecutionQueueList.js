@@ -32,7 +32,7 @@ function initPage() {
     drawQueueInformation();
 
     // Display table
-    var configurations = new TableConfigurationsServerSide("executionsTable", "ReadTestCaseExecutionQueue", "contentTable", aoColumnsFunc("executionsTable"), [1, 'desc']);
+    var configurations = new TableConfigurationsServerSide("executionsTable", "ReadTestCaseExecutionQueue", "contentTable", aoColumnsFunc("executionsTable"), [1, 'desc'], [10, 25, 50, 100, 200, 500]);
     var table = createDataTableWithPermissions(configurations, renderOptionsForApplication, "#executionList", undefined, true);
 
     if (searchS !== null) {
@@ -52,11 +52,10 @@ function initPage() {
     $("#selectAll").click(selectAll);
 
     // Display mass action
-    displayStateList();
-    $("#massActionBrpButtonSetState").click(massActionModalSaveHandler_setState);
-    $("#massActionBrpButtonRun").click(massActionModalSaveHandler_run);
-    $("#massActionBrpButtonDelete").click(massActionModalSaveHandler_delete);
-    $('#massActionBrpModal').on('hidden.bs.modal', massActionModalCloseHandler);
+    $("#massActionExeQButtonSubmit").click(massActionModalSaveHandler_submit);
+    $("#massActionExeQButtonCopy").click(massActionModalSaveHandler_copy);
+    $("#massActionExeQButtonCancel").click(massActionModalSaveHandler_cancel);
+    $('#massActionExeQModal').on('hidden.bs.modal', massActionModalCloseHandler);
 
     // React on tab changes
     $('#executionList a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
@@ -80,11 +79,6 @@ function displayPageLabel() {
 
     displayFooter(doc);
     displayGlobalLabel(doc);
-}
-
-function displayStateList() {
-    $('#massState').append($('<option></option>').text('CANCELLED').val('CANCELLED'));
-    $('#massState').append($('<option></option>').text('WAITING').val('WAITING'));
 }
 
 function renderOptionsForApplication(data) {
@@ -112,134 +106,93 @@ function massActionClick() {
     clearResponseMessageMainPage();
     // When creating a new item, Define here the default value.
     var formList = $('#massActionForm');
-    if (formList.serialize().indexOf("ids") === -1) {
+    if (formList.serialize().indexOf("id") === -1) {
         var localMessage = new Message("danger", doc.getDocLabel("page_global", "message_massActionError"));
         showMessage(localMessage, null);
     } else {
-        $('#massActionBrpModal').modal('show');
+        $('#massActionExeQModal').modal('show');
     }
 }
 
-function massActionModalSaveHandler_setState() {
-    clearResponseMessage($('#massActionBrpModal'));
+function massActionModalSaveHandler_submit() {
+    clearResponseMessage($('#massActionExeQModal'));
 
-    var formNewValues = $('#massActionBrpModal #massActionBrpModalForm').serialize();
-    var formList = $('#massActionForm').serialize();
+    var formNewValues = $('#massActionExeQModal #massActionExeQModalForm');
+    var formList = $('#massActionForm');
+    var paramSerialized = formList.serialize();
 
-    var jsonFormNewValues = convertSerialToJSONObject(formNewValues);
-    var jsonFormList = convertSerialToJSONObject(formList);
+    showLoaderInModal('#massActionExeQModal');
 
-    var requestBody = JSON.stringify($.extend(jsonFormNewValues, jsonFormList));
-
-    showLoaderInModal('#massActionBrpModal');
-
-    jsonPost({
-        url: 'UpdateExecutionInQueueState',
-        data: requestBody,
-        success: function (data) {
-            refreshTable();
-            hideLoaderInModal('#massActionBrpModal');
-            $('#massActionBrpModal').modal('hide');
-
-            if (!data || !Array.isArray(data.inError)) {
-                showMessage({
-                    messageType: 'KO',
-                    message: 'Unexpected error. See logs'
-                });
-            } else if (data.inError.length > 0) {
-                showMessage({
-                    messageType: 'WARNING',
-                    message: 'Some executions have not been updated: ' + data.inError.toString()
-                });
-            } else {
-                showMessage({
-                    messageType: 'OK',
-                    message: 'Update successfully executed'
-                });
-            }
-        },
-        error: handleErrorAjaxAfterTimeout
-    });
+    var jqxhr = $.post("UpdateTestCaseExecutionQueue", paramSerialized + "&actionState=toWAITING", "json");
+    $.when(jqxhr).then(function (data) {
+        // unblock when remote call returns 
+        hideLoaderInModal('#massActionExeQModal');
+        if ((getAlertType(data.messageType) === "success") || (getAlertType(data.messageType) === "warning")) {
+            $('#executionsTable').DataTable().draw();
+            $("#selectAll").prop("checked", false);
+            $('#massActionExeQModal').modal('hide');
+            showMessage(data);
+        } else {
+            showMessage(data, $('#massActionExeQModal'));
+        }
+    }).fail(handleErrorAjaxAfterTimeout);
 }
 
-function massActionModalSaveHandler_run() {
-    clearResponseMessage($('#massActionBrpModal'));
+function massActionModalSaveHandler_copy() {
+    clearResponseMessage($('#massActionExeQModal'));
 
-    var formList = $('#massActionForm').serialize();
+    var formNewValues = $('#massActionExeQModal #massActionExeQModalForm');
+    var formList = $('#massActionForm');
+    var paramSerialized = formList.serialize();
 
-    var requestBody = JSON.stringify(convertSerialToJSONObject(formList));
+    showLoaderInModal('#massActionExeQModal');
 
-    showLoaderInModal('#massActionBrpModal');
-
-    jsonPost({
-        url: 'RunExecutionInQueue',
-        data: requestBody,
-        success: function (data) {
-            refreshTable();
-            hideLoaderInModal('#massActionBrpModal');
-            $('#massActionBrpModal').modal('hide');
-
-            if (data) {
-                showMessage({
-                    messageType: 'OK',
-                    message: 'In waiting selected executions are running'
-                });
-            } else {
-                showMessage({
-                    messageType: 'KO',
-                    message: 'Unexpected error. See logs'
-                });
-            }
-        },
-        error: handleErrorAjaxAfterTimeout
-    });
+    var jqxhr = $.post("CreateTestCaseExecutionQueue", paramSerialized + "&actionState=toWAITING&actionSave=save", "json");
+    $.when(jqxhr).then(function (data) {
+        // unblock when remote call returns 
+        hideLoaderInModal('#massActionExeQModal');
+        if ((getAlertType(data.messageType) === "success") || (getAlertType(data.messageType) === "warning")) {
+            $('#executionsTable').DataTable().draw();
+            $("#selectAll").prop("checked", false);
+            $('#massActionExeQModal').modal('hide');
+            showMessage(data);
+        } else {
+            showMessage(data, $('#massActionExeQModal'));
+        }
+    }).fail(handleErrorAjaxAfterTimeout);
 }
 
-function massActionModalSaveHandler_delete() {
-    clearResponseMessage($('#massActionBrpModal'));
+function massActionModalSaveHandler_cancel() {
+    clearResponseMessage($('#massActionExeQModal'));
 
-    var formList = $('#massActionForm').serialize();
+    var formNewValues = $('#massActionExeQModal #massActionExeQModalForm');
+    var formList = $('#massActionForm');
+    var paramSerialized = formList.serialize();
 
-    var requestBody = JSON.stringify(convertSerialToJSONObject(formList));
+    showLoaderInModal('#massActionExeQModal');
 
-    showLoaderInModal('#massActionBrpModal');
-
-    jsonPost({
-        url: 'DeleteExecutionInQueue',
-        data: requestBody,
-        success: function (data) {
-            refreshTable();
-            hideLoaderInModal('#massActionBrpModal');
-            $('#massActionBrpModal').modal('hide');
-
-            if (!data || !Array.isArray(data.inError)) {
-                showMessage({
-                    messageType: 'KO',
-                    message: 'Unexpected error. See logs'
-                });
-            } else if (data.inError.length > 0) {
-                showMessage({
-                    messageType: 'WARNING',
-                    message: 'Some executions have not been deleted: ' + data.inError.toString()
-                });
-            } else {
-                showMessage({
-                    messageType: 'OK',
-                    message: 'Delete successfully executed'
-                });
-            }
-        },
-        error: handleErrorAjaxAfterTimeout
-    });
+    var jqxhr = $.post("UpdateTestCaseExecutionQueue", paramSerialized + "&actionState=toCANCELLED", "json");
+    $.when(jqxhr).then(function (data) {
+        // unblock when remote call returns 
+        hideLoaderInModal('#massActionExeQModal');
+        if ((getAlertType(data.messageType) === "success") || (getAlertType(data.messageType) === "warning")) {
+            $('#executionsTable').DataTable().draw();
+            $("#selectAll").prop("checked", false);
+            $('#massActionExeQModal').modal('hide');
+            showMessage(data);
+        } else {
+            showMessage(data, $('#massActionExeQModal'));
+        }
+    }).fail(handleErrorAjaxAfterTimeout);
 }
 
 function massActionModalCloseHandler() {
     // reset form values
-    $('#massActionBrpModal #massActionBrpModalForm')[0].reset();
+    $('#massActionExeQModal #massActionExeQModalForm')[0].reset();
     // remove all errors on the form fields
     $(this).find('div.has-error').removeClass("has-error");
     // clear the response messages of the modal
-    clearResponseMessage($('#massActionBrpModal'));
+    clearResponseMessage($('#massActionExeQModal'));
 }
 
 function getTable() {
@@ -443,7 +396,7 @@ function aoColumnsFunc(tableId) {
 
                 var selectBrp = '<input id="selectLine" \n\
                                 class="selectBrp margin-right5" \n\
-                                name="ids" value=' + obj["id"] + ' data-line="select" data-id="' + obj["id"] + '" title="' + doc.getDocLabel("page_global", "tooltip_massActionLine") + '" type="checkbox">\n\
+                                name="id" value=' + obj["id"] + ' data-line="select" data-id="' + obj["id"] + '" title="' + doc.getDocLabel("page_global", "tooltip_massActionLine") + '" type="checkbox">\n\
                                 </input>';
                 if (hasPermissions === "true") { //only draws the options if the user has the correct privileges
                     return '<div class="center btn-group width50">' + selectBrp + '</div>';
@@ -457,35 +410,33 @@ function aoColumnsFunc(tableId) {
             "data": "id",
             "bSortable": false,
             "bSearchable": false,
-            "sWidth": "150px",
+            "sWidth": "50px",
             "title": doc.getDocLabel("testdatalib", "actions"),
             "mRender": function (data, type, oObj) {
 //                var hasPermissions = $("#" + tableId).attr("hasPermissions");
-                var hasPermissions = true;
-                var submitElement = '<button id="submitExeQ' + data + '"  onclick="submitExecutionQueueClick(' + data + ');" \n\
-                                class="submitExecutionQueue btn btn-default btn-xs margin-right5" \n\
-                            name="submitExecutionQueue" title="' + doc.getDocLabel("page_testdatalib", "tooltip_editentry") + '" type="button">\n\
+//                var hasPermissions = true;
+                var hasPermissions = $("#" + tableId).attr("hasPermissions");
+                var editElement = '<button id="editExeQ' + data + '"  onclick="openModalTestCaseExecutionQueue(' + data + ',\'EDIT\');" \n\
+                                class="btn btn-default btn-xs margin-right5" \n\
+                            name="editExecutionQueue" title="' + doc.getDocLabel("page_testdatalib", "tooltip_editentry") + '" type="button">\n\
+                            <span class="glyphicon glyphicon-pencil"></span></button>';
+                var viewElement = '<button id="viewExeQ' + data + '"  onclick="openModalTestCaseExecutionQueue(' + data + ',\'EDIT\');" \n\
+                                class="btn btn-default btn-xs margin-right5" \n\
+                            name="viewExecutionQueue" title="' + doc.getDocLabel("page_testdatalib", "tooltip_editentry") + '" type="button">\n\
                             <span class="glyphicon glyphicon-eye-open"></span></button>';
-                var copyElement = '<button id="copyExeQ' + data + '"  onclick="copyExecutionQueueClick(' + data + ');" \n\
-                                class="copyExecutionQueueLib btn btn-default btn-xs margin-right5" \n\
-                            name="copyExecutionQueue" title="' + doc.getDocLabel("page_testdatalib", "tooltip_editentry") + '" type="button">\n\
-                            <span class="glyphicon glyphicon-plus"></span></button>';
-                var cancelElement = '<button onclick="cancelExecutionQueueClick(' + data + ');" class="btn btn-default btn-xs margin-right25 " \n\
-                            name="cancelExecutionQueue" title="' + doc.getDocLabel("page_testdatalib", "tooltip_delete") + '" type="button">\n\
-                            <span class="glyphicon glyphicon-stop"></span></button>';
+                var duplicateElement = '<button id="dupExeQ' + data + '"  onclick="openModalTestCaseExecutionQueue(' + data + ',\'DUPLICATE\');" \n\
+                                class="btn btn-default btn-xs margin-right5" \n\
+                            name="duplicateExecutionQueue" title="' + doc.getDocLabel("page_testdatalib", "tooltip_editentry") + '" type="button">\n\
+                            <span class="glyphicon glyphicon-duplicate"></span></button>';
 
                 var buttons = "";
-//                if ((oObj.state === "WAITING") || (oObj.state === "EXECUTING") || (oObj.state === "DONE")) { //only draws the options if the user has the correct privileges
-//                    buttons += copyElement;
-//                }
-//                if ((oObj.state === "ERROR") || (oObj.state === "CANCELLED")) { //only draws the options if the user has the correct privileges
-//                    buttons += submitElement;
-//                }
-//                if ((oObj.state === "WAITING") || (oObj.state === "ERROR")) { //only draws the options if the user has the correct privileges
-//                    buttons += cancelElement;
-//                }
-                buttons += submitElement;
-                return '<div class="center btn-group width250">' + buttons + '</div>';
+                if ((hasPermissions) && ((oObj.state === "ERROR") || (oObj.state === "CANCELLED"))) {
+                    buttons += editElement;
+                } else {
+                    buttons += viewElement;
+                }
+                buttons += duplicateElement;
+                return '<div class="center btn-group width100">' + buttons + '</div>';
             }
         },
         {

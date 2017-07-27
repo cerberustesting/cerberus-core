@@ -28,7 +28,11 @@ import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionQueue;
 import org.cerberus.crud.factory.IFactoryTestCaseExecution;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
+import org.cerberus.engine.entity.MessageGeneral;
+import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,83 +53,13 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
     private IFactoryTestCaseExecution factoryTestCaseExecution;
 
     @Override
-    public AnswerItem<TestCaseExecutionQueue> readByKey(Long queueId) {
+    public AnswerItem<TestCaseExecutionQueue> readByKey(long queueId) {
         return testCaseExecutionInQueueDAO.readByKey(queueId);
-    }
-
-    @Override
-    public void insert(TestCaseExecutionQueue inQueue) throws CerberusException {
-        testCaseExecutionInQueueDAO.insert(inQueue);
-    }
-
-    @Override
-    public void remove(long id) throws CerberusException {
-        testCaseExecutionInQueueDAO.remove(id);
     }
 
     @Override
     public List<TestCaseExecutionQueue> findTestCaseExecutionInQueuebyTag(String tag) throws CerberusException {
         return testCaseExecutionInQueueDAO.findTestCaseExecutionInQueuebyTag(tag);
-    }
-
-    @Override
-    public TestCaseExecutionQueue findByKey(long id) throws CerberusException {
-        return testCaseExecutionInQueueDAO.findByKey(id);
-    }
-
-    @Override
-    public void toWaiting(long id) throws CerberusException {
-        testCaseExecutionInQueueDAO.toWaiting(id);
-    }
-
-    @Override
-    public List<Long> toWaiting(final List<Long> ids) throws CerberusException {
-        return testCaseExecutionInQueueDAO.toWaiting(ids);
-    }
-
-    @Override
-    public List<TestCaseExecutionQueue> toQueued() throws CerberusException {
-        return testCaseExecutionInQueueDAO.toQueued(ITestCaseExecutionQueueDAO.UNLIMITED_FETCH_SIZE);
-    }
-
-    @Override
-    public List<TestCaseExecutionQueue> toQueued(int maxFetchSize) throws CerberusException {
-        return testCaseExecutionInQueueDAO.toQueued(maxFetchSize);
-    }
-
-    @Override
-    public List<TestCaseExecutionQueue> toQueued(final List<Long> ids) throws CerberusException {
-        return testCaseExecutionInQueueDAO.toQueued(ids);
-    }
-
-    @Override
-    public void toExecuting(long id) throws CerberusException {
-        testCaseExecutionInQueueDAO.toExecuting(id);
-    }
-
-    @Override
-    public void toError(long id, String comment) throws CerberusException {
-        testCaseExecutionInQueueDAO.toError(id, comment);
-    }
-
-    @Override
-    public void toDone(long id, String comment, long exeId) throws CerberusException {
-        testCaseExecutionInQueueDAO.toDone(id, comment, exeId);
-    }
-
-    @Override
-    public void toCancelled(long id) throws CerberusException {
-        testCaseExecutionInQueueDAO.toCancelled(id);
-    }
-
-    @Override
-    public List<Long> toCancelled(final List<Long> ids) throws CerberusException {
-        return testCaseExecutionInQueueDAO.toCancelled(ids);
-    }
-
-    @Override
-    public List<TestCaseExecutionQueue> findAll() throws CerberusException {
-        return testCaseExecutionInQueueDAO.findAll();
     }
 
     @Override
@@ -144,8 +78,8 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
     }
 
     @Override
-    public AnswerList readDistinctEnvCoutnryBrowserByTag(String tag) {
-        return testCaseExecutionInQueueDAO.readDistinctEnvCoutnryBrowserByTag(tag);
+    public AnswerList readDistinctEnvCountryBrowserByTag(String tag) {
+        return testCaseExecutionInQueueDAO.readDistinctEnvCountryBrowserByTag(tag);
     }
 
     @Override
@@ -169,6 +103,113 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
                 targetrevisionList, creatorList, implementerList, buildList, revisionList, environmentList, countryList, browserList, tcestatusList,
                 ip, port, tag, browserversion, comment, bugid, ticket);
 
+    }
+
+    @Override
+    public Answer create(TestCaseExecutionQueue object) {
+        return testCaseExecutionInQueueDAO.create(object);
+    }
+
+    @Override
+    public Answer update(TestCaseExecutionQueue object) {
+        return testCaseExecutionInQueueDAO.update(object);
+    }
+
+    @Override
+    public void updateToWaiting(long id) throws CerberusException {
+        testCaseExecutionInQueueDAO.updateToWaiting(id);
+    }
+
+    @Override
+    public List<Long> updateToWaiting(final List<Long> ids) throws CerberusException {
+        return testCaseExecutionInQueueDAO.updateToWaiting(ids);
+    }
+
+    @Override
+    public Answer updateToWaiting(long id, String comment) {
+        return testCaseExecutionInQueueDAO.updateToWaiting(id, comment);
+    }
+
+    @Override
+    public List<TestCaseExecutionQueue> updateToQueued() throws CerberusException {
+        return testCaseExecutionInQueueDAO.updateToQueued(ITestCaseExecutionQueueDAO.UNLIMITED_FETCH_SIZE);
+    }
+
+    @Override
+    public List<TestCaseExecutionQueue> updateToQueued(int maxFetchSize) throws CerberusException {
+        return testCaseExecutionInQueueDAO.updateToQueued(maxFetchSize);
+    }
+
+    @Override
+    public List<TestCaseExecutionQueue> updateToQueued(final List<Long> ids) throws CerberusException {
+        return testCaseExecutionInQueueDAO.updateToQueued(ids);
+    }
+
+    @Override
+    public void updateToExecuting(long id) throws CerberusException {
+        testCaseExecutionInQueueDAO.updateToExecuting(id);
+    }
+
+    @Override
+    public void updateToError(long id, String comment) throws CerberusException {
+        testCaseExecutionInQueueDAO.updateToError(id, comment);
+    }
+
+    @Override
+    public void updateToDone(long id, String comment, long exeId) throws CerberusException {
+        testCaseExecutionInQueueDAO.updateToDone(id, comment, exeId);
+    }
+
+    @Override
+    public void updateToCancelled1(long id, String comment) throws CerberusException {
+        testCaseExecutionInQueueDAO.updateToCancelled1(id, comment);
+    }
+
+    @Override
+    public List<Long> updateToCancelled(final List<Long> ids) throws CerberusException {
+        return testCaseExecutionInQueueDAO.updateToCancelled(ids);
+    }
+
+    @Override
+    public Answer updateToCancelled(long id, String comment) {
+        return testCaseExecutionInQueueDAO.updateToCancelled(id, comment);
+    }
+
+    @Override
+    public Answer delete(TestCaseExecutionQueue object) {
+        return testCaseExecutionInQueueDAO.delete(object);
+    }
+
+    @Override
+    public Answer delete(Long id) {
+        return testCaseExecutionInQueueDAO.delete(id);
+    }
+
+    @Override
+    public TestCaseExecutionQueue convert(AnswerItem answerItem) throws CerberusException {
+        if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            //if the service returns an OK message then we can get the item
+            return (TestCaseExecutionQueue) answerItem.getItem();
+        }
+        throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+    }
+
+    @Override
+    public List<TestCaseExecutionQueue> convert(AnswerList answerList) throws CerberusException {
+        if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            //if the service returns an OK message then we can get the item
+            return (List<TestCaseExecutionQueue>) answerList.getDataList();
+        }
+        throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+    }
+
+    @Override
+    public void convert(Answer answer) throws CerberusException {
+        if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            //if the service returns an OK message then we can get the item
+            return;
+        }
+        throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
 
     @Override
@@ -197,8 +238,8 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
         String timeout = testCaseExecutionInQueue.getTimeout();
         String outputFormat = "";
         TestCase tCase = testCaseExecutionInQueue.getTestCaseObj();
-        boolean manualURL = testCaseExecutionInQueue.isManualURL();
-        boolean manualExecution = testCaseExecutionInQueue.isManualExecution();
+        boolean manualURL = (testCaseExecutionInQueue.getManualURL() >= 1);
+        String manualExecution = testCaseExecutionInQueue.getManualExecution();
         String myHost = testCaseExecutionInQueue.getManualHost();
         String myContextRoot = testCaseExecutionInQueue.getManualContextRoot();
         String myLoginRelativeURL = testCaseExecutionInQueue.getManualLoginRelativeURL();

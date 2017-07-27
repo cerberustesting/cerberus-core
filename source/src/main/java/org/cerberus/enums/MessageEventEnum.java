@@ -408,6 +408,7 @@ public enum MessageEventEnum {
     // *********** DATA OPERATION ***********
     DATA_OPERATION_OK(500, MessageCodeEnum.GENERIC_CODE_SUCCESS.getCodeString(), "%ITEM% - %OPERATION% was finished with success!", false, false, false, MessageGeneralEnum.DATA_OPERATION_SUCCESS),
     DATA_OPERATION_WARNING_PARTIAL_RESULT(500, MessageCodeEnum.GENERIC_CODE_WARNING.getCodeString(), "Result may contain partial result. %DESCRIPTION%", false, false, false, MessageGeneralEnum.DATA_OPERATION_WARNING),
+    DATA_OPERATION_WARNING_NOUPDATE(500, MessageCodeEnum.GENERIC_CODE_WARNING.getCodeString(), "No record was updated. %DESCRIPTION%", false, false, false, MessageGeneralEnum.DATA_OPERATION_WARNING),
     DATA_OPERATION_WARNING(500, MessageCodeEnum.GENERIC_CODE_WARNING.getCodeString(), "%ITEM% - %OPERATION% was finished successfuly with warnings! %REASON%", false, false, false, MessageGeneralEnum.DATA_OPERATION_WARNING),
     DATA_OPERATION_NO_DATA_FOUND(500, MessageCodeEnum.GENERIC_CODE_SUCCESS.getCodeString(), "Could not find any data that match the required criteria.", true, true, false, MessageGeneralEnum.DATA_OPERATION_SUCCESS),
     DATA_OPERATION_ERROR_EXPECTED(550, MessageCodeEnum.GENERIC_CODE_ERROR.getCodeString(), "%ITEM% - operation %OPERATION% failed to complete. %REASON%", false, false, false, MessageGeneralEnum.DATA_OPERATION_ERROR),

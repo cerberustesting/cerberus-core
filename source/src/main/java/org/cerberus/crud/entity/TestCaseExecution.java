@@ -68,7 +68,7 @@ public class TestCaseExecution {
     private String conditionVal2Init;
     private String conditionVal1;
     private String conditionVal2;
-    private boolean manualExecution;
+    private String manualExecution;
     private String userAgent;
     private long queueID;
     private String UsrCreated;
@@ -95,6 +95,7 @@ public class TestCaseExecution {
     private boolean synchroneous;
     private String timeout;
     // Objects.
+    private TestCaseExecutionQueue testCaseExecutionQueue; 
     private Application applicationObj;
     private Invariant CountryObj;
     private Test testObj;
@@ -135,6 +136,14 @@ public class TestCaseExecution {
     public static final String CONTROLSTATUS_CA = "CA";
     public static final String CONTROLSTATUS_FA = "FA";
     public static final String CONTROLSTATUS_QU = "QU";
+
+    public TestCaseExecutionQueue getTestCaseExecutionQueue() {
+        return testCaseExecutionQueue;
+    }
+
+    public void setTestCaseExecutionQueue(TestCaseExecutionQueue testCaseExecutionQueue) {
+        this.testCaseExecutionQueue = testCaseExecutionQueue;
+    }
 
     public String getUsrCreated() {
         return UsrCreated;
@@ -317,11 +326,11 @@ public class TestCaseExecution {
         this.testCaseCountryPropertyList = testCaseCountryPropertyList;
     }
 
-    public boolean isManualExecution() {
+    public String getManualExecution() {
         return manualExecution;
     }
 
-    public void setManualExecution(boolean manualExecution) {
+    public void setManualExecution(String manualExecution) {
         this.manualExecution = manualExecution;
     }
 
@@ -818,7 +827,7 @@ public class TestCaseExecution {
             result.put("conditionVal2", this.getConditionVal2());
             result.put("userAgent", this.getUserAgent());
             result.put("queueId", this.getQueueID());
-            result.put("manualExecution", this.isManualExecution());
+            result.put("manualExecution", this.getManualExecution());
 
             if (withChilds) {
                 // Looping on ** Step **

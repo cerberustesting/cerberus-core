@@ -28,6 +28,7 @@
         <title id="pageTitle">Execution Detail</title>        
         <script type="text/javascript" src="dependencies/Tinymce-4.2.6/tinymce.min.js"></script>
         <script type="text/javascript" src="js/pages/TestCaseExecution.js"></script>
+        <script type="text/javascript" src="js/transversalobject/TestCaseExecutionQueue.js"></script>
         <link rel="stylesheet" type="text/css" href="css/pages/TestCaseExecution.css">
         <link rel="stylesheet" type="text/css" href="dependencies/Bootstrap-inversebutton/inversebutton.css">
     </head>
@@ -37,6 +38,7 @@
         <%@ include file="include/pages/testcasescript/manageProperties.html"%>
         <div id="page-layout" class="container-fluid center">
             <%@ include file="include/global/messagesArea.html"%>
+            <%@ include file="include/transversalobject/TestCaseExecutionQueue.html"%>
             <h1 class="page-title-line">Execution Detail</h1>
             <div class="panel panel-default" id="testCaseConfig">
                 <div style="min-height:150px">
@@ -67,7 +69,7 @@
                                 <div class="">
                                     <span id="exReturnMessage" style="font-size:.9em;margin:0px;line-height:1;height:.95em;">Descr</span>
                                 </div>
-                                </div>
+                            </div>
                             <div class="col-lg-6" style="padding: 0px;">
                                 <div id="TestCaseButton">
                                     <a href="#" class="btn btn-default pull-right" id="saveTestCaseExecution" data-toggle="tooltip" style="margin-left: 1px; display: none;"><span class="glyphicon glyphicon-save"></span> Save</a>
@@ -92,7 +94,17 @@
                                             <li><a href="#" id="editTcStepInfo"><span class="glyphicon glyphicon-pencil"></span> Edit Test Case from the current Step</a></li>
                                         </ul>
                                     </div>
-                                    <a href="#" class="btn btn-default pull-right" id="ExecutionByTag" style="margin-left: 1px; margin-right: 1px;"><span class="glyphicon glyphicon-fast-backward"></span> See Execution By Tag</a>
+                                    <div class="btn-group pull-right">
+                                        <a href="#" class="btn btn-default pull-left" id="ExecutionQueue"><span class="glyphicon glyphicon-tasks"></span> See Queue Parameters</a>
+                                        <a type="button" id="editTcToggleButton" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <span class="caret"></span>
+                                            <span class="sr-only">Toggle Dropdown</span>
+                                        </a>
+                                        <ul class="dropdown-menu">
+                                            <li><a href="#" class="btn btn-default" id="ExecutionQueueDup"><span class="glyphicon glyphicon-tasks"></span> Duplicate new Execution</a></li>
+                                        </ul>
+                                    </div>
+                                    <a href="#" class="btn btn-default pull-right" id="ExecutionByTag" style="margin-left: 1px; margin-right: 1px;"><span class="glyphicon glyphicon-tasks"></span> See Execution By Tag</a>
                                     <div class="side-item pull-right"></div>
 
                                 </div>

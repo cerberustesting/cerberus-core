@@ -32,6 +32,7 @@ import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionData;
+import org.cerberus.crud.entity.TestCaseExecutionQueue;
 import org.cerberus.crud.entity.TestCaseExecutionSysVer;
 import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.crud.entity.TestCaseStepAction;
@@ -48,9 +49,9 @@ import org.cerberus.crud.service.ICountryEnvParamService;
 import org.cerberus.crud.service.ILoadTestCaseService;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ITestCaseCountryPropertiesService;
+import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.crud.service.ITestCaseExecutionService;
 import org.cerberus.crud.service.ITestCaseExecutionSysVerService;
-import org.cerberus.crud.service.ITestCaseExecutionwwwSumService;
 import org.cerberus.crud.service.ITestCaseService;
 import org.cerberus.crud.service.ITestCaseStepActionControlExecutionService;
 import org.cerberus.crud.service.ITestCaseStepActionExecutionService;
@@ -65,6 +66,7 @@ import org.cerberus.engine.execution.ISeleniumServerService;
 import org.cerberus.engine.gwt.IActionService;
 import org.cerberus.engine.gwt.IControlService;
 import org.cerberus.engine.gwt.IVariableService;
+import org.cerberus.engine.threadpool.IExecutionThreadPoolService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusEventException;
@@ -110,7 +112,9 @@ public class ExecutionRunService implements IExecutionRunService {
     @Autowired
     private ICountryEnvLinkService countryEnvLinkService;
     @Autowired
-    private ITestCaseExecutionwwwSumService testCaseExecutionwwwSumService;
+    private ITestCaseExecutionQueueService executionQueueService;
+    @Autowired
+    private IExecutionThreadPoolService executionThreadPoolService;
     @Autowired
     private ITestCaseCountryPropertiesService testCaseCountryPropertiesService;
     @Autowired
@@ -298,7 +302,7 @@ public class ExecutionRunService implements IExecutionRunService {
              * If execution is not manual, evaluate the condition at the step
              * level
              */
-            if (!tCExecution.isManualExecution()) {
+            if (!tCExecution.getManualExecution().equals("Y")) {
                 try {
                     answerDecode = variableService.decodeStringCompletly(tCExecution.getConditionVal1(), tCExecution, null, false);
                     tCExecution.setConditionVal1((String) answerDecode.getItem());
@@ -338,7 +342,7 @@ public class ExecutionRunService implements IExecutionRunService {
                 conditionAnswerTc = this.conditionService.evaluateCondition(tCExecution.getConditionOper(), tCExecution.getConditionVal1(), tCExecution.getConditionVal2(), tCExecution);
                 boolean execute_TestCase = (boolean) conditionAnswerTc.getItem();
 
-                if (execute_TestCase || tCExecution.isManualExecution()) {
+                if (execute_TestCase || tCExecution.getManualExecution().equals("Y")) {
 
                     for (TestCaseStep testCaseStep : mainExecutionTestCaseStepList) {
 
@@ -645,6 +649,22 @@ public class ExecutionRunService implements IExecutionRunService {
                     + tCExecution.getBuild() + "." + tCExecution.getRevision() + "." + tCExecution.getTest() + "_"
                     + tCExecution.getTestCase() + "_" + tCExecution.getTestCaseObj().getDescription().replace(".", ""));
 
+            /**
+             * Retry maagement, in case the result is not OK, we execute the job
+             * again reducing the retry to 1.
+             */
+            if (tCExecution.getNumberOfRetries() > 0 
+                    && !tCExecution.getResultMessage().getCodeString().equals("OK")
+                    && !tCExecution.getResultMessage().getCodeString().equals("NE")) {
+                TestCaseExecutionQueue newExeQueue = tCExecution.getTestCaseExecutionQueue();
+                newExeQueue.setId(0);
+                newExeQueue.setRetries(newExeQueue.getRetries() - 1);
+                // Insert execution to the Queue.
+                executionQueueService.create(newExeQueue);
+                // Trigger the consumtion of the queue.
+                executionThreadPoolService.executeNextInQueue();
+            }
+
         }
 
         return tCExecution;
@@ -741,7 +761,7 @@ public class ExecutionRunService implements IExecutionRunService {
              */
             AnswerItem<Boolean> conditionAnswer;
             boolean conditionDecodeError = false;
-            if (!tcExecution.isManualExecution()) {
+            if (!tcExecution.getManualExecution().equals("Y")) {
 
                 try {
                     answerDecode = variableService.decodeStringCompletly(testCaseStepActionExecution.getConditionVal1(), tcExecution, null, false);
@@ -785,10 +805,10 @@ public class ExecutionRunService implements IExecutionRunService {
                  * action
                  */
                 if (conditionAnswer.getResultMessage().getMessage().getCodeString().equals("PE")
-                        || tcExecution.isManualExecution()) {
+                        || tcExecution.getManualExecution().equals("Y")) {
 
                     // Execute or not the action here.
-                    if (execute_Action || tcExecution.isManualExecution()) {
+                    if (execute_Action || tcExecution.getManualExecution().equals("Y")) {
                         LOG.debug("Executing action : " + testCaseStepActionExecution.getAction() + " with val1 : " + testCaseStepActionExecution.getValue1()
                                 + " and val2 : " + testCaseStepActionExecution.getValue2());
 
@@ -898,7 +918,7 @@ public class ExecutionRunService implements IExecutionRunService {
         /**
          * If execution is not manual, do action and record files
          */
-        if (!tcExecution.isManualExecution()) {
+        if (!tcExecution.getManualExecution().equals("Y")) {
             testCaseStepActionExecution = this.actionService.doAction(testCaseStepActionExecution);
 
             /**
@@ -968,7 +988,7 @@ public class ExecutionRunService implements IExecutionRunService {
             // Evaluate the condition at the control level.
             AnswerItem<Boolean> conditionAnswer;
             boolean conditionDecodeError = false;
-            if (tcExecution.isManualExecution()) {
+            if (tcExecution.getManualExecution().equals("Y")) {
                 try {
                     answerDecode = variableService.decodeStringCompletly(testCaseStepActionControlExecution.getConditionVal1(), tcExecution, null, false);
                     testCaseStepActionControlExecution.setConditionVal1((String) answerDecode.getItem());
@@ -1011,9 +1031,9 @@ public class ExecutionRunService implements IExecutionRunService {
                  * control
                  */
                 if (conditionAnswer.getResultMessage().getMessage().getCodeString().equals("PE")
-                        || tcExecution.isManualExecution()) {
+                        || tcExecution.getManualExecution().equals("Y")) {
 
-                    if (execute_Control || tcExecution.isManualExecution()) {
+                    if (execute_Control || tcExecution.getManualExecution().equals("Y")) {
 
                         /**
                          * We execute the control
@@ -1141,7 +1161,7 @@ public class ExecutionRunService implements IExecutionRunService {
         /**
          * If execution is not manual, do control and record files
          */
-        if (!tcExecution.isManualExecution()) {
+        if (!tcExecution.getManualExecution().equals("Y")) {
             testCaseStepActionControlExecution = this.controlService.doControl(testCaseStepActionControlExecution);
 
             /**

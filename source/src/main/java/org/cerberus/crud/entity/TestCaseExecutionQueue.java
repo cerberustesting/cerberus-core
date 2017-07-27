@@ -36,7 +36,7 @@ public class TestCaseExecutionQueue {
     private String browserVersion;
     private String platform;
     private String screenSize;
-    private boolean manualURL;
+    private int manualURL;
     private String manualHost;
     private String manualContextRoot;
     private String manualLoginRelativeURL;
@@ -47,7 +47,7 @@ public class TestCaseExecutionQueue {
     private String timeout;
     private int pageSource;
     private int seleniumLog;
-    private boolean manualExecution;
+    private String manualExecution;
     private int retries;
     private Date requestDate;
     private State state;
@@ -137,11 +137,11 @@ public class TestCaseExecutionQueue {
         this.applicationObj = applicationObj;
     }
 
-    public boolean isManualExecution() {
+    public String getManualExecution() {
         return manualExecution;
     }
 
-    public void setManualExecution(boolean manualExecution) {
+    public void setManualExecution(String manualExecution) {
         this.manualExecution = manualExecution;
     }
 
@@ -273,11 +273,11 @@ public class TestCaseExecutionQueue {
         this.platform = platform;
     }
 
-    public boolean isManualURL() {
+    public int getManualURL() {
         return manualURL;
     }
 
-    public void setManualURL(boolean manualURL) {
+    public void setManualURL(int manualURL) {
         this.manualURL = manualURL;
     }
 

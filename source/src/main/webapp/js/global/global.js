@@ -1373,7 +1373,7 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
     }
     $("#" + tableConfigurations.divId + "_length").addClass("marginBottom10").addClass("width80").addClass("pull-left");
     $("#" + tableConfigurations.divId + "_filter").addClass("marginBottom10").addClass("width150").addClass("pull-left");
-
+    
     return oTable;
 }
 
@@ -1463,11 +1463,11 @@ function showTitleWhenTextOverflow() {
 //            });
 //        }
 //    });
-
+    
 }
-///////////////////////////////////////////////////////////////////////////////
-/////////////////////SEARCH/FILTERS////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
+
+/***************************SEARCH/FILTERS**************************************/
+
 /**
  * Function that allow to reset the filter selected
  * @param {type} oTable datatable object
@@ -1609,6 +1609,7 @@ function clearIndividualFilter(tableId, columnNumber, clearGlobalSearch) {
     var oTable = $('#' + tableId).dataTable();
     resetFilters(oTable, columnNumber, clearGlobalSearch);
 }
+
 /**
  * Function that allow to clear filter individually
  * @param {type} tableId >> ID of the datatable
@@ -1621,6 +1622,7 @@ function clearIndividualFilterForClientSide(tableId, columnNumber, clearGlobalSe
     var oTable = $('#' + tableId).dataTable();
     resetFilters(oTable, columnNumber, clearGlobalSearch);
 }
+
 /**
  * Function that allow display of individual column when the table is created client side
  * @param {type} tableId >> ID of the datatable
@@ -1848,6 +1850,7 @@ function displayColumnSearchForClientSideTable(tableData, tableId, oSettings) {
 
     });
 }
+
 /**
  * Function that allow display of individual column searching on datatable
  * @param {type} tableId >> ID of the datatable
@@ -2711,6 +2714,7 @@ function showPicture(title, pictureUrl) {
     $('#modalContent').empty();
     //set the translations
     $('#modalContent').append($('<img>').addClass("selectedPicture").attr("src", pictureUrl + "&h=400&w=800"));
+    $('#modalContent').css("overflow","auto");
     if ($("#btnFullPicture").length > 0) {
         $("#btnFullPicture").remove();
     }

@@ -258,8 +258,8 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
              */
             case "state":
                 List<String> dataList = new ArrayList<>();
-                dataList.add(TestCaseExecutionQueue.State.QUEUED.name());
                 dataList.add(TestCaseExecutionQueue.State.WAITING.name());
+                dataList.add(TestCaseExecutionQueue.State.QUEUED.name());
                 dataList.add(TestCaseExecutionQueue.State.EXECUTING.name());
                 dataList.add(TestCaseExecutionQueue.State.ERROR.name());
                 dataList.add(TestCaseExecutionQueue.State.DONE.name());

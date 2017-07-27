@@ -785,11 +785,6 @@
         <servlet-class>org.cerberus.servlet.crud.test.GetStepInLibrary</servlet-class>
     </servlet>
     <servlet>
-        <description>Find execution that are in Execution Queue.</description>
-        <servlet-name>FindExecutionInQueue</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.testexecution.FindExecutionInQueue</servlet-class>
-    </servlet>
-    <servlet>
         <description>Add a test case to the execution queue.</description>
         <servlet-name>AddToExecutionQueue</servlet-name>
         <servlet-class>org.cerberus.servlet.zzpublic.AddToExecutionQueue</servlet-class>
@@ -972,6 +967,26 @@
     <servlet>
         <servlet-name>UpdateTestCaseExecution</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.testexecution.UpdateTestCaseExecution</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ReadTestCaseExecutionQueue</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.testexecution.ReadTestCaseExecutionQueue</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>CreateTestCaseExecutionQueue</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.testexecution.CreateTestCaseExecutionQueue</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UpdateExecutionInQueueState</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.testexecution.UpdateExecutionInQueueState</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DummyRESTCall</servlet-name>
+        <servlet-class>org.cerberus.servlet.dummy.DummyRESTCall</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UpdateTestCaseExecutionQueue</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.testexecution.UpdateTestCaseExecutionQueue</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>ReadCerberusDetailInformation</servlet-name>
@@ -1710,10 +1725,6 @@
         <url-pattern>/GetStepInLibrary</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>FindExecutionInQueue</servlet-name>
-        <url-pattern>/FindExecutionInQueue</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>ReadExecutionInQueue</servlet-name>
         <url-pattern>/ReadExecutionInQueue</url-pattern>
     </servlet-mapping>
@@ -1901,6 +1912,26 @@
         <servlet-name>UpdateTestCaseExecution</servlet-name>
         <url-pattern>/UpdateTestCaseExecution</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ReadTestCaseExecutionQueue</servlet-name>
+        <url-pattern>/ReadTestCaseExecutionQueue</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CreateTestCaseExecutionQueue</servlet-name>
+        <url-pattern>/CreateTestCaseExecutionQueue</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UpdateExecutionInQueueState</servlet-name>
+        <url-pattern>/UpdateExecutionInQueueState</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DummyRESTCall</servlet-name>
+        <url-pattern>/DummyRESTCall</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UpdateTestCaseExecutionQueue</servlet-name>
+        <url-pattern>/UpdateTestCaseExecutionQueue</url-pattern>
+    </servlet-mapping>    
     <session-config>
         <session-timeout>60</session-timeout>
     </session-config>
@@ -2149,6 +2180,10 @@
             <url-pattern>/DeleteExecutionInQueue</url-pattern>
             <url-pattern>/UpdateExecutionInQueue</url-pattern>
             <url-pattern>/GetExecutionQueue</url-pattern>
+            <url-pattern>/UpdateTestCaseExecutionQueue</url-pattern>
+            <url-pattern>/ReadTestCaseExecutionQueue</url-pattern>
+            <url-pattern>/CreateTestCaseExecutionQueue</url-pattern>
+            <url-pattern>/UpdateExecutionInQueueState</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>RunTest</description>
@@ -2416,6 +2451,7 @@
             <url-pattern>/AddToExecutionQueueV001</url-pattern>
             <url-pattern>/ReadApplicationObjectImage</url-pattern>
             <url-pattern>/GetTestCases</url-pattern>
+            <url-pattern>/DummyRESTCall</url-pattern>
         </web-resource-collection>
     </security-constraint>
     <security-constraint>

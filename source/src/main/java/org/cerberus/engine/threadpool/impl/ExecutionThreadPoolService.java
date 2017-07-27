@@ -19,11 +19,19 @@
  */
 package org.cerberus.engine.threadpool.impl;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.entity.CountryEnvironmentParameters;
 import org.cerberus.crud.entity.TestCaseExecutionQueue;
 import org.cerberus.crud.service.ICountryEnvironmentParametersService;
 import org.cerberus.crud.service.IParameterService;
+import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.engine.entity.threadpool.ExecutionThreadPool;
 import org.cerberus.engine.entity.threadpool.ExecutionThreadPoolStats;
@@ -37,15 +45,6 @@ import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.observe.Observer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 
 /**
  * {@link IExecutionThreadPoolService} default implementation
@@ -75,8 +74,6 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService, 
      */
     private static final String EXECUTION_POOL_NAME_FORMAT = "%s-%s-%s";
 
-    private static final String PARAMETER_CERBERUS_URL = "cerberus_url";
-
     @Autowired
     private ITestCaseExecutionQueueService tceiqService;
 
@@ -105,13 +102,13 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService, 
             LOG.warn("Unable to fetch " + limit + " waiting execution in queue");
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
         }
-        final List<TestCaseExecutionQueue> executionsInQueue = limit == UNLIMITED_FETCH_SIZE ? tceiqService.toQueued() : tceiqService.toQueued(limit);
+        final List<TestCaseExecutionQueue> executionsInQueue = limit == UNLIMITED_FETCH_SIZE ? tceiqService.updateToQueued() : tceiqService.updateToQueued(limit);
         for (final TestCaseExecutionQueue executionInQueue : executionsInQueue) {
             try {
                 execute(executionInQueue);
             } catch (CerberusException e) {
                 LOG.warn("Unable to execute " + executionInQueue.getId() + " due to " + e.getMessageError().getDescription(), e);
-                tceiqService.toError(executionInQueue.getId(), e.getMessageError().getDescription());
+                tceiqService.updateToError(executionInQueue.getId(), e.getMessageError().getDescription());
             }
         }
     }
@@ -121,18 +118,28 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService, 
      */
     @Override
     public void executeNextInQueue(final List<Long> ids) throws CerberusException {
-        for (final TestCaseExecutionQueue queued : tceiqService.toQueued(ids)) {
+        for (final TestCaseExecutionQueue queued : tceiqService.updateToQueued(ids)) {
             try {
                 execute(queued);
             } catch (CerberusException e) {
                 LOG.warn("Unable to execute " + queued.getId() + " due to " + e.getMessageError().getDescription(), e);
                 try {
-                    tceiqService.toError(queued.getId(), e.getMessageError().getDescription());
+                    tceiqService.updateToError(queued.getId(), e.getMessageError().getDescription());
                 } catch (CerberusException again) {
                     LOG.warn("Unable to put in error " + queued.getId() + " due to " + e.getMessageError().getDescription(), e);
                 }
             }
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void executeNextInQueue(final Long id) throws CerberusException {
+        List<Long> ids = new ArrayList<>();
+        ids.add(id);
+        executeNextInQueue(ids);
     }
 
     /**
@@ -210,7 +217,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService, 
         if (remainingExecutions != null) {
             for (ExecutionWorkerThread remainingExecution : remainingExecutions) {
                 try {
-                    tceiqService.remove(remainingExecution.getToExecute().getId());
+                    tceiqService.convert(tceiqService.delete(remainingExecution.getToExecute().getId()));
                 } catch (Exception e) {
                     LOG.warn("Unable to clean execution in queue " + remainingExecution.getToExecute().getId() + " during stopping process of the execution thread pool " + associatedPool.getName(), e);
                 }
@@ -276,7 +283,8 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService, 
             ExecutionWorkerThread execution = new ExecutionWorkerThread.Builder()
                     .toExecute(toExecute)
                     .toExecuteKey(toExecuteKey)
-                    .cerberusUrl(parameterService.findParameterByKey(PARAMETER_CERBERUS_URL, "").getValue())
+                    .toExecuteTimeout(parameterService.getParameterIntegerByKey("cerberus_queueexecution_timeout", "", 600000))
+                    .cerberusUrl(parameterService.getParameterStringByKey("cerberus_url", "", ""))
                     .inQueueService(tceiqService)
                     .build();
             if (LOG.isDebugEnabled()) {

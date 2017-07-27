@@ -242,7 +242,7 @@ public class ReadTestCaseExecution extends HttpServlet {
         /**
          * Get list of Execution in Queue by Tag
          */
-        testCaseExecutionListInQueue = testCaseExecutionInQueueService.readDistinctEnvCoutnryBrowserByTag(Tag);
+        testCaseExecutionListInQueue = testCaseExecutionInQueueService.readDistinctEnvCountryBrowserByTag(Tag);
         List<TestCaseExecutionQueue> testCaseExecutionsInQueue = testCaseExecutionListInQueue.getDataList();
 
         /**

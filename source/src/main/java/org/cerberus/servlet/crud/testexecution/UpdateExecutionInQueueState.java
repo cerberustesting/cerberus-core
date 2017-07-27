@@ -132,9 +132,9 @@ public class UpdateExecutionInQueueState extends PostableHttpServlet<UpdateExecu
         try {
             switch (request.getState()) {
                 case WAITING:
-                    return new Response(executionInQueueService.toWaiting(request.getIds()));
+                    return new Response(executionInQueueService.updateToWaiting(request.getIds()));
                 case CANCELLED:
-                    return new Response(executionInQueueService.toCancelled(request.getIds()));
+                    return new Response(executionInQueueService.updateToCancelled(request.getIds()));
                 default:
                     throw new RequestProcessException(HttpStatus.BAD_REQUEST, "Invalid action");
             }

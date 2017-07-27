@@ -24,7 +24,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
         initPage();
         initPageModalToAddObject("applicationObject");   
         initPageModalToEditObject();  
-        
+
         displayModalLabel();
     });
     
@@ -36,9 +36,9 @@ function initPage() {
     var application = GetURLParameter("application");
 
     //configure and create the dataTable
-    var configurations = new TableConfigurationsServerSide("applicationObjectsTable", "ReadApplicationObject?system=" + getUser().defaultSystem, "contentTable", aoColumnsFunc("applicationObjectsTable"), [1, 'asc']);
-    createDataTableWithPermissions(configurations, renderOptionsForApplicationObject, "#applicationObjectList", undefined, true);
-
+    var aoColumns =aoColumnsFunc("applicationObjectsTable");
+    var configurations = new TableConfigurationsServerSide("applicationObjectsTable", "ReadApplicationObject?system=" + getUser().defaultSystem, "contentTable", aoColumns, [1, 'asc']);
+    $.when( createDataTableWithPermissions(configurations, renderOptionsForApplicationObject, "#applicationObjectList", undefined, true) );
     if(application != null) {
         clearIndividualFilter("applicationObjectsTable",undefined,true);
         filterOnColumn("applicationObjectsTable", "application", application);
@@ -101,7 +101,6 @@ function deleteEntryHandlerClick() {
             if (info === 1) {//page has only one row, then returns to the previous page
                 oTable.fnPageChange('previous');
             }
-
         }
         //show message in the main page
         showMessageMainPage(messageType, data.message, false);
@@ -159,7 +158,8 @@ function aoColumnsFunc(tableId) {
             "sName": "screenshotfilename",
             "title": doc.getDocOnline("page_applicationObject", "ScreenshotFileName"),
             "mRender": function(data, type, obj) {
-                return "<image "+ "style ='height: 25px;'" + "src='ReadApplicationObjectImage?application=" + obj["application"] + "&object=" + obj["object"] + "&time=" + new Date().getTime() + "'></image>"
+                var currentCase = "<image "+ "onclick ='displayPictureOfMinitature(this)' " +"style ='height: 25px;cursor:  pointer;'" + "src='ReadApplicationObjectImage?application=" + obj["application"] + "&object=" + obj["object"] + "&time=" + new Date().getTime() + "'></image>"
+                return currentCase;
             }
         },
         {"data": "usrcreated",
@@ -180,6 +180,6 @@ function aoColumnsFunc(tableId) {
     return aoColumns;
 }
 
-
-
-
+function displayPictureOfMinitature(element){
+    showPicture("screenshot", $(element).attr('src')  );
+}

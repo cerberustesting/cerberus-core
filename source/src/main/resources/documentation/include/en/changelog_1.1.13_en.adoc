@@ -40,6 +40,8 @@
 * [GUI] On TestCase page: Invert button in order to be able to invert country selection in 1 click.
 * [GUI] On TestCaseScript page: Adding a property on a testcase that has no country selected now generates an error message.
 * [ENGINE] Queue execution are kept and linked to execution. A new DONE state on queue has been created for that purpose.
+* [ENGINE] New action and control implemented for FAT application testing. Screenshot are now available.
+
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
