@@ -8937,6 +8937,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `robot` ADD COLUMN `poolsize` INT(11) NOT NULL DEFAULT 0 AFTER `description`;");
         SQLInstruction.add(SQLS.toString());
+        
+        // Adding index to Execution Queue
+        //-- ------------------------ 1185
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `appservice` CHANGE COLUMN `Method` `Method` VARCHAR(255) NOT NULL DEFAULT '';");
+        SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;
     }
