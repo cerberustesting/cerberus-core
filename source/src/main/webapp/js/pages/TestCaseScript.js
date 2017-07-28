@@ -715,11 +715,26 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
 
     deleteBtn.click(function () {
         property.toDelete = (property.toDelete) ? false : true;
-
+        //set the property in red (or remove the red color)
         if (property.toDelete) {
             content.addClass("list-group-item-danger");
         } else {
             content.removeClass("list-group-item-danger");
+        }
+        //set the link to the property in red (or remove the red color)
+        var propertyName = property.property;
+        var linkToProperty =null;
+        //go though every link and look for the right one
+        $("#propListWrapper li a").each(function(){
+            if ( $(this).text() === propertyName )
+                linkToProperty = $(this).parent();
+        });
+        if ( linkToProperty !== null ){
+            if (property.toDelete) {
+                linkToProperty.addClass("list-group-item-danger");
+            } else {
+                linkToProperty.removeClass("list-group-item-danger");
+            }
         }
     });
 
