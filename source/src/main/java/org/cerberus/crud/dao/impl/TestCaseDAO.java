@@ -1070,7 +1070,7 @@ public class TestCaseDAO implements ITestCaseDAO {
     @Override
     public String getMaxNumberTestCase(String test) {
         String max = "";
-        final String sql = "SELECT  convert ( Max( Testcase ) + 0, UNSIGNED) as MAXTC FROM testcase where test = ?";
+        final String sql = "SELECT  Max( CAST(Testcase AS UNSIGNED) ) as MAXTC FROM testcase where test = ?";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
