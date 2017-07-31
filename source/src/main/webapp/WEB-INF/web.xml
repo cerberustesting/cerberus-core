@@ -145,32 +145,20 @@
         <servlet-class>org.cerberus.servlet.crud.usermanagement.GetUsers</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>AddUser</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.usermanagement.AddUser</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>CreateUser2</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.usermanagement.CreateUser2</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>UpdateUser2</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.usermanagement.UpdateUser2</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>DeleteUser2</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.usermanagement.DeleteUser2</servlet-class>
+        <servlet-name>CreateUser</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.usermanagement.CreateUser</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateUser</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.usermanagement.UpdateUser</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>UpdateMyUserSystem</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.usermanagement.UpdateMyUserSystem</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>DeleteUser</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.usermanagement.DeleteUser</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UpdateMyUserSystem</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.usermanagement.UpdateMyUserSystem</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ChangeUserPassword</servlet-name>
@@ -721,10 +709,6 @@
         <servlet-class>org.cerberus.servlet.crud.test.UseTestCaseStep</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>FindAllUsers</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.usermanagement.FindAllUsers</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>ReadUser</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.usermanagement.ReadUser</servlet-class>
     </servlet>
@@ -1057,32 +1041,20 @@
         <url-pattern>/GetUsers</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>AddUser</servlet-name>
-        <url-pattern>/AddUser</url-pattern>
+        <servlet-name>CreateUser</servlet-name>
+        <url-pattern>/CreateUser</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>UpdateUser</servlet-name>
         <url-pattern>/UpdateUser</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>CreateUser2</servlet-name>
-        <url-pattern>/CreateUser2</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>UpdateUser2</servlet-name>
-        <url-pattern>/UpdateUser2</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>DeleteUser2</servlet-name>
-        <url-pattern>/DeleteUser2</url-pattern>
+        <servlet-name>DeleteUser</servlet-name>
+        <url-pattern>/DeleteUser</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>UpdateMyUserSystem</servlet-name>
         <url-pattern>/UpdateMyUserSystem</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>DeleteUser</servlet-name>
-        <url-pattern>/DeleteUser</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ChangeUserPassword</servlet-name>
@@ -1677,10 +1649,6 @@
         <url-pattern>/UseTestCaseStep</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>FindAllUsers</servlet-name>
-        <url-pattern>/FindAllUsers</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>ReadUser</servlet-name>
         <url-pattern>/ReadUser</url-pattern>
     </servlet-mapping>
@@ -1931,7 +1899,7 @@
     <servlet-mapping>
         <servlet-name>UpdateTestCaseExecutionQueue</servlet-name>
         <url-pattern>/UpdateTestCaseExecutionQueue</url-pattern>
-    </servlet-mapping>    
+    </servlet-mapping>
     <session-config>
         <session-timeout>60</session-timeout>
     </session-config>
@@ -1951,7 +1919,6 @@
         <error-code>500</error-code>
         <location>/ErrorPages/Error.jsp</location>
     </error-page>
-    <!-- Start JAAS Configuration -->
     <security-role>
         <description>Readonly access to any test and testcase.</description>
         <role-name>TestRO</role-name>
@@ -2341,12 +2308,8 @@
             <url-pattern>/GetParameter</url-pattern>
             <url-pattern>/UpdateParameter</url-pattern>
             <url-pattern>/GetUsers</url-pattern>
-            <url-pattern>/FindAllUsers</url-pattern>
-            <url-pattern>/AddUser</url-pattern>
+            <url-pattern>/CreateUser</url-pattern>
             <url-pattern>/UpdateUser</url-pattern>
-            <url-pattern>/CreateUser2</url-pattern>
-            <url-pattern>/UpdateUser2</url-pattern>
-            <url-pattern>/DeleteUser2</url-pattern>
             <url-pattern>/DeleteUser</url-pattern>
             <url-pattern>/ReadLogEvent</url-pattern>
             <url-pattern>/CreateInvariant2</url-pattern>
@@ -2510,7 +2473,6 @@
             <form-error-page>/Login.jsp?error=1</form-error-page>
         </form-login-config>
     </login-config>
-    <!--End JAAS Configuration -->
     <context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>/WEB-INF/applicationContext.xml</param-value>

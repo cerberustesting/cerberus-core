@@ -310,7 +310,7 @@ function editEntryModalSaveHandler() {
 
     showLoaderInModal('#editUserModal');
     $.ajax({
-        url: "UpdateUser2",
+        url: "UpdateUser",
         async: true,
         method: "POST",
         data: data,
@@ -419,7 +419,7 @@ function addEntryModalSaveHandler() {
 
     showLoaderInModal('#addUserModal');
     $.ajax({
-        url: "CreateUser2",
+        url: "CreateUser",
         async: true,
         method: "POST",
         data: data,
@@ -454,7 +454,7 @@ function removeEntryClick(key) {
     showModalConfirmation(function (ev) {
         var id = $('#confirmationModal #hiddenField1').prop("value");
         $.ajax({
-            url: "DeleteUser2?login=" + key,
+            url: "DeleteUser?login=" + key,
             async: true,
             method: "GET",
             success: function (data) {

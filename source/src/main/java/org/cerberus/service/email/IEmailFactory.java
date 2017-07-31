@@ -19,14 +19,16 @@
  */
 package org.cerberus.service.email;
 
+import org.cerberus.service.email.impl.Email;
+
 /**
  *
  * @author bcivel
  */
-public interface IEmailBodyGeneration {
 
-    public String GenerateBuildContentTable(String system, String build, String revision, String lastBuild, String lastRevision);
 
-    public String GenerateTestRecapTable(String system, String build, String revision, String country);
-
+public interface IEmailFactory {
+    
+    public Email create(String host, int smtpPort, String userName, String password, boolean setTls, String subject, String body,
+            String from, String to, String cc);
 }

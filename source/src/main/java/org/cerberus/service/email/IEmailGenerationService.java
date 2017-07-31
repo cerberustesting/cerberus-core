@@ -20,22 +20,21 @@
 package org.cerberus.service.email;
 
 import org.cerberus.crud.entity.User;
-import org.cerberus.util.answer.Answer;
-import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.service.email.impl.Email;
 
 /**
  *
  * @author bcivel
  */
-public interface IEmailGeneration {
+public interface IEmailGenerationService {
 
-    public String EmailGenerationRevisionChange(String system, String country, String env, String build, String revision);
+    public Email generateRevisionChangeEmail(String system, String country, String env, String build, String revision) throws Exception;
 
-    public String EmailGenerationDisableEnv(String system, String country, String env);
+    public Email generateDisableEnvEmail(String system, String country, String env) throws Exception;
 
-    public String EmailGenerationNewChain(String system, String country, String env, String chain);
+    public Email generateNewChainEmail(String system, String country, String env, String chain) throws Exception;
 
-    public void BuildAndSendAccountCreationEmail(User user);
-    
-    public Answer SendForgotPasswordNotification(User user);
+    public Email generateAccountCreationEmail(User user) throws Exception;
+
+    public Email generateForgotPasswordEmail(User user) throws Exception;
 }

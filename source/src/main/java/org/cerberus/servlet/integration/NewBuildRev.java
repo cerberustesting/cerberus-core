@@ -37,8 +37,8 @@ import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.service.email.IEmailGeneration;
-import org.cerberus.service.email.impl.sendMail;
+import org.cerberus.service.email.IEmailGenerationService;
+import org.cerberus.service.email.impl.Email;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.version.Infos;
@@ -48,6 +48,7 @@ import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.cerberus.service.email.IEmailService;
 
 /**
  * @author vertigo
@@ -58,6 +59,8 @@ public class NewBuildRev extends HttpServlet {
     private final String OBJECT_NAME = "CountryEnvParam";
     private final String ITEM = "Environment";
     private final String OPERATION = "New Build/Revision";
+
+    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger("NewBuildRev");
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -92,7 +95,8 @@ public class NewBuildRev extends HttpServlet {
 //        AnswerItem answer = new AnswerItem(msg);
         String eMailContent;
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        IEmailGeneration emailService = appContext.getBean(IEmailGeneration.class);
+        IEmailService emailService = appContext.getBean(IEmailService.class);
+        IEmailGenerationService emailGenerationService = appContext.getBean(IEmailGenerationService.class);
         IParameterService parameterService = appContext.getBean(IParameterService.class);
         ICountryEnvParamService countryEnvParamService = appContext.getBean(ICountryEnvParamService.class);
         ICountryEnvParam_logService countryEnvParam_logService = appContext.getBean(ICountryEnvParam_logService.class);
@@ -149,12 +153,15 @@ public class NewBuildRev extends HttpServlet {
                  */
                 // Email Calculation. Email must be calcuated before we update the Build and revision in order to have the old build revision still available in the mail.
                 String OutputMessage = "";
-                eMailContent = emailService.EmailGenerationRevisionChange(system, country, env, build, revision);
-                String[] eMailContentTable = eMailContent.split("///");
-                String to = eMailContentTable[0];
-                String cc = eMailContentTable[1];
-                String subject = eMailContentTable[2];
-                String body = eMailContentTable[3];
+                Email email = null;
+                try {
+                    email = emailGenerationService.generateRevisionChangeEmail(system, country, env, build, revision);
+                } catch (Exception ex) {
+                    LOG.warn(Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", ex);
+                    logEventService.createForPrivateCalls("/NewBuildRev", "NEWBUILDREV", "Warning on New Build/Revision environment : ['" + system + "','" + country + "','" + env + "'] " + ex.getMessage(), request);
+                    OutputMessage = ex.getMessage();
+                }
+
                 // We update the object.
                 CountryEnvParam cepData = (CountryEnvParam) answerItem.getItem();
                 cepData.setBuild(build);
@@ -182,21 +189,8 @@ public class NewBuildRev extends HttpServlet {
                     /**
                      * Email notification.
                      */
-                    // Search the From, the Host and the Port defined in the parameters
-                    String from;
-                    String host;
-                    int port;
-                    String userName;
-                    String password;
                     try {
-                        from = parameterService.findParameterByKey("integration_smtp_from", system).getValue();
-                        host = parameterService.findParameterByKey("integration_smtp_host", system).getValue();
-                        port = Integer.valueOf(parameterService.findParameterByKey("integration_smtp_port", system).getValue());
-                        userName = parameterService.findParameterByKey("integration_smtp_username", system).getValue();
-                        password = parameterService.findParameterByKey("integration_smtp_password", system).getValue();
-
-                        //Sending the email
-                        sendMail.sendHtmlMail(host, port, userName, password, body, subject, from, to, cc);
+                        emailService.sendHtmlMail(email);
                     } catch (Exception e) {
                         Logger.getLogger(NewBuildRev.class.getName()).log(Level.SEVERE, Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", e);
                         logEventService.createForPrivateCalls("/NewBuildRev", "NEWBUILDREV", "Warning on New Build/Revision environment : ['" + system + "','" + country + "','" + env + "'] " + e.getMessage(), request);
@@ -244,7 +238,7 @@ public class NewBuildRev extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (JSONException ex) {
-            Logger.getLogger(NewBuildRev.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
     }
 
@@ -262,7 +256,7 @@ public class NewBuildRev extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (JSONException ex) {
-            Logger.getLogger(NewBuildRev.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
     }
 

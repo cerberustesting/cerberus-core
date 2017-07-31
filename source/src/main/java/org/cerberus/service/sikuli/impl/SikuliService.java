@@ -420,6 +420,7 @@ public class SikuliService implements ISikuliService {
         if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_SUCCESS).getCodeString())) {
             MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_KEYPRESS);
             message.setDescription(message.getDescription().replace("%ELEMENT%", locator));
+            message.setDescription(message.getDescription().replace("%DATA%", text));
             return message;
         }
         if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_FAILED).getCodeString())) {
@@ -450,17 +451,17 @@ public class SikuliService implements ISikuliService {
     }
 
     @Override
-    public MessageEvent doSikuliVerifyTextInPage(Session session, String locator) {
-        AnswerItem<JSONObject> actionResult = doSikuliAction(session, this.SIKULI_VERIFYTEXTINPAGE, locator, "");
+    public MessageEvent doSikuliVerifyTextInPage(Session session, String text) {
+        AnswerItem<JSONObject> actionResult = doSikuliAction(session, this.SIKULI_VERIFYTEXTINPAGE, null, text);
 
         if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_SUCCESS).getCodeString())) {
             MessageEvent message = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TEXTINPAGE);
-            message.setDescription(message.getDescription().replace("%STRING1%", locator));
+            message.setDescription(message.getDescription().replace("%STRING1%", text));
             return message;
         }
         if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_FAILED).getCodeString())) {
             MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTINPAGE);
-            mes.setDescription(mes.getDescription().replace("%STRING1%", locator));
+            mes.setDescription(mes.getDescription().replace("%STRING1%", text));
             return mes;
         }
 
