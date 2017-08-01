@@ -1243,7 +1243,7 @@ function loadLibraryStep(search) {
                 $('#lib').find("div").toggleClass('in');
             }
 
-            $('.list-group-item').unbind("click").on('click', function () {
+            $('#addStepModal > .list-group-item').unbind("click").on('click', function () {
                 $('.glyphicon', this)
                         .toggleClass('glyphicon-chevron-right')
                         .toggleClass('glyphicon-chevron-down');
