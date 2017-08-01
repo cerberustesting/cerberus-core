@@ -298,6 +298,8 @@ $.when($.getScript("js/global/global.js")).then(function () {
 
                             var prop = drawProperty(newProperty, testcaseinfo, true);
                             setPlaceholderProperty(prop[0], prop[1]);
+                            
+                            $(prop[0]).find("#propName").focus();
                             //autocompleteAllFields();
 
                             // Restore the saveScript button status
