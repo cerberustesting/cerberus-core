@@ -189,8 +189,8 @@ function updatePage(data, stepList) {
     $("#editTcInfo").attr("href", "TestCaseScript.jsp?test=" + data.test + "&testcase=" + data.testcase);
     $("#runTestCase").attr("href", "RunTests.jsp?test=" + data.test + "&testcase=" + data.testcase + "&country=" + data.country + "&environment=" + data.environment + "&browser=" + data.browser + "&tag=" + data.tag);
     $("#ExecutionByTag").attr("href", "ReportingExecutionByTag.jsp?Tag=" + data.tag);
-    $("#lastExecution").attr("href", "TestCaseExecution.jsp?test=" + data.test + "&testcase=" + data.testcase);
-    $("#lastExecutionwithEnvCountry").attr("href", "TestCaseExecution.jsp?test=" + data.test + "&testcase=" + data.testcase + "&country=" + data.country + "&environment=" + data.environment + "&application=" + data.application);
+    $("#lastExecution").attr("href", "TestCaseExecutionList.jsp?test=" + data.test + "&testcase=" + data.testcase);
+    $("#lastExecutionwithEnvCountry").attr("href", "TestCaseExecutionList.jsp?test=" + data.test + "&testcase=" + data.testcase + "&country=" + data.country + "&environment=" + data.environment + "&application=" + data.application);
 
     if (isEmpty(data.queueId) || (data.queueId === 0)) {
         $("#ExecutionQueue").attr("disabled", "disabled");
