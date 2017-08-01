@@ -404,10 +404,10 @@ function aoColumnsFunc2(tableId) {
                 return '<div class="center btn-group width150">' + removeTestbattery + '</div>';
 
             },
-            "width": "100px"
+            "sWidth": "100px"
         },
-        {"data": "test", "sName": "test", "title": doc.getDocLabel("page_testbattery", "test_col")},
-        {"data": "testCase", "sName": "testcase", "title": doc.getDocLabel("page_testbattery", "testcase_col")}
+        {"data": "test", "sName": "test", "title": doc.getDocLabel("page_testbattery", "test_col"), "sWidth": "300px"},
+        {"data": "testCase", "sName": "testcase", "title": doc.getDocLabel("page_testbattery", "testcase_col"), "sWidth": "100px"}
     ];
     return aoColumns;
 }
