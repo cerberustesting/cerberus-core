@@ -102,15 +102,15 @@ function initPage(id) {
     $("#editTag").click(function () {
         $(this).hide();
         $("#saveTag").show();
-        $("#tag").attr("readonly", false);
+        $("#testCaseDetails #tag").attr("readonly", false);
     });
 
     $("#saveTag").click(function () {
-        $("#tag").attr("readonly", true);
+        $("#testCaseDetails #tag").attr("readonly", true);
         $(this).attr("disabled", true);
         $.ajax({
             url: "SetTagToExecution",
-            data: {"executionId": id, newTag: $("#tag").val()},
+            data: {"executionId": id, newTag: $("#testCaseDetails #tag").val()},
             success: function (data) {
                 $("#saveTag").attr("disabled", false);
                 $("#saveTag").hide();
