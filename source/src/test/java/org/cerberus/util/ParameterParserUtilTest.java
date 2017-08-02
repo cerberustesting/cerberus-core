@@ -60,9 +60,10 @@ public class ParameterParserUtilTest {
         Assert.assertEquals(0, res);
     }
 
-    @Test(expected = NumberFormatException.class)
-    public void testParseIntegerParamWhenNonNumericStringProvided() throws NumberFormatException {
-        ParameterParserUtil.parseIntegerParam("qwerty", 0);
+    @Test
+    public void testParseIntegerParamWhenNonNumericStringProvided() {
+        int res = ParameterParserUtil.parseIntegerParam("qwerty", 0);
+        Assert.assertEquals(0, res);
     }
 
     @Test
