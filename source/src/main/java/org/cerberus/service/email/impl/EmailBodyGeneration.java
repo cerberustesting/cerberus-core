@@ -29,6 +29,7 @@ import org.apache.log4j.Logger;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.service.IApplicationService;
 import org.cerberus.crud.service.IParameterService;
+import org.cerberus.database.DatabaseSpring;
 import org.cerberus.service.email.IEmailBodyGeneration;
 import org.cerberus.util.SqlUtil;
 import org.cerberus.util.StringUtil;
@@ -47,14 +48,16 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
     private IParameterService parameterService;
     @Autowired
     private IApplicationService applicationService;
+    @Autowired
+    private DatabaseSpring databaseSpring;
 
     @Override
-    public String GenerateBuildContentTable(String system, String build, String revision, String lastBuild, String lastRevision, Connection conn) {
+    public String GenerateBuildContentTable(String system, String build, String revision, String lastBuild, String lastRevision) {
 
         String buildContentTemplate = "";
         String buildContentTable = "";
 
-        try {
+        try (Connection conn = databaseSpring.connect()) {
             Statement stmtBuildContent = conn.createStatement();
 
             String bugURL = "";
@@ -190,11 +193,11 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
     }
 
     @Override
-    public String GenerateTestRecapTable(String system, String build, String revision, String country, Connection conn) {
+    public String GenerateTestRecapTable(String system, String build, String revision, String country) {
 
         String TestRecapTable;
 
-        try {
+        try (Connection conn = databaseSpring.connect()) {
             Statement stmtBuildContent = conn.createStatement();
             Statement stmtCountryList = conn.createStatement();
 

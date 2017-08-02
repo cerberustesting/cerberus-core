@@ -22,8 +22,6 @@ package org.cerberus.servlet.zzpublic;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -33,15 +31,10 @@ import org.cerberus.crud.entity.CountryEnvParam;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.service.IBatchInvariantService;
 import org.cerberus.crud.service.IBuildRevisionBatchService;
-import org.cerberus.crud.service.IBuildRevisionInvariantService;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.ICountryEnvParamService;
-import org.cerberus.crud.service.ICountryEnvParam_logService;
 import org.cerberus.crud.service.ILogEventService;
-import org.cerberus.crud.service.IParameterService;
 import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.service.email.IEmailGeneration;
-import org.cerberus.service.email.impl.sendMail;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
@@ -49,6 +42,7 @@ import org.cerberus.util.answer.AnswerUtil;
 import org.cerberus.version.Infos;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.cerberus.service.email.IEmailService;
 
 /**
  * @author vertigo
@@ -87,10 +81,7 @@ public class NewEnvironmentEventV000 extends HttpServlet {
         IInvariantService invariantService = appContext.getBean(IInvariantService.class);
         IBatchInvariantService batchInvariantService = appContext.getBean(IBatchInvariantService.class);
         IBuildRevisionBatchService buildRevisionBatchService = appContext.getBean(IBuildRevisionBatchService.class);
-        IBuildRevisionInvariantService buildRevisionInvariantService = appContext.getBean(IBuildRevisionInvariantService.class);
-        IEmailGeneration emailService = appContext.getBean(IEmailGeneration.class);
-        ICountryEnvParam_logService countryEnvParam_logService = appContext.getBean(ICountryEnvParam_logService.class);
-        IParameterService parameterService = appContext.getBean(IParameterService.class);
+        IEmailService emailService = appContext.getBean(IEmailService.class);
 
         // Parsing all parameters.
         String system = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("system"), "", charset);
@@ -174,48 +165,25 @@ public class NewEnvironmentEventV000 extends HttpServlet {
                 /**
                  * Email notification.
                  */
-                // Email Calculation.
-                String eMailContent;
                 String OutputMessage = "";
-                eMailContent = emailService.EmailGenerationNewChain(cepData.getSystem(), cepData.getCountry(), cepData.getEnvironment(), event);
-                String[] eMailContentTable = eMailContent.split("///");
-                String to = eMailContentTable[0];
-                String cc = eMailContentTable[1];
-                String subject = eMailContentTable[2];
-                String body = eMailContentTable[3];
+                MessageEvent me = emailService.generateAndSendNewChainEmail(cepData.getSystem(), cepData.getCountry(), cepData.getEnvironment(), event);
 
-                // Search the From, the Host and the Port defined in the parameters
-                String from;
-                String host;
-                int port;
-                String userName;
-                String password;
-                try {
-                    from = parameterService.findParameterByKey("integration_smtp_from", cepData.getSystem()).getValue();
-                    host = parameterService.findParameterByKey("integration_smtp_host", cepData.getSystem()).getValue();
-                    port = Integer.valueOf(parameterService.findParameterByKey("integration_smtp_port", cepData.getSystem()).getValue());
-                    userName = parameterService.findParameterByKey("integration_smtp_username", system).getValue();
-                    password = parameterService.findParameterByKey("integration_smtp_password", system).getValue();
-
-                    //Sending the email
-                    sendMail.sendHtmlMail(host, port, userName, password, body, subject, from, to, cc);
-
-                } catch (Exception e) {
-                    Logger.getLogger(NewEnvironmentEventV000.class.getName()).log(Level.SEVERE, Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", e);
-                    logEventService.createForPrivateCalls("/NewEnvironmentEventV000", "NEW", "Warning on New environment event : ['" + cepData.getSystem() + "','" + cepData.getCountry() + "','" + cepData.getEnvironment() + "'] " + e.getMessage(), request);
-                    OutputMessage = e.getMessage();
+                if (!"OK".equals(me.getMessage().getCodeString())) {
+                    LOG.warn(Infos.getInstance().getProjectNameAndVersion() + " - Exception catched." + me.getMessage().getDescription());
+                    logEventService.createForPrivateCalls("/NewEnvironmentEventV000", "NEW", "Warning on New environment event : ['" + cepData.getSystem() + "','" + cepData.getCountry() + "','" + cepData.getEnvironment() + "'] " + me.getMessage().getDescription(), request);
+                    OutputMessage = me.getMessage().getDescription();
                 }
 
-                    if (OutputMessage.equals("")) {
-                        msg = new MessageEvent(MessageEventEnum.GENERIC_OK);
-                        Answer answerSMTP = new AnswerList(msg);
-                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, answerSMTP);
-                    } else {
-                        msg = new MessageEvent(MessageEventEnum.GENERIC_WARNING);
-                        msg.setDescription(msg.getDescription().replace("%REASON%", OutputMessage + " when sending email for " + cepData.getSystem() + "/" + cepData.getCountry() + "/" + cepData.getEnvironment()));
-                        Answer answerSMTP = new AnswerList(msg);
-                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, answerSMTP);
-                    }
+                if (OutputMessage.equals("")) {
+                    msg = new MessageEvent(MessageEventEnum.GENERIC_OK);
+                    Answer answerSMTP = new AnswerList(msg);
+                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, answerSMTP);
+                } else {
+                    msg = new MessageEvent(MessageEventEnum.GENERIC_WARNING);
+                    msg.setDescription(msg.getDescription().replace("%REASON%", OutputMessage + " when sending email for " + cepData.getSystem() + "/" + cepData.getCountry() + "/" + cepData.getEnvironment()));
+                    Answer answerSMTP = new AnswerList(msg);
+                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, answerSMTP);
+                }
             }
             /**
              * Formating and returning the result.

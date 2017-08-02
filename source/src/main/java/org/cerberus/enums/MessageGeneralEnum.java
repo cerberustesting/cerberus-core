@@ -43,6 +43,7 @@ public enum MessageGeneralEnum {
     VALIDATION_FAILED_ENVIRONMENT_NOTDEFINED(61, "", "The environment selected '%ENV%' belong to a group of environment '%ENVGP%' that is neither DEV, QA, UAT and PROD."),
     VALIDATION_FAILED_ENVIRONMENT_UNDER_MAINTENANCE(62, "", "The environment is under maintenance. You try to run a test aginst an environment that is currently under maintenance."),
     VALIDATION_FAILED_SELENIUM_COULDNOTCONNECT(63, "", "Could not contact Selenium server on %SSIP% using port %SSPORT%. Possible causes are invalid address of the remote server or browser start-up failure. %ERROR%"),
+    VALIDATION_FAILED_SIKULI_COULDNOTCONNECT(63, "", "Could not contact Sikuli server on %SSIP% using port %SSPORT%. Possible causes are invalid address of the remote server or cerberus-extension-sikuli not started properly."),
     VALIDATION_FAILED_APPLICATION_NOT_FOUND(64, "", "Application '%APPLI%' does not exist."),
     VALIDATION_FAILED_COUNTRYENV_NOT_FOUND(65, "", "System '%SYSTEM%' Country '%COUNTRY%' environment '%ENV%' parameters does not exist."),
     VALIDATION_FAILED_COUNTRYENVAPP_NOT_FOUND(66, "", "Country '%COUNTRY%' environment '%ENV%' application '%APPLI%' parameters does not exist."),

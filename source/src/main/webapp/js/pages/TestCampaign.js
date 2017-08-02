@@ -43,6 +43,8 @@ function initPage() {
             $("#batteryTestcampaignsTable").DataTable().draw();
         } else if (target == "#tabsCreate-3") {
             $("#parameterTestcampaignsTable").DataTable().draw();
+        } else if (target == "#tabsCreate-4") {
+            $("#labelTestcampaignsTable").DataTable().draw();
         }
     });
 
@@ -54,6 +56,8 @@ function initPage() {
             $("#addModalBatteryTestcampaignsTable").DataTable().draw();
         } else if (target == "#tabsCreate-13") {
             $("#addModalParameterTestcampaignsTable").DataTable().draw();
+        } else if (target == "#tabsCreate-14") {
+            $("#addModalLabelTestcampaignsTable").DataTable().draw();
         }
     });
 

@@ -1760,7 +1760,7 @@ function displayColumnSearchForClientSideTable(tableData, tableId, oSettings) {
                                     filterForFnFilter += newValue[i] + "|";
                                 }
                                 filterForFnFilter = filterForFnFilter.slice(0, -1);
-                                $("#" + tableId).dataTable().fnFilter(filterForFnFilter, index, true);
+                                $("#" + tableId).dataTable().fnFilter("^"+filterForFnFilter+"$", index, true);
 
                             }
                         });

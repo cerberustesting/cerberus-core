@@ -243,6 +243,18 @@ public class SeleniumServerService implements ISeleniumServerService {
                 }
                 driver = (WebDriver) appiumDriver;
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
+                /**
+                 * Check sikuli extension is reachable
+                 */
+                if (!sikuliService.isSikuliServerReachable(session)) {
+                    MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SIKULI_COULDNOTCONNECT);
+                    mes.setDescription(mes.getDescription().replace("%SSIP%", tCExecution.getSeleniumIP()));
+                    mes.setDescription(mes.getDescription().replace("%SSPORT%", tCExecution.getSeleniumPort()));
+                    throw new CerberusException(mes);
+                }
+                /**
+                 * If CountryEnvParameter IP is set, open the App
+                 */
                 if (!tCExecution.getCountryEnvironmentParameters().getIp().isEmpty()) {
                     sikuliService.doSikuliAction(session, "openApp", null, tCExecution.getCountryEnvironmentParameters().getIp());
                 }

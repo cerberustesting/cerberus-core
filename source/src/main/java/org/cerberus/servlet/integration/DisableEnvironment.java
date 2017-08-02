@@ -34,11 +34,8 @@ import org.cerberus.crud.service.ICountryEnvParamService;
 import org.cerberus.crud.service.ICountryEnvParam_logService;
 import org.cerberus.crud.service.ILogEventService;
 
-import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.service.email.IEmailGeneration;
-import org.cerberus.service.email.impl.sendMail;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.version.Infos;
@@ -48,6 +45,7 @@ import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.cerberus.service.email.IEmailService;
 
 /**
  * @author vertigo
@@ -58,6 +56,8 @@ public class DisableEnvironment extends HttpServlet {
     private final String OBJECT_NAME = "CountryEnvParam";
     private final String ITEM = "Environment";
     private final String OPERATION = "Disable";
+
+    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger("DisableEnvironment");
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -90,8 +90,7 @@ public class DisableEnvironment extends HttpServlet {
 //        AnswerItem answer = new AnswerItem(msg);
         String eMailContent = "";
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        IEmailGeneration emailService = appContext.getBean(IEmailGeneration.class);
-        IParameterService parameterService = appContext.getBean(IParameterService.class);
+        IEmailService emailService = appContext.getBean(IEmailService.class);
         ICountryEnvParamService countryEnvParamService = appContext.getBean(ICountryEnvParamService.class);
         ICountryEnvParam_logService countryEnvParam_logService = appContext.getBean(ICountryEnvParam_logService.class);
         ILogEventService logEventService = appContext.getBean(LogEventService.class);
@@ -157,34 +156,13 @@ public class DisableEnvironment extends HttpServlet {
                     /**
                      * Email notification.
                      */
-                    // Email Calculation.
                     String OutputMessage = "";
-                    eMailContent = emailService.EmailGenerationDisableEnv(system, country, env);
-                    String[] eMailContentTable = eMailContent.split("///");
-                    String to = eMailContentTable[0];
-                    String cc = eMailContentTable[1];
-                    String subject = eMailContentTable[2];
-                    String body = eMailContentTable[3];
+                    MessageEvent me = emailService.generateAndSendDisableEnvEmail(system, country, env);
 
-                    // Search the From, the Host and the Port defined in the parameters
-                    String from;
-                    String host;
-                    int port;
-                    String userName;
-                    String password;
-                    try {
-                        from = parameterService.findParameterByKey("integration_smtp_from", system).getValue();
-                        host = parameterService.findParameterByKey("integration_smtp_host", system).getValue();
-                        port = Integer.valueOf(parameterService.findParameterByKey("integration_smtp_port", system).getValue());
-                        userName = parameterService.findParameterByKey("integration_smtp_username", system).getValue();
-                        password = parameterService.findParameterByKey("integration_smtp_password", system).getValue();
-
-                        //Sending the email
-                        sendMail.sendHtmlMail(host, port, userName, password, body, subject, from, to, cc);
-                    } catch (Exception e) {
-                        Logger.getLogger(DisableEnvironment.class.getName()).log(Level.SEVERE, Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", e);
-                        logEventService.createForPrivateCalls("/DisableEnvironment", "DISABLE", "Warning on Disable environment : ['" + system + "','" + country + "','" + env + "'] " + e.getMessage(), request);
-                        OutputMessage = e.getMessage();
+                    if (!"OK".equals(me.getMessage().getCodeString())) {
+                        LOG.warn(Infos.getInstance().getProjectNameAndVersion() + " - Exception catched." + me.getMessage().getDescription());
+                        logEventService.createForPrivateCalls("/DisableEnvironment", "DISABLE", "Warning on Disable environment : ['" + system + "','" + country + "','" + env + "'] " + me.getMessage().getDescription(), request);
+                        OutputMessage = me.getMessage().getDescription();
                     }
 
                     if (OutputMessage.equals("")) {
@@ -205,11 +183,15 @@ public class DisableEnvironment extends HttpServlet {
         /**
          * Formating and returning the json result.
          */
-        jsonResponse.put("messageType", answerItem.getResultMessage().getMessage().getCodeString());
-        jsonResponse.put("message", answerItem.getResultMessage().getDescription());
+        jsonResponse.put(
+                "messageType", answerItem.getResultMessage().getMessage().getCodeString());
+        jsonResponse.put(
+                "message", answerItem.getResultMessage().getDescription());
 
-        response.getWriter().print(jsonResponse);
-        response.getWriter().flush();
+        response.getWriter()
+                .print(jsonResponse);
+        response.getWriter()
+                .flush();
 
     }
 
@@ -227,8 +209,10 @@ public class DisableEnvironment extends HttpServlet {
             throws ServletException, IOException {
         try {
             processRequest(request, response);
+
         } catch (JSONException ex) {
-            Logger.getLogger(DisableEnvironment.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DisableEnvironment.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -245,8 +229,10 @@ public class DisableEnvironment extends HttpServlet {
             throws ServletException, IOException {
         try {
             processRequest(request, response);
+
         } catch (JSONException ex) {
-            Logger.getLogger(DisableEnvironment.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DisableEnvironment.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
     }
 

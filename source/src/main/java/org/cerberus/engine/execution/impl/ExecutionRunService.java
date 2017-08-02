@@ -994,7 +994,7 @@ public class ExecutionRunService implements IExecutionRunService {
             // Evaluate the condition at the control level.
             AnswerItem<Boolean> conditionAnswer;
             boolean conditionDecodeError = false;
-            if (tcExecution.getManualExecution().equals("Y")) {
+            if (!tcExecution.getManualExecution().equals("Y")) {
                 try {
                     answerDecode = variableService.decodeStringCompletly(testCaseStepActionControlExecution.getConditionVal1(), tcExecution, null, false);
                     testCaseStepActionControlExecution.setConditionVal1((String) answerDecode.getItem());

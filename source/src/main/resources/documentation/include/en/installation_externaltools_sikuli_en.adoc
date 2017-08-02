@@ -76,10 +76,19 @@ to interface Cerberus with your sikuli server.
 
 . Download the https://github.com/cerberustesting/cerberus-extension-sikuli[cerberus-extension-sikuli].
 . Download Selenium http://www.seleniumhq.org/download[Standalone Server].
-. Unzip cerberus-extension-sikuli and put the cerberus-extension-sikuli-x.x.x.jar it in the same folder than the selenium server.
-. Create a bat/sh file with the following command
+. Unzip cerberus-extension-sikuli and put the cerberus-extension-sikuli-x.x.x-full.jar it in the same folder than the selenium server.
+. Create a bat/sh file with the following command lines:
 
+- For a FAT Client
 
+No needs of selenium server, you can use this cerberus extention in a standalone mode (since cerberus-extension-sikuli-1.1.0-full).
+--------------------------------------
+start /b java -jar cerberus-extension-sikuli-x.x.x-full.jar
+--------------------------------------
+
+- For a WebApplication
+
+Injecting the main servlet of this cerberus extension starting the selenium hub. 
 --------------------------------------
 start /b java -jar selenium-server-standalone-x.xx.x.jar -role hub -port 5555
 start /b java -cp selenium-server-standalone-x.xx.x.jar;cerberus-extension-sikuli-x.x.x.jar org.openqa.grid.selenium.GridLauncher -role node -hub http://localhost:5555/grid/register -port 5556 -servlets org.sikuliserver.ExecuteSikuliAction

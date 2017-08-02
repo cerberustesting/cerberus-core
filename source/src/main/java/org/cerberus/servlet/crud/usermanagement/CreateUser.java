@@ -49,18 +49,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.LinkedList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.cerberus.crud.factory.IFactoryUserGroup;
-import org.cerberus.service.email.IEmailGeneration;
-import org.cerberus.service.email.impl.EmailGeneration;
 import org.cerberus.util.answer.AnswerUtil;
+import org.cerberus.service.email.IEmailService;
 
 /**
  * @author bcivel
  */
-public class CreateUser2 extends HttpServlet {
+public class CreateUser extends HttpServlet {
 
+    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(CreateUser.class);
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -82,7 +80,7 @@ public class CreateUser2 extends HttpServlet {
         String charset = request.getCharacterEncoding();
 
         IParameterService parameterService = appContext.getBean(ParameterService.class);
-        IEmailGeneration generateEmailService = appContext.getBean(EmailGeneration.class);
+        IEmailService emailService = appContext.getBean(IEmailService.class);
         String system = "";
 
         String password = parameterService.findParameterByKey("cerberus_accountcreation_defaultpassword", system).getValue();
@@ -146,13 +144,14 @@ public class CreateUser2 extends HttpServlet {
                 String sendNotification = parameterService.findParameterByKey("cerberus_notification_accountcreation_activatenotification", system).getValue();
 
                 if (sendNotification.equalsIgnoreCase("Y")) {
-                    generateEmailService.BuildAndSendAccountCreationEmail(userData);
+                    Answer msgSent = new Answer(emailService.generateAndSendAccountCreationEmail(userData));
+                    ans = AnswerUtil.agregateAnswer(ans, msgSent);
                 }
                 /**
                  * Object updated. Adding Log entry.
                  */
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                logEventService.createForPrivateCalls("/CreateUser2", "CREATE", "Create User : ['" + login + "']", request);
+                logEventService.createForPrivateCalls("/CreateUser", "CREATE", "Create User : ['" + login + "']", request);
 
                 ans = AnswerUtil.agregateAnswer(ans, userGroupService.updateGroupsByUser(userData, newGroups));
                 ans = AnswerUtil.agregateAnswer(ans, userSystemService.updateSystemsByUser(userData, newSystems));
@@ -184,9 +183,9 @@ public class CreateUser2 extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(CreateUser2.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         } catch (JSONException ex) {
-            Logger.getLogger(CreateUser2.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
     }
 
@@ -204,9 +203,9 @@ public class CreateUser2 extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(CreateUser2.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         } catch (JSONException ex) {
-            Logger.getLogger(CreateUser2.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
     }
 

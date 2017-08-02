@@ -57,7 +57,7 @@ public class UpdateMyUserSystem extends HttpServlet {
         String login = request.getUserPrincipal().getName();
         String value = request.getParameter("value").replace("'", "");
 
-        MyLogger.log(UpdateUser.class.getName(), Level.INFO, "value : " + value + " login : " + login);
+        MyLogger.log(UpdateMyUserSystem.class.getName(), Level.INFO, "value : " + value + " login : " + login);
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         IUserService userService = appContext.getBean(UserService.class);

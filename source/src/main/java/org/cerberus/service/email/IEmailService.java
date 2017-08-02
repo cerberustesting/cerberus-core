@@ -19,14 +19,26 @@
  */
 package org.cerberus.service.email;
 
+import org.cerberus.crud.entity.User;
+import org.cerberus.engine.entity.MessageEvent;
+import org.cerberus.service.email.impl.Email;
+
 /**
  *
  * @author bcivel
  */
-public interface IEmailBodyGeneration {
+public interface IEmailService {
 
-    public String GenerateBuildContentTable(String system, String build, String revision, String lastBuild, String lastRevision);
+    public void sendHtmlMail(Email cerberusEmail) throws Exception;
 
-    public String GenerateTestRecapTable(String system, String build, String revision, String country);
+    public MessageEvent generateAndSendAccountCreationEmail(User user);
+
+    public MessageEvent generateAndSendForgotPasswordEmail(User user);
+
+    public MessageEvent generateAndSendRevisionChangeEmail(String system, String country, String env, String build, String revision);
+
+    public MessageEvent generateAndSendDisableEnvEmail(String system, String country, String env);
+
+    public MessageEvent generateAndSendNewChainEmail(String system, String country, String env, String chain);
 
 }

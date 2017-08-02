@@ -424,10 +424,10 @@ public class ExecutionStartService implements IExecutionStartService {
                     throw new CerberusException(ex.getMessageError());
                 }
                 LOG.debug("Server Started.");
-
+                
             }
         }
-
+        
         /**
          * Register RunID inside database.
          */

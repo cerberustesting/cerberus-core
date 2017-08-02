@@ -102,15 +102,15 @@ function initPage(id) {
     $("#editTag").click(function () {
         $(this).hide();
         $("#saveTag").show();
-        $("#tag").attr("readonly", false);
+        $("#testCaseDetails #tag").attr("readonly", false);
     });
 
     $("#saveTag").click(function () {
-        $("#tag").attr("readonly", true);
+        $("#testCaseDetails #tag").attr("readonly", true);
         $(this).attr("disabled", true);
         $.ajax({
             url: "SetTagToExecution",
-            data: {"executionId": id, newTag: $("#tag").val()},
+            data: {"executionId": id, newTag: $("#testCaseDetails #tag").val()},
             success: function (data) {
                 $("#saveTag").attr("disabled", false);
                 $("#saveTag").hide();
@@ -189,8 +189,8 @@ function updatePage(data, stepList) {
     $("#editTcInfo").attr("href", "TestCaseScript.jsp?test=" + data.test + "&testcase=" + data.testcase);
     $("#runTestCase").attr("href", "RunTests.jsp?test=" + data.test + "&testcase=" + data.testcase + "&country=" + data.country + "&environment=" + data.environment + "&browser=" + data.browser + "&tag=" + data.tag);
     $("#ExecutionByTag").attr("href", "ReportingExecutionByTag.jsp?Tag=" + data.tag);
-    $("#lastExecution").attr("href", "TestCaseExecution.jsp?test=" + data.test + "&testcase=" + data.testcase);
-    $("#lastExecutionwithEnvCountry").attr("href", "TestCaseExecution.jsp?test=" + data.test + "&testcase=" + data.testcase + "&country=" + data.country + "&environment=" + data.environment + "&application=" + data.application);
+    $("#lastExecution").attr("href", "TestCaseExecutionList.jsp?test=" + data.test + "&testcase=" + data.testcase);
+    $("#lastExecutionwithEnvCountry").attr("href", "TestCaseExecutionList.jsp?test=" + data.test + "&testcase=" + data.testcase + "&country=" + data.country + "&environment=" + data.environment + "&application=" + data.application);
 
     if (isEmpty(data.queueId) || (data.queueId === 0)) {
         $("#ExecutionQueue").attr("disabled", "disabled");

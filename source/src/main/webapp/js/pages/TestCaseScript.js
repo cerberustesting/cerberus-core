@@ -298,6 +298,8 @@ $.when($.getScript("js/global/global.js")).then(function () {
 
                             var prop = drawProperty(newProperty, testcaseinfo, true);
                             setPlaceholderProperty(prop[0], prop[1]);
+                            
+                            $(prop[0]).find("#propName").focus();
                             //autocompleteAllFields();
 
                             // Restore the saveScript button status
@@ -369,7 +371,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
             });
 
             $("#runTestCase").attr("onclick", "document.location.href='./RunTests.jsp?test=" + test + "&testcase=" + testcase + "'");
-            $("#seeLastExec").parent().attr("href", "./TestCaseExecution.jsp?test=" + test + "&testcase=" + testcase);
+            $("#seeLastExec").parent().attr("href", "./TestCaseExecutionList.jsp?test=" + test + "&testcase=" + testcase);
             $("#seeLogs").parent().attr("href", "./LogEvent.jsp?Test=" + test + "&TestCase=" + testcase);
 
             $.ajax({
@@ -715,11 +717,26 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
 
     deleteBtn.click(function () {
         property.toDelete = (property.toDelete) ? false : true;
-
+        //set the property in red (or remove the red color)
         if (property.toDelete) {
             content.addClass("list-group-item-danger");
         } else {
             content.removeClass("list-group-item-danger");
+        }
+        //set the link to the property in red (or remove the red color)
+        var propertyName = property.property;
+        var linkToProperty =null;
+        //go though every link and look for the right one
+        $("#propListWrapper li a").each(function(){
+            if ( $(this).text() === propertyName )
+                linkToProperty = $(this).parent();
+        });
+        if ( linkToProperty !== null ){
+            if (property.toDelete) {
+                linkToProperty.addClass("list-group-item-danger");
+            } else {
+                linkToProperty.removeClass("list-group-item-danger");
+            }
         }
     });
 
@@ -1228,7 +1245,7 @@ function loadLibraryStep(search) {
                 $('#lib').find("div").toggleClass('in');
             }
 
-            $('.list-group-item').unbind("click").on('click', function () {
+            $('#addStepModal > .list-group-item').unbind("click").on('click', function () {
                 $('.glyphicon', this)
                         .toggleClass('glyphicon-chevron-right')
                         .toggleClass('glyphicon-chevron-down');
@@ -2799,7 +2816,7 @@ function setPlaceholderProperty(propertyElement, property) {
     var placeHoldersList = {"fr": [
             {"type": "text", "value1": "Value :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/cerberus", "value2": null, "database": null, "length": "[opt] Length :", "rowLimit": null, "nature": "Nature :", "retry": null, "period": null},
             {"type": "executeSql", "value1": "SQL Query :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/sql", "value2": null, "database": "Database :", "length": null, "rowLimit": "Row Limit :", "nature": "Nature :", "retry": "Number of retry (if empty)", "period": "Retry period (ms)"},
-            {"type": "getFromDataLib", "value1": "DataLib name :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/cerberus", "value2": null, "database": null, "length": null, "rowLimit": "Row Limit :", "nature": "Nature :", "retry": "Number of retry (if empty)", "period": "Retry period (ms)"},
+            {"type": "getFromDataLib", "value1": "DataLib name :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/cerberus", "value2": null, "database": null, "length": "[opt] Length :", "rowLimit": "Row Limit :", "nature": "Nature :", "retry": "Number of retry (if empty)", "period": "Retry period (ms)"},
             {"type": "getFromHtml", "value1": "Element path :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/xquery", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
             {"type": "getFromHtmlVisible", "value1": "Element path :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/xquery", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
             {"type": "getFromJS", "value1": "Javascript command :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/javascript", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
@@ -2814,7 +2831,7 @@ function setPlaceholderProperty(propertyElement, property) {
         ], "en": [
             {"type": "text", "value1": "Value :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/cerberus", "value2": null, "database": null, "length": "[opt] Length :", "rowLimit": null, "nature": "Nature :", "retry": null, "period": null},
             {"type": "executeSql", "value1": "SQL Query :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/sql", "value2": null, "database": "Database :", "length": null, "rowLimit": "Row Limit :", "nature": "Nature :", "retry": "Number of retry (if empty)", "period": "Retry period (ms)"},
-            {"type": "getFromDataLib", "value1": "DataLib name :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/cerberus", "value2": null, "database": null, "length": null, "rowLimit": "Row Limit :", "nature": "Nature :", "retry": "Number of retry (if empty)", "period": "Retry period (ms)"},
+            {"type": "getFromDataLib", "value1": "DataLib name :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/cerberus", "value2": null, "database": null, "length": "[opt] Length :", "rowLimit": "Row Limit :", "nature": "Nature :", "retry": "Number of retry (if empty)", "period": "Retry period (ms)"},
             {"type": "getFromHtml", "value1": "Element path :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/xquery", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
             {"type": "getFromHtmlVisible", "value1": "Element path :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/xquery", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
             {"type": "getFromJS", "value1": "Javascript command :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/javascript", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},

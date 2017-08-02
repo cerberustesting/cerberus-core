@@ -437,13 +437,7 @@ public class SQLService implements ISQLService {
     public AnswerList queryDatabaseNColumns(String connectionName, String sql, int rowLimit, int defaultTimeOut, String system, HashMap<String, String> columnsToGet) {
         AnswerList listResult = new AnswerList();
         List<HashMap<String, String>> list;
-        int maxSecurityFetch = 100;
-        try {
-            String maxSecurityFetch1 = parameterService.findParameterByKey("cerberus_testdatalib_fetchmax", system).getValue();
-            maxSecurityFetch = Integer.valueOf(maxSecurityFetch1);
-        } catch (CerberusException ex) {
-            LOG.error(ex);
-        }
+        int maxSecurityFetch = parameterService.getParameterIntegerByKey("cerberus_testdatalib_fetchmax", system, 100).intValue();
         int maxFetch = maxSecurityFetch;
         if (rowLimit > 0 && rowLimit < maxSecurityFetch) {
             maxFetch = rowLimit;
@@ -470,7 +464,6 @@ public class SQLService implements ISQLService {
                 list = new ArrayList<HashMap<String, String>>();
                 try {
                     while ((resultSet.next()) && (nbFetch < maxFetch)) {
-
                         nbColMatch = 0;
                         HashMap<String, String> row = new HashMap<String, String>();
 

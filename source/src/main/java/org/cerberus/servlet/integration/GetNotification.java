@@ -20,8 +20,6 @@
 package org.cerberus.servlet.integration;
 
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -32,15 +30,15 @@ import javax.servlet.http.HttpServletResponse;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.service.email.IEmailGeneration;
+import org.cerberus.service.email.impl.Email;
 import org.cerberus.util.answer.Answer;
-import org.cerberus.util.answer.AnswerItem;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.cerberus.service.email.IEmailGenerationService;
 
 /**
  *
@@ -50,6 +48,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class GetNotification extends HttpServlet {
 
     private final String OBJECT_NAME = "GetNotification";
+
+    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger("GetNotification");
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -86,7 +86,7 @@ public class GetNotification extends HttpServlet {
 //        AnswerItem answer = new AnswerItem(msg);
         String eMailContent = "";
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        IEmailGeneration emailService = appContext.getBean(IEmailGeneration.class);
+        IEmailGenerationService emailService = appContext.getBean(IEmailGenerationService.class);
 
         if (request.getParameter("system") == null) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
@@ -100,39 +100,65 @@ public class GetNotification extends HttpServlet {
                     .replace("%OPERATION%", "Get")
                     .replace("%REASON%", "event is missing!"));
             answer.setResultMessage(msg);
-        } else if (request.getParameter("event").equals("newbuildrevision")) { // ID parameter is specified so we return the unique record of object.
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-            msg.setDescription(msg.getDescription().replace("%ITEM%", "GetNotification")
-                    .replace("%OPERATION%", "Get"));
-            answer.setResultMessage(msg);
-            eMailContent = emailService.EmailGenerationRevisionChange(system, country, env, build, revision);
-            String[] eMailContentTable = eMailContent.split("///");
-            jsonResponse.put("notificationTo", eMailContentTable[0]);
-            jsonResponse.put("notificationCC", eMailContentTable[1]);
-            jsonResponse.put("notificationSubject", eMailContentTable[2]);
-            jsonResponse.put("notificationBody", eMailContentTable[3]);
-        } else if (request.getParameter("event").equals("disableenvironment")) { // ID parameter is specified so we return the unique record of object.
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-            msg.setDescription(msg.getDescription().replace("%ITEM%", "GetNotification")
-                    .replace("%OPERATION%", "Get"));
-            answer.setResultMessage(msg);
-            eMailContent = emailService.EmailGenerationDisableEnv(system, country, env);
-            String[] eMailContentTable = eMailContent.split("///");
-            jsonResponse.put("notificationTo", eMailContentTable[0]);
-            jsonResponse.put("notificationCC", eMailContentTable[1]);
-            jsonResponse.put("notificationSubject", eMailContentTable[2]);
-            jsonResponse.put("notificationBody", eMailContentTable[3]);
-        } else if (request.getParameter("event").equals("newchain")) { // ID parameter is specified so we return the unique record of object.
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-            msg.setDescription(msg.getDescription().replace("%ITEM%", "GetNotification")
-                    .replace("%OPERATION%", "Get"));
-            answer.setResultMessage(msg);
-            eMailContent = emailService.EmailGenerationNewChain(system, country, env, chain);
-            String[] eMailContentTable = eMailContent.split("///");
-            jsonResponse.put("notificationTo", eMailContentTable[0]);
-            jsonResponse.put("notificationCC", eMailContentTable[1]);
-            jsonResponse.put("notificationSubject", eMailContentTable[2]);
-            jsonResponse.put("notificationBody", eMailContentTable[3]);
+        } else if (request.getParameter("event").equals("newbuildrevision")) {
+            try {
+                // ID parameter is specified so we return the unique record of object.
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "GetNotification")
+                        .replace("%OPERATION%", "Get"));
+                answer.setResultMessage(msg);
+
+                Email email = emailService.generateRevisionChangeEmail(system, country, env, build, revision);
+                jsonResponse.put("notificationTo", email.getTo());
+                jsonResponse.put("notificationCC", email.getCc());
+                jsonResponse.put("notificationSubject", email.getSubject());
+                jsonResponse.put("notificationBody", email.getBody());
+
+            } catch (Exception ex) {
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "GetNotification")
+                        .replace("%OPERATION%", "Get")
+                        .replace("%REASON%", ex.toString()));
+                answer.setResultMessage(msg);
+            }
+        } else if (request.getParameter("event").equals("disableenvironment")) {
+            try {
+                // ID parameter is specified so we return the unique record of object.
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "GetNotification")
+                        .replace("%OPERATION%", "Get"));
+                answer.setResultMessage(msg);
+                Email email = emailService.generateDisableEnvEmail(system, country, env);
+                jsonResponse.put("notificationTo", email.getTo());
+                jsonResponse.put("notificationCC", email.getCc());
+                jsonResponse.put("notificationSubject", email.getSubject());
+                jsonResponse.put("notificationBody", email.getBody());
+            } catch (Exception ex) {
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "GetNotification")
+                        .replace("%OPERATION%", "Get")
+                        .replace("%REASON%", ex.toString()));
+                answer.setResultMessage(msg);
+            }
+        } else if (request.getParameter("event").equals("newchain")) {
+            try {
+                // ID parameter is specified so we return the unique record of object.
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "GetNotification")
+                        .replace("%OPERATION%", "Get"));
+                answer.setResultMessage(msg);
+                Email email = emailService.generateNewChainEmail(system, country, env, chain);
+                jsonResponse.put("notificationTo", email.getTo());
+                jsonResponse.put("notificationCC", email.getCc());
+                jsonResponse.put("notificationSubject", email.getSubject());
+                jsonResponse.put("notificationBody", email.getBody());
+            } catch (Exception ex) {
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "GetNotification")
+                        .replace("%OPERATION%", "Get")
+                        .replace("%REASON%", ex.toString()));
+                answer.setResultMessage(msg);
+            }
         } else {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "GetNotification")
@@ -167,9 +193,9 @@ public class GetNotification extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(GetNotification.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            LOG.warn(ex);
         } catch (JSONException ex) {
-            Logger.getLogger(GetNotification.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
     }
 
@@ -187,9 +213,9 @@ public class GetNotification extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(GetNotification.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            LOG.warn(ex);
         } catch (JSONException ex) {
-            Logger.getLogger(GetNotification.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
     }
 
