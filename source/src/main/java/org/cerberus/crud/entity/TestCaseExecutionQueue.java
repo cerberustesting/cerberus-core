@@ -51,7 +51,9 @@ public class TestCaseExecutionQueue {
     private int retries;
     private Date requestDate;
     private State state;
+    private int priority;
     private String comment;
+    private String debugFlag;
     private long exeId;
     private String UsrCreated;
     private Timestamp DateCreated;
@@ -72,6 +74,22 @@ public class TestCaseExecutionQueue {
         CANCELLED,
         ERROR,
         DONE
+    }
+
+    public int getPriority() {
+        return priority;
+    }
+
+    public void setPriority(int priority) {
+        this.priority = priority;
+    }
+
+    public String getDebugFlag() {
+        return debugFlag;
+    }
+
+    public void setDebugFlag(String debugFlag) {
+        this.debugFlag = debugFlag;
     }
 
     public long getExeId() {
