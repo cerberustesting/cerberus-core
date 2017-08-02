@@ -54,6 +54,7 @@ import org.cerberus.service.appium.IAppiumService;
 import org.cerberus.service.appservice.IServiceService;
 import org.cerberus.service.rest.IRestService;
 import org.cerberus.service.sikuli.ISikuliService;
+import org.cerberus.service.sikuli.impl.SikuliService;
 import org.cerberus.service.soap.ISoapService;
 import org.cerberus.service.sql.ISQLService;
 import org.cerberus.service.webdriver.IWebDriverService;
@@ -361,20 +362,29 @@ public class ActionService implements IActionService {
              * Get Identifier (identifier, locator) and check it's valid
              */
             Identifier identifier = identifierService.convertStringToIdentifier(element);
-            identifierService.checkWebElementIdentifier(identifier.getIdentifier());
 
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
-                if (identifier.getIdentifier().equals("picture")) {
-                    return sikuliService.doSikuliActionClick(tCExecution.getSession(), identifier.getLocator());
+                if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
+                    return sikuliService.doSikuliActionClick(tCExecution.getSession(), identifier.getLocator(), "");
+                } else if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_TEXT)) {
+                    return sikuliService.doSikuliActionClick(tCExecution.getSession(), "", identifier.getLocator());
                 } else {
+                    identifierService.checkWebElementIdentifier(identifier.getIdentifier());
                     return webdriverService.doSeleniumActionClick(tCExecution.getSession(), identifier, true, true);
                 }
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
+                identifierService.checkWebElementIdentifier(identifier.getIdentifier());
                 return androidAppiumService.click(tCExecution.getSession(), identifier);
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
+                identifierService.checkWebElementIdentifier(identifier.getIdentifier());
                 return iosAppiumService.click(tCExecution.getSession(), identifier);
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
-                return sikuliService.doSikuliActionClick(tCExecution.getSession(), identifier.getLocator());
+                identifierService.checkSikuliIdentifier(identifier.getIdentifier());
+                if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
+                    return sikuliService.doSikuliActionClick(tCExecution.getSession(), identifier.getLocator(), "");
+                } else {
+                    return sikuliService.doSikuliActionClick(tCExecution.getSession(), "", identifier.getLocator());
+                }
             } else {
                 return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION)
                         .resolveDescription("ACTION", "Click")
@@ -427,16 +437,23 @@ public class ActionService implements IActionService {
              * Get Identifier (identifier, locator)
              */
             Identifier identifier = identifierService.convertStringToIdentifier(element);
-            identifierService.checkWebElementIdentifier(identifier.getIdentifier());
 
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
-                if (identifier.getIdentifier().equals("picture")) {
-                    return sikuliService.doSikuliActionRightClick(tCExecution.getSession(), identifier.getLocator());
+                if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
+                    return sikuliService.doSikuliActionRightClick(tCExecution.getSession(), identifier.getLocator(), "");
+                } else if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_TEXT)) {
+                    return sikuliService.doSikuliActionRightClick(tCExecution.getSession(), "", identifier.getLocator());
                 } else {
+                    identifierService.checkWebElementIdentifier(identifier.getIdentifier());
                     return webdriverService.doSeleniumActionRightClick(tCExecution.getSession(), identifier);
                 }
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
-                return sikuliService.doSikuliActionRightClick(tCExecution.getSession(), identifier.getLocator());
+                identifierService.checkSikuliIdentifier(identifier.getIdentifier());
+                if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
+                    return sikuliService.doSikuliActionRightClick(tCExecution.getSession(), identifier.getLocator(), "");
+                } else {
+                    return sikuliService.doSikuliActionRightClick(tCExecution.getSession(), "", identifier.getLocator());
+                }
             }
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             message.setDescription(message.getDescription().replace("%ACTION%", "rightClick"));
@@ -574,19 +591,27 @@ public class ActionService implements IActionService {
              * Get Identifier (identifier, locator)
              */
             Identifier identifier = identifierService.convertStringToIdentifier(element);
-            identifierService.checkWebElementIdentifier(identifier.getIdentifier());
 
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
-                if (identifier.getIdentifier().equals("picture")) {
-                    return sikuliService.doSikuliActionDoubleClick(tCExecution.getSession(), identifier.getLocator());
+                if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
+                    return sikuliService.doSikuliActionDoubleClick(tCExecution.getSession(), identifier.getLocator(), "");
+                } else if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_TEXT)) {
+                    return sikuliService.doSikuliActionDoubleClick(tCExecution.getSession(), "", identifier.getLocator());
                 } else {
+                    identifierService.checkWebElementIdentifier(identifier.getIdentifier());
                     return webdriverService.doSeleniumActionDoubleClick(tCExecution.getSession(), identifier, true, true);
                 }
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
                     || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
+                identifierService.checkWebElementIdentifier(identifier.getIdentifier());
                 return webdriverService.doSeleniumActionDoubleClick(tCExecution.getSession(), identifier, true, false);
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
-                return sikuliService.doSikuliActionDoubleClick(tCExecution.getSession(), identifier.getLocator());
+                identifierService.checkSikuliIdentifier(identifier.getIdentifier());
+                if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
+                    return sikuliService.doSikuliActionDoubleClick(tCExecution.getSession(), identifier.getLocator(), "");
+                } else {
+                    return sikuliService.doSikuliActionDoubleClick(tCExecution.getSession(), "", identifier.getLocator());
+                }
             }
 
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
@@ -622,13 +647,13 @@ public class ActionService implements IActionService {
             Identifier identifier = new Identifier();
             if (object != null) {
                 identifier = identifierService.convertStringToIdentifier(object);
-                identifierService.checkWebElementIdentifier(identifier.getIdentifier());
             }
 
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
-                if (identifier.getIdentifier().equals("picture")) {
+                if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
                     return sikuliService.doSikuliActionType(tCExecution.getSession(), identifier.getLocator(), property);
                 } else {
+                    identifierService.checkWebElementIdentifier(identifier.getIdentifier());
                     return webdriverService.doSeleniumActionType(tCExecution.getSession(), identifier, property, propertyName);
                 }
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
@@ -637,7 +662,8 @@ public class ActionService implements IActionService {
                 return iosAppiumService.type(tCExecution.getSession(), identifier, property, propertyName);
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
                 String locator = "";
-                if (object != null) {
+                if (!StringUtil.isNullOrEmpty(object)) {
+                    identifierService.checkSikuliIdentifier(identifier.getIdentifier());
                     locator = identifier.getLocator();
                 }
                 return sikuliService.doSikuliActionType(tCExecution.getSession(), locator, property);
@@ -665,16 +691,23 @@ public class ActionService implements IActionService {
              * Get Identifier (identifier, locator)
              */
             Identifier identifier = identifierService.convertStringToIdentifier(element);
-            identifierService.checkWebElementIdentifier(identifier.getIdentifier());
 
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
-                if (identifier.getIdentifier().equals("picture")) {
-                    return sikuliService.doSikuliActionMouseOver(tCExecution.getSession(), identifier.getLocator());
+                if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
+                    return sikuliService.doSikuliActionMouseOver(tCExecution.getSession(), identifier.getLocator(), "");
+                } else if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_TEXT)) {
+                    return sikuliService.doSikuliActionMouseOver(tCExecution.getSession(), "", identifier.getLocator());
                 } else {
+                    identifierService.checkWebElementIdentifier(identifier.getIdentifier());
                     return webdriverService.doSeleniumActionMouseOver(tCExecution.getSession(), identifier);
                 }
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
-                return sikuliService.doSikuliActionMouseOver(tCExecution.getSession(), identifier.getLocator());
+                identifierService.checkSikuliIdentifier(identifier.getIdentifier());
+                if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
+                    return sikuliService.doSikuliActionMouseOver(tCExecution.getSession(), identifier.getLocator(), "");
+                } else {
+                    return sikuliService.doSikuliActionMouseOver(tCExecution.getSession(), "", identifier.getLocator());
+                }
             }
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             message.setDescription(message.getDescription().replace("%ACTION%", "mouseOver"));
@@ -702,8 +735,10 @@ public class ActionService implements IActionService {
             identifierService.checkWebElementIdentifier(identifier.getIdentifier());
 
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
-                if (identifier.getIdentifier().equals("picture")) {
-                    message = sikuliService.doSikuliActionMouseOver(tCExecution.getSession(), identifier.getLocator());
+                if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
+                    message = sikuliService.doSikuliActionMouseOver(tCExecution.getSession(), identifier.getLocator(), "");
+                } else if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_TEXT)) {
+                    message = sikuliService.doSikuliActionMouseOver(tCExecution.getSession(), "", identifier.getLocator());
                 } else {
                     message = webdriverService.doSeleniumActionMouseOver(tCExecution.getSession(), identifier);
                 }
@@ -749,12 +784,14 @@ public class ActionService implements IActionService {
                     timeToWaitInMs = Long.valueOf(element);
                 } else {
                     identifier = identifierService.convertStringToIdentifier(element);
-                    identifierService.checkWebElementIdentifier(identifier.getIdentifier());
                 }
 
-                if (identifier != null && identifier.getIdentifier().equals("picture")) {
-                    return sikuliService.doSikuliActionWait(tCExecution.getSession(), identifier.getLocator());
+                if (identifier != null && identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
+                    return sikuliService.doSikuliActionWait(tCExecution.getSession(), identifier.getLocator(), "");
+                } else if (identifier != null && identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_TEXT)) {
+                    return sikuliService.doSikuliActionWait(tCExecution.getSession(), "", identifier.getLocator());
                 } else if (identifier != null) {
+                    identifierService.checkWebElementIdentifier(identifier.getIdentifier());
                     return webdriverService.doSeleniumActionWait(tCExecution.getSession(), identifier);
                 } else {
                     return this.waitTime(timeToWaitInMs);
@@ -787,17 +824,19 @@ public class ActionService implements IActionService {
              * Get Identifier (identifier, locator)
              */
             Identifier identifier = identifierService.convertStringToIdentifier(object);
-            identifierService.checkWebElementIdentifier(identifier.getIdentifier());
 
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
-                if (identifier.getIdentifier().equals("picture")) {
+                if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
                     return sikuliService.doSikuliActionKeyPress(tCExecution.getSession(), identifier.getLocator(), property);
                 } else {
+                    identifierService.checkWebElementIdentifier(identifier.getIdentifier());
                     return webdriverService.doSeleniumActionKeyPress(tCExecution.getSession(), identifier, property);
                 }
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
+                identifierService.checkWebElementIdentifier(identifier.getIdentifier());
                 return androidAppiumService.keyPress(tCExecution.getSession(), object);
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
+                identifierService.checkWebElementIdentifier(identifier.getIdentifier());
                 return iosAppiumService.keyPress(tCExecution.getSession(), object);
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
                 return sikuliService.doSikuliActionKeyPress(tCExecution.getSession(), identifier.getLocator(), property);
@@ -891,19 +930,27 @@ public class ActionService implements IActionService {
              * Get Identifier (identifier, locator)
              */
             Identifier identifier = identifierService.convertStringToIdentifier(value1);
-            identifierService.checkWebElementIdentifier(identifier.getIdentifier());
 
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
-                if (identifier.getIdentifier().equals("picture")) {
-                    return sikuliService.doSikuliActionWaitVanish(tCExecution.getSession(), identifier.getLocator());
+                if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
+                    return sikuliService.doSikuliActionWaitVanish(tCExecution.getSession(), identifier.getLocator(), "");
+                } else if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_TEXT)) {
+                    return sikuliService.doSikuliActionWaitVanish(tCExecution.getSession(),"" ,identifier.getLocator());
                 } else {
+                    identifierService.checkWebElementIdentifier(identifier.getIdentifier());
                     return webdriverService.doSeleniumActionWaitVanish(tCExecution.getSession(), identifier);
                 }
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
                     || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
+                identifierService.checkWebElementIdentifier(identifier.getIdentifier());
                 return webdriverService.doSeleniumActionWaitVanish(tCExecution.getSession(), identifier);
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
-                return sikuliService.doSikuliActionWaitVanish(tCExecution.getSession(), identifier.getLocator());
+                identifierService.checkSikuliIdentifier(identifier.getIdentifier());
+                if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
+                    return sikuliService.doSikuliActionWaitVanish(tCExecution.getSession(), identifier.getLocator(), "");
+                } else {
+                    return sikuliService.doSikuliActionWaitVanish(tCExecution.getSession(),"" ,identifier.getLocator());
+                }
             } else {
                 return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION)
                         .resolveDescription("ACTION", "WaitVanish")

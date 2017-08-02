@@ -43,7 +43,7 @@ public interface ISikuliService {
      */
     public AnswerItem<JSONObject> doSikuliAction(Session session, String action, String locator, String text);
     
-    public MessageEvent doSikuliActionClick(Session session, String locator);
+    public MessageEvent doSikuliActionClick(Session session, String locator, String text);
     
     public MessageEvent doSikuliActionOpenApp(Session session, String locator);
     
@@ -51,19 +51,19 @@ public interface ISikuliService {
     
     public File takeScreenShotFile(Session session);
 
-    public MessageEvent doSikuliActionRightClick(Session session, String locator);
+    public MessageEvent doSikuliActionRightClick(Session session, String locator, String text);
 
     public MessageEvent doSikuliActionSwitchApp(Session session, String locator);
 
-    public MessageEvent doSikuliActionDoubleClick(Session session, String locator);
+    public MessageEvent doSikuliActionDoubleClick(Session session, String locator, String text);
 
     public MessageEvent doSikuliActionType(Session session, String locator, String property);
 
-    public MessageEvent doSikuliActionMouseOver(Session session, String locator);
+    public MessageEvent doSikuliActionMouseOver(Session session, String locator, String text);
 
-    public MessageEvent doSikuliActionWait(Session session, String locator);
+    public MessageEvent doSikuliActionWait(Session session, String locator, String text);
     
-    public MessageEvent doSikuliActionWaitVanish(Session session, String locator);
+    public MessageEvent doSikuliActionWaitVanish(Session session, String locator, String text);
 
     public MessageEvent doSikuliActionKeyPress(Session session, String locator, String property);
 

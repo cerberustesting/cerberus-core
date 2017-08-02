@@ -37,4 +37,6 @@ public interface IIdentifierService {
     void checkWebElementIdentifier(String identifier) throws CerberusEventException;
 
     void checkSQLIdentifier(String identifier) throws CerberusEventException;
+
+    void checkSikuliIdentifier(String identifier) throws CerberusEventException;
 }
