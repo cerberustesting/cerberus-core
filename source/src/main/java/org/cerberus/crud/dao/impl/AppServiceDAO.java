@@ -485,7 +485,7 @@ public class AppServiceDAO implements IAppServiceDAO {
         StringBuilder query = new StringBuilder();
         query.append("INSERT INTO appservice (`Service`, `Group`, `Application`, `Type`, `Method`, `ServicePath`, `Operation`, `ServiceRequest`, `AttachementURL`, `Description`) ");
         if ((object.getApplication() != null) && (!object.getApplication().equals(""))) {
-            query.append("VALUES (?,?,?,?,?,?,?,?,?)");
+            query.append("VALUES (?,?,?,?,?,?,?,?,?,?)");
         } else {
             query.append("VALUES (?,?,null,?,?,?,?,?,?,?)");
         }
