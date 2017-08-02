@@ -30,6 +30,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.fileupload.ParameterParser;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -38,6 +39,7 @@ import org.cerberus.crud.dao.ITestCaseDAO;
 import org.cerberus.crud.dao.ITestCaseExecutionQueueDAO;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.TestCaseExecutionQueue;
+import org.cerberus.engine.threadpool.entity.TestCaseExecutionQueueToTreat;
 import org.cerberus.crud.factory.IFactoryApplication;
 import org.cerberus.crud.factory.IFactoryTestCaseExecutionQueue;
 import org.cerberus.database.DatabaseSpring;
@@ -48,6 +50,7 @@ import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.exception.FactoryCreationException;
 import org.cerberus.log.MyLogger;
+import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.SqlUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
@@ -399,6 +402,146 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                     LOG.error("Unable to execute query : " + ex.toString());
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
+                testCaseExecutionInQueueList = null;
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
+            testCaseExecutionInQueueList = null;
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                LOG.warn(e.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
+            }
+        }
+        answer.setResultMessage(msg);
+        return answer;
+    }
+
+    @Override
+    public AnswerList readQueueToTreat() throws CerberusException {
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+        AnswerList answer = new AnswerList();
+
+        final StringBuilder query = new StringBuilder();
+
+        query.append("SELECT id, exq.manualexecution, app.System, cep.environment, cep.country, cep.application, cep.poolsize, exq.robotIP, rbt.host ");
+        query.append("from testcaseexecutionqueue exq ");
+        query.append("left join testcase tc on tc.test=exq.test and tc.testcase=exq.testcase ");
+        query.append("left join application app on app.application=tc.application ");
+        query.append("left join robot rbt on rbt.robot=exq.robot ");
+        query.append("left join countryenvironmentparameters cep on cep.system=app.system and cep.environment=exq.environment and cep.country=exq.country and cep.application=tc.application ");
+        query.append("WHERE State='QUEUED' order by id asc;");
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query.toString());
+        }
+
+        List<TestCaseExecutionQueueToTreat> testCaseExecutionInQueueList = new ArrayList<TestCaseExecutionQueueToTreat>();
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+
+            try {
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    while (resultSet.next()) {
+                        testCaseExecutionInQueueList.add(loadQueueToTreatFromResultSet(resultSet));
+                    }
+
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCaseExecutionInQueue").replace("%OPERATION%", "SELECT"));
+                    answer = new AnswerList(testCaseExecutionInQueueList, testCaseExecutionInQueueList.size());
+                } catch (SQLException exception) {
+                    LOG.error("Unable to execute query : " + exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
+                    testCaseExecutionInQueueList = null;
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
+                testCaseExecutionInQueueList = null;
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
+            testCaseExecutionInQueueList = null;
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                LOG.warn(e.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
+            }
+        }
+        answer.setResultMessage(msg);
+        return answer;
+    }
+
+    @Override
+    public AnswerList readQueueRunning() throws CerberusException {
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+        AnswerList answer = new AnswerList();
+
+        final StringBuilder query = new StringBuilder();
+
+        query.append("SELECT id, exq.manualexecution, app.System, cep.environment, cep.country, cep.application, cep.poolsize, exq.robotIP, rbt.host ");
+        query.append("from testcaseexecutionqueue exq ");
+        query.append("left join testcase tc on tc.test=exq.test and tc.testcase=exq.testcase ");
+        query.append("left join application app on app.application=tc.application ");
+        query.append("left join robot rbt on rbt.robot=exq.robot ");
+        query.append("left join countryenvironmentparameters cep on cep.system=app.system and cep.environment=exq.environment and cep.country=exq.country and cep.application=tc.application ");
+        query.append("WHERE State in ('WAITING', 'STARTING', 'EXECUTING') order by id asc;");
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query.toString());
+        }
+
+        List<TestCaseExecutionQueueToTreat> testCaseExecutionInQueueList = new ArrayList<TestCaseExecutionQueueToTreat>();
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+
+            try {
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    while (resultSet.next()) {
+                        testCaseExecutionInQueueList.add(loadQueueToTreatFromResultSet(resultSet));
+                    }
+
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCaseExecutionInQueue").replace("%OPERATION%", "SELECT"));
+                    answer = new AnswerList(testCaseExecutionInQueueList, testCaseExecutionInQueueList.size());
+                } catch (SQLException exception) {
+                    LOG.error("Unable to execute query : " + exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
+                    testCaseExecutionInQueueList = null;
                 } finally {
                     resultSet.close();
                 }
@@ -1513,11 +1656,11 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
     }
 
     @Override
-    public Answer updateToWaiting(long id, String comment) {
+    public Answer updateToQueued(long id, String comment) {
         MessageEvent msg = null;
         String query
                 = "UPDATE `" + TABLE + "` "
-                + "SET `" + COLUMN_STATE + "` = 'WAITING', `" + COLUMN_REQUEST_DATE + "` = now(), `" + COLUMN_DATEMODIF + "` = now(), `" + COLUMN_COMMENT + "` = ? "
+                + "SET `" + COLUMN_STATE + "` = 'QUEUED', `" + COLUMN_REQUEST_DATE + "` = now(), `" + COLUMN_DATEMODIF + "` = now(), `" + COLUMN_COMMENT + "` = ? "
                 + "WHERE `" + COLUMN_ID + "` = ? "
                 + "AND `" + COLUMN_STATE + "` IN ('CANCELLED', 'ERROR')";
 
@@ -1570,136 +1713,86 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
     }
 
     @Override
-    public List<TestCaseExecutionQueue> updateToQueued(int fetchSize) throws CerberusException {
-        List<TestCaseExecutionQueue> result = new ArrayList<>();
-        String query = "SELECT * FROM `" + TABLE + "` exq "
-                + "INNER JOIN `" + TABLE_TEST_CASE + "` tec ON (exq.`" + COLUMN_TEST + "` = tec.`Test` AND exq.`" + COLUMN_TEST_CASE + "` = tec.`TestCase`) "
-                + "INNER JOIN `" + TABLE_APPLICATION + "` app ON (tec.`Application` = app.`Application`) "
-                + "WHERE `" + COLUMN_STATE + "` = 'WAITING' "
-                + "ORDER BY `" + COLUMN_ID + "` ASC";
-        String queryLimit = query + "LIMIT ?";
-
-        final String selectByStateQuery = UNLIMITED_FETCH_SIZE == fetchSize ? query : queryLimit;
-
-        String queryUpdate = "UPDATE `" + TABLE + "` "
-                + "SET `" + COLUMN_STATE + "` = 'QUEUED', `" + COLUMN_REQUEST_DATE + "` = now(), `" + COLUMN_DATEMODIF + "` = now() "
-                + "WHERE `" + COLUMN_ID + "` = ? "
-                + "AND `" + COLUMN_STATE + "` = 'WAITING'";
-
-        try (
-                Connection connection = this.databaseSpring.connect();
-                PreparedStatement selectWaitingsStatement = connection.prepareStatement(selectByStateQuery);
-                PreparedStatement updateStateStatement = connection.prepareStatement(queryUpdate)) {
-            // Select all executions in queue in WAITING state
-            if (UNLIMITED_FETCH_SIZE != fetchSize) {
-                selectWaitingsStatement.setInt(1, fetchSize);
-            }
-            // Debug message on SQL.
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("SQL : " + selectByStateQuery);
-            }
-
-            ResultSet waitings = selectWaitingsStatement.executeQuery();
-
-            // Then set their state to QUEUED by checking state is still the same
-            while (waitings.next()) {
-                try {
-                    TestCaseExecutionQueue waiting = loadWithDependenciesFromResultSet(waitings);
-
-                    // Debug message on SQL.
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("SQL : " + queryUpdate);
-                        LOG.debug("SQL.param.id : " + waiting.getId());
-                    }
-
-                    updateStateStatement.setLong(1, waiting.getId());
-
-                    updateStateStatement.addBatch();
-                    result.add(waiting);
-                } catch (SQLException | FactoryCreationException e) {
-                    LOG.warn("Unable to add execution in queue id " + waitings.getLong(COLUMN_ID) + " to the batch process from setting its state from WAITING to QUEUED", e);
-                }
-            }
-
-            // And finally remove those which have not been updated
-            int[] batchExecutionResult = updateStateStatement.executeBatch();
-            for (int batchExecutionResultIndex = 0, removedCount = 0; batchExecutionResultIndex < batchExecutionResult.length; batchExecutionResultIndex++) {
-                if (Statement.EXECUTE_FAILED == batchExecutionResult[batchExecutionResultIndex]) {
-                    LOG.warn("Unable to move execution state from WAITING to QUEUED for id " + result.get(batchExecutionResultIndex));
-                }
-                if (batchExecutionResult[batchExecutionResultIndex] <= 0) {
-                    int resultIndexToRemove = batchExecutionResultIndex - removedCount++;
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("Removing execution id " + result.get(resultIndexToRemove) + " from result because of getting no successful result count (" + batchExecutionResult[batchExecutionResultIndex]);
-                    }
-                    result.remove(resultIndexToRemove);
-                }
-            }
-            return result;
-        } catch (SQLException e) {
-            LOG.warn("Unable to state from WAITING to QUEUED state for executions in queue", e);
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
-        }
-    }
-
-    @Override
-    public List<TestCaseExecutionQueue> updateToQueued(final List<Long> ids) throws CerberusException {
+    public boolean updateToWaiting(final Long id) throws CerberusException {
         List<Long> registeredIds = new ArrayList<>();
-        List<TestCaseExecutionQueue> result = new ArrayList<>();
+        TestCaseExecutionQueue result = new TestCaseExecutionQueue();
 
         String queryUpdate = "UPDATE `" + TABLE + "` "
-                + "SET `" + COLUMN_STATE + "` = 'QUEUED', `" + COLUMN_REQUEST_DATE + "` = now(), `" + COLUMN_DATEMODIF + "` = now() "
-                + "WHERE `" + COLUMN_ID + "` = ? "
-                + "AND `" + COLUMN_STATE + "` = 'WAITING'";
-
-        try (
-                Connection connection = this.databaseSpring.connect();
-                PreparedStatement updateStateStatement = connection.prepareStatement(queryUpdate)) {
-            // Then set their state to QUEUED by checking state is still the same
-            for (Long id : ids) {
-                try {
-                    // Debug message on SQL.
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("SQL : " + queryUpdate);
-                        LOG.debug("SQL.param.id : " + id);
-                    }
-
-                    updateStateStatement.setLong(1, id);
-
-                    updateStateStatement.addBatch();
-                    registeredIds.add(id);
-                } catch (SQLException e) {
-                    LOG.warn("Unable to add execution in queue id " + id + " to the batch process from setting its state from WAITING to QUEUED", e);
-                }
-            }
-
-            // And finally remove those which have not been updated
-            int[] batchExecutionResult = updateStateStatement.executeBatch();
-            for (int batchExecutionResultIndex = 0, removedCount = 0; batchExecutionResultIndex < batchExecutionResult.length; batchExecutionResultIndex++) {
-                if (Statement.EXECUTE_FAILED == batchExecutionResult[batchExecutionResultIndex]) {
-                    LOG.warn("Unable to move execution state from WAITING to QUEUED for id " + result.get(batchExecutionResultIndex));
-                }
-                if (batchExecutionResult[batchExecutionResultIndex] > 0) {
-                    try {
-                        result.add(findByKeyWithDependencies(registeredIds.get(batchExecutionResultIndex)));
-                    } catch (CerberusException e) {
-                        LOG.error("Unable to find the well updated execution in queue id " + registeredIds.get(batchExecutionResultIndex), e);
-                    }
-                }
-            }
-            return result;
-        } catch (SQLException e) {
-            LOG.warn("Unable to state from WAITING to QUEUED state for executions in queue", e);
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
-        }
-    }
-
-    @Override
-    public void updateToExecuting(long id) throws CerberusException {
-        String queryUpdate = "UPDATE `" + TABLE + "` "
-                + "SET `" + COLUMN_STATE + "` = 'EXECUTING', `" + COLUMN_REQUEST_DATE + "` = now(), `" + COLUMN_DATEMODIF + "` = now() "
+                + "SET `" + COLUMN_STATE + "` = 'WAITING', `" + COLUMN_REQUEST_DATE + "` = now(), `" + COLUMN_DATEMODIF + "` = now() "
                 + "WHERE `" + COLUMN_ID + "` = ? "
                 + "AND `" + COLUMN_STATE + "` = 'QUEUED'";
+
+        try (
+                Connection connection = this.databaseSpring.connect();
+                PreparedStatement updateStateStatement = connection.prepareStatement(queryUpdate)) {
+            // Then set their state to QUEUED by checking state is still the same
+            try {
+                // Debug message on SQL.
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("SQL : " + queryUpdate);
+                    LOG.debug("SQL.param.id : " + id);
+                }
+
+                updateStateStatement.setLong(1, id);
+
+                int updateResult = updateStateStatement.executeUpdate();
+                if (updateResult <= 0) {
+                    LOG.warn("Unable to move state to CANCELLED for execution in queue " + id + " (update result: " + updateResult + "). Maybe execution is already EXECUTING, WAITING or DONE?");
+                    throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+                }
+
+                return true;
+
+            } catch (SQLException e) {
+                LOG.warn("Unable to add execution in queue id " + id + " to the batch process from setting its state from WAITING to QUEUED", e);
+            }
+
+            return false;
+
+        } catch (SQLException e) {
+            LOG.warn("Unable to state from WAITING to QUEUED state for executions in queue", e);
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+        }
+    }
+
+    @Override
+    public void updateToExecuting(long id, String comment, long exeId) throws CerberusException {
+        String queryUpdate = "UPDATE `" + TABLE + "` "
+                + "SET `" + COLUMN_STATE + "` = 'EXECUTING', `" + COLUMN_EXEID + "` = ?, `" + COLUMN_COMMENT + "` = ?, `" + COLUMN_REQUEST_DATE + "` = now(), `" + COLUMN_DATEMODIF + "` = now() "
+                + "WHERE `" + COLUMN_ID + "` = ? "
+                + "AND `" + COLUMN_STATE + "` in ('QUEUED', 'STARTING')";
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + queryUpdate);
+            LOG.debug("SQL.param.id : " + id);
+        }
+
+        try (
+                Connection connection = databaseSpring.connect();
+                PreparedStatement updateStateStatement = connection.prepareStatement(queryUpdate)) {
+
+            updateStateStatement.setLong(1, exeId);
+            updateStateStatement.setString(2, comment);
+            updateStateStatement.setLong(3, id);
+
+            int updateResult = updateStateStatement.executeUpdate();
+            if (updateResult <= 0) {
+                LOG.warn("Unable to move state from QUEUED to EXECUTING for execution in queue " + id + " (update result: " + updateResult + "). Is the execution is not currently QUEUED?");
+                throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+            }
+        } catch (SQLException e) {
+            LOG.warn("Unable to move state from QUEUED to EXECUTING for execution in queue " + id, e);
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+        }
+    }
+
+    @Override
+    public void updateToStarting(long id) throws CerberusException {
+        String queryUpdate = "UPDATE `" + TABLE + "` "
+                + "SET `" + COLUMN_STATE + "` = 'STARTING', `" + COLUMN_REQUEST_DATE + "` = now(), `" + COLUMN_DATEMODIF + "` = now() "
+                + "WHERE `" + COLUMN_ID + "` = ? "
+                + "AND `" + COLUMN_STATE + "` = 'WAITING'";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -1784,86 +1877,6 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
             }
         } catch (SQLException e) {
             LOG.warn("Unable to set move to DONE for execution in queue id " + id, e);
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
-        }
-    }
-
-    @Override
-    public void updateToCancelled1(long id, String comment) throws CerberusException {
-
-        String query
-                = "UPDATE `" + TABLE + "` "
-                + "SET `" + COLUMN_STATE + "` = 'CANCELLED', `" + COLUMN_REQUEST_DATE + "` = now(), `" + COLUMN_DATEMODIF + "` = now(), `" + COLUMN_COMMENT + "` = ? "
-                + "WHERE `" + COLUMN_ID + "` = ? "
-                + "AND `" + COLUMN_STATE + "` NOT IN ('EXECUTING', 'DONE', 'WAITING')";
-
-        // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query);
-            LOG.debug("SQL.param.id : " + id);
-        }
-
-        try (
-                Connection connection = databaseSpring.connect();
-                PreparedStatement updateStateStatement = connection.prepareStatement(query)) {
-
-            updateStateStatement.setLong(1, id);
-            updateStateStatement.setString(2, comment);
-
-            int updateResult = updateStateStatement.executeUpdate();
-            if (updateResult <= 0) {
-                LOG.warn("Unable to move state to CANCELLED for execution in queue " + id + " (update result: " + updateResult + "). Maybe execution is already EXECUTING, WAITING or DONE?");
-                throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
-            }
-        } catch (SQLException e) {
-            LOG.warn("Unable to move state to CANCELLED for execution in queue id " + id, e);
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
-        }
-    }
-
-    @Override
-    public List<Long> updateToCancelled(final List<Long> ids) throws CerberusException {
-        final List<Long> inSuccess = new ArrayList<>(ids);
-        final List<Long> inError = new ArrayList<>();
-
-        String query = "UPDATE `" + TABLE + "` "
-                + "SET `" + COLUMN_STATE + "` = 'CANCELLED', `" + COLUMN_REQUEST_DATE + "` = now(), `" + COLUMN_DATEMODIF + "` = now() "
-                + "WHERE `" + COLUMN_ID + "` = ? "
-                + "AND `" + COLUMN_STATE + "` NOT IN ('EXECUTING', 'ERROR')";
-
-        try (
-                final Connection connection = databaseSpring.connect();
-                final PreparedStatement updateStateStatement = connection.prepareStatement(query)) {
-            // First, create batch statement
-            for (final long id : ids) {
-                try {
-
-                    // Debug message on SQL.
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("SQL : " + query);
-                        LOG.debug("SQL.param.id : " + id);
-                    }
-
-                    updateStateStatement.setLong(1, id);
-
-                    updateStateStatement.addBatch();
-                } catch (SQLException e) {
-                    LOG.warn("Unable to add execution in queue id " + id + " to the batch process from setting its state to CANCELLED", e);
-                    inSuccess.remove(id);
-                    inError.add(id);
-                }
-            }
-
-            // Then execute batch statement and parse result
-            final int[] batchExecutionResult = updateStateStatement.executeBatch();
-            for (int batchExecutionResultIndex = 0; batchExecutionResultIndex < batchExecutionResult.length; batchExecutionResultIndex++) {
-                if (batchExecutionResult[batchExecutionResultIndex] <= 0) {
-                    inError.add(inSuccess.get(batchExecutionResultIndex));
-                }
-            }
-            return inError;
-        } catch (SQLException e) {
-            LOG.warn("Unable to move state to CANCELLED for selected executions in queue", e);
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
         }
     }
@@ -2044,6 +2057,24 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                 resultSet.getString(COLUMN_USRMODIF),
                 resultSet.getTimestamp(COLUMN_DATEMODIF)
         );
+    }
+
+    private TestCaseExecutionQueueToTreat loadQueueToTreatFromResultSet(ResultSet resultSet) throws SQLException {
+        TestCaseExecutionQueueToTreat inQueue = new TestCaseExecutionQueueToTreat();
+        inQueue.setId(resultSet.getInt("id"));
+        inQueue.setManualExecution(resultSet.getString("exq.manualexecution"));
+        inQueue.setSystem(resultSet.getString("app.system"));
+        inQueue.setEnvironment(resultSet.getString("cep.environment"));
+        inQueue.setCountry(resultSet.getString("cep.country"));
+        inQueue.setApplication(resultSet.getString("cep.application"));
+        inQueue.setPoolSizeApplication(resultSet.getInt("cep.poolsize"));
+        String robotHost = resultSet.getString("rbt.host");
+        if (StringUtil.isNullOrEmpty(robotHost)) {
+            robotHost = resultSet.getString("exq.robotIP");
+        }
+        inQueue.setRobotHost(robotHost);
+        return inQueue;
+
     }
 
     /**

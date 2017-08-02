@@ -90,6 +90,7 @@ public class FactoryTestCaseExecutionQueue implements IFactoryTestCaseExecutionQ
         TestCaseExecutionQueue inQueue = create(NEW_ENTRY_INDEX, test, testCase, country, environment, robot, robotIP, robotPort, browser, browserVersion, platform, screenSize, manualURL, manualHost,
                 manualContextRoot, manualLoginRelativeURL, manualEnvData, tag, screenshot, verbose, timeout, pageSource, seleniumLog, exeId,
                 retries, manualExecution, usrCreated, dateCreated, usrModif, dateModif);
+        inQueue.setState(TestCaseExecutionQueue.State.QUEUED);
         return inQueue;
     }
 

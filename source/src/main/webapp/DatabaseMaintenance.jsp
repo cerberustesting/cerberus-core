@@ -84,7 +84,7 @@
                     } else {
                         out.print("<div class=\"alert alert-warning\"><strong>Database is empty. A first version needs to be initialised. Please click on <i>Initialize Database</i> button bellow in order to initialize it. If already done, please click on <i>Apply Next SQL</i> button until all SQLs has been executed.<br>Anytime you will deploy a new version of Cerberus, you will have to come back to this page (Menu : Admin / Database Maintenance) and execute the missing SQL in order to upgrade the database.</strong></div>");
                         factoryMyversion = new FactoryMyversion();
-                        DtbVersion = factoryMyversion.create("database", 0);
+                        DtbVersion = factoryMyversion.create("database", 0, "");
                     }
 
                     // Displaying the current version of the database.
@@ -161,7 +161,7 @@
                             DtbVersion = myVersionService.findMyVersionByKey("database");
                             if (DtbVersion == null) {
                                 factoryMyversion = new FactoryMyversion();
-                                DtbVersion = factoryMyversion.create("database", 0);
+                                DtbVersion = factoryMyversion.create("database", 0, "");
                             }
                             out.print("<b>Database Moved to Version : ");
                             out.print(DtbVersion.getValue());

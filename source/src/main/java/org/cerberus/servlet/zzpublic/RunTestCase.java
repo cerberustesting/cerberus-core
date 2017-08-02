@@ -404,6 +404,7 @@ public class RunTestCase extends HttpServlet {
                 response.setContentType("text/plain");
                 String separator = " = ";
                 out.println("RunID" + separator + runID);
+                out.println("QueueID" + separator + idFromQueue);
                 out.println("Test" + separator + test);
                 out.println("TestCase" + separator + testCase);
                 out.println("Country" + separator + country);
@@ -456,6 +457,7 @@ public class RunTestCase extends HttpServlet {
                 response.setContentType("text/plain");
                 String separator = " = ";
                 out.println("RunID" + separator + 0);
+                out.println("QueueID" + separator + idFromQueue);
                 out.println("Test" + separator + test);
                 out.println("TestCase" + separator + testCase);
                 out.println("Country" + separator + country);

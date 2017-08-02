@@ -65,8 +65,9 @@ public class TestCaseExecutionQueue {
     private TestCase testCaseObj;
 
     public enum State {
-        WAITING,
         QUEUED,
+        WAITING,
+        STARTING,
         EXECUTING,
         CANCELLED,
         ERROR,

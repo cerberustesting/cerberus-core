@@ -87,6 +87,5 @@ public interface ICountryEnvironmentParametersDAO {
      */
     Answer update(CountryEnvironmentParameters object);
 
-    int getDefaultPoolSize();
 
 }

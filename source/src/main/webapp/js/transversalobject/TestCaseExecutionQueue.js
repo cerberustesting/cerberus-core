@@ -60,7 +60,7 @@ function initModalTestcaseExecutionQueue() {
 
     $("#submitExecutionQueueButton").off("click");
     $("#submitExecutionQueueButton").click(function () {
-        confirmExecutionQueueModalHandler("EDIT", "toWAITING", "save");
+        confirmExecutionQueueModalHandler("EDIT", "toQUEUED", "save");
     });
 
     $("#saveExecutionQueueButton").off("click");
@@ -75,7 +75,7 @@ function initModalTestcaseExecutionQueue() {
 
     $("#duplicateExecutionQueueButton").off("click");
     $("#duplicateExecutionQueueButton").click(function () {
-        confirmExecutionQueueModalHandler("DUPLICATE", "toWAITING", "save");
+        confirmExecutionQueueModalHandler("DUPLICATE", "toQUEUED", "save");
     });
 
     $("#test").bind("change", function (event) {
@@ -135,7 +135,7 @@ function duplicateExecutionQueueClick(queueID) {
 /***
  * Function that support the modal confirmation. Will call servlet to comit the transaction.
  * @param {String} mode - either ADD, EDIT or DUPLICATE in order to define the purpose of the modal.
- * @param {String} queueAction - will be sent in actionState of the servlet in order to trigger the change of state to the Execution queue. ex : "toWaiting"
+ * @param {String} queueAction - will be sent in actionState of the servlet in order to trigger the change of state to the Execution queue. ex : "toQUEUED", "toCANCELLED"
  * @param {String} saveAction - will be sent in actionSave of the servlet in order to trigger the save of the data. ex : "save"
  * @returns {null}
  */
@@ -254,11 +254,13 @@ function feedExecutionQueueModal(queueid, modalId, mode) {
                 var hasPermissions = data.hasPermissions;
 
                 if (mode === "EDIT") {
+                    // Cannot Cancel and execution that is already cancelled.
                     if (exeQ.state === "CANCELLED") {
                         $('#cancelExecutionQueueButton').attr('class', '');
                         $('#cancelExecutionQueueButton').prop('hidden', 'hidden');
                     }
-                    if ((exeQ.state === "QUEUED") || (exeQ.state === "WAITING") || (exeQ.state === "EXECUTING") || (exeQ.state === "DONE")) {
+                    // Cannot modify an execution currently running.
+                    if ((exeQ.state === "WAITING") || (exeQ.state === "STARTING") || (exeQ.state === "EXECUTING") || (exeQ.state === "DONE")) {
                         $('#cancelExecutionQueueButton').attr('class', '');
                         $('#cancelExecutionQueueButton').prop('hidden', 'hidden');
                         $('#saveExecutionQueueButton').attr('class', '');
@@ -433,32 +435,8 @@ function feedExecutionQueueModalData(exeQ, modalId, mode, hasPermissionsUpdate) 
     formEdit.find("#id").prop("disabled", "disabled");
 
     //We desactivate or activate the access to the fields depending on if user has the credentials to edit.
-    if ((!(hasPermissionsUpdate)) && (exeQ.state !== "DUPLICATE")) { // If readonly, we readonly all fields
-        formEdit.find("#tag").prop("readonly", "readonly");
-        formEdit.find("#test").prop("disabled", "disabled");
-        formEdit.find("#testCase").prop("disabled", "disabled");
-        formEdit.find("#environment").prop("disabled", "disabled");
-        formEdit.find("#country").prop("disabled", "disabled");
-        formEdit.find("#manualURL").prop("disabled", "disabled");
-        formEdit.find("#manualHost").prop("readonly", "readonly");
-        formEdit.find("#manualContextRoot").prop("readonly", "readonly");
-        formEdit.find("#manualLoginRelativeURL").prop("readonly", "readonly");
-        formEdit.find("#manualEnvData").prop("disabled", "disabled");
-        formEdit.find("#robot").prop("disabled", "disabled");
-        formEdit.find("#robotIP").prop("readonly", "readonly");
-        formEdit.find("#robotPort").prop("readonly", "readonly");
-        formEdit.find("#browser").prop("disabled", "disabled");
-        formEdit.find("#browserVersion").prop("readonly", "readonly");
-        formEdit.find("#platform").prop("disabled", "disabled");
-        formEdit.find("#screenSize").prop("readonly", "readonly");
-        formEdit.find("#verbose").prop("disabled", "disabled");
-        formEdit.find("#screenshot").prop("disabled", "disabled");
-        formEdit.find("#pageSource").prop("disabled", "disabled");
-        formEdit.find("#seleniumLog").prop("disabled", "disabled");
-        formEdit.find("#timeout").prop("readonly", "readonly");
-        formEdit.find("#retries").prop("disabled", "disabled");
-        formEdit.find("#manualExecution").prop("disabled", "disabled");
-    } else {
+    if (((hasPermissionsUpdate) && (mode === "EDIT") && ((exeQ.state === "QUEUED") || (exeQ.state === "ERROR") || (exeQ.state === "CANCELLED")))
+            || (mode === "DUPLICATE")) { // If readonly, we readonly all fields
         formEdit.find("#tag").prop("readonly", false);
         formEdit.find("#test").removeAttr("disabled");
         formEdit.find("#testCase").removeAttr("disabled");
@@ -483,5 +461,30 @@ function feedExecutionQueueModalData(exeQ, modalId, mode, hasPermissionsUpdate) 
         formEdit.find("#timeout").prop("readonly", false);
         formEdit.find("#retries").removeAttr("disabled");
         formEdit.find("#manualExecution").removeAttr("disabled");
+    } else {
+        formEdit.find("#tag").prop("readonly", "readonly");
+        formEdit.find("#test").prop("disabled", "disabled");
+        formEdit.find("#testCase").prop("disabled", "disabled");
+        formEdit.find("#environment").prop("disabled", "disabled");
+        formEdit.find("#country").prop("disabled", "disabled");
+        formEdit.find("#manualURL").prop("disabled", "disabled");
+        formEdit.find("#manualHost").prop("readonly", "readonly");
+        formEdit.find("#manualContextRoot").prop("readonly", "readonly");
+        formEdit.find("#manualLoginRelativeURL").prop("readonly", "readonly");
+        formEdit.find("#manualEnvData").prop("disabled", "disabled");
+        formEdit.find("#robot").prop("disabled", "disabled");
+        formEdit.find("#robotIP").prop("readonly", "readonly");
+        formEdit.find("#robotPort").prop("readonly", "readonly");
+        formEdit.find("#browser").prop("disabled", "disabled");
+        formEdit.find("#browserVersion").prop("readonly", "readonly");
+        formEdit.find("#platform").prop("disabled", "disabled");
+        formEdit.find("#screenSize").prop("readonly", "readonly");
+        formEdit.find("#verbose").prop("disabled", "disabled");
+        formEdit.find("#screenshot").prop("disabled", "disabled");
+        formEdit.find("#pageSource").prop("disabled", "disabled");
+        formEdit.find("#seleniumLog").prop("disabled", "disabled");
+        formEdit.find("#timeout").prop("readonly", "readonly");
+        formEdit.find("#retries").prop("disabled", "disabled");
+        formEdit.find("#manualExecution").prop("disabled", "disabled");
     }
 }

@@ -39,4 +39,6 @@ public interface IMyVersionDAO {
     
     boolean updateMyVersion(MyVersion myVersion);
     
+    boolean updateMyVersionString(MyVersion myVersion);
+    
 }

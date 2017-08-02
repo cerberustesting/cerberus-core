@@ -26,6 +26,15 @@ public class MyVersion {
 
     private String key;
     private int value;
+    private String valueString;
+
+    public String getValueString() {
+        return valueString;
+    }
+
+    public void setValueString(String valueString) {
+        this.valueString = valueString;
+    }
 
     public String getKey() {
         return key;
@@ -42,6 +51,5 @@ public class MyVersion {
     public void setValue(int value) {
         this.value = value;
     }
-
 
 }

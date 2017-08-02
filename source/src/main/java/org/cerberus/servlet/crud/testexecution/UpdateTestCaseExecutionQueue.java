@@ -205,11 +205,11 @@ public class UpdateTestCaseExecutionQueue extends HttpServlet {
                     }
 
                     // Update is done, we now check what action needs to be performed.
-                    if (actionState.equals("toWAITING")) {
-                        LOG.debug("toWAITING");
-                        ans = executionQueueService.updateToWaiting(id, "Trigered by user " + request.getRemoteUser() + ".");
+                    if (actionState.equals("toQUEUED")) {
+                        LOG.debug("toQUEUED");
+                        ans = executionQueueService.updateToQueued(id, "Trigered by user " + request.getRemoteUser() + ".");
                         finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
-                        executionThreadPoolService.executeNextInQueue(id);
+                        executionThreadPoolService.executeNextInQueue(false);
                     }
 
                     // Update is done, we now check what action needs to be performed.

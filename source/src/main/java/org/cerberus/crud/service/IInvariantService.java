@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,7 +36,19 @@ public interface IInvariantService {
 
     Invariant findInvariantByIdValue(String idName, String value) throws CerberusException;
 
+    /**
+     *
+     * @param idName
+     * @return
+     */
     AnswerList readByIdname(String idName);
+
+    /**
+     *
+     * @param idName
+     * @return
+     */
+    HashMap<String, Integer> readToHashMapByIdname(String idName, Integer defaultValue);
 
     AnswerList findInvariantByIdGp1(String idName, String gp);
 
@@ -72,7 +85,7 @@ public interface IInvariantService {
     Answer update(Invariant invariant);
 
     String getPublicPrivateFilter(String filter);
-    
+
     /**
      *
      * @param answerList

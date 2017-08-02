@@ -30,8 +30,9 @@ public interface IFactoryMyversion {
     /**
      * @param key   key for the version entry (ex: database for the database)
      * @param value value of the version.
+     * @param valueString
      * @return MyVersion object Created
      */
-    MyVersion create(String key, int value);
+    MyVersion create(String key, int value, String valueString);
 
 }

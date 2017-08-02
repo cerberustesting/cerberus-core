@@ -173,18 +173,20 @@ public class CreateTestCaseExecutionQueue extends HttpServlet {
                         } else {
                             // If id is defined, we get the execution queue from database.
                             executionQueueData = executionQueueService.convert(executionQueueService.readByKey(id));
-                            executionQueueData.setState(TestCaseExecutionQueue.State.WAITING);
+                            executionQueueData.setState(TestCaseExecutionQueue.State.QUEUED);
                         }
                         ans = executionQueueService.create(executionQueueData);
 
                         finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
 
-                        if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                            /**
-                             * Update was successfull. Adding Log entry.
-                             */
-                            ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                            logEventService.createForPrivateCalls("/CreateTestCaseExecutionQueue", "CREATE", "Created ExecutionQueue : ['" + id + "']", request);
+                        if (myIds.length <= 1) {
+                            if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                                /**
+                                 * Update was successfull. Adding Log entry.
+                                 */
+                                ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                                logEventService.createForPrivateCalls("/CreateTestCaseExecutionQueue", "CREATE", "Created ExecutionQueue : ['" + id + "']", request);
+                            }
                         }
 
                     }
@@ -198,7 +200,7 @@ public class CreateTestCaseExecutionQueue extends HttpServlet {
 
         // Update is done, we now check what action needs to be performed.
         if (actionState.equals("toWAITING")) {
-            executionThreadPoolService.executeNextInQueue();
+            executionThreadPoolService.executeNextInQueue(false);
         }
 
         /**

@@ -19,9 +19,12 @@
  */
 package org.cerberus.crud.service.impl;
 
+import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.IMyVersionDAO;
 import org.cerberus.crud.entity.MyVersion;
+import org.cerberus.crud.entity.Parameter;
 import org.cerberus.crud.service.IMyVersionService;
+import org.cerberus.exception.CerberusException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,9 +37,34 @@ public class MyVersionService implements IMyVersionService {
     @Autowired
     private IMyVersionDAO myVersionDAO;
 
+    private static final Logger LOG = Logger.getLogger(ParameterService.class);
+
     @Override
     public MyVersion findMyVersionByKey(String key) {
         return this.myVersionDAO.findMyVersionByKey(key);
+    }
+
+    @Override
+    public String getMyVersionStringByKey(String key, String defaultValue) {
+        MyVersion myVersion;
+        String outPutResult = defaultValue;
+        myVersion = this.findMyVersionByKey(key);
+        if (myVersion == null) {
+            outPutResult = String.valueOf(myVersion.getValue());
+            LOG.error("Error when trying to retreive myversion : '" + key + "'. Default value returned : '" + defaultValue);
+        } else {
+            LOG.debug("Success loading myVersion : '" + key + "'. Value returned : '" + outPutResult + "'");
+            outPutResult = myVersion.getValueString();
+        }
+        return outPutResult;
+    }
+
+    @Override
+    public boolean UpdateMyVersionString(String key, String value) {
+        MyVersion DtbVersion = new MyVersion();
+        DtbVersion.setKey(key);
+        DtbVersion.setValueString(value);
+        return this.myVersionDAO.updateMyVersionString(DtbVersion);
     }
 
     @Override

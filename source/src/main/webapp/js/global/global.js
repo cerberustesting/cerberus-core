@@ -1181,7 +1181,7 @@ function showUnexpectedError(jqXHR, textStatus, errorThrown) {
 /***
  * Creates a datatable that is server-side processed.
  * @param {type} tableConfigurations set of configurations that define how data is retrieved and presented
- * @param {Function} callbackFunction callback function to be called after table creation
+ * @param {Function} callbackFunction callback function to be called after table creation (only on server side)
  * @param {String} objectWaitingLayer object that will report the waiting layer when external calls. Ex : #logViewer
  * @param {Array} filtrableColumns array of parameter name that can trigger filter on columns
  * @param {Boolean} checkPermisson boolean that define if user permission need to be checked
@@ -1373,7 +1373,7 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
     }
     $("#" + tableConfigurations.divId + "_length").addClass("marginBottom10").addClass("width80").addClass("pull-left");
     $("#" + tableConfigurations.divId + "_filter").addClass("marginBottom10").addClass("width150").addClass("pull-left");
-    
+
     return oTable;
 }
 
@@ -1463,7 +1463,7 @@ function showTitleWhenTextOverflow() {
 //            });
 //        }
 //    });
-    
+
 }
 
 /***************************SEARCH/FILTERS**************************************/
@@ -2714,7 +2714,7 @@ function showPicture(title, pictureUrl) {
     $('#modalContent').empty();
     //set the translations
     $('#modalContent').append($('<img>').addClass("selectedPicture").attr("src", pictureUrl + "&h=400&w=800"));
-    $('#modalContent').css("overflow","auto");
+    $('#modalContent').css("overflow", "auto");
     if ($("#btnFullPicture").length > 0) {
         $("#btnFullPicture").remove();
     }

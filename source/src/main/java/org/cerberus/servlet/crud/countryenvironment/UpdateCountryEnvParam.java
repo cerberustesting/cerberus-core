@@ -286,14 +286,14 @@ public class UpdateCountryEnvParam extends HttpServlet {
             String strPoolSize = tcsaJson.getString("poolSize");
             int poolSize;
             if (strPoolSize.isEmpty()) {
-                poolSize = ceaService.defaultPoolSize();
+                poolSize = CountryEnvironmentParameters.DEFAULT_POOLSIZE;
             }
             else {
                 try {
                     poolSize = Integer.parseInt(strPoolSize);
                 } catch (NumberFormatException e) {
                     LOGGER.warn("Unable to parse pool size: " + strPoolSize + ". Applying default value");
-                    poolSize = ceaService.defaultPoolSize();
+                    poolSize = CountryEnvironmentParameters.DEFAULT_POOLSIZE;
                 }
             }
 

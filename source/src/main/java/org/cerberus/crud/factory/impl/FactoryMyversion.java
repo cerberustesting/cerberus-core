@@ -30,10 +30,11 @@ import org.springframework.stereotype.Service;
 public class FactoryMyversion implements IFactoryMyversion {
 
     @Override
-    public MyVersion create(String key, int value) {
+    public MyVersion create(String key, int value, String valueString) {
         MyVersion newMyVersion = new MyVersion();
         newMyVersion.setKey(key);
         newMyVersion.setValue(value);
+        newMyVersion.setValueString(valueString);
 
         return newMyVersion;
 

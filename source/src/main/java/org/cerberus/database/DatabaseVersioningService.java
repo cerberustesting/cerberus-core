@@ -8938,6 +8938,39 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ALTER TABLE `robot` ADD COLUMN `poolsize` INT(11) NOT NULL DEFAULT 0 AFTER `description`;");
         SQLInstruction.add(SQLS.toString());
 
+        // Value in order to secure the non parallel process of the queue.
+        //-- ------------------------ 1185-1187
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `myversion` ADD COLUMN `ValueString` VARCHAR(200) NULL DEFAULT NULL AFTER `Value`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `myversion` (`Key`, `ValueString`) VALUES ('queueprocessingjobrunning', 'N');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `myversion` (`Key`) VALUES ('queueprocessingjobstart');");
+        SQLInstruction.add(SQLS.toString());
+
+        // Added ROBOTHOST invariant.
+        //-- ------------------------ 1188-1189
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `invariant` SET `idname`='INVARIANTPRIVATE' WHERE `idname`='INVARIANTPUBLIC' and`value`='MANUALURL';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` VALUES ");
+        SQLS.append("('ROBOTHOST', 'localhost', 100, 'Localhost Robot', '10', '', '', '', '', '', '', '', '', '')");
+        SQLS.append(",('INVARIANTPUBLIC', 'ROBOTHOST', '650', '', '', '', '', '', '', '', '', '', '', '');");
+        SQLInstruction.add(SQLS.toString());
+
+        // Parameter for configuring default robot host constrain.
+        //-- ------------------------ 1190-1191
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` ");
+        SQLS.append("VALUES ('','cerberus_queueexecution_defaultrobothost_threadpoolsize','10','Default number of simultaneous execution allowed for Robot host constrain (only used when host entry does not exist in invariant table).');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `parameter` SET `param`='cerberus_queueexecution_global_threadpoolsize' WHERE `param`='cerberus_execution_threadpool_size';");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 

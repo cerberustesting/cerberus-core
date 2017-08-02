@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -34,8 +35,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.TestCaseExecutionQueue;
+import org.cerberus.engine.threadpool.entity.TestCaseExecutionQueueToTreat;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.engine.entity.MessageEvent;
+import org.cerberus.engine.threadpool.IExecutionThreadPoolService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
@@ -58,6 +61,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class ReadTestCaseExecutionQueue extends HttpServlet {
 
     private ITestCaseExecutionQueueService executionService;
+    private IExecutionThreadPoolService executionThreadPoolService;
 
     private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(ReadTestCaseExecutionQueue.class);
 
@@ -109,7 +113,7 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
 
         // Global boolean on the servlet that define if the user has permition to edit and delete object.
         boolean userHasPermissions = request.isUserInRole("RunTest");
-        
+
         try {
             JSONObject jsonResponse;
 
@@ -117,8 +121,11 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
                 answer = findDistinctValuesOfColumn(appContext, request, request.getParameter("columnName"));
                 jsonResponse = (JSONObject) answer.getItem();
             } else if (queueid != 0) {
-                    answer = findExecutionQueueByKeyTech(queueid, appContext, userHasPermissions);
-                    jsonResponse = (JSONObject) answer.getItem();
+                answer = findExecutionQueueByKeyTech(queueid, appContext, userHasPermissions);
+                jsonResponse = (JSONObject) answer.getItem();
+            } else if (request.getParameter("flag") != null && request.getParameter("flag").equals("queueStatus")) {
+                answer = findExecutionInQueueStatus(appContext);
+                jsonResponse = (JSONObject) answer.getItem();
             } else {
                 answer = findExecutionInQueueList(appContext, true, request);
                 jsonResponse = (JSONObject) answer.getItem();
@@ -240,6 +247,80 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
         return item;
     }
 
+    private AnswerItem findExecutionInQueueStatus(ApplicationContext appContext) throws JSONException {
+        AnswerItem item = new AnswerItem();
+        JSONObject object = new JSONObject();
+        executionThreadPoolService = appContext.getBean(IExecutionThreadPoolService.class);
+        JSONArray jsonArray = new JSONArray();
+
+        try {
+            HashMap<String, Integer> mapRunning = executionThreadPoolService.getCurrentlyRunning();
+            HashMap<String, Integer> mapInQueue = executionThreadPoolService.getCurrentlyToTreat();
+            HashMap<String, Integer> mapPoolSize = executionThreadPoolService.getCurrentlyPoolSizes();
+            for (Map.Entry<String, Integer> entry : mapRunning.entrySet()) {
+                String column = entry.getKey();
+                Integer name = entry.getValue();
+                if (!("".equals(column))) {
+                    String[] data = column.split("\\/\\/");
+                    LOG.debug(data.length);
+                    LOG.debug(data[0]);
+                    JSONObject jsonObject = new JSONObject();
+                    switch (data[0]) {
+                        case TestCaseExecutionQueueToTreat.CONSTRAIN1_GLOBAL:
+                            jsonObject.put("contrainId", data[0]);
+                            jsonObject.put("system", "");
+                            jsonObject.put("environment", "");
+                            jsonObject.put("country", "");
+                            jsonObject.put("application", "");
+                            jsonObject.put("robot", "");
+                            jsonObject.put("nbInQueue", ParameterParserUtil.parseIntegerParam(mapInQueue.get(column), 0));
+                            jsonObject.put("nbPoolSize", ParameterParserUtil.parseIntegerParam(mapPoolSize.get(column),0));
+                            jsonObject.put("nbRunning", ParameterParserUtil.parseIntegerParam(name,0));
+                            break;
+                        case TestCaseExecutionQueueToTreat.CONSTRAIN2_APPLICATION:
+                            jsonObject.put("contrainId", data[0]);
+                            jsonObject.put("system", data[1]);
+                            jsonObject.put("environment", data[2]);
+                            jsonObject.put("country", data[3]);
+                            jsonObject.put("application", data[4]);
+                            jsonObject.put("robot", "");
+                            jsonObject.put("nbInQueue", ParameterParserUtil.parseIntegerParam(mapInQueue.get(column),0));
+                            jsonObject.put("nbPoolSize", ParameterParserUtil.parseIntegerParam(mapPoolSize.get(column),0));
+                            jsonObject.put("nbRunning", ParameterParserUtil.parseIntegerParam(name,0));
+                            break;
+                        case TestCaseExecutionQueueToTreat.CONSTRAIN3_ROBOT:
+                            jsonObject.put("contrainId", data[0]);
+                            jsonObject.put("system", "");
+                            jsonObject.put("environment", "");
+                            jsonObject.put("country", "");
+                            jsonObject.put("application", "");
+                            if (data.length > 1) {
+                                jsonObject.put("robot", data[1]);
+                            } else {
+                                jsonObject.put("robot", "");
+                            }
+                            jsonObject.put("nbInQueue", ParameterParserUtil.parseIntegerParam(mapInQueue.get(column),0));
+                            jsonObject.put("nbPoolSize", ParameterParserUtil.parseIntegerParam(mapPoolSize.get(column),0));
+                            jsonObject.put("nbRunning", ParameterParserUtil.parseIntegerParam(name,0));
+                            break;
+                    }
+                    jsonArray.put(jsonObject);
+                }
+            }
+            object.put("contentTable", jsonArray);
+
+//            jsonArray.put(jsonObject);
+        } catch (CerberusException ex) {
+            Logger.getLogger(ReadTestCaseExecutionQueue.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        object.put("messageType", "");
+        object.put("message", "");
+        item.setResultMessage(new MessageEvent(MessageEventEnum.GENERIC_OK));
+        item.setItem(object);
+        return item;
+    }
+
     private AnswerItem findDistinctValuesOfColumn(ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
         AnswerItem answer = new AnswerItem();
         JSONObject object = new JSONObject();
@@ -258,8 +339,9 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
              */
             case "state":
                 List<String> dataList = new ArrayList<>();
-                dataList.add(TestCaseExecutionQueue.State.WAITING.name());
                 dataList.add(TestCaseExecutionQueue.State.QUEUED.name());
+                dataList.add(TestCaseExecutionQueue.State.WAITING.name());
+                dataList.add(TestCaseExecutionQueue.State.STARTING.name());
                 dataList.add(TestCaseExecutionQueue.State.EXECUTING.name());
                 dataList.add(TestCaseExecutionQueue.State.ERROR.name());
                 dataList.add(TestCaseExecutionQueue.State.DONE.name());

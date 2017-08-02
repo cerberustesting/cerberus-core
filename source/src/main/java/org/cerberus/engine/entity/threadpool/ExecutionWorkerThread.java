@@ -29,7 +29,6 @@ import java.util.regex.Pattern;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.fluent.Request;
 import org.apache.log4j.Logger;
-import org.cerberus.crud.entity.CountryEnvironmentParameters;
 import org.cerberus.crud.entity.TestCaseExecutionQueue;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.enums.MessageEventEnum;
@@ -122,11 +121,7 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
      */
     public static class Builder {
 
-        public static final String THREAD_NAME_FORMAT = "pool(%s-%s-%s-%s), queued(%d)";
-
         private ExecutionWorkerThread executionWorkerThread;
-
-        private CountryEnvironmentParameters.Key toExecuteKey;
 
         private String cerberusUrl;
 
@@ -139,10 +134,6 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
             return this;
         }
 
-        public Builder toExecuteKey(CountryEnvironmentParameters.Key toExecuteKey) {
-            this.toExecuteKey = toExecuteKey;
-            return this;
-        }
 
         public Builder cerberusUrl(String cerberusUrl) {
             this.cerberusUrl = cerberusUrl;
@@ -163,9 +154,6 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
             if (executionWorkerThread.getToExecute() == null) {
                 throw new IllegalStateException("Unable to create a new ExecutionWorkerThread without the TestCaseExecutionInQueue to execute");
             }
-            if (toExecuteKey == null) {
-                throw new IllegalStateException("Unable to create a new ExecutionWorkerThread without the CountryEnvironmentParameters.Key associated to the TestCaseExecutionInQueue to execute");
-            }
             if (cerberusUrl == null) {
                 throw new IllegalStateException("Unable to create a new ExecutionWorkerThread without the Cerberus base URL");
             }
@@ -175,19 +163,8 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
             if (executionWorkerThread.getToExecuteTimeout() == 0) {
                 executionWorkerThread.setToExecuteTimeout(DEFAULT_TIMEOUT);
             }
-            executionWorkerThread.setName(getName());
             executionWorkerThread.setToExecuteUrl(getExecutionUrl());
             return executionWorkerThread;
-        }
-
-        private String getName() {
-            return String.format(THREAD_NAME_FORMAT,
-                    toExecuteKey.getSystem(),
-                    toExecuteKey.getApplication(),
-                    toExecuteKey.getCountry(),
-                    toExecuteKey.getEnvironment(),
-                    executionWorkerThread.getToExecute().getId()
-            );
         }
 
         private String getExecutionUrl() {
@@ -364,7 +341,7 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
      */
     private boolean runFromQueuedToExecuting() {
         try {
-            inQueueService.updateToExecuting(toExecute.getId());
+            inQueueService.updateToExecuting(toExecute.getId(), "", 0);
             return true;
         } catch (CerberusException e) {
             LOG.warn("Unable to mark execution in queue " + toExecute.getId() + " as executing. Is execution in queue currently marked as queued?", e);

@@ -19,30 +19,21 @@
  */
 package org.cerberus.engine.threadpool.impl;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
+import java.util.concurrent.Future;
+import java.util.concurrent.RejectedExecutionException;
 import org.apache.log4j.Logger;
-import org.cerberus.crud.entity.CountryEnvironmentParameters;
-import org.cerberus.crud.entity.TestCaseExecutionQueue;
-import org.cerberus.crud.service.ICountryEnvironmentParametersService;
+import org.cerberus.crud.service.IInvariantService;
+import org.cerberus.engine.threadpool.entity.TestCaseExecutionQueueToTreat;
+import org.cerberus.crud.service.IMyVersionService;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
-import org.cerberus.engine.entity.MessageGeneral;
-import org.cerberus.engine.entity.threadpool.ExecutionThreadPool;
-import org.cerberus.engine.entity.threadpool.ExecutionThreadPoolStats;
-import org.cerberus.engine.entity.threadpool.ExecutionWorkerThread;
-import org.cerberus.engine.entity.threadpool.ManageableThreadPoolExecutor;
 import org.cerberus.engine.threadpool.IExecutionThreadPoolService;
-import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.util.answer.AnswerItem;
-import org.cerberus.util.observe.Observer;
+import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -53,293 +44,294 @@ import org.springframework.stereotype.Service;
  * @author abourdon
  */
 @Service
-public class ExecutionThreadPoolService implements IExecutionThreadPoolService, Observer<CountryEnvironmentParameters.Key, CountryEnvironmentParameters> {
+public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
 
     private static final Logger LOG = Logger.getLogger(ExecutionThreadPoolService.class);
 
-    private static final int UNLIMITED_FETCH_SIZE = -1;
-
-    /**
-     * The string format when displaying generated name.
-     * <p>
-     * Values are:
-     * <ol>
-     * <li>{@link CountryEnvironmentParameters.Key#getSystem()}</li>
-     * <li>{@link CountryEnvironmentParameters.Key#getApplication()}</li>
-     * <li>{@link CountryEnvironmentParameters.Key#getCountry()}</li>
-     * <li>{@link CountryEnvironmentParameters.Key#getEnvironment()}</li>
-     * </ol>
-     *
-     * @see #generateName(CountryEnvironmentParameters.Key)
-     */
-    private static final String EXECUTION_POOL_NAME_FORMAT = "%s-%s-%s";
+    private static final String CONST_SEPARATOR = "//";
 
     @Autowired
     private ITestCaseExecutionQueueService tceiqService;
-
     @Autowired
     private IParameterService parameterService;
-
     @Autowired
-    private ICountryEnvironmentParametersService countryEnvironmentParametersService;
+    private IInvariantService invariantService;
+    @Autowired
+    private IMyVersionService myVersionService;
+    @Autowired
+    ExecutionQueueThreadPool threadQueuePool;
+    @Autowired
+    private ITestCaseExecutionQueueService queueService;
 
-    private Map<CountryEnvironmentParameters.Key, ExecutionThreadPool<ExecutionWorkerThread>> executionPools;
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public void executeNextInQueue() throws CerberusException {
-        executeNextInQueue(UNLIMITED_FETCH_SIZE);
-    }
+    public HashMap<String, Integer> getCurrentlyRunning() throws CerberusException {
+        AnswerList answer = new AnswerList();
+        HashMap<String, Integer> constrains_current = new HashMap<String, Integer>();
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void executeNextInQueue(final int limit) throws CerberusException {
-        if (limit < 0 && limit != UNLIMITED_FETCH_SIZE) {
-            LOG.warn("Unable to fetch " + limit + " waiting execution in queue");
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
-        }
-        final List<TestCaseExecutionQueue> executionsInQueue = limit == UNLIMITED_FETCH_SIZE ? tceiqService.updateToQueued() : tceiqService.updateToQueued(limit);
-        for (final TestCaseExecutionQueue executionInQueue : executionsInQueue) {
-            try {
-                execute(executionInQueue);
-            } catch (CerberusException e) {
-                LOG.warn("Unable to execute " + executionInQueue.getId() + " due to " + e.getMessageError().getDescription(), e);
-                tceiqService.updateToError(executionInQueue.getId(), e.getMessageError().getDescription());
+        // Getting all executions already running in the queue.
+        answer = tceiqService.readQueueRunning();
+        List<TestCaseExecutionQueueToTreat> executionsRunning = (List<TestCaseExecutionQueueToTreat>) answer.getDataList();
+        // Calculate constrain values.
+        for (TestCaseExecutionQueueToTreat exe : executionsRunning) {
+            String const01_key = TestCaseExecutionQueueToTreat.CONSTRAIN1_GLOBAL;
+            String const02_key = TestCaseExecutionQueueToTreat.CONSTRAIN2_APPLICATION + CONST_SEPARATOR + exe.getSystem() + CONST_SEPARATOR + exe.getEnvironment() + CONST_SEPARATOR + exe.getCountry() + CONST_SEPARATOR + exe.getApplication();
+            String const03_key = TestCaseExecutionQueueToTreat.CONSTRAIN3_ROBOT + CONST_SEPARATOR + exe.getRobotHost();
+
+            if (constrains_current.containsKey(const01_key)) {
+                constrains_current.put(const01_key, constrains_current.get(const01_key) + 1);
+            } else {
+                constrains_current.put(const01_key, 1);
+            }
+            if (constrains_current.containsKey(const02_key)) {
+                constrains_current.put(const02_key, constrains_current.get(const02_key) + 1);
+            } else {
+                constrains_current.put(const02_key, 1);
+            }
+            if (constrains_current.containsKey(const03_key)) {
+                constrains_current.put(const03_key, constrains_current.get(const03_key) + 1);
+            } else {
+                constrains_current.put(const03_key, 1);
             }
         }
+        return constrains_current;
+
+    }
+
+    @Override
+    public HashMap<String, Integer> getCurrentlyPoolSizes() throws CerberusException {
+        AnswerList answer = new AnswerList();
+        HashMap<String, Integer> constrains_current = new HashMap<String, Integer>();
+
+        String const01_key = TestCaseExecutionQueueToTreat.CONSTRAIN1_GLOBAL;
+        int poolSizeGeneral = parameterService.getParameterIntegerByKey("cerberus_queueexecution_global_threadpoolsize", "", 12);
+        int poolSizeRobot = parameterService.getParameterIntegerByKey("cerberus_queueexecution_defaultrobothost_threadpoolsize", "", 10);
+        constrains_current.put(const01_key, poolSizeGeneral);
+
+        // Getting RobotHost PoolSize
+        HashMap<String, Integer> robot_poolsize = new HashMap<String, Integer>();
+        robot_poolsize = invariantService.readToHashMapByIdname("ROBOTHOST", poolSizeRobot);
+
+        // Getting all executions to be treated.
+        answer = tceiqService.readQueueToTreat();
+        List<TestCaseExecutionQueueToTreat> executionsToTreat = (List<TestCaseExecutionQueueToTreat>) answer.getDataList();
+        // Calculate constrain values.
+        for (TestCaseExecutionQueueToTreat exe : executionsToTreat) {
+            String const02_key = TestCaseExecutionQueueToTreat.CONSTRAIN2_APPLICATION + CONST_SEPARATOR + exe.getSystem() + CONST_SEPARATOR + exe.getEnvironment() + CONST_SEPARATOR + exe.getCountry() + CONST_SEPARATOR + exe.getApplication();
+            String const03_key = TestCaseExecutionQueueToTreat.CONSTRAIN3_ROBOT + CONST_SEPARATOR + exe.getRobotHost();
+
+            constrains_current.put(const02_key, exe.getPoolSizeApplication());
+
+            // Getting Robot Host PoolSize from invariant hashmap.
+            int robot_poolsize_final = 0;
+            if (robot_poolsize.containsKey(exe.getRobotHost())) {
+                robot_poolsize_final = ParameterParserUtil.parseIntegerParam(robot_poolsize.get(exe.getRobotHost()), poolSizeRobot);
+            } else {
+                robot_poolsize_final = 0;
+            }
+            constrains_current.put(const03_key, robot_poolsize_final);
+        }
+        return constrains_current;
+
+    }
+
+    @Override
+    public HashMap<String, Integer> getCurrentlyToTreat() throws CerberusException {
+        AnswerList answer = new AnswerList();
+        HashMap<String, Integer> constrains_current = new HashMap<String, Integer>();
+
+        // Getting all executions to be treated.
+        answer = tceiqService.readQueueToTreat();
+        List<TestCaseExecutionQueueToTreat> executionsToTreat = (List<TestCaseExecutionQueueToTreat>) answer.getDataList();
+
+        // Calculate constrain values.
+        for (TestCaseExecutionQueueToTreat exe : executionsToTreat) {
+            String const01_key = TestCaseExecutionQueueToTreat.CONSTRAIN1_GLOBAL;
+            String const02_key = TestCaseExecutionQueueToTreat.CONSTRAIN2_APPLICATION + CONST_SEPARATOR + exe.getSystem() + CONST_SEPARATOR + exe.getEnvironment() + CONST_SEPARATOR + exe.getCountry() + CONST_SEPARATOR + exe.getApplication();
+            String const03_key = TestCaseExecutionQueueToTreat.CONSTRAIN3_ROBOT + CONST_SEPARATOR + exe.getRobotHost();
+
+            if (constrains_current.containsKey(const01_key)) {
+                constrains_current.put(const01_key, constrains_current.get(const01_key) + 1);
+            } else {
+                constrains_current.put(const01_key, 1);
+            }
+            if (constrains_current.containsKey(const02_key)) {
+                constrains_current.put(const02_key, constrains_current.get(const02_key) + 1);
+            } else {
+                constrains_current.put(const02_key, 1);
+            }
+            if (constrains_current.containsKey(const03_key)) {
+                constrains_current.put(const03_key, constrains_current.get(const03_key) + 1);
+            } else {
+                constrains_current.put(const03_key, 1);
+            }
+        }
+        return constrains_current;
+
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void executeNextInQueue(final List<Long> ids) throws CerberusException {
-        for (final TestCaseExecutionQueue queued : tceiqService.updateToQueued(ids)) {
-            try {
-                execute(queued);
-            } catch (CerberusException e) {
-                LOG.warn("Unable to execute " + queued.getId() + " due to " + e.getMessageError().getDescription(), e);
-                try {
-                    tceiqService.updateToError(queued.getId(), e.getMessageError().getDescription());
-                } catch (CerberusException again) {
-                    LOG.warn("Unable to put in error " + queued.getId() + " due to " + e.getMessageError().getDescription(), e);
+    public void executeNextInQueue(boolean forceExecution) throws CerberusException {
+        // We first check that another thread of Cerberus already trigger the job. Only 1 instance of the job is necessary.
+        if (!(myVersionService.getMyVersionStringByKey("queueprocessingjobrunning", "N").equals("Y"))
+                || forceExecution) {
+            if (forceExecution) {
+                LOG.debug("Forcing Start of Queue_Processing_Job.");
+            }
+            // Job is not already running, we can trigger it.
+
+            LOG.debug("Starting Queue_Processing_Job.");
+
+            // Flag in database that job is already running.
+            myVersionService.UpdateMyVersionString("queueprocessingjobrunning", "Y");
+            myVersionService.UpdateMyVersionString("queueprocessingjobstart", String.valueOf(new Date()));
+
+            String cerberus_url = parameterService.getParameterStringByKey("cerberus_url", "", "");
+            AnswerList answer = new AnswerList();
+
+            // Getting all executions to be treated.
+            answer = tceiqService.readQueueToTreat();
+            List<TestCaseExecutionQueueToTreat> executionsInQueue = (List<TestCaseExecutionQueueToTreat>) answer.getDataList();
+
+            int poolSizeGeneral = parameterService.getParameterIntegerByKey("cerberus_queueexecution_global_threadpoolsize", "", 12);
+            int poolSizeRobot = parameterService.getParameterIntegerByKey("cerberus_queueexecution_defaultrobothost_threadpoolsize", "", 10);
+
+            // Init constrain counter.
+            int const01_current = 0;
+            int const02_current = 0;
+            int const03_current = 0;
+            HashMap<String, Integer> constrains_current = new HashMap<String, Integer>();
+            constrains_current = getCurrentlyRunning();
+
+            // Getting RobotHost PoolSize
+            HashMap<String, Integer> robot_poolsize = new HashMap<String, Integer>();
+            robot_poolsize = invariantService.readToHashMapByIdname("ROBOTHOST", poolSizeRobot);
+
+            // Analysing each execution in the database queue.
+            int nbqueuedexe = 0;
+            for (TestCaseExecutionQueueToTreat exe : executionsInQueue) {
+                // Robot PoolSize if retreived from hashmap.
+                int robot_poolsize_final = 0;
+                if (robot_poolsize.containsKey(exe.getRobotHost())) {
+                    robot_poolsize_final = ParameterParserUtil.parseIntegerParam(robot_poolsize.get(exe.getRobotHost()), poolSizeRobot);
+                } else {
+                    robot_poolsize_final = 0;
+                }
+
+                LOG.debug("Analysing Queue : " + exe.getId() + " poolGen " + poolSizeGeneral + " poolApp " + exe.getPoolSizeApplication() + " poolRobot " + robot_poolsize_final);
+
+                String const01_key = TestCaseExecutionQueueToTreat.CONSTRAIN1_GLOBAL;
+                String const02_key = TestCaseExecutionQueueToTreat.CONSTRAIN2_APPLICATION + CONST_SEPARATOR + exe.getSystem() + CONST_SEPARATOR + exe.getEnvironment() + CONST_SEPARATOR + exe.getCountry() + CONST_SEPARATOR + exe.getApplication();
+                String const03_key = TestCaseExecutionQueueToTreat.CONSTRAIN3_ROBOT + CONST_SEPARATOR + exe.getRobotHost();
+
+                // Eval Constrain 1
+                if (constrains_current.containsKey(const01_key)) {
+                    const01_current = constrains_current.get(const01_key);
+                } else {
+                    const01_current = 0;
+                }
+                // Eval Constrain 1
+                boolean constMatch01;
+                if (poolSizeGeneral == 0) {
+                    // if poolsize == 0, this means no constrain specified.
+                    constMatch01 = false;
+                } else {
+                    constMatch01 = (const01_current >= poolSizeGeneral);
+                }
+
+                // Eval Constrain 2
+                if (constrains_current.containsKey(const02_key)) {
+                    const02_current = constrains_current.get(const02_key);
+                } else {
+                    const02_current = 0;
+                }
+                // Eval Constrain 2
+                boolean constMatch02;
+                if (exe.getPoolSizeApplication() == 0) {
+                    // if poolsize == 0, this means no constrain specified.
+                    constMatch02 = false;
+                } else {
+                    constMatch02 = (const02_current >= exe.getPoolSizeApplication());
+                }
+
+                // Eval Constrain 3
+                if (constrains_current.containsKey(const03_key)) {
+                    const03_current = constrains_current.get(const03_key);
+                } else {
+                    const03_current = 0;
+                }
+                // Eval Constrain 3
+                boolean constMatch03;
+                if (robot_poolsize_final == 0) {
+                    // if poolsize == 0, this means no constrain specified.
+                    constMatch03 = false;
+                } else {
+                    constMatch03 = (const03_current >= robot_poolsize_final);
+                }
+
+                String notTriggeredExeMessage = "";
+                boolean triggerExe = false;
+                if ((!constMatch01 && !constMatch02 && !constMatch03)
+                        || (!constMatch01 && exe.getManualExecution().equals("Y"))) {
+                    // None of the constrains match or exe is manual so we can trigger the execution.
+
+                    // Adding execution to queue.
+                    if (queueService.updateToWaiting(exe.getId())) {
+                        ExecutionQueueWorkerThread task = new ExecutionQueueWorkerThread();
+                        task.setCerberusExecutionUrl(cerberus_url);
+                        task.setQueueId(exe.getId());
+                        task.setQueueService(queueService);
+                        task.setExecThreadPool(threadQueuePool);
+                        try {
+                            Future<?> future = threadQueuePool.getExecutor().submit(task);
+                            task.setFuture(future);
+                        } catch (RejectedExecutionException e) {
+                            System.out.println("RejectedExecutionException :" + e);
+                        }
+
+                        triggerExe = true;
+                        nbqueuedexe++;
+
+                        // Debug messages.
+                        LOG.debug("result : " + triggerExe + " Const1 " + constMatch01 + " Const2 " + constMatch01 + " Const3 " + constMatch01 + " Manual " + exe.getManualExecution());
+                        LOG.debug(" CurConst1 " + const01_current + " CurConst2 " + const02_current + " CurConst3 " + const03_current);
+
+                        // Counter increase
+                        constrains_current.put(const01_key, const01_current + 1);
+                        if (!exe.getManualExecution().equals("Y")) {
+                            // Specific increment only if automatic execution.
+                            constrains_current.put(const02_key, const02_current + 1);
+                            constrains_current.put(const03_key, const03_current + 1);
+                        }
+
+                    }
+
+                } else {
+                    if (constMatch03) {
+                        notTriggeredExeMessage = "Robot contrain on '" + const03_key + "' reached. " + robot_poolsize_final + " Execution(s) poolsize reached";
+                    }
+                    if (constMatch02) {
+                        notTriggeredExeMessage = "Application Environment contrain on '" + const02_key + "' reached . " + exe.getPoolSizeApplication() + " Execution(s) poolsize reached";
+                    }
+                    if (constMatch01) {
+                        notTriggeredExeMessage = "Global contrain reached. " + poolSizeGeneral + " Execution(s) poolsize reached";
+                    }
+                    LOG.debug("result : " + triggerExe + " Const1 " + constMatch01 + " Const2 " + constMatch01 + " Const3 " + constMatch01 + " Manual " + exe.getManualExecution());
+                    LOG.debug(" CurConst1 " + const01_current + " CurConst2 " + const02_current + " CurConst3 " + const03_current);
+                    LOG.debug(" " + notTriggeredExeMessage);
                 }
             }
-        }
-    }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void executeNextInQueue(final Long id) throws CerberusException {
-        List<Long> ids = new ArrayList<>();
-        ids.add(id);
-        executeNextInQueue(ids);
-    }
+            // Flag in database that job is finished.
+            myVersionService.UpdateMyVersionString("queueprocessingjobrunning", "N");
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Collection<ExecutionThreadPoolStats> getStats() {
-        final Collection<ExecutionThreadPoolStats> stats = new ArrayList<>();
-        for (Map.Entry<CountryEnvironmentParameters.Key, ExecutionThreadPool<ExecutionWorkerThread>> pool : executionPools.entrySet()) {
-            // Quasi-accurate (not atomic) statistics
-            stats.add(new ExecutionThreadPoolStats()
-                    .setId(pool.getKey())
-                    .setPoolSize(pool.getValue().getPoolSize())
-                    .setInQueue(pool.getValue().getInQueue())
-                    .setInExecution(pool.getValue().getInExecution())
-                    .setPaused(pool.getValue().isPaused())
-                    .setStopped(pool.getValue().isStopped())
-            );
-        }
-        return stats;
-    }
+            LOG.debug("Stoping Queue_Processing_Job - TOTAL Released execution(s) : " + nbqueuedexe);
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Map<ManageableThreadPoolExecutor.TaskState, List<ExecutionWorkerThread>> getTasks(CountryEnvironmentParameters.Key key) {
-        ExecutionThreadPool<ExecutionWorkerThread> associatedPool = getExecutionPool(key);
-        if (associatedPool == null) {
-            return null;
-        }
-        return associatedPool.getTasks();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void pauseExecutionThreadPool(CountryEnvironmentParameters.Key key) {
-        ExecutionThreadPool<ExecutionWorkerThread> associatedPool = getExecutionPool(key);
-        if (associatedPool == null) {
-            return;
-        }
-        associatedPool.pause();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void resumeExecutionThreadPool(CountryEnvironmentParameters.Key key) {
-        ExecutionThreadPool<ExecutionWorkerThread> associatedPool = getExecutionPool(key);
-        if (associatedPool == null) {
-            return;
-        }
-        associatedPool.resume();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void removeExecutionThreadPool(CountryEnvironmentParameters.Key key) {
-        // Stop the execution thread pool and remove it from our associated map
-        ExecutionThreadPool<ExecutionWorkerThread> associatedPool;
-        List<ExecutionWorkerThread> remainingExecutions = null;
-        synchronized (executionPools) {
-            associatedPool = executionPools.remove(key);
-            if (associatedPool != null) {
-                remainingExecutions = associatedPool.stop();
-            }
-        }
-
-        // Try to remove executions from database
-        if (remainingExecutions != null) {
-            for (ExecutionWorkerThread remainingExecution : remainingExecutions) {
-                try {
-                    tceiqService.convert(tceiqService.delete(remainingExecution.getToExecute().getId()));
-                } catch (Exception e) {
-                    LOG.warn("Unable to clean execution in queue " + remainingExecution.getToExecute().getId() + " during stopping process of the execution thread pool " + associatedPool.getName(), e);
-                }
-            }
-        }
-    }
-
-    @Override
-    public void observeCreate(CountryEnvironmentParameters.Key key, CountryEnvironmentParameters countryEnvironmentParameters) {
-        // Nothing to do
-    }
-
-    @Override
-    public void observeUpdate(CountryEnvironmentParameters.Key key, CountryEnvironmentParameters countryEnvironmentParameters) {
-        ExecutionThreadPool<ExecutionWorkerThread> associatedExecutionPool = getExecutionPool(key);
-        if (associatedExecutionPool != null) {
-            associatedExecutionPool.setSize(countryEnvironmentParameters.getPoolSize());
-        }
-    }
-
-    @Override
-    public void observeDelete(CountryEnvironmentParameters.Key key, CountryEnvironmentParameters countryEnvironmentParameters) {
-        removeExecutionThreadPool(key);
-    }
-
-    @PostConstruct
-    private void init() {
-        initExecutionPools();
-    }
-
-    @PreDestroy
-    private void stop() {
-        stopRegistration();
-        stopExecutionPools();
-    }
-
-    private void initExecutionPools() {
-        executionPools = new HashMap<>();
-    }
-
-    private void stopExecutionPools() {
-        if (executionPools == null) {
-            return;
-        }
-        for (ExecutionThreadPool<ExecutionWorkerThread> executionPool : executionPools.values()) {
-            LOG.info("Stopping execution pool " + executionPool.getName());
-            executionPool.stop();
-        }
-    }
-
-    private void stopRegistration() {
-        countryEnvironmentParametersService.unregister(this);
-    }
-
-    private String generateName(CountryEnvironmentParameters.Key key) {
-        return String.format(EXECUTION_POOL_NAME_FORMAT, key.getSystem(), key.getApplication(), key.getCountry(), key.getEnvironment());
-    }
-
-    private void execute(TestCaseExecutionQueue toExecute) throws CerberusException {
-        try {
-            CountryEnvironmentParameters.Key toExecuteKey = getKey(toExecute);
-            ExecutionThreadPool<ExecutionWorkerThread> executionPool = getOrCreateExecutionPool(toExecuteKey);
-            ExecutionWorkerThread execution = new ExecutionWorkerThread.Builder()
-                    .toExecute(toExecute)
-                    .toExecuteKey(toExecuteKey)
-                    .toExecuteTimeout(parameterService.getParameterIntegerByKey("cerberus_queueexecution_timeout", "", 600000))
-                    .cerberusUrl(parameterService.getParameterStringByKey("cerberus_url", "", ""))
-                    .inQueueService(tceiqService)
-                    .build();
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Request to execute " + execution + " from execution pool " + executionPool);
-            }
-            executionPool.submit(execution);
-        } catch (Exception e) {
-            String message = "Unable to execute " + toExecute + " due to " + e.getMessage();
-            LOG.warn(message, e);
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.GENERIC_ERROR).resolveDescription("REASON", message));
-        }
-    }
-
-    private ExecutionThreadPool getOrCreateExecutionPool(CountryEnvironmentParameters.Key key) {
-        ExecutionThreadPool<ExecutionWorkerThread> executionPool = executionPools.get(key);
-        if (executionPool == null) {
-            synchronized (executionPools) {
-                executionPool = executionPools.get(key);
-                if (executionPool == null) {
-                    executionPool = new ExecutionThreadPool<>(generateName(key), getPoolSize(key));
-                    executionPools.put(key, executionPool);
-                    registerTo(key);
-                }
-            }
-        }
-        return executionPool;
-    }
-
-    private ExecutionThreadPool<ExecutionWorkerThread> getExecutionPool(CountryEnvironmentParameters.Key key) {
-        synchronized (executionPools) {
-            return executionPools.get(key);
-        }
-    }
-
-    private CountryEnvironmentParameters.Key getKey(TestCaseExecutionQueue inQueue) throws CerberusException {
-        return new CountryEnvironmentParameters.Key(
-                inQueue.getApplicationObj().getSystem(),
-                inQueue.getApplicationObj().getApplication(),
-                inQueue.getCountry(),
-                inQueue.getEnvironment()
-        );
-    }
-
-    private int getPoolSize(CountryEnvironmentParameters.Key key) {
-        AnswerItem<Integer> poolSize = countryEnvironmentParametersService.readPoolSizeByKey(key.getSystem(), key.getCountry(), key.getEnvironment(), key.getApplication());
-        if (MessageEventEnum.DATA_OPERATION_OK.equals(poolSize.getResultMessage().getSource())) {
-            return poolSize.getItem();
         } else {
-            LOG.warn("Unable to get pool size from " + key + ". Get default");
-            return countryEnvironmentParametersService.defaultPoolSize();
+            LOG.debug("Queue_Processing_Job not triggered (already running.)");
         }
-    }
-
-    private void registerTo(CountryEnvironmentParameters.Key key) {
-        countryEnvironmentParametersService.register(key, this);
     }
 
 }

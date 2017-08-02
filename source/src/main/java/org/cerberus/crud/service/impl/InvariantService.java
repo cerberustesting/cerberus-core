@@ -20,6 +20,7 @@
 package org.cerberus.crud.service.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -32,6 +33,7 @@ import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.SqlUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -57,6 +59,18 @@ public class InvariantService implements IInvariantService {
     @Override
     public AnswerList readByIdname(String idName) {
         return invariantDao.readByIdname(idName);
+    }
+
+    @Override
+    public HashMap<String, Integer> readToHashMapByIdname(String idName, Integer defaultValue) {
+        HashMap<String, Integer> robot_poolsize = new HashMap<String, Integer>();
+
+        AnswerList answer = readByIdname(idName); //TODO: handle if the response does not turn ok
+        for (Invariant inv : (List<Invariant>) answer.getDataList()) {
+            int robotSelected = ParameterParserUtil.parseIntegerParam(inv.getGp1(), defaultValue);
+            robot_poolsize.put(inv.getValue(), robotSelected);
+        }
+        return robot_poolsize;
     }
 
     @Override
@@ -238,7 +252,7 @@ public class InvariantService implements IInvariantService {
 
         return searchSQL;
     }
-    
+
     @Override
     public List<Invariant> convert(AnswerList answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {

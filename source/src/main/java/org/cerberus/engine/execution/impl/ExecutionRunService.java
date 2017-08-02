@@ -650,10 +650,15 @@ public class ExecutionRunService implements IExecutionRunService {
                     + tCExecution.getTestCase() + "_" + tCExecution.getTestCaseObj().getDescription().replace(".", ""));
 
             /**
-             * Retry maagement, in case the result is not OK, we execute the job
-             * again reducing the retry to 1.
+             * Updating queue to done status.
              */
-            if (tCExecution.getNumberOfRetries() > 0 
+            executionQueueService.updateToDone(tCExecution.getQueueID(), "", runID);
+
+            /**
+             * Retry management, in case the result is not OK, we execute the
+             * job again reducing the retry to 1.
+             */
+            if (tCExecution.getNumberOfRetries() > 0
                     && !tCExecution.getResultMessage().getCodeString().equals("OK")
                     && !tCExecution.getResultMessage().getCodeString().equals("NE")) {
                 TestCaseExecutionQueue newExeQueue = tCExecution.getTestCaseExecutionQueue();
@@ -661,9 +666,10 @@ public class ExecutionRunService implements IExecutionRunService {
                 newExeQueue.setRetries(newExeQueue.getRetries() - 1);
                 // Insert execution to the Queue.
                 executionQueueService.create(newExeQueue);
-                // Trigger the consumtion of the queue.
-                executionThreadPoolService.executeNextInQueue();
             }
+
+            // After every execution finished we try to trigger more from the queue;-).
+            executionThreadPoolService.executeNextInQueue(false);
 
         }
 

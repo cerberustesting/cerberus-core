@@ -45,10 +45,6 @@
         <servlet-class>org.cerberus.servlet.zzpublic.RunTestCase</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>RunExecutionInQueue</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.testexecution.RunExecutionInQueue</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>GetTestCaseList</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.test.GetTestCaseList</servlet-class>
     </servlet>
@@ -207,18 +203,6 @@
     <servlet>
         <servlet-name>GetConnectionPoolName</servlet-name>
         <servlet-class>org.cerberus.servlet.GetConnectionPoolName</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>ReadExecutionPool</servlet-name>
-        <servlet-class>org.cerberus.servlet.engine.threadpool.ReadExecutionPool</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>ReadExecutionPools</servlet-name>
-        <servlet-class>org.cerberus.servlet.engine.threadpool.ReadExecutionPools</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>ManageExecutionPool</servlet-name>
-        <servlet-class>org.cerberus.servlet.engine.threadpool.ManageExecutionPool</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ReadTestCaseExecutionMedia</servlet-name>
@@ -977,10 +961,6 @@
         <servlet-class>org.cerberus.servlet.crud.testexecution.CreateTestCaseExecutionQueue</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>UpdateExecutionInQueueState</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.testexecution.UpdateExecutionInQueueState</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>DummyRESTCall</servlet-name>
         <servlet-class>org.cerberus.servlet.dummy.DummyRESTCall</servlet-class>
     </servlet>
@@ -995,10 +975,6 @@
     <servlet-mapping>
         <servlet-name>RunTestCase</servlet-name>
         <url-pattern>/RunTestCase</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>RunExecutionInQueue</servlet-name>
-        <url-pattern>/RunExecutionInQueue</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>DocumentationField</servlet-name>
@@ -1131,18 +1107,6 @@
     <servlet-mapping>
         <servlet-name>GetConnectionPoolName</servlet-name>
         <url-pattern>/GetConnectionPoolName</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>ReadExecutionPool</servlet-name>
-        <url-pattern>/ReadExecutionPool</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>ReadExecutionPools</servlet-name>
-        <url-pattern>/ReadExecutionPools</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>ManageExecutionPool</servlet-name>
-        <url-pattern>/ManageExecutionPool</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ReadTestCaseExecutionMedia</servlet-name>
@@ -1921,17 +1885,13 @@
         <url-pattern>/CreateTestCaseExecutionQueue</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>UpdateExecutionInQueueState</servlet-name>
-        <url-pattern>/UpdateExecutionInQueueState</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>DummyRESTCall</servlet-name>
         <url-pattern>/DummyRESTCall</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>UpdateTestCaseExecutionQueue</servlet-name>
         <url-pattern>/UpdateTestCaseExecutionQueue</url-pattern>
-    </servlet-mapping>    
+    </servlet-mapping>
     <session-config>
         <session-timeout>60</session-timeout>
     </session-config>

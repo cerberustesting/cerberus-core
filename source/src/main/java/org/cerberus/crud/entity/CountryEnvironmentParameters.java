@@ -19,117 +19,10 @@
  */
 package org.cerberus.crud.entity;
 
-import org.cerberus.util.StringUtil;
-import org.cerberus.util.validity.Validable;
-import org.cerberus.util.validity.Validity;
-
 /**
  * @author bcivel
  */
 public class CountryEnvironmentParameters {
-
-    public static class Key implements Validable {
-
-        public static Key fromCountryEnvironmentParameters(CountryEnvironmentParameters countryEnvironmentParameters) {
-            return new Key(
-                    countryEnvironmentParameters.getSystem(),
-                    countryEnvironmentParameters.getApplication(),
-                    countryEnvironmentParameters.getCountry(),
-                    countryEnvironmentParameters.getEnvironment()
-            );
-        }
-
-        private String system;
-
-        private String application;
-
-        private String country;
-
-        private String environment;
-
-        /**
-         * For (de)serialization purpose
-         */
-        private Key() {
-
-        }
-
-        public Key(String system, String application, String country, String environment) {
-            this.system = system;
-            this.application = application;
-            this.country = country;
-            this.environment = environment;
-        }
-
-
-        public String getSystem() {
-            return system;
-        }
-
-        public String getApplication() {
-            return application;
-        }
-
-        public String getCountry() {
-            return country;
-        }
-
-        public String getEnvironment() {
-            return environment;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            Key key = (Key) o;
-
-            if (system != null ? !system.equals(key.system) : key.system != null) return false;
-            if (application != null ? !application.equals(key.application) : key.application != null)
-                return false;
-            if (country != null ? !country.equals(key.country) : key.country != null) return false;
-            return environment != null ? environment.equals(key.environment) : key.environment == null;
-
-        }
-
-        @Override
-        public int hashCode() {
-            int result = system != null ? system.hashCode() : 0;
-            result = 31 * result + (application != null ? application.hashCode() : 0);
-            result = 31 * result + (country != null ? country.hashCode() : 0);
-            result = 31 * result + (environment != null ? environment.hashCode() : 0);
-            return result;
-        }
-
-        @Override
-        public String toString() {
-            return "Key{" +
-                    "system='" + system + '\'' +
-                    ", application='" + application + '\'' +
-                    ", country='" + country + '\'' +
-                    ", environment='" + environment + '\'' +
-                    '}';
-        }
-
-        @Override
-        public Validity validate() {
-            final Validity.Builder validity = Validity.builder();
-            if (StringUtil.isNullOrEmpty(system)) {
-                validity.reason("null or empty `system`");
-            }
-            if (StringUtil.isNullOrEmpty(application)) {
-                validity.reason("null or empty `application`");
-            }
-            if (StringUtil.isNullOrEmpty(country)) {
-                validity.reason("null or empty `country`");
-            }
-            if (StringUtil.isNullOrEmpty(environment)) {
-                validity.reason("null or empty `environment`");
-            }
-            return validity.build();
-        }
-    }
 
     private String system;
     private String country;
@@ -144,6 +37,11 @@ public class CountryEnvironmentParameters {
     private String var3;
     private String var4;
     private int poolSize;
+
+    /**
+     * Invariant ACTION String.
+     */
+    public static final int DEFAULT_POOLSIZE = 10;
 
     public String getApplication() {
         return application;

@@ -73,6 +73,16 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
     }
 
     @Override
+    public AnswerList readQueueToTreat() throws CerberusException {
+        return testCaseExecutionInQueueDAO.readQueueToTreat();
+    }
+
+    @Override
+    public AnswerList readQueueRunning() throws CerberusException {
+        return testCaseExecutionInQueueDAO.readQueueRunning();
+    }
+
+    @Override
     public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
         return testCaseExecutionInQueueDAO.readByCriteria(start, amount, column, dir, searchTerm, individualSearch);
     }
@@ -116,38 +126,23 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
     }
 
     @Override
-    public void updateToWaiting(long id) throws CerberusException {
-        testCaseExecutionInQueueDAO.updateToWaiting(id);
+    public Answer updateToQueued(long id, String comment) {
+        return testCaseExecutionInQueueDAO.updateToQueued(id, comment);
     }
 
     @Override
-    public List<Long> updateToWaiting(final List<Long> ids) throws CerberusException {
-        return testCaseExecutionInQueueDAO.updateToWaiting(ids);
+    public boolean updateToWaiting(final Long id) throws CerberusException {
+        return testCaseExecutionInQueueDAO.updateToWaiting(id);
     }
 
     @Override
-    public Answer updateToWaiting(long id, String comment) {
-        return testCaseExecutionInQueueDAO.updateToWaiting(id, comment);
+    public void updateToStarting(long id) throws CerberusException {
+        testCaseExecutionInQueueDAO.updateToStarting(id);
     }
 
     @Override
-    public List<TestCaseExecutionQueue> updateToQueued() throws CerberusException {
-        return testCaseExecutionInQueueDAO.updateToQueued(ITestCaseExecutionQueueDAO.UNLIMITED_FETCH_SIZE);
-    }
-
-    @Override
-    public List<TestCaseExecutionQueue> updateToQueued(int maxFetchSize) throws CerberusException {
-        return testCaseExecutionInQueueDAO.updateToQueued(maxFetchSize);
-    }
-
-    @Override
-    public List<TestCaseExecutionQueue> updateToQueued(final List<Long> ids) throws CerberusException {
-        return testCaseExecutionInQueueDAO.updateToQueued(ids);
-    }
-
-    @Override
-    public void updateToExecuting(long id) throws CerberusException {
-        testCaseExecutionInQueueDAO.updateToExecuting(id);
+    public void updateToExecuting(long id, String comment, long exeId) throws CerberusException {
+        testCaseExecutionInQueueDAO.updateToExecuting(id, comment, exeId);
     }
 
     @Override
@@ -158,16 +153,6 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
     @Override
     public void updateToDone(long id, String comment, long exeId) throws CerberusException {
         testCaseExecutionInQueueDAO.updateToDone(id, comment, exeId);
-    }
-
-    @Override
-    public void updateToCancelled1(long id, String comment) throws CerberusException {
-        testCaseExecutionInQueueDAO.updateToCancelled1(id, comment);
-    }
-
-    @Override
-    public List<Long> updateToCancelled(final List<Long> ids) throws CerberusException {
-        return testCaseExecutionInQueueDAO.updateToCancelled(ids);
     }
 
     @Override

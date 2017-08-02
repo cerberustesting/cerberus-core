@@ -81,6 +81,18 @@ public interface ITestCaseExecutionQueueDAO {
 
     /**
      *
+     * @return @throws CerberusException
+     */
+    public AnswerList readQueueToTreat() throws CerberusException;
+
+    /**
+     *
+     * @return @throws CerberusException
+     */
+    public AnswerList readQueueRunning() throws CerberusException;
+
+    /**
+     *
      * @param start
      * @param amount
      * @param column
@@ -193,30 +205,31 @@ public interface ITestCaseExecutionQueueDAO {
      * @param comment
      * @return
      */
-    Answer updateToWaiting(long id, String comment);
+    Answer updateToQueued(long id, String comment);
 
     /**
      *
-     * @param maxFetchSize
+     * @param id
      * @return
      * @throws CerberusException
      */
-    List<TestCaseExecutionQueue> updateToQueued(int maxFetchSize) throws CerberusException;
-
-    /**
-     *
-     * @param ids
-     * @return
-     * @throws CerberusException
-     */
-    List<TestCaseExecutionQueue> updateToQueued(List<Long> ids) throws CerberusException;
+    boolean updateToWaiting(final Long id) throws CerberusException;
 
     /**
      *
      * @param id
      * @throws CerberusException
      */
-    void updateToExecuting(long id) throws CerberusException;
+    void updateToStarting(long id) throws CerberusException;
+
+    /**
+     *
+     * @param id
+     * @param comment
+     * @param exeId
+     * @throws CerberusException
+     */
+    void updateToExecuting(long id, String comment, long exeId) throws CerberusException;
 
     /**
      *
@@ -234,22 +247,6 @@ public interface ITestCaseExecutionQueueDAO {
      * @throws CerberusException
      */
     void updateToDone(long id, String comment, long exeId) throws CerberusException;
-
-    /**
-     *
-     * @param id
-     * @param comment
-     * @throws CerberusException
-     */
-    void updateToCancelled1(long id, String comment) throws CerberusException;
-
-    /**
-     *
-     * @param ids
-     * @return
-     * @throws CerberusException
-     */
-    List<Long> updateToCancelled(List<Long> ids) throws CerberusException;
 
     /**
      *

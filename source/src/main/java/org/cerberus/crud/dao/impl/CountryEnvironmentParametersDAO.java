@@ -57,11 +57,6 @@ import org.cerberus.util.answer.AnswerItem;
 @Repository
 public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParametersDAO {
 
-
-    private static final String DEFAULT_POOL_SIZE_PARAMETER_KEY = "cerberus_execution_threadpool_size";
-
-    private static final int DEFAULT_POOL_SIZE_VALUE = 10;
-
     @Autowired
     private DatabaseSpring databaseSpring;
     @Autowired
@@ -92,7 +87,7 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
             LOG.debug("SQL.param.environment : " + environment);
             LOG.debug("SQL.param.application : " + application);
         }
-        
+
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
@@ -160,7 +155,7 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
             LOG.debug("SQL.param.application : " + application);
             LOG.debug("SQL.param.country : " + country);
         }
-        
+
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
@@ -221,7 +216,7 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
             LOG.debug("SQL.param.environment : " + ParameterParserUtil.wildcardIfEmpty(countryEnvironmentParameter.getEnvironment()));
             LOG.debug("SQL.param.application : " + ParameterParserUtil.wildcardIfEmpty(countryEnvironmentParameter.getApplication()));
         }
-        
+
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -327,7 +322,7 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
             LOG.debug("SQL.param.environment : " + environment);
             LOG.debug("SQL.param.application : " + application);
         }
-        
+
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -602,19 +597,7 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
         String var3 = resultSet.getString("cea.Var3");
         String var4 = resultSet.getString("cea.Var4");
         int poolSize = resultSet.getInt("cea.poolSize");
-        if (resultSet.wasNull()) {
-            poolSize = getDefaultPoolSize();
-        }
         return factoryCountryEnvironmentParameters.create(system, count, env, application, ip, domain, url, urllogin, var1, var2, var3, var4, poolSize);
-    }
-
-    @Override
-    public int getDefaultPoolSize() {
-        return parameterService.getParameterIntegerByKey(
-                DEFAULT_POOL_SIZE_PARAMETER_KEY,
-                IParameterService.DEFAULT_SYSTEM,
-                DEFAULT_POOL_SIZE_VALUE
-        );
     }
 
 }

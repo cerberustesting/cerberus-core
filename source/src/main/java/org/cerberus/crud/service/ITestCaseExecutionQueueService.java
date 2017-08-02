@@ -75,6 +75,18 @@ public interface ITestCaseExecutionQueueService {
 
     /**
      *
+     * @return @throws CerberusException
+     */
+    public AnswerList readQueueToTreat() throws CerberusException;
+
+    /**
+     *
+     * @return @throws CerberusException
+     */
+    public AnswerList readQueueRunning() throws CerberusException;
+
+    /**
+     *
      * @param start
      * @param amount
      * @param column
@@ -167,20 +179,7 @@ public interface ITestCaseExecutionQueueService {
      */
     Answer update(TestCaseExecutionQueue object);
 
-    /**
-     *
-     * @param id
-     * @throws CerberusException
-     */
-    void updateToWaiting(long id) throws CerberusException;
 
-    /**
-     *
-     * @param ids
-     * @return
-     * @throws CerberusException
-     */
-    List<Long> updateToWaiting(List<Long> ids) throws CerberusException;
 
     /**
      *
@@ -188,36 +187,34 @@ public interface ITestCaseExecutionQueueService {
      * @param comment
      * @return
      */
-    Answer updateToWaiting(long id, String comment);
+    Answer updateToQueued(long id, String comment);
+
+
+
 
     /**
      *
-     * @return @throws CerberusException
-     */
-    List<TestCaseExecutionQueue> updateToQueued() throws CerberusException;
-
-    /**
-     *
-     * @param maxFetchSize
+     * @param id
      * @return
      * @throws CerberusException
      */
-    List<TestCaseExecutionQueue> updateToQueued(int maxFetchSize) throws CerberusException;
-
+    boolean updateToWaiting(final Long id) throws CerberusException;
+    
     /**
      *
-     * @param ids
-     * @return
+     * @param id
+     * @param comment
+     * @param exeId
      * @throws CerberusException
      */
-    List<TestCaseExecutionQueue> updateToQueued(List<Long> ids) throws CerberusException;
+    void updateToExecuting(long id, String comment, long exeId) throws CerberusException;
 
     /**
      *
      * @param id
      * @throws CerberusException
      */
-    void updateToExecuting(long id) throws CerberusException;
+    void updateToStarting(long id) throws CerberusException;
 
     /**
      *
@@ -236,21 +233,7 @@ public interface ITestCaseExecutionQueueService {
      */
     void updateToDone(long id, String comment, long exeId) throws CerberusException;
 
-    /**
-     *
-     * @param id
-     * @param comment
-     * @throws CerberusException
-     */
-    void updateToCancelled1(long id, String comment) throws CerberusException;
 
-    /**
-     *
-     * @param ids
-     * @return
-     * @throws CerberusException
-     */
-    List<Long> updateToCancelled(List<Long> ids) throws CerberusException;
 
     /**
      *

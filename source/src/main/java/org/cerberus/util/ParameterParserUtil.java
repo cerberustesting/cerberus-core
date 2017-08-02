@@ -103,8 +103,7 @@ public final class ParameterParserUtil {
     /**
      * @param inParam
      * @param defaultVal
-     * @return an empty string if the inParam is null. It returns
-     * inParam if OK.
+     * @return an empty string if the inParam is null. It returns inParam if OK.
      */
     public static String parseStringParam(String inParam, String defaultVal) {
         if (inParam != null) {
@@ -254,13 +253,32 @@ public final class ParameterParserUtil {
 
     /**
      * @param inParam
+     * @param defaultVal
      * @return 0 if the inParam is empty or null. It returns inParam converted
      * to Integer if OK.
      * @throws NumberFormatException if inParam isn't numeric
      */
     public static int parseIntegerParam(String inParam, int defaultVal) {
         if (inParam != null && inParam.compareTo("") != 0) {
-            return Integer.valueOf(inParam);
+            try {
+                return Integer.valueOf(inParam);
+            } catch (NumberFormatException nfe) {
+                return defaultVal;
+            }
+        }
+        return defaultVal;
+    }
+
+    /**
+     * @param inParam
+     * @param defaultVal
+     * @return 0 if the inParam is empty or null. It returns inParam converted
+     * to Integer if OK.
+     * @throws NumberFormatException if inParam isn't numeric
+     */
+    public static int parseIntegerParam(Integer inParam, int defaultVal) {
+        if (inParam != null) {
+            return inParam;
         }
         return defaultVal;
     }

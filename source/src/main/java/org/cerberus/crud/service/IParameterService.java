@@ -49,7 +49,7 @@ public interface IParameterService extends Observable<String, Parameter> {
     Parameter findParameterByKey(String key, String system) throws CerberusException;
 
     /**
-     * This method can be used in order to retreive a parameter directly in
+     * This method can be used in order to retrieve a parameter directly in
      * boolean format.
      *
      * @param key
@@ -60,7 +60,7 @@ public interface IParameterService extends Observable<String, Parameter> {
     boolean getParameterBooleanByKey(String key, String system, boolean defaultValue);
 
     /**
-     * This method can be used in order to retreive a parameter directly in
+     * This method can be used in order to retrieve a parameter directly in
      * integer format.
      *
      * @param key
@@ -71,7 +71,7 @@ public interface IParameterService extends Observable<String, Parameter> {
     Integer getParameterIntegerByKey(String key, String system, Integer defaultValue);
 
     /**
-     * This method can be used in order to retreive a parameter directly in long
+     * This method can be used in order to retrieve a parameter directly in long
      * format.
      *
      * @param key
@@ -82,7 +82,7 @@ public interface IParameterService extends Observable<String, Parameter> {
     long getParameterLongByKey(String key, String system, long defaultValue);
 
     /**
-     * This method can be used in order to retreive a parameter directly in
+     * This method can be used in order to retrieve a parameter directly in
      * float format.
      *
      * @param key
@@ -93,7 +93,7 @@ public interface IParameterService extends Observable<String, Parameter> {
     float getParameterFloatByKey(String key, String system, float defaultValue);
 
     /**
-     * This method can be used in order to retreive a parameter directly in
+     * This method can be used in order to retrieve a parameter directly in
      * String format.
      *
      * @param key

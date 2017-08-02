@@ -28,12 +28,12 @@ function initPage() {
 
     displayPageLabel();
 
-    // Display queue information
-    drawQueueInformation();
+    displayAndRefresh_followup();
+
 
     // Display table
     var configurations = new TableConfigurationsServerSide("executionsTable", "ReadTestCaseExecutionQueue", "contentTable", aoColumnsFunc("executionsTable"), [1, 'desc'], [10, 25, 50, 100, 200, 500]);
-    var table = createDataTableWithPermissions(configurations, renderOptionsForApplication, "#executionList", undefined, true);
+    var table = createDataTableWithPermissions(configurations, renderOptionsForExeQueue, "#executionList", undefined, true);
 
     if (searchS !== null) {
         table.search(searchS).draw();
@@ -63,11 +63,91 @@ function initPage() {
             case "#tabDetails":
                 refreshTable();
                 break;
-            case "#tabSummary":
-                refreshQueueInformation();
+            case "#tabFollowUp":
+                displayAndRefresh_followup();
+                break;
+            case "#tabJobStatus":
+                displayAndRefresh_jobStatus();
                 break;
         }
     });
+}
+
+function displayAndRefresh_followup() {
+    // Display table
+    var jqxhr = $.getJSON("ReadTestCaseExecutionQueue?flag=queueStatus");
+    $.when(jqxhr).then(function (data) {
+        var obj = data["contentTable"];
+
+        /* TESTCASE */
+
+        var array = [];
+
+        $.each(obj, function (e) {
+
+            array.push(
+                    [obj[e].contrainId, obj[e].system, obj[e].environment, obj[e].country, obj[e].application, obj[e].robot, obj[e].nbRunning, obj[e].nbPoolSize, obj[e].nbInQueue]
+                    );
+        });
+
+        if ($("#followUpTableList #followUpTable_wrapper").length > 0) {
+            $("#followUpTableList #followUpTable").DataTable().clear();
+            $("#followUpTableList #followUpTable").DataTable().rows.add(array).draw();
+        } else {
+            var configurations1 = new TableConfigurationsClientSide("followUpTable", array, aoColumnsFunc_followUp(), true);
+            createDataTableWithPermissions(configurations1, undefined, "#followUpTableList", undefined, true);
+        }
+    });
+
+
+}
+
+function displayAndRefresh_jobStatus() {
+    // Display table
+    var jqxhr = $.getJSON("ExecuteNextInQueue");
+    $.when(jqxhr).then(function (data) {
+        var obj = data;
+
+        $("#jobRunning").val(data["jobStart"]);
+        $("#jobStart").val(data["jobRunning"]);
+    });
+}
+
+function forceExecution() {
+    // Display table
+    var jqxhr = $.getJSON("ExecuteNextInQueue?forceExecution=Y");
+    $.when(jqxhr).then(function (data) {
+        var obj = data;
+
+        $("#jobRunning").val(data["jobStart"]);
+        $("#jobStart").val(data["jobRunning"]);
+    });
+}
+
+function renderOptionsForExeQueue(data) {
+    if ($("#blankSpace").length === 0) {
+        var doc = new Doc();
+        var contentToAdd = "<div class='marginBottom10' style='height:34px;' id='blankSpace'>";
+        contentToAdd += "<button id='createBrpMassButton' type='button' class='btn btn-default'><span class='glyphicon glyphicon-th-list'></span> " + doc.getDocLabel("page_global", "button_massAction") + "</button>";
+        contentToAdd += "<button id='refreshExecutionButton' type='button' class='btn btn-default'><span class='glyphicon glyphicon-refresh'></span> " + doc.getDocLabel("page_global", "refresh") + "</button>";
+        contentToAdd += "<button id='selectPendingButton' type='button' class='btn btn-default'>" + doc.getDocLabel("page_testcaseexecutionqueue", "button_filterPending") + "</button>";
+        contentToAdd += "<button id='selectRunningButton' type='button' class='btn btn-default'>" + doc.getDocLabel("page_testcaseexecutionqueue", "button_filterExecuting") + "</button>";
+        contentToAdd += "</div>";
+
+        $("#executionsTable_wrapper div#executionsTable_length").before(contentToAdd);
+        $('#executionList #createBrpMassButton').click(massActionClick);
+        $('#executionList #refreshExecutionButton').click(refreshTable);
+        $('#executionList #selectPendingButton').click(filterPending);
+        $('#executionList #selectRunningButton').click(filterERunning);
+    }
+}
+
+function filterPending() {
+    filterOnColumn("executionsTable", "state", "QUEUED");
+}
+
+function filterERunning() {
+    filterOnColumn("executionsTable", "state", "EXECUTING,STARTING,WAITING");
 }
 
 function displayPageLabel() {
@@ -79,18 +159,6 @@ function displayPageLabel() {
 
     displayFooter(doc);
     displayGlobalLabel(doc);
-}
-
-function renderOptionsForApplication(data) {
-    if ($("#blankSpace").length === 0) {
-        var doc = new Doc();
-        var contentToAdd = "<div class='marginBottom10' style='height:34px;' id='blankSpace'>";
-        contentToAdd += "<button id='createBrpMassButton' type='button' class='btn btn-default'><span class='glyphicon glyphicon-th-list'></span> " + doc.getDocLabel("page_global", "button_massAction") + "</button>";
-        contentToAdd += "</div>";
-
-        $("#executionsTable_wrapper div#executionsTable_length").before(contentToAdd);
-        $('#executionList #createBrpMassButton').click(massActionClick);
-    }
 }
 
 function selectAll() {
@@ -123,7 +191,7 @@ function massActionModalSaveHandler_submit() {
 
     showLoaderInModal('#massActionExeQModal');
 
-    var jqxhr = $.post("UpdateTestCaseExecutionQueue", paramSerialized + "&actionState=toWAITING", "json");
+    var jqxhr = $.post("UpdateTestCaseExecutionQueue", paramSerialized + "&actionState=toQUEUED", "json");
     $.when(jqxhr).then(function (data) {
         // unblock when remote call returns 
         hideLoaderInModal('#massActionExeQModal');
@@ -207,178 +275,14 @@ function refreshTable() {
     getTable().fnDraw();
 }
 
-function refreshQueueInformation() {
-    clearQueueInformation();
-    drawQueueInformation();
-}
-
-function clearQueueInformation() {
-    $('#statusChart').empty();
-}
-
-function drawQueueInformation() {
-
-    var jqxhr = $.get("ReadExecutionPools");
-    $.when(jqxhr).then(function (data) {
-        //var messageType = getAlertType(data.messageType);
-        //if (messageType === "success") {
-        //redraw the datatable
-        for (var inc = 0; inc < data.length; inc++) {
-            generatePie("statusChart", inc, data[inc]);
-        }
-        //}
-        //show message in the main page
-        //showMessageMainPage(messageType, data.message, false);
-        //close confirmation window
-        //$('#confirmationModal').modal('hide');
-    }).fail(handleErrorAjaxAfterTimeout);
-}
-
 function filterAndDisplayTable(poolId) {
     filterTable(poolId);
     displayTable();
 }
 
-function filterTable(poolId) {
-    $.getJSON({
-        url: "ReadExecutionPool",
-        data: "system=" + poolId.system + "&application=" + poolId.application + "&country=" + poolId.country + "&environment=" + poolId.environment,
-        success: function (data) {
-            // Get associated execution ids from pool
-            var associcatedIds = [];
-            data.EXECUTING.forEach(function (exec) {
-                associcatedIds.push(exec.toExecute.id);
-            });
-            data.QUEUED.forEach(function (exec) {
-                associcatedIds.push(exec.toExecute.id);
-            });
-
-            if (associcatedIds.length == 0) {
-                resetTableFilters();
-                showMessage({
-                    messageType: 'WARNING',
-                    message: 'Execution pool is empty, showing the whole table'
-                });
-            } else {
-                // Apply filter
-                applyFiltersOnMultipleColumns(
-                        'executionsTable',
-                        [
-                            {
-                                param: 'id',
-                                values: associcatedIds
-                            }
-                        ]
-                        );
-                refreshTable();
-            }
-        },
-        error: handleErrorAjaxAfterTimeout
-    });
-}
-
 function displayTable() {
     $('.nav-tabs a[href="#tabDetails"]').tab('show');
 }
-
-/**
- * Generate Pie generate a pie chart and append it to the defined element.
- * @param {type} elementid : ID of the div where the pie will be included
- * @param {type} name : Name of the queue
- * @param {type} poolSize : Size of the Pool
- * @param {type} inExecution : Number of current execution
- * @param {type} remaining : Number remaining executions in queue
- * @returns {undefined}
- */
-function generatePie(root, id, data) {
-    var width = 130;
-    var height = 130;
-    var margin = {
-        horizontal: 50,
-        vertical: 50
-    };
-    var totalWidth = width + margin.horizontal;
-    var totalHeight = height + margin.vertical;
-
-    var container = $('<div/>')
-            .attr('id', root + id)
-            .attr('role', 'button')
-            .addClass('pie')
-            .css('width', totalWidth)
-            .css('height', totalHeight);
-    container.click(function () {
-        filterAndDisplayTable(data.id);
-    });
-    $('#' + root).append(container);
-
-    /**
-     * Generate data object which is an array of 2 objects that contains 
-     * attributes value and color
-     */
-    var colors = [{"color": "#3498DB", "value": data.inExecution},
-        {"color": "#eee", "value": data.poolSize - data.inExecution}];
-
-    var radius = Math.min(width, height) / 2;
-
-    var svg = d3.select('#' + root + id)
-            .append('svg')
-            .attr('width', totalHeight)
-            .attr('height', totalHeight)
-            .append('g')
-            .attr('transform', 'translate(' + ((totalWidth) / 2) + ',' + ((totalHeight) / 2) + ')');
-
-    var arc = d3.svg.arc()
-            .outerRadius(radius)
-            .innerRadius(radius - 10);
-
-    var pie = d3.layout.pie()
-            .value(function (d) {
-                return d.value;
-            })
-            .sort(null);
-
-    svg.append("text")
-            .attr("dy", "-7.1em")
-            .style("text-anchor", "middle")
-            .attr("class", "primary-name")
-            .text(function (d) {
-                return data.id.application;
-            });
-    svg.append("text")
-            .attr("dy", "-7.2em")
-            .style("text-anchor", "middle")
-            .attr("class", "secondary-name")
-            .text(function (d) {
-                return '(' + data.id.country + ' - ' + data.id.environment + ')';
-            });
-    svg.append("text")
-            .style("text-anchor", "middle")
-            .attr("dy", "+0.2em")
-            .attr("class", "count")
-            .text(function (d) {
-                return data.inExecution + '/' + data.poolSize;
-            });
-    if (data.remaining > 0) {
-        svg.append("text")
-                .attr("dy", "+1.9em")
-                .style("text-anchor", "middle")
-                .attr("class", "remaining")
-                .text(function (d) {
-                    return '(+ ' + data.remaining + ')';
-                });
-    }
-
-    var path = svg.selectAll('path')
-            .data(pie(colors))
-            .enter()
-            .append('path')
-            .attr('d', arc)
-            .attr('fill', function (d, i) {
-                return d.data.color;
-            });
-
-}
-
 
 function aoColumnsFunc(tableId) {
     var doc = new Doc();
@@ -430,7 +334,7 @@ function aoColumnsFunc(tableId) {
                             <span class="glyphicon glyphicon-duplicate"></span></button>';
 
                 var buttons = "";
-                if ((hasPermissions) && ((oObj.state === "ERROR") || (oObj.state === "CANCELLED"))) {
+                if ((hasPermissions) && ((oObj.state === "ERROR") || (oObj.state === "CANCELLED") || (oObj.state === "QUEUED"))) {
                     buttons += editElement;
                 } else {
                     buttons += viewElement;
@@ -691,3 +595,47 @@ function aoColumnsFunc(tableId) {
     return aoColumns;
 }
 
+function aoColumnsFunc_followUp() {
+    var doc = new Doc();
+    var aoColumns = [
+        {"data": "0", "sName": "constrainsId", "title": doc.getDocLabel("page_testcaseexecutionqueue", "constrain")},
+        {"data": "1", "sName": "system", "title": doc.getDocLabel("invariant", "SYSTEM")},
+        {"data": "2", "sName": "environment", "title": doc.getDocLabel("invariant", "ENVIRONMENT")},
+        {"data": "3", "sName": "country", "title": doc.getDocLabel("invariant", "COUNTRY")},
+        {"data": "4", "sName": "application", "title": doc.getDocLabel("application", "Application")},
+        {"data": "5", "sName": "robot", "title": doc.getDocLabel("robot", "robot")},
+        {"data": "6", "sName": "nbRunning", "title": doc.getDocLabel("page_testcaseexecutionqueue", "nbRunning")},
+        {"data": "7", "sName": "nbPoolSize", "title": doc.getDocLabel("page_testcaseexecutionqueue", "nbPoolSize")},
+        {"data": "8", "sName": "nbInQueue", "title": doc.getDocLabel("page_testcaseexecutionqueue", "nbInQueue")},
+        {
+            "data": null, "sName": "saturation", "title": doc.getDocLabel("page_testcaseexecutionqueue", "saturation"),
+            "mRender": function (data, type, obj) {
+                var saturation_level;
+                var satcolor;
+                if (obj[7] > 0) {
+                    saturation_level = (obj[6] / obj[7]) * 100;
+                } else {
+                    saturation_level = 0;
+                }
+                if (saturation_level > 90) {
+                    satcolor = "#D9534F";
+                } else {
+                    satcolor = "#5CB85C";
+                }
+                return "<div class='progress-bar' role='progressbar' style='width:" + saturation_level + "%; background-color: " + satcolor + ";'>" + saturation_level + "%</div>";
+
+            }
+        },
+        {
+            "data": null, "sName": "oversaturation", "title": doc.getDocLabel("page_testcaseexecutionqueue", "oversaturation"),
+            "mRender": function (data, type, obj) {
+                if ((obj[7] > 0) && ((obj[6] >= obj[7]))) {
+                    return obj[8];
+                } else {
+                    return 0;
+                }
+            }
+        }
+    ];
+    return aoColumns;
+}

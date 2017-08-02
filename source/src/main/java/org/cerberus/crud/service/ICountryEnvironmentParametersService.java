@@ -26,13 +26,12 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
-import org.cerberus.util.observe.Observable;
 
 /**
  *
  * @author bcivel
  */
-public interface ICountryEnvironmentParametersService extends Observable<CountryEnvironmentParameters.Key, CountryEnvironmentParameters> {
+public interface ICountryEnvironmentParametersService {
 
     /**
      *
@@ -43,8 +42,6 @@ public interface ICountryEnvironmentParametersService extends Observable<Country
      * @return
      */
     AnswerItem<CountryEnvironmentParameters> readByKey(String system, String country, String environment, String application);
-
-    AnswerItem<Integer> readPoolSizeByKey(String system, String country, String environment, String application);
 
     /**
      *
@@ -163,7 +160,5 @@ public interface ICountryEnvironmentParametersService extends Observable<Country
      * @throws CerberusException
      */
     void convert(Answer answer) throws CerberusException;
-
-    int defaultPoolSize();
 
 }

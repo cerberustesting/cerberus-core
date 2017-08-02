@@ -226,7 +226,7 @@ public class ExecutionStartService implements IExecutionStartService {
                 throw new CerberusException(mes);
             } else {
                 CountryEnvironmentParameters cea;
-                cea = this.factorycountryEnvironmentParameters.create(tCExecution.getApplicationObj().getSystem(), tCExecution.getCountry(), tCExecution.getEnvironment(), tCExecution.getApplicationObj().getApplication(), tCExecution.getMyHost(), "", tCExecution.getMyContextRoot(), tCExecution.getMyLoginRelativeURL(), "", "", "", "", countryEnvironmentParametersService.defaultPoolSize());
+                cea = this.factorycountryEnvironmentParameters.create(tCExecution.getApplicationObj().getSystem(), tCExecution.getCountry(), tCExecution.getEnvironment(), tCExecution.getApplicationObj().getApplication(), tCExecution.getMyHost(), "", tCExecution.getMyContextRoot(), tCExecution.getMyLoginRelativeURL(), "", "", "", "", CountryEnvironmentParameters.DEFAULT_POOLSIZE);
                 cea.setIp(tCExecution.getMyHost());
                 cea.setUrl(tCExecution.getMyContextRoot());
 //                tCExecution.setUrl(cea.getIp()+ cea.getUrl());
@@ -442,7 +442,7 @@ public class ExecutionStartService implements IExecutionStartService {
                 executionUUIDObject.setExecutionUUID(tCExecution.getExecutionUUID(), tCExecution);
                 // Update Queue Execution here if QueueID =! 0.
                 if (tCExecution.getQueueID() != 0) {
-                    inQueueService.updateToDone(tCExecution.getQueueID(), "", runID);
+                    inQueueService.updateToExecuting(tCExecution.getQueueID(), "", runID);
                 }
 
             } else {

@@ -19,19 +19,30 @@
  */
 package org.cerberus.servlet.zzpublic;
 
-import org.apache.log4j.Logger;
-import org.cerberus.engine.threadpool.IExecutionThreadPoolService;
-import org.cerberus.exception.CerberusException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.context.support.WebApplicationContextUtils;
-
+import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import org.apache.log4j.Logger;
+import org.cerberus.crud.service.IMyVersionService;
+import org.cerberus.engine.entity.MessageEvent;
+import org.cerberus.engine.threadpool.IExecutionThreadPoolService;
+import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.exception.CerberusException;
+import org.cerberus.servlet.crud.testexecution.ReadTestCaseExecutionQueue;
+import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerUtil;
+import org.cerberus.util.servlet.ServletUtil;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.owasp.html.PolicyFactory;
+import org.owasp.html.Sanitizers;
+import org.springframework.context.ApplicationContext;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  * Executes the next test case contained into the execution queue.
@@ -53,22 +64,62 @@ public class ExecuteNextInQueue extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     private IExecutionThreadPoolService threadPoolService;
+    private IMyVersionService myVersionService;
 
     @Override
     public void init() throws ServletException {
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         threadPoolService = appContext.getBean(IExecutionThreadPoolService.class);
+        myVersionService = appContext.getBean(IMyVersionService.class);
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        try {
-            threadPoolService.executeNextInQueue(1);
-            resp.setStatus(HttpStatus.OK.value());
-        } catch (CerberusException e) {
-            LOG.warn("Unable to execute next in queue", e);
-            resp.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        JSONObject jsonResponse = new JSONObject();
+        Answer answer = new Answer();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+        answer.setResultMessage(msg);
+        PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
+        String charset = request.getCharacterEncoding();
+
+        response.setContentType("application/json");
+
+        // Calling Servlet Transversal Util.
+        ServletUtil.servletStart(request);
+
+        boolean forceExecution = ParameterParserUtil.parseBooleanParamAndDecode(request.getParameter("forceExecution"), false, charset);
+
+        if (forceExecution) {
+            try {
+                threadPoolService.executeNextInQueue(true);
+                response.setStatus(HttpStatus.OK.value());
+            } catch (CerberusException e) {
+                LOG.warn("Unable to execute next in queue", e);
+                response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            }
         }
+
+        try {
+
+            String jobRunning = myVersionService.getMyVersionStringByKey("queueprocessingjobrunning", "");
+            jsonResponse.put("jobRunning", jobRunning);
+
+            String jobStart = myVersionService.getMyVersionStringByKey("queueprocessingjobstart", "");
+            jsonResponse.put("jobStart", jobStart);
+
+            jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
+            jsonResponse.put("message", answer.getResultMessage().getDescription());
+
+            response.getWriter().print(jsonResponse.toString());
+
+        } catch (JSONException e) {
+            org.apache.log4j.Logger.getLogger(ReadTestCaseExecutionQueue.class.getName()).log(org.apache.log4j.Level.ERROR, null, e);
+            //returns a default error message with the json format that is able to be parsed by the client-side
+            response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
+        }
+
     }
 
 }

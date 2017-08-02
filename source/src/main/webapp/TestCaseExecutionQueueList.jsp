@@ -49,16 +49,39 @@
                 <div class="panel-body" id="executionList">
                     <ul id="tabsScriptEdit" class="nav nav-tabs" data-tabs="tabs">
                         <li class="active"><a data-toggle="tab" href="#tabDetails" id="editTabDetails" name="tabDetails">Executions in queue</a></li>
-                        <li><a data-toggle="tab" href="#tabSummary" id="editTabSummary" name="tabSummary">Execution pools</a></li>
+                        <li><a data-toggle="tab" href="#tabFollowUp" id="editTabFollowUp" name="tabFollowUp">Pools Follow Up</a></li>
+                        <li><a data-toggle="tab" href="#tabJobStatus" id="editTabJobStatus" name="tabJobStatus">Queue Job Status</a></li>
                     </ul>
                     <div class="tab-content">
-                        <div class="center marginTop25 tab-pane fade" id="tabSummary">
-                            <div id="statusChart"></div>
-                        </div>
                         <div class="center marginTop25 tab-pane fade in active" id="tabDetails">
                             <form id="massActionForm" name="massActionForm"  title="" role="form">
                                 <table id="executionsTable" class="table table-bordered table-hover display" name="executionsTable"></table>
                             </form>
+                        </div>
+                        <div class="center marginTop25 tab-pane fade" id="tabFollowUp">
+                            <div class='marginBottom10'>
+                                <button type="button" class="btn btn-default" style="margin-left: 10px;" id="refreshFollowUpbutton" onclick="displayAndRefresh_followup()"><span class="glyphicon glyphicon-refresh"></span> Refresh</button>
+                            </div>
+                            <div id="followUpTableList">
+                                <table id="followUpTable" class="table table-bordered table-hover display" name="followUpTable"></table>
+                                <div class="marginBottom20"></div>
+                            </div>
+                        </div>
+                        <div class="center marginTop25 tab-pane fade" id="tabJobStatus">
+                            <div class='marginBottom10'>
+                                <button type="button" class="btn btn-default" style="margin-left: 10px;" id="refreshJobStatusbutton" onclick="displayAndRefresh_jobStatus()"><span class="glyphicon glyphicon-refresh"></span> Refresh</button>
+                                <button type="button" class="btn btn-default" style="margin-left: 10px;" id="refreshForceExebutton" onclick="forceExecution()"><span class="glyphicon glyphicon-play"></span> Force Execution</button>
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-xs-6">
+                                    <label for="jobRunning" name="jobRunningField">Job Status</label>
+                                    <input type="text" class="form-control" name="jobRunning" id="jobRunning" aria-describedby="basic-addon1" readonly>
+                                </div>
+                                <div class="form-group col-xs-6">
+                                    <label for="jobStart" name="jobStartField">Job Start</label>
+                                    <input type="text" class="form-control" name="jobStart" id="jobStart" aria-describedby="basic-addon1" readonly>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="marginBottom20"></div>
