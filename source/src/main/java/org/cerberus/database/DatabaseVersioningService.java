@@ -9191,6 +9191,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ADD COLUMN `Priority` INT DEFAULT 1000 AFTER `State`, ADD COLUMN `DebugFlag` VARCHAR(1) NULL DEFAULT 'N' AFTER `comment`;");
         SQLInstruction.add(SQLS.toString());
 
+        // Removing PoolSize column on robot table.
+        //-- ------------------------ 1195
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `robot` DROP COLUMN `poolsize`;");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 
