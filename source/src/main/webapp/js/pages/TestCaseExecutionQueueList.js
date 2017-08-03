@@ -215,7 +215,7 @@ function massActionModalSaveHandler_copy() {
 
     showLoaderInModal('#massActionExeQModal');
 
-    var jqxhr = $.post("CreateTestCaseExecutionQueue", paramSerialized + "&actionState=toWAITING&actionSave=save", "json");
+    var jqxhr = $.post("CreateTestCaseExecutionQueue", paramSerialized + "&actionState=toQUEUED&actionSave=save", "json");
     $.when(jqxhr).then(function (data) {
         // unblock when remote call returns 
         hideLoaderInModal('#massActionExeQModal');

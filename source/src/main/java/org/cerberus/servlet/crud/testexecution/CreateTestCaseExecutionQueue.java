@@ -199,7 +199,7 @@ public class CreateTestCaseExecutionQueue extends HttpServlet {
         }
 
         // Update is done, we now check what action needs to be performed.
-        if (actionState.equals("toWAITING")) {
+        if (actionState.equals("toQUEUED")) {
             executionThreadPoolService.executeNextInQueue(false);
         }
 
