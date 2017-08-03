@@ -273,9 +273,10 @@ public class AddToExecutionQueueV001 extends HttpServlet {
                     for (String environment : environments) {
                         for (String browser : browsers) {
                             try {
+                                String user = request.getRemoteUser() == null ? "" : request.getRemoteUser();
                                 toInserts.add(inQueueFactoryService.create(test, testCase, country, environment, robot, robotIP, robotPort, browser, browserVersion,
                                         platform, screenSize, manualURL, manualHost, manualContextRoot, manualLoginRelativeURL, manualEnvData, tag, screenshot, verbose,
-                                        timeout, pageSource, seleniumLog, 0, retries, manualExecution, request.getRemoteUser(), null, null, null));
+                                        timeout, pageSource, seleniumLog, 0, retries, manualExecution, user, null, null, null));
                             } catch (FactoryCreationException e) {
                                 LOG.error("Unable to insert record due to: " + e);
                                 LOG.error("test: " + test + "-" + testCase + "-" + country + "-" + environment + "-" + robot);
