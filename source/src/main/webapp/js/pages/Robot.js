@@ -35,6 +35,10 @@ function initPage() {
     $("[name='screensize']").autocomplete({
         source: availableScreenSize
     });
+    var availableHost = getInvariantArray("ROBOTHOST", false);
+    $("[name='host']").autocomplete({
+        source: availableHost
+    });
 
     // Load the select needed in localStorage cache.
     getSelectInvariant("CAPABILITY", true);

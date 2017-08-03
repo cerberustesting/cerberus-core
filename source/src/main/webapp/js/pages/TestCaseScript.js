@@ -279,7 +279,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
                             $("#saveScript").attr("disabled", true);
                             //clone the country list
                             var newCountryList = myCountry.slice(0);
-                            
+
                             var newProperty = {
                                 property: "",
                                 description: "",
@@ -298,7 +298,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
 
                             var prop = drawProperty(newProperty, testcaseinfo, true);
                             setPlaceholderProperty(prop[0], prop[1]);
-                            
+
                             $(prop[0]).find("#propName").focus();
                             //autocompleteAllFields();
 
@@ -585,9 +585,13 @@ function saveScript() {
     var properties = $("#propTable #masterProp");
     var propArr = [];
     var propertyWithoutCountry = false;
+    var propertyWithoutName = false;
     for (var i = 0; i < properties.length; i++) {
         if ($(properties[i]).data("property").country.length <= 0) {
             propertyWithoutCountry = true;
+        }
+        if ($(properties[i]).data("property").property === "") {
+            propertyWithoutName = true;
         }
         propArr.push($(properties[i]).data("property"));
     }
@@ -639,6 +643,13 @@ function saveScript() {
         }, function () {
             $("#saveScript").attr("disabled", false);
         }, doc.getDocLabel("page_global", "btn_savetableconfig"), doc.getDocLabel("page_testcasescript", "warning_no_country"), "", "", "", "");
+    } else if (propertyWithoutName) {
+        showModalConfirmation(function () {
+            $('#confirmationModal').modal('hide');
+            saveProp();
+        }, function () {
+            $("#saveScript").attr("disabled", false);
+        }, doc.getDocLabel("page_global", "btn_savetableconfig"), doc.getDocLabel("page_testcasescript", "warning_one_empty_prop"), "", "", "", "");
     } else {
         saveProp();
     }
@@ -725,13 +736,13 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
         }
         //set the link to the property in red (or remove the red color)
         var propertyName = property.property;
-        var linkToProperty =null;
+        var linkToProperty = null;
         //go though every link and look for the right one
-        $("#propListWrapper li a").each(function(){
-            if ( $(this).text() === propertyName )
+        $("#propListWrapper li a").each(function () {
+            if ($(this).text() === propertyName)
                 linkToProperty = $(this).parent();
         });
-        if ( linkToProperty !== null ){
+        if (linkToProperty !== null) {
             if (property.toDelete) {
                 linkToProperty.addClass("list-group-item-danger");
             } else {

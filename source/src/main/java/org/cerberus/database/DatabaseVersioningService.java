@@ -7153,6 +7153,28 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // New updated Documentation.
         //-- ------------------------ 1192-1193
         SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Added priority + Debug Flag column.
+        //-- ------------------------ 1194
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcaseexecutionqueue`  CHANGE COLUMN `State` `State` VARCHAR(9) NOT NULL DEFAULT 'QUEUED' ,");
+        SQLS.append("ADD COLUMN `Priority` INT DEFAULT 1000 AFTER `State`, ADD COLUMN `DebugFlag` VARCHAR(1) NULL DEFAULT 'N' AFTER `comment`;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Removing PoolSize column on robot table.
+        //-- ------------------------ 1195
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `robot` DROP COLUMN `poolsize`;");
+        SQLInstruction.add(SQLS.toString());
+
+        // New updated Documentation.
+        //-- ------------------------ 1196-1197
+        SQLS = new StringBuilder();
         SQLS.append("DELETE FROM `documentation`;");
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
@@ -8696,8 +8718,10 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_testcasescript','value_field','','fr','Valeur :','')");
         SQLS.append(",('page_testcasescript','warning_nocountry','','en','That Testcase has no country selected, please add at east one country (in \\'Activation Criteria\\' Tab of the testcase) in order to be able to add and define properties.','')");
         SQLS.append(",('page_testcasescript','warning_nocountry','','fr','Ce Cas de Test n\\'a auncu pays de défini. Merci d\\'en ajouter en minimum 1 (depuis \\'Activation Criteria\\' au niveau de l\\'entete du cas de test) avant d\\'ajouter une propriété.',NULL)");
-        SQLS.append(",('page_testcasescript','warning_no_country','','en','There is no country for at least one property. If you save it will be removed. Do you still want to save ?','')");
-        SQLS.append(",('page_testcasescript','warning_no_country','','fr','Il y a au moins un paramètre sans pays. Si vous sauvegardez il sera supprimé. Voulez-vous vraiment sauvegarder ?','')");
+        SQLS.append(",('page_testcasescript','warning_no_country','','en','There is no country selected for at least one property. If you save it will be removed. Do you still want to save ?','')");
+        SQLS.append(",('page_testcasescript','warning_no_country','','fr','Il y a au moins une propriété sans pays de selectionné. Si vous sauvegardez elle sera supprimée. Voulez-vous vraiment sauvegarder ?','')");
+        SQLS.append(",('page_testcasescript','warning_one_empty_prop','','en','There is at least one property with no name defined. If you save it will be removed. Do you still want to save ?','')");
+        SQLS.append(",('page_testcasescript','warning_one_empty_prop','','fr','Il y a au moins une propriétée sans pays. Si vous sauvegardez elle sera supprimée. Voulez-vous vraiment sauvegarder ?','')");
         SQLS.append(",('page_testcasesearch','text','','en','Text','Insert here the text that will search against the following Fields of every <code class=\\'doc-crbvvoca\\'>test case</code> :<br>- Short Description,<br>- Detailed description / Value Expected,<br>- HowTo<br>- Comment<br><br>NB : Search is case insensitive.')");
         SQLS.append(",('page_testcasesearch','text','','fr','Texte',NULL)");
         SQLS.append(",('page_testcase_m_addPicture','error_message_empty','','en','The URL value is empty!','')");
@@ -9182,19 +9206,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('user','Team','','fr','Equipe','Correspond à l\\'équipe de l\\'utilisateur')");
         SQLS.append(",('usergroup','GroupName','','en','Group Name','Authorities are managed by group. In order to be granted to a set of feature, you must belong to the corresponding group.<br>Every user can of course belong to as many group as necessary in order to get access to as many feature as required.<br>In order to get the full access to the system you must belong to every group.<br>Some groups are linked together on the test perimeter and integration perimeter.<br><br><b>Test perimeter :</b><br><br><code class=\\'doc-fixed\\'>TestRO</code>: Has read only access to the information related to test cases and also has access to execution reporting options.<br><br><code class=\\'doc-fixed\\'>Test</code>: Can modify non WORKING test cases but cannot delete test cases.<br><br><code class=\\'doc-fixed\\'>TestAdmin</code>: Can modify or delete any test case (including Pre Testing test cases). Can also create or delete a test.<br><br>The minimum group you need to belong is <code class=\\'doc-fixed\\'>TestRO</code> that will give you access in read only to all test data (including its execution reporting page).<br>If you want to be able to modify the testcases (except the WORKING ones), you need <code class=\\'doc-fixed\\'>Test</code> group on top of <code class=\\'doc-fixed\\'>TestRO</code> group.<br>If you want the full access to all testcase (including beeing able to delete any testcase), you will need <code class=\\'doc-fixed\\'>TestAdmin</code> on top of <code class=\\'doc-fixed\\'>TestRO</code> and <code class=\\'doc-fixed\\'>Test</code> group.<br><br><b>Test Data perimeter :</b><br><br><code class=\\'doc-fixed\\'>TestDataManager</code>: Can modify the test data..<br><br><b>Test Execution perimeter :</b><br><br><code class=\\'doc-fixed\\'>RunTest</code>: Can run both Manual and Automated test cases from GUI.<br><br><b>Integration perimeter :</b><br><br><code class=\\'doc-fixed\\'>IntegratorRO</code>: Has access to the integration status.<br><br><code class=\\'doc-fixed\\'>Integrator</code>: Can add an application. Can change parameters of the environments.<br><br><code class=\\'doc-fixed\\'>IntegratorNewChain</code>: Can register the end of the chain execution. Has read only access to the other informations on the same page.<br><br><code class=\\'doc-fixed\\'>IntegratorDeploy</code>: Can disable or enable environments and register new build / revision.<br><br>The minimum group you need to belong is <code class=\\'doc-fixed\\'>IntegratorRO</code> that will give you access in read only to all environment data.<br>If you want to be able to modify the environment data, you need <code class=\\'doc-fixed\\'>Integrator</code> group on top of <code class=\\'doc-fixed\\'>IntegratorRO</code> group.<br><code class=\\'doc-fixed\\'>IntegratorNewChain</code> and <code class=\\'doc-fixed\\'>IntegratorDeploy</code> are used on top of <code class=\\'doc-fixed\\'>Integrator</code> Group to be able to create a new chain on an environment or perform a deploy operation.<br><br><b>Administration perimeter :</b><br><br><code class=\\'doc-fixed\\'>Administrator</code>: Can create, modify or delete users. Has access to log Event and Database Maintenance. Can change Parameter values.')");
         SQLS.append(",('usergroup','GroupName','','fr','Nom du groupe',NULL)");
-        SQLInstruction.add(SQLS.toString());
-
-        // Added priority + Debug Flag column.
-        //-- ------------------------ 1194
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcaseexecutionqueue`  CHANGE COLUMN `State` `State` VARCHAR(9) NOT NULL DEFAULT 'QUEUED' ,");
-        SQLS.append("ADD COLUMN `Priority` INT DEFAULT 1000 AFTER `State`, ADD COLUMN `DebugFlag` VARCHAR(1) NULL DEFAULT 'N' AFTER `comment`;");
-        SQLInstruction.add(SQLS.toString());
-
-        // Removing PoolSize column on robot table.
-        //-- ------------------------ 1195
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `robot` DROP COLUMN `poolsize`;");
         SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;
