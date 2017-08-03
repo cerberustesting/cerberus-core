@@ -67,7 +67,7 @@ public class IdentifierService implements IIdentifierService {
         String[] selectOptionAttributes = {"label", "value", "index", "regexLabel", "regexValue", "regexIndex"};
 
         if (!Arrays.asList(selectOptionAttributes).contains(identifier)) {
-            MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SELECT_NO_IDENTIFIER);
+            MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_UNKOWN_IDENTIFIER_SELENIUM_SELECT);
             message.setDescription(message.getDescription().replace("%IDENTIFIER%", identifier));
             throw new CerberusEventException(message);
         }
@@ -76,10 +76,10 @@ public class IdentifierService implements IIdentifierService {
 
     @Override
     public void checkWebElementIdentifier(String identifier) throws CerberusEventException {
-        String[] selectOptionAttributes = {"id", "name", "class", "css", "xpath", "link", "data-cerberus", "picture", "coord"};
+        String[] selectOptionAttributes = {"id", "name", "class", "css", "xpath", "link", "data-cerberus", "coord", "picture"};
 
         if (!Arrays.asList(selectOptionAttributes).contains(identifier)) {
-            MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_NO_SUCH_ELEMENT);
+            MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_UNKOWN_IDENTIFIER_SELENIUM);
             message.setDescription(message.getDescription().replace("%IDENTIFIER%", identifier));
             throw new CerberusEventException(message);
         }
@@ -90,7 +90,18 @@ public class IdentifierService implements IIdentifierService {
         String[] selectOptionAttributes = {"script", "procedure"};
 
         if (!Arrays.asList(selectOptionAttributes).contains(identifier)) {
-            MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_NO_SUCH_ELEMENT);
+            MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_UNKOWN_IDENTIFIER_SQL);
+            message.setDescription(message.getDescription().replace("%IDENTIFIER%", identifier));
+            throw new CerberusEventException(message);
+        }
+    }
+
+    @Override
+    public void checkSikuliIdentifier(String identifier) throws CerberusEventException {
+        String[] selectOptionAttributes = {"picture", "text"};
+
+        if (!Arrays.asList(selectOptionAttributes).contains(identifier)) {
+            MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_UNKOWN_IDENTIFIER_SIKULI);
             message.setDescription(message.getDescription().replace("%IDENTIFIER%", identifier));
             throw new CerberusEventException(message);
         }
