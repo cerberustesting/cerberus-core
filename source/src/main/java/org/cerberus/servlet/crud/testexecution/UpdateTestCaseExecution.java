@@ -266,13 +266,13 @@ public class UpdateTestCaseExecution extends HttpServlet {
             int index = currentControl.getInt("index");
             int sort = currentControl.getInt("sort");
             int sequence = currentControl.getInt("sequence");
-            int controlSequence = currentControl.getInt("controlSequence");
+            int controlSequence = currentControl.getInt("control");
             String conditionOper = currentControl.getString("conditionOper");
             String conditionVal1Init = currentControl.getString("conditionVal1Init");
             String conditionVal2Init = currentControl.getString("conditionVal2Init");
             String conditionVal1 = currentControl.getString("conditionVal1");
             String conditionVal2 = currentControl.getString("conditionVal2");
-            String control  = currentControl.getString("control");
+            String control  = currentControl.getString("controlType");
             String value1Init = currentControl.getString("value1init");
             String value2Init = currentControl.getString("value2init");
             String value1 = currentControl.getString("value1");

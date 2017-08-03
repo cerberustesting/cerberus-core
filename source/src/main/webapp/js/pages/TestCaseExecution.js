@@ -132,7 +132,7 @@ function initPage(id) {
 }
 
 function displayPageLabel(doc) {
-    console.log(doc)
+
     $("#pageTitle").text(doc.getDocLabel("page_executiondetail", "title"));
     $(".alert.alert-warning span").text(doc.getDocLabel("page_global", "beta_message"));
     $(".alert.alert-warning button").text(doc.getDocLabel("page_global", "old_page"));
@@ -1736,8 +1736,6 @@ Control.prototype.draw = function (idMotherStep, idMotherAction, idControl) {
     row.append(header);
     row.data("item", this);
     row.data("id", currentControlId);
-    //set the control Sequence
-    this.controlSequence = idControl + 1;//start at 1
 
     var button = $("<div></div>").addClass("col-sm-1").append($("<span class='glyphicon glyphicon-chevron-down'></span>").attr("style", "font-size:1.5em"));
 
