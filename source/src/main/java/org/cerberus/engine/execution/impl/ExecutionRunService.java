@@ -657,9 +657,11 @@ public class ExecutionRunService implements IExecutionRunService {
                     + tCExecution.getTestCase() + "_" + tCExecution.getTestCaseObj().getDescription().replace(".", ""));
 
             /**
-             * Updating queue to done status.
+             * Updating queue to done status only for execution from queue
              */
-            executionQueueService.updateToDone(tCExecution.getQueueID(), "", runID);
+            if (tCExecution.getQueueID() != 0) {
+                executionQueueService.updateToDone(tCExecution.getQueueID(), "", runID);
+            }
 
             /**
              * Retry management, in case the result is not OK, we execute the
