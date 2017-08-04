@@ -7118,7 +7118,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
 
         // Value in order to secure the non parallel process of the queue.
-        //-- ------------------------ 1185-1187
+        //-- ------------------------ 1185-1188
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `myversion` ADD COLUMN `ValueString` VARCHAR(200) NULL DEFAULT NULL AFTER `Value`;");
         SQLInstruction.add(SQLS.toString());
@@ -7130,7 +7130,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
 
         // Added ROBOTHOST invariant.
-        //-- ------------------------ 1188-1189
+        //-- ------------------------ 1189-1190
         SQLS = new StringBuilder();
         SQLS.append("UPDATE `invariant` SET `idname`='INVARIANTPRIVATE' WHERE `idname`='INVARIANTPUBLIC' and`value`='MANUALURL';");
         SQLInstruction.add(SQLS.toString());
@@ -7141,7 +7141,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
 
         // Parameter for configuring default robot host constrain.
-        //-- ------------------------ 1190-1191
+        //-- ------------------------ 1191-1192
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `parameter` ");
         SQLS.append("VALUES ('','cerberus_queueexecution_defaultrobothost_threadpoolsize','10','Default number of simultaneous execution allowed for Robot host constrain (only used when host entry does not exist in invariant table).');");
@@ -7151,7 +7151,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
 
         // New updated Documentation.
-        //-- ------------------------ 1192-1193
+        //-- ------------------------ 1193-1194
         SQLS = new StringBuilder();
         SQLS.append("select 1 from DUAL;");
         SQLInstruction.add(SQLS.toString());
@@ -7160,20 +7160,45 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
 
         // Added priority + Debug Flag column.
-        //-- ------------------------ 1194
+        //-- ------------------------ 1195
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `testcaseexecutionqueue`  CHANGE COLUMN `State` `State` VARCHAR(9) NOT NULL DEFAULT 'QUEUED' ,");
         SQLS.append("ADD COLUMN `Priority` INT DEFAULT 1000 AFTER `State`, ADD COLUMN `DebugFlag` VARCHAR(1) NULL DEFAULT 'N' AFTER `comment`;");
         SQLInstruction.add(SQLS.toString());
 
         // Removing PoolSize column on robot table.
-        //-- ------------------------ 1195
+        //-- ------------------------ 1196
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `robot` DROP COLUMN `poolsize`;");
         SQLInstruction.add(SQLS.toString());
 
         // New updated Documentation.
-        //-- ------------------------ 1196-1197
+        //-- ------------------------ 1197-1198
+        SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Added QUEUEDEBUGFLAG invariant.
+        //-- ------------------------ 1199
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` VALUES ");
+        SQLS.append("('QUEUEDEBUGFLAG', 'N', 100, 'No debug message.', '', '', '', '', '', '', '', '', '', '')");
+        SQLS.append(",('QUEUEDEBUGFLAG', 'Y', 200, 'Activate debug message.', '', '', '', '', '', '', '', '', '', '')");
+        SQLS.append(",('INVARIANTPRIVATE', 'QUEUEDEBUGFLAG', '650', '', '', '', '', '', '', '', '', '', '', '');");
+        SQLInstruction.add(SQLS.toString());
+
+        // Parameter for pausing job queue treatement.
+        //-- ------------------------ 1200
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` ");
+        SQLS.append("VALUES ('','cerberus_queueexecution_enable','Y','Activation boolean in order to activate the job that process the execution queue.Y value will activate the job. N will stop it, leaving all the executions in QUEUED State.');");
+        SQLInstruction.add(SQLS.toString());
+
+        // New updated Documentation.
+        //-- ------------------------ 1201-1202
         SQLS = new StringBuilder();
         SQLS.append("DELETE FROM `documentation`;");
         SQLInstruction.add(SQLS.toString());
@@ -9011,6 +9036,10 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('testcaseexecution','URL','','en','URL','Full URL used to connect to the application.')");
         SQLS.append(",('testcaseexecution','verbose','','en','Verbose','This correspond to the level if information that Cerberus will keep when performing the execution. It can take the following values :<br><br><b>0</b> : The test will keep minimum login information in order to preserve the response times. This is to be used when a massive amout of tests are performed. No details on action will be saved.<br><b>1</b> : This is the standard level of log. Detailed action execution information will also be stored.<br><b>2</b> : This is the highest level of detailed information that can be chosen. Detailed web traffic information will be stored. This is to be used only on very specific cases where all hits information of an execution are required.<br><br>NB : Verbose level higher that 0 rely on Network traffic (only available on firefox browser).')");
         SQLS.append(",('testcaseexecutiondata','Value','','en','Property Value','This is the Value of the calculated Property.')");
+        SQLS.append(",('testcaseexecutionqueue','debugFlag','','en','Activate Debug Mode',NULL)");
+        SQLS.append(",('testcaseexecutionqueue','debugFlag','','fr','Activation du mode debug',NULL)");
+        SQLS.append(",('testcaseexecutionqueue','priority','','en','Priority',NULL)");
+        SQLS.append(",('testcaseexecutionqueue','priority','','fr','Priorité',NULL)");
         SQLS.append(",('testcaseexecutionwwwsum','css_nb','','en','Css_nb','Number of css downloaded for all the scenario')");
         SQLS.append(",('testcaseexecutionwwwsum','css_nb','','fr','Css_nb',NULL)");
         SQLS.append(",('testcaseexecutionwwwsum','css_size_max','','en','Css_size_max','Size of the biggest css dowloaded during the scenario')");
@@ -9205,23 +9234,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('user','Team','','en','Team','This is the team of the user.')");
         SQLS.append(",('user','Team','','fr','Equipe','Correspond à l\\'équipe de l\\'utilisateur')");
         SQLS.append(",('usergroup','GroupName','','en','Group Name','Authorities are managed by group. In order to be granted to a set of feature, you must belong to the corresponding group.<br>Every user can of course belong to as many group as necessary in order to get access to as many feature as required.<br>In order to get the full access to the system you must belong to every group.<br>Some groups are linked together on the test perimeter and integration perimeter.<br><br><b>Test perimeter :</b><br><br><code class=\\'doc-fixed\\'>TestRO</code>: Has read only access to the information related to test cases and also has access to execution reporting options.<br><br><code class=\\'doc-fixed\\'>Test</code>: Can modify non WORKING test cases but cannot delete test cases.<br><br><code class=\\'doc-fixed\\'>TestAdmin</code>: Can modify or delete any test case (including Pre Testing test cases). Can also create or delete a test.<br><br>The minimum group you need to belong is <code class=\\'doc-fixed\\'>TestRO</code> that will give you access in read only to all test data (including its execution reporting page).<br>If you want to be able to modify the testcases (except the WORKING ones), you need <code class=\\'doc-fixed\\'>Test</code> group on top of <code class=\\'doc-fixed\\'>TestRO</code> group.<br>If you want the full access to all testcase (including beeing able to delete any testcase), you will need <code class=\\'doc-fixed\\'>TestAdmin</code> on top of <code class=\\'doc-fixed\\'>TestRO</code> and <code class=\\'doc-fixed\\'>Test</code> group.<br><br><b>Test Data perimeter :</b><br><br><code class=\\'doc-fixed\\'>TestDataManager</code>: Can modify the test data..<br><br><b>Test Execution perimeter :</b><br><br><code class=\\'doc-fixed\\'>RunTest</code>: Can run both Manual and Automated test cases from GUI.<br><br><b>Integration perimeter :</b><br><br><code class=\\'doc-fixed\\'>IntegratorRO</code>: Has access to the integration status.<br><br><code class=\\'doc-fixed\\'>Integrator</code>: Can add an application. Can change parameters of the environments.<br><br><code class=\\'doc-fixed\\'>IntegratorNewChain</code>: Can register the end of the chain execution. Has read only access to the other informations on the same page.<br><br><code class=\\'doc-fixed\\'>IntegratorDeploy</code>: Can disable or enable environments and register new build / revision.<br><br>The minimum group you need to belong is <code class=\\'doc-fixed\\'>IntegratorRO</code> that will give you access in read only to all environment data.<br>If you want to be able to modify the environment data, you need <code class=\\'doc-fixed\\'>Integrator</code> group on top of <code class=\\'doc-fixed\\'>IntegratorRO</code> group.<br><code class=\\'doc-fixed\\'>IntegratorNewChain</code> and <code class=\\'doc-fixed\\'>IntegratorDeploy</code> are used on top of <code class=\\'doc-fixed\\'>Integrator</code> Group to be able to create a new chain on an environment or perform a deploy operation.<br><br><b>Administration perimeter :</b><br><br><code class=\\'doc-fixed\\'>Administrator</code>: Can create, modify or delete users. Has access to log Event and Database Maintenance. Can change Parameter values.')");
-        SQLS.append(",('usergroup','GroupName','','fr','Nom du groupe',NULL)");
-        SQLInstruction.add(SQLS.toString());
-
-        // Added QUEUEDEBUGFLAG invariant.
-        //-- ------------------------ 1198
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `invariant` VALUES ");
-        SQLS.append("('QUEUEDEBUGFLAG', 'N', 100, 'No debug message.', '', '', '', '', '', '', '', '', '', '')");
-        SQLS.append(",('QUEUEDEBUGFLAG', 'Y', 200, 'Activate debug message.', '', '', '', '', '', '', '', '', '', '')");
-        SQLS.append(",('INVARIANTPRIVATE', 'QUEUEDEBUGFLAG', '650', '', '', '', '', '', '', '', '', '', '', '');");
-        SQLInstruction.add(SQLS.toString());
-
-        // Parameter for pausing job queue treatement.
-        //-- ------------------------ 1199
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `parameter` ");
-        SQLS.append("VALUES ('','cerberus_queueexecution_enable','Y','Activation boolean in order to activate the job that process the execution queue.Y value will activate the job. N will stop it, leaving all the executions in QUEUED State.');");
+        SQLS.append(",('usergroup','GroupName','','fr','Nom du groupe',NULL);");
         SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;
