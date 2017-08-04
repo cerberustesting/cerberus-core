@@ -27,6 +27,8 @@ $.when($.getScript("js/global/global.js")).then(function () {
     });
 });
 
+//global bool that say if the execution is manual
+var isTheExecutionManual =false;
 function loadExecutionInformation(executionId, stepList, sockets) {
 
     $.ajax({
@@ -37,8 +39,13 @@ function loadExecutionInformation(executionId, stepList, sockets) {
         async: true,
         success: function (data) {
             var tce = data.testCaseExecution;
+            //store in a global var if the manualExecution is set to yes to double check with the control status
+            if (tce.manualExecution === "Y")
+                isTheExecutionManual = true;
             updatePage(tce, stepList);
-            if (tce.controlStatus == "PE") {
+
+            if (tce.controlStatus === "PE") {
+
                 var parser = document.createElement('a');
                 parser.href = window.location.href;
 
@@ -132,7 +139,7 @@ function initPage(id) {
 }
 
 function displayPageLabel(doc) {
-    console.log(doc)
+
     $("#pageTitle").text(doc.getDocLabel("page_executiondetail", "title"));
     $(".alert.alert-warning span").text(doc.getDocLabel("page_global", "beta_message"));
     $(".alert.alert-warning button").text(doc.getDocLabel("page_global", "old_page"));
@@ -325,7 +332,7 @@ function updateExecutionControlStatue(controlStatus) {
         configPanel.find("#controlstatus").addClass("text-danger");
         configPanel.find("#exReturnMessage").addClass("text-danger");
         controlMessage = "The test case failed on validations."
-    } else if (controlStatus === "NE") {
+    } else if (controlStatus === "NE" && isTheExecutionManual) {
         configPanel.find("#controlstatus").addClass("text-black");
         configPanel.find("#exReturnMessage").addClass("text-black");
         controlMessage = "The test case not executed";
@@ -434,7 +441,7 @@ function updateDataBarVisual(controlStatus, progress = 100) {
             $("#progress-bar").addClass("progress-bar-success");
         } else if (controlStatus === "KO") {
             $("#progress-bar").addClass("progress-bar-danger");
-        } else if (controlStatus === "NE") {
+        } else if (controlStatus === "NE" && isTheExecutionManual) {
             $("#progress-bar").addClass("progress-bar-black");
         } else {
             $("#progress-bar").addClass("progress-bar-warning");
@@ -934,7 +941,7 @@ Step.prototype.updateReturnCode = function () {
 
         if (elementBelongToCurrentStep) {
 
-            if ($(this).data("item").returnCode === "NE") {
+            if ($(this).data("item").returnCode === "NE" && isTheExecutionManual) {
                 everyActionAndControlCheck = false;
             } else if ($(this).data("item").returnCode === "KO") {
                 newReturnCode = "KO";
@@ -944,7 +951,7 @@ Step.prototype.updateReturnCode = function () {
         }
     });
 
-    if (!everyActionAndControlCheck && newReturnCode === "OK")
+    if (!everyActionAndControlCheck && newReturnCode === "OK" && isTheExecutionManual)
         newReturnCode = "NE";
 
     var htmlElement = this.html;
@@ -969,7 +976,7 @@ Step.prototype.draw = function () {
     } else if (object.returnCode === "NA") {
         htmlElement.append($("<span>").addClass("glyphicon glyphicon-alert pull-left"));
         object.html.addClass("list-group-item-info");
-    } else if (object.returnCode === "NE") {
+    } else if (object.returnCode === "NE" && isTheExecutionManual) {
         htmlElement.append($("<span>").addClass("glyphicon glyphicon-question-sign pull-left"));
         object.html.addClass("list-group-item-black");
     } else {
@@ -1003,7 +1010,7 @@ Step.prototype.show = function () {
     } else if (object.returnCode === "KO") {
         $("#stepInfo").prepend($("<div>").addClass("col-sm-1").append($("<h2>").addClass("glyphicon glyphicon-remove pull-left text-danger").attr("style", "font-size:3em")));
         // $("#stepContent").addClass("col-lg-9");
-    } else if (object.returnCode === "NE") {
+    } else if (object.returnCode === "NE" && isTheExecutionManual) {
         $("#stepInfo").prepend($("<div>").addClass("col-sm-1").append($("<h2>").addClass("glyphicon glyphicon-question-sign pull-left text-black").attr("style", "font-size:3em")));
     } else {
         $("#stepInfo").prepend($("<div>").addClass("col-sm-1").append($("<h2>").addClass("glyphicon glyphicon-alert pull-left text-warning").attr("style", "font-size:3em")));
@@ -1092,7 +1099,7 @@ function returnMessageWritableForStep(object, field) {
     field.data("currentStep", object);
 
     field.prop("readonly", true);
-    if (object.returnCode === "NE") {
+    if (object.returnCode === "NE" && isTheExecutionManual) {
         field.prop("readonly", false);
         field.change(function () {
             var currentObject = field.data("currentStep");
@@ -1248,7 +1255,7 @@ Action.prototype.draw = function (idMotherStep, id) {
         htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-alert").attr("style", "font-size:1.5em")));
         htmlElement.addClass("row list-group-item list-group-item-info");
         content.hide();
-    } else if (action.returnCode === "NE") {
+    } else if (action.returnCode === "NE" && isTheExecutionManual) {
         htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-question-sign").attr("style", "font-size:1.5em")));
         htmlElement.addClass("row list-group-item list-group-item-black");
         content.hide();
@@ -1317,7 +1324,7 @@ function returnMessageWritable(object, field) {
 
     field.empty();
     field.prop("readonly", true);
-    if (object.returnCode === "NE") {
+    if (object.returnCode === "NE" && isTheExecutionManual) {
         field.prop("readonly", false);
         field.change(function () {
             object.setReturnMessage(field.val());
@@ -1345,7 +1352,8 @@ Action.prototype.generateHeader = function (id) {
     /**
      * If returnCode is NE, display button, else display elapsed time
      */
-    if (this.returnCode === "NE") {
+    if (this.returnCode === "NE" && isTheExecutionManual) {
+
         var buttonFA = $($("<button>").addClass("btn btn-warning btn-inverse").attr("type", "button").text("FA"));
         var buttonOK = $($("<button>").addClass("btn btn-success btn-inverse").attr("type", "button").text("OK"));
         buttonOK.click(function (event) {
@@ -1442,7 +1450,7 @@ function updateReturnCode(idElementTriggers, newReturnCode) {
         }
         //look for the previous elements untouch
         var idName = ["stepId", "actionId", "controlId"];
-        if ($(this).data("item").returnCode === "NE") {
+        if ($(this).data("item").returnCode === "NE" && isTheExecutionManual) {
             for (var i = 0; i < 3; i++) {
                 if (idCurrentElement[ idName[i] ] !== idElementTriggers[ idName[i] ]) {
                     //element before the one clicked
@@ -1736,8 +1744,6 @@ Control.prototype.draw = function (idMotherStep, idMotherAction, idControl) {
     row.append(header);
     row.data("item", this);
     row.data("id", currentControlId);
-    //set the control Sequence
-    this.controlSequence = idControl + 1;//start at 1
 
     var button = $("<div></div>").addClass("col-sm-1").append($("<span class='glyphicon glyphicon-chevron-down'></span>").attr("style", "font-size:1.5em"));
 
@@ -1761,7 +1767,7 @@ Control.prototype.draw = function (idMotherStep, idMotherAction, idControl) {
         htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-alert").attr("style", "font-size:1.5em")));
         htmlElement.addClass("row list-group-item list-group-item-info");
         content.hide();
-    } else if (this.returnCode === "NE") {
+    } else if (this.returnCode === "NE" && isTheExecutionManual) {
         htmlElement.prepend($("<div>").addClass("marginLeft-15 col-sm-1").append($("<span>").addClass("glyphicon glyphicon-question-sign").attr("style", "font-size:1.5em")));
         htmlElement.addClass("row list-group-item list-group-item-black");
         content.hide();
@@ -1823,7 +1829,7 @@ Control.prototype.generateHeader = function (id) {
         elapsedTime.append("...");
     }
 
-    if (this.returnCode === "NE") {
+    if (this.returnCode === "NE" && isTheExecutionManual) {
         var buttonFA = $($("<button>").addClass("btn btn-danger btn-inverse").attr("type", "button").text("KO"));
         var buttonOK = $($("<button>").addClass("btn btn-success btn-inverse").attr("type", "button").text("OK"));
         buttonOK.click(function (event) {

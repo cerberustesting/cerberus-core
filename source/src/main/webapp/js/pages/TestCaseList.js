@@ -512,7 +512,7 @@ function aoColumnsFunc(countries, tableId) {
                                         class="duplicateEntry btn btn-default btn-xs margin-right5" \n\
                                         name="duplicateEntry" data-toggle="tooltip"  title="' + doc.getDocLabel("page_testcaselist", "btn_duplicate") + '" type="button">\n\
                                         <span class="glyphicon glyphicon-duplicate"></span></button>';
-                var editScript = '<a id="testCaseBetaLink" class="btn btn-primary btn-xs marginRight5"\n\
+                var editScript = '<a id="testCaseLink" class="btn btn-primary btn-xs marginRight5"\n\
                                     data-toggle="tooltip" title="' + doc.getDocLabel("page_testcaselist", "btn_editScript") + '" href="./TestCaseScript.jsp?test=' + encodeURIComponent(obj["test"]) + '&testcase=' + encodeURIComponent(obj["testCase"]) + '">\n\
                                     <span class="glyphicon glyphicon-new-window"></span>\n\
                                     </a>';
