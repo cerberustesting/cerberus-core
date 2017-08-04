@@ -22,6 +22,7 @@ package org.cerberus.engine.threadpool.entity;
 public class TestCaseExecutionQueueToTreat {
 
     private long id;
+    private String debugFlag;
     private String manualExecution;
     private String system;
     private String environment;
@@ -43,6 +44,14 @@ public class TestCaseExecutionQueueToTreat {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public String getDebugFlag() {
+        return debugFlag;
+    }
+
+    public void setDebugFlag(String debugFlag) {
+        this.debugFlag = debugFlag;
     }
 
     public String getManualExecution() {

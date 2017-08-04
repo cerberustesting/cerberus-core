@@ -187,17 +187,11 @@ public interface ITestCaseExecutionQueueDAO {
     /**
      *
      * @param id
-     * @throws CerberusException
-     */
-    void updateToWaiting(long id) throws CerberusException;
-
-    /**
-     *
-     * @param ids
+     * @param comment
      * @return
-     * @throws CerberusException
      */
-    List<Long> updateToWaiting(List<Long> ids) throws CerberusException;
+    Answer updateComment(long id, String comment);
+
 
     /**
      *
@@ -256,6 +250,13 @@ public interface ITestCaseExecutionQueueDAO {
      */
     Answer updateToCancelled(long id, String comment);
 
+    /**
+     *
+     * @return
+     */
+    Answer updateToCancelledForce(long id, String comment);
+
+    
     /**
      * @param object the {@link AppService} to Delete
      * @return {@link AnswerItem}

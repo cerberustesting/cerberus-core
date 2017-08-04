@@ -174,6 +174,8 @@ public class CreateTestCaseExecutionQueue extends HttpServlet {
                             // If id is defined, we get the execution queue from database.
                             executionQueueData = executionQueueService.convert(executionQueueService.readByKey(id));
                             executionQueueData.setState(TestCaseExecutionQueue.State.QUEUED);
+                            executionQueueData.setDebugFlag("N");
+                            executionQueueData.setPriority(1000);
                         }
                         ans = executionQueueService.create(executionQueueData);
 

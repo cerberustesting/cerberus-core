@@ -9208,6 +9208,22 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('usergroup','GroupName','','fr','Nom du groupe',NULL)");
         SQLInstruction.add(SQLS.toString());
 
+        // Added QUEUEDEBUGFLAG invariant.
+        //-- ------------------------ 1198
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` VALUES ");
+        SQLS.append("('QUEUEDEBUGFLAG', 'N', 100, 'No debug message.', '', '', '', '', '', '', '', '', '', '')");
+        SQLS.append(",('QUEUEDEBUGFLAG', 'Y', 200, 'Activate debug message.', '', '', '', '', '', '', '', '', '', '')");
+        SQLS.append(",('INVARIANTPRIVATE', 'QUEUEDEBUGFLAG', '650', '', '', '', '', '', '', '', '', '', '', '');");
+        SQLInstruction.add(SQLS.toString());
+
+        // Parameter for pausing job queue treatement.
+        //-- ------------------------ 1199
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` ");
+        SQLS.append("VALUES ('','cerberus_queueexecution_enable','Y','Activation boolean in order to activate the job that process the execution queue.Y value will activate the job. N will stop it, leaving all the executions in QUEUED State.');");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 

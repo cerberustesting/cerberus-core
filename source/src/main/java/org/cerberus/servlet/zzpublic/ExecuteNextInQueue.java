@@ -27,6 +27,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.service.IMyVersionService;
+import org.cerberus.crud.service.IParameterService;
+import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.threadpool.IExecutionThreadPoolService;
 import org.cerberus.enums.MessageEventEnum;
@@ -65,12 +67,16 @@ public class ExecuteNextInQueue extends HttpServlet {
 
     private IExecutionThreadPoolService threadPoolService;
     private IMyVersionService myVersionService;
+    private IParameterService parameterService;
+    private ITestCaseExecutionQueueService testCaseExectionQueueService;
 
     @Override
     public void init() throws ServletException {
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         threadPoolService = appContext.getBean(IExecutionThreadPoolService.class);
         myVersionService = appContext.getBean(IMyVersionService.class);
+        parameterService = appContext.getBean(IParameterService.class);
+        testCaseExectionQueueService = appContext.getBean(ITestCaseExecutionQueueService.class);
     }
 
     @Override
@@ -109,6 +115,9 @@ public class ExecuteNextInQueue extends HttpServlet {
             String jobStart = myVersionService.getMyVersionStringByKey("queueprocessingjobstart", "");
             jsonResponse.put("jobStart", jobStart);
 
+            String jobActive = parameterService.getParameterStringByKey("cerberus_queueexecution_enable", "", "Y");
+            jsonResponse.put("jobActive", jobActive);
+            
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
             jsonResponse.put("message", answer.getResultMessage().getDescription());
 

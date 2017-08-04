@@ -22,18 +22,35 @@
                         </div>
                         <ul id="tabsMassActions" class="nav nav-tabs" data-tabs="tabs">
                             <li class="active"><a data-toggle="tab" href="#tabsMass-1" id="massTab1Text" name="tabState">Set state</a></li>
+                            <li><a data-toggle="tab" href="#tabsMass-2" id="massTab2Text" name="tabChange">Modify</a></li>
                         </ul>
                         <div class="tab-content">
                             <div class="center marginTop25 tab-pane fade in active" id="tabsMass-1">
                                 <div class="row">
+                                    <div class="form-group col-xs-6">
+                                        <button type="button" id="massActionExeQButtonSubmit" class="btn btn-primary" name="buttonStateSubmit">move to QUEUED</button>
+                                    </div>
+                                    <div class="form-group col-xs-6">
+                                        <button type="button" id="massActionExeQButtonCancel" class="btn btn-primary" name="buttonStateCancel">move to CANCELLED</button>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-xs-6">
+                                        <button type="button" id="massActionExeQButtonCopy" class="btn btn-primary" name="buttonStateCopy">Copy to QUEUED</button>
+                                    </div>
+                                    <div class="form-group col-xs-6">
+                                        <button type="button" id="massActionExeQButtonCancelForce" class="btn btn-primary" name="buttonStateCancelForce">Force to CANCELLED</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="center marginTop25 tab-pane fade in" id="tabsMass-2">
+                                <div class="row">
                                     <div class="form-group col-xs-4">
-                                        <button type="button" id="massActionExeQButtonSubmit" class="btn btn-primary" name="buttonStateSubmit">Submit</button>
+                                        <label for="priority" name="priorityField">Priority</label>
+                                        <input type="text" class="form-control" name="priority" id="priority" aria-describedby="basic-editon1" />
                                     </div>
                                     <div class="form-group col-xs-4">
-                                        <button type="button" id="massActionExeQButtonCancel" class="btn btn-primary" name="buttonStateCancel">Cancel</button>
-                                    </div>
-                                    <div class="form-group col-xs-4">
-                                        <button type="button" id="massActionExeQButtonCopy" class="btn btn-primary" name="buttonStateCopy">Copy and Submit</button>
+                                        <button type="button" id="massActionExeQButtonPrio" class="btn btn-primary" name="buttonChangePrio">Change Priority</button>
                                     </div>
                                 </div>
                             </div>

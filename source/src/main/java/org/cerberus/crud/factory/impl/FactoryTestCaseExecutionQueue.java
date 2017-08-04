@@ -97,7 +97,7 @@ public class FactoryTestCaseExecutionQueue implements IFactoryTestCaseExecutionQ
     @Override
     public TestCaseExecutionQueue create(long id, String test, String testCase, String country, String environment, String robot, String robotIP, String robotPort, String browser,
             String browserVersion, String platform, String screenSize, int manualURL, String manualHost, String manualContextRoot, String manualLoginRelativeURL, String manualEnvData,
-            String tag, int screenshot, int verbose, String timeout, int pageSource, int seleniumLog, Date requestDate, TestCaseExecutionQueue.State state, String comment, Integer retries,
+            String tag, int screenshot, int verbose, String timeout, int pageSource, int seleniumLog, Date requestDate, TestCaseExecutionQueue.State state, int priority, String comment, String debugFlag, Integer retries,
             String manualExecution, long exeId, String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif) throws FactoryCreationException {
         TestCaseExecutionQueue inQueue;
         inQueue = this.create(id, test, testCase, country, environment, robot, robotIP, robotPort, browser, browserVersion, platform, screenSize, manualURL, manualHost,
@@ -106,6 +106,8 @@ public class FactoryTestCaseExecutionQueue implements IFactoryTestCaseExecutionQ
         inQueue.setState(state);
         inQueue.setComment(comment);
         inQueue.setRequestDate(requestDate);
+        inQueue.setDebugFlag(debugFlag);
+        inQueue.setPriority(priority);
         return inQueue;
     }
 }

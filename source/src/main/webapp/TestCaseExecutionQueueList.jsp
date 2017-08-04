@@ -82,6 +82,12 @@
                                     <input type="text" class="form-control" name="jobStart" id="jobStart" aria-describedby="basic-addon1" readonly>
                                 </div>
                             </div>
+                            <div class="row">
+                                <div class="form-group col-xs-6">
+                                    <label for="jobActive" name="jobActiveField">Job Activated</label>
+                                    <input type="text" class="form-control" name="jobActive" id="jobActive" aria-describedby="basic-addon1" readonly>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="marginBottom20"></div>

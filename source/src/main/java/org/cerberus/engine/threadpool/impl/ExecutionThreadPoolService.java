@@ -174,6 +174,12 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
      */
     @Override
     public void executeNextInQueue(boolean forceExecution) throws CerberusException {
+        // Job can be desactivated by parameter.
+        if (!(parameterService.getParameterBooleanByKey("cerberus_queueexecution_enable", "", true))) {
+            LOG.debug("Queue_Processing_Job disabled by parameter : 'cerberus_queueexecution_enable'.");
+            return;
+        }
+
         // We first check that another thread of Cerberus already trigger the job. Only 1 instance of the job is necessary.
         if (!(myVersionService.getMyVersionStringByKey("queueprocessingjobrunning", "N").equals("Y"))
                 || forceExecution) {
@@ -310,13 +316,16 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
 
                 } else {
                     if (constMatch03) {
-                        notTriggeredExeMessage = "Robot contrain on '" + const03_key + "' reached. " + robot_poolsize_final + " Execution(s) poolsize reached";
+                        notTriggeredExeMessage = "Robot contrain on '" + const03_key + "' reached. " + robot_poolsize_final + " Execution(s) already in pool.";
                     }
                     if (constMatch02) {
-                        notTriggeredExeMessage = "Application Environment contrain on '" + const02_key + "' reached . " + exe.getPoolSizeApplication() + " Execution(s) poolsize reached";
+                        notTriggeredExeMessage = "Application Environment contrain on '" + const02_key + "' reached . " + exe.getPoolSizeApplication() + " Execution(s) already in pool.";
                     }
                     if (constMatch01) {
-                        notTriggeredExeMessage = "Global contrain reached. " + poolSizeGeneral + " Execution(s) poolsize reached";
+                        notTriggeredExeMessage = "Global contrain reached. " + poolSizeGeneral + " Execution(s) already in pool.";
+                    }
+                    if (exe.getDebugFlag().equalsIgnoreCase("Y")) {
+                        queueService.updateComment(exe.getId(), notTriggeredExeMessage);
                     }
                     LOG.debug("result : " + triggerExe + " Const1 " + constMatch01 + " Const2 " + constMatch01 + " Const3 " + constMatch01 + " Manual " + exe.getManualExecution());
                     LOG.debug(" CurConst1 " + const01_current + " CurConst2 " + const02_current + " CurConst3 " + const03_current);

@@ -188,6 +188,8 @@ function confirmExecutionQueueModalHandler(mode, queueAction, saveAction) {
             seleniumLog: data.seleniumLog,
             timeout: data.timeout,
             retries: data.retries,
+            priority: data.priority,
+            debugFlag: data.debugFlag,
             manualExecution: data.manualExecution,
             actionState: queueAction,
             actionSave: saveAction
@@ -287,7 +289,8 @@ function feedExecutionQueueModal(queueid, modalId, mode) {
 /***
  * Feed the TestCase select with all the testcase from test defined.
  * @param {String} test - test in order to filter the testcase values.
- * @param {String} modalId - id of select to refresh.
+ * @param {String} selectElement - id of select to refresh.
+ * @param {String} defaultTestCase - id of testcase to select.
  * @returns {null}
  */
 function feedTestCase(test, selectElement, defaultTestCase) {
@@ -348,6 +351,8 @@ function feedExecutionQueueModalData(exeQ, modalId, mode, hasPermissionsUpdate) 
 
     });
 
+    $("#debugFlag").empty();
+    displayInvariantList("debugFlag", "QUEUEDEBUGFLAG", false, exeQ.debugFlag);
     $("#country").empty();
     displayInvariantList("country", "COUNTRY", false, exeQ.country);
     $("#environment").empty();
@@ -419,6 +424,8 @@ function feedExecutionQueueModalData(exeQ, modalId, mode, hasPermissionsUpdate) 
         formEdit.find("#requestDate").val(exeQ.requestDate);
         formEdit.find("#state").val(exeQ.state);
         formEdit.find("#comment").prop("value", exeQ.comment);
+        formEdit.find("#priority").prop("value", exeQ.priority);
+        formEdit.find("#debugFlag").prop("value", exeQ.debugFlag);
         formEdit.find("#exeId").prop("value", exeQ.exeId);
         formEdit.find("#test").prop("value", exeQ.test);
         formEdit.find("#testCase").prop("value", exeQ.testCase);
@@ -461,6 +468,8 @@ function feedExecutionQueueModalData(exeQ, modalId, mode, hasPermissionsUpdate) 
         formEdit.find("#timeout").prop("readonly", false);
         formEdit.find("#retries").removeAttr("disabled");
         formEdit.find("#manualExecution").removeAttr("disabled");
+        formEdit.find("#priority").prop("readonly", false);
+        formEdit.find("#debugFlag").removeAttr("disabled");
     } else {
         formEdit.find("#tag").prop("readonly", "readonly");
         formEdit.find("#test").prop("disabled", "disabled");
@@ -472,6 +481,8 @@ function feedExecutionQueueModalData(exeQ, modalId, mode, hasPermissionsUpdate) 
         formEdit.find("#manualContextRoot").prop("readonly", "readonly");
         formEdit.find("#manualLoginRelativeURL").prop("readonly", "readonly");
         formEdit.find("#manualEnvData").prop("disabled", "disabled");
+        formEdit.find("#priority").prop("readonly", "readonly");
+        formEdit.find("#debugFlag").prop("disabled", "disabled");
         formEdit.find("#robot").prop("disabled", "disabled");
         formEdit.find("#robotIP").prop("readonly", "readonly");
         formEdit.find("#robotPort").prop("readonly", "readonly");

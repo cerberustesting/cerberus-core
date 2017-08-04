@@ -179,7 +179,13 @@ public interface ITestCaseExecutionQueueService {
      */
     Answer update(TestCaseExecutionQueue object);
 
-
+    /**
+     *
+     * @param id
+     * @param comment
+     * @return
+     */
+    Answer updateComment(long id, String comment);
 
     /**
      *
@@ -189,9 +195,6 @@ public interface ITestCaseExecutionQueueService {
      */
     Answer updateToQueued(long id, String comment);
 
-
-
-
     /**
      *
      * @param id
@@ -199,7 +202,7 @@ public interface ITestCaseExecutionQueueService {
      * @throws CerberusException
      */
     boolean updateToWaiting(final Long id) throws CerberusException;
-    
+
     /**
      *
      * @param id
@@ -233,8 +236,6 @@ public interface ITestCaseExecutionQueueService {
      */
     void updateToDone(long id, String comment, long exeId) throws CerberusException;
 
-
-
     /**
      *
      * @param id
@@ -242,6 +243,14 @@ public interface ITestCaseExecutionQueueService {
      * @return
      */
     Answer updateToCancelled(long id, String comment);
+
+    /**
+     *
+     * @param id
+     * @param comment
+     * @return
+     */
+    Answer updateToCancelledForce(long id, String comment);
 
     /**
      * @param object the {@link AppService} to Delete

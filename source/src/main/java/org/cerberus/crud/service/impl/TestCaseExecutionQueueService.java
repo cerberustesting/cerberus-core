@@ -126,6 +126,11 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
     }
 
     @Override
+    public Answer updateComment(long id, String comment) {
+        return testCaseExecutionInQueueDAO.updateComment(id, comment);
+    }
+
+    @Override
     public Answer updateToQueued(long id, String comment) {
         return testCaseExecutionInQueueDAO.updateToQueued(id, comment);
     }
@@ -160,6 +165,11 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
         return testCaseExecutionInQueueDAO.updateToCancelled(id, comment);
     }
 
+    @Override
+    public Answer updateToCancelledForce(long id, String comment) {
+        return testCaseExecutionInQueueDAO.updateToCancelledForce(id, comment);
+    }
+    
     @Override
     public Answer delete(TestCaseExecutionQueue object) {
         return testCaseExecutionInQueueDAO.delete(object);

@@ -36,7 +36,6 @@ import org.cerberus.engine.threadpool.IExecutionThreadPoolService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
-import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerUtil;
@@ -114,6 +113,8 @@ public class UpdateTestCaseExecutionQueue extends HttpServlet {
         String timeout = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("timeout"), "", charset);
         int retries = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("retries"), 0, charset);
         String manualExecution = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("manualExecution"), "", charset);
+        int priority = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("priority"), 1000, charset);
+        String debugFlag = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("debugFlag"), "N", charset);
 
         // Parameter that we cannot secure as we need the html --> We DECODE them
         String[] myIds = request.getParameterValues("id");
@@ -125,7 +126,7 @@ public class UpdateTestCaseExecutionQueue extends HttpServlet {
 
         boolean id_error = false;
         for (String myId : myIds) {
-            
+
             id_error = false;
             try {
                 id = Long.valueOf(myId);
@@ -160,12 +161,12 @@ public class UpdateTestCaseExecutionQueue extends HttpServlet {
 
                 } else {
 
+                    TestCaseExecutionQueue executionQueueData = (TestCaseExecutionQueue) resp.getItem();
                     if (actionSave.equals("save")) {
                         /**
                          * The service was able to perform the query and confirm
                          * the object exist, then we can update it.
                          */
-                        TestCaseExecutionQueue executionQueueData = (TestCaseExecutionQueue) resp.getItem();
                         executionQueueData.setTest(test);
                         executionQueueData.setTestCase(testcase);
                         executionQueueData.setTag(tag);
@@ -190,6 +191,8 @@ public class UpdateTestCaseExecutionQueue extends HttpServlet {
                         executionQueueData.setTimeout(timeout);
                         executionQueueData.setRetries(retries);
                         executionQueueData.setManualExecution(manualExecution);
+                        executionQueueData.setDebugFlag(debugFlag);
+                        executionQueueData.setPriority(priority);
                         executionQueueData.setUsrModif(request.getRemoteUser());
                         ans = executionQueueService.update(executionQueueData);
                         finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
@@ -212,14 +215,27 @@ public class UpdateTestCaseExecutionQueue extends HttpServlet {
                         executionThreadPoolService.executeNextInQueue(false);
                     }
 
+                    // Priority Update.
+                    if (actionSave.equals("priority")) {
+                        executionQueueData.setPriority(priority);
+                        ans = executionQueueService.update(executionQueueData);
+                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                    }
+
                     // Update is done, we now check what action needs to be performed.
                     if (actionState.equals("toCANCELLED")) {
                         LOG.debug("toCANCELLED");
                         ans = executionQueueService.updateToCancelled(id, "Cancelled by user " + request.getRemoteUser() + ".");
                         finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
-
                     }
 
+                    // Update is done, we now check what action needs to be performed.
+                    if (actionState.equals("toCANCELLEDForce")) {
+                        LOG.debug("toCANCELLEDForce");
+                        ans = executionQueueService.updateToCancelledForce(id, "Forced Cancelled by user " + request.getRemoteUser() + ".");
+                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                    }
+                    
                 }
             }
         }

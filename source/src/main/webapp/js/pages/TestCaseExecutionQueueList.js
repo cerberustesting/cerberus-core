@@ -55,6 +55,8 @@ function initPage() {
     $("#massActionExeQButtonSubmit").click(massActionModalSaveHandler_submit);
     $("#massActionExeQButtonCopy").click(massActionModalSaveHandler_copy);
     $("#massActionExeQButtonCancel").click(massActionModalSaveHandler_cancel);
+    $("#massActionExeQButtonCancelForce").click(massActionModalSaveHandler_cancelForce);
+    $("#massActionExeQButtonPrio").click(massActionModalSaveHandler_changePrio);
     $('#massActionExeQModal').on('hidden.bs.modal', massActionModalCloseHandler);
 
     // React on tab changes
@@ -108,8 +110,9 @@ function displayAndRefresh_jobStatus() {
     $.when(jqxhr).then(function (data) {
         var obj = data;
 
-        $("#jobRunning").val(data["jobStart"]);
-        $("#jobStart").val(data["jobRunning"]);
+        $("#jobRunning").val(data["jobRunning"]);
+        $("#jobStart").val(data["jobStart"]);
+        $("#jobActive").val(data["jobActive"]);
     });
 }
 
@@ -119,10 +122,12 @@ function forceExecution() {
     $.when(jqxhr).then(function (data) {
         var obj = data;
 
-        $("#jobRunning").val(data["jobStart"]);
-        $("#jobStart").val(data["jobRunning"]);
+        $("#jobRunning").val(data["jobRunning"]);
+        $("#jobStart").val(data["jobStart"]);
+        $("#jobActive").val(data["jobActive"]);
     });
 }
+
 
 function renderOptionsForExeQueue(data) {
     if ($("#blankSpace").length === 0) {
@@ -254,6 +259,55 @@ function massActionModalSaveHandler_cancel() {
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
+function massActionModalSaveHandler_cancelForce() {
+    clearResponseMessage($('#massActionExeQModal'));
+
+    var formNewValues = $('#massActionExeQModal #massActionExeQModalForm');
+    var formList = $('#massActionForm');
+    var paramSerialized = formList.serialize();
+
+    showLoaderInModal('#massActionExeQModal');
+
+    var jqxhr = $.post("UpdateTestCaseExecutionQueue", paramSerialized + "&actionState=toCANCELLEDForce", "json");
+    $.when(jqxhr).then(function (data) {
+        // unblock when remote call returns 
+        hideLoaderInModal('#massActionExeQModal');
+        if ((getAlertType(data.messageType) === "success") || (getAlertType(data.messageType) === "warning")) {
+            $('#executionsTable').DataTable().draw();
+            $("#selectAll").prop("checked", false);
+            $('#massActionExeQModal').modal('hide');
+            showMessage(data);
+        } else {
+            showMessage(data, $('#massActionExeQModal'));
+        }
+    }).fail(handleErrorAjaxAfterTimeout);
+}
+
+function massActionModalSaveHandler_changePrio() {
+    clearResponseMessage($('#massActionExeQModal'));
+
+    var formNewValues = $('#massActionExeQModal #massActionExeQModalForm');
+    var formList = $('#massActionForm');
+    var paramSerialized = formList.serialize();
+    var newPrio = $('#massActionExeQModalForm #priority').val();
+
+    showLoaderInModal('#massActionExeQModal');
+
+    var jqxhr = $.post("UpdateTestCaseExecutionQueue", paramSerialized + "&actionSave=priority&priority=" + newPrio, "json");
+    $.when(jqxhr).then(function (data) {
+        // unblock when remote call returns 
+        hideLoaderInModal('#massActionExeQModal');
+        if ((getAlertType(data.messageType) === "success") || (getAlertType(data.messageType) === "warning")) {
+            $('#executionsTable').DataTable().draw();
+            $("#selectAll").prop("checked", false);
+            $('#massActionExeQModal').modal('hide');
+            showMessage(data);
+        } else {
+            showMessage(data, $('#massActionExeQModal'));
+        }
+    }).fail(handleErrorAjaxAfterTimeout);
+}
+
 function massActionModalCloseHandler() {
     // reset form values
     $('#massActionExeQModal #massActionExeQModalForm')[0].reset();
@@ -347,6 +401,12 @@ function aoColumnsFunc(tableId) {
             "data": "id",
             "sName": "id",
             "title": doc.getDocLabel("page_testcaseexecutionqueue", "id_col"),
+            "sWidth": "40px"
+        },
+        {
+            "data": "priority",
+            "sName": "priority",
+            "title": doc.getDocLabel("testcaseexecutionqueue", "priority"),
             "sWidth": "40px"
         },
         {
@@ -576,6 +636,13 @@ function aoColumnsFunc(tableId) {
             "sWidth": "70px",
             "defaultContent": "",
             "visible": false
+        },
+        {
+            "data": "debugFlag",
+            "sName": "debugFlag",
+            "title": doc.getDocLabel("testcaseexecutionqueue", "debugFlag"),
+            "sWidth": "70px",
+            "defaultContent": "",
         },
         {
             "data": "UsrModif",

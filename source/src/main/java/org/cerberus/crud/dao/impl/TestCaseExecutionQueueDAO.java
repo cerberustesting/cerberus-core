@@ -96,6 +96,8 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
     private static final String COLUMN_RETRIES = "Retries";
     private static final String COLUMN_MANUAL_EXECUTION = "ManualExecution";
     private static final String COLUMN_STATE = "State";
+    private static final String COLUMN_PRIORITY = "Priority";
+    private static final String COLUMN_DEBUGFLAG = "DebugFlag";
     private static final String COLUMN_EXEID = "ExeId";
     private static final String COLUMN_USRCREATED = "UsrCreated";
     private static final String COLUMN_DATECREATED = "DateCreated";
@@ -440,13 +442,13 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
 
         final StringBuilder query = new StringBuilder();
 
-        query.append("SELECT id, exq.manualexecution, app.System, cep.environment, cep.country, cep.application, cep.poolsize, exq.robotIP, rbt.host ");
+        query.append("SELECT exq.id, exq.manualexecution, app.System, cea.environment, cea.country, cea.application, cea.poolsize, exq.robotIP, rbt.host, exq.DebugFlag ");
         query.append("from testcaseexecutionqueue exq ");
-        query.append("left join testcase tc on tc.test=exq.test and tc.testcase=exq.testcase ");
-        query.append("left join application app on app.application=tc.application ");
+        query.append("left join testcase tec on tec.test=exq.test and tec.testcase=exq.testcase ");
+        query.append("left join application app on app.application=tec.application ");
         query.append("left join robot rbt on rbt.robot=exq.robot ");
-        query.append("left join countryenvironmentparameters cep on cep.system=app.system and cep.environment=exq.environment and cep.country=exq.country and cep.application=tc.application ");
-        query.append("WHERE State='QUEUED' order by id asc;");
+        query.append("left join countryenvironmentparameters cea on cea.system=app.system and cea.environment=exq.environment and cea.country=exq.country and cea.application=tec.application ");
+        query.append("WHERE exq.State = 'QUEUED' order by exq.priority, exq.id asc;");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -510,13 +512,13 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
 
         final StringBuilder query = new StringBuilder();
 
-        query.append("SELECT id, exq.manualexecution, app.System, cep.environment, cep.country, cep.application, cep.poolsize, exq.robotIP, rbt.host ");
+        query.append("SELECT exq.id, exq.manualexecution, app.System, cea.environment, cea.country, cea.application, cea.poolsize, exq.robotIP, rbt.host, exq.DebugFlag ");
         query.append("from testcaseexecutionqueue exq ");
-        query.append("left join testcase tc on tc.test=exq.test and tc.testcase=exq.testcase ");
-        query.append("left join application app on app.application=tc.application ");
+        query.append("left join testcase tec on tec.test=exq.test and tec.testcase=exq.testcase ");
+        query.append("left join application app on app.application=tec.application ");
         query.append("left join robot rbt on rbt.robot=exq.robot ");
-        query.append("left join countryenvironmentparameters cep on cep.system=app.system and cep.environment=exq.environment and cep.country=exq.country and cep.application=tc.application ");
-        query.append("WHERE State in ('WAITING', 'STARTING', 'EXECUTING') order by id asc;");
+        query.append("left join countryenvironmentparameters cea on cea.system=app.system and cea.environment=exq.environment and cea.country=exq.country and cea.application=tec.application ");
+        query.append("WHERE exq.State in ('WAITING', 'STARTING', 'EXECUTING') order by exq.priority, exq.id asc;");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -1429,8 +1431,8 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                 + "`, `" + COLUMN_SCREENSIZE + "`, `" + COLUMN_MANUAL_URL + "`, `" + COLUMN_MANUAL_HOST + "`, `" + COLUMN_MANUAL_CONTEXT_ROOT + "`, `"
                 + COLUMN_MANUAL_LOGIN_RELATIVE_URL + "`, `" + COLUMN_MANUAL_ENV_DATA + "`, `" + COLUMN_TAG + "`, `" + COLUMN_SCREENSHOT + "`, `" + COLUMN_VERBOSE + "`, `"
                 + COLUMN_TIMEOUT + "`, `" + COLUMN_PAGE_SOURCE + "`, `" + COLUMN_SELENIUM_LOG + "`, `" + COLUMN_RETRIES + "`, `"
-                + COLUMN_MANUAL_EXECUTION + "`, `" + COLUMN_USRCREATED + "`, `" + COLUMN_STATE + "`) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+                + COLUMN_MANUAL_EXECUTION + "`, `" + COLUMN_USRCREATED + "`, `" + COLUMN_STATE + "`, `" + COLUMN_DEBUGFLAG + "`, `" + COLUMN_PRIORITY + "`) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -1471,6 +1473,8 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                 } else {
                     preStat.setString(i++, object.getState().name());
                 }
+                preStat.setString(i++, object.getDebugFlag());
+                preStat.setInt(i++, object.getPriority());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -1511,7 +1515,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
         String query = "UPDATE testcaseexecutionqueue exq SET `Test` = ?, `TestCase` = ?, `Country` = ?, Environment = ?, Robot = ?, "
                 + "RobotIP = ?, `RobotPort` = ?, Browser = ?, BrowserVersion = ?, `Platform`= ?, `ScreenSize` = ?, "
                 + "ManualURL = ?, `ManualHost` = ?, ManualContextRoot = ?, `ManualLoginRelativeUrl`= ?, `ManualEnvData` = ?, "
-                + "Tag = ?, `Screenshot` = ?, Verbose = ?, `Timeout`= ?, `PageSource` = ?, "
+                + "Tag = ?, `Screenshot` = ?, Verbose = ?, `Timeout`= ?, `PageSource` = ?, `debugFlag` = ?, `priority` = ?, "
                 + "SeleniumLog = ?, `Retries`= ?, `ManualExecution` = ?, "
                 + "`UsrModif`= ?, `DateModif` = now() ";
         query += " WHERE `ID` = ?";
@@ -1547,6 +1551,8 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                 preStat.setInt(i++, object.getVerbose());
                 preStat.setString(i++, object.getTimeout());
                 preStat.setInt(i++, object.getPageSource());
+                preStat.setString(i++, object.getDebugFlag());
+                preStat.setInt(i++, object.getPriority());
                 preStat.setInt(i++, object.getSeleniumLog());
                 preStat.setInt(i++, object.getRetries());
                 preStat.setString(i++, object.getManualExecution());
@@ -1580,11 +1586,12 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
     }
 
     @Override
-    public void updateToWaiting(long id) throws CerberusException {
-        final String query = "UPDATE `" + TABLE + "` "
-                + "SET `" + COLUMN_STATE + "` = 'WAITING', `" + COLUMN_REQUEST_DATE + "` = now(), `" + COLUMN_DATEMODIF + "` = now() "
-                + "WHERE `" + COLUMN_ID + "` = ? "
-                + "AND `" + COLUMN_STATE + "` not in ('WAITING','EXECUTING','DONE')";
+    public Answer updateComment(long id, String comment) {
+        MessageEvent msg = null;
+        String query
+                = "UPDATE `" + TABLE + "` "
+                + "SET `" + COLUMN_REQUEST_DATE + "` = now(), `" + COLUMN_DATEMODIF + "` = now(), `" + COLUMN_COMMENT + "` = ? "
+                + "WHERE `" + COLUMN_ID + "` = ? ;";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -1592,67 +1599,46 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
             LOG.debug("SQL.param.id : " + id);
         }
 
-        try (
-                Connection connection = databaseSpring.connect();
-                PreparedStatement updateStateStatement = connection.prepareStatement(query)) {
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                int i = 1;
+                preStat.setString(i++, comment);
+                preStat.setLong(i++, id);
 
-            updateStateStatement.setLong(1, id);
+                int updateResult = preStat.executeUpdate();
+                if (updateResult <= 0) {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_NOUPDATE);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%DESCRIPTION%", "Unable to update comment for execution in queue " + id + " (update result: " + updateResult + ")."));
+                    LOG.warn("Unable to update comment for execution in queue " + id + " (update result: " + updateResult + ").");
+                } else {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
 
-            int updateResult = updateStateStatement.executeUpdate();
-            if (updateResult <= 0) {
-                LOG.warn("Unable to move state to WAITING for execution in queue " + id + " (update result: " + updateResult + "). Is the execution is currently EXECUTING?");
-                throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
-            }
-        } catch (SQLException e) {
-            LOG.warn("Unable to set move to WAITING for execution in queue id " + id, e);
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
-        }
-    }
-
-    @Override
-    public List<Long> updateToWaiting(final List<Long> ids) throws CerberusException {
-        final List<Long> inSuccess = new ArrayList<>(ids);
-        final List<Long> inError = new ArrayList<>();
-
-        String query = "UPDATE `" + TABLE + "` "
-                + "SET `" + COLUMN_STATE + "` = 'WAITING', `" + COLUMN_REQUEST_DATE + "` = now(), `" + COLUMN_DATEMODIF + "` = now() "
-                + "WHERE `" + COLUMN_ID + "` = ? "
-                + "AND `" + COLUMN_STATE + "` <> 'EXECUTING'";
-
-        try (
-                final Connection connection = databaseSpring.connect();
-                final PreparedStatement updateStateStatement = connection.prepareStatement(query)) {
-            // First, create batch statement
-            for (final long id : ids) {
-                try {
-
-                    // Debug message on SQL.
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("SQL : " + query);
-                        LOG.debug("SQL.param.id : " + id);
-                    }
-                    updateStateStatement.setLong(1, id);
-
-                    updateStateStatement.addBatch();
-                } catch (SQLException e) {
-                    LOG.warn("Unable to add execution in queue id " + id + " to the batch process from setting its state to WAITING", e);
-                    inSuccess.remove(id);
-                    inError.add(id);
                 }
-            }
 
-            // Then execute batch statement and parse result
-            final int[] batchExecutionResult = updateStateStatement.executeBatch();
-            for (int batchExecutionResultIndex = 0; batchExecutionResultIndex < batchExecutionResult.length; batchExecutionResultIndex++) {
-                if (batchExecutionResult[batchExecutionResultIndex] <= 0) {
-                    inError.add(inSuccess.get(batchExecutionResultIndex));
-                }
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                preStat.close();
             }
-            return inError;
-        } catch (SQLException e) {
-            LOG.warn("Unable to move state to WAITING for selected executions in queue", e);
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
+            }
         }
+        return new Answer(msg);
     }
 
     @Override
@@ -1681,8 +1667,8 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                 int updateResult = preStat.executeUpdate();
                 if (updateResult <= 0) {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_NOUPDATE);
-                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%DESCRIPTION%", "Unable to move state to WAITING for execution in queue " + id + " (update result: " + updateResult + "). Maybe execution is already EXECUTING, WAITING or DONE?"));
-                    LOG.warn("Unable to move state to CANCELLED for execution in queue " + id + " (update result: " + updateResult + "). Maybe execution is already EXECUTING, WAITING or DONE?");
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%DESCRIPTION%", "Unable to move state to QUEUD for execution in queue " + id + " (update result: " + updateResult + "). Maybe execution is no longuer in CANCELLED or ERROR ?"));
+                    LOG.warn("Unable to move state to QUEUED for execution in queue " + id + " (update result: " + updateResult + "). Maybe execution is no longuer in CANCELLED or ERROR ?");
                 } else {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                     msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
@@ -1737,7 +1723,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
 
                 int updateResult = updateStateStatement.executeUpdate();
                 if (updateResult <= 0) {
-                    LOG.warn("Unable to move state to CANCELLED for execution in queue " + id + " (update result: " + updateResult + "). Maybe execution is already EXECUTING, WAITING or DONE?");
+                    LOG.warn("Unable to move state to WAITING for execution in queue " + id + " (update result: " + updateResult + "). Maybe execution is not in QUEUED ?");
                     throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
                 }
 
@@ -1760,7 +1746,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
         String queryUpdate = "UPDATE `" + TABLE + "` "
                 + "SET `" + COLUMN_STATE + "` = 'EXECUTING', `" + COLUMN_EXEID + "` = ?, `" + COLUMN_COMMENT + "` = ?, `" + COLUMN_REQUEST_DATE + "` = now(), `" + COLUMN_DATEMODIF + "` = now() "
                 + "WHERE `" + COLUMN_ID + "` = ? "
-                + "AND `" + COLUMN_STATE + "` in ('QUEUED', 'STARTING')";
+                + "AND `" + COLUMN_STATE + "` in ('STARTING')";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -1778,7 +1764,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
 
             int updateResult = updateStateStatement.executeUpdate();
             if (updateResult <= 0) {
-                LOG.warn("Unable to move state from QUEUED to EXECUTING for execution in queue " + id + " (update result: " + updateResult + "). Is the execution is not currently QUEUED?");
+                LOG.warn("Unable to move state to EXECUTING for execution in queue " + id + " (update result: " + updateResult + "). Is the execution currently STARTING ?");
                 throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
             }
         } catch (SQLException e) {
@@ -1808,7 +1794,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
 
             int updateResult = updateStateStatement.executeUpdate();
             if (updateResult <= 0) {
-                LOG.warn("Unable to move state from QUEUED to EXECUTING for execution in queue " + id + " (update result: " + updateResult + "). Is the execution is not currently QUEUED?");
+                LOG.warn("Unable to move state to STARTING for execution in queue " + id + " (update result: " + updateResult + "). Is the execution currently WAITING ?");
                 throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
             }
         } catch (SQLException e) {
@@ -1888,7 +1874,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                 = "UPDATE `" + TABLE + "` "
                 + "SET `" + COLUMN_STATE + "` = 'CANCELLED', `" + COLUMN_REQUEST_DATE + "` = now(), `" + COLUMN_DATEMODIF + "` = now(), `" + COLUMN_COMMENT + "` = ? "
                 + "WHERE `" + COLUMN_ID + "` = ? "
-                + "AND `" + COLUMN_STATE + "` IN ('ERROR')";
+                + "AND `" + COLUMN_STATE + "` IN ('ERROR','QUEUED')";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -1906,8 +1892,64 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                 int updateResult = preStat.executeUpdate();
                 if (updateResult <= 0) {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_NOUPDATE);
-                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%DESCRIPTION%", "Unable to move state to CANCELLED for execution in queue " + id + " (update result: " + updateResult + "). Maybe execution is already EXECUTING, WAITING or DONE?"));
-                    LOG.warn("Unable to move state to CANCELLED for execution in queue " + id + " (update result: " + updateResult + "). Maybe execution is already EXECUTING, WAITING or DONE?");
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%DESCRIPTION%", "Unable to move state to CANCELLED for execution in queue " + id + " (update result: " + updateResult + "). Maybe execution is no longuer in ERROR or QUEUED ?"));
+                    LOG.warn("Unable to move state to CANCELLED for execution in queue " + id + " (update result: " + updateResult + "). Maybe execution is no longuer in ERROR or QUEUED ?");
+//                throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+                } else {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
+
+                }
+
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
+            }
+        }
+        return new Answer(msg);
+    }
+
+    @Override
+    public Answer updateToCancelledForce(long id, String comment) {
+        MessageEvent msg = null;
+        String query
+                = "UPDATE `" + TABLE + "` "
+                + "SET `" + COLUMN_STATE + "` = 'CANCELLED', `" + COLUMN_REQUEST_DATE + "` = now(), `" + COLUMN_DATEMODIF + "` = now(), `" + COLUMN_COMMENT + "` = ? "
+                + "WHERE `" + COLUMN_ID + "` = ? "
+                + "AND `" + COLUMN_STATE + "` IN ('WAITING','STARTING','EXECUTING')";
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                int i = 1;
+                preStat.setString(i++, comment);
+                preStat.setLong(i++, id);
+
+                int updateResult = preStat.executeUpdate();
+                if (updateResult <= 0) {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_NOUPDATE);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%DESCRIPTION%", "Unable to move state to CANCELLED (forced) for execution in queue " + id + " (update result: " + updateResult + "). Maybe execution is no longuer in WAITING or STARTING or EXECUTING ?"));
+                    LOG.warn("Unable to move state to CANCELLED (forced) for execution in queue " + id + " (update result: " + updateResult + "). Maybe execution is no longuer in WAITING or STARTING or EXECUTING ?");
 //                throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
                 } else {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -2048,7 +2090,9 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                 resultSet.getInt(COLUMN_SELENIUM_LOG),
                 new Date(resultSet.getTimestamp(COLUMN_REQUEST_DATE).getTime()),
                 TestCaseExecutionQueue.State.valueOf(resultSet.getString(COLUMN_STATE)),
+                resultSet.getInt(COLUMN_PRIORITY),
                 resultSet.getString(COLUMN_COMMENT),
+                resultSet.getString(COLUMN_DEBUGFLAG),
                 resultSet.getInt(COLUMN_RETRIES),
                 resultSet.getString(COLUMN_MANUAL_EXECUTION),
                 resultSet.getLong(COLUMN_EXEID),
@@ -2061,13 +2105,14 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
 
     private TestCaseExecutionQueueToTreat loadQueueToTreatFromResultSet(ResultSet resultSet) throws SQLException {
         TestCaseExecutionQueueToTreat inQueue = new TestCaseExecutionQueueToTreat();
-        inQueue.setId(resultSet.getInt("id"));
+        inQueue.setId(resultSet.getInt("exq.id"));
         inQueue.setManualExecution(resultSet.getString("exq.manualexecution"));
         inQueue.setSystem(resultSet.getString("app.system"));
-        inQueue.setEnvironment(resultSet.getString("cep.environment"));
-        inQueue.setCountry(resultSet.getString("cep.country"));
-        inQueue.setApplication(resultSet.getString("cep.application"));
-        inQueue.setPoolSizeApplication(resultSet.getInt("cep.poolsize"));
+        inQueue.setEnvironment(resultSet.getString("cea.environment"));
+        inQueue.setCountry(resultSet.getString("cea.country"));
+        inQueue.setApplication(resultSet.getString("cea.application"));
+        inQueue.setPoolSizeApplication(resultSet.getInt("cea.poolsize"));
+        inQueue.setDebugFlag(resultSet.getString("exq.DebugFlag"));
         String robotHost = resultSet.getString("rbt.host");
         if (StringUtil.isNullOrEmpty(robotHost)) {
             robotHost = resultSet.getString("exq.robotIP");
