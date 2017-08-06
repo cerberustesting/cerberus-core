@@ -26,6 +26,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -34,6 +35,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.entity.CampaignParameter;
 import org.cerberus.crud.entity.TestCase;
+import org.cerberus.crud.entity.TestCaseCountry;
 import org.cerberus.crud.entity.TestCaseExecutionQueue;
 import org.cerberus.crud.service.ICampaignParameterService;
 import org.cerberus.crud.service.ILogEventService;
@@ -48,6 +50,8 @@ import org.cerberus.util.servlet.ServletUtil;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.cerberus.crud.factory.IFactoryTestCaseExecutionQueue;
+import org.cerberus.crud.service.IInvariantService;
+import org.cerberus.crud.service.ITestCaseCountryService;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 
 /**
@@ -101,7 +105,9 @@ public class AddToExecutionQueueV001 extends HttpServlet {
     private ITestCaseExecutionQueueService inQueueService;
     private IFactoryTestCaseExecutionQueue inQueueFactoryService;
     private IExecutionThreadPoolService executionThreadService;
+    private IInvariantService invariantService;
     private ITestCaseService testCaseService;
+    private ITestCaseCountryService testCaseCountryService;
     private ICampaignParameterService campaignParameterService;
 
     /**
@@ -131,6 +137,8 @@ public class AddToExecutionQueueV001 extends HttpServlet {
         inQueueFactoryService = appContext.getBean(IFactoryTestCaseExecutionQueue.class);
         executionThreadService = appContext.getBean(IExecutionThreadPoolService.class);
         testCaseService = appContext.getBean(ITestCaseService.class);
+        invariantService = appContext.getBean(IInvariantService.class);
+        testCaseCountryService = appContext.getBean(ITestCaseCountryService.class);
         campaignParameterService = appContext.getBean(ICampaignParameterService.class);
 
         // Calling Servlet Transversal Util.
@@ -263,27 +271,44 @@ public class AddToExecutionQueueV001 extends HttpServlet {
 
         // Starting the request only if previous parameters exist.
         if (!error) {
-
             // Part 1: Getting all possible xecution from test cases + countries + environments + browsers which have been sent to this servlet.
+            Map<String, String> invariantEnv = invariantService.readToHashMapGp1StringByIdname("ENVIRONMENT", "");
             List<TestCaseExecutionQueue> toInserts = new ArrayList<TestCaseExecutionQueue>();
-            for (Map<String, String> selectedTest : selectedTests) {
-                String test = selectedTest.get(PARAMETER_SELECTED_TEST_KEY_TEST);
-                String testCase = selectedTest.get(PARAMETER_SELECTED_TEST_KEY_TESTCASE);
-                for (String country : countries) {
-                    for (String environment : environments) {
-                        for (String browser : browsers) {
-                            try {
-                                String user = request.getRemoteUser() == null ? "" : request.getRemoteUser();
-                                toInserts.add(inQueueFactoryService.create(test, testCase, country, environment, robot, robotIP, robotPort, browser, browserVersion,
-                                        platform, screenSize, manualURL, manualHost, manualContextRoot, manualLoginRelativeURL, manualEnvData, tag, screenshot, verbose,
-                                        timeout, pageSource, seleniumLog, 0, retries, manualExecution, user, null, null, null));
-                            } catch (FactoryCreationException e) {
-                                LOG.error("Unable to insert record due to: " + e);
-                                LOG.error("test: " + test + "-" + testCase + "-" + country + "-" + environment + "-" + robot);
+            try {
+                for (Map<String, String> selectedTest : selectedTests) {
+                    String test = selectedTest.get(PARAMETER_SELECTED_TEST_KEY_TEST);
+                    String testCase = selectedTest.get(PARAMETER_SELECTED_TEST_KEY_TESTCASE);
+                    TestCase tc = testCaseService.convert(testCaseService.readByKey(test, testCase));
+                    // TestCases that are not active are not inserted into queue.
+                    if (tc.getTcActive().equals("Y")) {
+                        // We only insert testcase that exist for the given country.
+                        for (TestCaseCountry country : testCaseCountryService.convert(testCaseCountryService.readByTestTestCase(null, test, testCase))) {
+                            if (countries.contains(country.getCountry())) {
+                                // for each environment we test that correspondng gp1 is compatible with testcase environment flag activation.
+                                for (String environment : environments) {
+                                    String envGp1 = invariantEnv.get(environment);
+                                    if (((envGp1.equals("PROD")) && (tc.getActivePROD().equalsIgnoreCase("Y")))
+                                            || ((envGp1.equals("UAT")) && (tc.getActiveUAT().equalsIgnoreCase("Y")))
+                                            || ((envGp1.equals("QA")) && (tc.getActiveQA().equalsIgnoreCase("Y")))) {
+                                        for (String browser : browsers) {
+                                            try {
+                                                String user = request.getRemoteUser() == null ? "" : request.getRemoteUser();
+                                                toInserts.add(inQueueFactoryService.create(test, testCase, country.getCountry(), environment, robot, robotIP, robotPort, browser, browserVersion,
+                                                        platform, screenSize, manualURL, manualHost, manualContextRoot, manualLoginRelativeURL, manualEnvData, tag, screenshot, verbose,
+                                                        timeout, pageSource, seleniumLog, 0, retries, manualExecution, user, null, null, null));
+                                            } catch (FactoryCreationException e) {
+                                                LOG.error("Unable to insert record due to: " + e);
+                                                LOG.error("test: " + test + "-" + testCase + "-" + country.getCountry() + "-" + environment + "-" + robot);
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
                 }
+            } catch (CerberusException ex) {
+                java.util.logging.Logger.getLogger(AddToExecutionQueueV001.class.getName()).log(Level.SEVERE, null, ex);
             }
 
             // Part 2: Try to insert all these test cases to the execution queue.

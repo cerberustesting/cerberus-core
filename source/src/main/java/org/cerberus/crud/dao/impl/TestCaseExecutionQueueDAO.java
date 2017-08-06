@@ -1368,8 +1368,8 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                 + "`, `" + COLUMN_SCREENSIZE + "`, `" + COLUMN_MANUAL_URL + "`, `" + COLUMN_MANUAL_HOST + "`, `" + COLUMN_MANUAL_CONTEXT_ROOT + "`, `"
                 + COLUMN_MANUAL_LOGIN_RELATIVE_URL + "`, `" + COLUMN_MANUAL_ENV_DATA + "`, `" + COLUMN_TAG + "`, `" + COLUMN_SCREENSHOT + "`, `" + COLUMN_VERBOSE + "`, `"
                 + COLUMN_TIMEOUT + "`, `" + COLUMN_PAGE_SOURCE + "`, `" + COLUMN_SELENIUM_LOG + "`, `" + COLUMN_RETRIES + "`, `"
-                + COLUMN_MANUAL_EXECUTION + "`, `" + COLUMN_USRCREATED + "`, `" + COLUMN_STATE + "`, `" + COLUMN_DEBUGFLAG + "`, `" + COLUMN_PRIORITY + "`) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+                + COLUMN_MANUAL_EXECUTION + "`, `" + COLUMN_USRCREATED + "`, `" + COLUMN_STATE + "`, `" + COLUMN_COMMENT + "`, `" + COLUMN_DEBUGFLAG + "`, `" + COLUMN_PRIORITY + "`) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -1410,6 +1410,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                 } else {
                     preStat.setString(i++, object.getState().name());
                 }
+                preStat.setString(i++, object.getComment());
                 preStat.setString(i++, object.getDebugFlag());
                 preStat.setInt(i++, object.getPriority());
 

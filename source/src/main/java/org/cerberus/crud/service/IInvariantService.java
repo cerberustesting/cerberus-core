@@ -46,9 +46,18 @@ public interface IInvariantService {
     /**
      *
      * @param idName
+     * @param defaultValue
      * @return
      */
-    HashMap<String, Integer> readToHashMapByIdname(String idName, Integer defaultValue);
+    HashMap<String, Integer> readToHashMapGp1IntegerByIdname(String idName, Integer defaultValue);
+
+    /**
+     *
+     * @param idName
+     * @param defaultValue
+     * @return
+     */
+    HashMap<String, String> readToHashMapGp1StringByIdname(String idName, String defaultValue);
 
     AnswerList findInvariantByIdGp1(String idName, String gp);
 

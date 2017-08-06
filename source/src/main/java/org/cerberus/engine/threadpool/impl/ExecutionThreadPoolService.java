@@ -109,7 +109,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
 
         // Getting RobotHost PoolSize
         HashMap<String, Integer> robot_poolsize = new HashMap<String, Integer>();
-        robot_poolsize = invariantService.readToHashMapByIdname("ROBOTHOST", poolSizeRobot);
+        robot_poolsize = invariantService.readToHashMapGp1IntegerByIdname("ROBOTHOST", poolSizeRobot);
 
         // Getting all executions to be treated.
         answer = tceiqService.readQueueToTreat();
@@ -220,7 +220,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
 
                 // Getting RobotHost PoolSize
                 HashMap<String, Integer> robot_poolsize = new HashMap<String, Integer>();
-                robot_poolsize = invariantService.readToHashMapByIdname("ROBOTHOST", poolSizeRobot);
+                robot_poolsize = invariantService.readToHashMapGp1IntegerByIdname("ROBOTHOST", poolSizeRobot);
 
                 // Analysing each execution in the database queue.
                 for (TestCaseExecutionQueueToTreat exe : executionsInQueue) {

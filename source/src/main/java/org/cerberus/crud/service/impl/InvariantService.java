@@ -62,15 +62,27 @@ public class InvariantService implements IInvariantService {
     }
 
     @Override
-    public HashMap<String, Integer> readToHashMapByIdname(String idName, Integer defaultValue) {
-        HashMap<String, Integer> robot_poolsize = new HashMap<String, Integer>();
+    public HashMap<String, Integer> readToHashMapGp1IntegerByIdname(String idName, Integer defaultValue) {
+        HashMap<String, Integer> result = new HashMap<String, Integer>();
 
         AnswerList answer = readByIdname(idName); //TODO: handle if the response does not turn ok
         for (Invariant inv : (List<Invariant>) answer.getDataList()) {
-            int robotSelected = ParameterParserUtil.parseIntegerParam(inv.getGp1(), defaultValue);
-            robot_poolsize.put(inv.getValue(), robotSelected);
+            int gp1ToInt = ParameterParserUtil.parseIntegerParam(inv.getGp1(), defaultValue);
+            result.put(inv.getValue(), gp1ToInt);
         }
-        return robot_poolsize;
+        return result;
+    }
+
+    @Override
+    public HashMap<String, String> readToHashMapGp1StringByIdname(String idName, String defaultValue) {
+        HashMap<String, String> result = new HashMap<String, String>();
+
+        AnswerList answer = readByIdname(idName); //TODO: handle if the response does not turn ok
+        for (Invariant inv : (List<Invariant>) answer.getDataList()) {
+            String gp1 = ParameterParserUtil.parseStringParam(inv.getGp1(), defaultValue);
+            result.put(inv.getValue(), gp1);
+        }
+        return result;
     }
 
     @Override

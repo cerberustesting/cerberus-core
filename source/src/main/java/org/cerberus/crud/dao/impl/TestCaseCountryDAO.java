@@ -326,6 +326,13 @@ public class TestCaseCountryDAO implements ITestCaseCountryDAO {
             query.append(" AND tcc.testcase = ?");
         }
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.test : " + test);
+            LOG.debug("SQL.param.testCase : " + testCase);
+        }
+        
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
