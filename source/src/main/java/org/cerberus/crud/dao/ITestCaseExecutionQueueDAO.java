@@ -81,15 +81,12 @@ public interface ITestCaseExecutionQueueDAO {
 
     /**
      *
+     * @param state State to filter the list of id queue to read. Use state =
+     * RUNNING in order to get all RUNNING state (EXECUTING, STARTING and
+     * WAITING)
      * @return @throws CerberusException
      */
-    public AnswerList readQueueToTreat() throws CerberusException;
-
-    /**
-     *
-     * @return @throws CerberusException
-     */
-    public AnswerList readQueueRunning() throws CerberusException;
+    public AnswerList readQueueToTreatOrRunning(String state) throws CerberusException;
 
     /**
      *
@@ -192,7 +189,6 @@ public interface ITestCaseExecutionQueueDAO {
      */
     Answer updateComment(long id, String comment);
 
-
     /**
      *
      * @param id
@@ -256,7 +252,6 @@ public interface ITestCaseExecutionQueueDAO {
      */
     Answer updateToCancelledForce(long id, String comment);
 
-    
     /**
      * @param object the {@link AppService} to Delete
      * @return {@link AnswerItem}

@@ -19,17 +19,10 @@
  */
 package org.cerberus.engine.threadpool;
 
-import org.cerberus.engine.entity.threadpool.ExecutionThreadPool;
 import org.cerberus.exception.CerberusException;
 
 import java.util.HashMap;
 
-/**
- * Manage a set of {@link ExecutionThreadPool} to support multiple Cerberus test
- * case executions
- *
- * @author abourdon
- */
 public interface IExecutionThreadPoolService {
 
     HashMap<String, Integer> getCurrentlyRunning() throws CerberusException;

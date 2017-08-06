@@ -91,6 +91,9 @@ public class FactoryTestCaseExecutionQueue implements IFactoryTestCaseExecutionQ
                 manualContextRoot, manualLoginRelativeURL, manualEnvData, tag, screenshot, verbose, timeout, pageSource, seleniumLog, exeId,
                 retries, manualExecution, usrCreated, dateCreated, usrModif, dateModif);
         inQueue.setState(TestCaseExecutionQueue.State.QUEUED);
+        inQueue.setComment("");
+        inQueue.setDebugFlag("N");
+        inQueue.setPriority(100);
         return inQueue;
     }
 

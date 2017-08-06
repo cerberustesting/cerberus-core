@@ -32,7 +32,7 @@ function initPage() {
 
 
     // Display table
-    var configurations = new TableConfigurationsServerSide("executionsTable", "ReadTestCaseExecutionQueue", "contentTable", aoColumnsFunc("executionsTable"), [1, 'desc'], [10, 25, 50, 100, 200, 500]);
+    var configurations = new TableConfigurationsServerSide("executionsTable", "ReadTestCaseExecutionQueue", "contentTable", aoColumnsFunc("executionsTable"), [1, 'desc'], [10, 25, 50, 100, 200, 500, 1000]);
     var table = createDataTableWithPermissions(configurations, renderOptionsForExeQueue, "#executionList", undefined, true);
 
     if (searchS !== null) {

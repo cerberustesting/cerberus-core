@@ -57,44 +57,10 @@ public class ExecutionQueueWorkerThread implements Runnable {
     private int toExecuteTimeout;
 
     private Future<?> future;
-    private static final Pattern RETURN_CODE_FROM_ANSWER_PATTERN = Pattern.compile("^ReturnCode = (\\d+)$", Pattern.MULTILINE);
+    private static final Pattern EXECUTION_ID_FROM_ANSWER_PATTERN = Pattern.compile("^RunID = (\\d+)$", Pattern.MULTILINE);
     private static final Pattern RETURN_CODE_DESCRIPTION_FROM_ANSWER_PATTERN = Pattern.compile("^ReturnCodeDescription = (.*)$", Pattern.MULTILINE);
+
     public static String PARAMETER_OUTPUT_FORMAT_VALUE = "verbose-txt";
-
-    /**
-     * The set of return codes to be considered as technical errors
-     */
-    private static Set<Integer> RETURN_CODES_IN_ERROR = new HashSet<Integer>() {
-        {
-            // Pre execution checks (from ExecutionStartService#startExecution())
-            add(MessageGeneralEnum.VALIDATION_FAILED_OUTPUTFORMAT_INVALID.getCode());
-            add(MessageGeneralEnum.VALIDATION_FAILED_VERBOSE_INVALID.getCode());
-            add(MessageGeneralEnum.VALIDATION_FAILED_SCREENSHOT_INVALID.getCode());
-            add(MessageGeneralEnum.NO_DATA_FOUND.getCode());
-            add(MessageGeneralEnum.VALIDATION_FAILED_TESTCASE_NOT_FOUND.getCode());
-            add(MessageGeneralEnum.VALIDATION_FAILED_TEST_NOT_FOUND.getCode());
-            add(MessageGeneralEnum.VALIDATION_FAILED_APPLICATION_NOT_FOUND.getCode());
-            add(MessageGeneralEnum.VALIDATION_FAILED_COUNTRY_NOT_FOUND.getCode());
-            add(MessageGeneralEnum.VALIDATION_FAILED_MANUALURL_INVALID.getCode());
-            add(MessageGeneralEnum.VALIDATION_FAILED_COUNTRYENVAPP_NOT_FOUND.getCode());
-            add(MessageGeneralEnum.VALIDATION_FAILED_ENVIRONMENT_DOESNOTEXIST_MAN.getCode());
-            add(MessageGeneralEnum.VALIDATION_FAILED_ENVIRONMENT_DOESNOTEXIST.getCode());
-            add(MessageGeneralEnum.VALIDATION_FAILED_COUNTRYENV_NOT_FOUND.getCode());
-            add(MessageGeneralEnum.VALIDATION_FAILED_BROWSER_NOT_SUPPORTED.getCode());
-            add(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_EMPTYORBADIP.getCode());
-            add(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_EMPTYORBADPORT.getCode());
-            add(MessageGeneralEnum.VALIDATION_FAILED_COULDNOTCREATE_RUNID.getCode());
-
-            // Pre-execution checks (from SeleniumServerService#startServer())
-            add(MessageGeneralEnum.VALIDATION_FAILED_URL_MALFORMED.getCode());
-            add(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_COULDNOTCONNECT.getCode());
-            add(MessageGeneralEnum.EXECUTION_FA_SELENIUM.getCode());
-            add(MessageGeneralEnum.EXECUTION_FA_SERVLETVALIDATONS.getCode());
-
-            // Pre-execution checks (from SikuliService)
-            add(MessageEventEnum.ACTION_FAILED_SIKULI_SERVER_NOT_REACHABLE.getCode());
-        }
-    };
 
     private ParamRequestMaker makeParamRequest() {
         ParamRequestMaker paramRequestMaker = new ParamRequestMaker();
@@ -183,6 +149,14 @@ public class ExecutionQueueWorkerThread implements Runnable {
         this.future = future;
     }
 
+    public int getToExecuteTimeout() {
+        return toExecuteTimeout;
+    }
+
+    public void setToExecuteTimeout(int toExecuteTimeout) {
+        this.toExecuteTimeout = toExecuteTimeout;
+    }
+
     @Override
     public void run() {
         try {
@@ -203,7 +177,7 @@ public class ExecutionQueueWorkerThread implements Runnable {
             LOG.warn("Execution in queue " + queueId + " has finished with error", e);
             try {
                 queueService.updateToError(queueId, e.getMessage());
-                
+
             } catch (CerberusException again) {
                 LOG.warn("Unable to mark execution in queue " + queueId + " as in error", again);
             }
@@ -253,9 +227,6 @@ public class ExecutionQueueWorkerThread implements Runnable {
     /**
      * Parse the answer given by the {@link RunTestCase}
      * <p>
-     * Assume answer has been written following the
-     * {@link #PARAMETER_OUTPUT_FORMAT_VALUE}
-     *
      * @param answer the {@link RunTestCase}'s answer
      * @throws RunProcessException if an error occurred if execution was on
      * failure or if answer cannot be parsed
@@ -263,28 +234,28 @@ public class ExecutionQueueWorkerThread implements Runnable {
      */
     private void runParseAnswer(String answer) {
         // Check answer format
-        LOG.debug("Parsing Execution result : " + answer);
+//        LOG.debug("Parsing Execution result : " + answer);
 
-        Matcher matcher = RETURN_CODE_FROM_ANSWER_PATTERN.matcher(answer);
+        Matcher matcher = EXECUTION_ID_FROM_ANSWER_PATTERN.matcher(answer);
         if (!matcher.find()) {
             LOG.warn("Bad answer format: " + answer);
-            throw new RunQueueProcessException("Bad answer format. Expected " + PARAMETER_OUTPUT_FORMAT_VALUE + ". Probably due to bad cerberus_url value. Check server logs");
+            throw new RunQueueProcessException("Bad answer format. Expected 'RunID = ' in the output result. Probably due to bad cerberus_url value. Check server logs");
         }
 
         // Extract the return code
-        int returnCode;
+        Long executionID;
         try {
-            returnCode = Integer.parseInt(matcher.group(1));
+            executionID = Long.parseLong(matcher.group(1));
         } catch (NumberFormatException e) {
             throw new RunQueueProcessException("Bad return code format: " + matcher.group(1));
         }
 
         // Check if return code is in error
-        if (RETURN_CODES_IN_ERROR.contains(returnCode)) {
+        if (executionID == 0) {
             Matcher descriptionMatcher = RETURN_CODE_DESCRIPTION_FROM_ANSWER_PATTERN.matcher(answer);
             if (!descriptionMatcher.find()) {
                 LOG.warn("Bad return code description format: " + answer);
-                throw new RunQueueProcessException("Bad answer format. Expected " + PARAMETER_OUTPUT_FORMAT_VALUE + ". Check server logs");
+                throw new RunQueueProcessException("Bad answer format. Expected 'RunID = ' in the output result. Check server logs");
             }
             throw new RunQueueProcessException(descriptionMatcher.group(1));
         }

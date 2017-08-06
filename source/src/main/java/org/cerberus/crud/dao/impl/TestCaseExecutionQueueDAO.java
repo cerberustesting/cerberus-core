@@ -436,89 +436,26 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
     }
 
     @Override
-    public AnswerList readQueueToTreat() throws CerberusException {
+    public AnswerList readQueueToTreatOrRunning(String state) throws CerberusException {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
         AnswerList answer = new AnswerList();
 
         final StringBuilder query = new StringBuilder();
 
-        query.append("SELECT exq.id, exq.manualexecution, app.System, cea.environment, cea.country, cea.application, cea.poolsize, exq.robotIP, rbt.host, exq.DebugFlag ");
+        query.append("SELECT exq.id, exq.manualexecution, app.System, cea.environment, cea.country, cea.application, cea.poolsize, exq.robotIP, rbt.host, exq.DebugFlag, app.type ");
         query.append("from testcaseexecutionqueue exq ");
         query.append("left join testcase tec on tec.test=exq.test and tec.testcase=exq.testcase ");
         query.append("left join application app on app.application=tec.application ");
         query.append("left join robot rbt on rbt.robot=exq.robot ");
         query.append("left join countryenvironmentparameters cea on cea.system=app.system and cea.environment=exq.environment and cea.country=exq.country and cea.application=tec.application ");
-        query.append("WHERE exq.State = 'QUEUED' order by exq.priority, exq.id asc;");
-
-        // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query.toString());
+        if (state.equals("RUNNING")) {
+            query.append("WHERE exq.State in ('WAITING', 'STARTING', 'EXECUTING') ");
+        } else {
+            query.append("WHERE exq.State = '");
+            query.append(state);
+            query.append("' ");
         }
-
-        List<TestCaseExecutionQueueToTreat> testCaseExecutionInQueueList = new ArrayList<TestCaseExecutionQueueToTreat>();
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
-
-            try {
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    while (resultSet.next()) {
-                        testCaseExecutionInQueueList.add(loadQueueToTreatFromResultSet(resultSet));
-                    }
-
-                    msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCaseExecutionInQueue").replace("%OPERATION%", "SELECT"));
-                    answer = new AnswerList(testCaseExecutionInQueueList, testCaseExecutionInQueueList.size());
-                } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
-                    testCaseExecutionInQueueList = null;
-                } finally {
-                    resultSet.close();
-                }
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
-                testCaseExecutionInQueueList = null;
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
-            testCaseExecutionInQueueList = null;
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
-            }
-        }
-        answer.setResultMessage(msg);
-        return answer;
-    }
-
-    @Override
-    public AnswerList readQueueRunning() throws CerberusException {
-        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-        AnswerList answer = new AnswerList();
-
-        final StringBuilder query = new StringBuilder();
-
-        query.append("SELECT exq.id, exq.manualexecution, app.System, cea.environment, cea.country, cea.application, cea.poolsize, exq.robotIP, rbt.host, exq.DebugFlag ");
-        query.append("from testcaseexecutionqueue exq ");
-        query.append("left join testcase tec on tec.test=exq.test and tec.testcase=exq.testcase ");
-        query.append("left join application app on app.application=tec.application ");
-        query.append("left join robot rbt on rbt.robot=exq.robot ");
-        query.append("left join countryenvironmentparameters cea on cea.system=app.system and cea.environment=exq.environment and cea.country=exq.country and cea.application=tec.application ");
-        query.append("WHERE exq.State in ('WAITING', 'STARTING', 'EXECUTING') order by exq.priority, exq.id asc;");
+        query.append("order by exq.priority, exq.id asc;");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -2113,9 +2050,17 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
         inQueue.setApplication(resultSet.getString("cea.application"));
         inQueue.setPoolSizeApplication(resultSet.getInt("cea.poolsize"));
         inQueue.setDebugFlag(resultSet.getString("exq.DebugFlag"));
-        String robotHost = resultSet.getString("rbt.host");
-        if (StringUtil.isNullOrEmpty(robotHost)) {
-            robotHost = resultSet.getString("exq.robotIP");
+        /**
+         * Robot host is feed only if application type really required a robot.
+         * data comes from robot by priority or exe when exist.
+         */
+        String robotHost = "";
+        String appType = resultSet.getString("app.type");
+        if ((appType.equals(Application.TYPE_APK)) || (appType.equals(Application.TYPE_GUI)) || (appType.equals(Application.TYPE_FAT)) || (appType.equals(Application.TYPE_IPA))) {
+            robotHost = resultSet.getString("rbt.host");
+            if (StringUtil.isNullOrEmpty(robotHost)) {
+                robotHost = resultSet.getString("exq.robotIP");
+            }
         }
         inQueue.setRobotHost(robotHost);
         return inQueue;

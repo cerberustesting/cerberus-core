@@ -74,12 +74,12 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
 
     @Override
     public AnswerList readQueueToTreat() throws CerberusException {
-        return testCaseExecutionInQueueDAO.readQueueToTreat();
+        return testCaseExecutionInQueueDAO.readQueueToTreatOrRunning("QUEUED");
     }
 
     @Override
     public AnswerList readQueueRunning() throws CerberusException {
-        return testCaseExecutionInQueueDAO.readQueueRunning();
+        return testCaseExecutionInQueueDAO.readQueueToTreatOrRunning("RUNNING");
     }
 
     @Override

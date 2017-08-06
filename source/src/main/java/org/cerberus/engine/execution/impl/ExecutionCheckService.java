@@ -36,7 +36,6 @@ import org.cerberus.crud.service.IBuildRevisionInvariantService;
 import org.cerberus.crud.service.ITestCaseCountryService;
 import org.cerberus.engine.execution.IExecutionCheckService;
 import org.cerberus.util.ParameterParserUtil;
-import org.cerberus.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -79,18 +78,18 @@ public class ExecutionCheckService implements IExecutionCheckService {
         } else /**
          * Automatic application connectivity parameter (from database)
          */
-         if (this.checkEnvironmentActive(tCExecution.getCountryEnvParam())
-                    && this.checkTestCaseNotManual(tCExecution)
-                    && this.checkRangeBuildRevision(tCExecution)
-                    && this.checkTargetBuildRevision(tCExecution)
-                    && this.checkActiveEnvironmentGroup(tCExecution)
-                    && this.checkTestCaseActive(tCExecution.getTestCaseObj())
-                    && this.checkTestActive(tCExecution.getTestObj())
-                    && this.checkCountry(tCExecution)
-                    && this.checkMaintenanceTime(tCExecution)) {
-                LOG.debug("Execution is checked and can proceed.");
-                return new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_CHECKINGPARAMETERS);
-            }
+        if (this.checkEnvironmentActive(tCExecution.getCountryEnvParam())
+                && this.checkTestCaseNotManual(tCExecution)
+                && this.checkRangeBuildRevision(tCExecution)
+                && this.checkTargetBuildRevision(tCExecution)
+                && this.checkActiveEnvironmentGroup(tCExecution)
+                && this.checkTestCaseActive(tCExecution.getTestCaseObj())
+                && this.checkTestActive(tCExecution.getTestObj())
+                && this.checkCountry(tCExecution)
+                && this.checkMaintenanceTime(tCExecution)) {
+            LOG.debug("Execution is checked and can proceed.");
+            return new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_CHECKINGPARAMETERS);
+        }
         return message;
     }
 
@@ -361,15 +360,30 @@ public class ExecutionCheckService implements IExecutionCheckService {
 
             try {
                 long now = sdf.parse(nowDate).getTime();
-                long startMaintenance = sdf.parse(tCExecution.getCountryEnvParam().getMaintenanceStr()).getTime();
-                long endMaintenance = sdf.parse(tCExecution.getCountryEnvParam().getMaintenanceStr()).getTime();
+                long startMaintenance = sdf.parse(nowDate).getTime();
+                long endMaintenance = sdf.parse(nowDate).getTime();
 
-                if (!(now > startMaintenance && now < endMaintenance)) {
+                if (tCExecution.getCountryEnvParam() != null) {
+                    if (tCExecution.getCountryEnvParam().getMaintenanceStr() != null) {
+                        startMaintenance = sdf.parse(tCExecution.getCountryEnvParam().getMaintenanceStr()).getTime();
+                    }
+                    if (tCExecution.getCountryEnvParam().getMaintenanceStr() != null) {
+                        endMaintenance = sdf.parse(tCExecution.getCountryEnvParam().getMaintenanceEnd()).getTime();
+                    }
+                }
+
+                if (!(now >= startMaintenance && now <= endMaintenance)) {
                     return true;
                 }
 
             } catch (ParseException exception) {
-                LOG.error(exception.toString());
+                LOG.error("Error when parsing maintenance start and/or end."
+                        + tCExecution.getCountryEnvParam().getSystem() + tCExecution.getCountryEnvParam().getCountry()
+                        + tCExecution.getCountryEnvParam().getEnvironment() + " " + tCExecution.getCountryEnvParam().getMaintenanceStr() + tCExecution.getCountryEnvParam().getMaintenanceEnd() + exception.toString());
+            } catch (Exception exception) {
+                LOG.error("Error when parsing maintenance start and/or end."
+                        + tCExecution.getCountryEnvParam().getSystem() + tCExecution.getCountryEnvParam().getCountry()
+                        + tCExecution.getCountryEnvParam().getEnvironment() + " " + tCExecution.getCountryEnvParam().getMaintenanceStr() + tCExecution.getCountryEnvParam().getMaintenanceEnd() + exception.toString());
             }
             message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_ENVIRONMENT_UNDER_MAINTENANCE);
             return false;
