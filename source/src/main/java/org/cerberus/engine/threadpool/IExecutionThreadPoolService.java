@@ -41,4 +41,5 @@ public interface IExecutionThreadPoolService {
      */
     void executeNextInQueue(boolean forceExecution) throws CerberusException;
 
+    void executeNextInQueueAsynchroneously(boolean forceExecution) throws CerberusException;
 }

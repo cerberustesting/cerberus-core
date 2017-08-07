@@ -43,7 +43,7 @@ public interface IExecutionRunService {
      * @return
      * @throws CerberusException
      */
-    TestCaseExecution executeAsynchroneouslyTestCase(TestCaseExecution tCExecution) throws CerberusException;
+    TestCaseExecution executeTestCaseAsynchroneously(TestCaseExecution tCExecution) throws CerberusException;
     
     /**
      * Stop the Test Case Execution

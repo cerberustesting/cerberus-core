@@ -35,6 +35,7 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 /**
@@ -338,7 +339,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                         LOG.debug(" CurConst1 " + const01_current + " CurConst2 " + const02_current + " CurConst3 " + const03_current);
                         LOG.debug(" " + notTriggeredExeMessage);
                     }
-                    
+
                 }
 
                 // Flag in database that job is finished.
@@ -351,6 +352,15 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
         } else {
             LOG.debug("Queue_Processing_Job not triggered (already running.)");
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Async
+    public void executeNextInQueueAsynchroneously(boolean forceExecution) throws CerberusException {
+        this.executeNextInQueue(forceExecution);
     }
 
 }

@@ -70,7 +70,7 @@ public class RunTestCaseService implements IRunTestCaseService {
         if (tCExecution.getId() != 0) {
             try {
                 if (!tCExecution.isSynchroneous()) {
-                    executionRunService.executeAsynchroneouslyTestCase(tCExecution);
+                    executionRunService.executeTestCaseAsynchroneously(tCExecution);
                 } else {
                     tCExecution = executionRunService.executeTestCase(tCExecution);
                 }

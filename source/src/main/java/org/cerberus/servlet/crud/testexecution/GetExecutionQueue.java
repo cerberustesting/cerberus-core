@@ -364,7 +364,7 @@ public class GetExecutionQueue extends HttpServlet {
             // Trigger execution if necessary
             if (addedToQueue > 0) {
                 try {
-                    executionThreadService.executeNextInQueue(false);
+                    executionThreadService.executeNextInQueueAsynchroneously(false);
                 } catch (CerberusException ex) {
                     String errorMessage = "Unable to feed the execution queue due to " + ex.getMessage();
                     LOG.warn(errorMessage);

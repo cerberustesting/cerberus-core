@@ -328,7 +328,7 @@ public class AddToExecutionQueueV001 extends HttpServlet {
 
             // Part 3 : Put these tests in the queue in memory
             try {
-                executionThreadService.executeNextInQueue(false);
+                executionThreadService.executeNextInQueueAsynchroneously(false);
             } catch (CerberusException ex) {
                 String errorMessage = "Unable to feed the execution queue due to " + ex.getMessage();
                 LOG.warn(errorMessage);

@@ -212,7 +212,7 @@ public class UpdateTestCaseExecutionQueue extends HttpServlet {
                         LOG.debug("toQUEUED");
                         ans = executionQueueService.updateToQueued(id, "Trigered by user " + request.getRemoteUser() + ".");
                         finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
-                        executionThreadPoolService.executeNextInQueue(false);
+                        executionThreadPoolService.executeNextInQueueAsynchroneously(false);
                     }
 
                     // Priority Update.

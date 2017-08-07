@@ -99,7 +99,7 @@ public class ExecuteNextInQueue extends HttpServlet {
 
         if (forceExecution) {
             try {
-                threadPoolService.executeNextInQueue(true);
+                threadPoolService.executeNextInQueueAsynchroneously(true);
                 response.setStatus(HttpStatus.OK.value());
             } catch (CerberusException e) {
                 LOG.warn("Unable to execute next in queue", e);
@@ -117,7 +117,7 @@ public class ExecuteNextInQueue extends HttpServlet {
 
             String jobActive = parameterService.getParameterStringByKey("cerberus_queueexecution_enable", "", "Y");
             jsonResponse.put("jobActive", jobActive);
-            
+
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
             jsonResponse.put("message", answer.getResultMessage().getDescription());
 

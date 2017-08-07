@@ -323,8 +323,7 @@ public class RunTestCase extends HttpServlet {
             LOG.info("Execution Requested : UUID=" + executionUUID);
 
             /**
-             * Loop on the execution of the testcase until we get an OK or
-             * reached the number of retries.
+             * Execution of the testcase.
              */
             LOG.debug("Start execution " + tCExecution.getId());
             tCExecution = runTestCaseService.runTestCase(tCExecution);

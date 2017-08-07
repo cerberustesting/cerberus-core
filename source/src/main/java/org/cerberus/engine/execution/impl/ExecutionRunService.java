@@ -678,7 +678,7 @@ public class ExecutionRunService implements IExecutionRunService {
             }
 
             // After every execution finished we try to trigger more from the queue;-).
-            executionThreadPoolService.executeNextInQueue(false);
+            executionThreadPoolService.executeNextInQueueAsynchroneously(false);
 
         }
 
@@ -1231,7 +1231,7 @@ public class ExecutionRunService implements IExecutionRunService {
 
     @Override
     @Async
-    public TestCaseExecution executeAsynchroneouslyTestCase(TestCaseExecution tCExecution) throws CerberusException {
+    public TestCaseExecution executeTestCaseAsynchroneously(TestCaseExecution tCExecution) throws CerberusException {
         try {
             return executeTestCase(tCExecution);
         } catch (CerberusException ex) {
