@@ -84,7 +84,6 @@ function initModalTestcaseExecutionQueue() {
     });
 }
 
-
 /***
  * Open the modal with testcase information.
  * @param {String} queueID - type selected
@@ -130,7 +129,6 @@ function duplicateExecutionQueueClick(queueID) {
 
     feedExecutionQueueModal(queueID, "editExecutionQueueModal", "DUPLICATE");
 }
-
 
 /***
  * Function that support the modal confirmation. Will call servlet to comit the transaction.
@@ -215,7 +213,6 @@ function confirmExecutionQueueModalHandler(mode, queueAction, saveAction) {
 
 }
 
-
 /***
  * Feed the TestCase modal with all the data from the TestCase.
  * @param {String} modalId - type selected
@@ -285,7 +282,6 @@ function feedExecutionQueueModal(queueid, modalId, mode) {
 
 }
 
-
 /***
  * Feed the TestCase select with all the testcase from test defined.
  * @param {String} test - test in order to filter the testcase values.
@@ -310,6 +306,7 @@ function feedTestCase(test, selectElement, defaultTestCase) {
     });
 
 }
+
 /***
  * Feed the TestCase modal with all the data from the TestCase.
  * @param {String} exeQ - service object to be loaded.
@@ -395,18 +392,17 @@ function feedExecutionQueueModalData(exeQ, modalId, mode, hasPermissionsUpdate) 
         formEdit.find("#datecreated").prop("value", exeQ.DateCreated);
         formEdit.find("#usrmodif").prop("value", exeQ.UsrModif);
         formEdit.find("#datemodif").prop("value", exeQ.DateModif);
+        formEdit.find("#priority").prop("value", exeQ.priority);
+        formEdit.find("#debugFlag").prop("value", exeQ.debugFlag);
     } else { // DUPLICATE or ADD
         formEdit.find("#usrcreated").prop("value", "");
         formEdit.find("#datecreated").prop("value", "");
         formEdit.find("#usrmodif").prop("value", "");
         formEdit.find("#datemodif").prop("value", "");
-        if (mode === "ADD") {
-            $("[name='editSoapLibraryField']").html(doc.getDocOnline("page_appservice", "button_create"));
-            formEdit.find("#id").prop("value", "");
-        } else { // DUPLICATE
-            $("[name='editSoapLibraryField']").html(doc.getDocOnline("page_appservice", "button_duplicate"));
-            formEdit.find("#id").prop("value", exeQ.id);
-        }
+        formEdit.find("#priority").prop("value", "100");
+        formEdit.find("#debugFlag").prop("value", "N");
+        $("[name='editSoapLibraryField']").html(doc.getDocOnline("page_appservice", "button_duplicate"));
+        formEdit.find("#id").prop("value", exeQ.id);
     }
     if (isEmpty(exeQ)) {
         formEdit.find("#originalid").prop("value", "");
@@ -419,13 +415,16 @@ function feedExecutionQueueModalData(exeQ, modalId, mode, hasPermissionsUpdate) 
         formEdit.find("#testCase").text("");
         formEdit.find("#country").prop("value", "");
         formEdit.find("#environment").prop("value", "");
+        formEdit.find("#robotIP").prop("value", "");
+        formEdit.find("#robotPort").prop("value", "");
+        formEdit.find("#browserVersion").prop("value", "");
+        formEdit.find("#screenSize").prop("value", "");
+        formEdit.find("#timeout").prop("value", "");
     } else {
         formEdit.find("#tag").val(exeQ.tag);
         formEdit.find("#requestDate").val(exeQ.requestDate);
         formEdit.find("#state").val(exeQ.state);
         formEdit.find("#comment").prop("value", exeQ.comment);
-        formEdit.find("#priority").prop("value", exeQ.priority);
-        formEdit.find("#debugFlag").prop("value", exeQ.debugFlag);
         formEdit.find("#exeId").prop("value", exeQ.exeId);
         formEdit.find("#test").prop("value", exeQ.test);
         formEdit.find("#testCase").prop("value", exeQ.testCase);

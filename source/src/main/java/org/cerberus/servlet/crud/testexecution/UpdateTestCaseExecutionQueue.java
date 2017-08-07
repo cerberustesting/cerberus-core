@@ -113,8 +113,16 @@ public class UpdateTestCaseExecutionQueue extends HttpServlet {
         String timeout = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("timeout"), "", charset);
         int retries = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("retries"), 0, charset);
         String manualExecution = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("manualExecution"), "", charset);
-        int priority = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("priority"), 1000, charset);
         String debugFlag = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("debugFlag"), "N", charset);
+        Integer priority = 100;
+        boolean prio_error = false;
+        try {
+            if (request.getParameter("priority") != null && !request.getParameter("priority").equals("")) {
+                priority = Integer.valueOf(policy.sanitize(request.getParameter("priority")));
+            }
+        } catch (Exception ex) {
+            prio_error = true;
+        }
 
         // Parameter that we cannot secure as we need the html --> We DECODE them
         String[] myIds = request.getParameterValues("id");
@@ -142,6 +150,13 @@ public class UpdateTestCaseExecutionQueue extends HttpServlet {
                 msg.setDescription(msg.getDescription().replace("%ITEM%", "Execution Queue")
                         .replace("%OPERATION%", "Update")
                         .replace("%REASON%", "Could not manage to convert id to an integer value."));
+                ans.setResultMessage(msg);
+                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+            } else if (prio_error || priority > 2147483647 || priority < -2147483648) {
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "Execution Queue")
+                        .replace("%OPERATION%", "Update")
+                        .replace("%REASON%", "Could not manage to convert priority to an integer value."));
                 ans.setResultMessage(msg);
                 finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
             } else {
@@ -235,7 +250,7 @@ public class UpdateTestCaseExecutionQueue extends HttpServlet {
                         ans = executionQueueService.updateToCancelledForce(id, "Forced Cancelled by user " + request.getRemoteUser() + ".");
                         finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
                     }
-                    
+
                 }
             }
         }

@@ -115,6 +115,7 @@ public class CreateTestCaseExecutionQueue extends HttpServlet {
         String timeout = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("timeout"), "", charset);
         int retries = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("retries"), 0, charset);
         String manualExecution = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("manualExecution"), "", charset);
+        String debugFlag = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("debugFlag"), "N", charset);
 
         // Parameter that we cannot secure as we need the html --> We DECODE them
         String[] myIds = request.getParameterValues("id");
@@ -123,6 +124,15 @@ public class CreateTestCaseExecutionQueue extends HttpServlet {
             myIds[0] = "0";
         }
         long id = 0;
+        Integer priority = 100;
+        boolean prio_error = false;
+        try {
+            if (request.getParameter("priority") != null && !request.getParameter("priority").equals("")) {
+                priority = Integer.valueOf(policy.sanitize(request.getParameter("priority")));
+            }
+        } catch (Exception ex) {
+            prio_error = true;
+        }
 
         boolean id_error = false;
 
@@ -151,6 +161,13 @@ public class CreateTestCaseExecutionQueue extends HttpServlet {
                         .replace("%REASON%", "Could not manage to convert id to an integer value."));
                 ans.setResultMessage(msg);
                 finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+            } else if (prio_error || priority > 2147483647 || priority < -2147483648) {
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "Execution Queue")
+                        .replace("%OPERATION%", "Update")
+                        .replace("%REASON%", "Could not manage to convert priority to an integer value."));
+                ans.setResultMessage(msg);
+                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
             } else {
                 try {
                     /**
@@ -170,6 +187,8 @@ public class CreateTestCaseExecutionQueue extends HttpServlet {
                             executionQueueData = executionQueueFactory.create(test, testcase, country, environment, robot, robotIP, robotPort, browser, browserVersion,
                                     platform, screenSize, manualURL, manualHost, manualContextRoot, manualLoginRelativeURL, manualEnvData, tag, screenshot, verbose, timeout,
                                     pageSource, seleniumLog, 0, retries, manualExecution, request.getRemoteUser(), null, null, null);
+                            executionQueueData.setPriority(priority);
+                            executionQueueData.setDebugFlag(debugFlag);
                         } else {
                             // If id is defined, we get the execution queue from database.
                             executionQueueData = executionQueueService.convert(executionQueueService.readByKey(id));
