@@ -1638,8 +1638,6 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
 
     @Override
     public boolean updateToWaiting(final Long id) throws CerberusException {
-        List<Long> registeredIds = new ArrayList<>();
-        TestCaseExecutionQueue result = new TestCaseExecutionQueue();
 
         String queryUpdate = "UPDATE `" + TABLE + "` "
                 + "SET `" + COLUMN_STATE + "` = 'WAITING', `" + COLUMN_REQUEST_DATE + "` = now(), `" + COLUMN_DATEMODIF + "` = now() "
@@ -1649,7 +1647,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
         try (
                 Connection connection = this.databaseSpring.connect();
                 PreparedStatement updateStateStatement = connection.prepareStatement(queryUpdate)) {
-            // Then set their state to QUEUED by checking state is still the same
+
             try {
                 // Debug message on SQL.
                 if (LOG.isDebugEnabled()) {
@@ -1662,16 +1660,15 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                 int updateResult = updateStateStatement.executeUpdate();
                 if (updateResult <= 0) {
                     LOG.warn("Unable to move state to WAITING for execution in queue " + id + " (update result: " + updateResult + "). Maybe execution is not in QUEUED ?");
-                    throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+                    return false;
                 }
 
                 return true;
 
             } catch (SQLException e) {
                 LOG.warn("Unable to move state to WAITING for execution in queue " + id + ". Maybe execution is not in QUEUED ?", e);
+                throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
             }
-
-            return false;
 
         } catch (SQLException e) {
             LOG.warn("Unable to state from QUEUED to WAITING state for executions in queue", e);

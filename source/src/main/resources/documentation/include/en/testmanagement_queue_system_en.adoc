@@ -75,14 +75,17 @@ When submitting too many execution in a too short period of time, the result cou
 In order to prevent that issue, 3 levels of constrains can be defined.
 
 - constrain **'constrain1_global'** : Global level of constrain in order to secure that Cerberus itself is not saturated by number of simultaneous execution.
- Parameter 'cerberus_queueexecution_global_threadpoolsize' allow to configure the number of simultaneous execution will handle in total.
+ Parameter _cerberus_queueexecution_global_threadpoolsize_ allow to configure the number of simultaneous execution will handle in total.
 
 - constrain **'constrain2_application'** : Application level constrain. An application on a given environment could have some limitation that can be controlled by that constrain.
  The number of simultaneous execution can be defined in 'Pool Size' field from application screen or Environment screen.
 
-- constrain **'constrain3_robot'** : Robot level constrain. Some robot cannot handle too many execution at the same time. The configuration of simultaneous xecution is done at robot host level.
+- constrain **'constrain3_robot'** : Robot level constrain. Some robot cannot handle too many execution at the same time. The configuration of simultaneous execution is done at robot host level.
  Please use public invariant **ROBOTHOST** in order to define that number of simultaneous execution using gp1 field.
- A default value can be configured with parameter 'cerberus_queueexecution_defaultrobothost_threadpoolsize'. That parameter will be used in case the invariant entry does not exist or cannot be converted to numeric value.
+
+image:queuerobothost.png[QueueRobotHost]
+
+ A default value can be configured with parameter _cerberus_queueexecution_defaultrobothost_threadpoolsize_. That parameter will be used in case the invariant entry does not exist or cannot be converted to numeric value.
 
 - NB1 : Only the applications that require a robot will enter to that constrain (GUI, IPA, APK, FAT).
 - NB2 : Robot host will be taken by preference from Robot and then from execution itself.
@@ -108,9 +111,8 @@ image:queuejobstatus.png[QueueJobStatus]
 
 - 'Job Status' is at Y when the job that analyse the queue is currently running (that should almost never happen).
 - 'Job Start' correspond to the time when the last job was triggered. That job automatically trigger when a new execution is inserted inside the queue or an execution finish (releasing some space for a new execution to start).
-- 'Job Activate' is at Y if the Job is enable. Job can be disable (in case you want to pause the release of any new execution) or enable by changing the parameter 'cerberus_queueexecution_enable'.
+- 'Job Activate' is at Y if the Job is enable. Job can be disable (in case you want to pause the release of any new execution) or enable by changing the parameter _cerberus_queueexecution_enable_.
 
 Button 'Force Execution' will force the execution in case the job is not automatically triggered.
-
 
 
