@@ -42,21 +42,13 @@ function openModalTestCaseExecutionQueue(queueID, mode) {
 function initModalTestcaseExecutionQueue() {
 
     var doc = new Doc();
-    $("[name='soapLibraryField']").html(doc.getDocLabel("appservice", "service"));
-    $("[name='typeField']").html(doc.getDocLabel("appservice", "type"));
-    $("[name='descriptionField']").html(doc.getDocLabel("appservice", "description"));
-    $("[name='servicePathField']").html(doc.getDocLabel("appservice", "servicePath"));
-    $("[name='methodField']").html(doc.getDocLabel("appservice", "method"));
-    $("[name='buttonClose']").html(doc.getDocLabel("page_appservice", "close_btn"));
-    $("[name='buttonAdd']").html(doc.getDocLabel("page_appservice", "save_btn"));
-    $("#soapLibraryListLabel").html("<span class='glyphicon glyphicon-list'></span> " + doc.getDocLabel("appservice", "service"));
+    $("[name='buttonClose']").html(doc.getDocLabel("page_global", "buttonClose"));
+    $("[name='buttonAdd']").html(doc.getDocLabel("page_global", "btn_add"));
     // Tracability
     $("[name='lbl_created']").html(doc.getDocOnline("transversal", "DateCreated"));
     $("[name='lbl_creator']").html(doc.getDocOnline("transversal", "UsrCreated"));
     $("[name='lbl_lastModified']").html(doc.getDocOnline("transversal", "DateModif"));
     $("[name='lbl_lastModifier']").html(doc.getDocOnline("transversal", "UsrModif"));
-
-    $("[name='editExecutionQueueField']").html(doc.getDocLabel("page_appservice", "editSoapLibrary_field"));
 
     $("#submitExecutionQueueButton").off("click");
     $("#submitExecutionQueueButton").click(function () {
@@ -259,7 +251,7 @@ function feedExecutionQueueModal(queueid, modalId, mode) {
                         $('#cancelExecutionQueueButton').prop('hidden', 'hidden');
                     }
                     // Cannot modify an execution currently running.
-                    if ((exeQ.state === "WAITING") || (exeQ.state === "STARTING") || (exeQ.state === "EXECUTING") || (exeQ.state === "DONE")) {
+                    if ((exeQ.state === "STARTING") || (exeQ.state === "EXECUTING") || (exeQ.state === "DONE")) {
                         $('#cancelExecutionQueueButton').attr('class', '');
                         $('#cancelExecutionQueueButton').prop('hidden', 'hidden');
                         $('#saveExecutionQueueButton').attr('class', '');
@@ -386,7 +378,7 @@ function feedExecutionQueueModalData(exeQ, modalId, mode, hasPermissionsUpdate) 
 
     // Data Feed.
     if (mode === "EDIT") {
-        $("[name='editSoapLibraryField']").html(doc.getDocOnline("page_appservice", "button_edit"));
+        $("[name='editSoapLibraryField']").html(doc.getDocOnline("page_global", "btn_duplicate"));
         formEdit.find("#id").prop("value", exeQ.id);
         formEdit.find("#usrcreated").prop("value", exeQ.UsrCreated);
         formEdit.find("#datecreated").prop("value", exeQ.DateCreated);
@@ -401,7 +393,7 @@ function feedExecutionQueueModalData(exeQ, modalId, mode, hasPermissionsUpdate) 
         formEdit.find("#datemodif").prop("value", "");
         formEdit.find("#priority").prop("value", "100");
         formEdit.find("#debugFlag").prop("value", "N");
-        $("[name='editSoapLibraryField']").html(doc.getDocOnline("page_appservice", "button_duplicate"));
+        $("[name='editSoapLibraryField']").html(doc.getDocOnline("page_global", "btn_duplicate"));
         formEdit.find("#id").prop("value", exeQ.id);
     }
     if (isEmpty(exeQ)) {
@@ -441,7 +433,7 @@ function feedExecutionQueueModalData(exeQ, modalId, mode, hasPermissionsUpdate) 
     formEdit.find("#id").prop("disabled", "disabled");
 
     //We desactivate or activate the access to the fields depending on if user has the credentials to edit.
-    if (((hasPermissionsUpdate) && (mode === "EDIT") && ((exeQ.state === "QUEUED") || (exeQ.state === "ERROR") || (exeQ.state === "CANCELLED")))
+    if (((hasPermissionsUpdate) && (mode === "EDIT") && ((exeQ.state === "WAITING") || (exeQ.state === "QUEUED") || (exeQ.state === "ERROR") || (exeQ.state === "CANCELLED")))
             || (mode === "DUPLICATE")) { // If readonly, we readonly all fields
         formEdit.find("#tag").prop("readonly", false);
         formEdit.find("#test").removeAttr("disabled");

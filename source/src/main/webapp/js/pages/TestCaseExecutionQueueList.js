@@ -388,7 +388,7 @@ function aoColumnsFunc(tableId) {
                             <span class="glyphicon glyphicon-duplicate"></span></button>';
 
                 var buttons = "";
-                if ((hasPermissions) && ((oObj.state === "ERROR") || (oObj.state === "CANCELLED") || (oObj.state === "QUEUED"))) {
+                if ((hasPermissions) && ((oObj.state === "WAITING") || (oObj.state === "ERROR") || (oObj.state === "CANCELLED") || (oObj.state === "QUEUED"))) {
                     buttons += editElement;
                 } else {
                     buttons += viewElement;

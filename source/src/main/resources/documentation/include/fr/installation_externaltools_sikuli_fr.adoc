@@ -1,0 +1,96 @@
+http://sikulix.com/[Sikuli] is an open source project that automates anything you see on the screen 
+of your desktop computer running Windows, Mac or some Linux/Unix. It uses image recognition powered by OpenCV 
+to identify and control GUI components. This is handy in cases when there is no easy access to a GUI's 
+internals or the source code of the application or web page you want to act on..
+
+This procedure covers installation and configuration of **SikuliX 1.1.1**.
+
+== Sikuli installation
+
+[NOTE]
+.Sikuli have to be installed only on the server where the test will run (on the robot server)!
+=================================================
+Cerberus will interact with Sikuli that will control the system on which the test will be executed. Please notice that Sikuli have not to be installed on
+the Cereberus Server, but only on robot server.
+=================================================
+
+=== Prerequisites
+
+SikuliX can be used on systems with : +
+
+
+- Windows XP and later including Windows 8 and 10 (32-Bit or 64-Bit)
+- Mac OSX 10.6 and later including 10.10 and 10.11 (64-Bit only)
+- Linux/Unix systems depending on the availability of the prerequisites (32-Bit or 64-Bit)
+
+
+In any case you must have a valid Java installation of at least Java 7 (JRE (runtime only) or JDK (runtime + development kit)). 
+It is highly recommended, to always have the latest stable Oracle/Sun Java version on your system 
+(currently Java 8, does not work with Java 9). 
+Equivalent versions of OpenJDK should work as well and are recommended on Linux systems..
+
+On 64-Bit capable systems a Java 64-Bit version is strongly recommended. 
+SikuliX will detect Java's bitness at runtime and select the fitting native library set automatically. 
+So you might freely switch between different Java versions with the same SikuliX on one machine.
+
+=== Installation
+
+After having downloaded sikulixsetup.jar, you should consider the following recommendations, before doing anything: +
+
+- select a prominent folder that is intended, to permanently contain all artifacts making up SikuliX
+- the path to this folder and its name should not contain any blanks or special characters (example: C:\SikuliX)
+- the folder should not be a program or application folder with special system access restrictions (must be freely user writeable)
+into this folder copy/move sikulixsetup....jar
+
+
+
+. launch sikulixsetup.jar
+. Choose either the option 1 (Full package with IDE) or the option 2.
+. After having made your selections, click the button [Setup Now].
+
+If everything works well, after successful internal download of the needed packages, 
+you will get some intermediate yellow badges, hopefully positive popups from the tests and a final success message. 
+
+
+-- You might find the following files in your SikuliX setup folder:
+
+--------------------------------------
+SikuliX-1.1.0-SetupLog.txt --- contains debug information of setup workflow
+sikulixsetup-1.1.0.jar (might have a lengthy version suffix)
+runsikulix(.cmd) --- command script for commandline usages of SikuliX
+sikulix.jar --- (non-Mac systems only) SikuliX IDE and scripting support (option 1)
+SikuliX.app --- (Mac systems) Mac application, should be moved to /Applications (option 1)
+sikulixapi.jar --- Java programming support (option2)
+--------------------------------------
+
+
+[NOTE]
+See official documentation http://sikulix.com/quickstart/[here] for more details.
+
+
+=== Connect Cerberus to Sikuli
+
+You'll need to download the project https://github.com/cerberustesting/cerberus-extension-sikuli[cerberus-extension-sikuli] 
+to interface Cerberus with your sikuli server.
+
+
+. Download the https://github.com/cerberustesting/cerberus-extension-sikuli[cerberus-extension-sikuli].
+. Download Selenium http://www.seleniumhq.org/download[Standalone Server].
+. Unzip cerberus-extension-sikuli and put the cerberus-extension-sikuli-x.x.x-full.jar it in the same folder than the selenium server.
+. Create a bat/sh file with the following command lines:
+
+- For a FAT Client
+
+No needs of selenium server, you can use this cerberus extention in a standalone mode (since cerberus-extension-sikuli-1.1.0-full).
+--------------------------------------
+start /b java -jar cerberus-extension-sikuli-x.x.x-full.jar
+--------------------------------------
+
+- For a WebApplication
+
+Injecting the main servlet of this cerberus extension starting the selenium hub. 
+--------------------------------------
+start /b java -jar selenium-server-standalone-x.xx.x.jar -role hub -port 5555
+start /b java -cp selenium-server-standalone-x.xx.x.jar;cerberus-extension-sikuli-x.x.x.jar org.openqa.grid.selenium.GridLauncher -role node -hub http://localhost:5555/grid/register -port 5556 -servlets org.sikuliserver.ExecuteSikuliAction
+--------------------------------------
+

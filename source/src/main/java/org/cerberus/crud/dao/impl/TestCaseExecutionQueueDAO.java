@@ -1668,13 +1668,13 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                 return true;
 
             } catch (SQLException e) {
-                LOG.warn("Unable to add execution in queue id " + id + " to the batch process from setting its state from WAITING to QUEUED", e);
+                LOG.warn("Unable to move state to WAITING for execution in queue " + id + ". Maybe execution is not in QUEUED ?", e);
             }
 
             return false;
 
         } catch (SQLException e) {
-            LOG.warn("Unable to state from WAITING to QUEUED state for executions in queue", e);
+            LOG.warn("Unable to state from QUEUED to WAITING state for executions in queue", e);
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
         }
     }
@@ -1706,7 +1706,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                 throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
             }
         } catch (SQLException e) {
-            LOG.warn("Unable to move state from QUEUED to EXECUTING for execution in queue " + id, e);
+            LOG.warn("Unable to move state from STARTING to EXECUTING for execution in queue " + id, e);
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
         }
     }
@@ -1736,7 +1736,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                 throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
             }
         } catch (SQLException e) {
-            LOG.warn("Unable to move state from QUEUED to EXECUTING for execution in queue " + id, e);
+            LOG.warn("Unable to move state from WAITING to STARTING for execution in queue " + id, e);
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
         }
     }

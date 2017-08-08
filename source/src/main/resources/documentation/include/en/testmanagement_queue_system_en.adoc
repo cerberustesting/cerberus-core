@@ -1,0 +1,116 @@
+In this section, you will find information on the queuing system of Cerberus.
+
+=== Workflow
+ 
+The queuing system allow you to submit many execution and have them executed automatically ASAP depending on constrain configuration.
+
+- Every execution that are submitted inside the queue follow a specific workflow.
+image:queueworkflow.png[QueueWorkflow]
+
+- In order to monitor and administer the workflow every execution gets a State with an associated message. Each time the State is modified the Last State date is updated accordingly.
+- Each execution enter the queue in a **QUEUED** State.
+- The queue Job will analyse all the executions that are in **QUEUED** State in order to decide (or not) to start the execution.
+If none of the constrains are applied, the execution moves to a **WAITING** State. That state corresponding to the execution being in the final (JAVA) queue before execution.
+- It then moves to **STARTING** as soon as the call to the RunTestCase Servlet is done.
+- Then depending on if execution could be started, it moves in **ERROR** State with the associated error message or **EXECUTING**.
+- An execution in **EXECUTING** State have the execution ID defined and the followup of that execution can be monitored directly on that execution.
+- Once the execution is finished (no matter what could be the end result in terms of status - OK, KO, FA, NA, ...), the execution move to the final state **DONE**.
+- Execution that are in state **ERROR** can either be submitted again in **QUEUED** or cancelled in state **CANCELLED**
+- Executions that are in state **CANCELLED** can also be submitted again in **QUEUED** state.
+
+
+- All executions that are in State **QUEUED**, **WAITING**, **ERROR** and **CANCELLED** can be modified.
+- All executions that are in State **STARTING**, **EXECUTING** and **DONE** cannot be modified.
+
+=== Administration
+ 
+The 'Executions in Queue' tab from the Executions in queue screen allow to see and count the number of exe in various state.
+
+image:queueexecutionsinqueue.png[ExecutionsInQueue]
+
+- Button 'Filter Pending' allow to directly filter to **QUEUED** State.
+- Button 'Filter Executing' allow to filter state : **WAITING**, **STARTING** and **EXECUTING**
+- Refresh button allow to refresh the list without fully loading the page.
+
+On each execution, you can modify its content by clicking on the edit button.
+
+image:queueeditmodal.png[QueueEditModal]
+
+- Button 'Save' allow to modify the parameters of the execution.
+- Button 'Save and submit again' is to save the new parameters and change the status again to **QUEUED**
+- Button 'Cancel this execution' is to cancel the execution by moving it state to **CANCELLED**
+
+You can also duplicate it to a new execution that will be inserted in **QUEUED** state by clicking on the duplicate button.
+
+image:queueduplicatemodal.png[QueueDuplicateModal]
+
+- Button 'Copy and submit a new execution' allow to copy the execution to a new one that will be inserted in **QUEUED** state.
+
+Mass Action allow to perform similar operation in a massive way.
+Select a list of exe and click on Mass Action button in order to open the following screen:
+
+image:queuemassaction1.png[QueueMassAction]
+
+- 'move to **QUEUED**' allow to move an execution that is in state **ERROR** or **CANCELLED** back to **QUEUED** state
+- 'copy to **QUEUED**' allow to copy the list of execution to new executions that will all be in **QUEUED** state.
+- 'move to **CANCELLED**' allow to cancel the list of execution that are in state **ERROR** or **QUEUED**
+- 'force to **CANCELLED**' should be used only in very rare occasion when some executions are stuck in **WAITING**, **STARTING** or **EXECUTING** state. That could happen for example if Cerberus has been stopped when executions were still processing.
+
+image:queuemassaction2.png[QueueMassAction]
+
+On that screen you can massively modify the priority of the execution list.
+Just put the new priority value and cick on 'Change Priority'
+
+=== Priorities management
+
+- By default, execution are treated in FIFO mode.
+- Each time the queue job analyse the list of **QUEUED** execution, it will analyse them sorted by priority ascending + by queueID ascending.
+- Default Priority value is 100.
+- If you want to increase the priority of the given execution, you can change it to any value bellow 100. The lower priority value takes, the higher the priority will be.
+- If you want some execution to be treated last, change it to any value above 100.
+
+=== Constrain management
+ 
+When submitting too many execution in a too short period of time, the result could be uncertain.
+In order to prevent that issue, 3 levels of constrains can be defined.
+
+- constrain **'constrain1_global'** : Global level of constrain in order to secure that Cerberus itself is not saturated by number of simultaneous execution.
+ Parameter 'cerberus_queueexecution_global_threadpoolsize' allow to configure the number of simultaneous execution will handle in total.
+
+- constrain **'constrain2_application'** : Application level constrain. An application on a given environment could have some limitation that can be controlled by that constrain.
+ The number of simultaneous execution can be defined in 'Pool Size' field from application screen or Environment screen.
+
+- constrain **'constrain3_robot'** : Robot level constrain. Some robot cannot handle too many execution at the same time. The configuration of simultaneous xecution is done at robot host level.
+ Please use public invariant **ROBOTHOST** in order to define that number of simultaneous execution using gp1 field.
+ A default value can be configured with parameter 'cerberus_queueexecution_defaultrobothost_threadpoolsize'. That parameter will be used in case the invariant entry does not exist or cannot be converted to numeric value.
+
+- NB1 : Only the applications that require a robot will enter to that constrain (GUI, IPA, APK, FAT).
+- NB2 : Robot host will be taken by preference from Robot and then from execution itself.
+
+The 'Pools Follow Up' tab allow to control and follow up all those constrain value
+
+image:queuepoolsfollowup.png[QueuePoolsFollowup]
+
+In that example, there is currently 2 executions for a global maximum of 50 executions. 
+A total of 8 executions are still in the queue (that will be treated once the 2 pending will be finished). Saturation level is at 4% and considering that global queue is not saturated, there are no execution pending on saturated queue.
+
+There is currently 2 executions running against Cerberus application in DEV for RX country. On that application / environment, a total of 6 executions are still in queue. That queue is saturated at 100% and 6 executions are in the queue on that saturated queue.
+
+There is currently 2 executions running against localhost robot. On that robot host, a total of 7 executions are still in queue. That queue is also saturated at 100% and 7 executions are in the queue on that saturated queue.
+
+Sorting the last column will give the constrain/queue that require the most attention in order to speedup the global execution of the campaign.
+
+TIP : In case you have an execution that you don't understand why it is not released, you can modify for that execution the debug Flag to Y. Next time the queue job execute, the state message will detail the constrain that prevent the execution to be released.
+
+The 'Queue Job Status' tab allow to monitor the 'queue execution job'.
+
+image:queuejobstatus.png[QueueJobStatus]
+
+- 'Job Status' is at Y when the job that analyse the queue is currently running (that should almost never happen).
+- 'Job Start' correspond to the time when the last job was triggered. That job automatically trigger when a new execution is inserted inside the queue or an execution finish (releasing some space for a new execution to start).
+- 'Job Activate' is at Y if the Job is enable. Job can be disable (in case you want to pause the release of any new execution) or enable by changing the parameter 'cerberus_queueexecution_enable'.
+
+Button 'Force Execution' will force the execution in case the job is not automatically triggered.
+
+
+

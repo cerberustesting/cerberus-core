@@ -74,6 +74,12 @@ include::include/{lang}/{file-to-include}[]
 
 link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
 
+== Execution Queuing system
+:file-to-include: testmanagement_queue_system_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
 == Campaign management
 :file-to-include: testmanagement_managecampaign_{lang}.adoc
 include::include/{lang}/{file-to-include}[]
