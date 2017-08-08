@@ -297,7 +297,7 @@ public class AddToExecutionQueueV001 extends HttpServlet {
                                                         platform, screenSize, manualURL, manualHost, manualContextRoot, manualLoginRelativeURL, manualEnvData, tag, screenshot, verbose,
                                                         timeout, pageSource, seleniumLog, 0, retries, manualExecution, user, null, null, null));
                                             } catch (FactoryCreationException e) {
-                                                LOG.error("Unable to insert record due to: " + e);
+                                                LOG.error("Unable to insert record due to: " + e,e);
                                                 LOG.error("test: " + test + "-" + testCase + "-" + country.getCountry() + "-" + environment + "-" + robot);
                                             }
                                         }
