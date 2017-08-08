@@ -391,7 +391,7 @@ function feedExecutionQueueModalData(exeQ, modalId, mode, hasPermissionsUpdate) 
         formEdit.find("#datecreated").prop("value", "");
         formEdit.find("#usrmodif").prop("value", "");
         formEdit.find("#datemodif").prop("value", "");
-        formEdit.find("#priority").prop("value", "100");
+        formEdit.find("#priority").prop("value", "1000");
         formEdit.find("#debugFlag").prop("value", "N");
         $("[name='editSoapLibraryField']").html(doc.getDocOnline("page_global", "btn_duplicate"));
         formEdit.find("#id").prop("value", exeQ.id);

@@ -65,9 +65,9 @@ Just put the new priority value and cick on 'Change Priority'
 
 - By default, execution are treated in FIFO mode.
 - Each time the queue job analyse the list of **QUEUED** execution, it will analyse them sorted by priority ascending + by queueID ascending.
-- Default Priority value is 100.
-- If you want to increase the priority of the given execution, you can change it to any value bellow 100. The lower priority value takes, the higher the priority will be.
-- If you want some execution to be treated last, change it to any value above 100.
+- Default Priority value is 1000.
+- If you want to increase the priority of the given execution, you can change it to any value bellow 1000. The lower priority value takes, the higher the priority will be.
+- If you want some execution to be treated last, change it to any value above 1000.
 
 === Constrain management
  

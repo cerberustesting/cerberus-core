@@ -124,7 +124,7 @@ public class CreateTestCaseExecutionQueue extends HttpServlet {
             myIds[0] = "0";
         }
         long id = 0;
-        Integer priority = 100;
+        Integer priority = TestCaseExecutionQueue.PRIORITY_DEFAULT;
         boolean prio_error = false;
         try {
             if (request.getParameter("priority") != null && !request.getParameter("priority").equals("")) {
@@ -194,7 +194,7 @@ public class CreateTestCaseExecutionQueue extends HttpServlet {
                             executionQueueData = executionQueueService.convert(executionQueueService.readByKey(id));
                             executionQueueData.setState(TestCaseExecutionQueue.State.QUEUED);
                             executionQueueData.setDebugFlag("N");
-                            executionQueueData.setPriority(1000);
+                            executionQueueData.setPriority(TestCaseExecutionQueue.PRIORITY_DEFAULT);
                         }
                         ans = executionQueueService.create(executionQueueData);
 

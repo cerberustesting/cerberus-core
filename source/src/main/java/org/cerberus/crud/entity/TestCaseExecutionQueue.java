@@ -66,6 +66,8 @@ public class TestCaseExecutionQueue {
     private Application applicationObj;
     private TestCase testCaseObj;
 
+    public static final int PRIORITY_DEFAULT = 1000;
+    
     public enum State {
         QUEUED,
         WAITING,

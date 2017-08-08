@@ -93,7 +93,7 @@ public class FactoryTestCaseExecutionQueue implements IFactoryTestCaseExecutionQ
         inQueue.setState(TestCaseExecutionQueue.State.QUEUED);
         inQueue.setComment("");
         inQueue.setDebugFlag("N");
-        inQueue.setPriority(100);
+        inQueue.setPriority(TestCaseExecutionQueue.PRIORITY_DEFAULT);
         return inQueue;
     }
 
