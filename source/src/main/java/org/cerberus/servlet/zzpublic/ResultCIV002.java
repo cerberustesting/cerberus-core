@@ -117,6 +117,7 @@ public class ResultCIV002 extends HttpServlet {
                 int nbne = 0;
                 int nbna = 0;
                 int nbca = 0;
+                int nbqu = 0;
                 int nbtotal = 0;
 
                 int nbkop1 = 0;
@@ -170,10 +171,13 @@ public class ResultCIV002 extends HttpServlet {
                             case TestCaseExecution.CONTROLSTATUS_NE:
                                 nbne++;
                                 break;
+                            case TestCaseExecution.CONTROLSTATUS_QU:
+                                nbqu++;
+                                break;
                         }
 
-                        if (!(curExe.getControlStatus().equals("OK")) && !(curExe.getControlStatus().equals("NE"))
-                                && !(curExe.getControlStatus().equals("PE"))) {
+                        if (!curExe.getControlStatus().equals("OK") && !curExe.getControlStatus().equals("NE")
+                                && !curExe.getControlStatus().equals("PE") && !curExe.getControlStatus().equals("QU")) {
                             switch (curExe.getTestCaseObj().getPriority()) {
                                 case 1:
                                     nbkop1++;
@@ -205,7 +209,7 @@ public class ResultCIV002 extends HttpServlet {
                 float pond4 = parameterService.getParameterFloatByKey("CI_OK_prio4", "", 0);
                 String result;
                 float resultCal = (nbkop1 * pond1) + (nbkop2 * pond2) + (nbkop3 * pond3) + (nbkop4 * pond4);
-                if ((nbtotal > 0) && nbne + nbpe > 0) {
+                if ((nbtotal > 0) && nbqu + nbne + nbpe > 0) {
                     result = "PE";
                 } else if ((resultCal < 1) && (nbtotal > 0)) {
                     result = "OK";
@@ -232,6 +236,7 @@ public class ResultCIV002 extends HttpServlet {
                 jsonResponse.put("status_NA_nbOfExecution", nbna);
                 jsonResponse.put("status_CA_nbOfExecution", nbca);
                 jsonResponse.put("status_NE_nbOfExecution", nbne);
+                jsonResponse.put("status_QU_nbOfExecution", nbqu);
                 jsonResponse.put("TOTAL_nbOfExecution", nbtotal);
                 jsonResponse.put("result", result);
                 jsonResponse.put("ExecutionStart", String.valueOf(new Timestamp(longStart)));
