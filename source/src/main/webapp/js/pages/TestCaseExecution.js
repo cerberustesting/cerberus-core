@@ -213,8 +213,6 @@ function updatePage(data, stepList) {
         });
     }
 
-    updateConfigPanel(data);
-
     // Adding all media attached to execution.
     var fileContainer = $("#testCaseConfig #tcFileContentField");
     addFileLink(data.fileList, fileContainer);
@@ -256,6 +254,7 @@ function updatePage(data, stepList) {
             }
         });
     }
+    setConfigPanel(data);
 
     createStepList(data.testCaseStepExecutionList, stepList);
     createProperties(data.testCaseExecutionDataList);
@@ -263,19 +262,18 @@ function updatePage(data, stepList) {
 }
 
 
-function updateConfigPanel(data) {
+function setConfigPanel(data) {
 
     var configPanel = $("#testCaseConfig");
     configPanel.find("#idlabel").text(data.id);
     configPanel.find("#test").text(data.test);
     configPanel.find("#testcase").text(data.testcase);
+    configPanel.find("#exReturnMessage").text(data.controlMessage);
+    configPanel.find("#controlstatus").text(data.controlStatus);
 
     configPanel.find("#environment").text(data.environment);
     configPanel.find("#country").text(data.country);
     configPanel.find("#tcDescription").text(data.description);
-
-    updateExecutionControlStatue(data.controlStatus);
-
     configPanel.find("input#application").val(data.application);
     configPanel.find("input#browser").val(data.browser);
     configPanel.find("input#browserfull").val(data.browserFullVersion);
@@ -307,53 +305,12 @@ function updateConfigPanel(data) {
     configPanel.find("input#conditionVal2InitTC").val(data.conditionVal2Init);
     configPanel.find("input#conditionVal1TC").val(data.conditionVal1);
     configPanel.find("input#conditionVal2TC").val(data.conditionVal2);
-    updateLoadBar(data);
+
+    //setTestCaseControlStatue(data.controlStatus);
+    setLoadBar(data);
 }
 
-function updateExecutionControlStatue(controlStatus) {
 
-    var configPanel = $("#testCaseConfig");
-    configPanel.find("#controlstatus").text(controlStatus);
-
-    removeColorClass(configPanel.find("#controlstatus"));
-    removeColorClass(configPanel.find("#exReturnMessage"));
-
-    var controlMessage;
-    var updateDataBarPossible = true;
-    if (controlStatus === "PE") {
-        configPanel.find("#controlstatus").addClass("text-primary");
-        configPanel.find("#exReturnMessage").addClass("text-primary");
-        controlMessage = "";
-    } else if (controlStatus === "OK") {
-        configPanel.find("#controlstatus").addClass("text-success");
-        configPanel.find("#exReturnMessage").addClass("text-success");
-        controlMessage = "The test case finished successfully";
-    } else if (controlStatus === "KO") {
-        configPanel.find("#controlstatus").addClass("text-danger");
-        configPanel.find("#exReturnMessage").addClass("text-danger");
-        controlMessage = "The test case failed on validations."
-    } else if (controlStatus === "NE" && isTheExecutionManual) {
-        configPanel.find("#controlstatus").addClass("text-black");
-        configPanel.find("#exReturnMessage").addClass("text-black");
-        controlMessage = "The test case not executed";
-    } else if (controlStatus === "FA") {
-        configPanel.find("#controlstatus").addClass("text-black");
-        configPanel.find("#exReturnMessage").addClass("text-black");
-        controlMessage = "The test case failed to be executed because of an action.";
-    } else {
-        configPanel.find("#controlstatus").addClass("text-warning");
-        configPanel.find("#exReturnMessage").addClass("text-warning");
-        controlMessage = "";
-        updateDataBarPossible = false;
-    }
-
-    configPanel.find("#controlstatus").text(controlStatus);
-    configPanel.find("#exReturnMessage").text(controlMessage);
-    configPanel.find("input#controlstatus2").val(controlStatus);
-
-    if (updateDataBarPossible)
-        updateDataBarVisual(controlStatus);
-}
 
 function removeColorClass(element) {
     element.removeClass("text-black");
@@ -390,7 +347,7 @@ function setLinkOnEditTCStepInfoButton() {
     $("#editTcStepInfo").attr("href", "TestCaseScript.jsp?test=" + currentStep.attr('test') + "&testcase=" + currentStep.attr('testcase') + "&step=" + currentStep.attr('step'));
 }
 
-function updateLoadBar(data) {
+function setLoadBar(data) {
     var total = 0;
     var ended = 0;
     if (data.testCaseObj != undefined && data.testCaseObj.testCaseStepList != undefined) {
@@ -538,7 +495,6 @@ function drawProperty(property, table) {
     var row = $("<div></div>").addClass("col-sm-10");
     row.append(generateHeaderContent);
     var button = $("<div></div>").addClass("col-sm-1").append($("<span class='glyphicon glyphicon-chevron-down'></span>").attr("style", "font-size:1.5em"));
-
     var propContent = getPropertyContent(property);
 
     if (property.RC === "OK") {
@@ -858,7 +814,6 @@ function createStepList(data, stepList) {
         $(stepObj).data("id", {stepId: i, actionId: -1, controlId: -1});
 
         stepObj.addElements();
-        stepObj.updateReturnCode(i);
         stepObj.draw();
 
         stepList.push(stepObj);
@@ -929,36 +884,6 @@ Step.prototype.addElements = function () {
 
 };
 
-//Get the correct return code from added action list
-Step.prototype.updateReturnCode = function () {
-    var newReturnCode = "OK";
-    var everyActionAndControlCheck = true;
-    var idCurrentStep = $(this).data("id");
-
-    $(".itemContainer").each(function () {
-        var idCurrentActionControl = $(this).data("id");
-        var elementBelongToCurrentStep = (idCurrentStep.stepId == idCurrentActionControl.stepId);
-
-        if (elementBelongToCurrentStep) {
-
-            if ($(this).data("item").returnCode === "NE" && isTheExecutionManual) {
-                everyActionAndControlCheck = false;
-            } else if ($(this).data("item").returnCode === "KO") {
-                newReturnCode = "KO";
-            } else if ($(this).data("item").returnCode === "FA" && newReturnCode !== "KO") {
-                newReturnCode = "FA";
-            }
-        }
-    });
-
-    if (!everyActionAndControlCheck && newReturnCode === "OK" && isTheExecutionManual)
-        newReturnCode = "NE";
-
-    var htmlElement = this.html;
-    var object = htmlElement.data("item");
-    object.returnCode = newReturnCode;
-}
-
 Step.prototype.draw = function () {
 
     var htmlElement = this.html;
@@ -976,13 +901,61 @@ Step.prototype.draw = function () {
     } else if (object.returnCode === "NA") {
         htmlElement.append($("<span>").addClass("glyphicon glyphicon-alert pull-left"));
         object.html.addClass("list-group-item-info");
-    } else if (object.returnCode === "NE" && isTheExecutionManual) {
+    } else if (object.returnCode === "FA") {
+        htmlElement.append($("<span>").addClass("glyphicon glyphicon-alert pull-left"));
+        object.html.addClass("list-group-item-warning");
+    }
+    else if (object.returnCode === "NE" && isTheExecutionManual) {
         htmlElement.append($("<span>").addClass("glyphicon glyphicon-question-sign pull-left"));
         object.html.addClass("list-group-item-black");
-    } else {
+    }else {
         htmlElement.prepend($("<span>").addClass("glyphicon glyphicon-alert pull-left"));
         object.html.addClass("list-group-item-warning");
     }
+}
+
+
+//update display of the step
+Step.prototype.update = function (idStep) {
+
+
+    var glyphiconColor = "text-black";
+    var className = "list-group-item-black";
+    var glyphiconName = "glyphicon-question-sign";
+
+    if (this.returnCode === "KO") {
+        className = "list-group-item-danger";
+        glyphiconName = "glyphicon-remove";
+        glyphiconColor = "text-danger";
+    }
+    else if (this.returnCode === "FA") {
+        className = "list-group-item-warning";
+        glyphiconName = "glyphicon-alert";
+        glyphiconColor = "text-warning";
+    }
+    else if (this.returnCode === "OK") {
+        className = "list-group-item-success";
+        glyphiconName = "glyphicon-ok";
+        glyphiconColor = "text-success";
+    }
+
+    $($("#steps").find("a")[idStep]).removeClass(function (index, className) {
+        return (className.match(/(^|\s)list-group-item-\S+/g) || []).join(' ');
+    }).addClass(className);
+
+    $($("#steps").find("a")[idStep]).find("span").removeClass(function (index, className) {
+        return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
+    }).addClass(glyphiconName);
+
+    var glyphIcon = $($("#stepInfo h2")[0]).removeClass(function (index, className) {
+        return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
+    });
+    //
+    removeColorClass(glyphIcon);
+    glyphIcon.addClass(glyphiconColor);
+    glyphIcon.addClass(glyphiconName);
+    //
+    $("#stepRC").val(this.returnCode);
 }
 
 
@@ -1394,6 +1367,7 @@ function triggerActionExecution(element, id, status) {
         $(currentElement.find("span")[0]).removeClass(function (index, className) {
             return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
         }).addClass("glyphicon-ok");
+        $(currentElement).next("div").find("input[id='returncode']").val("OK").change();
         newReturnCode = "OK";
     } else {
         currentElement.removeClass(function (index, className) {
@@ -1402,6 +1376,7 @@ function triggerActionExecution(element, id, status) {
         $(currentElement.find("span")[0]).removeClass(function (index, className) {
             return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
         }).addClass("glyphicon-alert");
+        $(currentElement).next("div").find("input[id='returncode']").val("FA").change();
         newReturnCode = "FA";
     }
     $(currentElement).next("div").find("input[id='returncode']").attr("data-modified", "true");
@@ -1433,100 +1408,242 @@ function triggerActionExecution(element, id, status) {
     //Modify Status of all previous action and control of the previous step that have not been modified yet
     //$(prevElementPreviousStep).next("div").find("input[id='returncode']:not([data-modified])").val("OK").change();
     $(prevElementPreviousStep).next("div").find("input[id='returnmessage']").val("Action manually executed").change();
-    //Check Step Status
-    updateReturnCode(id, newReturnCode);
-    updateStepStatus(id);
-
+    //update return code
+    updateActionControlReturnCode(id, newReturnCode);
 }
 
-function updateReturnCode(idElementTriggers, newReturnCode) {
-    //
+/*
+ * * Update the action focus by idElementTriggers and update the step and the testCase if there was a change in action
+ * @param {type} idElementTriggers
+ * @param {type} returnCodeElementTrigger
+ * @returns {void}
+ */
+function updateActionControlReturnCode(idElementTriggers, returnCodeElementTrigger) {
+
+    //go though every action or control to update them
     $(".itemContainer").each(function () {
+
         var idCurrentElement = $(this).data("id");
-        //current element
-        if (idCurrentElement === idElementTriggers) {
-            $(this).data("item").returnCode = newReturnCode;
-            return;
-        }
-        //look for the previous elements untouch
-        var idName = ["stepId", "actionId", "controlId"];
-        if ($(this).data("item").returnCode === "NE" && isTheExecutionManual) {
-            for (var i = 0; i < 3; i++) {
-                if (idCurrentElement[ idName[i] ] !== idElementTriggers[ idName[i] ]) {
-                    //element before the one clicked
-                    if ((idCurrentElement[ idName[i] ] === -1) || (idCurrentElement[ idName[i] ] < idElementTriggers[idName[i] ])) {
-                        $(this).data("item").returnCode = "OK";
+        var isBeforeTheElementTrigger =false;
+        var isTheElementTrigger = (idCurrentElement === idElementTriggers);
+
+        var currentActionControlReturnCode = $(this).data("item").returnCode;
+        //if a change in return code is possible on this action or control
+        if (returnCodeElementTrigger !== currentActionControlReturnCode){
+            //look if the current action or control is the one trigger
+            var isTheElementTrigger = (idCurrentElement === idElementTriggers);
+            //look if the current action or control is before the one trigger
+            if ( !isTheElementTrigger ) {
+                var idName = ["stepId", "actionId", "controlId"];
+                for (var i = 0; i < 3; i++) {
+                    if (idCurrentElement[idName[i]] !== idElementTriggers[idName[i]]) {
+                        if (idCurrentElement[idName[i]] < idElementTriggers[idName[i]]) {
+                            isBeforeTheElementTrigger = true;
+                        }
+                        else if (idCurrentElement[idName[i]] === -1 && idElementTriggers[idName[i]] !== -1) {
+                            isBeforeTheElementTrigger = true;
+                        }
+                        break;
                     }
-                    return;
                 }
             }
-        } else
-            return;
+            var updateStepNeeded =false;
+            //change the returnCode of the one trigger
+            if( isTheElementTrigger ){
+                $(this).data("item").returnCode = returnCodeElementTrigger;
+                updateStepNeeded =true;
+            }
+            if ( isBeforeTheElementTrigger ){
+                //change the returnCode if it's untouched
+                if( currentActionControlReturnCode === "NE") {
+                    //change the return code
+                    $(this).data("item").returnCode = "OK";
+                    $(this).parent().next("div").find("input[id='returncode']").val("OK").change();
+                    updateStepNeeded =true;
+                }
+            }
+            //An action or a control was changed the step need to be updated
+            if ( updateStepNeeded ){
+                //update the element's step triggered
+                updateStepExecutionReturnCode(idElementTriggers.stepId, returnCodeElementTrigger, true);
+                //then update all the previous step if they are untouched
+                for (var idStep = 0; idStep < idElementTriggers.stepId ; idStep++) {// update all the step below the element trigger
+                    var currentStep = $("#stepList").data("listOfStep")[ idStep ];
+                    //if previous element are untouch
+                    if ( currentStep.returnCode === "NE"){
+                        updateStepExecutionReturnCode(idStep, "OK", false);
+                    }
+                }
+                updateTestCaseReturnCode();
+            }
+        }
+
     });
+
+
 }
 
-function updateStepStatus(idElementTrigger) {
+/*
+ * * Update the step focus by step id if needed
+ * @param {type} stepId
+ * @param {type} returnCodeActionControlTrigger
+ * @param {type} isStepDisplayed
+ * @returns {void}
+ */
+function updateStepExecutionReturnCode(stepId, returnCodeActionControlTrigger, isStepDisplayed){
 
-    var allStepOk = true;
-
-    var controlStatus = "NE";//function call only in manual execution so the default control status is NE
-
-    for (var idStep = idElementTrigger.stepId; idStep >= 0; idStep--) {// update all the step below the element trigger
-
-        var stepElementTriggerBelongTo = $("#stepList").data("listOfStep")[ idStep ];
-        stepElementTriggerBelongTo.updateReturnCode();
-        var returnCodeStep = stepElementTriggerBelongTo.html.data("item").returnCode;
-
-        var glyphiconColor = "text-black";
-        var className = "list-group-item-black";
-        var glyphiconName = "glyphicon-question-sign";
-        if (returnCodeStep === "OK") {
-            className = "list-group-item-success";
-            glyphiconName = "glyphicon-ok";
-            glyphiconColor = "text-success";
+    var newStepReturnCode = null;
+    var currentStep = $("#stepList").data("listOfStep")[stepId]
+    if ( returnCodeActionControlTrigger !== currentStep.returnCode) {
+        if (returnCodeActionControlTrigger === "KO") {
+            newStepReturnCode = "KO";
         }
-        if (returnCodeStep === "FA") {
-            className = "list-group-item-warning";
-            glyphiconName = "glyphicon-alert";
-            glyphiconColor = "text-warning";
-            if (controlStatus !== "KO")
-                controlStatus = "FA"
+        else if (returnCodeActionControlTrigger === "FA" && currentStep.returnCode !=="KO") {
+            newStepReturnCode = "FA";
         }
-        if (returnCodeStep === "KO") {
-            className = "list-group-item-danger";
-            glyphiconName = "glyphicon-remove";
-            glyphiconColor = "text-danger";
-            controlStatus = "KO"
+        else if (returnCodeActionControlTrigger === "OK") {
+
+            var everyActionAndControlOK = true;
+            var returnMessageCanBeReset = true;
+
+            $(".itemContainer").each(function () {
+                var idCurrentActionControl = $(this).data("id");
+                var actionControBelongToCurrentStep = (stepId == idCurrentActionControl.stepId);
+                if (actionControBelongToCurrentStep) {
+
+                    if ($(this).data("item").returnCode === "KO") {
+                        newStepReturnCode = "KO";
+                        everyActionAndControlOK =false;
+                        returnMessageCanBeReset =false;
+                    }
+                    else if ( newStepReturnCode !== "KO" && $(this).data("item").returnCode === "FA"){
+                        newStepReturnCode = "FA";
+                        everyActionAndControlOK =false;
+                        returnMessageCanBeReset =false;
+                    }
+                    else if ( newStepReturnCode !== "KO" && newStepReturnCode !== "FA" && $(this).data("item").returnCode === "NE"){
+                        everyActionAndControlOK =false;
+                    }
+                }
+            });
+            //the last step's action or control was check and no option FA or KO was selected we set the step to OK by default
+            if (everyActionAndControlOK) {
+                newStepReturnCode = "OK";
+            //reset to defaut
+            }else if (returnMessageCanBeReset){
+                newStepReturnCode = "NE";
+            }
         }
-        if (returnCodeStep !== "OK")
-            allStepOk = false;
+        if ( newStepReturnCode !== null ){
+            //update step return code
+            var stepUpdated = $("#stepList").data("listOfStep")[ stepId ];
+            stepUpdated.returnCode = newStepReturnCode;
 
-        $($("#steps").find("a")[idStep]).removeClass(function (index, className) {
-            return (className.match(/(^|\s)list-group-item-\S+/g) || []).join(' ');
-        }).addClass(className);
+            //update step visual
+            var glyphiconColor = "text-black";
+            var className = "list-group-item-black";
+            var glyphiconName = "glyphicon-question-sign";
 
-        $($("#steps").find("a")[idStep]).find("span").removeClass(function (index, className) {
-            return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
-        }).addClass(glyphiconName);
+            if (newStepReturnCode === "KO") {
+                className = "list-group-item-danger";
+                glyphiconName = "glyphicon-remove";
+                glyphiconColor = "text-danger";
+            }
+            else if (newStepReturnCode === "FA") {
+                className = "list-group-item-warning";
+                glyphiconName = "glyphicon-alert";
+                glyphiconColor = "text-warning";
+            }
+            else if (newStepReturnCode === "OK") {
+                className = "list-group-item-success";
+                glyphiconName = "glyphicon-ok";
+                glyphiconColor = "text-success";
+            }
 
-        //if is the step focus
-        if (idStep === idElementTrigger.stepId) {
+            $($("#steps").find("a")[stepId]).removeClass(function (index, className) {
+                return (className.match(/(^|\s)list-group-item-\S+/g) || []).join(' ');
+            }).addClass(className);
 
-            var glyphIcon = $($("#stepInfo h2")[0]).removeClass(function (index, className) {
+            $($("#steps").find("a")[stepId]).find("span").removeClass(function (index, className) {
                 return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
-            })
-            removeColorClass(glyphIcon);
-            glyphIcon.addClass(glyphiconColor);
-            glyphIcon.addClass(glyphiconName);
+            }).addClass(glyphiconName);
+
+            //if the current step is the one displayed at the center of the screen
+            if (isStepDisplayed){
+                var glyphIcon = $($("#stepInfo h2")[0]).removeClass(function (index, className) {
+                    return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
+                });
+
+                removeColorClass(glyphIcon);
+                glyphIcon.addClass(glyphiconColor);
+                glyphIcon.addClass(glyphiconName);
+                $("#stepRC").val(newStepReturnCode);
+            }
         }
-
     }
-    if (allStepOk === true)
-        controlStatus = "OK";
-
-    updateExecutionControlStatue(controlStatus);
 }
 
+/*
+ * * Update the testCase focus if needed
+ * @returns {void}
+ */
+function updateTestCaseReturnCode() {
+
+    var testCaseNewReturnCode = null;
+    // go tough every step to see if the testCase need to be update
+    for (var idStep = 0; idStep < $("#stepList").data("listOfStep").length ; idStep++) {
+        var currentStep = $("#stepList").data("listOfStep")[idStep];
+        //a step is not complete no need to go further in the list of step
+        if (currentStep.returnCode === "NE"){
+            if( testCaseNewReturnCode !== "FA" && testCaseNewReturnCode !== "KO")
+                testCaseNewReturnCode = "NE";
+            break;//no need to continue
+        }
+        else if (currentStep.returnCode === "OK" && testCaseNewReturnCode ===null){
+            testCaseNewReturnCode = "OK";
+        }
+        else if (currentStep.returnCode === "FA" && testCaseNewReturnCode !=="KO"){
+            testCaseNewReturnCode = "FA";
+        }
+        else if (currentStep.returnCode === "KO"){
+            testCaseNewReturnCode = "KO";
+        }
+    }
+
+    var configPanel = $("#testCaseConfig");
+    if ( testCaseNewReturnCode !==null && testCaseNewReturnCode !==  configPanel.find("#controlstatus").val()){
+
+        removeColorClass(configPanel.find("#controlstatus"));
+        removeColorClass(configPanel.find("#exReturnMessage"));
+        var controlMessage =null;
+
+        if (testCaseNewReturnCode === "PE") {
+            configPanel.find("#controlstatus").addClass("text-primary");
+            configPanel.find("#exReturnMessage").addClass("text-primary");
+            controlMessage = "";
+        } else if (testCaseNewReturnCode === "OK") {
+            configPanel.find("#controlstatus").addClass("text-success");
+            configPanel.find("#exReturnMessage").addClass("text-success");
+            controlMessage = "The test case finished successfully."
+        } else if (testCaseNewReturnCode === "KO") {
+            configPanel.find("#controlstatus").addClass("text-danger");
+            configPanel.find("#exReturnMessage").addClass("text-danger");
+            controlMessage = "The test case failed on validations."
+        } else if (testCaseNewReturnCode === "NE") {
+            configPanel.find("#controlstatus").addClass("text-black");
+            configPanel.find("#exReturnMessage").addClass("text-black");
+            controlMessage = "The test case has not been executed.";
+        } else if (testCaseNewReturnCode === "FA") {
+            configPanel.find("#controlstatus").addClass("text-black");
+            configPanel.find("#exReturnMessage").addClass("text-black");
+            controlMessage = "The test case failed to be executed because of an action.";
+        }
+        configPanel.find("#controlstatus").text(testCaseNewReturnCode);
+        configPanel.find("#exReturnMessage").text(controlMessage);
+        configPanel.find("input#controlstatus2").val(testCaseNewReturnCode);
+        updateDataBarVisual(testCaseNewReturnCode);
+    }
+}
 
 Action.prototype.generateContent = function () {
     var obj = this;
@@ -1860,6 +1977,7 @@ Control.prototype.generateHeader = function (id) {
 
 function triggerControlExecution(element, id, status) {
     var currentElement = $($(element).closest(".control")[0]);
+    var newReturnCode = "NE";
     if (status === "OK") {
         currentElement.removeClass(function (index, className) {
             return (className.match(/(^|\s)list-group-item-\S+/g) || []).join(' ');
@@ -1871,6 +1989,7 @@ function triggerControlExecution(element, id, status) {
         $(currentElement).next("div").find("input[id='returncode']").val("OK").change();
         $(currentElement).next("div").find("input[id='returncode']").attr("data-modified", "true");
         $(currentElement).next("div").find("input[id='returnmessage']").val("Action manually executed").change();
+        newReturnCode ="OK";
     } else {
         currentElement.removeClass(function (index, className) {
             return (className.match(/(^|\s)list-group-item-\S+/g) || []).join(' ');
@@ -1882,6 +2001,7 @@ function triggerControlExecution(element, id, status) {
         $(currentElement).next("div").find("input[id='returncode']").val("KO").change();
         $(currentElement).next("div").find("input[id='returncode']").attr("data-modified", "true");
         $(currentElement).next("div").find("input[id='returnmessage']").val("Action manually executed").change();
+        newReturnCode ="KO";
     }
 
     //Modify style of action of the current actiongroup that have not been modified yet
@@ -1923,10 +2043,9 @@ function triggerControlExecution(element, id, status) {
     //Modify Status of all previous action and control of the previous step that have not been modified yet
     $(prevElementPreviousStep).next("div").find("input[id='returncode']:not([data-modified])").val("OK").change();
     $(prevElementPreviousStep).next("div").find("input[id='returnmessage']").val("Action manually executed").change();
-    //Check Step Status
+    //update return code
+    updateActionControlReturnCode(id, newReturnCode);
 
-    updateReturnCode(id, status);
-    updateStepStatus(id);
 }
 
 Control.prototype.generateContent = function () {
@@ -2221,3 +2340,4 @@ function getScriptInformationOfStep() {
     }
     return stepArr;
 }
+
