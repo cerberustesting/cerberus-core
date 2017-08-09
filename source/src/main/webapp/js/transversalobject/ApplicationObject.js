@@ -344,7 +344,8 @@ function pasteListennerForClipboardPicture( idModal) {
     
     //on paste
     this.paste_auto = function (e) {
-        if (e.clipboardData) {
+        //handle paste event if the user do not select an input
+        if (e.clipboardData && !$(e.target).is( "input" )) {
             var items = e.clipboardData.items;
             handlePictureSend(items, idModal);
             e.preventDefault();
