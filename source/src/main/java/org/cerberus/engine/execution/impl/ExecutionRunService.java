@@ -664,15 +664,31 @@ public class ExecutionRunService implements IExecutionRunService {
             }
 
             /**
-             * Retry management, in case the result is not OK, we execute the
+             * Retry management, in case the result is not (OK or NE), we execute the
              * job again reducing the retry to 1.
              */
             if (tCExecution.getNumberOfRetries() > 0
                     && !tCExecution.getResultMessage().getCodeString().equals("OK")
                     && !tCExecution.getResultMessage().getCodeString().equals("NE")) {
-                TestCaseExecutionQueue newExeQueue = tCExecution.getTestCaseExecutionQueue();
+                TestCaseExecutionQueue newExeQueue = new TestCaseExecutionQueue();
+                if (tCExecution.getQueueID() > 0) {
+                    // If QueueId exist, we try to get the original execution queue.
+                    try {
+                        newExeQueue = executionQueueService.convert(executionQueueService.readByKey(tCExecution.getQueueID()));
+                    } catch (Exception e) {
+                        // Unfortunatly the execution no longuer exist so we pick initial value.
+                        newExeQueue = tCExecution.getTestCaseExecutionQueue();
+                    }
+                } else {
+                    // Initial Execution does not come from the queue so we pick the value created at the beginning of the execution.
+                    newExeQueue = tCExecution.getTestCaseExecutionQueue();
+                }
+                // Forcing init value for that new queue execution : exeid=0, no debugflag and State = QUEUED
                 newExeQueue.setId(0);
-                newExeQueue.setRetries(newExeQueue.getRetries() - 1);
+                newExeQueue.setDebugFlag("N");
+                newExeQueue.setComment("");
+                newExeQueue.setState(TestCaseExecutionQueue.State.QUEUED);
+                newExeQueue.setRetries(tCExecution.getNumberOfRetries() - 1);
                 // Insert execution to the Queue.
                 executionQueueService.create(newExeQueue);
             }

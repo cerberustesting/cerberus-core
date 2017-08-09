@@ -24,13 +24,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import org.apache.commons.fileupload.ParameterParser;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -50,7 +48,6 @@ import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.exception.FactoryCreationException;
 import org.cerberus.log.MyLogger;
-import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.SqlUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
@@ -1374,6 +1371,11 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
+            LOG.debug("SQL.param.prio : " + object.getPriority());
+            LOG.debug("SQL.param.debug : " + object.getDebugFlag());
+            LOG.debug("SQL.param.exeid : " + object.getExeId());
+            LOG.debug("SQL.param.comment : " + object.getComment());
+            LOG.debug("SQL.param.state : " + object.getState());
         }
         Connection connection = this.databaseSpring.connect();
         try {
@@ -1404,7 +1406,8 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                 preStat.setInt(i++, object.getSeleniumLog());
                 preStat.setInt(i++, object.getRetries());
                 preStat.setString(i++, object.getManualExecution());
-                preStat.setString(i++, object.getUsrCreated());
+                String user = object.getUsrCreated() == null ? "" : object.getUsrCreated();
+                preStat.setString(i++, user);
                 if (object.getState() == null) {
                     preStat.setString(i++, object.getState().WAITING.name());
                 } else {
