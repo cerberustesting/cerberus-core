@@ -21,16 +21,12 @@ package org.cerberus.crud.service.impl;
 
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import org.cerberus.crud.dao.ILogEventDAO;
 import org.cerberus.crud.entity.LogEvent;
-import org.cerberus.crud.entity.Parameter;
 import org.cerberus.crud.factory.IFactoryLogEvent;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.IParameterService;
-import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;

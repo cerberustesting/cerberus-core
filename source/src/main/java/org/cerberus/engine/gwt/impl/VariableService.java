@@ -137,9 +137,14 @@ public class VariableService implements IVariableService {
                 LOG.debug("   Result Message : " + answer.getResultMessage().getCodeString() + " - " + answer.getResultMessage().getDescription());
             }
 
-            //if the property result message indicates that we need to stop the test action, then the action is notified               
-            //or if the property was not successfully calculated, either because it was not defined for the country or because it does not exist
-            //then we notify the execution
+            /**
+             *
+             * if the property result message indicates that we need to stop the
+             * test action, then the action is notified or if the property was
+             * not successfully calculated, either because it was not defined
+             * for the country or because it does not exist then we notify the
+             * execution.
+             */
             if (answer.getResultMessage().getCodeString().equals("FA")
                     || answer.getResultMessage().getCodeString().equals("NA")) {
                 String prop_message = answer.getResultMessage().getDescription();
@@ -147,11 +152,6 @@ public class VariableService implements IVariableService {
                         .resolveDescription("ERROR", prop_message));
                 answer.setItem(result);
                 return answer;
-//                if (!(testCaseStepActionExecution == null)) {
-//                    testCaseStepActionExecution.setStopExecution(answerProp.getResultMessage().isStopTest());
-//                    testCaseStepActionExecution.setActionResultMessage(answerProp.getResultMessage());
-//                    testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(answerProp.getResultMessage().getMessage()));
-//                }
             }
             count_decode++;
         }

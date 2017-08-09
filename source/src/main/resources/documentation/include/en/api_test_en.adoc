@@ -1,22 +1,35 @@
 This is the APi that can be used on the test perimeter (getting testcase information, and manage executions) :
 
+[%autowidth.spread]
 |=== 
 
 | *API URI* | *Description* | *Version List*
 
 | /RunTestCase | Trigger a single testcase excution | **/RunTestCase**
 
-| /AddToExecutionQueue | Allow to insert testcase execution into Cerberus Queue for execution | /AddToExecutionQueue **/AddToExecutionQueueV001**
-
-| /ExecuteNextInQueue | TBD. | **/ExecuteNextInQueue**
+| /AddToExecutionQueue 
+| Allow to insert testcase execution into Cerberus Queue for execution 
+v| /AddToExecutionQueue 
+**/AddToExecutionQueueV001**
 
 | /GetCampaignExecutionsCommand | TBD. | **/GetCampaignExecutionsCommand**
 
 | /GetTagExecutions | TBD. | **/GetTagExecutions**
 
-| /GetNumberOfExecutions | Return the number of execution performed on WORKING test cases that match the following criterias. To be used for monitoring purpose. | **/GetNumberOfExecutions**
+| /GetTestCases 
+| Provide the list of test cases by application. 
+| **/GetTestCasesV000**
 
-| /ResultCI | Used to provide various execution counters as well as a global OK or KO status based on the number and status of the execution done on a specific tag. | /ResultCI /ResultCIV001 **/ResultCIV002**
+| /GetNumberOfExecutions 
+| Return the number of execution performed on WORKING test cases that match the following criterias. 
+To be used for monitoring purpose. 
+| **/GetNumberOfExecutions**
+
+| /ResultCI 
+| Used to provide various execution counters as well as a global OK or KO status based on the number and status of the execution done on a specific tag. 
+v| /ResultCI 
+/ResultCIV001 
+**/ResultCIV002**
 
 |=== 
 

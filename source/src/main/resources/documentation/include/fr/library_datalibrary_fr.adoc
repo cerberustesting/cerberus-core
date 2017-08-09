@@ -23,7 +23,7 @@ Si aucun environnement, système ou pays n'est sélectionné, la donnée sera di
 
 Pas de configuration spécifique, seule une valeur statique est requise dans l'onglet subdata. 
 
-image:testdatacreatenewsubdata.PNG[Logo]
+image:testdatacreatenewsubdata.png[Logo]
 
 ==== configuration SOAP
 

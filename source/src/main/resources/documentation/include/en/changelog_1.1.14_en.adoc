@@ -18,4 +18,4 @@ None
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
-None
+* [API] /ExecuteNextInQueue is no longuer considered as public API. Triggering execution from the queue has now become an automatic process. Please get in touch with us via github if you started to use it in external scripts.

@@ -51,7 +51,7 @@ image:testcaseshortcutduplicate.png[TestCaseDuplicate,200,200]
 
 ==== Step
 
-. Click on *[red]#Add step#* to display the following window.  image:testcasepage.PNG[TestCasePage,250,250,float="right",align="center"] 
+. Click on *[red]#Add step#* to display the following window.  image:testcasepage.png[TestCasePage,250,250,float="right",align="center"] 
 . Feed a *[red]#Description#* and click on *[red]#Add#* for a new step. 
 . Or search for a step in library then click on *[red]#Add#*.
 
@@ -185,77 +185,135 @@ image:windowmanageproperties.png[windowManageProperties]
 
 ==== Variables
 
-You can use variables in the action and control's values.
-These variable are define in cerberus and you can have access to them with the right syntax.
+You can use variables in many area of Cerberus. Those variable are used in order to perform some actions of controls in a dynamic way.
+3 types of variables can be created :
 
-A variable is defined between %
+- Variables defined from **properties** inside Test Cases.
+- Variables defined from **application object**.
+- **System** Variables
 
-The easiest way to feed an action with a property or an object, is to use the auto-completion :
+Properties and Application Object are defined by the users while system variable are provided by Cerberus.
 
-. *[red]#Create#* your *property* or your *application object [red]#in advance#*
-. *[red]#Type#* "%"
-. *[red]#Select#* property or object
-. *[red]#Select#* property-name or object-name
-. If it's an object, *[red]#select#* its value / picture path / picture url
+The global syntax of a variable is :
+%[property|object|system].nameOfTheVariable%
 
-image:testcasevariables.png[testCaseVariables]
+This is the list of fields in Cerberus where you can use those variables.
 
-These syntax are available:
+- Condition Value1 and Value2 at Test Case level.
+- Condition Value1 and Value2 at Step Test Case level.
+- Condition Value1 and Value2 at Action Test Case level.
+- Condition Value1 and Value2 at Control Test Case level.
+- Test Case Action Value 1 and Value 2.
+- Test Case Control Value 1 and Value 2.
+- Test Case Properties Value 1 and Value 2.
+- Path, Envelope and Method at Test Data Library (SOAP) level.
+- SQL Script at Test Data Library (SQL) level
+- Path, Request, Operation and Attachement URL at Service level.
+- Request detail (all key and value) and Header (all key and value) at Service level.
 
-. %property.myproperty% : Get the property myproperty
-. %object.myobject.value% : Get the application object myobject's value
-. %object.myobject.picturepath% : Get the application object myobject's picture path
-. %object.myobject.pictureurl% : Get the application object myobject's picure url
+When a variable is detected in one of those field, Cerberus will replace it by the value during the execution.
 
-Below you will find usefull properties :
+- If the variable is an object, the value (that never change) is just replaced.
+- If the variable is a system variable, the value is calculated and replaced at the same time (for ex : time will be the time of the replacement).
+- If the variable is a property, it gets automatically calculated at the time of the replacement. If was already calculated before, the same value (already calculated) is replaced.
+NOTE: In order to force the calculation of a property at a certain timing, _calculateProperty_ Action can be inserted just before the action is used in a field.
+
+Variables can be defined in a recursive way.
+That means that the following syntax :
+
+%property.%system.country%% will be first replaced by
+
+%property.FR% and then by FR property value (if it exist).
+
+Please note also that, if at the end of the decode operation, there are still references to %property.???% or %system.???% or %object.%%% in the field, the corresponding test case will report an error and generate an FA status.
+
+===== Property Variables
+
+Property variable allow to have multi row content.
+As a consequence the full syntax will look like this :
+
+%property.NameOfTheVariable.rowNb.SubData%
+
+If rowNb is not defined, the 1st row will be used. As a consequence, the syntax %property.rowNb.nameOfTheVariable% is the same as %property.1.nameOfTheVariable%
+
+If SubData is not defined, the key velue subdata will be used.
+
+===== Object Variables
+
+- %object.myobject.value% : Get the application object myobject's value
+- %object.myobject.picturepath% : Get the application object myobject's picture path
+- %object.myobject.pictureurl% : Get the application object myobject's picure url
+
+===== System Variables
+
+Below you will find useful properties :
 
 |=== 
 
 | *Value* | *Description*   
-| %SYS_SYSTEM% | System value 
-| %SYS_APPLI% |	Application reference
-| %SYS_APP_DOMAIN% |	Domain of the Application
-| %SYS_APP_VAR1% |	VAR1 of the application on the environment.
-| %SYS_APP_VAR2% |	VAR2 of the application on the environment.
-| %SYS_APP_VAR3% |	VAR3 of the application on the environment.
-| %SYS_APP_VAR4% |	VAR4 of the application on the environment.
-| %SYS_ENV% |	Environment value
-| %SYS_ENVGP% |	Environment group code
-| %SYS_COUNTRY% |	Country code
-| %SYS_TEST% |	Test.
-| %SYS_TESTCASE% |	TestCase
-| %SYS_COUNTRYGP1% |	Country group1 value
-| %SYS_SSIP% |	Selenium server IP
-| %SYS_SSPORT% |	Selenium server port
-| %SYS_BROWSER% |	Browser name of the current execution.
-| %SYS_TAG% |	Execution tag
-| %SYS_EXECUTIONID% |	Execution ID
-| %SYS_EXESTART% |	Start date and time of the execution with format : 2016-12-31 21:24:53.008.
-| %SYS_EXESTORAGEURL% |	Path where media are stored (based from the exeid).
-| %SYS_STEP.n.RETURNCODE% |	Return Code of the step n. n being the execution sequence of the step (sort).
-| %SYS_TODAY-yyyy% |	Year of today
-| %SYS_TODAY-MM% |	Month of today
-| %SYS_TODAY-dd% |	Day of today
-| %SYS_TODAY-doy% |	Day of today from the beginning of the year
-| %SYS_TODAY-HH% |	Hour of today
-| %SYS_TODAY-mm% |	Minute of today
-| %SYS_TODAY-ss% |	Second of today
-| %SYS_YESTERDAY-yyyy% |	Year of yesterday
-| %SYS_YESTERDAY-MM% |	Month of yesterday
-| %SYS_YESTERDAY-dd% |	Day of yesterday
-| %SYS_TODAY-doy% |	Day of yesterday from the beginning of the year
-| %SYS_YESTERDAY-HH% |	Hour of yesterday
-| %SYS_YESTERDAY-mm% |	Minute of yesterday
-| %SYS_YESTERDAY-ss% |	Second of yesterday
-| %SYS_ELAPSED-EXESTART% |	Number of milisecond since the start of the execution.
-| %SYS_ELAPSED-STEPSTART% |	Number of milisecond since the start of the execution of the current step.
+| %system.SYSTEM% | System value 
+| %system.APPLI% |	Application reference
+| %system.BROWSER% |	Browser name of the current execution.
+| %system.APP_DOMAIN% |	Domain of the Application
+| %system.APP_HOST% |	Host of the tested Application
+| %system.APP_VAR1% |	VAR1 of the application on the environment.
+| %system.APP_VAR2% |	VAR2 of the application on the environment.
+| %system.APP_VAR3% |	VAR3 of the application on the environment.
+| %system.APP_VAR4% |	VAR4 of the application on the environment.
+| %system.ENV% |	Environment value
+| %system.ENVGP% |	Environment group code
+| %system.COUNTRY% |	Country code
+| %system.COUNTRYGP1% |	Country group1 value
+| %system.COUNTRYGP2% |	Country group2 value
+| %system.COUNTRYGP3% |	Country group3 value
+| %system.COUNTRYGP4% |	Country group4 value
+| %system.COUNTRYGP5% |	Country group5 value
+| %system.COUNTRYGP6% |	Country group6 value
+| %system.COUNTRYGP7% |	Country group7 value
+| %system.COUNTRYGP8% |	Country group8 value
+| %system.COUNTRYGP9% |	Country group9 value
+| %system.TEST% |	Test.
+| %system.TESTCASE% |	TestCase
+| %system.SSIP% |	Selenium server IP
+| %system.SSPORT% |	Selenium server port
+| %system.TAG% |	Execution tag
+| %system.EXECUTIONID% |	Execution ID
+| %system.EXESTART% |	Start date and time of the execution with format : 2016-12-31 21:24:53.008.
+| %system.EXESTORAGEURL% |	Path where media are stored (based from the exeid).
+| %system.EXEELAPSEDMS% |	Elapsed time in ms since the beginning of the execution (can be used to perform timing controls).
+| %system.CURRENTSTEP_INDEX% |	Index number of the current step execution. Can be used when looping over a step.
+| %system.CURRENTSTEP_STARTISO% |	ISO Timestamp of the beginning of the step execution.
+| %system.CURRENTSTEP_ELAPSEDMS% |	Elapsed time in ms since the beginning of the current step execution (can be used to perform timing controls).
+| %system.STEP.n.RETURNCODE% |	Return Code of the step n. n being the execution sequence of the step (sort).
+| %system.LASTSERVICE_HTTPCODE% |	Http return code of the last service called.
+| %system.TODAY-yyyy% |	Year of today
+| %system.TODAY-MM% |	Month of today
+| %system.TODAY-dd% |	Day of today
+| %system.TODAY-doy% |	Day of today from the beginning of the year
+| %system.TODAY-HH% |	Hour of today
+| %system.TODAY-mm% |	Minute of today
+| %system.TODAY-ss% |	Second of today
+| %system.YESTERDAY-yyyy% |	Year of yesterday
+| %system.YESTERDAY-MM% |	Month of yesterday
+| %system.YESTERDAY-dd% |	Day of yesterday
+| %system.TODAY-doy% |	Day of yesterday from the beginning of the year
+| %system.YESTERDAY-HH% |	Hour of yesterday
+| %system.YESTERDAY-mm% |	Minute of yesterday
+| %system.YESTERDAY-ss% |	Second of yesterday
+| %system.ELAPSED-EXESTART% |	Number of milisecond since the start of the execution.
+| %system.ELAPSED-STEPSTART% |	Number of milisecond since the start of the execution of the current step.
 
 |=== 
+
+===== Tricks
 
 You will find below some tricks which help you to implement specific test cases.
 
 NOTE: It is possible to create a random property with a number of digit defined. You have to feed the property fields like the screenshot below. This property will be different for each execution. Example: 884592, 004795
-image:testcaserandomproperty.PNG[TestCaseRandomProperty]
+image:testcaserandomproperty.png[TestCaseRandomProperty]
+
+NOTE: It is possible to loop over a step using the following configuration.
+image:testlooptep.png[TestCaseLoopStep]
 
 ==== Robot Constrains
 
