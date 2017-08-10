@@ -42,10 +42,10 @@ import java.util.List;
  *
  * @author Aurelien Bourdon
  */
-public class GetTestCases extends PublicGetableHttpServlet<GetTestCases.Request, GetTestCases.Response> {
+public class GetTestCasesV000 extends PublicGetableHttpServlet<GetTestCasesV000.Request, GetTestCasesV000.Response> {
 
     /**
-     * The associated request to this {@link GetTestCases} servlet
+     * The associated request to this {@link GetTestCasesV000} servlet
      *
      * @author Aurelien Bourdon
      */
@@ -74,7 +74,7 @@ public class GetTestCases extends PublicGetableHttpServlet<GetTestCases.Request,
     }
 
     /**
-     * The associated response to this {@link GetTestCases} servlet
+     * The associated response to this {@link GetTestCasesV000} servlet
      *
      * @author Aurelien Bourdon
      */
@@ -148,7 +148,7 @@ public class GetTestCases extends PublicGetableHttpServlet<GetTestCases.Request,
     @Override
     protected GetableHttpServletInfo getInfo() {
         return new GetableHttpServletInfo(
-                GetTestCases.class.getSimpleName(),
+                GetTestCasesV000.class.getSimpleName(),
                 getVersion(),
                 "Get a list of test cases based on criteria",
                 new GetableHttpServletInfo.GetableUsage(

@@ -773,12 +773,12 @@
     <servlet>
         <description>Execute the next record from the execution queue.</description>
         <servlet-name>ExecuteNextInQueue</servlet-name>
-        <servlet-class>org.cerberus.servlet.zzpublic.ExecuteNextInQueue</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.testexecution.ExecuteNextInQueue</servlet-class>
     </servlet>
     <servlet>
         <description>Get a list of test cases based on criteria.</description>
-        <servlet-name>GetTestCases</servlet-name>
-        <servlet-class>org.cerberus.servlet.zzpublic.GetTestCases</servlet-class>
+        <servlet-name>GetTestCasesV000</servlet-name>
+        <servlet-class>org.cerberus.servlet.zzpublic.GetTestCasesV000</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DeleteBuildRevisionParameters</servlet-name>
@@ -1677,8 +1677,8 @@
         <url-pattern>/ExecuteNextInQueue</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>GetTestCases</servlet-name>
-        <url-pattern>/GetTestCases</url-pattern>
+        <servlet-name>GetTestCasesV000</servlet-name>
+        <url-pattern>/GetTestCasesV000</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>GeneratePerformanceString</servlet-name>
@@ -2373,7 +2373,7 @@
             <url-pattern>/AddToExecutionQueue</url-pattern>
             <url-pattern>/AddToExecutionQueueV001</url-pattern>
             <url-pattern>/ReadApplicationObjectImage</url-pattern>
-            <url-pattern>/GetTestCases</url-pattern>
+            <url-pattern>/GetTestCasesV000</url-pattern>
             <url-pattern>/DummyRESTCall</url-pattern>
         </web-resource-collection>
     </security-constraint>

@@ -114,7 +114,7 @@ public class UpdateTestCaseExecutionQueue extends HttpServlet {
         int retries = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("retries"), 0, charset);
         String manualExecution = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("manualExecution"), "", charset);
         String debugFlag = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("debugFlag"), "N", charset);
-        Integer priority = 100;
+        Integer priority = TestCaseExecutionQueue.PRIORITY_DEFAULT;
         boolean prio_error = false;
         try {
             if (request.getParameter("priority") != null && !request.getParameter("priority").equals("")) {

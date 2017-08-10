@@ -23,7 +23,7 @@ Si aucun environnement, système ou pays n'est sélectionné, la donnée sera di
 
 Pas de configuration spécifique, seule une valeur statique est requise dans l'onglet subdata. 
 
-image:testdatacreatenewsubdata.PNG[Logo]
+image:testdatacreatenewsubdata.png[Logo]
 
 ==== configuration SOAP
 
@@ -60,11 +60,19 @@ image:testdatacreatenewsubdata.PNG[Logo]
 
 | *Champ* | *Description*  
 
-| Base de données | TBD
+| Base de données | Base de donnée utilisée pour determiner le debut du chemin utilisé pour récupérer le fichier CSV.
 
 | CSV URL | CSV URL indique l'URL ou le CSV est accessible.
 
 | Séparateur | Séparateur utilisé par le CSV.
 
 |===
+
+Chaque Base de connée peut être configuré au niveau de chaque environnement (System + Country + Environment) sur l'écran de gestion des environnements pour les 3 types de source de base de données :
+
+- JDBC Ressource : Connection pool name qui sera à configurer dans le serveur d'aplication Glassfish.
+- SOAP Service URL : Partie gauche de l'URL qui sera utilisée pour appeler le service.
+- CSV Service URL : Parti Gauche de l'URL qui sera utilisée pour récuperer le fichier CSV.
+
+image:datalibdatabaseconfig_fr.png[DatalibraryDatabaseConfig]
 

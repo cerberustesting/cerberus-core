@@ -292,32 +292,33 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
 
                         // Adding execution to queue.
                         if (queueService.updateToWaiting(exe.getId())) {
-                            ExecutionQueueWorkerThread task = new ExecutionQueueWorkerThread();
-                            task.setCerberusExecutionUrl(cerberus_url);
-                            task.setQueueId(exe.getId());
-                            task.setToExecuteTimeout(queueTimeout);
-                            task.setQueueService(queueService);
-                            task.setExecThreadPool(threadQueuePool);
                             try {
+                                ExecutionQueueWorkerThread task = new ExecutionQueueWorkerThread();
+                                task.setCerberusExecutionUrl(cerberus_url);
+                                task.setQueueId(exe.getId());
+                                task.setToExecuteTimeout(queueTimeout);
+                                task.setQueueService(queueService);
+                                task.setExecThreadPool(threadQueuePool);
                                 Future<?> future = threadQueuePool.getExecutor().submit(task);
                                 task.setFuture(future);
-                            } catch (RejectedExecutionException e) {
-                                System.out.println("RejectedExecutionException :" + e);
-                            }
 
-                            triggerExe = true;
-                            nbqueuedexe++;
+                                triggerExe = true;
+                                nbqueuedexe++;
 
-                            // Debug messages.
-                            LOG.debug("result : " + triggerExe + " Const1 " + constMatch01 + " Const2 " + constMatch01 + " Const3 " + constMatch01 + " Manual " + exe.getManualExecution());
-                            LOG.debug(" CurConst1 " + const01_current + " CurConst2 " + const02_current + " CurConst3 " + const03_current);
+                                // Debug messages.
+                                LOG.debug("result : " + triggerExe + " Const1 " + constMatch01 + " Const2 " + constMatch01 + " Const3 " + constMatch01 + " Manual " + exe.getManualExecution());
+                                LOG.debug(" CurConst1 " + const01_current + " CurConst2 " + const02_current + " CurConst3 " + const03_current);
 
-                            // Counter increase
-                            constrains_current.put(const01_key, const01_current + 1);
-                            if (!exe.getManualExecution().equals("Y")) {
-                                // Specific increment only if automatic execution.
-                                constrains_current.put(const02_key, const02_current + 1);
-                                constrains_current.put(const03_key, const03_current + 1);
+                                // Counter increase
+                                constrains_current.put(const01_key, const01_current + 1);
+                                if (!exe.getManualExecution().equals("Y")) {
+                                    // Specific increment only if automatic execution.
+                                    constrains_current.put(const02_key, const02_current + 1);
+                                    constrains_current.put(const03_key, const03_current + 1);
+                                }
+
+                            } catch (Exception e) {
+                                LOG.error("Failed to add Queueid : " + exe.getId() + " into the queue : " + e.getMessage());
                             }
 
                         }

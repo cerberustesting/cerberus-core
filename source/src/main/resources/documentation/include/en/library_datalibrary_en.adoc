@@ -61,11 +61,19 @@ image:testdatacreatenewsubdata.png[testdatacreatenewsubdata,200,200,float="right
 
 | *Field* | *Description*  
 
-| Database | TBD
+| Database | Name of the database the define the root path where to get the CSV file.
 
-| CSV URL | CSV URL specifies the URL where the CSV can be reached.
+| CSV URL | CSV URL specifies the URL where the CSV can be reached. Can be a full URL but also a relative URL in case the Database information is provided and configured at environment level.
 
 | Separator | Separator used parsing a CSV.
 
 |===
+
+Database can be configured for each environment (System + Country + Environment) inside the Environment screen for the 3 types of datasource :
+
+- JDBC Ressource : Connection pool name to be configured inside Glassfish application server.
+- SOAP Service URL : Left part of the URL that will be used to call the Service URL
+- CSV Service URL : Left part of the URL that will be used to get the CSV file.
+
+image:datalibdatabaseconfig_en.png[DatalibraryDatabaseConfig]
 

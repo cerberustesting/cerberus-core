@@ -33,9 +33,9 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class FactoryTestCaseExecutionQueue implements IFactoryTestCaseExecutionQueue {
-
+    
     private static final long NEW_ENTRY_INDEX = -1;
-
+    
     @Override
     public TestCaseExecutionQueue create(long id, String test, String testCase, String country, String environment, String robot, String robotIP, String robotPort,
             String browser, String browserVersion, String platform, String screenSize, int manualURL, String manualHost, String manualContextRoot, String manualLoginRelativeURL,
@@ -73,6 +73,10 @@ public class FactoryTestCaseExecutionQueue implements IFactoryTestCaseExecutionQ
             inQueue.setRetries(retries);
             inQueue.setManualExecution(manualExecution);
             inQueue.setExeId(exeId);
+            inQueue.setState(TestCaseExecutionQueue.State.QUEUED);
+            inQueue.setComment("");
+            inQueue.setDebugFlag("N");
+            inQueue.setPriority(TestCaseExecutionQueue.PRIORITY_DEFAULT);
             return inQueue;
         } catch (IllegalArgumentException iae) {
             throw new FactoryCreationException("Unable to create a TestCaseExecutionInQueue instance", iae);
@@ -80,7 +84,7 @@ public class FactoryTestCaseExecutionQueue implements IFactoryTestCaseExecutionQ
             throw new FactoryCreationException("Unable to create a TestCaseExecutionInQueue instance", ise);
         }
     }
-
+    
     @Override
     public TestCaseExecutionQueue create(String test, String testCase, String country, String environment, String robot, String robotIP, String robotPort, String browser,
             String browserVersion, String platform, String screenSize, int manualURL, String manualHost, String manualContextRoot, String manualLoginRelativeURL, String manualEnvData,
@@ -93,10 +97,10 @@ public class FactoryTestCaseExecutionQueue implements IFactoryTestCaseExecutionQ
         inQueue.setState(TestCaseExecutionQueue.State.QUEUED);
         inQueue.setComment("");
         inQueue.setDebugFlag("N");
-        inQueue.setPriority(100);
+        inQueue.setPriority(TestCaseExecutionQueue.PRIORITY_DEFAULT);
         return inQueue;
     }
-
+    
     @Override
     public TestCaseExecutionQueue create(long id, String test, String testCase, String country, String environment, String robot, String robotIP, String robotPort, String browser,
             String browserVersion, String platform, String screenSize, int manualURL, String manualHost, String manualContextRoot, String manualLoginRelativeURL, String manualEnvData,

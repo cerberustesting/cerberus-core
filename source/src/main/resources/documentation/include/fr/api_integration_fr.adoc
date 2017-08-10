@@ -4,13 +4,13 @@ Ci dessous les API à utiliser dans un contexte d'integration.
 
 | *API URI* | *Description* | *Version List*
 
-| /DisableEnvironment | Notifier Cerberus qu'un systeme est à desactiver.. | /DisableEnvironmentV000
+| /DisableEnvironment | Notifier Cerberus qu'un systeme est à desactiver.. | **/DisableEnvironmentV000**
 
-| /NewBuildRevision | Used to inform Cerberus that a new Build and Revision has been deployed on a system. | /NewBuildRevisionV000
+| /NewBuildRevision | Used to inform Cerberus that a new Build and Revision has been deployed on a system. | **/NewBuildRevisionV000**
 
-| /NewEnvironmentEvent | Used to inform Cerberus about an event that occured on a given environment | /NewEnvironmentEventV000
+| /NewEnvironmentEvent | Used to inform Cerberus about an event that occured on a given environment | **/NewEnvironmentEventV000**
 
-| /NewRelease | Used to create or update a release entry of an application in a 'NONE' build and 'NONE' revision. | /NewRelease
+| /NewRelease | Used to create or update a release entry of an application in a 'NONE' build and 'NONE' revision. | **/NewRelease**
 
 |=== 
 

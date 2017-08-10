@@ -4,13 +4,13 @@ This is the APi that can be used on the integration perimeter (change environmen
 
 | *API URI* | *Description* | *Version List*
 
-| /DisableEnvironment | Used to inform Cerberus that a system is disabled. | /DisableEnvironmentV000
+| /DisableEnvironment | Used to inform Cerberus that a system is disabled. | **/DisableEnvironmentV000**
 
-| /NewBuildRevision | Used to inform Cerberus that a new Build and Revision has been deployed on a system. | /NewBuildRevisionV000
+| /NewBuildRevision | Used to inform Cerberus that a new Build and Revision has been deployed on a system. | **/NewBuildRevisionV000**
 
-| /NewEnvironmentEvent | Used to inform Cerberus about an event that occured on a given environment | /NewEnvironmentEventV000
+| /NewEnvironmentEvent | Used to inform Cerberus about an event that occured on a given environment | **/NewEnvironmentEventV000**
 
-| /NewRelease | Used to create or update a release entry of an application in a 'NONE' build and 'NONE' revision. | /NewRelease
+| /NewRelease | Used to create or update a release entry of an application in a 'NONE' build and 'NONE' revision. | **/NewRelease**
 
 |=== 
 

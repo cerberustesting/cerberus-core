@@ -158,7 +158,7 @@ public class AddToExecutionQueueV001 extends HttpServlet {
         List<String> countries;
         countries = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues(PARAMETER_COUNTRY), null, charset);
         List<String> environments;
-        environments = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues(PARAMETER_ENVIRONMENT), null, charset);
+        environments = ParameterParserUtil.parseListParamAndDecodeAndDeleteEmptyValue(request.getParameterValues(PARAMETER_ENVIRONMENT), null, charset);
         List<String> browsers;
         browsers = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues(PARAMETER_BROWSER), null, charset);
         // Execution parameters.
@@ -275,6 +275,7 @@ public class AddToExecutionQueueV001 extends HttpServlet {
             Map<String, String> invariantEnv = invariantService.readToHashMapGp1StringByIdname("ENVIRONMENT", "");
             List<TestCaseExecutionQueue> toInserts = new ArrayList<TestCaseExecutionQueue>();
             try {
+                LOG.debug("Nb of TestCase : " + selectedTests.size());
                 for (Map<String, String> selectedTest : selectedTests) {
                     String test = selectedTest.get(PARAMETER_SELECTED_TEST_KEY_TEST);
                     String testCase = selectedTest.get(PARAMETER_SELECTED_TEST_KEY_TESTCASE);
@@ -289,7 +290,8 @@ public class AddToExecutionQueueV001 extends HttpServlet {
                                     String envGp1 = invariantEnv.get(environment);
                                     if (((envGp1.equals("PROD")) && (tc.getActivePROD().equalsIgnoreCase("Y")))
                                             || ((envGp1.equals("UAT")) && (tc.getActiveUAT().equalsIgnoreCase("Y")))
-                                            || ((envGp1.equals("QA")) && (tc.getActiveQA().equalsIgnoreCase("Y")))) {
+                                            || ((envGp1.equals("QA")) && (tc.getActiveQA().equalsIgnoreCase("Y")))
+                                            || (envGp1.equals("DEV"))) {
                                         for (String browser : browsers) {
                                             try {
                                                 String user = request.getRemoteUser() == null ? "" : request.getRemoteUser();
@@ -297,14 +299,20 @@ public class AddToExecutionQueueV001 extends HttpServlet {
                                                         platform, screenSize, manualURL, manualHost, manualContextRoot, manualLoginRelativeURL, manualEnvData, tag, screenshot, verbose,
                                                         timeout, pageSource, seleniumLog, 0, retries, manualExecution, user, null, null, null));
                                             } catch (FactoryCreationException e) {
-                                                LOG.error("Unable to insert record due to: " + e,e);
+                                                LOG.error("Unable to insert record due to: " + e, e);
                                                 LOG.error("test: " + test + "-" + testCase + "-" + country.getCountry() + "-" + environment + "-" + robot);
                                             }
                                         }
+                                    } else {
+                                        LOG.debug("Env group not active for testcase : " + environment);
                                     }
                                 }
+                            } else {
+                                LOG.debug("Country does not match. " + countries + " " + country.getCountry());
                             }
                         }
+                    } else {
+                        LOG.debug("TestCase not Active.");
                     }
                 }
             } catch (CerberusException ex) {

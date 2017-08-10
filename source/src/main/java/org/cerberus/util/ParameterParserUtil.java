@@ -22,6 +22,7 @@ package org.cerberus.util;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -238,6 +239,23 @@ public final class ParameterParserUtil {
 
         return result;
     }
+
+    /**
+     * Parses and decode a list from the given inParams one by decoding each of
+     * them
+     *
+     * @param param
+     * @param defaultVal
+     * @param req
+     * @return
+     */
+    public static List<String> parseListParamAndDecodeAndDeleteEmptyValue(String[] inParams, List<String> defaultVal, String charset) {
+        List<String> result = parseListParamAndDecode(inParams,defaultVal,charset);
+        result.removeAll(Collections.singleton(""));
+        result.removeAll(Collections.singleton(null));
+        return result;
+    }
+
 
     /**
      * @param inParam
