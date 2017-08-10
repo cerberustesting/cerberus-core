@@ -105,18 +105,6 @@ include::include/{lang}/{file-to-include}[]
 
 link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
 
-== SOAP Library
-:file-to-include: library_soaplibrary_{lang}.adoc
-include::include/{lang}/{file-to-include}[]
-
-link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
-
-== SQL Library
-:file-to-include: library_sqllibrary_{lang}.adoc
-include::include/{lang}/{file-to-include}[]
-
-link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
-
 ---
 = Integration
 :file-to-include: integration_introduction_{lang}.adoc
@@ -138,6 +126,18 @@ link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-
 
 == Application Object
 :file-to-include: integration_applicationobject_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
+== Service Library
+:file-to-include: integration_servicelibrary_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
+== SQL Library
+:file-to-include: integration_sqllibrary_{lang}.adoc
 include::include/{lang}/{file-to-include}[]
 
 link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
