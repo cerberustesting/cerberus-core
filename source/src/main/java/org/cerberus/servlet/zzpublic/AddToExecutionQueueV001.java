@@ -33,6 +33,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
+import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.CampaignParameter;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseCountry;
@@ -50,6 +51,7 @@ import org.cerberus.util.servlet.ServletUtil;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.cerberus.crud.factory.IFactoryTestCaseExecutionQueue;
+import org.cerberus.crud.service.IApplicationService;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.ITestCaseCountryService;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
@@ -106,6 +108,7 @@ public class AddToExecutionQueueV001 extends HttpServlet {
     private IFactoryTestCaseExecutionQueue inQueueFactoryService;
     private IExecutionThreadPoolService executionThreadService;
     private IInvariantService invariantService;
+    private IApplicationService applicationService;
     private ITestCaseService testCaseService;
     private ITestCaseCountryService testCaseCountryService;
     private ICampaignParameterService campaignParameterService;
@@ -138,6 +141,7 @@ public class AddToExecutionQueueV001 extends HttpServlet {
         executionThreadService = appContext.getBean(IExecutionThreadPoolService.class);
         testCaseService = appContext.getBean(ITestCaseService.class);
         invariantService = appContext.getBean(IInvariantService.class);
+        applicationService = appContext.getBean(IApplicationService.class);
         testCaseCountryService = appContext.getBean(ITestCaseCountryService.class);
         campaignParameterService = appContext.getBean(ICampaignParameterService.class);
 
@@ -269,6 +273,7 @@ public class AddToExecutionQueueV001 extends HttpServlet {
             error = true;
         }
 
+        String user = request.getRemoteUser() == null ? "" : request.getRemoteUser();
         // Starting the request only if previous parameters exist.
         if (!error) {
             // Part 1: Getting all possible xecution from test cases + countries + environments + browsers which have been sent to this servlet.
@@ -292,10 +297,24 @@ public class AddToExecutionQueueV001 extends HttpServlet {
                                             || ((envGp1.equals("UAT")) && (tc.getActiveUAT().equalsIgnoreCase("Y")))
                                             || ((envGp1.equals("QA")) && (tc.getActiveQA().equalsIgnoreCase("Y")))
                                             || (envGp1.equals("DEV"))) {
-                                        for (String browser : browsers) {
+                                        // Getting Application in order to check application type against browser.
+                                        Application app = applicationService.convert(applicationService.readByKey(tc.getApplication()));
+                                        if ((app != null) && (app.getType() != null) && app.getType().equalsIgnoreCase(Application.TYPE_GUI)) {
+                                            for (String browser : browsers) {
+                                                try {
+                                                    toInserts.add(inQueueFactoryService.create(test, testCase, country.getCountry(), environment, robot, robotIP, robotPort, browser, browserVersion,
+                                                            platform, screenSize, manualURL, manualHost, manualContextRoot, manualLoginRelativeURL, manualEnvData, tag, screenshot, verbose,
+                                                            timeout, pageSource, seleniumLog, 0, retries, manualExecution, user, null, null, null));
+                                                } catch (FactoryCreationException e) {
+                                                    LOG.error("Unable to insert record due to: " + e, e);
+                                                    LOG.error("test: " + test + "-" + testCase + "-" + country.getCountry() + "-" + environment + "-" + robot);
+                                                }
+                                            }
+                                        } else {
+                                            // Application does not support browser so we force an empty value.
+                                            LOG.debug("Forcing Browser to empty value. Application type=" + app.getType());
                                             try {
-                                                String user = request.getRemoteUser() == null ? "" : request.getRemoteUser();
-                                                toInserts.add(inQueueFactoryService.create(test, testCase, country.getCountry(), environment, robot, robotIP, robotPort, browser, browserVersion,
+                                                toInserts.add(inQueueFactoryService.create(test, testCase, country.getCountry(), environment, robot, robotIP, robotPort, "", browserVersion,
                                                         platform, screenSize, manualURL, manualHost, manualContextRoot, manualLoginRelativeURL, manualEnvData, tag, screenshot, verbose,
                                                         timeout, pageSource, seleniumLog, 0, retries, manualExecution, user, null, null, null));
                                             } catch (FactoryCreationException e) {

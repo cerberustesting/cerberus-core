@@ -664,8 +664,8 @@ public class ExecutionRunService implements IExecutionRunService {
             }
 
             /**
-             * Retry management, in case the result is not (OK or NE), we execute the
-             * job again reducing the retry to 1.
+             * Retry management, in case the result is not (OK or NE), we
+             * execute the job again reducing the retry to 1.
              */
             if (tCExecution.getNumberOfRetries() > 0
                     && !tCExecution.getResultMessage().getCodeString().equals("OK")
@@ -684,11 +684,16 @@ public class ExecutionRunService implements IExecutionRunService {
                     newExeQueue = tCExecution.getTestCaseExecutionQueue();
                 }
                 // Forcing init value for that new queue execution : exeid=0, no debugflag and State = QUEUED
+                int newRetry = tCExecution.getNumberOfRetries() - 1;
                 newExeQueue.setId(0);
                 newExeQueue.setDebugFlag("N");
-                newExeQueue.setComment("Added from Retry.");
+                if (newRetry <= 0) {
+                    newExeQueue.setComment("Added from Retry. Last attempt to go.");
+                } else {
+                    newExeQueue.setComment("Added from Retry. Still " + newRetry + " attempt(s) to go.");
+                }
                 newExeQueue.setState(TestCaseExecutionQueue.State.QUEUED);
-                newExeQueue.setRetries(tCExecution.getNumberOfRetries() - 1);
+                newExeQueue.setRetries(newRetry);
                 // Insert execution to the Queue.
                 executionQueueService.create(newExeQueue);
             }

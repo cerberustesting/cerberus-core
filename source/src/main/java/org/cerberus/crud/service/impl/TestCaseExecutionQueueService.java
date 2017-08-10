@@ -236,6 +236,7 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
         int screenshot = testCaseExecutionInQueue.getScreenshot();
         int pageSource = testCaseExecutionInQueue.getPageSource();
         int seleniumLog = testCaseExecutionInQueue.getSeleniumLog();
+        int retry = testCaseExecutionInQueue.getRetries();
         boolean synchroneous = true;
         String timeout = testCaseExecutionInQueue.getTimeout();
         String outputFormat = "";
@@ -251,7 +252,7 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
         TestCaseExecution result = factoryTestCaseExecution.create(0, test, testCase, null, null, null, environment, country, browser, version, platform,
                 browser, start, end, controlStatus, controlMessage, application, applicationObj, ip, "", port, tag, verbose, screenshot, pageSource,
                 seleniumLog, synchroneous, timeout, outputFormat, "", "", tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL,
-                myEnvData, seleniumIP, seleniumPort, null, null, null, 0, "", null, "", "", "", "", "", manualExecution, "");
+                myEnvData, seleniumIP, seleniumPort, null, null, null, retry, "", null, "", "", "", "", "", manualExecution, "");
         result.setQueueID(testCaseExecutionInQueue.getId());
         result.setId(testCaseExecutionInQueue.getExeId());
         return result;
