@@ -158,7 +158,7 @@ public class AddToExecutionQueueV001 extends HttpServlet {
         List<String> countries;
         countries = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues(PARAMETER_COUNTRY), null, charset);
         List<String> environments;
-        environments = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues(PARAMETER_ENVIRONMENT), null, charset);
+        environments = ParameterParserUtil.parseListParamAndDecodeAndDeleteEmptyValue(request.getParameterValues(PARAMETER_ENVIRONMENT), null, charset);
         List<String> browsers;
         browsers = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues(PARAMETER_BROWSER), null, charset);
         // Execution parameters.
