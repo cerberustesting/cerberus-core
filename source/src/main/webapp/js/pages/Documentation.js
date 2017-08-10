@@ -23,15 +23,22 @@ $.when($.getScript("js/global/global.js")).then(function () {
     });
 });
 
-function initPage(){
+function initPage() {
     var doc = new Doc();
 
     displayHeaderLabel(doc);
-    
+
     var lang = $("#MyLang").val();
-    $("#documentationFrame").attr("src", "./documentation/documentation_"+lang+".html");
+    var windowsHeight = $(window).height() + 'px';
+    $("#documentationFrame").attr("src", "./documentation/documentation_" + lang + ".html");
+    $('#documentationFrame').css('height', windowsHeight);
+
+    $('#documentationFrame').load(function () {
+        $('#documentationFrame').contents().find('#content').css('height', windowsHeight).css('overflow', 'auto');
+    });
+
 }
 
 function resizeIframe(obj) {
     obj.style.height = obj.contentWindow.document.body.scrollHeight + 'px';
-  }
+}

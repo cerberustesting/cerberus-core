@@ -31,13 +31,11 @@
     <body>
         <%@ include file="include/global/header.html" %>
         <div class="container-fluid center" id="page-layout">
-
             <h1 class="page-title-line" id="title">Documentation</h1>
-            <iframe id="documentationFrame" style="width:100%" frameborder="0" scrolling="no" onload="resizeIframe(this)" /></iframe>
-             
-            <footer class="footer">
-                <div class="container-fluid" id="footer"></div>
-            </footer>
-        </div>
-    </body>
+            <iframe id="documentationFrame" style="width:100%" frameborder="0" scrolling="no"/></iframe>
+        <footer class="footer">
+            <div class="container-fluid" id="footer"></div>
+        </footer>
+    </div>
+</body>
 </html>
