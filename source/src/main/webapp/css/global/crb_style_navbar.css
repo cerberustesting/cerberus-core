@@ -270,16 +270,15 @@
 #side-menu>li>a,
 #side-menu>li>a,
 .navbar-default .controlToggle {
-    color: #868a91;
+    color: #ddd;
 }
 
-/* side navbarbar text color when hover*/
+/* side navbarbar background color when hover*/
 .nav-second-level>li>a:focus,
 .nav-second-level>li>a:hover,
 #side-menu>li>a:focus,
 #side-menu>li>a:hover{
     background-color: rgba(79,84,92,.6);
-    color: whitesmoke;
 }
 /* title color */
 .titleCase{
