@@ -67,11 +67,12 @@ public interface ITestCaseExecutionQueueService {
 
     /**
      *
-     * @param tag
+     * @param tag tag to filter.
+     * @param stateList List of State to filter.
      * @return
      * @throws CerberusException
      */
-    public AnswerList readByTag(String tag) throws CerberusException;
+    public AnswerList readByVarious1(String tag, List<String> stateList) throws CerberusException;
 
     /**
      *

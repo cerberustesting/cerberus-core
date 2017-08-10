@@ -686,7 +686,7 @@ public class ExecutionRunService implements IExecutionRunService {
                 // Forcing init value for that new queue execution : exeid=0, no debugflag and State = QUEUED
                 newExeQueue.setId(0);
                 newExeQueue.setDebugFlag("N");
-                newExeQueue.setComment("");
+                newExeQueue.setComment("Added from Retry.");
                 newExeQueue.setState(TestCaseExecutionQueue.State.QUEUED);
                 newExeQueue.setRetries(tCExecution.getNumberOfRetries() - 1);
                 // Insert execution to the Queue.
