@@ -279,6 +279,7 @@
 #side-menu>li>a:focus,
 #side-menu>li>a:hover{
     background-color: rgba(79,84,92,.6);
+    color: #FFF;
 }
 /* title color */
 .titleCase{
