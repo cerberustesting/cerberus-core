@@ -189,8 +189,12 @@ function renderOptionsForTestCaseList(data) {
 
             $('#testCaseList #createTestCaseButton').click(data, function () {
                 // Getting the Test from the 1st row of the testcase table.
-                var firstRowTest = $("#testCaseTable td.sorting_1")[0].textContent;
-                addTestCaseClick(firstRowTest);
+                if($("#testCaseTable td.sorting_1")[0] != undefined) {
+                    var firstRowTest = $("#testCaseTable td.sorting_1")[0].textContent;
+                    addTestCaseClick(firstRowTest);
+                } else {
+                    addTestCaseClick();
+                }
             });
             $('#testCaseList #createBrpMassButton').click(massActionClick);
         }
