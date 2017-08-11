@@ -82,7 +82,7 @@
             	
             	<div class="col-md-12 login-box-form">
             		<div class="col-md-6">
-            			<img src="images/logo250.png" class="img-responsive center-block logo-login"></img>
+            			<img src="images/logoLogin-v2.jpg" class="img-responsive center-block logo-login"></img>
             		</div>
             		<div class="col-md-6">
 

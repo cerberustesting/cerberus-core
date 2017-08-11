@@ -39,7 +39,15 @@
 
 /*title padding style*/
 #side-menu>li>a.titleCase{
-    padding: 10px 20px 14px 18px;
+    padding: 10px 20px 45px 18px;
+}
+.navbar-default.collapsed #side-menu>li>a.titleCase{
+    padding: 10px 20px 45px 10px;
+}
+
+#logo {
+    margin-top:-5px;
+    max-height: 42px;
 }
 
 .navbar-right a {
@@ -254,6 +262,7 @@
 .sidebar .active>a>.fa.arrow:before {
     content: "\f105";/*angle right*/
 }
+
 
 /*==Color setting==*/
 
