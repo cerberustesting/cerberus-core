@@ -49,8 +49,8 @@ public class ApplicationObjectService implements IApplicationObjectService {
     private final String OBJECT_NAME = "ApplicationObject";
 
     @Override
-    public AnswerItem readByKey(int id) {
-        return ApplicationObjectDAO.readByKey(id);
+    public AnswerItem readByKeyTech(int id) {
+        return ApplicationObjectDAO.readByKeyTech(id);
     }
 
     @Override
@@ -94,8 +94,8 @@ public class ApplicationObjectService implements IApplicationObjectService {
     }
 
     @Override
-    public Answer update(ApplicationObject object) {
-        return ApplicationObjectDAO.update(object);
+    public Answer update(String application, String appObject, ApplicationObject object) {
+        return ApplicationObjectDAO.update(application, appObject, object);
     }
 
     @Override

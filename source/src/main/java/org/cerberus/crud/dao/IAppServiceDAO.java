@@ -78,10 +78,11 @@ public interface IAppServiceDAO {
     Answer create(AppService object);
 
     /**
+     * @param service
      * @param object the {@link AppService} to Update
      * @return {@link AnswerItem}
      */
-    Answer update(AppService object);
+    Answer update(String service, AppService object);
 
     /**
      * @param object the {@link AppService} to Delete

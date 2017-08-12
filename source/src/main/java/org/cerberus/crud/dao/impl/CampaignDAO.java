@@ -20,7 +20,6 @@
 package org.cerberus.crud.dao.impl;
 
 import com.google.common.base.Strings;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -28,19 +27,18 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.ICampaignDAO;
+import org.cerberus.crud.entity.Campaign;
+import org.cerberus.crud.factory.IFactoryCampaign;
 import org.cerberus.crud.factory.impl.FactoryCampaign;
 import org.cerberus.database.DatabaseSpring;
-import org.cerberus.crud.entity.Campaign;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.MessageGeneral;
+import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.crud.factory.IFactoryCampaign;
-import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.log.MyLogger;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.SqlUtil;
@@ -56,13 +54,13 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public class CampaignDAO implements ICampaignDAO {
+    private static final Logger LOG = Logger.getLogger(CampaignDAO.class);
 
     @Autowired
     private DatabaseSpring databaseSpring;
     @Autowired
     private IFactoryCampaign factoryCampaign;
 
-    private static final Logger LOG = Logger.getLogger(CampaignDAO.class);
 
     private final String OBJECT_NAME = "Campaign";
     private final int MAX_ROW_SELECTED = 100000;
@@ -810,7 +808,7 @@ public class CampaignDAO implements ICampaignDAO {
     @Override
     public Answer update(Campaign object) {
         MessageEvent msg = null;
-        final String query = "UPDATE campaign cpg SET Description = ? WHERE campaignID = ?";
+        final String query = "UPDATE campaign cpg SET campaign = ?, Description = ? WHERE campaignID = ?";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -820,8 +818,10 @@ public class CampaignDAO implements ICampaignDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
-                preStat.setString(1, object.getDescription());
-                preStat.setInt(2, object.getCampaignID());
+                int i=1;
+                preStat.setString(i++, object.getCampaign());
+                preStat.setString(i++, object.getDescription());
+                preStat.setInt(i++, object.getCampaignID());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);

@@ -67,16 +67,6 @@ public class TestService implements ITestService {
     }
 
     @Override
-    public boolean createTest(Test test) throws CerberusException {
-        return testDao.createTest(test);
-    }
-
-    @Override
-    public boolean deleteTest(Test test) {
-        return testDao.deleteTest(test);
-    }
-
-    @Override
     public Test findTestByKey(String test) {
         return testDao.findTestByKey(test);
     }
@@ -95,7 +85,7 @@ public class TestService implements ITestService {
     public AnswerList readDistinctBySystem(String system) {
         return testDao.readDistinctBySystem(system);
     }
-    
+
     @Override
     public AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
         return testDao.readByCriteria(start, amount, colName, dir, searchTerm, individualSearch);
@@ -107,8 +97,8 @@ public class TestService implements ITestService {
     }
 
     @Override
-    public Answer update(Test test) {
-        return testDao.update(test);
+    public Answer update(String keyTest, Test test) {
+        return testDao.update(keyTest, test);
     }
 
     @Override

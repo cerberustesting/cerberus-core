@@ -124,7 +124,7 @@ public interface IAppServiceContentService {
      * @param object
      * @return
      */
-    Answer update(AppServiceContent object);
+    Answer update(String service, String key, AppServiceContent object);
 
     /**
      *

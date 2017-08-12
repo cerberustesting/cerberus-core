@@ -281,7 +281,7 @@ public class ReadApplicationObject extends HttpServlet {
         JSONObject object = new JSONObject();
         applicationObjectService = appContext.getBean(IApplicationObjectService.class);
 
-        AnswerItem resp = applicationObjectService.readByKey(id);
+        AnswerItem resp = applicationObjectService.readByKeyTech(id);
 
         JSONObject jsonObject = new JSONObject();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values

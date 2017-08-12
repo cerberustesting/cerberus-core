@@ -112,8 +112,8 @@ public class AppServiceContentService implements IAppServiceContentService {
     }
 
     @Override
-    public Answer update(AppServiceContent object) {
-        return AppServiceContentDAO.update(object);
+    public Answer update(String service, String key, AppServiceContent object) {
+        return AppServiceContentDAO.update(service, key, object);
     }
 
     @Override
@@ -167,7 +167,7 @@ public class AppServiceContentService implements IAppServiceContentService {
         for (AppServiceContent objectDifference : listToUpdateOrInsertToIterate) {
             for (AppServiceContent objectInDatabase : oldList) {
                 if (objectDifference.hasSameKey(objectInDatabase)) {
-                    ans = this.update(objectDifference);
+                    ans = this.update(objectDifference.getService(), objectDifference.getKey(), objectDifference);
                     finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
                     listToUpdateOrInsert.remove(objectDifference);
                 }

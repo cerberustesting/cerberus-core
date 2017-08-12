@@ -19,7 +19,7 @@
  */
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
-       initPage();
+        initPage();
 
         $("#editEntryButton").click(editEntryModalSaveHandler);
         $("#addEntryButton").click(addEntryModalSaveHandler);
@@ -74,7 +74,7 @@ function renderOptionsForTest(data) {
 
 function deleteEntryHandlerClick() {
     var test = $('#confirmationModal').find('#hiddenField1').prop("value");
-    var jqxhr = $.post("DeleteTest1", {test: test}, "json");
+    var jqxhr = $.post("DeleteTest", {test: test}, "json");
     $.when(jqxhr).then(function (data) {
         var messageType = getAlertType(data.messageType);
         if (messageType === "success") {
@@ -122,7 +122,7 @@ function addEntryModalSaveHandler() {
         return;
 
     showLoaderInModal('#addEntryModal');
-    createEntry("CreateTest1", formAdd, "#testTable");
+    createEntry("CreateTest", formAdd, "#testTable");
 }
 
 function addEntryClick() {
@@ -135,11 +135,20 @@ function editEntryModalSaveHandler() {
     var formEdit = $('#editEntryModalForm');
 
     showLoaderInModal('#editEntryModal');
-    updateEntry("UpdateTest1", formEdit, "#testTable");
+    updateEntry("UpdateTest", formEdit, "#testTable");
 }
 
 function editEntryClick(test) {
     clearResponseMessageMainPage();
+
+    // In Edit TestCase form, if we change the test, we get the latest testcase from that test.
+    $('#editEntryModalForm input[name="test"]').off("change");
+    $('#editEntryModalForm input[name="test"]').change(function () {
+        // Compare with original value in order to display the warning message.
+        displayWarningOnChangeTestKey();
+    });
+
+
     var jqxhr = $.getJSON("ReadTest", "test=" + encodeURIComponent(test));
     $.when(jqxhr).then(function (data) {
         var obj = data["contentTable"];
@@ -147,6 +156,7 @@ function editEntryClick(test) {
         var formEdit = $('#editEntryModal');
 
         formEdit.find("#test").prop("value", obj.test);
+        formEdit.find("#originalTest").prop("value", obj.test);
         formEdit.find("#active").prop("value", obj.active);
         formEdit.find("#description").prop("value", obj.description);
         formEdit.find("#automated").prop("value", obj.automated);
@@ -163,6 +173,19 @@ function editEntryClick(test) {
 
         formEdit.modal('show');
     });
+}
+
+function displayWarningOnChangeTestKey() {
+    // Compare with original value in order to display the warning message.
+    let old1 = $("#originalTest").val();
+    let new1 = $('#editEntryModal input[name="test"]').val();
+    console.info(old1 + " " + new1);
+    if (old1 !== new1) {
+        var localMessage = new Message("WARNING", "If you rename that test, it will loose the corresponding execution historic of all corresponding test cases.");
+        showMessage(localMessage, $('#editEntryModal'));
+    } else {
+        clearResponseMessage($('#editEntryModal'));
+    }
 }
 
 function aoColumnsFunc() {

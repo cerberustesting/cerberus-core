@@ -400,7 +400,7 @@ function setActive(checkbox) {
     }
 
     $.ajax({
-        url: "UpdateTestCase2",
+        url: "UpdateTestCase",
         method: "POST",
         data: {test: test, testCase: testCase, active: active},
         dataType: "json",

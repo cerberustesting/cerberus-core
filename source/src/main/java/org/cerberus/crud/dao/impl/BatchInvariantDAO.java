@@ -26,14 +26,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.IBatchInvariantDAO;
-import org.cerberus.database.DatabaseSpring;
 import org.cerberus.crud.entity.BatchInvariant;
-import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.factory.IFactoryBatchInvariant;
 import org.cerberus.crud.factory.impl.FactoryBatchInvariant;
+import org.cerberus.database.DatabaseSpring;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.SqlUtil;
@@ -344,9 +343,9 @@ public class BatchInvariantDAO implements IBatchInvariantDAO {
     }
 
     @Override
-    public Answer update(BatchInvariant object) {
+    public Answer update(String batch, BatchInvariant object) {
         MessageEvent msg = null;
-        final String query = "UPDATE batchinvariant SET description = ?, System = ? WHERE batch = ?";
+        final String query = "UPDATE batchinvariant SET batch = ?, description = ?, System = ? WHERE batch = ?";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -356,9 +355,11 @@ public class BatchInvariantDAO implements IBatchInvariantDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
-                preStat.setString(1, object.getDescription());
-                preStat.setString(2, object.getSystem());
-                preStat.setString(3, object.getBatch());
+                int i=1;
+                preStat.setString(i++, object.getBatch());
+                preStat.setString(i++, object.getDescription());
+                preStat.setString(i++, object.getSystem());
+                preStat.setString(i++, batch);
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);

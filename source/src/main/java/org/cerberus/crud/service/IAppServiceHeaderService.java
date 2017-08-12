@@ -121,10 +121,12 @@ public interface IAppServiceHeaderService {
 
     /**
      *
+     * @param service
+     * @param key
      * @param object
      * @return
      */
-    Answer update(AppServiceHeader object);
+    Answer update(String service, String key, AppServiceHeader object);
 
     /**
      *

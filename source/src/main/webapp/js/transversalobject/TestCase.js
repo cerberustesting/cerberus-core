@@ -105,14 +105,14 @@ function editTestCaseClick(test, testCase) {
         // Compare with original value in order to display the warning message.
         displayWarningOnChangeTestCaseKey();
     });
+    $('#editTestCaseModalForm input[name="testCase"]').off("change");
     $('#editTestCaseModalForm input[name="testCase"]').change(function () {
         // Compare with original value in order to display the warning message.
         displayWarningOnChangeTestCaseKey();
     });
-
-
     feedTestCaseModal(test, testCase, "editTestCaseModal", "EDIT");
 }
+
 function displayWarningOnChangeTestCaseKey() {
     // Compare with original value in order to display the warning message.
     let old1 = $("#originalTest").val();
@@ -120,11 +120,9 @@ function displayWarningOnChangeTestCaseKey() {
     let new1 = $('#editTestCaseModalForm select[name="test"]').val();
     let new2 = $('#editTestCaseModalForm input[name="testCase"]').val();
     if ((old1 !== new1) || (old2 !== new2)) {
-        console.info(old1 + " " + old2 + " " + new1 + " " + new2);
         var localMessage = new Message("WARNING", "If you rename that test case, it will loose the corresponding execution historic.");
         showMessage(localMessage, $('#editTestCaseModal'));
     } else {
-//        $("#DialogMessagesAlert").fadeOut();
         clearResponseMessage($('#editTestCaseModal'));
     }
 }
@@ -247,9 +245,9 @@ function confirmTestCaseModalHandler(mode) {
         formEdit.find("#test").removeAttr("disabled");
     }
     // Calculate servlet name to call.
-    var myServlet = "UpdateTestCase2";
+    var myServlet = "UpdateTestCase";
     if ((mode === "ADD") || (mode === "DUPLICATE")) {
-        myServlet = "CreateTestCase2";
+        myServlet = "CreateTestCase";
     }
 
     // Getting Data from Country List

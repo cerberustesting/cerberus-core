@@ -42,7 +42,7 @@ public interface IApplicationObjectService {
      * @param id
      * @return
      */
-    AnswerItem readByKey(int id);
+    AnswerItem readByKeyTech(int id);
 
     /**
      *
@@ -99,6 +99,7 @@ public interface IApplicationObjectService {
      * @return
      */
     BufferedImage readImageByKey(String application, String object);
+
     /**
      *
      * @param object
@@ -115,10 +116,12 @@ public interface IApplicationObjectService {
 
     /**
      *
+     * @param application
+     * @param appObject
      * @param object
      * @return
      */
-    Answer update(ApplicationObject object);
+    Answer update(String application, String appObject, ApplicationObject object);
 
     /**
      *

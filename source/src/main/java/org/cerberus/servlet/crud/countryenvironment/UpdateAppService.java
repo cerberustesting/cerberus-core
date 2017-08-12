@@ -146,7 +146,7 @@ public class UpdateAppService extends HttpServlet {
                 appService.setMethod(method);
                 appService.setServicePath(servicePath);
                 appService.setUsrModif(request.getRemoteUser());
-                ans = appServiceService.update(appService);
+                ans = appServiceService.update(appService.getService(), appService);
                 finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
 
                 if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {

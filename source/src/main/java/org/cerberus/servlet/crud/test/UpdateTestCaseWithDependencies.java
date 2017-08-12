@@ -122,7 +122,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                 if (groupList.contains("TestAdmin")) {
                     Test newTest = tService.findTestByKey(initialTest);
                     newTest.setTest(tc.getTest());
-                    tService.createTest(newTest);
+                    tService.convert(tService.create(newTest));
                 } else {
                     response.sendError(403, MessageGeneralEnum.GUI_TEST_CREATION_NOT_HAVE_RIGHT.getDescription());
                     return;
@@ -508,7 +508,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                 String conditionOper = getParameterIfExists(request, "step_conditionoper_" + inc);
                 String conditionVal1 = getParameterIfExists(request, "step_conditionval1_" + inc);
                 String conditionVal2 = getParameterIfExists(request, "step_conditionval2_" + inc);
-                
+
                 String desc = getParameterIfExists(request, "step_description_" + inc);
                 String useStep = getParameterIfExists(request, "step_useStep_" + inc);
                 String useStepChanged = getParameterIfExists(request, "step_useStepChanged_" + inc);

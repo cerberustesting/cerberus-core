@@ -413,9 +413,9 @@ public class BuildRevisionInvariantDAO implements IBuildRevisionInvariantDAO {
     }
 
     @Override
-    public Answer update(BuildRevisionInvariant buildRevisionInvariant) {
+    public Answer update(String system, Integer level, Integer seq, BuildRevisionInvariant buildRevisionInvariant) {
         MessageEvent msg = null;
-        final String query = "UPDATE buildrevisioninvariant SET versionname = ?  WHERE system = ? and level = ? and seq = ? ";
+        final String query = "UPDATE buildrevisioninvariant SET  system = ?, level = ?, seq = ?, versionname = ?  WHERE system = ? and level = ? and seq = ? ";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -425,10 +425,14 @@ public class BuildRevisionInvariantDAO implements IBuildRevisionInvariantDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
-                preStat.setString(1, buildRevisionInvariant.getVersionName());
-                preStat.setString(2, buildRevisionInvariant.getSystem());
-                preStat.setInt(3, buildRevisionInvariant.getLevel());
-                preStat.setInt(4, buildRevisionInvariant.getSeq());
+                int i=1;
+                preStat.setString(i++, buildRevisionInvariant.getSystem());
+                preStat.setInt(i++, buildRevisionInvariant.getLevel());
+                preStat.setInt(i++, buildRevisionInvariant.getSeq());
+                preStat.setString(i++, buildRevisionInvariant.getVersionName());
+                preStat.setString(i++, system);
+                preStat.setInt(i++, level);
+                preStat.setInt(i++, seq);
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);

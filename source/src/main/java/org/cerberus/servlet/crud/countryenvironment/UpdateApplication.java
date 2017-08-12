@@ -176,7 +176,7 @@ public class UpdateApplication extends HttpServlet {
                 applicationData.setDescription(description);
                 applicationData.setSort(sort);
                 applicationData.setUsrModif(request.getRemoteUser());
-                ans = applicationService.update(applicationData);
+                ans = applicationService.update(applicationData.getApplication(), applicationData);
                 finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
 
                 if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {

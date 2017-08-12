@@ -52,7 +52,7 @@ public interface IBuildRevisionInvariantService {
 
     Answer delete(BuildRevisionInvariant buildRevisionInvariant);
 
-    Answer update(BuildRevisionInvariant buildRevisionInvariant);
+    Answer update(String system, Integer level, Integer seq, BuildRevisionInvariant buildRevisionInvariant);
 
     BuildRevisionInvariant convert(AnswerItem answerItem) throws CerberusException;
 

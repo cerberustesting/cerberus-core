@@ -97,8 +97,8 @@ public class ApplicationService implements IApplicationService {
     }
 
     @Override
-    public Answer update(Application object) {
-        return ApplicationDAO.update(object);
+    public Answer update(String application, Application object) {
+        return ApplicationDAO.update(application, object);
     }
 
     @Override
