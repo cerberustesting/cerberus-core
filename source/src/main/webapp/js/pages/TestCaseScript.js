@@ -127,6 +127,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
                     }
                     if (testcase != null) {
                         $("#testCaseSelect option[value='" + testcase + "']").prop('selected', true);
+                        window.document.title = "TestCase - " + testcase;
                     }
                     $("#testCaseSelect").bind("change", function (event) {
                         window.location.href = "./TestCaseScript.jsp?test=" + test + "&testcase=" + $(this).val();
@@ -529,7 +530,6 @@ function addActionAndFocus(action) {
 function getTestCase(test, testcase, step) {
     window.location.href = "./TestCaseScript.jsp?test=" + test + "&testcase=" + testcase + "&step=" + step;
 }
-
 function setAllSort() {
     var stepList = $("#stepList li");
     var stepArr = [];
