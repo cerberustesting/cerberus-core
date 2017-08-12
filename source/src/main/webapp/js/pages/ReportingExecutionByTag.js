@@ -838,6 +838,8 @@ function aoColumnsFunc(Columns) {
     var testCaseInfoWidth = (1 / 5) * 30;
     var testExecWidth = (1 / nbColumn) * 70;
     var tag = $('#selectTag').val();
+    
+    
 
 
     var aoColumns = [
@@ -855,7 +857,11 @@ function aoColumnsFunc(Columns) {
             "title": doc.getDocOnline("testcase", "TestCase"),
             "mRender": function (data, type, obj, meta) {
                 var result = "<a href='./TestCaseScript.jsp?test=" + encodeURIComponent(obj.test) + "&testcase=" + encodeURIComponent(obj.testCase) + "'>" + obj.testCase + "</a>";
-                return result;
+                if (obj.testExist) {
+                    return result;
+                } else {
+                    return obj.testCase;
+                }
             }
         },
         {
@@ -888,9 +894,9 @@ function aoColumnsFunc(Columns) {
                     var executionLink = generateExecutionLink(data.ControlStatus, data.ID, tag);
                     var glyphClass = getRowClass(data.ControlStatus);
                     var tooltip = generateTooltip(data);
-                    var cell = '<div class="progress-bar status' + data.ControlStatus+ '"';
-                        cell += 'role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;cursor: pointer; height: 40px;"';
-                        cell += 'data-toggle="tooltip" data-html="true" title="' + tooltip + '"';
+                    var cell = '<div class="progress-bar status' + data.ControlStatus + '"';
+                    cell += 'role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;cursor: pointer; height: 40px;"';
+                    cell += 'data-toggle="tooltip" data-html="true" title="' + tooltip + '"';
                     if (data.ControlStatus === "QU") {
                         cell = cell + ' onclick="openModalTestCaseExecutionQueue(' + data.QueueID + ', \'EDIT\');">\n\' ';
                     } else {

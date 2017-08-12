@@ -15,6 +15,7 @@ None
   * Execution will be taken from the Queue (QUEUED state) and triggered ASAP until any of the constrain are reached.
   * Queue screen allow to control the result and followup the executions.
   * 1st tab display the list of queue execution, 2nd tab the list of constrain and level of saturation of every constrain, the 3rd tab display the timing of the last job that analyzed the queue and allow to force a new trigger of that job (should be automatic at the end of every queue successfully submitted).
+* [GUI] Test Cases can now be renamed. When renamed, it loose the execution history.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

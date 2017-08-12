@@ -98,7 +98,35 @@ function editTestCaseClick(test, testCase) {
     $('#addTestCaseButton').attr('class', '');
     $('#addTestCaseButton').attr('hidden', 'hidden');
 
+    // In Edit TestCase form, if we change the test, we get the latest testcase from that test.
+    $('#editTestCaseModalForm select[name="test"]').off("change");
+    $('#editTestCaseModalForm select[name="test"]').change(function () {
+        feedTestCaseField(null, "editTestCaseModalForm");
+        // Compare with original value in order to display the warning message.
+        displayWarningOnChangeTestCaseKey();
+    });
+    $('#editTestCaseModalForm input[name="testCase"]').change(function () {
+        // Compare with original value in order to display the warning message.
+        displayWarningOnChangeTestCaseKey();
+    });
+
+
     feedTestCaseModal(test, testCase, "editTestCaseModal", "EDIT");
+}
+function displayWarningOnChangeTestCaseKey() {
+    // Compare with original value in order to display the warning message.
+    let old1 = $("#originalTest").val();
+    let old2 = $("#originalTestCase").val();
+    let new1 = $('#editTestCaseModalForm select[name="test"]').val();
+    let new2 = $('#editTestCaseModalForm input[name="testCase"]').val();
+    if ((old1 !== new1) || (old2 !== new2)) {
+        console.info(old1 + " " + old2 + " " + new1 + " " + new2);
+        var localMessage = new Message("WARNING", "If you rename that test case, it will loose the corresponding execution historic.");
+        showMessage(localMessage, $('#editTestCaseModal'));
+    } else {
+//        $("#DialogMessagesAlert").fadeOut();
+        clearResponseMessage($('#editTestCaseModal'));
+    }
 }
 
 /***
@@ -300,9 +328,6 @@ function confirmTestCaseModalHandler(mode) {
         },
         error: showUnexpectedError
     });
-    if (mode === 'EDIT') { // Disable back the test combo before submit the form.
-        formEdit.find("#test").prop("disabled", "disabled");
-    }
 
 }
 
@@ -493,13 +518,6 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
     }
 
     // Authorities
-    if (mode === "EDIT") {
-        formEdit.find("#test").prop("disabled", "disabled");
-        formEdit.find("#testCase").prop("readonly", "readonly");
-    } else {
-        formEdit.find("#test").removeAttr("disabled");
-        formEdit.find("#testCase").removeAttr("readonly");
-    }
 
     //We define here the rule that enable or nt the fields depending on if user has the credentials to edit.
     var doBloackAllFields = false;
@@ -511,6 +529,8 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
 
     if (doBloackAllFields) { // If readonly, we only readonly all fields
         //test case info
+        formEdit.find("#test").prop("disabled", "disabled");
+        formEdit.find("#testCase").prop("readonly", "readonly");
         formEdit.find("#implementer").prop("readonly", "readonly");
         formEdit.find("#origin").prop("disabled", "disabled");
         formEdit.find("#project").prop("disabled", "disabled");
@@ -547,6 +567,8 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         $('#editTestCaseButton').attr('hidden', 'hidden');
     } else {
         //test case info
+        formEdit.find("#test").removeAttr("disabled");
+        formEdit.find("#testCase").removeAttr("readonly");
         formEdit.find("#active").removeProp("disabled");
         formEdit.find("#bugId").removeProp("readonly");
         formEdit.find("#implementer").removeProp("readonly");

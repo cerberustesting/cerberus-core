@@ -91,7 +91,7 @@
                                             <span class="sr-only">Toggle Dropdown</span>
                                         </a>
                                         <ul class="dropdown-menu">
-                                            <li><a href="#" id="editTcStepInfo"><span class="glyphicon glyphicon-pencil"></span> Edit Test Case from the current Step</a></li>
+                                            <li><a href="#" class="btn btn-default" id="editTcStepInfo"><span class="glyphicon glyphicon-pencil"></span> Edit Test Case from the current Step</a></li>
                                         </ul>
                                     </div>
                                     <div class="btn-group pull-right">

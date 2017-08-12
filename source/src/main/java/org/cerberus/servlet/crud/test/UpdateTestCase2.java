@@ -68,7 +68,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class UpdateTestCase2 extends HttpServlet {
 
     private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(UpdateTestCase2.class);
-    
+
     private ITestCaseLabelService testCaseLabelService;
     private IFactoryTestCaseLabel testCaseLabelFactory;
     private ITestCaseCountryService testCaseCountryService;
@@ -105,6 +105,8 @@ public class UpdateTestCase2 extends HttpServlet {
          */
         String test = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("test"), "");
         String testCase = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("testCase"), null);
+        String keyTest = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("originalTest"), "");
+        String keyTestCase = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("originalTestCase"), null);
 
         // Prepare the final answer.
         MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
@@ -112,11 +114,11 @@ public class UpdateTestCase2 extends HttpServlet {
         /**
          * Checking all constrains before calling the services.
          */
-        if ((StringUtil.isNullOrEmpty(test)) || (testCase == null)) {
+        if ((StringUtil.isNullOrEmpty(test)) || (StringUtil.isNullOrEmpty(testCase)) || (StringUtil.isNullOrEmpty(keyTest)) || (StringUtil.isNullOrEmpty(keyTestCase))) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Test Case")
                     .replace("%OPERATION%", "Update")
-                    .replace("%REASON%", "mandatory fields (test or testcase) are missing."));
+                    .replace("%REASON%", "mandatory fields (test, testcase) are missing."));
             finalAnswer.setResultMessage(msg);
         } else {
 
@@ -127,7 +129,7 @@ public class UpdateTestCase2 extends HttpServlet {
             testCaseCountryService = appContext.getBean(ITestCaseCountryService.class);
             testCaseCountryFactory = appContext.getBean(IFactoryTestCaseCountry.class);
 
-            AnswerItem resp = testCaseService.readByKey(test, testCase);
+            AnswerItem resp = testCaseService.readByKey(keyTest, keyTestCase);
             TestCase tc = (TestCase) resp.getItem();
             if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem() != null)) {
                 /**
@@ -155,37 +157,38 @@ public class UpdateTestCase2 extends HttpServlet {
                     tc = getTestCaseFromRequest(request, tc);
 
                     // Update testcase
-                    ans = testCaseService.update(tc);
+                    ans = testCaseService.update(keyTest, keyTestCase, tc);
                     finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
 
                     if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                         /**
-                         * Update was succesfull. Adding Log entry.
+                         * Update was successful. Adding Log entry.
                          */
                         ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                        logEventService.createForPrivateCalls("/UpdateTestCase", "UPDATE", "Update testcase : ['" + tc.getTest() + "'|'" + tc.getTestCase() + "']", request);
-                    }
+                        logEventService.createForPrivateCalls("/UpdateTestCase", "UPDATE", "Update testcase : ['" + keyTest + "'|'" + keyTestCase + "']", request);
 
-                    // Update labels
-                    if (request.getParameter("labelList") != null) {
-                        JSONArray objLabelArray = new JSONArray(request.getParameter("labelList"));
-                        List<TestCaseLabel> labelList = new ArrayList();
-                        labelList = getLabelListFromRequest(request, appContext, test, testCase, objLabelArray);
+                        // Update labels
+                        if (request.getParameter("labelList") != null) {
+                            JSONArray objLabelArray = new JSONArray(request.getParameter("labelList"));
+                            List<TestCaseLabel> labelList = new ArrayList();
+                            labelList = getLabelListFromRequest(request, appContext, test, testCase, objLabelArray);
 
-                        // Update the Database with the new list.
-                        ans = testCaseLabelService.compareListAndUpdateInsertDeleteElements(tc.getTest(), tc.getTestCase(), labelList);
-                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
-                    }
+                            // Update the Database with the new list.
+                            ans = testCaseLabelService.compareListAndUpdateInsertDeleteElements(tc.getTest(), tc.getTestCase(), labelList);
+                            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                        }
 
-                    // Update Countries
-                    if (request.getParameter("countryList") != null) {
-                        JSONArray objCountryArray = new JSONArray(request.getParameter("countryList"));
-                        List<TestCaseCountry> tccList = new ArrayList();
-                        tccList = getCountryListFromRequest(request, appContext, test, testCase, objCountryArray);
+                        // Update Countries
+                        if (request.getParameter("countryList") != null) {
+                            JSONArray objCountryArray = new JSONArray(request.getParameter("countryList"));
+                            List<TestCaseCountry> tccList = new ArrayList();
+                            tccList = getCountryListFromRequest(request, appContext, test, testCase, objCountryArray);
 
-                        // Update the Database with the new list.
-                        ans = testCaseCountryService.compareListAndUpdateInsertDeleteElements(tc.getTest(), tc.getTestCase(), tccList);
-                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                            // Update the Database with the new list.
+                            ans = testCaseCountryService.compareListAndUpdateInsertDeleteElements(tc.getTest(), tc.getTestCase(), tccList);
+                            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                        }
+
                     }
 
                 }

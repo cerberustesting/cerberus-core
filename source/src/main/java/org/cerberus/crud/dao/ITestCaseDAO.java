@@ -23,7 +23,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
-
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.factory.impl.FactoryTestCase;
 import org.cerberus.exception.CerberusException;
@@ -127,10 +126,27 @@ public interface ITestCaseDAO {
 
     public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 
-    public Answer update(TestCase testCase);
+    /**
+     *
+     * @param keyTest
+     * @param keyTestCase
+     * @param testCase target object value.
+     * @return
+     */
+    public Answer update(String keyTest, String keyTestCase, TestCase testCase);
 
+    /**
+     *
+     * @param testCase
+     * @return
+     */
     public Answer create(TestCase testCase);
 
+    /**
+     *
+     * @param testCase
+     * @return
+     */
     public Answer delete(TestCase testCase);
 
     /**

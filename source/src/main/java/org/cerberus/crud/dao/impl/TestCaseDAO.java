@@ -1611,10 +1611,12 @@ public class TestCaseDAO implements ITestCaseDAO {
     }
 
     @Override
-    public Answer update(TestCase tc) {
+    public Answer update(String keyTest, String keyTestCase, TestCase tc) {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder("UPDATE testcase SET");
 
+        query.append(" test = ?,");
+        query.append(" testcase = ?,");
         query.append(" implementer = ?,");
         query.append(" project = ?,");
         query.append(" ticket = ?,");
@@ -1657,6 +1659,8 @@ public class TestCaseDAO implements ITestCaseDAO {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
                 int i = 1;
+                preStat.setString(i++, tc.getTest());
+                preStat.setString(i++, tc.getTestCase());
                 preStat.setString(i++, tc.getImplementer());
                 preStat.setString(i++, tc.getProject());
                 preStat.setString(i++, tc.getTicket());
@@ -1687,8 +1691,8 @@ public class TestCaseDAO implements ITestCaseDAO {
                 preStat.setString(i++, tc.getConditionOper());
                 preStat.setString(i++, tc.getConditionVal1());
                 preStat.setString(i++, tc.getConditionVal2());
-                preStat.setString(i++, tc.getTest());
-                preStat.setString(i++, tc.getTestCase());
+                preStat.setString(i++, keyTest);
+                preStat.setString(i++, keyTestCase);
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);

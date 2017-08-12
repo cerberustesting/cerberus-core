@@ -141,7 +141,7 @@ public class UpdateTestCaseMass extends HttpServlet {
                     tcData.setUsrModif(request.getRemoteUser());
                     tcData.setFunction(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("function"), tcData.getFunction(), charset));
                     tcData.setStatus(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("status"), tcData.getStatus(), charset));
-                    ans = testCaseService.update(tcData);
+                    ans = testCaseService.update(tcData.getTest(), tcData.getTestCase(), tcData);
 
                     if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                         /**

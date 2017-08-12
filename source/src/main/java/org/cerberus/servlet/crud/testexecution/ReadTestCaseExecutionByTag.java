@@ -35,7 +35,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.Level;
 import org.cerberus.crud.entity.Invariant;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseLabel;
@@ -117,17 +116,17 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
             if (outputReport.isEmpty() || outputReport.contains("statsChart")) {
                 jsonResponse.put("statsChart", generateStats(request, testCaseExecutions, statusFilter, countryFilter, true));
             }
-            if ( !outputReport.isEmpty() ){
+            if (!outputReport.isEmpty()) {
                 //currently used to optimize the homePage
                 if (outputReport.contains("totalStatsCharts") && !outputReport.contains("statsChart")) {
                     jsonResponse.put("statsChart", generateStats(request, testCaseExecutions, statusFilter, countryFilter, false));
                 }
                 //currently used to optimize the homePage
                 if (outputReport.contains("resendTag")) {
-                    jsonResponse.put("tag",  Tag );
+                    jsonResponse.put("tag", Tag);
                 }
             }
-            
+
             answer.setItem(jsonResponse);
             answer.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
 
@@ -137,11 +136,13 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
             response.getWriter().print(jsonResponse.toString());
 
         } catch (ParseException ex) {
-            Logger.getLogger(ReadTestCaseExecutionByTag.class.getName()).log(Level.ERROR, null, ex);
+            LOG.error("Error on main call : " + ex);
         } catch (CerberusException ex) {
-            Logger.getLogger(ReadTestCaseExecutionByTag.class.getName()).log(Level.ERROR, null, ex);
+            LOG.error("Error on main call : " + ex);
         } catch (JSONException ex) {
-            Logger.getLogger(ReadTestCaseExecutionByTag.class.getName()).log(Level.ERROR, null, ex);
+            LOG.error("Error on main call : " + ex);
+        } catch (Exception ex) {
+            LOG.error("Error on main call : " + ex);
         }
     }
 
@@ -161,17 +162,21 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         result.put("Status", JavaScriptUtils.javaScriptEscape(testCaseExecution.getStatus()));
 
         String bugId;
-        if (testCaseExecution.getApplicationObj() != null && testCaseExecution.getApplicationObj().getBugTrackerUrl() != null
-                && !"".equals(testCaseExecution.getApplicationObj().getBugTrackerUrl()) && testCaseExecution.getTestCaseObj().getBugID() != null) {
-            bugId = testCaseExecution.getApplicationObj().getBugTrackerUrl().replace("%BUGID%", testCaseExecution.getTestCaseObj().getBugID());
-            bugId = new StringBuffer("<a href='")
-                    .append(bugId)
-                    .append("' target='reportBugID'>")
-                    .append(testCaseExecution.getTestCaseObj().getBugID())
-                    .append("</a>")
-                    .toString();
+        if (testCaseExecution.getTestCaseObj() != null) {
+            if (testCaseExecution.getApplicationObj() != null && testCaseExecution.getApplicationObj().getBugTrackerUrl() != null
+                    && !"".equals(testCaseExecution.getApplicationObj().getBugTrackerUrl()) && testCaseExecution.getTestCaseObj().getBugID() != null) {
+                bugId = testCaseExecution.getApplicationObj().getBugTrackerUrl().replace("%BUGID%", testCaseExecution.getTestCaseObj().getBugID());
+                bugId = new StringBuffer("<a href='")
+                        .append(bugId)
+                        .append("' target='reportBugID'>")
+                        .append(testCaseExecution.getTestCaseObj().getBugID())
+                        .append("</a>")
+                        .toString();
+            } else {
+                bugId = testCaseExecution.getTestCaseObj().getBugID();
+            }
         } else {
-            bugId = testCaseExecution.getTestCaseObj().getBugID();
+            bugId = "";
         }
         result.put("BugID", bugId);
 
@@ -197,7 +202,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
             statusList.put("CA", ParameterParserUtil.parseStringParam(request.getParameter("CA"), "off"));
             statusList.put("QU", ParameterParserUtil.parseStringParam(request.getParameter("QU"), "off"));
         } catch (JSONException ex) {
-            Logger.getLogger(ReadTestCaseExecution.class.getName()).log(Level.ERROR, null, ex);
+            LOG.error("Error on getStatusList : " + ex);
         }
 
         return statusList;
@@ -212,7 +217,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                 countryList.put(country.getValue(), ParameterParserUtil.parseStringParam(request.getParameter(country.getValue()), "off"));
             }
         } catch (JSONException ex) {
-            Logger.getLogger(ReadTestCaseExecution.class.getName()).log(Level.ERROR, null, ex);
+            LOG.error("Error on getCountryList : " + ex);
         }
 
         return countryList;
@@ -244,13 +249,27 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                     } else {
                         ttcObject.put("test", testCaseExecution.getTest());
                         ttcObject.put("testCase", testCaseExecution.getTestCase());
-                        ttcObject.put("function", testCaseExecution.getTestCaseObj().getFunction());
-                        ttcObject.put("shortDesc", testCaseExecution.getTestCaseObj().getDescription());
+                        ttcObject.put("shortDesc", testCaseExecution.getDescription());
                         ttcObject.put("status", testCaseExecution.getStatus());
                         ttcObject.put("application", testCaseExecution.getApplication());
-                        ttcObject.put("priority", testCaseExecution.getTestCaseObj().getPriority());
-                        ttcObject.put("bugId", new JSONObject("{\"bugId\":\"" + testCaseExecution.getTestCaseObj().getBugID() + "\",\"bugTrackerUrl\":\"" + testCaseExecution.getApplicationObj().getBugTrackerUrl().replace("%BUGID%", testCaseExecution.getTestCaseObj().getBugID()) + "\"}"));
-                        ttcObject.put("comment", testCaseExecution.getTestCaseObj().getComment());
+                        if (testCaseExecution.getTestCaseObj() != null) {
+                            ttcObject.put("function", testCaseExecution.getTestCaseObj().getFunction());
+                            ttcObject.put("priority", testCaseExecution.getTestCaseObj().getPriority());
+                            ttcObject.put("comment", testCaseExecution.getTestCaseObj().getComment());
+                            if ((testCaseExecution.getApplicationObj() != null) && (testCaseExecution.getApplicationObj().getBugTrackerUrl() != null) && (testCaseExecution.getTestCaseObj().getBugID() != null)) {
+                                ttcObject.put("bugId", new JSONObject("{\"bugId\":\"" + testCaseExecution.getTestCaseObj().getBugID() + "\",\"bugTrackerUrl\":\"" + testCaseExecution.getApplicationObj().getBugTrackerUrl().replace("%BUGID%", testCaseExecution.getTestCaseObj().getBugID()) + "\"}"));
+                            } else {
+                                ttcObject.put("bugId", new JSONObject("{\"bugId\":\"\",\"bugTrackerUrl\":\"\"}"));
+                            }
+                        } else {
+                            ttcObject.put("function", "");
+                            ttcObject.put("priority", "");
+                            ttcObject.put("comment", "");
+                            ttcObject.put("bugId", new JSONObject("{\"bugId\":\"\",\"bugTrackerUrl\":\"\"}"));
+                        }
+                        // Flag that report if test case still exist.
+                        ttcObject.put("testExist", testCaseExecution.getTestCaseObj().getTest() != null);
+                        
                         execTab.put(execKey, execution);
                         ttcObject.put("execTab", execTab);
 
@@ -287,7 +306,9 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                 testCaseExecutionTable.put("iTotalDisplayRecords", ttc.size());
                 testCaseExecutionTable.put("tableColumns", treeMap.values());
             } catch (JSONException ex) {
-                Logger.getLogger(ReadTestCaseExecution.class.getName()).log(Level.ERROR, null, ex);
+                LOG.error("Error on generateTestCaseExecutionTable : " + ex);
+            } catch (Exception ex) {
+                LOG.error("Error on generateTestCaseExecutionTable : " + ex);
             }
         }
         return testCaseExecutionTable;
@@ -309,7 +330,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
 
             String controlStatus = testCaseExecution.getControlStatus();
             if (statusFilter.get(controlStatus).equals("on") && countryFilter.get(testCaseExecution.getCountry()).equals("on")) {
-                if (testCaseExecution.getTestCaseObj().getFunction() != null && !"".equals(testCaseExecution.getTestCaseObj().getFunction())) {
+                if (testCaseExecution.getTestCaseObj() != null && testCaseExecution.getTestCaseObj().getFunction() != null && !"".equals(testCaseExecution.getTestCaseObj().getFunction())) {
                     key = testCaseExecution.getTestCaseObj().getFunction();
                 } else {
                     key = testCaseExecution.getTest();
@@ -356,7 +377,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         jsonResult.put("globalStatus", globalStatus);
         return jsonResult;
     }
-    
+
     private JSONObject generateStats(HttpServletRequest request, List<TestCaseExecution> testCaseExecutions, JSONObject statusFilter, JSONObject countryFilter, boolean splitStats) throws JSONException {
 
         JSONObject jsonResult = new JSONObject();
@@ -389,22 +410,22 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                 statMap.put(key.toString(), stat);
             }
         }
-        
+
         jsonResult.put("contentTable", getStatByEnvCountryBrowser(testCaseExecutions, statMap, env, country, browser, app, statusFilter, countryFilter, splitStats));
-        
+
         return jsonResult;
     }
 
     private JSONObject getStatByEnvCountryBrowser(List<TestCaseExecution> testCaseExecutions, HashMap<String, SummaryStatisticsDTO> statMap, boolean env, boolean country, boolean browser, boolean app, JSONObject statusFilter, JSONObject countryFilter, boolean splitStats) throws JSONException {
         SummaryStatisticsDTO total = new SummaryStatisticsDTO();
         total.setEnvironment("Total");
-        
+
         for (TestCaseExecution testCaseExecution : testCaseExecutions) {
-            
+
             String controlStatus = testCaseExecution.getControlStatus();
             if (statusFilter.get(controlStatus).equals("on") && countryFilter.get(testCaseExecution.getCountry()).equals("on") || !splitStats) {
                 StringBuilder key = new StringBuilder();
-                
+
                 key.append((env) ? testCaseExecution.getEnvironment() : "");
                 key.append("_");
                 key.append((country) ? testCaseExecution.getCountry() : "");
@@ -425,7 +446,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
     private JSONObject extractSummaryData(HashMap<String, SummaryStatisticsDTO> summaryMap, SummaryStatisticsDTO total, boolean splitStats) throws JSONException {
         JSONObject extract = new JSONObject();
         Gson gson = new Gson();
-        if ( splitStats ){
+        if (splitStats) {
             JSONArray dataArray = new JSONArray();
             //sort keys
             TreeMap<String, SummaryStatisticsDTO> sortedKeys = new TreeMap<String, SummaryStatisticsDTO>(summaryMap);

@@ -314,8 +314,8 @@ public class TestCaseService implements ITestCaseService {
     }
 
     @Override
-    public Answer update(TestCase testCase) {
-        return testCaseDao.update(testCase);
+    public Answer update(String keyTest, String keyTestCase, TestCase testCase) {
+        return testCaseDao.update(keyTest, keyTestCase, testCase);
     }
 
     @Override

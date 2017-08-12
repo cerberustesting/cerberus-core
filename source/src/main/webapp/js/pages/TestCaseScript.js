@@ -139,6 +139,22 @@ $.when($.getScript("js/global/global.js")).then(function () {
             // Edit TestCase open the TestCase Modal
             $("#editTcInfo").click(function () {
                 editTestCaseClick(test, testcase);
+                $('#editTestCaseModal').on("hidden.bs.modal", function (e) {
+                    $('#editTestCaseModal').unbind("hidden.bs.modal");
+                    var t = $('#editTestCaseModal').find("#test option:selected");
+                    var tc = $('#editTestCaseModal').find("#testCase");
+                    console.info(t.val() + " " + tc.val());
+                    console.info(test + " " + testcase);
+                    if (!((t.val() === test) && (tc.val() === testcase))) {
+                        // Key was modified.
+                        if ($('#editTestCaseModal').data("Saved")) {
+                            // Modal confirm that change was OK.
+                            $('#editTestCaseModal').data("Saved", undefined);
+                            window.location = "./TestCaseScript.jsp?test=" + t.val() + "&testcase=" + tc.val();
+                        }
+
+                    }
+                });
             });
 
             $("#deleteTestCase").click(function () {
