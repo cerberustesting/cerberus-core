@@ -76,7 +76,7 @@ function initModalTestcaseExecutionQueue() {
 }
 
 /***
- * Open the modal with testcase information.
+ * Open the modal with queue information.
  * @param {String} queueID - type selected
  * @returns {null}
  */
@@ -100,8 +100,8 @@ function editExecutionQueueClick(queueID) {
 }
 
 /***
- * Open the modal with testcase information.
- * @param {String} service - type selected
+ * Open the modal with queue information.
+ * @param {String} queueID - id of the queue to duplicate.
  * @returns {null}
  */
 function duplicateExecutionQueueClick(queueID) {
@@ -511,4 +511,10 @@ function feedExecutionQueueModalData(exeQ, modalId, mode, hasPermissionsUpdate) 
         formEdit.find("#retries").prop("disabled", "disabled");
         formEdit.find("#manualExecution").prop("disabled", "disabled");
     }
+}
+
+function enableDisableJob() {
+    openModalParameter('cerberus_queueexecution_enable', getSys());
+    // Trap closure of modal in order to trigger that refresh.
+    displayAndRefresh_jobStatus();
 }

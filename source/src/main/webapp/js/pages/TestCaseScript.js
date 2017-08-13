@@ -139,7 +139,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
         if (test != null && testcase != null) {
             // Edit TestCase open the TestCase Modal
             $("#editTcInfo").click(function () {
-                editTestCaseClick(test, testcase);
+                openModalTestCase(test, testcase, "EDIT");
                 $('#editTestCaseModal').on("hidden.bs.modal", function (e) {
                     $('#editTestCaseModal').unbind("hidden.bs.modal");
                     var t = $('#editTestCaseModal').find("#test option:selected");
@@ -375,7 +375,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
             });
             $("#saveScript").click(saveScript);
             $("#saveScriptAs").click(function () {
-                duplicateTestCaseClick(test, testcase);
+                openModalTestCase(test, testcase, "DUPLICATE");
                 $('#editTestCaseModal').on("hidden.bs.modal", function (e) {
                     $('#editTestCaseModal').unbind("hidden.bs.modal");
                     var t = $('#editTestCaseModal').find("#test option:selected");

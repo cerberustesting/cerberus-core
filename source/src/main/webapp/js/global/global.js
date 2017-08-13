@@ -2848,3 +2848,9 @@ function jsonPost(conf) {
     conf.contentType = 'application/json;charset=UTF-8';
     $.post(conf);
 }
+
+function getSys() {
+    var sel = document.getElementById("MySystem");
+    var selectedIndex = sel.selectedIndex;
+    return sel.options[selectedIndex].value;
+}

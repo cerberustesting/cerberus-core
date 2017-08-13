@@ -19,31 +19,31 @@
     along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page contentType="text/html" pageEncoding="UTF-8" %>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <%@ include file="include/global/dependenciesInclusions.html" %>
-    <title>Service Library</title>
-    <script type="text/javascript" src="js/pages/AppService.js"></script>
-    <script type="text/javascript" src="js/transversalobject/AppService.js"></script>
+    <title>Parameter</title>
+    <script type="text/javascript" src="js/pages/ParameterList.js"></script>
+    <script type="text/javascript" src="js/transversalobject/Parameter.js"></script>
 </head>
 <body>
 <%@ include file="include/global/header.html" %>
 <div class="container-fluid center" id="page-layout">
-    <%@ include file="include/global/messagesArea.html" %>
-    <%@ include file="include/utils/modal-confirmation.html" %>
-    <%@ include file="include/transversalobject/AppService.html" %>
+    <%@ include file="include/global/messagesArea.html"%>
+    <%@ include file="include/utils/modal-confirmation.html"%>
+    <%@ include file="include/transversalobject/Parameter.html"%>
 
-    <h1 class="page-title-line" id="title">Application Service</h1>
+    <h1 class="page-title-line" id="title">Parameters</h1>
     <div class="panel panel-default">
-        <div class="panel-heading" id="soapLibraryListLabel">
+        <div class="panel-heading" id="parameterListLabel">
             <span class="glyphicon glyphicon-list"></span>
+            Parameters
         </div>
-        <div class="panel-body" id="soapLibraryList">
-            <table id="soapLibrarysTable" class="table table-bordered table-hover display"
-                   name="soapLibrarysTable"></table>
+        <div class="panel-body" id="parameterList">
+            <table id="parametersTable" class="table table-bordered table-hover display" name="parametersTable"></table>
             <div class="marginBottom20"></div>
         </div>
     </div>

@@ -17,7 +17,35 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-function displayTestCaseLabel(doc) {
+
+/***
+ * Open the modal with testcase information.
+ * @param {String} test - id of the test to open the modal
+ * @param {String} testcase - id of the testcase to open the modal
+ * @param {String} mode - mode to open the modal. Can take the values : ADD, DUPLICATE, EDIT
+ * @returns {null}
+ */
+function openModalTestCase(test, testcase, mode) {
+
+    // We only load the Labels and bind the events once for performance optimisations.
+    if ($('#editTestCaseModal').data("initLabel") === undefined) {
+        initModalTestCase();
+        $('#editTestCaseModal').data("initLabel", true);
+    }
+
+    if (mode === "EDIT") {
+        editTestCaseClick(test, testcase);
+    } else {
+        duplicateTestCaseClick(test, testcase);
+    }
+}
+
+
+function initModalTestCase(doc) {
+    var doc = new Doc();
+    
+    console.info("init.");
+    
     $("[name='testField']").html(doc.getDocOnline("test", "Test"));
     $("[name='testCaseField']").html(doc.getDocOnline("testcase", "TestCase"));
     $("[name='lastModifierField']").html(doc.getDocOnline("testcase", "LastModifier"));
@@ -73,6 +101,20 @@ function displayTestCaseLabel(doc) {
     $("[name='lbl_usrcreated']").html(doc.getDocOnline("transversal", "UsrCreated"));
     $("[name='lbl_datemodif']").html(doc.getDocOnline("transversal", "DateModif"));
     $("[name='lbl_usrmodif']").html(doc.getDocOnline("transversal", "UsrModif"));
+    
+    displayInvariantList("group", "GROUP", false);
+    displayInvariantList("status", "TCSTATUS", false);
+    displayInvariantList("priority", "PRIORITY", false);
+    displayInvariantList("conditionOper", "TESTCASECONDITIONOPER", false);
+    $('[name="origin"]').append('<option value="All">All</option>');
+    displayInvariantList("origin", "ORIGIN", true);
+    displayInvariantList("active", "TCACTIVE", false);
+    displayInvariantList("activeQA", "TCACTIVE", false);
+    displayInvariantList("activeUAT", "TCACTIVE", false);
+    displayInvariantList("activeProd", "TCACTIVE", false);
+    appendProjectList();
+    
+    
 }
 
 /***
