@@ -40,7 +40,6 @@ function openModalTestCase(test, testcase, mode) {
     }
 }
 
-
 function initModalTestCase(doc) {
     var doc = new Doc();
     

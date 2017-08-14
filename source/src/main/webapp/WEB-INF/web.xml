@@ -490,23 +490,11 @@
     </servlet>
     <servlet>
         <servlet-name>CreateSqlLibrary</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.testdata.CreateSqlLibrary</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>CreateSqlLibrary2</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.countryenvironment.CreateSqlLibrary2</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.CreateSqlLibrary</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DeleteSqlLibrary</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.testdata.DeleteSqlLibrary</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>DeleteSqlLibrary2</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.countryenvironment.DeleteSqlLibrary2</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>FindAllSqlLibrary</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.testdata.FindAllSqlLibrary</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.DeleteSqlLibrary</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ReadSqlLibrary</servlet-name>
@@ -514,11 +502,7 @@
     </servlet>
     <servlet>
         <servlet-name>UpdateSqlLibrary</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.testdata.UpdateSqlLibrary</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>UpdateSqlLibrary2</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.countryenvironment.UpdateSqlLibrary2</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.UpdateSqlLibrary</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>CreateAppService</servlet-name>
@@ -735,10 +719,6 @@
         <servlet-class>org.cerberus.servlet.crud.testexecution.GetExecutionQueue</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>ReadExecutionInQueue</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.testexecution.ReadTestCaseExecutionQueue</servlet-class>
-    </servlet>
-    <servlet>
         <description>Execute the next record from the execution queue.</description>
         <servlet-name>ExecuteNextInQueue</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.testexecution.ExecuteNextInQueue</servlet-class>
@@ -783,14 +763,6 @@
     <servlet>
         <servlet-name>ExecutionThreadReset</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.testexecution.ExecutionThreadReset</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>DeleteExecutionInQueue</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.testexecution.DeleteExecutionInQueue</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>UpdateExecutionInQueue</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.testexecution.UpdateExecutionInQueue</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>SetTagToExecution</servlet-name>
@@ -1393,20 +1365,8 @@
         <url-pattern>/CreateSqlLibrary</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>CreateSqlLibrary2</servlet-name>
-        <url-pattern>/CreateSqlLibrary2</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>DeleteSqlLibrary</servlet-name>
         <url-pattern>/DeleteSqlLibrary</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>DeleteSqlLibrary2</servlet-name>
-        <url-pattern>/DeleteSqlLibrary2</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>FindAllSqlLibrary</servlet-name>
-        <url-pattern>/FindAllSqlLibrary</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ReadSqlLibrary</servlet-name>
@@ -1415,10 +1375,6 @@
     <servlet-mapping>
         <servlet-name>UpdateSqlLibrary</servlet-name>
         <url-pattern>/UpdateSqlLibrary</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>UpdateSqlLibrary2</servlet-name>
-        <url-pattern>/UpdateSqlLibrary2</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>CreateAppService</servlet-name>
@@ -1605,10 +1561,6 @@
         <url-pattern>/GetStepInLibrary</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>ReadExecutionInQueue</servlet-name>
-        <url-pattern>/ReadExecutionInQueue</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>AddToExecutionQueue</servlet-name>
         <url-pattern>/AddToExecutionQueue</url-pattern>
     </servlet-mapping>
@@ -1663,14 +1615,6 @@
     <servlet-mapping>
         <servlet-name>ExecutionThreadReset</servlet-name>
         <url-pattern>/ExecutionThreadReset</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>DeleteExecutionInQueue</servlet-name>
-        <url-pattern>/DeleteExecutionInQueue</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>UpdateExecutionInQueue</servlet-name>
-        <url-pattern>/UpdateExecutionInQueue</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>SetTagToExecution</servlet-name>
@@ -1922,7 +1866,7 @@
             <web-resource-name>jsp</web-resource-name>
             <description>jsp</description>
             <url-pattern>/SqlLibrary.jsp</url-pattern>
-            <url-pattern>/AppService.jsp</url-pattern>
+            <url-pattern>/AppServiceList.jsp</url-pattern>
             <url-pattern>/TestDataLib.jsp</url-pattern>
             <url-pattern>/Label.jsp</url-pattern>
         </web-resource-collection>
@@ -1949,7 +1893,6 @@
             <url-pattern>/FindAllTestData</url-pattern>
             <url-pattern>/ReadTestDataLib</url-pattern>
             <url-pattern>/ReadTestDataLibData</url-pattern>
-            <url-pattern>/FindAllSqlLibrary</url-pattern>
             <url-pattern>/ReadSqlLibrary</url-pattern>
             <url-pattern>/PictureConnector</url-pattern>
             <url-pattern>/UseTestCaseStep</url-pattern>
@@ -2006,11 +1949,8 @@
             <url-pattern>/DeleteTestCase</url-pattern>
             <url-pattern>/DeleteTestCaseFromTestPage</url-pattern>
             <url-pattern>/CreateSqlLibrary</url-pattern>
-            <url-pattern>/CreateSqlLibrary2</url-pattern>
             <url-pattern>/DeleteSqlLibrary</url-pattern>
-            <url-pattern>/DeleteSqlLibrary2</url-pattern>
             <url-pattern>/UpdateSqlLibrary</url-pattern>
-            <url-pattern>/UpdateSqlLibrary2</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>TestAdmin</description>
@@ -2032,15 +1972,10 @@
             <url-pattern>/RunExecutionInQueue</url-pattern>
             <url-pattern>/RunManualTest</url-pattern>
             <url-pattern>/SetTagToExecution</url-pattern>
-            <url-pattern>/FindExecutionInQueue</url-pattern>
-            <url-pattern>/ReadExecutionInQueue</url-pattern>
-            <url-pattern>/DeleteExecutionInQueue</url-pattern>
-            <url-pattern>/UpdateExecutionInQueue</url-pattern>
             <url-pattern>/GetExecutionQueue</url-pattern>
             <url-pattern>/UpdateTestCaseExecutionQueue</url-pattern>
             <url-pattern>/ReadTestCaseExecutionQueue</url-pattern>
             <url-pattern>/CreateTestCaseExecutionQueue</url-pattern>
-            <url-pattern>/UpdateExecutionInQueueState</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>RunTest</description>
@@ -2070,7 +2005,7 @@
             <web-resource-name>jsp</web-resource-name>
             <description>jsp</description>
             <url-pattern>/Application.jsp</url-pattern>
-            <url-pattern>/ApplicationObject.jsp</url-pattern>
+            <url-pattern>/ApplicationObjectList.jsp</url-pattern>
             <url-pattern>/BuildContent.jsp</url-pattern>
             <url-pattern>/BuildRevDefinition.jsp</url-pattern>
             <url-pattern>/Environment.jsp</url-pattern>
@@ -2186,7 +2121,7 @@
             <web-resource-name>jsp</web-resource-name>
             <description>jsp</description>
             <url-pattern>/LogEvent.jsp</url-pattern>
-            <url-pattern>/Parameter.jsp</url-pattern>
+            <url-pattern>/ParameterList.jsp</url-pattern>
             <url-pattern>/UserManager.jsp</url-pattern>
             <url-pattern>/Invariant.jsp</url-pattern>
             <url-pattern>/CerberusInformation.jsp</url-pattern>

@@ -21,6 +21,7 @@ package org.cerberus.servlet.crud.countryenvironment;
 
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.SqlLibrary;
+import org.cerberus.crud.factory.IFactorySqlLibrary;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.ISqlLibraryService;
 import org.cerberus.crud.service.impl.LogEventService;
@@ -29,8 +30,6 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
-import org.cerberus.util.answer.AnswerItem;
-import org.cerberus.util.answer.AnswerUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
@@ -41,22 +40,22 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.logging.Logger;
 
 /**
+ *
  * @author bcivel
  */
-public class UpdateSqlLibrary2 extends HttpServlet {
+public class CreateSqlLibrary extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, CerberusException, JSONException {
@@ -69,7 +68,6 @@ public class UpdateSqlLibrary2 extends HttpServlet {
         ans.setResultMessage(msg);
 
         response.setContentType("text/html;charset=UTF-8");
-        PrintWriter out = response.getWriter();
         String charset = request.getCharacterEncoding();
 
         // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
@@ -81,9 +79,6 @@ public class UpdateSqlLibrary2 extends HttpServlet {
         // Parameter that we cannot secure as we need the html --> We DECODE them
         String script = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("script"), null, charset);
         
-        // Prepare the final answer.
-        MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
-        Answer finalAnswer = new Answer(msg1);
 
         /**
          * Checking all constrains before calling the services.
@@ -91,65 +86,46 @@ public class UpdateSqlLibrary2 extends HttpServlet {
         if (StringUtil.isNullOrEmpty(name)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "SqlLibrary")
-                    .replace("%OPERATION%", "Update")
-                    .replace("%REASON%", "SqlLibrary ID (name) is missing."));
-            finalAnswer.setResultMessage(msg);
-        } else {
+                    .replace("%OPERATION%", "Create")
+                    .replace("%REASON%", "SqlLibrary name is missing!"));
+            ans.setResultMessage(msg);
+        }else{
             /**
              * All data seems cleans so we can call the services.
              */
             ISqlLibraryService sqlLibraryService = appContext.getBean(ISqlLibraryService.class);
+            IFactorySqlLibrary factorySqlLibrary = appContext.getBean(IFactorySqlLibrary.class);
 
-            AnswerItem resp = sqlLibraryService.readByKey(name);
-            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem() != null)) {
+            SqlLibrary sqlLib = factorySqlLibrary.create(name, type, database, script, description);
+            ans = sqlLibraryService.create(sqlLib);
+
+            if(ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                 /**
-                 * Object could not be found. We stop here and report the error.
+                 * Adding Log entry.
                  */
-                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) resp);
-
-            } else {
-                /**
-                 * The service was able to perform the query and confirm the
-                 * object exist, then we can update it.
-                 */
-                SqlLibrary sqlLib = (SqlLibrary) resp.getItem();
-                sqlLib.setType(type);
-                sqlLib.setDescription(description);
-                sqlLib.setDatabase(database);
-                sqlLib.setScript(script);
-                ans = sqlLibraryService.update(sqlLib);
-                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
-
-                if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                    /**
-                     * Update was succesfull. Adding Log entry.
-                     */
-                    ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createForPrivateCalls("/UpdateSqlLibrary", "UPDATE", "Updated SqlLibrary : ['" + name + "']", request);
-                }
-
+                ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                logEventService.createForPrivateCalls("/CreateSqlLibrary", "CREATE", "Create SQLLibrary : " + name, request);
             }
         }
 
         /**
          * Formating and returning the json result.
          */
-        jsonResponse.put("messageType", finalAnswer.getResultMessage().getMessage().getCodeString());
-        jsonResponse.put("message", finalAnswer.getResultMessage().getDescription());
+        jsonResponse.put("messageType", ans.getResultMessage().getMessage().getCodeString());
+        jsonResponse.put("message", ans.getResultMessage().getDescription());
 
         response.getWriter().print(jsonResponse);
         response.getWriter().flush();
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-
     /**
      * Handles the HTTP <code>GET</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -157,30 +133,29 @@ public class UpdateSqlLibrary2 extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(CreateSqlLibrary2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            Logger.getLogger(CreateSqlLibrary.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (JSONException ex) {
-            Logger.getLogger(CreateSqlLibrary2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            Logger.getLogger(CreateSqlLibrary.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
     }
 
     /**
      * Handles the HTTP <code>POST</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            String t = request.getParameter("value");
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(CreateSqlLibrary2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            Logger.getLogger(CreateSqlLibrary.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (JSONException ex) {
-            Logger.getLogger(CreateSqlLibrary2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            Logger.getLogger(CreateSqlLibrary.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
     }
 
@@ -193,4 +168,5 @@ public class UpdateSqlLibrary2 extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
+
 }

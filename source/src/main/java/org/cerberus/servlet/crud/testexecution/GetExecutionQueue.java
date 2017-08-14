@@ -131,7 +131,7 @@ public class GetExecutionQueue extends HttpServlet {
             ICountryEnvParamService cepService = appContext.getBean(ICountryEnvParamService.class);
             IParameterService parameterService = appContext.getBean(IParameterService.class);
             testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
-            List<ExecutionValidator> inQueue = new ArrayList<ExecutionValidator>();
+            List<ExecutionValidator> inQueue = new ArrayList<>();
 
             JSONArray testCaseList = new JSONArray(request.getParameter("testcase"));
             JSONArray environmentList = new JSONArray(request.getParameter("environment"));
@@ -140,9 +140,9 @@ public class GetExecutionQueue extends HttpServlet {
             /**
              * Creating all the list from the JSON to call the services
              */
-            List<TestCase> TCList = new ArrayList<TestCase>();
-            List<String> envList = new ArrayList<String>();
-            List<String> countries = new ArrayList<String>();
+            List<TestCase> TCList = new ArrayList<>();
+            List<String> envList = new ArrayList<>();
+            List<String> countries = new ArrayList<>();
 
             for (int index = 0; index < testCaseList.length(); index++) {
                 JSONObject testCaseJson = testCaseList.getJSONObject(index);

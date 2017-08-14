@@ -35,6 +35,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.TestCaseExecutionQueue;
+import org.cerberus.crud.service.IParameterService;
 import org.cerberus.engine.threadpool.entity.TestCaseExecutionQueueToTreat;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.engine.entity.MessageEvent;
@@ -62,6 +63,7 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
 
     private ITestCaseExecutionQueueService executionService;
     private IExecutionThreadPoolService executionThreadPoolService;
+    private IParameterService parameterService;
 
     private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(ReadTestCaseExecutionQueue.class);
 
@@ -124,7 +126,7 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
                 answer = findExecutionQueueByKeyTech(queueid, appContext, userHasPermissions);
                 jsonResponse = (JSONObject) answer.getItem();
             } else if (request.getParameter("flag") != null && request.getParameter("flag").equals("queueStatus")) {
-                answer = findExecutionInQueueStatus(appContext);
+                answer = findExecutionInQueueStatus(appContext, request);
                 jsonResponse = (JSONObject) answer.getItem();
             } else {
                 answer = findExecutionInQueueList(appContext, true, request);
@@ -247,10 +249,11 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
         return item;
     }
 
-    private AnswerItem findExecutionInQueueStatus(ApplicationContext appContext) throws JSONException {
+    private AnswerItem findExecutionInQueueStatus(ApplicationContext appContext, HttpServletRequest request) throws JSONException {
         AnswerItem item = new AnswerItem();
         JSONObject object = new JSONObject();
         executionThreadPoolService = appContext.getBean(IExecutionThreadPoolService.class);
+        parameterService = appContext.getBean(IParameterService.class);
         JSONArray jsonArray = new JSONArray();
 
         try {
@@ -276,6 +279,7 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
                             jsonObject.put("nbInQueue", ParameterParserUtil.parseIntegerParam(mapInQueue.get(column), 0));
                             jsonObject.put("nbPoolSize", ParameterParserUtil.parseIntegerParam(mapPoolSize.get(column),0));
                             jsonObject.put("nbRunning", ParameterParserUtil.parseIntegerParam(name,0));
+                            jsonObject.put("hasPermissionsUpdate", parameterService.hasPermissionsUpdate("cerberus_queueexecution_global_threadpoolsize", request));
                             break;
                         case TestCaseExecutionQueueToTreat.CONSTRAIN2_APPLICATION:
                             jsonObject.put("contrainId", data[0]);
@@ -287,6 +291,7 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
                             jsonObject.put("nbInQueue", ParameterParserUtil.parseIntegerParam(mapInQueue.get(column),0));
                             jsonObject.put("nbPoolSize", ParameterParserUtil.parseIntegerParam(mapPoolSize.get(column),0));
                             jsonObject.put("nbRunning", ParameterParserUtil.parseIntegerParam(name,0));
+                            jsonObject.put("hasPermissionsUpdate", parameterService.hasPermissionsUpdate("cerberus_queueexecution_global_threadpoolsize", request));
                             break;
                         case TestCaseExecutionQueueToTreat.CONSTRAIN3_ROBOT:
                             jsonObject.put("contrainId", data[0]);
@@ -302,6 +307,7 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
                             jsonObject.put("nbInQueue", ParameterParserUtil.parseIntegerParam(mapInQueue.get(column),0));
                             jsonObject.put("nbPoolSize", ParameterParserUtil.parseIntegerParam(mapPoolSize.get(column),0));
                             jsonObject.put("nbRunning", ParameterParserUtil.parseIntegerParam(name,0));
+                            jsonObject.put("hasPermissionsUpdate", parameterService.hasPermissionsUpdate("cerberus_queueexecution_global_threadpoolsize", request));
                             break;
                     }
                     jsonArray.put(jsonObject);

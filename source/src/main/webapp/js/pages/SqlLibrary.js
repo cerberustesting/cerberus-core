@@ -109,7 +109,7 @@ function editEntryClick(name) {
         method: "GET",
         success: function (data) {
             if (data.messageType === "OK") {
-                
+
                 //Destroy the previous Ace object.
                 ace.edit($("#editSqlLibraryModalForm #script")[0]).destroy();
 
@@ -119,7 +119,7 @@ function editEntryClick(name) {
                 formEdit.find("#description").prop("value", $('<div/>').html(data.description).text());
                 formEdit.find("#database").find("option").removeAttr("selected");
                 formEdit.find("#database").find("option[value='" + data.database + "']").attr("selected", "selected");
-                
+
                 //Highlight envelop on modal loading
                 var editor = ace.edit($("#editSqlLibraryModalForm #script")[0]);
                 editor.setTheme("ace/theme/chrome");
@@ -127,7 +127,7 @@ function editEntryClick(name) {
                 editor.setOptions({
                     maxLines: Infinity
                 });
-                
+
                 if (!(data["hasPermissions"])) { // If readonly, we only readonly all fields
                     formEdit.find("#name").prop("readonly", "readonly");
                     formEdit.find("#type").prop("readonly", "readonly");
@@ -160,7 +160,7 @@ function editEntryModalSaveHandler() {
 
     showLoaderInModal('#editSqlLibraryModal');
     $.ajax({
-        url: "UpdateSqlLibrary2",
+        url: "UpdateSqlLibrary",
         async: true,
         method: "POST",
         data: {
@@ -204,7 +204,7 @@ function addEntryClick() {
      */
     $("#addSqlLibraryModal #idname").empty();
     $('#addSqlLibraryModal #envelope').empty();
-    
+
     //Highlight envelop on modal loading
     var editor = ace.edit($("#addSqlLibraryModalForm #script")[0]);
     editor.setTheme("ace/theme/chrome");
@@ -212,7 +212,7 @@ function addEntryClick() {
     editor.setOptions({
         maxLines: Infinity
     });
-    
+
 
     $('#addSqlLibraryModal').modal('show');
 }
@@ -229,7 +229,7 @@ function addEntryModalSaveHandler() {
 
     showLoaderInModal('#addSqlLibraryModal');
     $.ajax({
-        url: "CreateSqlLibrary2",
+        url: "CreateSqlLibrary",
         async: true,
         method: "POST",
         data: {
@@ -265,26 +265,36 @@ function addEntryModalCloseHandler() {
     clearResponseMessage($('#addSqlLibraryModal'));
 }
 
-function removeEntryClick(name) {
-    var doc = new Doc();
-    showModalConfirmation(function (ev) {
-        var name = $('#confirmationModal #hiddenField1').prop("value");
-        $.ajax({
-            url: "DeleteSqlLibrary2?name=" + name,
-            async: true,
-            method: "GET",
-            success: function (data) {
-                hideLoaderInModal('#removeSqlLibraryModal');
-                var oTable = $("#sqlLibrarysTable").dataTable();
-                oTable.fnDraw(true);
-                $('#removeSqlLibraryModal').modal('hide');
-                showMessage(data);
-            },
-            error: showUnexpectedError
-        });
+function removeEntryClickHandler() {
+    var name = $('#confirmationModal #hiddenField1').prop("value");
+    var jqxhr = $.post("DeleteSqlLibrary", {name: name}, "json");
+    $.when(jqxhr).then(function (data) {
+        var messageType = getAlertType(data.messageType);
+        if (messageType === "success") {
+            //redraw the datatable
+            var oTable = $("#sqlLibrarysTable").dataTable();
+            oTable.fnDraw(true);
+            var info = oTable.fnGetData().length;
 
+            if (info === 1) {//page has only one row, then returns to the previous page
+                oTable.fnPageChange('previous');
+            }
+
+        }
+        //show message in the main page
+        showMessageMainPage(messageType, data.message, false);
+        //close confirmation window
         $('#confirmationModal').modal('hide');
-    }, undefined, doc.getDocLabel("page_sqlLibrary", "title_remove"), doc.getDocLabel("page_sqlLibrary", "message_remove"), name, undefined, undefined, undefined);
+    }).fail(handleErrorAjaxAfterTimeout);
+
+}
+
+function removeEntryClick(name) {
+    clearResponseMessageMainPage();
+    var doc = new Doc();
+    var messageComplete = doc.getDocLabel("page_sqlLibrary", "message_remove");
+    messageComplete = messageComplete.replace("%ENTRY%", name);
+    showModalConfirmation(removeEntryClickHandler, undefined, doc.getDocLabel("page_sqlLibrary", "title_remove"), messageComplete, name, "", "", "");
 }
 
 function aoColumnsFunc(tableId) {

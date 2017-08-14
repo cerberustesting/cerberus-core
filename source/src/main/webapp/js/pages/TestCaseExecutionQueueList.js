@@ -88,7 +88,8 @@ function displayAndRefresh_followup() {
         $.each(obj, function (e) {
 
             array.push(
-                    [obj[e].contrainId, obj[e].system, obj[e].environment, obj[e].country, obj[e].application, obj[e].robot, obj[e].nbRunning, obj[e].nbPoolSize, obj[e].nbInQueue]
+                    [obj[e].contrainId, obj[e].system, obj[e].environment, obj[e].country, obj[e].application
+                                , obj[e].robot, obj[e].nbRunning, obj[e].nbPoolSize, obj[e].nbInQueue, obj[e].hasPermissionsUpdate]
                     );
         });
 
@@ -113,6 +114,12 @@ function displayAndRefresh_jobStatus() {
         $("#jobRunning").val(data["jobRunning"]);
         $("#jobStart").val(data["jobStart"]);
         $("#jobActive").val(data["jobActive"]);
+
+        if (data["jobActiveHasPermissionsUpdate"]) {
+            $("#modifyParambutton").attr("disabled", false);
+        } else {
+            $("#modifyParambutton").attr("disabled", true);
+        }
     });
 }
 
@@ -127,7 +134,6 @@ function forceExecution() {
         $("#jobActive").val(data["jobActive"]);
     });
 }
-
 
 function renderOptionsForExeQueue(data) {
     if ($("#blankSpace").length === 0) {
@@ -665,6 +671,27 @@ function aoColumnsFunc(tableId) {
 function aoColumnsFunc_followUp() {
     var doc = new Doc();
     var aoColumns = [
+        {
+            "data": null,
+            "sName": "action",
+            "title": doc.getDocLabel("page_global", "action"),
+            "mRender": function (data, type, oObj) {
+                var editGlobalParam = '<button id="editExeQ' + data + '"  onclick="openModalParameter(\'cerberus_queueexecution_global_threadpoolsize\',\'' + getSys() + '\');" \n\
+                                class="btn btn-default btn-xs margin-right5" \n\
+                            name="editExecutionQueue" title="' + doc.getDocLabel("page_testdatalib", "tooltip_editentry") + '" type="button">\n\
+                            <span class="glyphicon glyphicon-pencil"></span></button>';
+
+                var buttons = "";
+                console.info(data[9]);
+                console.info(oObj);
+                if ((data[0] === "constrain1_global") && (data[9])) {
+                    // Constrain is global and hasPermitionUpdate is true.
+                    buttons += editGlobalParam;
+                }
+                return '<div class="center btn-group width100">' + buttons + '</div>';
+            }
+        }
+        ,
         {"data": "0", "sName": "constrainsId", "title": doc.getDocLabel("page_testcaseexecutionqueue", "constrain")},
         {"data": "1", "sName": "system", "title": doc.getDocLabel("invariant", "SYSTEM")},
         {"data": "2", "sName": "environment", "title": doc.getDocLabel("invariant", "ENVIRONMENT")},

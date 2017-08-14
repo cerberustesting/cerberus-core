@@ -30,6 +30,7 @@ import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
@@ -40,12 +41,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.logging.Logger;
 
 /**
  * @author bcivel
  */
-public class DeleteSqlLibrary2 extends HttpServlet {
+public class UpdateSqlLibrary extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -67,11 +69,21 @@ public class DeleteSqlLibrary2 extends HttpServlet {
         ans.setResultMessage(msg);
 
         response.setContentType("text/html;charset=UTF-8");
-
+        PrintWriter out = response.getWriter();
         String charset = request.getCharacterEncoding();
-        String name = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("name"), null, charset);
 
-        ISqlLibraryService sqlLibraryService = appContext.getBean(ISqlLibraryService.class);
+        // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
+        // Parameter that needs to be secured --> We SECURE+DECODE them
+        String name = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("name"), null, charset);
+        String type = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("type"), null, charset);
+        String database = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("database"), null, charset);
+        String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("description"), null, charset);
+        // Parameter that we cannot secure as we need the html --> We DECODE them
+        String script = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("script"), null, charset);
+        
+        // Prepare the final answer.
+        MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
+        Answer finalAnswer = new Answer(msg1);
 
         /**
          * Checking all constrains before calling the services.
@@ -79,47 +91,51 @@ public class DeleteSqlLibrary2 extends HttpServlet {
         if (StringUtil.isNullOrEmpty(name)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "SqlLibrary")
-                    .replace("%OPERATION%", "Delete")
-                    .replace("%REASON%", "SqlLibrary ID (name) is missing!"));
-            ans.setResultMessage(msg);
+                    .replace("%OPERATION%", "Update")
+                    .replace("%REASON%", "SqlLibrary ID (name) is missing."));
+            finalAnswer.setResultMessage(msg);
         } else {
             /**
              * All data seems cleans so we can call the services.
              */
+            ISqlLibraryService sqlLibraryService = appContext.getBean(ISqlLibraryService.class);
+
             AnswerItem resp = sqlLibraryService.readByKey(name);
             if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem() != null)) {
                 /**
                  * Object could not be found. We stop here and report the error.
                  */
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", "SqlLibrary")
-                        .replace("%OPERATION%", "Delete")
-                        .replace("%REASON%", "SqlLibrary does not exist."));
-                ans.setResultMessage(msg);
+                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) resp);
 
             } else {
                 /**
                  * The service was able to perform the query and confirm the
-                 * object exist, then we can delete it.
+                 * object exist, then we can update it.
                  */
-                SqlLibrary sql = (SqlLibrary) resp.getItem();
-                ans = sqlLibraryService.delete(sql);
+                SqlLibrary sqlLib = (SqlLibrary) resp.getItem();
+                sqlLib.setType(type);
+                sqlLib.setDescription(description);
+                sqlLib.setDatabase(database);
+                sqlLib.setScript(script);
+                ans = sqlLibraryService.update(sqlLib);
+                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
 
                 if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                     /**
-                     * Adding Log entry.
+                     * Update was succesfull. Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createForPrivateCalls("/DeleteSqlLibrary", "DELETE", "Delete SQLLibrary : " + name, request);
+                    logEventService.createForPrivateCalls("/UpdateSqlLibrary", "UPDATE", "Updated SqlLibrary : ['" + name + "']", request);
                 }
+
             }
         }
 
         /**
          * Formating and returning the json result.
          */
-        jsonResponse.put("messageType", ans.getResultMessage().getMessage().getCodeString());
-        jsonResponse.put("message", ans.getResultMessage().getDescription());
+        jsonResponse.put("messageType", finalAnswer.getResultMessage().getMessage().getCodeString());
+        jsonResponse.put("message", finalAnswer.getResultMessage().getDescription());
 
         response.getWriter().print(jsonResponse);
         response.getWriter().flush();
@@ -141,9 +157,9 @@ public class DeleteSqlLibrary2 extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(CreateSqlLibrary2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            Logger.getLogger(UpdateSqlLibrary.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (JSONException ex) {
-            Logger.getLogger(CreateSqlLibrary2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            Logger.getLogger(UpdateSqlLibrary.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
     }
 
@@ -159,11 +175,12 @@ public class DeleteSqlLibrary2 extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
+            String t = request.getParameter("value");
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(CreateSqlLibrary2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            Logger.getLogger(UpdateSqlLibrary.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (JSONException ex) {
-            Logger.getLogger(CreateSqlLibrary2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            Logger.getLogger(UpdateSqlLibrary.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
     }
 
@@ -176,5 +193,4 @@ public class DeleteSqlLibrary2 extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-
 }
