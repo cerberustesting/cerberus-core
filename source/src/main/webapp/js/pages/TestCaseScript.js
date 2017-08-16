@@ -1101,6 +1101,10 @@ function changeLib() {
     }
 }
 
+function generateImportInfoId(stepInfo) {
+    return  stepInfo.testCase + stepInfo.description.replace(new RegExp(" ", "g"),"_");
+}
+
 var importInfoIdx=0;
 function showImportStepDetail(element) {
 
@@ -1109,18 +1113,18 @@ function showImportStepDetail(element) {
     if($(element).hasClass("selected")) {
         $(element).removeClass("selected");
         $(element).find("[name='idx']").remove();
-        $("#" +  stepInfo.description).remove();
+        $("#" + generateImportInfoId(stepInfo)).remove();
     } else {
         importInfoIdx++;
         $(element).addClass("selected");
         $(element).append('<span class="badge" name="idx">' + importInfoIdx + ' </span>');
-        var importInfoId = stepInfo.description;
+        var importInfoId =  generateImportInfoId(stepInfo);
 
         var importInfo =
         '<div id="'+importInfoId+'" class="row">' +
-        '   <div class="col-sm-3"><span class="badge">' + importInfoIdx + ' </span>&nbsp;' + stepInfo.description + '</div>' +
+        '   <div class="col-sm-5"><span class="badge">' + importInfoIdx + ' </span>&nbsp;' + stepInfo.description + '</div>' +
         '   <div name="importInfo" class="col-sm-5"></div>' +
-        '   <div class="col-sm-4">'+
+        '   <div class="col-sm-2">'+
         '    <label class="checkbox-inline">'+
         '        <input type="checkbox" name="useStep" checked> Use Step'+
         '    </label>'+
