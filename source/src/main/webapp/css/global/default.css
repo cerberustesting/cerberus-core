@@ -746,3 +746,8 @@ img.selectedPicture{
 		max-width: 150px;
 	}
 }
+
+a.list-group-item.selected, button.list-group-item.selected {
+    color: #fff;
+    background-color: #5bc0de;
+}

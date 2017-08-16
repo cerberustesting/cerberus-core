@@ -351,11 +351,17 @@ $.when($.getScript("js/global/global.js")).then(function () {
                 $("#saveScript").attr("disabled", typeof saveScriptOldStatus !== typeof undefined && saveScriptOldStatus !== false);
             });
             $('#addStepModal').on('hidden.bs.modal', function () {
-                $("#importInfo").removeData("stepInfo");
-                $("#importInfo").empty();
+                $("#importDetail").find("[name='importInfo']").removeData("stepInfo");
+                $("[name='importInfo']").empty();
                 $("#addStepModal #description").val("");
                 $("#useStep").prop("checked", false);
                 $("#importDetail").hide();
+                $("#importDetail div.row").remove();
+                $(".sub-sub-item.selected").each(function (idx,element) {
+                    $(element).removeClass("selected");
+                    $(element).find("[name='idx']").remove();
+                });
+                importInfoIdx=0;
             });
 
             $("#deleteStep").click(function () {
@@ -1095,15 +1101,61 @@ function changeLib() {
     }
 }
 
+function generateImportInfoId(stepInfo) {
+    return  stepInfo.testCase + stepInfo.description.replace(new RegExp(" ", "g"),"_");
+}
+
+var importInfoIdx=0;
 function showImportStepDetail(element) {
+
     var stepInfo = $(element).data("stepInfo");
 
-    $("#importInfo").text("Imported from " + stepInfo.test + " - " + stepInfo.testCase + " - " + stepInfo.sort + ")").data("stepInfo", stepInfo);
-    $("#addStepModal #description").val(stepInfo.description);
-    $("#useStep").prop("checked", true);
+    if($(element).hasClass("selected")) {
+        $(element).removeClass("selected");
+        $(element).find("[name='idx']").remove();
+        $("#" + generateImportInfoId(stepInfo)).remove();
+    } else {
+        importInfoIdx++;
+        $(element).addClass("selected");
+        $(element).append('<span class="badge" name="idx">' + importInfoIdx + ' </span>');
+        var importInfoId =  generateImportInfoId(stepInfo);
 
-    $("#importDetail").show();
+        var importInfo =
+        '<div id="'+importInfoId+'" class="row">' +
+        '   <div class="col-sm-5"><span class="badge">' + importInfoIdx + ' </span>&nbsp;' + stepInfo.description + '</div>' +
+        '   <div name="importInfo" class="col-sm-5"></div>' +
+        '   <div class="col-sm-2">'+
+        '    <label class="checkbox-inline">'+
+        '        <input type="checkbox" name="useStep" checked> Use Step'+
+        '    </label>'+
+        '   </div>'+
+        '</div>';
+
+        $("#importDetail").append(importInfo);
+        $("#"+importInfoId).find("[name='importInfo']").text("Imported from " + stepInfo.test + " - " + stepInfo.testCase + " - " + stepInfo.sort + ")").data("stepInfo", stepInfo);
+
+        $("#importDetail[name='useStep']").prop("checked", true);
+
+        $("#importDetail").show();
+    }
 }
+function initStep() {
+    return   {
+        "inLibrary": "N",
+        "objType": "step",
+        "useStepTest": "",
+        "useStepTestCase": "",
+        "useStep": "N",
+        "description": "",
+        "useStepStep": -1,
+        "actionList": [],
+        "loop": "onceIfConditionTrue",
+        "conditionOper": "always",
+        "conditionVal1": "",
+        "conditionVal2": ""
+    };
+}
+
 
 function addStep(event) {
     var stepList = event.data.stepList;
@@ -1114,57 +1166,60 @@ function addStep(event) {
         $('#description').focus();
     })
 
-    $(".sub-sub-item").on("click", function () {
-        showImportStepDetail($(this))
-    });
-
     $("#addStepConfirm").unbind("click").click(function (event) {
         setModif(true);
-        var step = {"inLibrary": "N",
-            "objType": "step",
-            "useStepTest": "",
-            "useStepTestCase": "",
-            "useStep": "N",
-            "description": "",
-            "useStepStep": -1,
-            "actionList": [],
-            "loop": "onceIfConditionTrue",
-            "conditionOper": "always",
-            "conditionVal1": "",
-            "conditionVal2": ""
-        };
 
-        step.description = $("#addStepModal #description").val();
-        if ($("#importInfo").data("stepInfo")) {
-            var useStep = $("#importInfo").data("stepInfo");
-            $.ajax({
-                url: "ReadTestCaseStep",
-                data: {test: useStep.test, testcase: useStep.testCase, step: useStep.step},
-                async: false,
-                success: function (data) {
-                    step.actionList = data.tcsActionList;
 
-                    for (var index = 0; index < data.tcsActionControlList.length; index++) {
-                        var control = data.tcsActionControlList[index];
+        if($("[name='importInfo']").length == 0 ) { // added a new step
+            var step = initStep();
+            step.description = $("#addStepModal #description").val();
 
-                        step.actionList[control.sequence - 1].controlList.push(control);
+            var stepObj = new Step(step, stepList, true);
+
+            stepObj.draw();
+            stepList.push(stepObj);
+            stepObj.html.trigger("click");
+        } else {
+
+            // added a library step
+            $("[name='importInfo']").each(function (idx, importInfo) {
+                var step = initStep();
+
+                if ($(importInfo).data("stepInfo")) {
+                    var useStep = $(importInfo).data("stepInfo");
+
+                    step.description = useStep.description;
+
+                    $.ajax({
+                        url: "ReadTestCaseStep",
+                        data: {test: useStep.test, testcase: useStep.testCase, step: useStep.step},
+                        async: false,
+                        success: function (data) {
+                            step.actionList = data.tcsActionList;
+
+                            for (var index = 0; index < data.tcsActionControlList.length; index++) {
+                                var control = data.tcsActionControlList[index];
+
+                                step.actionList[control.sequence - 1].controlList.push(control);
+                            }
+                            sortStep(step);
+                        }
+                    });
+                    if ($("#" + useStep.description).find("[name='useStep']").prop("checked")) {
+                        step.useStep = "Y";
+                        step.useStepTest = useStep.test;
+                        step.useStepTestCase = useStep.testCase;
+                        step.useStepStep = useStep.step;
+                        step.useStepStepSort = useStep.sort;
                     }
-                    sortStep(step);
                 }
-            });
-            if ($("#useStep").prop("checked")) {
-                step.useStep = "Y";
-                step.useStepTest = useStep.test;
-                step.useStepTestCase = useStep.testCase;
-                step.useStepStep = useStep.step;
-                step.useStepStepSort = useStep.sort;
-            }
-        }
-        var stepObj = new Step(step, stepList, true);
+                var stepObj = new Step(step, stepList, true);
 
-        stepObj.draw();
-        stepList.push(stepObj);
-        stepObj.html.trigger("click");
+                stepObj.draw();
+                stepList.push(stepObj);
+                stepObj.html.trigger("click");
+            });
+        }
     });
 }
 
