@@ -64,6 +64,7 @@ import org.json.JSONObject;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
@@ -295,7 +296,7 @@ public class CreateTestCase extends HttpServlet {
         tc.setImplementer(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("implementer"), "", charset));
         tc.setUsrCreated(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getUserPrincipal().getName(), "", charset));
         tc.setUsrModif(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getUserPrincipal().getName(), "", charset));
-        if (request.getParameter("project").isEmpty()) {
+        if (StringUtils.isEmpty(request.getParameter("project"))) {
             tc.setProject(null);
         } else {
             tc.setProject(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("project"), "", charset));
