@@ -23,7 +23,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Future;
-import java.util.concurrent.RejectedExecutionException;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.engine.threadpool.entity.TestCaseExecutionQueueToTreat;
@@ -192,6 +191,12 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
             int nbqueuedexe = 0;
 
             do {
+
+                if (!(parameterService.getParameterBooleanByKey("cerberus_queueexecution_enable", "", true))) {
+                    LOG.debug("Queue_Processing_Job disabled by parameter : 'cerberus_queueexecution_enable'.");
+                    return;
+                }
+
                 nbqueuedexe = 0;
                 // Job is not already running, we can trigger it.
 

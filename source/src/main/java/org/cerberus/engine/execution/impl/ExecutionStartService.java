@@ -102,7 +102,7 @@ public class ExecutionStartService implements IExecutionStartService {
         LOG.debug("Checking the parameters.");
         Invariant myInvariant;
         try {
-            myInvariant = this.invariantService.findInvariantByIdValue("OUTPUTFORMAT", tCExecution.getOutputFormat());
+            myInvariant = invariantService.convert(invariantService.readByKey("OUTPUTFORMAT", tCExecution.getOutputFormat()));
         } catch (CerberusException ex) {
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_OUTPUTFORMAT_INVALID);
             mes.setDescription(mes.getDescription().replace("%PARAM%", tCExecution.getOutputFormat()));
@@ -110,7 +110,7 @@ public class ExecutionStartService implements IExecutionStartService {
             throw new CerberusException(mes);
         }
         try {
-            myInvariant = this.invariantService.findInvariantByIdValue("VERBOSE", String.valueOf(tCExecution.getVerbose()));
+            myInvariant = invariantService.convert(invariantService.readByKey("VERBOSE", String.valueOf(tCExecution.getVerbose())));
         } catch (CerberusException ex) {
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_VERBOSE_INVALID);
             mes.setDescription(mes.getDescription().replace("%PARAM%", String.valueOf(tCExecution.getVerbose())));
@@ -118,7 +118,7 @@ public class ExecutionStartService implements IExecutionStartService {
             throw new CerberusException(mes);
         }
         try {
-            myInvariant = this.invariantService.findInvariantByIdValue("SCREENSHOT", String.valueOf(tCExecution.getScreenshot()));
+            myInvariant = invariantService.convert(invariantService.readByKey("SCREENSHOT", String.valueOf(tCExecution.getScreenshot())));
         } catch (CerberusException ex) {
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SCREENSHOT_INVALID);
             mes.setDescription(mes.getDescription().replace("%PARAM%", String.valueOf(tCExecution.getScreenshot())));
@@ -185,7 +185,7 @@ public class ExecutionStartService implements IExecutionStartService {
         LOG.debug("Loading Application Information");
         try {
             tCExecution.setApplication(tCExecution.getTestCaseObj().getApplication());
-            tCExecution.setApplicationObj(this.applicationService.convert(this.applicationService.readByKey(tCExecution.getTestCaseObj().getApplication())));
+            tCExecution.setApplicationObj(applicationService.convert(this.applicationService.readByKey(tCExecution.getTestCaseObj().getApplication())));
         } catch (CerberusException ex) {
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_APPLICATION_NOT_FOUND);
             mes.setDescription(mes.getDescription().replace("%APPLI%", tCExecution.getTestCaseObj().getApplication()));
@@ -199,7 +199,7 @@ public class ExecutionStartService implements IExecutionStartService {
          */
         LOG.debug("Loading Country Information");
         try {
-            tCExecution.setCountryObj(this.invariantService.findInvariantByIdValue("COUNTRY", tCExecution.getCountry()));
+            tCExecution.setCountryObj(invariantService.convert(invariantService.readByKey("COUNTRY", tCExecution.getCountry())));
         } catch (CerberusException ex) {
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_COUNTRY_NOT_FOUND);
             mes.setDescription(mes.getDescription().replace("%COUNTRY%", tCExecution.getCountry()));
@@ -289,7 +289,7 @@ public class ExecutionStartService implements IExecutionStartService {
          */
         LOG.debug("Loading Environment Information. " + tCExecution.getEnvironmentData());
         try {
-            tCExecution.setEnvironmentDataObj(this.invariantService.findInvariantByIdValue("ENVIRONMENT", tCExecution.getEnvironmentData()));
+            tCExecution.setEnvironmentDataObj(invariantService.convert(invariantService.readByKey("ENVIRONMENT", tCExecution.getEnvironmentData())));
         } catch (CerberusException ex) {
             if (tCExecution.isManualURL()) {
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_ENVIRONMENT_DOESNOTEXIST_MAN);
@@ -380,7 +380,7 @@ public class ExecutionStartService implements IExecutionStartService {
          */
         if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
             try {
-                myInvariant = this.invariantService.findInvariantByIdValue("BROWSER", tCExecution.getBrowser());
+                myInvariant = invariantService.convert(invariantService.readByKey("BROWSER", tCExecution.getBrowser()));
             } catch (CerberusException ex) {
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_BROWSER_NOT_SUPPORTED);
                 mes.setDescription(mes.getDescription().replace("%BROWSER%", tCExecution.getBrowser()));

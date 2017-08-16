@@ -521,16 +521,16 @@
         <servlet-class>org.cerberus.servlet.crud.countryenvironment.UpdateAppService</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>CreateInvariant2</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.transversaltables.CreateInvariant2</servlet-class>
+        <servlet-name>CreateInvariant</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.transversaltables.CreateInvariant</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>UpdateInvariant2</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.transversaltables.UpdateInvariant2</servlet-class>
+        <servlet-name>UpdateInvariant</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.transversaltables.UpdateInvariant</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>DeleteInvariant2</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.transversaltables.DeleteInvariant2</servlet-class>
+        <servlet-name>DeleteInvariant</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.transversaltables.DeleteInvariant</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ReadProject</servlet-name>
@@ -1393,16 +1393,16 @@
         <url-pattern>/UpdateAppService</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>CreateInvariant2</servlet-name>
-        <url-pattern>/CreateInvariant2</url-pattern>
+        <servlet-name>CreateInvariant</servlet-name>
+        <url-pattern>/CreateInvariant</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>UpdateInvariant2</servlet-name>
-        <url-pattern>/UpdateInvariant2</url-pattern>
+        <servlet-name>UpdateInvariant</servlet-name>
+        <url-pattern>/UpdateInvariant</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>DeleteInvariant2</servlet-name>
-        <url-pattern>/DeleteInvariant2</url-pattern>
+        <servlet-name>DeleteInvariant</servlet-name>
+        <url-pattern>/DeleteInvariant</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ReadProject</servlet-name>
@@ -2123,7 +2123,7 @@
             <url-pattern>/LogEvent.jsp</url-pattern>
             <url-pattern>/ParameterList.jsp</url-pattern>
             <url-pattern>/UserManager.jsp</url-pattern>
-            <url-pattern>/Invariant.jsp</url-pattern>
+            <url-pattern>/InvariantList.jsp</url-pattern>
             <url-pattern>/CerberusInformation.jsp</url-pattern>
         </web-resource-collection>
         <web-resource-collection>
@@ -2137,9 +2137,9 @@
             <url-pattern>/UpdateUser</url-pattern>
             <url-pattern>/DeleteUser</url-pattern>
             <url-pattern>/ReadLogEvent</url-pattern>
-            <url-pattern>/CreateInvariant2</url-pattern>
-            <url-pattern>/UpdateInvariant2</url-pattern>
-            <url-pattern>/DeleteInvariant2</url-pattern>
+            <url-pattern>/CreateInvariant</url-pattern>
+            <url-pattern>/UpdateInvariant</url-pattern>
+            <url-pattern>/DeleteInvariant</url-pattern>
             <url-pattern>/DeleteApplication</url-pattern>
             <url-pattern>/ReadCerberusDetailInformation</url-pattern>
         </web-resource-collection>

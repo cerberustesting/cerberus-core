@@ -217,7 +217,7 @@ public class GetExecutionQueue extends HttpServlet {
                 }
 
                 try {
-                    execution.setEnvironmentDataObj(invariantService.findInvariantByIdValue("ENVIRONMENT", execution.getEnvironmentData()));
+                    execution.setEnvironmentDataObj(invariantService.convert(invariantService.readByKey("ENVIRONMENT", execution.getEnvironmentData())));
                 } catch (CerberusException ex) {
                     MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_ENVIRONMENT_DOESNOTEXIST);
                     mes.setDescription(mes.getDescription().replace("%ENV%", execution.getEnvironmentData()));

@@ -22,7 +22,7 @@ package org.cerberus.crud.service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import javax.servlet.http.HttpServletRequest;
 import org.cerberus.crud.entity.Invariant;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
@@ -33,8 +33,6 @@ import org.cerberus.util.answer.AnswerList;
  * @author bcivel
  */
 public interface IInvariantService {
-
-    Invariant findInvariantByIdValue(String idName, String value) throws CerberusException;
 
     /**
      *
@@ -59,9 +57,9 @@ public interface IInvariantService {
      */
     HashMap<String, String> readToHashMapGp1StringByIdname(String idName, String defaultValue);
 
-    AnswerList findInvariantByIdGp1(String idName, String gp);
+    AnswerList readByIdnameGp1(String idName, String gp);
 
-    AnswerList readInvariantCountryListEnvironmentLastChanges(String system, Integer nbDays);
+    AnswerList readCountryListEnvironmentLastChanges(String system, Integer nbDays);
 
     AnswerList readByPublicByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
@@ -77,23 +75,98 @@ public interface IInvariantService {
 
     AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
 
-    Integer getNumberOfPrivateInvariant(String searchTerm);
-
-    Integer getNumberOfPublicInvariant(String searchTerm);
-
+    /**
+     *
+     * @param idName
+     * @param value
+     * @return
+     */
     boolean isInvariantExist(String idName, String value);
 
-    AnswerItem isInvariantPublic(Invariant object);
+    /**
+     *
+     * @param object
+     * @return
+     */
+    boolean isInvariantPublic(Invariant object);
 
+    /**
+     *
+     * @param id
+     * @param value
+     * @return
+     */
     AnswerItem readByKey(String id, String value);
 
+    /**
+     *
+     * @param invariant
+     * @return
+     */
     Answer create(Invariant invariant);
 
+    /**
+     *
+     * @param invariant
+     * @return
+     */
     Answer delete(Invariant invariant);
 
-    Answer update(Invariant invariant);
+    /**
+     *
+     * @param idname
+     * @param value
+     * @param invariant
+     * @return
+     */
+    Answer update(String idname, String value, Invariant invariant);
 
+    /**
+     *
+     * @param filter
+     * @return
+     */
     String getPublicPrivateFilter(String filter);
+
+    /**
+     *
+     * @param invariant
+     * @param request
+     * @return
+     */
+    boolean hasPermissionsRead(Invariant invariant, HttpServletRequest request);
+
+    /**
+     *
+     * @param invariant
+     * @param request
+     * @return
+     */
+    boolean hasPermissionsUpdate(Invariant invariant, HttpServletRequest request);
+
+    /**
+     *
+     * @param invariant
+     * @param request
+     * @return
+     */
+    boolean hasPermissionsCreate(Invariant invariant, HttpServletRequest request);
+
+    /**
+     *
+     * @param invariant
+     * @param request
+     * @return
+     */
+    boolean hasPermissionsDelete(Invariant invariant, HttpServletRequest request);
+
+    /**
+     *
+     * @param answerItem
+     * @return
+     * @throws CerberusException
+     */
+    Invariant convert(AnswerItem answerItem) throws CerberusException;
 
     /**
      *
@@ -109,4 +182,5 @@ public interface IInvariantService {
      * @throws CerberusException
      */
     void convert(Answer answer) throws CerberusException;
+
 }

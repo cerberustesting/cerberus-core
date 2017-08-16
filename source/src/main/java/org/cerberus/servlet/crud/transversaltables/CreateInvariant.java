@@ -19,11 +19,19 @@
  */
 package org.cerberus.servlet.crud.transversaltables;
 
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.Invariant;
-import org.cerberus.engine.entity.MessageEvent;
+import org.cerberus.crud.factory.IFactoryInvariant;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.impl.LogEventService;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
@@ -36,27 +44,19 @@ import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /**
  * @author bcivel
  */
-public class DeleteInvariant2 extends HttpServlet {
+public class CreateInvariant extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, CerberusException, JSONException {
@@ -67,13 +67,30 @@ public class DeleteInvariant2 extends HttpServlet {
         ans.setResultMessage(msg);
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
         String charset = request.getCharacterEncoding();
-        
-        response.setContentType("application/json");
 
         String id = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("idName"), "", charset);
-        String value = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("value"), "", charset);
+        String value = request.getParameter("value");
+        String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("description"), "", charset);
+        String veryShortDescField = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("veryShortDesc"), "", charset);
+        String gp1 = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("gp1"), "", charset);
+        String gp2 = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("gp2"), "", charset);
+        String gp3 = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("gp3"), "", charset);
+        String gp4 = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("gp4"), "", charset);
+        String gp5 = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("gp5"), "", charset);
+        String gp6 = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("gp6"), "", charset);
+        String gp7 = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("gp7"), "", charset);
+        String gp8 = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("gp8"), "", charset);
+        String gp9 = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("gp9"), "", charset);
 
-        boolean userHasPermissions = request.isUserInRole("Administrator");
+        Integer sort = 10;
+        boolean sort_error = false;
+        try {
+            if (request.getParameter("Sort") != null && !request.getParameter("Sort").equals("")) {
+                sort = Integer.valueOf(policy.sanitize(request.getParameter("Sort")));
+            }
+        } catch (Exception ex) {
+            sort_error = true;
+        }
 
         /**
          * Checking all constrains before calling the services.
@@ -81,14 +98,14 @@ public class DeleteInvariant2 extends HttpServlet {
         if (StringUtil.isNullOrEmpty(id)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Invariant")
-                    .replace("%OPERATION%", "Delete")
+                    .replace("%OPERATION%", "Create")
                     .replace("%REASON%", "Invariant name is missing!"));
             ans.setResultMessage(msg);
-        } else if (!userHasPermissions) {
+        } else if (sort_error) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Invariant")
-                    .replace("%OPERATION%", "Delete")
-                    .replace("%REASON%", "You don't have the right to do that"));
+                    .replace("%OPERATION%", "Create")
+                    .replace("%REASON%", "Could not manage to convert sort to an integer value!"));
             ans.setResultMessage(msg);
         } else {
             /**
@@ -97,17 +114,25 @@ public class DeleteInvariant2 extends HttpServlet {
 
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             IInvariantService invariantService = appContext.getBean(IInvariantService.class);
+            IFactoryInvariant factoryInvariant = appContext.getBean(IFactoryInvariant.class);
+            Invariant invariantData = factoryInvariant.create(id, value, sort, description, veryShortDescField, gp1, gp2, gp3, gp4, gp5, gp6, gp7, gp8, gp9);
 
-            Invariant invariantData = invariantService.findInvariantByIdValue(id, value);
+            if (invariantService.hasPermissionsCreate(invariantData, request)) {
+                ans = invariantService.create(invariantData);
 
-            ans = invariantService.delete(invariantData);
-
-            if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                /**
-                 * Object updated. Adding Log entry.
-                 */
-                ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                logEventService.createForPrivateCalls("/DeleteInvariant2", "DELETE", "Delete Invariant : ['" + id + "']", request);
+                if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                    /**
+                     * Object updated. Adding Log entry.
+                     */
+                    ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                    logEventService.createForPrivateCalls("/CreateInvariant2", "CREATE", "Create Invariant : ['" + id + "']", request);
+                }
+            } else {
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "Invariant")
+                        .replace("%OPERATION%", "Create")
+                        .replace("%REASON%", "You are not allowed to do that or invariant is not public."));
+                ans.setResultMessage(msg);
             }
         }
 
@@ -117,20 +142,18 @@ public class DeleteInvariant2 extends HttpServlet {
         jsonResponse.put("messageType", ans.getResultMessage().getMessage().getCodeString());
         jsonResponse.put("message", ans.getResultMessage().getDescription());
 
-        response.getWriter().print(jsonResponse.toString());
+        response.getWriter().print(jsonResponse);
         response.getWriter().flush();
-
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-
     /**
      * Handles the HTTP <code>GET</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -138,19 +161,19 @@ public class DeleteInvariant2 extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(DeleteInvariant2.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CreateInvariant.class.getName()).log(Level.SEVERE, null, ex);
         } catch (JSONException ex) {
-            Logger.getLogger(DeleteInvariant2.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CreateInvariant.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     /**
      * Handles the HTTP <code>POST</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -158,9 +181,9 @@ public class DeleteInvariant2 extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(DeleteInvariant2.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CreateInvariant.class.getName()).log(Level.SEVERE, null, ex);
         } catch (JSONException ex) {
-            Logger.getLogger(DeleteInvariant2.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CreateInvariant.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

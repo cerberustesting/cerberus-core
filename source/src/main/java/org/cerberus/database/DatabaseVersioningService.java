@@ -7200,6 +7200,48 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // New updated Documentation.
         //-- ------------------------ 1201-1202
         SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Enlarge UserPref column.
+        //-- ------------------------ 1203
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `user` CHANGE COLUMN `UserPreferences` `UserPreferences` LONGTEXT NOT NULL ;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Created Tag table.
+        //-- ------------------------ 1204
+        SQLS = new StringBuilder();
+        SQLS.append("CREATE TABLE `tag` (");
+        SQLS.append("  `id` INT NOT NULL,");
+        SQLS.append("  `Tag` VARCHAR(50) NOT NULL DEFAULT '',");
+        SQLS.append("  `Description` VARCHAR(300) NOT NULL DEFAULT '',");
+        SQLS.append("  `Campaign` VARCHAR(45) NULL DEFAULT NULL,");
+        SQLS.append("  `UsrCreated` VARCHAR(45) NOT NULL DEFAULT '',");
+        SQLS.append("  `DateCreated` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,");
+        SQLS.append("  `UsrModif` VARCHAR(45) NULL DEFAULT '',");
+        SQLS.append("  `DateModif` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01',");
+        SQLS.append("  PRIMARY KEY (`id`),");
+        SQLS.append("  INDEX `IX_tag_01` (`Tag` ASC),");
+        SQLS.append("  INDEX `IX_tag_02` (`Campaign` ASC));");
+        SQLInstruction.add(SQLS.toString());
+
+        // Traca fields inside invariant table.
+        //-- ------------------------ 1205
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `invariant` ");
+        SQLS.append(" ADD COLUMN `UsrCreated` VARCHAR(45) NOT NULL DEFAULT '' AFTER `gp9`,");
+        SQLS.append(" ADD COLUMN `DateCreated` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `UsrCreated`,");
+        SQLS.append(" ADD COLUMN `UsrModif` VARCHAR(45) NULL DEFAULT '' AFTER `DateCreated`,");
+        SQLS.append(" ADD COLUMN `DateModif` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01' AFTER `UsrModif` ;");
+        SQLInstruction.add(SQLS.toString());
+
+        // New updated Documentation.
+        //-- ------------------------ 1206-1207
+        SQLS = new StringBuilder();
         SQLS.append("DELETE FROM `documentation`;");
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
@@ -7864,6 +7906,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_global','btn_clearfilter','','fr','','')");
         SQLS.append(",('page_global','btn_duplicate','','en','Duplicate','')");
         SQLS.append(",('page_global','btn_duplicate','','fr','Dupliquer','')");
+        SQLS.append(",('page_global','btn_edit','','en','Edit',NULL)");
+        SQLS.append(",('page_global','btn_edit','','fr','Editer',NULL)");
         SQLS.append(",('page_global','btn_export','','en','Export','')");
         SQLS.append(",('page_global','btn_export','','fr','Export',NULL)");
         SQLS.append(",('page_global','btn_restoreuserpreferences','','en','Load','')");
@@ -8032,6 +8076,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_invariant','button_col','','fr','Actions','')");
         SQLS.append(",('page_invariant','button_create','','en','Create Invariant','')");
         SQLS.append(",('page_invariant','button_create','','fr','Créer un Invariant','')");
+        SQLS.append(",('page_invariant','button_duplicate','','en','Duplicate Invariant','')");
+        SQLS.append(",('page_invariant','button_duplicate','','fr','Dupliquer un Invariant','')");
         SQLS.append(",('page_invariant','button_edit','','en','Edit Invariant','')");
         SQLS.append(",('page_invariant','button_edit','','fr','Editer l\\'Invariant','')");
         SQLS.append(",('page_invariant','button_remove','','en','Delete Invariant',NULL)");
@@ -8531,6 +8577,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_testcaseexecution','table_executionlist','','fr','Liste des executions',NULL)");
         SQLS.append(",('page_testcaseexecution','title','','en','Test Case Execution','')");
         SQLS.append(",('page_testcaseexecution','title','','fr','Execution des Cas de Test','')");
+        SQLS.append(",('page_testcaseexecutionqueue','tooltip_editentry','','en','Edit Queue entry','')");
+        SQLS.append(",('page_testcaseexecutionqueue','tooltip_editentry','','fr','Editer l\\'exécution en queue','')");
+        SQLS.append(",('page_testcaseexecutionqueue','tooltip_viewentry','','en','View Queue entry','')");
+        SQLS.append(",('page_testcaseexecutionqueue','tooltip_viewentry','','fr','Voir l\\'exécution en queue','')");
+        SQLS.append(",('page_testcaseexecutionqueue','tooltip_dupentry','','en','Duplicate Queue entry','')");
+        SQLS.append(",('page_testcaseexecutionqueue','tooltip_dupentry','','fr','Dupliquer l\\'éxécution en queue','')");
         SQLS.append(",('page_testcaseexecutionqueue','allExecution','','en','Executions in queue','')");
         SQLS.append(",('page_testcaseexecutionqueue','allExecution','','fr','File d\\'exécutions','')");
         SQLS.append(",('page_testcaseexecutionqueue','browserVersion_col','','en','Browser version','')");

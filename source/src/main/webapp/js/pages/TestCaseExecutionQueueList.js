@@ -89,7 +89,7 @@ function displayAndRefresh_followup() {
 
             array.push(
                     [obj[e].contrainId, obj[e].system, obj[e].environment, obj[e].country, obj[e].application
-                                , obj[e].robot, obj[e].nbRunning, obj[e].nbPoolSize, obj[e].nbInQueue, obj[e].hasPermissionsUpdate]
+                                , obj[e].robot, obj[e].nbRunning, obj[e].nbPoolSize, obj[e].nbInQueue, obj[e].hasPermissionsUpdate, obj[e].invariantExist]
                     );
         });
 
@@ -375,22 +375,20 @@ function aoColumnsFunc(tableId) {
             "bSortable": false,
             "bSearchable": false,
             "sWidth": "50px",
-            "title": doc.getDocLabel("testdatalib", "actions"),
+            "title": doc.getDocLabel("page_global", "columnAction"),
             "mRender": function (data, type, oObj) {
-//                var hasPermissions = $("#" + tableId).attr("hasPermissions");
-//                var hasPermissions = true;
                 var hasPermissions = $("#" + tableId).attr("hasPermissions");
                 var editElement = '<button id="editExeQ' + data + '"  onclick="openModalTestCaseExecutionQueue(' + data + ',\'EDIT\');" \n\
                                 class="btn btn-default btn-xs margin-right5" \n\
-                            name="editExecutionQueue" title="' + doc.getDocLabel("page_testdatalib", "tooltip_editentry") + '" type="button">\n\
+                            name="editExecutionQueue" title="' + doc.getDocLabel("page_testcaseexecutionqueue", "tooltip_editentry") + '" type="button">\n\
                             <span class="glyphicon glyphicon-pencil"></span></button>';
                 var viewElement = '<button id="viewExeQ' + data + '"  onclick="openModalTestCaseExecutionQueue(' + data + ',\'EDIT\');" \n\
                                 class="btn btn-default btn-xs margin-right5" \n\
-                            name="viewExecutionQueue" title="' + doc.getDocLabel("page_testdatalib", "tooltip_editentry") + '" type="button">\n\
+                            name="viewExecutionQueue" title="' + doc.getDocLabel("page_testcaseexecutionqueue", "tooltip_viewentry") + '" type="button">\n\
                             <span class="glyphicon glyphicon-eye-open"></span></button>';
                 var duplicateElement = '<button id="dupExeQ' + data + '"  onclick="openModalTestCaseExecutionQueue(' + data + ',\'DUPLICATE\');" \n\
                                 class="btn btn-default btn-xs margin-right5" \n\
-                            name="duplicateExecutionQueue" title="' + doc.getDocLabel("page_testdatalib", "tooltip_editentry") + '" type="button">\n\
+                            name="duplicateExecutionQueue" title="' + doc.getDocLabel("page_testcaseexecutionqueue", "tooltip_dupentry") + '" type="button">\n\
                             <span class="glyphicon glyphicon-duplicate"></span></button>';
 
                 var buttons = "";
@@ -674,19 +672,40 @@ function aoColumnsFunc_followUp() {
         {
             "data": null,
             "sName": "action",
-            "title": doc.getDocLabel("page_global", "action"),
+            "title": doc.getDocLabel("page_global", "columnAction"),
             "mRender": function (data, type, oObj) {
                 var editGlobalParam = '<button id="editExeQ' + data + '"  onclick="openModalParameter(\'cerberus_queueexecution_global_threadpoolsize\',\'' + getSys() + '\');" \n\
                                 class="btn btn-default btn-xs margin-right5" \n\
-                            name="editExecutionQueue" title="' + doc.getDocLabel("page_testdatalib", "tooltip_editentry") + '" type="button">\n\
+                            name="editExecutionQueue" title="' + doc.getDocLabel("page_parameter", "editparameter_field") + '" type="button">\n\
                             <span class="glyphicon glyphicon-pencil"></span></button>';
+                var editRobotParam = '<button id="editExeQ' + data + '"  onclick="openModalParameter(\'cerberus_queueexecution_defaultrobothost_threadpoolsize\',\'' + getSys() + '\');" \n\
+                                class="btn btn-default btn-xs margin-right5" \n\
+                            name="editExecutionQueue" title="' + doc.getDocLabel("page_parameter", "editparameter_field") + '" type="button">\n\
+                            <span class="glyphicon glyphicon-pencil"></span></button>';
+                var editRobotInvariant = '<button id="editExeQ' + data + '"  onclick="openModalInvariant(\'ROBOTHOST\',\'' + data[5] + '\',\'EDIT\');" \n\
+                                class="btn btn-default btn-xs margin-right5" \n\
+                            name="editExecutionQueue" title="' + doc.getDocLabel("page_invariant", "button_edit") + '" type="button">\n\
+                            <span class="glyphicon glyphicon-pencil"></span></button>';
+                var addRobotInvariant = '<button id="editExeQ' + data + '"  onclick="openModalInvariant(\'ROBOTHOST\',\'' + data[5] + '\',\'ADD\');" \n\
+                                class="btn btn-default btn-xs margin-right5" \n\
+                            name="editExecutionQueue" title="' + doc.getDocLabel("page_invariant", "button_create") + '" type="button">\n\
+                            <span class="glyphicon glyphicon-plus"></span></button>';
 
                 var buttons = "";
-                console.info(data[9]);
-                console.info(oObj);
                 if ((data[0] === "constrain1_global") && (data[9])) {
                     // Constrain is global and hasPermitionUpdate is true.
                     buttons += editGlobalParam;
+                }
+                if ((data[0] === "constrain3_robot") && (data[9])) {
+                    // Constrain is global and hasPermitionUpdate is true.
+                    if (data[10]) {
+                        // Invariant exist. We can edit it.
+                        buttons += editRobotInvariant;
+                    } else if (!isEmpty(data[5]) && data[5] !== "null") {
+                        //Invariant does not exist and is not null or empty. We can either create it or change default parameter.
+                        buttons += editRobotParam;
+                        buttons += addRobotInvariant;
+                    }
                 }
                 return '<div class="center btn-group width100">' + buttons + '</div>';
             }

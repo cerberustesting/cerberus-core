@@ -32,6 +32,7 @@
         <script type="text/javascript" src="js/pages/TestCaseExecutionQueueList.js"></script>
         <script type="text/javascript" src="js/transversalobject/TestCaseExecutionQueue.js"></script>
         <script type="text/javascript" src="js/transversalobject/Parameter.js"></script>
+        <script type="text/javascript" src="js/transversalobject/Invariant.js"></script>
     </head>
     <body>
         <%@ include file="include/global/header.html" %>
@@ -41,6 +42,7 @@
             <%@ include file="include/pages/testcaseexecutionqueue/massActionExecutionPending.html"%>
             <%@ include file="include/transversalobject/TestCaseExecutionQueue.html"%>
             <%@ include file="include/transversalobject/Parameter.html"%>
+            <%@ include file="include/transversalobject/Invariant.html"%>
 
             <h1 class="page-title-line" id="title">Executions in Queue</h1>
             <div class="panel panel-default">

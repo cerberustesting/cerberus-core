@@ -23,21 +23,23 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.cerberus.crud.entity.Invariant;
-import org.cerberus.engine.entity.MessageEvent;
-import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.exception.CerberusException;
-import org.cerberus.crud.factory.IFactoryInvariant;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.impl.LogEventService;
+import org.cerberus.engine.entity.MessageEvent;
+import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerUtil;
+import org.cerberus.util.servlet.ServletUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.owasp.html.PolicyFactory;
@@ -48,19 +50,21 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 /**
  * @author bcivel
  */
-public class CreateInvariant2 extends HttpServlet {
+@WebServlet(name = "UpdateInvariant", urlPatterns = {"/UpdateInvariant"})
+public class UpdateInvariant extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, CerberusException, JSONException {
+
         JSONObject jsonResponse = new JSONObject();
         Answer ans = new Answer();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -69,10 +73,15 @@ public class CreateInvariant2 extends HttpServlet {
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
         String charset = request.getCharacterEncoding();
 
-        String id = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("Idname"), "", charset);
-        String value = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("Value"), "", charset);
-        String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("Description"), "", charset);
-        String veryShortDescField = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("VeryShortDesc"), "", charset);
+        // Calling Servlet Transversal Util.
+        ServletUtil.servletStart(request);
+
+        String id = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("idName"), "", charset);
+        String value = request.getParameter("value");
+        String oriId = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("originalIdName"), "", charset);
+        String oriValue = request.getParameter("originalValue");
+        String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("description"), "", charset);
+        String veryShortDescField = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("veryShortDesc"), "", charset);
         String gp1 = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("gp1"), "", charset);
         String gp2 = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("gp2"), "", charset);
         String gp3 = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("gp3"), "", charset);
@@ -86,8 +95,8 @@ public class CreateInvariant2 extends HttpServlet {
         Integer sort = 10;
         boolean sort_error = false;
         try {
-            if (request.getParameter("Sort") != null && !request.getParameter("Sort").equals("")) {
-                sort = Integer.valueOf(policy.sanitize(request.getParameter("Sort")));
+            if (request.getParameter("sort") != null && !request.getParameter("sort").equals("")) {
+                sort = Integer.valueOf(policy.sanitize(request.getParameter("sort")));
             }
         } catch (Exception ex) {
             sort_error = true;
@@ -95,27 +104,31 @@ public class CreateInvariant2 extends HttpServlet {
 
         boolean userHasPermissions = request.isUserInRole("Administrator");
 
+        // Prepare the final answer.
+        MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
+        Answer finalAnswer = new Answer(msg1);
+
         /**
          * Checking all constrains before calling the services.
          */
         if (StringUtil.isNullOrEmpty(id)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Invariant")
-                    .replace("%OPERATION%", "Create")
+                    .replace("%OPERATION%", "Update")
                     .replace("%REASON%", "Invariant name is missing!"));
-            ans.setResultMessage(msg);
+            finalAnswer.setResultMessage(msg);
         } else if (sort_error) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Invariant")
-                    .replace("%OPERATION%", "Create")
+                    .replace("%OPERATION%", "Update")
                     .replace("%REASON%", "Could not manage to convert sort to an integer value!"));
-            ans.setResultMessage(msg);
+            finalAnswer.setResultMessage(msg);
         } else if (!userHasPermissions) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Invariant")
-                    .replace("%OPERATION%", "Create")
+                    .replace("%OPERATION%", "Update")
                     .replace("%REASON%", "You don't have the right to do that"));
-            ans.setResultMessage(msg);
+            finalAnswer.setResultMessage(msg);
         } else {
             /**
              * All data seems cleans so we can call the services.
@@ -123,39 +136,80 @@ public class CreateInvariant2 extends HttpServlet {
 
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             IInvariantService invariantService = appContext.getBean(IInvariantService.class);
-            IFactoryInvariant factoryInvariant = appContext.getBean(IFactoryInvariant.class);
-            Invariant invariantData = factoryInvariant.create(id, value, sort, description, veryShortDescField, gp1, gp2, gp3, gp4, gp5, gp6, gp7, gp8, gp9);
 
-            ans = invariantService.create(invariantData);
-
-            if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            AnswerItem resp = invariantService.readByKey(oriId, oriValue);
+            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem() != null)) {
                 /**
-                 * Object updated. Adding Log entry.
+                 * Object could not be found. We stop here and report the error.
                  */
-                ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                logEventService.createForPrivateCalls("/CreateInvariant2", "CREATE", "Create Invariant : ['" + id + "']", request);
+                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) resp);
+
+            } else {
+                Invariant invariantData = (Invariant) resp.getItem();
+                if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem() != null)) {
+                    /**
+                     * Object could not be found. We stop here and report the
+                     * error.
+                     */
+                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) resp);
+
+                } else {
+                    if (invariantService.hasPermissionsUpdate(invariantData, request)) {
+                        invariantData.setIdName(id);
+                        invariantData.setValue(value);
+                        invariantData.setSort(sort);
+                        invariantData.setDescription(description);
+                        invariantData.setVeryShortDesc(veryShortDescField);
+                        invariantData.setGp1(gp1);
+                        invariantData.setGp2(gp2);
+                        invariantData.setGp3(gp3);
+                        invariantData.setGp4(gp4);
+                        invariantData.setGp5(gp5);
+                        invariantData.setGp6(gp6);
+                        invariantData.setGp7(gp7);
+                        invariantData.setGp8(gp8);
+                        invariantData.setGp9(gp9);
+
+                        ans = invariantService.update(oriId, oriValue, invariantData);
+                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+
+                        if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                            /**
+                             * Object updated. Adding Log entry.
+                             */
+                            ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                            logEventService.createForPrivateCalls("/UpdateInvariant2", "UPDATE", "Update Invariant : ['" + id + "']", request);
+                        }
+                    } else {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+                        msg.setDescription(msg.getDescription().replace("%ITEM%", "Invariant")
+                                .replace("%OPERATION%", "Update")
+                                .replace("%REASON%", "The Invariant is not Public!"));
+                        ans.setResultMessage(msg);
+                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                    }
+                }
             }
         }
 
         /**
          * Formating and returning the json result.
          */
-        jsonResponse.put("messageType", ans.getResultMessage().getMessage().getCodeString());
-        jsonResponse.put("message", ans.getResultMessage().getDescription());
+        jsonResponse.put("messageType", finalAnswer.getResultMessage().getMessage().getCodeString());
+        jsonResponse.put("message", finalAnswer.getResultMessage().getDescription());
 
         response.getWriter().print(jsonResponse);
         response.getWriter().flush();
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-
     /**
      * Handles the HTTP <code>GET</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -163,19 +217,19 @@ public class CreateInvariant2 extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(CreateInvariant2.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(UpdateInvariant.class.getName()).log(Level.SEVERE, null, ex);
         } catch (JSONException ex) {
-            Logger.getLogger(CreateInvariant2.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(UpdateInvariant.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     /**
      * Handles the HTTP <code>POST</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -183,9 +237,9 @@ public class CreateInvariant2 extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(CreateInvariant2.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(UpdateInvariant.class.getName()).log(Level.SEVERE, null, ex);
         } catch (JSONException ex) {
-            Logger.getLogger(CreateInvariant2.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(UpdateInvariant.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

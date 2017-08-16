@@ -343,9 +343,11 @@ function feedExecutionQueueModalData(exeQ, modalId, mode, hasPermissionsUpdate) 
     } else {
         //If we cannot edit, we just put the value of the exe queue in the combo. No need to call the test and testcase list.
         var testList = $("#test");
+        testList.empty();
         testList.append($('<option></option>').text(exeQ.test).val(exeQ.test));
 
         var testCaseList = $("#testCase");
+        testCaseList.empty();
         testCaseList.append($('<option></option>').text(exeQ.testCase).val(exeQ.testCase));
     }
 

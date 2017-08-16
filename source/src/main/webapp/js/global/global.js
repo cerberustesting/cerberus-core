@@ -105,7 +105,7 @@ function displayInvariantList(selectName, idName, forceReload, defaultValue, add
                 if (defaultValue !== undefined) {
                     $("[name='" + selectName + "']").val(defaultValue);
                 }
-            }
+                    }
         });
     } else {
         for (var index = 0; index < list.length; index++) {
@@ -117,8 +117,8 @@ function displayInvariantList(selectName, idName, forceReload, defaultValue, add
         if (defaultValue !== undefined) {
             $("[name='" + selectName + "']").val(defaultValue);
         }
-    }
-}
+            }
+        }
 
 /**
  * Method that return a list of value retrieved from the invariant list

@@ -402,7 +402,7 @@ public class SeleniumServerService implements ISeleniumServerService {
                 profile.setPreference("app.update.enabled", false);
                 profile.setEnableNativeEvents(true);
                 try {
-                    Invariant invariant = this.invariantService.findInvariantByIdValue("COUNTRY", tCExecution.getCountry());
+                    Invariant invariant = invariantService.convert(invariantService.readByKey("COUNTRY", tCExecution.getCountry()));
                     if (invariant.getGp2() == null) {
                         LOG.warn("Country selected (" + tCExecution.getCountry() + ") has no value of GP2 in Invariant table, default language set to English (en)");
                         profile.setPreference("intl.accept_languages", "en");

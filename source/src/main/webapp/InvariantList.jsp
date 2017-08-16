@@ -26,15 +26,15 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <%@ include file="include/global/dependenciesInclusions.html" %>
     <title>Invariant</title>
-    <script type="text/javascript" src="js/pages/Invariant.js"></script>
+    <script type="text/javascript" src="js/pages/InvariantList.js"></script>
+    <script type="text/javascript" src="js/transversalobject/Invariant.js"></script>
 </head>
 <body>
 <%@ include file="include/global/header.html" %>
 <div class="container-fluid center" id="page-layout">
     <%@ include file="include/global/messagesArea.html"%>
     <%@ include file="include/utils/modal-confirmation.html"%>
-    <%@ include file="include/pages/invariant/editInvariant.html"%>
-    <%@ include file="include/pages/invariant/addInvariant.html"%>
+    <%@ include file="include/transversalobject/Invariant.html"%>
 
     <h1 class="page-title-line" id="title">Invariants</h1>
 
