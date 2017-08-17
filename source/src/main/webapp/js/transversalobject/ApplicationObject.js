@@ -89,7 +89,12 @@ function addApplicationObjectModalSaveHandler(page) {
         formData.append(sa[i].name, sa[i].value);
     }
     
-    formData.append("file",file.prop("files")[0]);
+    if( imagePasteFromClipboard !== undefined ){//imagePasteFromClipboard is undefined, the picture to upload should be taken inside the input
+        formData.append("file",imagePasteFromClipboard);
+    }else{
+        var file = $("#addApplicationObjectModal input[type=file]");
+        formData.append("file",file.prop("files")[0]);
+    }
     showLoaderInModal('#addApplicationObjectModal');
     
     var jqxhr = $.ajax({
@@ -414,7 +419,7 @@ function handlePictureSend(items,idModal){
             imagePasteFromClipboard =blob;
             var URLObj = window.URL || window.webkitURL;
             var source = URLObj.createObjectURL(blob);
-            var nameToDisplay =source.split("/")[source.split("/").length-1];
+            var nameToDisplay =blob.name;
             updateDropzone(nameToDisplay, idModal);
             return true;
         }else{
