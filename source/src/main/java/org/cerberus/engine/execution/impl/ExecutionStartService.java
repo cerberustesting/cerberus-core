@@ -378,7 +378,7 @@ public class ExecutionStartService implements IExecutionStartService {
         /**
          * For GUI application, check if Browser is supported.
          */
-        if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
+        if (!tCExecution.getManualExecution().equals("Y") && tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
             try {
                 myInvariant = invariantService.convert(invariantService.readByKey("BROWSER", tCExecution.getBrowser()));
             } catch (CerberusException ex) {
