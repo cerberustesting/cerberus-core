@@ -143,6 +143,8 @@ function addApplicationObjectModalCloseHandler() {
     clearResponseMessage($('#addApplicationObjectModal'));
     //Reset label button text
     updateDropzone("Drag and drop Files ",'#addApplicationObjectModal');
+    //reset imagePasteFromClipboard
+    imagePasteFromClipboard = undefined;
 }
 
 /*
@@ -237,6 +239,8 @@ function editApplicationObjectModalCloseHandler() {
     clearResponseMessage($('#editApplicationObjectModal'));
     //Reset label button text
     updateDropzone("Drag and drop Files ",'#editApplicationObjectModal');
+    //reset imagePasteFromClipboard
+    imagePasteFromClipboard = undefined;
 }
 
 
