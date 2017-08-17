@@ -148,7 +148,9 @@
     <head>
         <title><%= Title%></title>
         <link rel="stylesheet" href="css/crb_style_doc.css">
-        <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />        
+        <link rel="icon" type="image/png" href="images/Logo_cerberus_menu_fav.png"><!-- Major Browsers -->
+        <!--[if IE]><link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico"/><![endif]--><!-- Internet Explorer-->
+                
         <link type="text/css" rel="stylesheet" href="dependencies/zz_OldDependencies/css/bootstrap.css">
     </head>
 
