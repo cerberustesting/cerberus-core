@@ -69,8 +69,8 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
     }
 
     @Override
-    public AnswerList readByVarious1(String tag, List<String> stateList) throws CerberusException {
-        return testCaseExecutionInQueueDAO.readByVarious1(tag, stateList);
+    public AnswerList readByVarious1(String tag, List<String> stateList, boolean withDependencies) throws CerberusException {
+        return testCaseExecutionInQueueDAO.readByVarious1(tag, stateList, withDependencies);
     }
 
     @Override
@@ -249,7 +249,11 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
         String myEnvData = testCaseExecutionInQueue.getManualEnvData();
         String seleniumIP = testCaseExecutionInQueue.getRobotIP();
         String seleniumPort = testCaseExecutionInQueue.getRobotPort();
-        TestCaseExecution result = factoryTestCaseExecution.create(0, test, testCase, null, null, null, environment, country, browser, version, platform,
+        String description = "";
+        if ((testCaseExecutionInQueue.getTestCaseObj() != null) && (testCaseExecutionInQueue.getTestCaseObj().getDescription() != null)) {
+            description = testCaseExecutionInQueue.getTestCaseObj().getDescription();
+        }
+        TestCaseExecution result = factoryTestCaseExecution.create(0, test, testCase, description, null, null, environment, country, browser, version, platform,
                 browser, start, end, controlStatus, controlMessage, application, applicationObj, ip, "", port, tag, verbose, screenshot, pageSource,
                 seleniumLog, synchroneous, timeout, outputFormat, "", "", tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL,
                 myEnvData, seleniumIP, seleniumPort, null, null, null, retry, "", null, "", "", "", "", "", manualExecution, "");

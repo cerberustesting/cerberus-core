@@ -74,11 +74,12 @@ public interface ITestCaseExecutionQueueDAO {
      *
      * @param tag Tag used to filter execution.
      * @param stateList List of State to filter.
+     * @param withDependencies
      * @return AnswerList that contains a list of TestCaseExecutionInQueue
      * object enriched with TestCase and Application objects
      * @throws CerberusException
      */
-    public AnswerList readByVarious1(String tag, List<String> stateList) throws CerberusException;
+    public AnswerList readByVarious1(String tag, List<String> stateList, boolean withDependencies) throws CerberusException;
 
     /**
      *

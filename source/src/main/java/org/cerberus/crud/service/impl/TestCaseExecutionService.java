@@ -321,7 +321,7 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
         stateList.add(TestCaseExecutionQueue.State.WAITING.name());
         stateList.add(TestCaseExecutionQueue.State.STARTING.name());
         stateList.add(TestCaseExecutionQueue.State.ERROR.name());
-        testCaseExecutionInQueue = testCaseExecutionInQueueService.readByVarious1(tag, stateList);
+        testCaseExecutionInQueue = testCaseExecutionInQueueService.readByVarious1(tag, stateList, true);
         List<TestCaseExecutionQueue> testCaseExecutionsInQueue = testCaseExecutionInQueue.getDataList();
         /**
          * Feed hash map with execution from the two list (to get only one by
