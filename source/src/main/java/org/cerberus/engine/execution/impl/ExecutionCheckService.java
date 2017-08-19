@@ -79,7 +79,6 @@ public class ExecutionCheckService implements IExecutionCheckService {
          * Automatic application connectivity parameter (from database)
          */
         if (this.checkEnvironmentActive(tCExecution.getCountryEnvParam())
-                && this.checkTestCaseNotManual(tCExecution)
                 && this.checkRangeBuildRevision(tCExecution)
                 && this.checkTargetBuildRevision(tCExecution)
                 && this.checkActiveEnvironmentGroup(tCExecution)

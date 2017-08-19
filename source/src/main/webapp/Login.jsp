@@ -102,7 +102,7 @@
 		                       	 	<span class="input-group-addon " id="user-icon">	
 		                       	 		<span class="glyphicon glyphicon-user"></span>
 		                       	 	</span>
-		                        	<input name="j_username" class="form-control" title="Username" placeholder="Username" value="" size="30" maxlength="10" aria-describedby="user-icon" autofocus>
+		                        	<input name="j_username" class="form-control" title="Username" placeholder="Username" value="" size="50" maxlength="50" aria-describedby="user-icon" autofocus>
 		                        </div>
 	                    	</div>
 	                    	<div class="form-group">

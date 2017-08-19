@@ -48,6 +48,7 @@ function initPage() {
 function displayPageLabel(doc) {
     $("#pageTitle").html(doc.getDocLabel("test", "Test"));
     $("#title").html(doc.getDocLabel("test", "Test"));
+    $("#testListLabel").html(doc.getDocLabel("page_test", "table_testlist"));
     $("[name='addEntryField']").html(doc.getDocLabel("page_test", "btn_create"));
     $("[name='confirmationField']").html(doc.getDocLabel("page_test", "button_delete"));
     $("[name='editEntryField']").html(doc.getDocLabel("page_test", "btn_edit"));
