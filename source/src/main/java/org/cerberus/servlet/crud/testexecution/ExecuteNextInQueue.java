@@ -33,7 +33,6 @@ import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.threadpool.IExecutionThreadPoolService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.servlet.crud.testexecution.ReadTestCaseExecutionQueue;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerUtil;
@@ -117,6 +116,8 @@ public class ExecuteNextInQueue extends HttpServlet {
 
             String jobActive = parameterService.getParameterStringByKey("cerberus_queueexecution_enable", "", "Y");
             jsonResponse.put("jobActive", jobActive);
+
+            jsonResponse.put("jobActiveHasPermissionsUpdate", parameterService.hasPermissionsUpdate("cerberus_queueexecution_enable", request));
 
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
             jsonResponse.put("message", answer.getResultMessage().getDescription());

@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
+import org.cerberus.crud.entity.Application;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.crud.entity.TestCase;
@@ -131,7 +132,7 @@ public class GetExecutionQueue extends HttpServlet {
             ICountryEnvParamService cepService = appContext.getBean(ICountryEnvParamService.class);
             IParameterService parameterService = appContext.getBean(IParameterService.class);
             testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
-            List<ExecutionValidator> inQueue = new ArrayList<ExecutionValidator>();
+            List<ExecutionValidator> inQueue = new ArrayList<>();
 
             JSONArray testCaseList = new JSONArray(request.getParameter("testcase"));
             JSONArray environmentList = new JSONArray(request.getParameter("environment"));
@@ -140,9 +141,9 @@ public class GetExecutionQueue extends HttpServlet {
             /**
              * Creating all the list from the JSON to call the services
              */
-            List<TestCase> TCList = new ArrayList<TestCase>();
-            List<String> envList = new ArrayList<String>();
-            List<String> countries = new ArrayList<String>();
+            List<TestCase> TCList = new ArrayList<>();
+            List<String> envList = new ArrayList<>();
+            List<String> countries = new ArrayList<>();
 
             for (int index = 0; index < testCaseList.length(); index++) {
                 JSONObject testCaseJson = testCaseList.getJSONObject(index);
@@ -217,7 +218,7 @@ public class GetExecutionQueue extends HttpServlet {
                 }
 
                 try {
-                    execution.setEnvironmentDataObj(invariantService.findInvariantByIdValue("ENVIRONMENT", execution.getEnvironmentData()));
+                    execution.setEnvironmentDataObj(invariantService.convert(invariantService.readByKey("ENVIRONMENT", execution.getEnvironmentData())));
                 } catch (CerberusException ex) {
                     MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_ENVIRONMENT_DOESNOTEXIST);
                     mes.setDescription(mes.getDescription().replace("%ENV%", execution.getEnvironmentData()));
@@ -227,7 +228,14 @@ public class GetExecutionQueue extends HttpServlet {
                 }
 
                 String browser = ParameterParserUtil.parseStringParam(request.getParameter(PARAMETER_BROWSER), DEFAULT_VALUE_BROWSER);
-                execution.setBrowser(browser);
+                if (!(StringUtil.isNullOrEmpty(browser))) {
+                    // if application is not GUI, we force browser to empty value.
+                    if (execution.getApplicationObj() != null && execution.getApplicationObj().getType() != null && !(execution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI))) {
+                        execution.setBrowser("");
+                    }
+                } else {
+                    execution.setBrowser(browser);
+                }
                 String manualExecution = ParameterParserUtil.parseStringParam(request.getParameter(PARAMETER_MANUAL_EXECUTION), DEFAULT_VALUE_MANUAL_EXECUTION);
                 execution.setManualExecution(manualExecution);
 
@@ -257,6 +265,7 @@ public class GetExecutionQueue extends HttpServlet {
                 exec.put("testcase", tce.getExecution().getTestCase());
                 exec.put("env", tce.getExecution().getEnvironment());
                 exec.put("country", tce.getExecution().getCountry());
+                exec.put("appType", tce.getExecution().getApplicationObj().getType());
                 exec.put("isValid", tce.isValid());
                 exec.put("message", tce.getMessage());
                 dataArray.put(exec);
@@ -319,7 +328,7 @@ public class GetExecutionQueue extends HttpServlet {
                             robot,
                             robotIP,
                             robotPort,
-                            null,
+                            "",
                             browserVersion,
                             platform,
                             screenSize,
@@ -341,7 +350,8 @@ public class GetExecutionQueue extends HttpServlet {
                             null, null, null);
 
                     // Then fill it with either no browser
-                    if (browsers.length() == 0) {
+                    if ((browsers.length() == 0)
+                            || ((toAdd.getString("appType") != null) && (!toAdd.getString("appType").equalsIgnoreCase(Application.TYPE_GUI)))) {
                         inQueueService.convert(inQueueService.create(tceiq));
                         addedToQueue++;
                     } // Or with required browsers

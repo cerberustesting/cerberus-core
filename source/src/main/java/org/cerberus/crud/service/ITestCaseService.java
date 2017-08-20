@@ -184,7 +184,7 @@ public interface ITestCaseService {
      * @param testCase
      * @return
      */
-    public Answer update(TestCase testCase);
+    public Answer update(String keyTest, String keyTestCase, TestCase testCase);
 
     /**
      *

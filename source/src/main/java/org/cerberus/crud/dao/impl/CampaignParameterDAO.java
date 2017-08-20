@@ -25,19 +25,18 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.ICampaignParameterDAO;
 import org.cerberus.crud.entity.Campaign;
-import org.cerberus.database.DatabaseSpring;
 import org.cerberus.crud.entity.CampaignParameter;
+import org.cerberus.crud.factory.IFactoryCampaignParameter;
+import org.cerberus.database.DatabaseSpring;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.MessageGeneral;
+import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.crud.factory.IFactoryCampaignParameter;
-import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.log.MyLogger;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
@@ -80,11 +79,6 @@ public class CampaignParameterDAO implements ICampaignParameterDAO {
          * Create a new {@link CampaignParameter}
          */
         String CREATE = "INSERT INTO `campaignparameter` (`campaign`,`Parameter`,`Value`) VALUES (?, ?, ?)";
-
-        /**
-         * Update an existing {@link CampaignParameter}
-         */
-        String UPDATE = "UPDATE `campaignparameter` SET `value` = ? WHERE `campaign` = ? AND `parameter` = ?";
 
         /**
          * Remove an existing {@link CampaignParameter}
@@ -666,9 +660,11 @@ public class CampaignParameterDAO implements ICampaignParameterDAO {
     public Answer update(CampaignParameter object) {
         Answer ans = new Answer();
         MessageEvent msg = null;
+        String query = "UPDATE `campaignparameter` SET `value` = ? WHERE `campaign` = ? AND `parameter` = ?";
+
 
         try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(Query.UPDATE)) {
+             PreparedStatement preStat = connection.prepareStatement(query)) {
             // Prepare and execute query
             preStat.setString(1, object.getValue());
             preStat.setString(2, object.getCampaign());

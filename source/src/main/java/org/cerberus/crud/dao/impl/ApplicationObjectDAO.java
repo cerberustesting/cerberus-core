@@ -19,18 +19,25 @@
  */
 package org.cerberus.crud.dao.impl;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import javax.imageio.ImageIO;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.log4j.Logger;
-import org.cerberus.crud.dao.IApplicationDAO;
 import org.cerberus.crud.dao.IApplicationObjectDAO;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.ApplicationObject;
 import org.cerberus.crud.entity.Parameter;
-import org.cerberus.crud.factory.IFactoryApplication;
 import org.cerberus.crud.factory.IFactoryApplicationObject;
-import org.cerberus.crud.factory.impl.FactoryApplication;
 import org.cerberus.crud.service.IParameterService;
-import org.cerberus.crud.service.impl.ParameterService;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
@@ -42,19 +49,6 @@ import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Implements methods defined on IApplicationDAO
@@ -97,7 +91,8 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
         String READ_BY_KEY1 = "SELECT * FROM `applicationobject` WHERE `Application` = ? AND `Object` = ?";
 
         /**
-         * Get list of {@link ApplicationObject} associated with the given {@link Application}
+         * Get list of {@link ApplicationObject} associated with the given
+         * {@link Application}
          */
         String READ_BY_APP = "SELECT * FROM `applicationobject` WHERE `application` = ?";
 
@@ -105,11 +100,6 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
          * Create a new {@link ApplicationObject}
          */
         String CREATE = "INSERT INTO `applicationobject` (`application`,`object`,`value`,`screenshotfilename`,`usrcreated`,`datecreated`,`usrmodif`,`datemodif`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-
-        /**
-         * Update an existing {@link ApplicationObject}
-         */
-        String UPDATE = "UPDATE `applicationobject` SET `value` = ?, `screenshotfilename` = ?, `usrcreated` = ?, `datecreated` = ?, `usrmodif` = ?, `datemodif` = ? WHERE `application` = ? AND `object` = ?";
 
         /**
          * Remove an existing {@link ApplicationObject}
@@ -123,12 +113,12 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
     }
 
     @Override
-    public AnswerItem readByKey(int id) {
+    public AnswerItem readByKeyTech(int id) {
         AnswerItem ans = new AnswerItem();
         MessageEvent msg = null;
 
         try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(Query.READ_BY_KEY)) {
+                PreparedStatement preStat = connection.prepareStatement(Query.READ_BY_KEY)) {
             // Prepare and execute query
             preStat.setInt(1, id);
             ResultSet rs = preStat.executeQuery();
@@ -154,13 +144,13 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
         MessageEvent msg = null;
 
         try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(Query.READ_BY_KEY1)) {
+                PreparedStatement preStat = connection.prepareStatement(Query.READ_BY_KEY1)) {
             ApplicationObject ao = null;
             // Prepare and execute query
             preStat.setString(1, application);
             preStat.setString(2, object);
             ResultSet rs = preStat.executeQuery();
-            while(rs.next()) {
+            while (rs.next()) {
                 ao = loadFromResultSet(rs);
             }
             ans.setItem(ao);
@@ -184,12 +174,12 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
         MessageEvent msg = null;
 
         try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(Query.READ_BY_APP)) {
+                PreparedStatement preStat = connection.prepareStatement(Query.READ_BY_APP)) {
             // Prepare and execute query
             preStat.setString(1, Application);
             ResultSet rs = preStat.executeQuery();
             List<ApplicationObject> al = new ArrayList<ApplicationObject>();
-            while(rs.next()) {
+            while (rs.next()) {
                 al.add(loadFromResultSet(rs));
             }
             ans.setDataList(al);
@@ -212,14 +202,14 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
         BufferedImage image = null;
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
                 "cerberus_applicationobject_path Parameter not found");
-        AnswerItem a = parameterService.readByKey("","cerberus_applicationobject_path");
-        if(a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
+        AnswerItem a = parameterService.readByKey("", "cerberus_applicationobject_path");
+        if (a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             Parameter p = (Parameter) a.getItem();
             String uploadPath = p.getValue();
-            a = readByKey(application,object);
-            if(a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                ApplicationObject ao = (ApplicationObject)a.getItem();
-                if(ao != null) {
+            a = readByKey(application, object);
+            if (a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                ApplicationObject ao = (ApplicationObject) a.getItem();
+                if (ao != null) {
                     File picture = new File(uploadPath + "/" + ao.getID() + "/" + ao.getScreenShotFileName());
                     try {
                         image = ImageIO.read(picture);
@@ -227,17 +217,17 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
                         LOG.warn("Impossible to read the image");
                     }
                 }
-            }else{
+            } else {
                 LOG.warn("Application Object not found");
             }
-        }else{
+        } else {
             LOG.warn("cerberus_applicationobject_path Parameter not found");
         }
         a.setResultMessage(msg);
         return image;
     }
 
-    private static void deleteFolder(File folder, boolean deleteit){
+    private static void deleteFolder(File folder, boolean deleteit) {
         File[] files = folder.listFiles();
         if (files != null) { //some JVMs return null for empty dirs
             for (File f : files) {
@@ -248,7 +238,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
                 }
             }
         }
-        if(deleteit) {
+        if (deleteit) {
             folder.delete();
         }
     }
@@ -257,23 +247,22 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
     public Answer uploadFile(int id, FileItem file) {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
                 "cerberus_applicationobject_path Parameter not found");
-        AnswerItem a = parameterService.readByKey("","cerberus_applicationobject_path");
-        if(a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
-            Parameter p = (Parameter)a.getItem();
+        AnswerItem a = parameterService.readByKey("", "cerberus_applicationobject_path");
+        if (a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            Parameter p = (Parameter) a.getItem();
             String uploadPath = p.getValue();
             File appDir = new File(uploadPath + "/" + id);
-            if(!appDir.exists()){
-                try{
+            if (!appDir.exists()) {
+                try {
                     appDir.mkdirs();
-                }
-                catch(SecurityException se){
+                } catch (SecurityException se) {
                     LOG.warn("Unable to create application dir: " + se.getMessage());
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
                             se.toString());
                     a.setResultMessage(msg);
                 }
             }
-            if(a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            if (a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                 deleteFolder(appDir, false);
                 File picture = new File(uploadPath + "/" + id + "/" + file.getName());
                 try {
@@ -287,7 +276,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
                             e.toString());
                 }
             }
-        }else{
+        } else {
             LOG.warn("cerberus_applicationobject_path Parameter not found");
         }
         a.setResultMessage(msg);
@@ -588,7 +577,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
         MessageEvent msg = null;
 
         try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(Query.CREATE)) {
+                PreparedStatement preStat = connection.prepareStatement(Query.CREATE)) {
             // Prepare and execute query
             preStat.setString(1, object.getApplication());
             preStat.setString(2, object.getObject());
@@ -620,7 +609,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
         MessageEvent msg = null;
 
         try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(Query.DELETE)) {
+                PreparedStatement preStat = connection.prepareStatement(Query.DELETE)) {
             // Prepare and execute query
             preStat.setInt(1, object.getID());
             preStat.executeUpdate();
@@ -640,21 +629,26 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
     }
 
     @Override
-    public Answer update(ApplicationObject object) {
+    public Answer update(String application, String appObject, ApplicationObject object) {
         Answer ans = new Answer();
         MessageEvent msg = null;
+        String query = "UPDATE `applicationobject` SET `application` = ?, `object` = ?, `value` = ?, `screenshotfilename` = ?, `usrcreated` = ?, `datecreated` = ?, `usrmodif` = ?, `datemodif` = ? "
+                + " WHERE `application` = ? AND `object` = ?";
 
         try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(Query.UPDATE)) {
+                PreparedStatement preStat = connection.prepareStatement(query)) {
             // Prepare and execute query
-            preStat.setString(1, object.getValue());
-            preStat.setString(2, object.getScreenShotFileName());
-            preStat.setString(3, object.getUsrCreated());
-            preStat.setString(4, object.getDateCreated());
-            preStat.setString(5, object.getUsrModif());
-            preStat.setString(6, object.getDateModif());
-            preStat.setString(7, object.getApplication());
-            preStat.setString(8, object.getObject());
+            int i = 1;
+            preStat.setString(i++, object.getApplication());
+            preStat.setString(i++, object.getObject());
+            preStat.setString(i++, object.getValue());
+            preStat.setString(i++, object.getScreenShotFileName());
+            preStat.setString(i++, object.getUsrCreated());
+            preStat.setString(i++, object.getDateCreated());
+            preStat.setString(i++, object.getUsrModif());
+            preStat.setString(i++, object.getDateModif());
+            preStat.setString(i++, application);
+            preStat.setString(i++, appObject);
             preStat.executeUpdate();
 
             // Set the final message
@@ -715,7 +709,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
             LOG.debug("SQL : " + query.toString());
         }
         try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+                PreparedStatement preStat = connection.prepareStatement(query.toString())) {
 
             int i = 1;
             if (!StringUtil.isNullOrEmpty(searchTerm)) {
@@ -821,7 +815,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
             LOG.debug("SQL : " + query.toString());
         }
         try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+                PreparedStatement preStat = connection.prepareStatement(query.toString())) {
 
             int i = 1;
             if (!StringUtil.isNullOrEmpty(application)) {

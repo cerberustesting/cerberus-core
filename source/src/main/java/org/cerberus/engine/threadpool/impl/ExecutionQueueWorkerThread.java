@@ -28,8 +28,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.HttpResponseException;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.fluent.Request;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.cerberus.crud.entity.TestCaseExecutionQueue;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.enums.MessageEventEnum;
@@ -205,6 +210,24 @@ public class ExecutionQueueWorkerThread implements Runnable {
 
             LOG.debug("Trigger Execution to URL : " + url.toString());
             LOG.debug("Trigger Execution with TimeOut : " + toExecuteTimeout);
+
+            CloseableHttpClient httpclient = HttpClients.createDefault();
+            RequestConfig requestConfig
+                    = RequestConfig
+                            .custom()
+                            .setConnectTimeout(toExecuteTimeout)
+                            .setConnectionRequestTimeout(toExecuteTimeout)
+                            .setSocketTimeout(toExecuteTimeout)
+                            .build();
+
+            HttpGet httpGet = new HttpGet(url.toString());
+            httpGet.setConfig(requestConfig);
+            //responseHttp = executeHTTPCall(httpclient, httpGet);
+
+            // Provide custom retry handler is necessary
+            ///method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER,
+             //       new DefaultHttpMethodRetryHandler(3, false));
+
             return Request
                     .Get(url.toString())
                     .connectTimeout(toExecuteTimeout)

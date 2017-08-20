@@ -35,6 +35,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.TestCaseExecutionQueue;
+import org.cerberus.crud.service.IInvariantService;
+import org.cerberus.crud.service.IParameterService;
 import org.cerberus.engine.threadpool.entity.TestCaseExecutionQueueToTreat;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.engine.entity.MessageEvent;
@@ -62,6 +64,8 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
 
     private ITestCaseExecutionQueueService executionService;
     private IExecutionThreadPoolService executionThreadPoolService;
+    private IParameterService parameterService;
+    private IInvariantService invariantService;
 
     private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(ReadTestCaseExecutionQueue.class);
 
@@ -124,7 +128,7 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
                 answer = findExecutionQueueByKeyTech(queueid, appContext, userHasPermissions);
                 jsonResponse = (JSONObject) answer.getItem();
             } else if (request.getParameter("flag") != null && request.getParameter("flag").equals("queueStatus")) {
-                answer = findExecutionInQueueStatus(appContext);
+                answer = findExecutionInQueueStatus(appContext, request);
                 jsonResponse = (JSONObject) answer.getItem();
             } else {
                 answer = findExecutionInQueueList(appContext, true, request);
@@ -247,10 +251,12 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
         return item;
     }
 
-    private AnswerItem findExecutionInQueueStatus(ApplicationContext appContext) throws JSONException {
+    private AnswerItem findExecutionInQueueStatus(ApplicationContext appContext, HttpServletRequest request) throws JSONException {
         AnswerItem item = new AnswerItem();
         JSONObject object = new JSONObject();
         executionThreadPoolService = appContext.getBean(IExecutionThreadPoolService.class);
+        parameterService = appContext.getBean(IParameterService.class);
+        invariantService = appContext.getBean(IInvariantService.class);
         JSONArray jsonArray = new JSONArray();
 
         try {
@@ -262,8 +268,6 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
                 Integer name = entry.getValue();
                 if (!("".equals(column))) {
                     String[] data = column.split("\\/\\/");
-                    LOG.debug(data.length);
-                    LOG.debug(data[0]);
                     JSONObject jsonObject = new JSONObject();
                     switch (data[0]) {
                         case TestCaseExecutionQueueToTreat.CONSTRAIN1_GLOBAL:
@@ -274,8 +278,9 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
                             jsonObject.put("application", "");
                             jsonObject.put("robot", "");
                             jsonObject.put("nbInQueue", ParameterParserUtil.parseIntegerParam(mapInQueue.get(column), 0));
-                            jsonObject.put("nbPoolSize", ParameterParserUtil.parseIntegerParam(mapPoolSize.get(column),0));
-                            jsonObject.put("nbRunning", ParameterParserUtil.parseIntegerParam(name,0));
+                            jsonObject.put("nbPoolSize", ParameterParserUtil.parseIntegerParam(mapPoolSize.get(column), 0));
+                            jsonObject.put("nbRunning", ParameterParserUtil.parseIntegerParam(name, 0));
+                            jsonObject.put("hasPermissionsUpdate", parameterService.hasPermissionsUpdate("cerberus_queueexecution_global_threadpoolsize", request));
                             break;
                         case TestCaseExecutionQueueToTreat.CONSTRAIN2_APPLICATION:
                             jsonObject.put("contrainId", data[0]);
@@ -284,9 +289,10 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
                             jsonObject.put("country", data[3]);
                             jsonObject.put("application", data[4]);
                             jsonObject.put("robot", "");
-                            jsonObject.put("nbInQueue", ParameterParserUtil.parseIntegerParam(mapInQueue.get(column),0));
-                            jsonObject.put("nbPoolSize", ParameterParserUtil.parseIntegerParam(mapPoolSize.get(column),0));
-                            jsonObject.put("nbRunning", ParameterParserUtil.parseIntegerParam(name,0));
+                            jsonObject.put("nbInQueue", ParameterParserUtil.parseIntegerParam(mapInQueue.get(column), 0));
+                            jsonObject.put("nbPoolSize", ParameterParserUtil.parseIntegerParam(mapPoolSize.get(column), 0));
+                            jsonObject.put("nbRunning", ParameterParserUtil.parseIntegerParam(name, 0));
+                            jsonObject.put("hasPermissionsUpdate", parameterService.hasPermissionsUpdate("cerberus_queueexecution_global_threadpoolsize", request));
                             break;
                         case TestCaseExecutionQueueToTreat.CONSTRAIN3_ROBOT:
                             jsonObject.put("contrainId", data[0]);
@@ -296,12 +302,19 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
                             jsonObject.put("application", "");
                             if (data.length > 1) {
                                 jsonObject.put("robot", data[1]);
+                                if ((data[1] == null) || (data[1].equalsIgnoreCase("null"))) {
+                                    jsonObject.put("invariantExist", false);
+                                } else {
+                                    jsonObject.put("invariantExist", invariantService.isInvariantExist("ROBOTHOST", data[1]));
+                                }
                             } else {
                                 jsonObject.put("robot", "");
+                                jsonObject.put("invariantExist", false);
                             }
-                            jsonObject.put("nbInQueue", ParameterParserUtil.parseIntegerParam(mapInQueue.get(column),0));
-                            jsonObject.put("nbPoolSize", ParameterParserUtil.parseIntegerParam(mapPoolSize.get(column),0));
-                            jsonObject.put("nbRunning", ParameterParserUtil.parseIntegerParam(name,0));
+                            jsonObject.put("nbInQueue", ParameterParserUtil.parseIntegerParam(mapInQueue.get(column), 0));
+                            jsonObject.put("nbPoolSize", ParameterParserUtil.parseIntegerParam(mapPoolSize.get(column), 0));
+                            jsonObject.put("nbRunning", ParameterParserUtil.parseIntegerParam(name, 0));
+                            jsonObject.put("hasPermissionsUpdate", parameterService.hasPermissionsUpdate("cerberus_queueexecution_global_threadpoolsize", request));
                             break;
                     }
                     jsonArray.put(jsonObject);
@@ -309,7 +322,6 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
             }
             object.put("contentTable", jsonArray);
 
-//            jsonArray.put(jsonObject);
         } catch (CerberusException ex) {
             Logger.getLogger(ReadTestCaseExecutionQueue.class.getName()).log(Level.SEVERE, null, ex);
         }

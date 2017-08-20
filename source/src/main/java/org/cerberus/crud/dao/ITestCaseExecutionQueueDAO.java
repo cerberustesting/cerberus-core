@@ -72,21 +72,21 @@ public interface ITestCaseExecutionQueueDAO {
     /**
      * Read TestCaseExecutionInQueue By Tag
      *
-     * @param tag Tag used to filter execution
+     * @param tag Tag used to filter execution.
+     * @param stateList List of State to filter.
+     * @param withDependencies
      * @return AnswerList that contains a list of TestCaseExecutionInQueue
      * object enriched with TestCase and Application objects
      * @throws CerberusException
      */
-    public AnswerList readByTag(String tag) throws CerberusException;
+    public AnswerList readByVarious1(String tag, List<String> stateList, boolean withDependencies) throws CerberusException;
 
     /**
      *
-     * @param state State to filter the list of id queue to read. Use state =
-     * RUNNING in order to get all RUNNING state (EXECUTING, STARTING and
-     * WAITING)
+     * @param stateList list of state to filter.
      * @return @throws CerberusException
      */
-    public AnswerList readQueueToTreatOrRunning(String state) throws CerberusException;
+    public AnswerList readQueueToTreatOrRunning(List<String> stateList) throws CerberusException;
 
     /**
      *

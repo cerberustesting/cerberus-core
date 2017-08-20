@@ -37,17 +37,17 @@ function initPage() {
     displayGlobalLabel(doc);
     displayPageLabel(doc);
     displayFooter(doc);
-    displayInvariantList("group", "GROUP", false);
-    displayInvariantList("status", "TCSTATUS", false);
-    displayInvariantList("priority", "PRIORITY", false);
-    displayInvariantList("conditionOper", "TESTCASECONDITIONOPER", false);
-    $('[name="origin"]').append('<option value="All">All</option>');
-    displayInvariantList("origin", "ORIGIN", true);
-    displayInvariantList("active", "TCACTIVE", false);
-    displayInvariantList("activeQA", "TCACTIVE", false);
-    displayInvariantList("activeUAT", "TCACTIVE", false);
-    displayInvariantList("activeProd", "TCACTIVE", false);
-    appendProjectList();
+//    displayInvariantList("group", "GROUP", false);
+//    displayInvariantList("status", "TCSTATUS", false);
+//    displayInvariantList("priority", "PRIORITY", false);
+//    displayInvariantList("conditionOper", "TESTCASECONDITIONOPER", false);
+//    $('[name="origin"]').append('<option value="All">All</option>');
+//    displayInvariantList("origin", "ORIGIN", true);
+//    displayInvariantList("active", "TCACTIVE", false);
+//    displayInvariantList("activeQA", "TCACTIVE", false);
+//    displayInvariantList("activeUAT", "TCACTIVE", false);
+//    displayInvariantList("activeProd", "TCACTIVE", false);
+//    appendProjectList();
 
 //    var selectTest = GetURLParameter('test');
 //    loadTestFilters(selectTest);
@@ -87,59 +87,59 @@ function initPage() {
 }
 
 function displayPageLabel(doc) {
-    $("[name='testField']").html(doc.getDocOnline("test", "Test"));
-    $("[name='testCaseField']").html(doc.getDocOnline("testcase", "TestCase"));
-    $("[name='lastModifierField']").html(doc.getDocOnline("testcase", "LastModifier"));
-    $("[name='originField']").html(doc.getDocOnline("testcase", "Origine"));
-    $("[name='refOriginField']").html(doc.getDocOnline("testcase", "RefOrigine"));
-    $("[name='projectField']").html(doc.getDocOnline("project", "idproject"));
-    $("[name='ticketField']").html(doc.getDocOnline("testcase", "ticket"));
-    $("[name='functionField']").html(doc.getDocOnline("testcase", "Function"));
-    $("[name='applicationField']").html(doc.getDocOnline("application", "Application"));
-    $("[name='statusField']").html(doc.getDocOnline("testcase", "Status"));
-    $("[name='bugIdField']").html(doc.getDocOnline("testcase", "BugID"));
-    $("[name='actQAField']").html(doc.getDocOnline("testcase", "activeQA"));
-    $("[name='actUATField']").html(doc.getDocOnline("testcase", "activeUAT"));
-    $("[name='actUATField']").html(doc.getDocOnline("testcase", "activeUAT"));
-    $("[name='actProdField']").html(doc.getDocOnline("testcase", "activePROD"));
-    $("[name='shortDescField']").html(doc.getDocOnline("testcase", "Description"));
-    $("[name='behaviorOrValueExpectedField']").html(doc.getDocOnline("testcase", "BehaviorOrValueExpected"));
-    $("[name='shortDescField']").html(doc.getDocOnline("testcase", "Description"));
-    $("[name='howToField']").html(doc.getDocOnline("testcase", "HowTo"));
-    $("[name='descriptionField']").html(doc.getDocOnline("test", "Description"));
-    $("[name='creatorField']").html(doc.getDocOnline("testcase", "Creator"));
-    $("[name='implementerField']").html(doc.getDocOnline("testcase", "Implementer"));
-    $("[name='groupField']").html(doc.getDocOnline("invariant", "GROUP"));
-    $("[name='priorityField']").html(doc.getDocOnline("invariant", "PRIORITY"));
-    $("[name='countryList']").html(doc.getDocOnline("testcase", "countryList"));
-    $("[name='bugIdField']").html(doc.getDocOnline("testcase", "BugID"));
-    $("[name='tcDateCreaField']").html(doc.getDocOnline("testcase", "TCDateCrea"));
-    $("[name='activeField']").html(doc.getDocOnline("testcase", "TcActive"));
-    $("[name='fromSprintField']").html(doc.getDocOnline("testcase", "FromBuild"));
-    $("[name='fromRevField']").html(doc.getDocOnline("testcase", "FromRev"));
-    $("[name='toSprintField']").html(doc.getDocOnline("testcase", "ToBuild"));
-    $("[name='toRevField']").html(doc.getDocOnline("testcase", "ToRev"));
-    $("[name='targetSprintField']").html(doc.getDocOnline("testcase", "TargetBuild"));
-    $("[name='targetRevField']").html(doc.getDocOnline("testcase", "TargetRev"));
-    $("[name='commentField']").html(doc.getDocOnline("testcase", "Comment"));
-    $("#filters").html(doc.getDocOnline("page_testcaselist", "filters"));
-    $("#testCaseListLabel").html(doc.getDocOnline("page_testcaselist", "testcaselist"));
-    $("[name='btnLoad']").html(doc.getDocLabel("page_global", "buttonLoad"));
-    $("[name='testField']").html(doc.getDocLabel("test", "Test"));
-    $("[name='editEntryField']").html(doc.getDocLabel("page_testcaselist", "btn_edit"));
-    $("[name='addEntryField']").html(doc.getDocLabel("page_testcaselist", "btn_create"));
-    $("[name='linkField']").html(doc.getDocLabel("page_testcaselist", "link"));
-    //PREPARE MASS ACTION
-    $("[name='massActionTestCaseField']").html(doc.getDocOnline("page_testcaselist", "massAction"));
-    $("[name='testInfoField']").html(doc.getDocLabel("page_testcaselist", "testInfo"));
-    $("[name='testCaseInfoField']").html(doc.getDocLabel("page_testcaselist", "testCaseInfo"));
-    $("[name='testCaseParameterField']").html(doc.getDocLabel("page_testcaselist", "testCaseParameter"));
-    $("[name='activationCriteriaField']").html(doc.getDocLabel("page_testcaselist", "activationCriteria"));
-    // Tracability
-    $("[name='lbl_datecreated']").html(doc.getDocOnline("transversal", "DateCreated"));
-    $("[name='lbl_usrcreated']").html(doc.getDocOnline("transversal", "UsrCreated"));
-    $("[name='lbl_datemodif']").html(doc.getDocOnline("transversal", "DateModif"));
-    $("[name='lbl_usrmodif']").html(doc.getDocOnline("transversal", "UsrModif"));
+//    $("[name='testField']").html(doc.getDocOnline("test", "Test"));
+//    $("[name='testCaseField']").html(doc.getDocOnline("testcase", "TestCase"));
+//    $("[name='lastModifierField']").html(doc.getDocOnline("testcase", "LastModifier"));
+//    $("[name='originField']").html(doc.getDocOnline("testcase", "Origine"));
+//    $("[name='refOriginField']").html(doc.getDocOnline("testcase", "RefOrigine"));
+//    $("[name='projectField']").html(doc.getDocOnline("project", "idproject"));
+//    $("[name='ticketField']").html(doc.getDocOnline("testcase", "ticket"));
+//    $("[name='functionField']").html(doc.getDocOnline("testcase", "Function"));
+//    $("[name='applicationField']").html(doc.getDocOnline("application", "Application"));
+//    $("[name='statusField']").html(doc.getDocOnline("testcase", "Status"));
+//    $("[name='bugIdField']").html(doc.getDocOnline("testcase", "BugID"));
+//    $("[name='actQAField']").html(doc.getDocOnline("testcase", "activeQA"));
+//    $("[name='actUATField']").html(doc.getDocOnline("testcase", "activeUAT"));
+//    $("[name='actUATField']").html(doc.getDocOnline("testcase", "activeUAT"));
+//    $("[name='actProdField']").html(doc.getDocOnline("testcase", "activePROD"));
+//    $("[name='shortDescField']").html(doc.getDocOnline("testcase", "Description"));
+//    $("[name='behaviorOrValueExpectedField']").html(doc.getDocOnline("testcase", "BehaviorOrValueExpected"));
+//    $("[name='shortDescField']").html(doc.getDocOnline("testcase", "Description"));
+//    $("[name='howToField']").html(doc.getDocOnline("testcase", "HowTo"));
+//    $("[name='descriptionField']").html(doc.getDocOnline("test", "Description"));
+//    $("[name='creatorField']").html(doc.getDocOnline("testcase", "Creator"));
+//    $("[name='implementerField']").html(doc.getDocOnline("testcase", "Implementer"));
+//    $("[name='groupField']").html(doc.getDocOnline("invariant", "GROUP"));
+//    $("[name='priorityField']").html(doc.getDocOnline("invariant", "PRIORITY"));
+//    $("[name='countryList']").html(doc.getDocOnline("testcase", "countryList"));
+//    $("[name='bugIdField']").html(doc.getDocOnline("testcase", "BugID"));
+//    $("[name='tcDateCreaField']").html(doc.getDocOnline("testcase", "TCDateCrea"));
+//    $("[name='activeField']").html(doc.getDocOnline("testcase", "TcActive"));
+//    $("[name='fromSprintField']").html(doc.getDocOnline("testcase", "FromBuild"));
+//    $("[name='fromRevField']").html(doc.getDocOnline("testcase", "FromRev"));
+//    $("[name='toSprintField']").html(doc.getDocOnline("testcase", "ToBuild"));
+//    $("[name='toRevField']").html(doc.getDocOnline("testcase", "ToRev"));
+//    $("[name='targetSprintField']").html(doc.getDocOnline("testcase", "TargetBuild"));
+//    $("[name='targetRevField']").html(doc.getDocOnline("testcase", "TargetRev"));
+//    $("[name='commentField']").html(doc.getDocOnline("testcase", "Comment"));
+//    $("#filters").html(doc.getDocOnline("page_testcaselist", "filters"));
+//    $("#testCaseListLabel").html(doc.getDocOnline("page_testcaselist", "testcaselist"));
+//    $("[name='btnLoad']").html(doc.getDocLabel("page_global", "buttonLoad"));
+//    $("[name='testField']").html(doc.getDocLabel("test", "Test"));
+//    $("[name='editEntryField']").html(doc.getDocLabel("page_testcaselist", "btn_edit"));
+//    $("[name='addEntryField']").html(doc.getDocLabel("page_testcaselist", "btn_create"));
+//    $("[name='linkField']").html(doc.getDocLabel("page_testcaselist", "link"));
+//    //PREPARE MASS ACTION
+//    $("[name='massActionTestCaseField']").html(doc.getDocOnline("page_testcaselist", "massAction"));
+//    $("[name='testInfoField']").html(doc.getDocLabel("page_testcaselist", "testInfo"));
+//    $("[name='testCaseInfoField']").html(doc.getDocLabel("page_testcaselist", "testCaseInfo"));
+//    $("[name='testCaseParameterField']").html(doc.getDocLabel("page_testcaselist", "testCaseParameter"));
+//    $("[name='activationCriteriaField']").html(doc.getDocLabel("page_testcaselist", "activationCriteria"));
+//    // Tracability
+//    $("[name='lbl_datecreated']").html(doc.getDocOnline("transversal", "DateCreated"));
+//    $("[name='lbl_usrcreated']").html(doc.getDocOnline("transversal", "UsrCreated"));
+//    $("[name='lbl_datemodif']").html(doc.getDocOnline("transversal", "DateModif"));
+//    $("[name='lbl_usrmodif']").html(doc.getDocOnline("transversal", "UsrModif"));
 
 }
 
@@ -194,8 +194,12 @@ function renderOptionsForTestCaseList(data) {
 
             $('#testCaseList #createTestCaseButton').click(data, function () {
                 // Getting the Test from the 1st row of the testcase table.
-                var firstRowTest = $("#testCaseTable td.sorting_1")[0].textContent;
-                addTestCaseClick(firstRowTest);
+                if($("#testCaseTable td.sorting_1")[0] != undefined) {
+                    var firstRowTest = $("#testCaseTable td.sorting_1")[0].textContent;
+                    addTestCaseClick(firstRowTest);
+                } else {
+                    addTestCaseClick();
+                }
             });
             $('#testCaseList #createBrpMassButton').click(massActionClick);
         }
@@ -405,7 +409,7 @@ function setActive(checkbox) {
     }
 
     $.ajax({
-        url: "UpdateTestCase2",
+        url: "UpdateTestCase",
         method: "POST",
         data: {test: test, testCase: testCase, active: active},
         dataType: "json",
@@ -501,11 +505,11 @@ function aoColumnsFunc(countries, tableId) {
             "mRender": function (data, type, obj) {
                 var buttons = "";
 
-                var editEntry = '<button id="editEntry" onclick="editTestCaseClick(\'' + escapeHtml(obj["test"]) + '\',\'' + escapeHtml(obj["testCase"]) + '\');"\n\
+                var editEntry = '<button id="editEntry" onclick="openModalTestCase(\'' + escapeHtml(obj["test"]) + '\',\'' + escapeHtml(obj["testCase"]) + '\',\'EDIT\');"\n\
                                 class="editEntry btn btn-default btn-xs margin-right5" \n\
                                 name="editEntry" data-toggle="tooltip"  title="' + doc.getDocLabel("page_testcaselist", "btn_edit") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-pencil"></span></button>';
-                var viewEntry = '<button id="editEntry" onclick="editTestCaseClick(\'' + escapeHtml(obj["test"]) + '\',\'' + escapeHtml(obj["testCase"]) + '\');"\n\
+                var viewEntry = '<button id="editEntry" onclick="openModalTestCase(\'' + escapeHtml(obj["test"]) + '\',\'' + escapeHtml(obj["testCase"]) + '\',\'EDIT\');"\n\
                                 class="editEntry btn btn-default btn-xs margin-right5" \n\
                                 name="editEntry" data-toggle="tooltip"  title="' + doc.getDocLabel("page_testcaselist", "btn_view") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-eye-open"></span></button>';
@@ -513,7 +517,7 @@ function aoColumnsFunc(countries, tableId) {
                                         class="deleteEntry btn btn-default btn-xs margin-right25" \n\
                                         name="deleteEntry" data-toggle="tooltip"  title="' + doc.getDocLabel("page_testcaselist", "btn_delete") + '" type="button">\n\
                                         <span class="glyphicon glyphicon-trash"></span></button>';
-                var duplicateEntry = '<button id="duplicateEntry" onclick="duplicateTestCaseClick(\'' + escapeHtml(obj["test"]) + '\',\'' + escapeHtml(obj["testCase"]) + '\');"\n\
+                var duplicateEntry = '<button id="duplicateEntry" onclick="openModalTestCase(\'' + escapeHtml(obj["test"]) + '\',\'' + escapeHtml(obj["testCase"]) + '\',\'DUPLICATE\');"\n\
                                         class="duplicateEntry btn btn-default btn-xs margin-right5" \n\
                                         name="duplicateEntry" data-toggle="tooltip"  title="' + doc.getDocLabel("page_testcaselist", "btn_duplicate") + '" type="button">\n\
                                         <span class="glyphicon glyphicon-duplicate"></span></button>';

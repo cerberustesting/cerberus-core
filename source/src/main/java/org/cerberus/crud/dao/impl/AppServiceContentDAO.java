@@ -27,15 +27,14 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.IAppServiceContentDAO;
 import org.cerberus.crud.entity.AppServiceContent;
-import org.cerberus.database.DatabaseSpring;
 import org.cerberus.crud.factory.IFactoryAppServiceContent;
+import org.cerberus.crud.factory.impl.FactoryAppServiceContent;
+import org.cerberus.database.DatabaseSpring;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.crud.factory.impl.FactoryAppServiceContent;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.SqlUtil;
 import org.cerberus.util.StringUtil;
@@ -390,9 +389,9 @@ public class AppServiceContentDAO implements IAppServiceContentDAO {
     }
 
     @Override
-    public Answer update(AppServiceContent object) {
+    public Answer update(String service, String key, AppServiceContent object) {
         MessageEvent msg = null;
-        final String query = "UPDATE appservicecontent SET description = ?, sort = ?, `active` = ?, `value` = ?, "
+        final String query = "UPDATE appservicecontent SET `Service` = ?, `Key` = ?, description = ?, sort = ?, `active` = ?, `value` = ?, "
                 + "dateModif = NOW(), usrModif= ?  WHERE `Service` = ? and `Key` = ?";
 
         // Debug message on SQL.
@@ -406,13 +405,15 @@ public class AppServiceContentDAO implements IAppServiceContentDAO {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
                 int i = 1;
+                preStat.setString(i++, object.getService());
+                preStat.setString(i++, object.getKey());
                 preStat.setString(i++, object.getDescription());
                 preStat.setInt(i++, object.getSort());
                 preStat.setString(i++, object.getActive());
                 preStat.setString(i++, object.getValue());
                 preStat.setString(i++, object.getUsrModif());
-                preStat.setString(i++, object.getService());
-                preStat.setString(i++, object.getKey());
+                preStat.setString(i++, service);
+                preStat.setString(i++, key);
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);

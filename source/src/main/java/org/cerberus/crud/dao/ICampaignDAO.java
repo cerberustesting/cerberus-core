@@ -89,6 +89,7 @@ public interface ICampaignDAO {
     Answer create(Campaign object);
 
     /**
+     * @param campaign
      * @param object the {@link Campaign} to Update
      * @return {@link AnswerItem}
      */

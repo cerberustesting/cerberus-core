@@ -129,7 +129,6 @@ public class UpdateApplicationObject extends HttpServlet {
         // Parameter that we cannot secure as we need the html --> We DECODE them
 
         // Getting list of application from JSON Call
-
         // Prepare the final answer.
         MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
         Answer finalAnswer = new Answer(msg1);
@@ -170,9 +169,9 @@ public class UpdateApplicationObject extends HttpServlet {
                 ApplicationObject applicationData = (ApplicationObject) resp.getItem();
 
                 String fileName = applicationData.getScreenShotFileName();
-                if(file != null){
+                if (file != null) {
                     ans = applicationObjectService.uploadFile(applicationData.getID(), file);
-                    if(ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
+                    if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                         fileName = file.getName();
                     }
                 }
@@ -181,7 +180,7 @@ public class UpdateApplicationObject extends HttpServlet {
                 applicationData.setScreenShotFileName(fileName);
                 applicationData.setUsrModif(usrmodif);
                 applicationData.setDateModif(datemodif);
-                ans = applicationObjectService.update(applicationData);
+                ans = applicationObjectService.update(applicationData.getApplication(), applicationData.getObject(), applicationData);
                 finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
 
                 if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {

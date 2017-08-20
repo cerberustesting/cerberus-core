@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.cerberus.crud.dao.ITestCaseExecutionQueueDAO;
@@ -68,18 +69,24 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
     }
 
     @Override
-    public AnswerList readByTag(String tag) throws CerberusException {
-        return testCaseExecutionInQueueDAO.readByTag(tag);
+    public AnswerList readByVarious1(String tag, List<String> stateList, boolean withDependencies) throws CerberusException {
+        return testCaseExecutionInQueueDAO.readByVarious1(tag, stateList, withDependencies);
     }
 
     @Override
     public AnswerList readQueueToTreat() throws CerberusException {
-        return testCaseExecutionInQueueDAO.readQueueToTreatOrRunning("QUEUED");
+        List<String> stateList = new ArrayList<>();
+        stateList.add(TestCaseExecutionQueue.State.QUEUED.name());
+        return testCaseExecutionInQueueDAO.readQueueToTreatOrRunning(stateList);
     }
 
     @Override
     public AnswerList readQueueRunning() throws CerberusException {
-        return testCaseExecutionInQueueDAO.readQueueToTreatOrRunning("RUNNING");
+        List<String> stateList = new ArrayList<>();
+        stateList.add(TestCaseExecutionQueue.State.WAITING.name());
+        stateList.add(TestCaseExecutionQueue.State.STARTING.name());
+        stateList.add(TestCaseExecutionQueue.State.EXECUTING.name());
+        return testCaseExecutionInQueueDAO.readQueueToTreatOrRunning(stateList);
     }
 
     @Override
@@ -169,7 +176,7 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
     public Answer updateToCancelledForce(long id, String comment) {
         return testCaseExecutionInQueueDAO.updateToCancelledForce(id, comment);
     }
-    
+
     @Override
     public Answer delete(TestCaseExecutionQueue object) {
         return testCaseExecutionInQueueDAO.delete(object);
@@ -219,7 +226,7 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
         long start = testCaseExecutionInQueue.getRequestDate() != null ? testCaseExecutionInQueue.getRequestDate().getTime() : 0;
         long end = 0;
         String controlStatus = TestCaseExecution.CONTROLSTATUS_QU;
-        String controlMessage = "Queued with State : " + testCaseExecutionInQueue.getState().name();
+        String controlMessage = "Queued with State : " + testCaseExecutionInQueue.getState().name() + " - " + testCaseExecutionInQueue.getComment();
         Application applicationObj = testCaseExecutionInQueue.getApplicationObj();
         String application = testCaseExecutionInQueue.getApplicationObj() != null ? testCaseExecutionInQueue.getApplicationObj().getApplication() : "";
         String ip = testCaseExecutionInQueue.getRobotIP();
@@ -229,6 +236,7 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
         int screenshot = testCaseExecutionInQueue.getScreenshot();
         int pageSource = testCaseExecutionInQueue.getPageSource();
         int seleniumLog = testCaseExecutionInQueue.getSeleniumLog();
+        int retry = testCaseExecutionInQueue.getRetries();
         boolean synchroneous = true;
         String timeout = testCaseExecutionInQueue.getTimeout();
         String outputFormat = "";
@@ -241,10 +249,14 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
         String myEnvData = testCaseExecutionInQueue.getManualEnvData();
         String seleniumIP = testCaseExecutionInQueue.getRobotIP();
         String seleniumPort = testCaseExecutionInQueue.getRobotPort();
-        TestCaseExecution result = factoryTestCaseExecution.create(0, test, testCase, null, null, null, environment, country, browser, version, platform,
+        String description = "";
+        if ((testCaseExecutionInQueue.getTestCaseObj() != null) && (testCaseExecutionInQueue.getTestCaseObj().getDescription() != null)) {
+            description = testCaseExecutionInQueue.getTestCaseObj().getDescription();
+        }
+        TestCaseExecution result = factoryTestCaseExecution.create(0, test, testCase, description, null, null, environment, country, browser, version, platform,
                 browser, start, end, controlStatus, controlMessage, application, applicationObj, ip, "", port, tag, verbose, screenshot, pageSource,
                 seleniumLog, synchroneous, timeout, outputFormat, "", "", tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL,
-                myEnvData, seleniumIP, seleniumPort, null, null, null, 0, "", null, "", "", "", "", "", manualExecution, "");
+                myEnvData, seleniumIP, seleniumPort, null, null, null, retry, "", null, "", "", "", "", "", manualExecution, "");
         result.setQueueID(testCaseExecutionInQueue.getId());
         result.setId(testCaseExecutionInQueue.getExeId());
         return result;

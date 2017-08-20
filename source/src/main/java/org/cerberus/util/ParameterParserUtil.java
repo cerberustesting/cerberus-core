@@ -244,18 +244,20 @@ public final class ParameterParserUtil {
      * Parses and decode a list from the given inParams one by decoding each of
      * them
      *
-     * @param param
+     * @param inParams
      * @param defaultVal
-     * @param req
+     * @param charset
      * @return
      */
     public static List<String> parseListParamAndDecodeAndDeleteEmptyValue(String[] inParams, List<String> defaultVal, String charset) {
-        List<String> result = parseListParamAndDecode(inParams,defaultVal,charset);
+        if (inParams == null) {
+            return null;
+        }
+        List<String> result = parseListParamAndDecode(inParams, defaultVal, charset);
         result.removeAll(Collections.singleton(""));
         result.removeAll(Collections.singleton(null));
         return result;
     }
-
 
     /**
      * @param inParam

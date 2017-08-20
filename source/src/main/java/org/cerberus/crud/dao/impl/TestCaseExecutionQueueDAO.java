@@ -360,16 +360,19 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
     }
 
     @Override
-    public AnswerList readByTag(String tag) throws CerberusException {
+    public AnswerList readByVarious1(String tag, List<String> stateList, boolean withDependencies) throws CerberusException {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
         AnswerList answer = new AnswerList();
 
         final StringBuilder query = new StringBuilder();
 
         query.append("SELECT * FROM testcaseexecutionqueue exq ");
-        query.append("left join testcase tec on exq.Test = tec.Test and exq.TestCase = tec.TestCase ");
-        query.append("left join application app on tec.application = app.application ");
-        query.append("where exq.tag = ? and exq.state not in ('DONE','CANCELLED')");
+        if (withDependencies) {
+            query.append("left join testcase tec on exq.Test = tec.Test and exq.TestCase = tec.TestCase ");
+            query.append("left join application app on tec.application = app.application ");
+        }
+        query.append("where exq.tag = ? ");
+        query.append(SqlUtil.createWhereInClause(" AND exq.state", stateList, true));
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -387,7 +390,11 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     while (resultSet.next()) {
-                        testCaseExecutionInQueueList.add(this.loadWithDependenciesFromResultSet(resultSet));
+                        if (withDependencies) {
+                            testCaseExecutionInQueueList.add(this.loadWithDependenciesFromResultSet(resultSet));
+                        } else {
+                            testCaseExecutionInQueueList.add(this.loadFromResultSet(resultSet));
+                        }
                     }
 
                     msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCaseExecutionInQueue").replace("%OPERATION%", "SELECT"));
@@ -433,7 +440,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
     }
 
     @Override
-    public AnswerList readQueueToTreatOrRunning(String state) throws CerberusException {
+    public AnswerList readQueueToTreatOrRunning(List<String> stateList) throws CerberusException {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
         AnswerList answer = new AnswerList();
 
@@ -445,13 +452,8 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
         query.append("left join application app on app.application=tec.application ");
         query.append("left join robot rbt on rbt.robot=exq.robot ");
         query.append("left join countryenvironmentparameters cea on cea.system=app.system and cea.environment=exq.environment and cea.country=exq.country and cea.application=tec.application ");
-        if (state.equals("RUNNING")) {
-            query.append("WHERE exq.State in ('WAITING', 'STARTING', 'EXECUTING') ");
-        } else {
-            query.append("WHERE exq.State = '");
-            query.append(state);
-            query.append("' ");
-        }
+        query.append("WHERE 1=1 ");
+        query.append(SqlUtil.createWhereInClause(" AND exq.state", stateList, true));
         query.append("order by exq.priority, exq.id asc;");
 
         // Debug message on SQL.

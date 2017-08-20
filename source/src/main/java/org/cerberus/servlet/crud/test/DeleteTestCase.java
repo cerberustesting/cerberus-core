@@ -21,30 +21,39 @@ package org.cerberus.servlet.crud.test;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.cerberus.engine.entity.MessageGeneral;
-import org.cerberus.enums.MessageGeneralEnum;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseStep;
-import org.cerberus.exception.CerberusException;
+import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.ITestCaseService;
 import org.cerberus.crud.service.ITestCaseStepService;
-import org.cerberus.crud.service.impl.UserService;
+import org.cerberus.crud.service.impl.LogEventService;
+import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.exception.CerberusException;
+import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.StringUtil;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.servlet.ServletUtil;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
- * @author bcivel
+ *
+ * @author cerberus
  */
-@WebServlet(name = "DeleteTestCase", urlPatterns = {"/DeleteTestCase"})
+@WebServlet(name = "DeleteTestCase2", urlPatterns = {"/DeleteTestCase2"})
 public class DeleteTestCase extends HttpServlet {
 
     /**
@@ -57,34 +66,88 @@ public class DeleteTestCase extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
+            throws ServletException, IOException, JSONException, CerberusException {
+        JSONObject jsonResponse = new JSONObject();
+        Answer ans = new Answer();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+        ans.setResultMessage(msg);
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
-        String test = policy.sanitize(request.getParameter("test"));
-        String testcase = policy.sanitize(request.getParameter("testcase"));
-        String fromPage = policy.sanitize(request.getParameter("fromPage"));
 
-        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        ITestCaseService tcService = appContext.getBean(ITestCaseService.class);
-        ITestCaseStepService tcsService = appContext.getBean(ITestCaseStepService.class);
-        try {
-            TestCase testCase = tcService.findTestCaseByKey(test, testcase);
-            if (testCase != null) {
-                List<TestCaseStep> tcsList = tcsService.getTestCaseStepUsingTestCaseInParamter(test, testcase);
-                    if (tcsList != null && !tcsList.isEmpty()){
-                        response.sendError(403, MessageGeneralEnum.GUI_TESTCASE_DELETE_USED_STEP.getDescription());
-                        return;
-                    }
-                    tcService.deleteTestCase(testCase);
+        response.setContentType("application/json");
+
+        // Calling Servlet Transversal Util.
+        ServletUtil.servletStart(request);
+        
+        /**
+         * Parsing and securing all required parameters.
+         */
+        String test = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("test"), "");
+        String testCase = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("testCase"), null);
+
+        /**
+         * Checking all constrains before calling the services.
+         */
+        if (StringUtil.isNullOrEmpty(test) || testCase == null) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase")
+                    .replace("%OPERATION%", "Delete")
+                    .replace("%REASON%", "mendatory fields is missing!"));
+            ans.setResultMessage(msg);
+        } else {
+            /**
+             * All data seems cleans so we can call the services.
+             */
+            ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+            ITestCaseService testCaseService = appContext.getBean(ITestCaseService.class);
+            ITestCaseStepService testCaseStepService = appContext.getBean(ITestCaseStepService.class);
+
+            AnswerItem resp = testCaseService.readByKey(test, testCase);
+            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem()!=null)) {
+                /**
+                 * Object could not be found. We stop here and report the error.
+                 */
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase")
+                        .replace("%OPERATION%", "Delete")
+                        .replace("%REASON%", "TestCase does not exist."));
+                ans.setResultMessage(msg);
+
             } else {
-                throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
+                /**
+                 * The service was able to perform the query and confirm the
+                 * object exist, then we can delete it.
+                 */
+                TestCase testCaseData = (TestCase) resp.getItem();
+                List<TestCaseStep> tcsList = testCaseStepService.getTestCaseStepUsingTestCaseInParamter(testCaseData.getTest(), testCaseData.getTestCase());
+                if (tcsList != null && !tcsList.isEmpty()) {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase")
+                            .replace("%OPERATION%", "Delete")
+                            .replace("%REASON%", "You're trying to delete a testcase which have some step used in other tests. Please remove the link before deleting this testcase."));
+                    ans.setResultMessage(msg);
+                } else {
+                    ans = testCaseService.delete(testCaseData);
+                }
+
+                if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                    /**
+                     * Delete was succesfull. Adding Log entry.
+                     */
+                    ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                    logEventService.createForPrivateCalls("/DeleteTestCase", "DELETE", "Delete TestCase : ['" + testCase + "']", request);
+                }
             }
-        } catch (CerberusException ex) {
-            Logger.getLogger(UserService.class.getName()).log(Level.ERROR, null, ex);
         }
 
-        response.sendRedirect(fromPage);
+        /**
+         * Formating and returning the json result.
+         */
+        jsonResponse.put("messageType", ans.getResultMessage().getMessage().getCodeString());
+        jsonResponse.put("message", ans.getResultMessage().getDescription());
 
+        response.getWriter().print(jsonResponse.toString());
+        response.getWriter().flush();
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -99,7 +162,13 @@ public class DeleteTestCase extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (JSONException ex) {
+            Logger.getLogger(DeleteTestCase.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (CerberusException ex) {
+            Logger.getLogger(DeleteTestCase.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -113,7 +182,13 @@ public class DeleteTestCase extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (JSONException ex) {
+            Logger.getLogger(DeleteTestCase.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (CerberusException ex) {
+            Logger.getLogger(DeleteTestCase.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -125,4 +200,5 @@ public class DeleteTestCase extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
+
 }

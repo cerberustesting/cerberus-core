@@ -89,8 +89,8 @@ public class BuildRevisionInvariantService implements IBuildRevisionInvariantSer
     }
 
     @Override
-    public Answer update(BuildRevisionInvariant buildRevisionInvariant) {
-        return BuildRevisionInvariantDAO.update(buildRevisionInvariant);
+    public Answer update(String system, Integer level, Integer seq, BuildRevisionInvariant buildRevisionInvariant) {
+        return BuildRevisionInvariantDAO.update(system, level, seq, buildRevisionInvariant);
     }
 
     @Override

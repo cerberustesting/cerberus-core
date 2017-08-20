@@ -97,8 +97,8 @@ public class AppServiceService implements IAppServiceService {
     }
 
     @Override
-    public Answer update(AppService object) {
-        return appServiceDao.update(object);
+    public Answer update(String service, AppService object) {
+        return appServiceDao.update(service, object);
     }
 
     @Override

@@ -25,19 +25,18 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.ICampaignContentDAO;
 import org.cerberus.crud.entity.Campaign;
-import org.cerberus.database.DatabaseSpring;
 import org.cerberus.crud.entity.CampaignContent;
+import org.cerberus.crud.factory.IFactoryCampaignContent;
+import org.cerberus.database.DatabaseSpring;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.MessageGeneral;
+import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.crud.factory.IFactoryCampaignContent;
-import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.log.MyLogger;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
@@ -81,11 +80,6 @@ public class CampaignContentDAO implements ICampaignContentDAO {
          * Create a new {@link CampaignContent}
          */
         String CREATE = "INSERT INTO `campaigncontent` (`campaign`,`testbattery`) VALUES (?, ?)";
-
-        /**
-         * Update an existing {@link CampaignContent}
-         */
-        String UPDATE = "UPDATE `campaigncontent` SET  WHERE `campaign` = ? AND `testbattery` = ?";
 
         /**
          * Remove an existing {@link CampaignContent}
@@ -728,12 +722,15 @@ public class CampaignContentDAO implements ICampaignContentDAO {
     public Answer update(CampaignContent object) {
         Answer ans = new Answer();
         MessageEvent msg = null;
+        String query = "UPDATE `campaigncontent` SET  WHERE `campaign` = ? AND `testbattery` = ?";
+
 
         try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(Query.CREATE)) {
+             PreparedStatement preStat = connection.prepareStatement(query)) {
             // Prepare and execute query
-            preStat.setString(1, object.getCampaign());
-            preStat.setString(2, object.getTestbattery());
+            int i=1;
+            preStat.setString(i++, object.getCampaign());
+            preStat.setString(i++, object.getTestbattery());
             preStat.executeUpdate();
 
             // Set the final message

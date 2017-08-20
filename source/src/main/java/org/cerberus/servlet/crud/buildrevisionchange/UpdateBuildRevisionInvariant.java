@@ -153,7 +153,7 @@ public class UpdateBuildRevisionInvariant extends HttpServlet {
                 buildRevisionInvariantData.setLevel(level);
                 buildRevisionInvariantData.setSeq(seq);
                 buildRevisionInvariantData.setVersionName(versionName);
-                ans = buildRevisionInvariantService.update(buildRevisionInvariantData);
+                ans = buildRevisionInvariantService.update(buildRevisionInvariantData.getSystem(), buildRevisionInvariantData.getLevel(), buildRevisionInvariantData.getSeq(), buildRevisionInvariantData);
 
                 if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                     /**

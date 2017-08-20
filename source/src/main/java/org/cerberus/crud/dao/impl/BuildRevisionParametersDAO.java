@@ -19,27 +19,26 @@
  */
 package org.cerberus.crud.dao.impl;
 
-import org.apache.log4j.Logger;
-import org.cerberus.crud.dao.IBuildRevisionParametersDAO;
-import org.cerberus.database.DatabaseSpring;
-import org.cerberus.crud.entity.BuildRevisionParameters;
-import org.cerberus.util.ParameterParserUtil;
-import org.cerberus.util.StringUtil;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.cerberus.engine.entity.MessageEvent;
+import org.apache.log4j.Logger;
+import org.cerberus.crud.dao.IBuildRevisionParametersDAO;
+import org.cerberus.crud.entity.BuildRevisionParameters;
 import org.cerberus.crud.factory.IFactoryBuildRevisionParameters;
 import org.cerberus.crud.factory.impl.FactoryBuildRevisionParameters;
+import org.cerberus.database.DatabaseSpring;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.SqlUtil;
+import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 @Repository
 public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {

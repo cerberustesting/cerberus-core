@@ -28,7 +28,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
 
         appendCampaignList();
 //        $("#campaignSelect").select2();
-        
+
         var country = GetURLParameter("country");
         appendCountryList(country);
 
@@ -136,7 +136,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
             $("#countryList input").prop('checked', false);
             updatePotentialNumber();
         });
-        
+
         //open Run navbar Menu
         openNavbarMenu("navMenuRun");
         
@@ -283,23 +283,28 @@ function loadTestCaseFromFilter(defTest, defTestcase) {
             var testCaseList = $("#testCaseList");
 
             testCaseList.empty();
-            if (data.contentTable.length > 0) {
-                for (var i = 0; i < data.contentTable.length; i++) {
 
-                    var text = data.contentTable[i].test + " - " + data.contentTable[i].testCase + " [" + data.contentTable[i].application + "]: " + data.contentTable[i].description;
+            if (data.contentTable === undefined) {
+                showMessageMainPage("danger", "Test Case : " + defTest + " - " + defTestcase + " does not exist !", true);
+            } else {
+                if (data.contentTable.length > 0) {
+                    for (var i = 0; i < data.contentTable.length; i++) {
+
+                        var text = data.contentTable[i].test + " - " + data.contentTable[i].testCase + " [" + data.contentTable[i].application + "]: " + data.contentTable[i].description;
+
+                        testCaseList.append($("<option></option>")
+                                .text(text)
+                                .val(data.contentTable[i].test + "-" + data.contentTable[i].testCase)
+                                .data("item", data.contentTable[i]));
+                    }
+                } else {
+                    var text = data.contentTable.test + " - " + data.contentTable.testCase + " [" + data.contentTable.application + "]: " + data.contentTable.description;
 
                     testCaseList.append($("<option></option>")
                             .text(text)
-                            .val(data.contentTable[i].test + "-" + data.contentTable[i].testCase)
-                            .data("item", data.contentTable[i]));
+                            .val(data.contentTable.test + "-" + data.contentTable.testCase)
+                            .data("item", data.contentTable));
                 }
-            } else {
-                var text = data.contentTable.test + " - " + data.contentTable.testCase + " [" + data.contentTable.application + "]: " + data.contentTable.description;
-
-                testCaseList.append($("<option></option>")
-                        .text(text)
-                        .val(data.contentTable.test + "-" + data.contentTable.testCase)
-                        .data("item", data.contentTable));
             }
             hideLoader("#chooseTest");
             if ((defTest !== null) && (defTest !== undefined)) { // if test is defined we select the value in the select list.
@@ -694,7 +699,7 @@ function appendCampaignList() {
             campaignList.append($('<option></option>').text(data.contentTable[index].campaign + " - " + data.contentTable[index].description)
                     .val(data.contentTable[index].campaign));
         }
-        
+
     });
 }
 
@@ -1032,19 +1037,19 @@ function loadTestCaseFilterData(system) {
 function loadTestCaseEssentialData(test, testcase, environment, country, tag, browser) {
     showLoader("#chooseTest");
     $.when(
-        loadExecForm(tag),
-        loadRobotForm(browser),
-        loadHardDefinedSingleSelect("length", [{label: '50', value: 50}, {label: '100', value: 100}, {label: '>100', value: -1}], 0)
-    )
-    .then(function () {
-        typeSelectHandler(test, testcase, environment, country);
-    });
+            loadExecForm(tag),
+            loadRobotForm(browser),
+            loadHardDefinedSingleSelect("length", [{label: '50', value: 50}, {label: '100', value: 100}, {label: '>100', value: -1}], 0)
+            )
+            .then(function () {
+                typeSelectHandler(test, testcase, environment, country);
+            });
 
 }
 //Remove the call to updateUserPreferences when no new data are loaded by the filter
 function bindToggleCollapseCustom() {
     $(".collapse").each(function () {
-        if (this.id !== "sidenavbar-subnavlist"){//disable interaction with the navbar
+        if (this.id !== "sidenavbar-subnavlist") {//disable interaction with the navbar
             $(this).on('shown.bs.collapse', function () {
                 localStorage.setItem(this.id, true);
                 if ($(this)[0].id != "filtersPanel")

@@ -51,6 +51,7 @@ public class EmailService implements IEmailService {
         email.setSubject(cerberusEmail.getSubject());
         email.setHtmlMsg(cerberusEmail.getBody());
         email.setTLS(cerberusEmail.isSetTls());
+        email.setDebug(true);
 
         if (!StringUtils.isNullOrEmpty(cerberusEmail.getUserName()) || !StringUtils.isNullOrEmpty(cerberusEmail.getPassword())) {
             email.setAuthentication(cerberusEmail.getUserName(), cerberusEmail.getPassword());

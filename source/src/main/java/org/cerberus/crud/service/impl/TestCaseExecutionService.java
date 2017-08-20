@@ -315,7 +315,13 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
         /**
          * Get list of Execution in Queue by Tag
          */
-        testCaseExecutionInQueue = testCaseExecutionInQueueService.readByTag(tag);
+        List<String> stateList = new ArrayList<>();
+        // We select here the list of state where no execution exist yet (or will never exist).
+        stateList.add(TestCaseExecutionQueue.State.QUEUED.name());
+        stateList.add(TestCaseExecutionQueue.State.WAITING.name());
+        stateList.add(TestCaseExecutionQueue.State.STARTING.name());
+        stateList.add(TestCaseExecutionQueue.State.ERROR.name());
+        testCaseExecutionInQueue = testCaseExecutionInQueueService.readByVarious1(tag, stateList, true);
         List<TestCaseExecutionQueue> testCaseExecutionsInQueue = testCaseExecutionInQueue.getDataList();
         /**
          * Feed hash map with execution from the two list (to get only one by

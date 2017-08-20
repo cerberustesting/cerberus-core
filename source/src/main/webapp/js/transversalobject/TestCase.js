@@ -17,7 +17,34 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-function displayTestCaseLabel(doc) {
+
+/***
+ * Open the modal with testcase information.
+ * @param {String} test - id of the test to open the modal
+ * @param {String} testcase - id of the testcase to open the modal
+ * @param {String} mode - mode to open the modal. Can take the values : ADD, DUPLICATE, EDIT
+ * @returns {null}
+ */
+function openModalTestCase(test, testcase, mode) {
+
+    // We only load the Labels and bind the events once for performance optimisations.
+    if ($('#editTestCaseModal').data("initLabel") === undefined) {
+        initModalTestCase();
+        $('#editTestCaseModal').data("initLabel", true);
+    }
+
+    if (mode === "EDIT") {
+        editTestCaseClick(test, testcase);
+    } else {
+        duplicateTestCaseClick(test, testcase);
+    }
+}
+
+function initModalTestCase(doc) {
+    var doc = new Doc();
+    
+    console.info("init.");
+    
     $("[name='testField']").html(doc.getDocOnline("test", "Test"));
     $("[name='testCaseField']").html(doc.getDocOnline("testcase", "TestCase"));
     $("[name='lastModifierField']").html(doc.getDocOnline("testcase", "LastModifier"));
@@ -73,6 +100,20 @@ function displayTestCaseLabel(doc) {
     $("[name='lbl_usrcreated']").html(doc.getDocOnline("transversal", "UsrCreated"));
     $("[name='lbl_datemodif']").html(doc.getDocOnline("transversal", "DateModif"));
     $("[name='lbl_usrmodif']").html(doc.getDocOnline("transversal", "UsrModif"));
+    
+    displayInvariantList("group", "GROUP", false);
+    displayInvariantList("status", "TCSTATUS", false);
+    displayInvariantList("priority", "PRIORITY", false);
+    displayInvariantList("conditionOper", "TESTCASECONDITIONOPER", false);
+    $('[name="origin"]').append('<option value="All">All</option>');
+    displayInvariantList("origin", "ORIGIN", true);
+    displayInvariantList("active", "TCACTIVE", false);
+    displayInvariantList("activeQA", "TCACTIVE", false);
+    displayInvariantList("activeUAT", "TCACTIVE", false);
+    displayInvariantList("activeProd", "TCACTIVE", false);
+    appendProjectList();
+    
+    
 }
 
 /***
@@ -98,7 +139,33 @@ function editTestCaseClick(test, testCase) {
     $('#addTestCaseButton').attr('class', '');
     $('#addTestCaseButton').attr('hidden', 'hidden');
 
+    // In Edit TestCase form, if we change the test, we get the latest testcase from that test.
+    $('#editTestCaseModalForm select[name="test"]').off("change");
+    $('#editTestCaseModalForm select[name="test"]').change(function () {
+        feedTestCaseField(null, "editTestCaseModalForm");
+        // Compare with original value in order to display the warning message.
+        displayWarningOnChangeTestCaseKey();
+    });
+    $('#editTestCaseModalForm input[name="testCase"]').off("change");
+    $('#editTestCaseModalForm input[name="testCase"]').change(function () {
+        // Compare with original value in order to display the warning message.
+        displayWarningOnChangeTestCaseKey();
+    });
     feedTestCaseModal(test, testCase, "editTestCaseModal", "EDIT");
+}
+
+function displayWarningOnChangeTestCaseKey() {
+    // Compare with original value in order to display the warning message.
+    let old1 = $("#originalTest").val();
+    let old2 = $("#originalTestCase").val();
+    let new1 = $('#editTestCaseModalForm select[name="test"]').val();
+    let new2 = $('#editTestCaseModalForm input[name="testCase"]').val();
+    if ((old1 !== new1) || (old2 !== new2)) {
+        var localMessage = new Message("WARNING", "If you rename that test case, it will loose the corresponding execution historic.");
+        showMessage(localMessage, $('#editTestCaseModal'));
+    } else {
+        clearResponseMessage($('#editTestCaseModal'));
+    }
 }
 
 /***
@@ -219,9 +286,9 @@ function confirmTestCaseModalHandler(mode) {
         formEdit.find("#test").removeAttr("disabled");
     }
     // Calculate servlet name to call.
-    var myServlet = "UpdateTestCase2";
+    var myServlet = "UpdateTestCase";
     if ((mode === "ADD") || (mode === "DUPLICATE")) {
-        myServlet = "CreateTestCase2";
+        myServlet = "CreateTestCase";
     }
 
     // Getting Data from Country List
@@ -300,9 +367,6 @@ function confirmTestCaseModalHandler(mode) {
         },
         error: showUnexpectedError
     });
-    if (mode === 'EDIT') { // Disable back the test combo before submit the form.
-        formEdit.find("#test").prop("disabled", "disabled");
-    }
 
 }
 
@@ -493,13 +557,6 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
     }
 
     // Authorities
-    if (mode === "EDIT") {
-        formEdit.find("#test").prop("disabled", "disabled");
-        formEdit.find("#testCase").prop("readonly", "readonly");
-    } else {
-        formEdit.find("#test").removeAttr("disabled");
-        formEdit.find("#testCase").removeAttr("readonly");
-    }
 
     //We define here the rule that enable or nt the fields depending on if user has the credentials to edit.
     var doBloackAllFields = false;
@@ -511,6 +568,8 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
 
     if (doBloackAllFields) { // If readonly, we only readonly all fields
         //test case info
+        formEdit.find("#test").prop("disabled", "disabled");
+        formEdit.find("#testCase").prop("readonly", "readonly");
         formEdit.find("#implementer").prop("readonly", "readonly");
         formEdit.find("#origin").prop("disabled", "disabled");
         formEdit.find("#project").prop("disabled", "disabled");
@@ -547,6 +606,8 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         $('#editTestCaseButton').attr('hidden', 'hidden');
     } else {
         //test case info
+        formEdit.find("#test").removeAttr("disabled");
+        formEdit.find("#testCase").removeAttr("readonly");
         formEdit.find("#active").removeProp("disabled");
         formEdit.find("#bugId").removeProp("readonly");
         formEdit.find("#implementer").removeProp("readonly");

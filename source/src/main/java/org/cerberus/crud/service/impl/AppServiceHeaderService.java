@@ -112,8 +112,8 @@ public class AppServiceHeaderService implements IAppServiceHeaderService {
     }
 
     @Override
-    public Answer update(AppServiceHeader object) {
-        return AppServiceHeaderDAO.update(object);
+    public Answer update(String service, String key, AppServiceHeader object) {
+        return AppServiceHeaderDAO.update(service, key, object);
     }
 
     @Override
@@ -167,7 +167,7 @@ public class AppServiceHeaderService implements IAppServiceHeaderService {
         for (AppServiceHeader objectDifference : listToUpdateOrInsertToIterate) {
             for (AppServiceHeader objectInDatabase : oldList) {
                 if (objectDifference.hasSameKey(objectInDatabase)) {
-                    ans = this.update(objectDifference);
+                    ans = this.update(objectDifference.getService(), objectDifference.getKey(), objectDifference);
                     finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
                     listToUpdateOrInsert.remove(objectDifference);
                 }

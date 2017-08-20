@@ -127,6 +127,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
                     }
                     if (testcase != null) {
                         $("#testCaseSelect option[value='" + testcase + "']").prop('selected', true);
+                        window.document.title = "TestCase - " + testcase;
                     }
                     $("#testCaseSelect").bind("change", function (event) {
                         window.location.href = "./TestCaseScript.jsp?test=" + test + "&testcase=" + $(this).val();
@@ -138,7 +139,23 @@ $.when($.getScript("js/global/global.js")).then(function () {
         if (test != null && testcase != null) {
             // Edit TestCase open the TestCase Modal
             $("#editTcInfo").click(function () {
-                editTestCaseClick(test, testcase);
+                openModalTestCase(test, testcase, "EDIT");
+                $('#editTestCaseModal').on("hidden.bs.modal", function (e) {
+                    $('#editTestCaseModal').unbind("hidden.bs.modal");
+                    var t = $('#editTestCaseModal').find("#test option:selected");
+                    var tc = $('#editTestCaseModal').find("#testCase");
+                    console.info(t.val() + " " + tc.val());
+                    console.info(test + " " + testcase);
+                    if (!((t.val() === test) && (tc.val() === testcase))) {
+                        // Key was modified.
+                        if ($('#editTestCaseModal').data("Saved")) {
+                            // Modal confirm that change was OK.
+                            $('#editTestCaseModal').data("Saved", undefined);
+                            window.location = "./TestCaseScript.jsp?test=" + t.val() + "&testcase=" + tc.val();
+                        }
+
+                    }
+                });
             });
 
             $("#deleteTestCase").click(function () {
@@ -334,11 +351,17 @@ $.when($.getScript("js/global/global.js")).then(function () {
                 $("#saveScript").attr("disabled", typeof saveScriptOldStatus !== typeof undefined && saveScriptOldStatus !== false);
             });
             $('#addStepModal').on('hidden.bs.modal', function () {
-                $("#importInfo").removeData("stepInfo");
-                $("#importInfo").empty();
+                $("#importDetail").find("[name='importInfo']").removeData("stepInfo");
+                $("[name='importInfo']").empty();
                 $("#addStepModal #description").val("");
                 $("#useStep").prop("checked", false);
                 $("#importDetail").hide();
+                $("#importDetail div.row").remove();
+                $(".sub-sub-item.selected").each(function (idx,element) {
+                    $(element).removeClass("selected");
+                    $(element).find("[name='idx']").remove();
+                });
+                importInfoIdx=0;
             });
 
             $("#deleteStep").click(function () {
@@ -358,7 +381,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
             });
             $("#saveScript").click(saveScript);
             $("#saveScriptAs").click(function () {
-                duplicateTestCaseClick(test, testcase);
+                openModalTestCase(test, testcase, "DUPLICATE");
                 $('#editTestCaseModal').on("hidden.bs.modal", function (e) {
                     $('#editTestCaseModal').unbind("hidden.bs.modal");
                     var t = $('#editTestCaseModal').find("#test option:selected");
@@ -518,7 +541,6 @@ function addActionAndFocus(action) {
 function getTestCase(test, testcase, step) {
     window.location.href = "./TestCaseScript.jsp?test=" + test + "&testcase=" + testcase + "&step=" + step;
 }
-
 function setAllSort() {
     var stepList = $("#stepList li");
     var stepArr = [];
@@ -1084,15 +1106,61 @@ function changeLib() {
     }
 }
 
+function generateImportInfoId(stepInfo) {
+    return  stepInfo.testCase + stepInfo.description.replace(new RegExp(" ", "g"),"_");
+}
+
+var importInfoIdx=0;
 function showImportStepDetail(element) {
+
     var stepInfo = $(element).data("stepInfo");
 
-    $("#importInfo").text("Imported from " + stepInfo.test + " - " + stepInfo.testCase + " - " + stepInfo.sort + ")").data("stepInfo", stepInfo);
-    $("#addStepModal #description").val(stepInfo.description);
-    $("#useStep").prop("checked", true);
+    if($(element).hasClass("selected")) {
+        $(element).removeClass("selected");
+        $(element).find("[name='idx']").remove();
+        $("#" + generateImportInfoId(stepInfo)).remove();
+    } else {
+        importInfoIdx++;
+        $(element).addClass("selected");
+        $(element).append('<span class="badge" name="idx">' + importInfoIdx + ' </span>');
+        var importInfoId =  generateImportInfoId(stepInfo);
 
-    $("#importDetail").show();
+        var importInfo =
+        '<div id="'+importInfoId+'" class="row">' +
+        '   <div class="col-sm-5"><span class="badge">' + importInfoIdx + ' </span>&nbsp;' + stepInfo.description + '</div>' +
+        '   <div name="importInfo" class="col-sm-5"></div>' +
+        '   <div class="col-sm-2">'+
+        '    <label class="checkbox-inline">'+
+        '        <input type="checkbox" name="useStep" checked> Use Step'+
+        '    </label>'+
+        '   </div>'+
+        '</div>';
+
+        $("#importDetail").append(importInfo);
+        $("#"+importInfoId).find("[name='importInfo']").text("Imported from " + stepInfo.test + " - " + stepInfo.testCase + " - " + stepInfo.sort + ")").data("stepInfo", stepInfo);
+
+        $("#importDetail[name='useStep']").prop("checked", true);
+
+        $("#importDetail").show();
+    }
 }
+function initStep() {
+    return   {
+        "inLibrary": "N",
+        "objType": "step",
+        "useStepTest": "",
+        "useStepTestCase": "",
+        "useStep": "N",
+        "description": "",
+        "useStepStep": -1,
+        "actionList": [],
+        "loop": "onceIfConditionTrue",
+        "conditionOper": "always",
+        "conditionVal1": "",
+        "conditionVal2": ""
+    };
+}
+
 
 function addStep(event) {
     var stepList = event.data.stepList;
@@ -1103,57 +1171,60 @@ function addStep(event) {
         $('#description').focus();
     })
 
-    $(".sub-sub-item").on("click", function () {
-        showImportStepDetail($(this))
-    });
-
     $("#addStepConfirm").unbind("click").click(function (event) {
         setModif(true);
-        var step = {"inLibrary": "N",
-            "objType": "step",
-            "useStepTest": "",
-            "useStepTestCase": "",
-            "useStep": "N",
-            "description": "",
-            "useStepStep": -1,
-            "actionList": [],
-            "loop": "onceIfConditionTrue",
-            "conditionOper": "always",
-            "conditionVal1": "",
-            "conditionVal2": ""
-        };
 
-        step.description = $("#addStepModal #description").val();
-        if ($("#importInfo").data("stepInfo")) {
-            var useStep = $("#importInfo").data("stepInfo");
-            $.ajax({
-                url: "ReadTestCaseStep",
-                data: {test: useStep.test, testcase: useStep.testCase, step: useStep.step},
-                async: false,
-                success: function (data) {
-                    step.actionList = data.tcsActionList;
 
-                    for (var index = 0; index < data.tcsActionControlList.length; index++) {
-                        var control = data.tcsActionControlList[index];
+        if($("[name='importInfo']").length == 0 ) { // added a new step
+            var step = initStep();
+            step.description = $("#addStepModal #description").val();
 
-                        step.actionList[control.sequence - 1].controlList.push(control);
+            var stepObj = new Step(step, stepList, true);
+
+            stepObj.draw();
+            stepList.push(stepObj);
+            stepObj.html.trigger("click");
+        } else {
+
+            // added a library step
+            $("[name='importInfo']").each(function (idx, importInfo) {
+                var step = initStep();
+
+                if ($(importInfo).data("stepInfo")) {
+                    var useStep = $(importInfo).data("stepInfo");
+
+                    step.description = useStep.description;
+
+                    $.ajax({
+                        url: "ReadTestCaseStep",
+                        data: {test: useStep.test, testcase: useStep.testCase, step: useStep.step},
+                        async: false,
+                        success: function (data) {
+                            step.actionList = data.tcsActionList;
+
+                            for (var index = 0; index < data.tcsActionControlList.length; index++) {
+                                var control = data.tcsActionControlList[index];
+
+                                step.actionList[control.sequence - 1].controlList.push(control);
+                            }
+                            sortStep(step);
+                        }
+                    });
+                    if ($("#" + useStep.description).find("[name='useStep']").prop("checked")) {
+                        step.useStep = "Y";
+                        step.useStepTest = useStep.test;
+                        step.useStepTestCase = useStep.testCase;
+                        step.useStepStep = useStep.step;
+                        step.useStepStepSort = useStep.sort;
                     }
-                    sortStep(step);
                 }
-            });
-            if ($("#useStep").prop("checked")) {
-                step.useStep = "Y";
-                step.useStepTest = useStep.test;
-                step.useStepTestCase = useStep.testCase;
-                step.useStepStep = useStep.step;
-                step.useStepStepSort = useStep.sort;
-            }
-        }
-        var stepObj = new Step(step, stepList, true);
+                var stepObj = new Step(step, stepList, true);
 
-        stepObj.draw();
-        stepList.push(stepObj);
-        stepObj.html.trigger("click");
+                stepObj.draw();
+                stepList.push(stepObj);
+                stepObj.html.trigger("click");
+            });
+        }
     });
 }
 
@@ -2518,7 +2589,7 @@ function removeTestCaseClick(test, testCase) {
 function deleteTestCaseHandlerClick() {
     var test = $('#confirmationModal').find('#hiddenField1').prop("value");
     var testCase = $('#confirmationModal').find('#hiddenField2').prop("value");
-    var jqxhr = $.post("DeleteTestCase2", {test: test, testCase: testCase}, "json");
+    var jqxhr = $.post("DeleteTestCase", {test: test, testCase: testCase}, "json");
     $.when(jqxhr).then(function (data) {
         var messageType = getAlertType(data.messageType);
         if (messageType === "success") {

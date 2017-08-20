@@ -67,8 +67,8 @@ public class BatchInvariantService implements IBatchInvariantService {
     }
 
     @Override
-    public Answer update(BatchInvariant object) {
-        return batchInvariantDAO.update(object);
+    public Answer update(String batch, BatchInvariant object) {
+        return batchInvariantDAO.update(batch, object);
     }
 
     @Override

@@ -77,10 +77,11 @@ public interface IBatchInvariantService {
 
     /**
      *
+     * @param batch
      * @param object
      * @return
      */
-    Answer update(BatchInvariant object);
+    Answer update(String batch, BatchInvariant object);
 
     /**
      *

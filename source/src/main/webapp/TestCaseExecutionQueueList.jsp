@@ -31,6 +31,8 @@
         <script type="text/javascript" src="dependencies/D3-tip-0.6.7/js/index.js"></script>
         <script type="text/javascript" src="js/pages/TestCaseExecutionQueueList.js"></script>
         <script type="text/javascript" src="js/transversalobject/TestCaseExecutionQueue.js"></script>
+        <script type="text/javascript" src="js/transversalobject/Parameter.js"></script>
+        <script type="text/javascript" src="js/transversalobject/Invariant.js"></script>
     </head>
     <body>
         <%@ include file="include/global/header.html" %>
@@ -39,6 +41,8 @@
             <%@ include file="include/utils/modal-confirmation.html"%>
             <%@ include file="include/pages/testcaseexecutionqueue/massActionExecutionPending.html"%>
             <%@ include file="include/transversalobject/TestCaseExecutionQueue.html"%>
+            <%@ include file="include/transversalobject/Parameter.html"%>
+            <%@ include file="include/transversalobject/Invariant.html"%>
 
             <h1 class="page-title-line" id="title">Executions in Queue</h1>
             <div class="panel panel-default">
@@ -86,6 +90,11 @@
                                 <div class="form-group col-xs-6">
                                     <label for="jobActive" name="jobActiveField">Job Activated</label>
                                     <input type="text" class="form-control" name="jobActive" id="jobActive" aria-describedby="basic-addon1" readonly>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-xs-6">
+                                    <button type="button" class="btn btn-default" style="margin-left: 10px;" id="modifyParambutton" onclick="enableDisableJob();"><span class="glyphicon glyphicon-play"></span> <span class="glyphicon glyphicon-pause"></span> Modify Parameter in order to Activate / Desactivate Queue Job</button>
                                 </div>
                             </div>
                         </div>

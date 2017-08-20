@@ -28,15 +28,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.IApplicationDAO;
-import org.cerberus.database.DatabaseSpring;
 import org.cerberus.crud.entity.Application;
-import org.cerberus.engine.entity.MessageEvent;
-import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.crud.factory.IFactoryApplication;
 import org.cerberus.crud.factory.impl.FactoryApplication;
+import org.cerberus.database.DatabaseSpring;
+import org.cerberus.engine.entity.MessageEvent;
+import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.SqlUtil;
 import org.cerberus.util.StringUtil;
@@ -479,9 +478,9 @@ public class ApplicationDAO implements IApplicationDAO {
     }
 
     @Override
-    public Answer update(Application object) {
+    public Answer update(String application, Application object) {
         MessageEvent msg = null;
-        final String query = "UPDATE application SET description = ?, sort = ?, `type` = ?, `system` = ?, SubSystem = ?, svnurl = ?, BugTrackerUrl = ?, BugTrackerNewUrl = ?, "
+        final String query = "UPDATE application SET Application = ?, description = ?, sort = ?, `type` = ?, `system` = ?, SubSystem = ?, svnurl = ?, BugTrackerUrl = ?, BugTrackerNewUrl = ?, "
                 + "deploytype = ?, mavengroupid = ?, dateModif = NOW(), usrModif= ?  WHERE Application = ?";
 
         // Debug message on SQL.
@@ -494,6 +493,7 @@ public class ApplicationDAO implements IApplicationDAO {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
                 int i = 1;
+                preStat.setString(i++, object.getApplication());
                 preStat.setString(i++, object.getDescription());
                 preStat.setInt(i++, object.getSort());
                 preStat.setString(i++, object.getType());
@@ -505,7 +505,7 @@ public class ApplicationDAO implements IApplicationDAO {
                 preStat.setString(i++, object.getDeploytype());
                 preStat.setString(i++, object.getMavengroupid());
                 preStat.setString(i++, object.getUsrModif());
-                preStat.setString(i++, object.getApplication());
+                preStat.setString(i++, application);
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);

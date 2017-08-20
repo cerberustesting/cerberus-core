@@ -130,7 +130,7 @@ public class UpdateBatchInvariant extends HttpServlet {
                 BatchInvariant batchInvariantData = (BatchInvariant) resp.getItem();
                 batchInvariantData.setSystem(system);
                 batchInvariantData.setDescription(description);
-                ans = batchInvariantService.update(batchInvariantData);
+                ans = batchInvariantService.update(batchInvariantData.getBatch(), batchInvariantData);
 
                 if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                     /**

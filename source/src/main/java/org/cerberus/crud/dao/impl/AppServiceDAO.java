@@ -27,16 +27,17 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.cerberus.engine.entity.MessageEvent;
+import org.cerberus.crud.dao.IAppServiceDAO;
+import org.cerberus.crud.entity.AppService;
+import org.cerberus.crud.factory.IFactoryAppService;
 import org.cerberus.crud.factory.impl.FactoryAppService;
 import org.cerberus.database.DatabaseSpring;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
-import org.cerberus.crud.entity.AppService;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.util.ParameterParserUtil;
@@ -47,8 +48,6 @@ import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import org.cerberus.crud.factory.IFactoryAppService;
-import org.cerberus.crud.dao.IAppServiceDAO;
 
 /**
  * {Insert class description here}
@@ -546,9 +545,9 @@ public class AppServiceDAO implements IAppServiceDAO {
     }
 
     @Override
-    public Answer update(AppService object) {
+    public Answer update(String service, AppService object) {
         MessageEvent msg = null;
-        String query = "UPDATE appservice srv SET `Group` = ?, `ServicePath` = ?, `Operation` = ?, ServiceRequest = ?, AttachementURL = ?, "
+        String query = "UPDATE appservice srv SET `Service` = ?, `Group` = ?, `ServicePath` = ?, `Operation` = ?, ServiceRequest = ?, AttachementURL = ?, "
                 + "Description = ?, `Type` = ?, Method = ?, `UsrModif`= ?, `DateModif` = NOW()";
         if ((object.getApplication() != null) && (!object.getApplication().equals(""))) {
             query += " ,Application = ?";
@@ -567,6 +566,7 @@ public class AppServiceDAO implements IAppServiceDAO {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
                 int i = 1;
+                preStat.setString(i++, object.getService());
                 preStat.setString(i++, object.getGroup());
                 preStat.setString(i++, object.getServicePath());
                 preStat.setString(i++, object.getOperation());
@@ -579,7 +579,7 @@ public class AppServiceDAO implements IAppServiceDAO {
                 if ((object.getApplication() != null) && (!object.getApplication().equals(""))) {
                     preStat.setString(i++, object.getApplication());
                 }
-                preStat.setString(i++, object.getService());
+                preStat.setString(i++, service);
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);

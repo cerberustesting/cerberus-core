@@ -320,38 +320,6 @@ public class TestDAO implements ITestDAO {
     }
 
     @Override
-    public boolean deleteTest(Test test) {
-        boolean res = false;
-        final String sql = "DELETE FROM test where Test = ?";
-
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(sql);
-            try {
-                preStat.setString(1, test.getTest());
-
-                res = preStat.executeUpdate() > 0;
-            } catch (SQLException exception) {
-                MyLogger.log(TestDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            MyLogger.log(TestDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                MyLogger.log(TestDAO.class.getName(), Level.WARN, e.toString());
-            }
-        }
-
-        return res;
-    }
-
-    @Override
     public Answer delete(Test test) {
         MessageEvent msg = null;
         final String query = "DELETE FROM test WHERE test = ? ";
@@ -389,18 +357,27 @@ public class TestDAO implements ITestDAO {
     }
 
     @Override
-    public Answer update(Test test) {
+    public Answer update(String keyTest, Test test) {
         MessageEvent msg = null;
-        final String query = "UPDATE test SET description = ?, active = ?, automated = ? WHERE test = ?";
+        final String query = "UPDATE test SET test = ?, description = ?, active = ?, automated = ? WHERE test = ?";
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.test : " + keyTest);
+        }
+
 
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
-                preStat.setString(1, test.getDescription());
-                preStat.setString(2, test.getActive());
-                preStat.setString(3, test.getAutomated());
-                preStat.setString(4, test.getTest());
+                int i = 1;
+                preStat.setString(i++, test.getTest());
+                preStat.setString(i++, test.getDescription());
+                preStat.setString(i++, test.getActive());
+                preStat.setString(i++, test.getAutomated());
+                preStat.setString(i++, keyTest);
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -582,9 +559,9 @@ public class TestDAO implements ITestDAO {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
                         response = new AnswerList(testList, nrTotalRows);
-                    } else if (testList.size() <= 0) {                      
+                    } else if (testList.size() <= 0) {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                        response = new AnswerList(testList, nrTotalRows);  
+                        response = new AnswerList(testList, nrTotalRows);
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                         msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
@@ -631,7 +608,7 @@ public class TestDAO implements ITestDAO {
         response.setResultMessage(msg);
         return response;
     }
-    
+
     @Override
     public AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
         AnswerList response = new AnswerList();
@@ -711,9 +688,9 @@ public class TestDAO implements ITestDAO {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
                         response = new AnswerList(testList, nrTotalRows);
-                    } else if (testList.size() <= 0) {                      
+                    } else if (testList.size() <= 0) {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                        response = new AnswerList(testList, nrTotalRows);  
+                        response = new AnswerList(testList, nrTotalRows);
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                         msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
@@ -760,7 +737,7 @@ public class TestDAO implements ITestDAO {
         response.setResultMessage(msg);
         return response;
     }
-    
+
     @Override
     public AnswerList<List<String>> readDistinctValuesByCriteria(String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
         AnswerList answer = new AnswerList();

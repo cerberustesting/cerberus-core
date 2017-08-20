@@ -72,12 +72,11 @@ function initModalTestcaseExecutionQueue() {
 
     $("#test").bind("change", function (event) {
         feedTestCase($(this).val(), "#testCase");
-//                    window.location.href = "./TestCaseScript.jsp?test=" + $(this).val();
     });
 }
 
 /***
- * Open the modal with testcase information.
+ * Open the modal with queue information.
  * @param {String} queueID - type selected
  * @returns {null}
  */
@@ -101,8 +100,8 @@ function editExecutionQueueClick(queueID) {
 }
 
 /***
- * Open the modal with testcase information.
- * @param {String} service - type selected
+ * Open the modal with queue information.
+ * @param {String} queueID - id of the queue to duplicate.
  * @returns {null}
  */
 function duplicateExecutionQueueClick(queueID) {
@@ -134,8 +133,6 @@ function confirmExecutionQueueModalHandler(mode, queueAction, saveAction) {
 
     var formEdit = $('#editExecutionQueueModal #editExecutionQueueModalForm');
 
-    showLoaderInModal('#editExecutionQueueModal');
-
     // Enable the test combo before submit the form.
     if (mode === 'EDIT') {
         formEdit.find("#id").removeAttr("disabled");
@@ -148,6 +145,18 @@ function confirmExecutionQueueModalHandler(mode, queueAction, saveAction) {
 
     // Get the header data from the form.
     var data = convertSerialToJSONObject(formEdit.serialize());
+
+    var tcElement = formEdit.find("#testCase");
+    if (isEmpty(data.testCase)) {
+        tcElement.parents("div.form-group").addClass("has-error");
+        var localMessage = new Message("danger", "Please specify a Test Case value !");
+        showMessage(localMessage, $('#editExecutionQueueModal'));
+        return;
+    } else {
+        tcElement.parents("div.form-group").removeClass("has-error");
+    }
+
+    showLoaderInModal('#editExecutionQueueModal');
 
     $.ajax({
         url: myServlet,
@@ -310,22 +319,38 @@ function feedTestCase(test, selectElement, defaultTestCase) {
 function feedExecutionQueueModalData(exeQ, modalId, mode, hasPermissionsUpdate) {
     var formEdit = $('#' + modalId);
     var doc = new Doc();
+    var isEditable = (((hasPermissionsUpdate) && (mode === "EDIT") && ((exeQ.state === "WAITING") || (exeQ.state === "QUEUED") || (exeQ.state === "ERROR") || (exeQ.state === "CANCELLED")))
+            || (mode === "DUPLICATE"));
 
     $("#test").empty();
     $("#testCase").empty();
 
-    var jqxhr = $.getJSON("ReadTest", "");
-    $.when(jqxhr).then(function (data) {
+
+    if (isEditable) {
+        var jqxhr = $.getJSON("ReadTest", "");
+        $.when(jqxhr).then(function (data) {
+            var testList = $("#test");
+
+            for (var index = 0; index < data.contentTable.length; index++) {
+                testList.append($('<option></option>').text(data.contentTable[index].test).val(data.contentTable[index].test));
+            }
+            $("#test").prop("value", exeQ.test);
+
+            feedTestCase(exeQ.test, "#testCase", exeQ.testCase);
+
+        });
+
+    } else {
+        //If we cannot edit, we just put the value of the exe queue in the combo. No need to call the test and testcase list.
         var testList = $("#test");
+        testList.empty();
+        testList.append($('<option></option>').text(exeQ.test).val(exeQ.test));
 
-        for (var index = 0; index < data.contentTable.length; index++) {
-            testList.append($('<option></option>').text(data.contentTable[index].test).val(data.contentTable[index].test));
-        }
-        $("#test").prop("value", exeQ.test);
+        var testCaseList = $("#testCase");
+        testCaseList.empty();
+        testCaseList.append($('<option></option>').text(exeQ.testCase).val(exeQ.testCase));
+    }
 
-        feedTestCase(exeQ.test, "#testCase", exeQ.testCase);
-
-    });
 
     $("#robot").empty();
     var jqxhr = $.getJSON("ReadRobot", "");
@@ -433,8 +458,7 @@ function feedExecutionQueueModalData(exeQ, modalId, mode, hasPermissionsUpdate) 
     formEdit.find("#id").prop("disabled", "disabled");
 
     //We desactivate or activate the access to the fields depending on if user has the credentials to edit.
-    if (((hasPermissionsUpdate) && (mode === "EDIT") && ((exeQ.state === "WAITING") || (exeQ.state === "QUEUED") || (exeQ.state === "ERROR") || (exeQ.state === "CANCELLED")))
-            || (mode === "DUPLICATE")) { // If readonly, we readonly all fields
+    if (isEditable) { // If readonly, we readonly all fields
         formEdit.find("#tag").prop("readonly", false);
         formEdit.find("#test").removeAttr("disabled");
         formEdit.find("#testCase").removeAttr("disabled");
@@ -489,4 +513,10 @@ function feedExecutionQueueModalData(exeQ, modalId, mode, hasPermissionsUpdate) 
         formEdit.find("#retries").prop("disabled", "disabled");
         formEdit.find("#manualExecution").prop("disabled", "disabled");
     }
+}
+
+function enableDisableJob() {
+    openModalParameter('cerberus_queueexecution_enable', getSys());
+    // Trap closure of modal in order to trigger that refresh.
+    displayAndRefresh_jobStatus();
 }

@@ -31,15 +31,47 @@ import org.cerberus.util.answer.AnswerList;
  */
 public interface IBatchInvariantDAO {
 
+    /**
+     *
+     * @param batch
+     * @return
+     */
     public AnswerItem readByKey(String batch);
 
+    /**
+     *
+     * @param system
+     * @param start
+     * @param amount
+     * @param column
+     * @param dir
+     * @param searchTerm
+     * @param individualSearch
+     * @return
+     */
     public AnswerList readBySystemByCriteria(String system, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
+    /**
+     *
+     * @param object
+     * @return
+     */
     public Answer create(BatchInvariant object);
 
+    /**
+     *
+     * @param object
+     * @return
+     */
     public Answer delete(BatchInvariant object);
 
-    public Answer update(BatchInvariant object);
+    /**
+     *
+     * @param batch
+     * @param object
+     * @return
+     */
+    public Answer update(String batch, BatchInvariant object);
 
     /**
      * 
@@ -47,6 +79,7 @@ public interface IBatchInvariantDAO {
      * @param searchParameter
      * @param individualSearch
      * @param columnName 
+     * @return  
      */
     public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 }

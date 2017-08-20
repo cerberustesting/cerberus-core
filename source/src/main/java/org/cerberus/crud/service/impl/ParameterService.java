@@ -19,6 +19,9 @@
  */
 package org.cerberus.crud.service.impl;
 
+import java.util.List;
+import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.IParameterDAO;
 import org.cerberus.crud.entity.Parameter;
@@ -35,9 +38,6 @@ import org.cerberus.util.observe.ObservableEngine;
 import org.cerberus.util.observe.Observer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author bcivel
@@ -85,7 +85,7 @@ public class ParameterService implements IParameterService {
         } catch (CerberusException | NumberFormatException ex) {
             LOG.error("Error when trying to retreive parameter : '" + key + "' for system : '" + system + "'. Default value returned : '" + defaultValue + "'. Trace : " + ex);
         }
-        LOG.debug("Success loading parameter : '" + key + "' for system : '" + system + "'. Value returned : '" + outPutResult+ "'");
+        LOG.debug("Success loading parameter : '" + key + "' for system : '" + system + "'. Value returned : '" + outPutResult + "'");
         return outPutResult;
     }
 
@@ -99,7 +99,7 @@ public class ParameterService implements IParameterService {
         } catch (CerberusException | NumberFormatException ex) {
             LOG.error("Error when trying to retreive parameter : '" + key + "' for system : '" + system + "'. Default value returned : '" + defaultValue + "'. Trace : " + ex);
         }
-        LOG.debug("Success loading parameter : '" + key + "' for system : '" + system + "'. Value returned : '" + outPutResult+ "'");
+        LOG.debug("Success loading parameter : '" + key + "' for system : '" + system + "'. Value returned : '" + outPutResult + "'");
         return outPutResult;
     }
 
@@ -113,7 +113,7 @@ public class ParameterService implements IParameterService {
         } catch (CerberusException | NumberFormatException ex) {
             LOG.error("Error when trying to retreive parameter : '" + key + "' for system : '" + system + "'. Default value returned : '" + defaultValue + "'. Trace : " + ex);
         }
-        LOG.debug("Success loading parameter : '" + key + "' for system : '" + system + "'. Value returned : '" + outPutResult+ "'");
+        LOG.debug("Success loading parameter : '" + key + "' for system : '" + system + "'. Value returned : '" + outPutResult + "'");
         return outPutResult;
     }
 
@@ -127,7 +127,7 @@ public class ParameterService implements IParameterService {
         } catch (CerberusException | NumberFormatException ex) {
             LOG.error("Error when trying to retreive parameter : '" + key + "' for system : '" + system + "'. Default value returned : '" + defaultValue + "'. Trace : " + ex);
         }
-        LOG.debug("Success loading parameter : '" + key + "' for system : '" + system + "'. Value returned : '" + outPutResult+ "'");
+        LOG.debug("Success loading parameter : '" + key + "' for system : '" + system + "'. Value returned : '" + outPutResult + "'");
         return outPutResult;
     }
 
@@ -254,6 +254,35 @@ public class ParameterService implements IParameterService {
             finalAnswer = new Answer(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED));
         }
         return finalAnswer;
+    }
+
+    @Override
+    public boolean hasPermissionsRead(Parameter testCase, HttpServletRequest request) {
+        // Access right calculation.
+        return true;
+    }
+
+    @Override
+    public boolean hasPermissionsUpdate(Parameter testCase, HttpServletRequest request) {
+        // Access right calculation.
+        return request.isUserInRole("Administrator");
+    }
+
+    @Override
+    public boolean hasPermissionsUpdate(String testCase, HttpServletRequest request) {
+        return this.hasPermissionsUpdate((Parameter) null, request);
+    }
+
+    @Override
+    public boolean hasPermissionsCreate(Parameter testCase, HttpServletRequest request) {
+        // Access right calculation.
+        return false;
+    }
+
+    @Override
+    public boolean hasPermissionsDelete(Parameter testCase, HttpServletRequest request) {
+        // Access right calculation.
+        return false;
     }
 
     @Override

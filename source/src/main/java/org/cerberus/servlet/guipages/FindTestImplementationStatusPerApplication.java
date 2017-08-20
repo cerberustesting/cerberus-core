@@ -100,7 +100,7 @@ public class FindTestImplementationStatusPerApplication extends HttpServlet {
             DatabaseSpring database = appContext.getBean(DatabaseSpring.class);
             connection = database.connect();
 
-            AnswerList answer = invariantService.findInvariantByIdGp1("TCSTATUS", "Y");
+            AnswerList answer = invariantService.readByIdnameGp1("TCSTATUS", "Y");
             List<Invariant> myInvariants = answer.getDataList();
             StringBuilder SQL = new StringBuilder();
             StringBuilder SQLa = new StringBuilder();

@@ -1,4 +1,6 @@
 Dans cette section, vous retrouverez toutes les informations sur la gestion des données via la datalibrary.
+A Test Data Library is used to store or define the way to retrieve the data that will be necessary to perform the tests.
+Different way of getting the data can be used (INTERNAL, SQL, SERVICE or CSV) but that definition is independent from the test case definition so that you can easily change from one to another without impacting all the corresponding test cases.
 
 === Créer une donnée
 
@@ -13,66 +15,122 @@ Dans cette section, vous retrouverez toutes les informations sur la gestion des 
 .. Remplir les informations de vos subdatas liées à votre configuration. Se référer à la section Configurations des données pour plus d'informations.
 .. Cliquer sur *[red]#Ajouter#*.
 
-La première subdata ne requiert pas de nom. %my_data% retournera la valeur de la subdata 1 et %my_data(sub-data2)% retournera la valeur de la subdata 2.
+The first sub-data does not require a name, it correspond to the key of the datalib and should be unique to that entry.
+Inside a testcase, if property PROP1 is defined as getFromTestDataLib on that data, that sub data is retreived as %PROP1%.
+The other sub data values are retreived as %PROP1.SUBDATA1%.
 
 Si aucun environnement, système ou pays n'est sélectionné, la donnée sera disponible sur tous les environnements, systèmes et pays.
 
 === Configurations des données
 
-==== configuration Interne
+==== INTERNAL configuration
 
-Pas de configuration spécifique, seule une valeur statique est requise dans l'onglet subdata. 
+This is used to store the test data directly inside Cerberus.
+This is considered as being static as it will require to define manually each data inside Cerberus.
+No specific configuration needed, just feed static sub data values in subdata tab. 
 
-image:testdatacreatenewsubdata.png[Logo]
+image:testdatalinternalsub.png[testdatacreatenewsubdata,align="center"]
 
-==== configuration SOAP
+NOTE : You can define as many INTERNAL data lib entry as you want be giving them the same name. That way, Cerberus will be able to pick one of them from that list (just like it would for the dynamic type such as SQL, SRVICE or CSV).
 
-|=== 
+==== SQL configuration
 
-| *Champ* | *Description*  
+This is used to retrieve the test data in a dynamic way from any database that has JDCB driver available (it still require Glassfish configuration to create the corresponding connection pool).
+The SQL will be performed during the test execution to get the data in the right environment at the right timing..
 
-| Base de données | Base de données ou le Database where the Service Path will be requested. (non obligatoire)
-
-| Service Path | Localisation du service. Exemple: http://mydomain/mywebservicelocationmywebservicelocation
-
-| Opération | Opérations invoquée par l'appel SOAP.
-
-| Enveloppe | Message qui sera envoyé par la requête SOAP.
+image:testdatalsql.png[testdatacreatenewsubdata,align="center"]
 
 |=== 
 
+| *Field* | *Description*  
 
-==== configuration SQL 
+| Database | Database where the script attribute should be executed.
 
-|=== 
-
-| *Champ* | *Description*  
-
-| Base de données | Base de données où la requête doit être executer .
-
-| Requête | Requête à executer.
+| Script | SQL Script you want to execute.
 
 |===
+
+All Subdata now need to be defined in **Column** with the name of the column where the subdata is defined.
+
+image:testdatalsqlsubdata.png[testdatacreatenewsubdata,align="center"]
+
+
+==== SERVICE configuration
+
+Just like SQL, it will get the data in a dynamic way but from a service call in stead of an SQL.
+The best option is to define a corresponding service (Service) and point to it (it can then be REST (both GET or POST) or SOAP).
+
+image:testdatalservicesrv.png[testdatacreatenewsubdata,align="center"]
+
+But you can also directly define a Service call request (Service Path, Method and Envelope) if it is in a SOAP format.
+
+image:testdatalservicesoap.png[testdatacreatenewsubdata,align="center"]
+
+|=== 
+
+| *Field* | *Description*  
+
+| Database | Database where the Service Path will be requested. (optional)
+
+| Service | Name of the service that define the request.
+
+| Service Path | Location of the service. Example: http://mydomain/mywebservicelocationmywebservicelocation
+
+| Method | Method that is invoked by the SOAP request/call.
+
+| Envelope | Envelope that is sent in the SOAP request.
+
+|=== 
+
+All Subdata now need to be defined in **Parsing Answer** with the xpath or jsonpath where the subdata is defined.
+
+image:testdatalservicesubdatajson.png[testdatacreatenewsubdata,align="center"]
+
+image:testdatalservicesubdataxml.png[testdatacreatenewsubdata,align="center"]
+
 
 ==== CSV configuration
 
+Just like SQL and SERVICE, it will get the data in a dynamic way but from a csv flat file (that can be static or dynamic).
+Just define the path to the csv file and separator used.
+
+image:testdatalcsvnodatabase.png[testdatacreatenewsubdata,align="center"]
+
 |=== 
 
-| *Champ* | *Description*  
+| *Field* | *Description*  
 
-| Base de données | Base de donnée utilisée pour determiner le debut du chemin utilisé pour récupérer le fichier CSV.
+| Database | Name of the database the define the root path where to get the CSV file. (optional)
 
-| CSV URL | CSV URL indique l'URL ou le CSV est accessible.
+| CSV URL | CSV URL specifies the URL where the CSV can be reached. Can be a full URL but also a relative URL in case the Database information is provided and configured at environment level.
 
-| Séparateur | Séparateur utilisé par le CSV.
+| Separator | Separator used parsing a CSV.
 
 |===
 
-Chaque Base de connée peut être configuré au niveau de chaque environnement (System + Country + Environment) sur l'écran de gestion des environnements pour les 3 types de source de base de données :
+All Subdata now need to be defined in **Column Position** with an integer that define the number of the column where the subdata is defined.
 
-- JDBC Ressource : Connection pool name qui sera à configurer dans le serveur d'aplication Glassfish.
-- SOAP Service URL : Partie gauche de l'URL qui sera utilisée pour appeler le service.
-- CSV Service URL : Parti Gauche de l'URL qui sera utilisée pour récuperer le fichier CSV.
+image:testdatalcsvsubdata.png[testdatacreatenewsubdata,align="center"]
 
-image:datalibdatabaseconfig_fr.png[DatalibraryDatabaseConfig]
+
+==== Database field configuration
+
+Database can be configured for data library of types : SQL, SERVICE and CSV.
+It is used in order to make the access to the data linked to the environment so that, a testcase executed in PROD environment will not call the same URL (or access the same JDBC ressource) as in UAT.
+
+image:testdatalcsvdatabase.png[testdatacreatenewsubdata,align="center"]
+
+In that example, CRB database has been defined and as a consequence, CSV URL has been modified to be relative.
+
+Databases can be created inside invariant screen. Use **PROPERTYDATABASE** idname.
+
+image:testdataldatabaseconfig.png[testdatacreatenewsubdata,align="center"]
+
+Once the database is created in invariant table and used inside the test data library, you can define the context of the data access calls for each environment (System + Country + Environment) inside the Environment screen for the 3 types of datasource :
+
+- For **SQL** Test Data Library --> **JDBC Ressource** : Connection pool name to be configured inside Glassfish application server.
+- For **SERVICE** Test Data Library --> **SOAP Service URL** : Left part of the URL that will be used to call the Service URL
+- For **CSV** Test Data Library --> **CSV Service URL** : Left part of the URL that will be used to get the CSV file.
+
+image:datalibdatabaseconfig_en.png[DatalibraryDatabaseConfig]
 

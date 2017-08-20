@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.dao.impl;
 
+import com.google.common.base.Strings;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -26,18 +27,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import com.google.common.base.Strings;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.IInvariantDAO;
-import org.cerberus.database.DatabaseSpring;
 import org.cerberus.crud.entity.Invariant;
-import org.cerberus.engine.entity.MessageEvent;
-import org.cerberus.engine.entity.MessageGeneral;
-import org.cerberus.enums.MessageGeneralEnum;
-import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.factory.IFactoryInvariant;
+import org.cerberus.database.DatabaseSpring;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.log.MyLogger;
 import org.cerberus.util.SqlUtil;
@@ -73,64 +69,82 @@ public class InvariantDAO implements IInvariantDAO {
     private final int MAX_ROW_SELECTED = 1000;
 
     @Override
-    public Invariant readByKey(String idName, String value) throws CerberusException {
-        boolean throwException = true;
+    public AnswerItem readByKey(String id, String value) {
+        AnswerItem ans = new AnswerItem();
         Invariant result = null;
-        final String query = "SELECT * FROM invariant i  WHERE i.idname = ? AND i.value = ?";
+        final String query = "SELECT * FROM `invariant` WHERE `idname` = ? AND `value` = ?";
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.id : " + id);
+            LOG.debug("SQL.param.value : " + value);
+        }
 
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
-                preStat.setString(1, idName);
+                preStat.setString(1, id);
                 preStat.setString(2, value);
                 ResultSet resultSet = preStat.executeQuery();
                 try {
-                    while (resultSet.next()) {
-                        throwException = false;
-                        result = this.loadFromResultSet(resultSet);
+                    if (resultSet.first()) {
+                        result = loadFromResultSet(resultSet);
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+                        ans.setItem(result);
+                    } else {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-                } catch (NullPointerException ex) {
-                    MyLogger.log(InvariantDAO.class.getName(), Level.FATAL, "InvariantDAO - NullPointerException Resultset");
+                    LOG.error("Unable to execute query : " + exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-            } catch (NullPointerException ex) {
-                MyLogger.log(InvariantDAO.class.getName(), Level.FATAL, "InvariantDAO - NullPointerException Statement");
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-        } catch (NullPointerException ex) {
-            MyLogger.log(InvariantDAO.class.getName(), Level.FATAL, "InvariantDAO - NullPointerException Connection");
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
                 }
-            } catch (SQLException e) {
-                MyLogger.log(InvariantDAO.class.getName(), Level.WARN, "Connection already closed!");
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
             }
         }
-        if (throwException) {
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
-        }
-        return result;
+
+        //sets the message
+        ans.setResultMessage(msg);
+        return ans;
     }
 
     @Override
     public AnswerList readByIdname(String idName) {
         AnswerList answer = new AnswerList();
         MessageEvent msg;
-        List<Invariant> result = new ArrayList<Invariant>();
-        ;
+        List<Invariant> result = new ArrayList<>();
 
         final String query = "SELECT * FROM invariant i  WHERE i.idname = ? ORDER BY sort";
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.idName : " + idName);
+        }
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -197,6 +211,13 @@ public class InvariantDAO implements IInvariantDAO {
         List<Invariant> invariantList = new ArrayList<Invariant>();
         final String query = "SELECT * FROM invariant i  WHERE i.idname = ? AND i.gp1 = ? ORDER BY sort";
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.idName : " + idName);
+            LOG.debug("SQL.param.gp : " + gp);
+        }
+
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
@@ -255,7 +276,7 @@ public class InvariantDAO implements IInvariantDAO {
 
     @Override
     public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch, String PublicPrivateFilter) {
-        List<Invariant> invariantList = new ArrayList<Invariant>();
+        List<Invariant> invariantList = new ArrayList<>();
         AnswerList answer = new AnswerList();
         MessageEvent msg;
 
@@ -295,6 +316,11 @@ public class InvariantDAO implements IInvariantDAO {
             query.append(" limit ").append(start).append(" , ").append(MAX_ROW_SELECTED);
         } else {
             query.append(" limit ").append(start).append(" , ").append(amount);
+        }
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
         }
 
         Connection connection = this.databaseSpring.connect();
@@ -364,9 +390,9 @@ public class InvariantDAO implements IInvariantDAO {
 
     @Override
     public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, String PublicPrivateFilter) {
-        List<Invariant> invariantList = new ArrayList<Invariant>();
+        List<Invariant> invariantList = new ArrayList<>();
         AnswerList answer = new AnswerList();
-        List<String> individalColumnSearchValues = new ArrayList<String>();
+        List<String> individalColumnSearchValues = new ArrayList<>();
         MessageEvent msg;
 
         StringBuilder searchSQL = new StringBuilder();
@@ -405,6 +431,11 @@ public class InvariantDAO implements IInvariantDAO {
             query.append(" limit ").append(start).append(" , ").append(MAX_ROW_SELECTED);
         } else {
             query.append(" limit ").append(start).append(" , ").append(amount);
+        }
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
         }
 
         Connection connection = this.databaseSpring.connect();
@@ -604,7 +635,7 @@ public class InvariantDAO implements IInvariantDAO {
     }
 
     @Override
-    public AnswerList readInvariantCountryListEnvironmentLastChanges(String system, Integer nbdays) {
+    public AnswerList readCountryListEnvironmentLastChanges(String system, Integer nbdays) {
         AnswerList response = new AnswerList();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -704,133 +735,7 @@ public class InvariantDAO implements IInvariantDAO {
     }
 
     @Override
-    public Integer getNumberOfInvariant(String searchTerm, String PublicPrivateFilter) throws CerberusException {
-        boolean throwException = true;
-        Integer result = 0;
-
-        StringBuilder searchSQL = new StringBuilder();
-        if (!(PublicPrivateFilter.equalsIgnoreCase(""))) {
-            searchSQL.append(" and ");
-            searchSQL.append(PublicPrivateFilter);
-        }
-        if (!(searchTerm.equalsIgnoreCase(""))) {
-            searchSQL.append(" and ");
-            searchSQL.append(getSearchString(searchTerm));
-        }
-
-        String query = "SELECT count(*) FROM invariant i  WHERE 1=1 " + searchSQL.toString();
-
-        MyLogger.log(InvariantDAO.class.getName(), Level.DEBUG, query);
-
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    if (resultSet.first()) {
-                        throwException = false;
-                        result = resultSet.getInt(1);
-                    }
-                } catch (SQLException exception) {
-                    MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-                } catch (NullPointerException ex) {
-                    MyLogger.log(InvariantDAO.class.getName(), Level.FATAL, "InvariantDAO - NullPointerException Resultset");
-                } finally {
-                    resultSet.close();
-                }
-            } catch (SQLException exception) {
-                MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-            } catch (NullPointerException ex) {
-                MyLogger.log(InvariantDAO.class.getName(), Level.FATAL, "InvariantDAO - NullPointerException Statement");
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-        } catch (NullPointerException ex) {
-            MyLogger.log(InvariantDAO.class.getName(), Level.FATAL, "InvariantDAO - NullPointerException Connection");
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                MyLogger.log(InvariantDAO.class.getName(), Level.WARN, "Connection already closed!");
-            }
-        }
-        if (throwException) {
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
-        }
-        return result;
-    }
-
-    @Override
-    public AnswerItem readByKey2(String id, String value) {
-        AnswerItem ans = new AnswerItem();
-        Invariant result = null;
-        final String query = "SELECT * FROM `invariant` WHERE `idname` = ? AND `value` = ?";
-        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-
-        // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query);
-            LOG.debug("SQL.param.id : " + id);
-            LOG.debug("SQL.param.value : " + value);
-        }
-
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                preStat.setString(1, id);
-                preStat.setString(2, value);
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    if (resultSet.first()) {
-                        result = loadFromResultSet(resultSet);
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                        ans.setItem(result);
-                    } else {
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                    }
-                } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-                } finally {
-                    resultSet.close();
-                }
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException exception) {
-                LOG.warn("Unable to close connection : " + exception.toString());
-            }
-        }
-
-        //sets the message
-        ans.setResultMessage(msg);
-        return ans;
-    }
-
-    @Override
-    public Answer create2(Invariant object) {
+    public Answer create(Invariant object) {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
         query.append("INSERT INTO invariant (`idname`, `value`, `sort`, `description`, `VeryShortDesc`, `gp1`, `gp2`, `gp3`, `gp4`, `gp5`, `gp6`, `gp7`, `gp8`, `gp9`) ");
@@ -844,7 +749,7 @@ public class InvariantDAO implements IInvariantDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
-                int i=1;
+                int i = 1;
                 preStat.setString(i++, object.getIdName());
                 preStat.setString(i++, object.getValue());
                 preStat.setInt(i++, object.getSort());
@@ -894,7 +799,7 @@ public class InvariantDAO implements IInvariantDAO {
     }
 
     @Override
-    public Answer delete2(Invariant object) {
+    public Answer delete(Invariant object) {
         MessageEvent msg = null;
         final String query = "DELETE FROM invariant WHERE idname = ? and `value` = ?";
 
@@ -937,19 +842,23 @@ public class InvariantDAO implements IInvariantDAO {
     }
 
     @Override
-    public Answer update2(Invariant object) {
+    public Answer update(String idname, String value, Invariant object) {
         MessageEvent msg = null;
-        final String query = "UPDATE invariant SET sort = ?, Description = ?, VeryShortDesc = ?, gp1 = ?, gp2 = ?, gp3 = ?, gp4 = ?, gp5 = ?, gp6 = ?, gp7 = ?, gp8 = ?, gp9 = ?  WHERE idname = ? and `value` = ?";
+        final String query = "UPDATE invariant SET idname = ?, `value` = ?, sort = ?, Description = ?, VeryShortDesc = ?, gp1 = ?, gp2 = ?, gp3 = ?, gp4 = ?, gp5 = ?, gp6 = ?, gp7 = ?, gp8 = ?, gp9 = ?  WHERE idname = ? and `value` = ?";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.idname : " + idname);
+            LOG.debug("SQL.param.value : " + value);
         }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
-                int i=1;
+                int i = 1;
+                preStat.setString(i++, object.getIdName());
+                preStat.setString(i++, object.getValue());
                 preStat.setInt(i++, object.getSort());
                 preStat.setString(i++, object.getDescription());
                 preStat.setString(i++, object.getVeryShortDesc());
@@ -962,8 +871,8 @@ public class InvariantDAO implements IInvariantDAO {
                 preStat.setString(i++, object.getGp7());
                 preStat.setString(i++, object.getGp8());
                 preStat.setString(i++, object.getGp9());
-                preStat.setString(i++, object.getIdName());
-                preStat.setString(i++, object.getValue());
+                preStat.setString(i++, idname);
+                preStat.setString(i++, value);
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);

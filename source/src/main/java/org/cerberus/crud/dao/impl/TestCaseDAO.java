@@ -1611,10 +1611,12 @@ public class TestCaseDAO implements ITestCaseDAO {
     }
 
     @Override
-    public Answer update(TestCase tc) {
+    public Answer update(String keyTest, String keyTestCase, TestCase tc) {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder("UPDATE testcase SET");
 
+        query.append(" test = ?,");
+        query.append(" testcase = ?,");
         query.append(" implementer = ?,");
         query.append(" project = ?,");
         query.append(" ticket = ?,");
@@ -1657,6 +1659,8 @@ public class TestCaseDAO implements ITestCaseDAO {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
                 int i = 1;
+                preStat.setString(i++, tc.getTest());
+                preStat.setString(i++, tc.getTestCase());
                 preStat.setString(i++, tc.getImplementer());
                 preStat.setString(i++, tc.getProject());
                 preStat.setString(i++, tc.getTicket());
@@ -1687,8 +1691,8 @@ public class TestCaseDAO implements ITestCaseDAO {
                 preStat.setString(i++, tc.getConditionOper());
                 preStat.setString(i++, tc.getConditionVal1());
                 preStat.setString(i++, tc.getConditionVal2());
-                preStat.setString(i++, tc.getTest());
-                preStat.setString(i++, tc.getTestCase());
+                preStat.setString(i++, keyTest);
+                preStat.setString(i++, keyTestCase);
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -1779,7 +1783,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                 msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT"));
 
             } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
+                LOG.error("Unable to execute query : " + exception.toString(), exception);
 
                 if (exception.getSQLState().equals(SQL_DUPLICATED_CODE)) { //23000 is the sql state for duplicate entries
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_DUPLICATE);

@@ -46,20 +46,7 @@ public interface ITestService {
      */
     List<Test> getListOfTest();
 
-    /**
-     *
-     * @param test need to be created in database
-     * @return TRUE if test have been inserted successfully
-     * @throws org.cerberus.exception.CerberusException
-     */
-    boolean createTest(Test test) throws CerberusException;
 
-    /**
-     *
-     * @param test need to be deleted in database
-     * @return TRUE if test have been deleted successfully
-     */
-    boolean deleteTest(Test test);
 
     /**
      *
@@ -76,10 +63,26 @@ public interface ITestService {
     
     public AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
+    /**
+     *
+     * @param test
+     * @return
+     */
     public Answer create(Test test);
 
-    public Answer update(Test test);
+    /**
+     *
+     * @param keyTest
+     * @param test
+     * @return
+     */
+    public Answer update(String keyTest, Test test);
     
+    /**
+     *
+     * @param test
+     * @return
+     */
     public Answer delete(Test test);
     
     /**

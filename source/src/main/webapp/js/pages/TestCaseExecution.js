@@ -33,7 +33,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
 });
 
 //global bool that say if the execution is manual
-var isTheExecutionManual =false;
+var isTheExecutionManual = false;
 function loadExecutionInformation(executionId, stepList, sockets) {
 
     $.ajax({
@@ -103,9 +103,9 @@ function initPage(id) {
         $(".affix").width($("#page-layout").width() - 3);
     });
 
-    $("#editTcInfo").prop("disabled", true);
-    $("#runTestCase").prop("disabled", true);
-    $("#lastExecution").prop("disabled", true);
+    $("#editTcInfo").attr("disabled", true);
+    $("#runTestCase").attr("disabled", true);
+    $("#lastExecution").attr("disabled", true);
 
     $("#runOld").click(function () {
         window.location = "TestCaseExecution.jsp?executionId=" + id;
@@ -189,19 +189,34 @@ function updatePage(data, stepList) {
 
     sortData(data.testCaseStepExecutionList);
 
-    $("#editTcInfo").prop("disabled", false);
-    $("#runTestCase").prop("disabled", false);
-    $("#lastExecution").prop("disabled", false);
+    if (data.testCaseObj === undefined) {
+        console.info("testcase not exist.");
+        $("#editTcInfo").attr("disabled", true);
+        $("#editTcInfo").attr("href", "#");
+        $("#editTcStepInfo").attr("disabled", true);
+        $("#editTcStepInfo").attr("href", "#");
+        $("#editTcToggleButton").unbind("click");
+        $("#runTestCase").attr("disabled", true);
+        $("#runTestCase").attr("href", "#");
+    } else {
+        $("#editTcInfo").attr("disabled", false);
+        $("#editTcInfo").attr("href", "TestCaseScript.jsp?test=" + data.test + "&testcase=" + data.testcase);
+        $("#editTcStepInfo").attr("disabled", false);
+        $("#editTcStepInfo").attr("href", "TestCaseScript.jsp?test=" + data.test + "&testcase=" + data.testcase);
+        $("#editTcToggleButton").click(function () {
+            setLinkOnEditTCStepInfoButton();
+        });
 
-    $("#editTcToggleButton").click(function () {
-        setLinkOnEditTCStepInfoButton();
-    });
+        $("#runTestCase").attr("disabled", false);
+        $("#runTestCase").attr("href", "RunTests.jsp?test=" + data.test + "&testcase=" + data.testcase + "&country=" + data.country + "&environment=" + data.environment + "&browser=" + data.browser + "&tag=" + data.tag);
+    }
 
-    $("#editTcStepInfo").attr("href", "TestCaseScript.jsp?test=" + data.test + "&testcase=" + data.testcase);
-    $("#editTcInfo").attr("href", "TestCaseScript.jsp?test=" + data.test + "&testcase=" + data.testcase);
-    $("#runTestCase").attr("href", "RunTests.jsp?test=" + data.test + "&testcase=" + data.testcase + "&country=" + data.country + "&environment=" + data.environment + "&browser=" + data.browser + "&tag=" + data.tag);
-    $("#ExecutionByTag").attr("href", "ReportingExecutionByTag.jsp?Tag=" + data.tag);
+    $("#lastExecution").attr("disabled", false);
     $("#lastExecution").attr("href", "TestCaseExecutionList.jsp?test=" + data.test + "&testcase=" + data.testcase);
+
+
+
+    $("#ExecutionByTag").attr("href", "ReportingExecutionByTag.jsp?Tag=" + data.tag);
     $("#lastExecutionwithEnvCountry").attr("href", "TestCaseExecutionList.jsp?test=" + data.test + "&testcase=" + data.testcase + "&country=" + data.country + "&environment=" + data.environment + "&application=" + data.application);
 
     if (isEmpty(data.queueId) || (data.queueId === 0)) {
@@ -232,30 +247,32 @@ function updatePage(data, stepList) {
             success: function (dataApp) {
                 var link;
                 var newBugURL = dataApp.contentTable.bugTrackerNewUrl;
-                if ((data.testCaseObj.bugId == undefined || data.testCaseObj.bugId == "") && newBugURL != undefined) {
-                    newBugURL = newBugURL.replace("%EXEID%", data.id);
-                    newBugURL = newBugURL.replace("%EXEDATE%", new Date(data.start).toLocaleString());
-                    newBugURL = newBugURL.replace("%TEST%", data.test);
-                    newBugURL = newBugURL.replace("%TESTCASE%", data.testcase);
-                    newBugURL = newBugURL.replace("%TESTCASEDESC%", data.testCaseObj.description);
-                    newBugURL = newBugURL.replace("%COUNTRY%", data.country);
-                    newBugURL = newBugURL.replace("%ENV%", data.environment);
-                    newBugURL = newBugURL.replace("%BUILD%", data.build);
-                    newBugURL = newBugURL.replace("%REV%", data.revision);
-                    newBugURL = newBugURL.replace("%BROWSER%", data.browser);
-                    newBugURL = newBugURL.replace("%BROWSERFULLVERSION%", data.browserFullVersion);
-                    link = $('<a target="_blank" id="bugID">').attr("href", newBugURL).append($("<button class='btn btn-default btn-block'>").text("Open a new bug"));
-                } else {
-                    newBugURL = dataApp.contentTable.bugTrackerUrl;
-                    if (newBugURL != undefined && newBugURL != "") {
-                        newBugURL = newBugURL.replace("%BUGID%", data.testCaseObj.bugId);
-                        link = $('<a target="_blank" id="bugID">').attr("href", newBugURL).append($("<button class='btn btn-default btn-block'>").text(data.testCaseObj.bugId));
+                if (data.testCaseObj !== undefined) {
+                    if ((data.testCaseObj.bugId === undefined || data.testCaseObj.bugId === "") && newBugURL !== undefined) {
+                        newBugURL = newBugURL.replace("%EXEID%", data.id);
+                        newBugURL = newBugURL.replace("%EXEDATE%", new Date(data.start).toLocaleString());
+                        newBugURL = newBugURL.replace("%TEST%", data.test);
+                        newBugURL = newBugURL.replace("%TESTCASE%", data.testcase);
+                        newBugURL = newBugURL.replace("%TESTCASEDESC%", data.testCaseObj.description);
+                        newBugURL = newBugURL.replace("%COUNTRY%", data.country);
+                        newBugURL = newBugURL.replace("%ENV%", data.environment);
+                        newBugURL = newBugURL.replace("%BUILD%", data.build);
+                        newBugURL = newBugURL.replace("%REV%", data.revision);
+                        newBugURL = newBugURL.replace("%BROWSER%", data.browser);
+                        newBugURL = newBugURL.replace("%BROWSERFULLVERSION%", data.browserFullVersion);
+                        link = $('<a target="_blank" id="bugID">').attr("href", newBugURL).append($("<button class='btn btn-default btn-block'>").text("Open a new bug"));
                     } else {
-                        link = $("<span>").text(data.testCaseObj.bugId);
+                        newBugURL = dataApp.contentTable.bugTrackerUrl;
+                        if (newBugURL !== undefined && newBugURL !== "") {
+                            newBugURL = newBugURL.replace("%BUGID%", data.testCaseObj.bugId);
+                            link = $('<a target="_blank" id="bugID">').attr("href", newBugURL).append($("<button class='btn btn-default btn-block'>").text(data.testCaseObj.bugId));
+                        } else {
+                            link = $("<span>").text(data.testCaseObj.bugId);
+                        }
                     }
+                    $("#bugID").append(link);
+                    $("#bugID").data("appBugURL", "true");
                 }
-                $("#bugID").append(link);
-                $("#bugID").data("appBugURL", "true");
             }
         });
     }
@@ -909,11 +926,10 @@ Step.prototype.draw = function () {
     } else if (object.returnCode === "FA") {
         htmlElement.append($("<span>").addClass("glyphicon glyphicon-alert pull-left"));
         object.html.addClass("list-group-item-warning");
-    }
-    else if (object.returnCode === "NE" && isTheExecutionManual) {
+    } else if (object.returnCode === "NE" && isTheExecutionManual) {
         htmlElement.append($("<span>").addClass("glyphicon glyphicon-question-sign pull-left"));
         object.html.addClass("list-group-item-black");
-    }else {
+    } else {
         htmlElement.prepend($("<span>").addClass("glyphicon glyphicon-alert pull-left"));
         object.html.addClass("list-group-item-warning");
     }
@@ -932,13 +948,11 @@ Step.prototype.update = function (idStep) {
         className = "list-group-item-danger";
         glyphiconName = "glyphicon-remove";
         glyphiconColor = "text-danger";
-    }
-    else if (this.returnCode === "FA") {
+    } else if (this.returnCode === "FA") {
         className = "list-group-item-warning";
         glyphiconName = "glyphicon-alert";
         glyphiconColor = "text-warning";
-    }
-    else if (this.returnCode === "OK") {
+    } else if (this.returnCode === "OK") {
         className = "list-group-item-success";
         glyphiconName = "glyphicon-ok";
         glyphiconColor = "text-success";
@@ -1429,53 +1443,52 @@ function updateActionControlReturnCode(idElementTriggers, returnCodeElementTrigg
     $(".itemContainer").each(function () {
 
         var idCurrentElement = $(this).data("id");
-        var isBeforeTheElementTrigger =false;
+        var isBeforeTheElementTrigger = false;
         var isTheElementTrigger = (idCurrentElement === idElementTriggers);
 
         var currentActionControlReturnCode = $(this).data("item").returnCode;
         //if a change in return code is possible on this action or control
-        if (returnCodeElementTrigger !== currentActionControlReturnCode){
+        if (returnCodeElementTrigger !== currentActionControlReturnCode) {
             //look if the current action or control is the one trigger
             var isTheElementTrigger = (idCurrentElement === idElementTriggers);
             //look if the current action or control is before the one trigger
-            if ( !isTheElementTrigger ) {
+            if (!isTheElementTrigger) {
                 var idName = ["stepId", "actionId", "controlId"];
                 for (var i = 0; i < 3; i++) {
                     if (idCurrentElement[idName[i]] !== idElementTriggers[idName[i]]) {
                         if (idCurrentElement[idName[i]] < idElementTriggers[idName[i]]) {
                             isBeforeTheElementTrigger = true;
-                        }
-                        else if (idCurrentElement[idName[i]] === -1 && idElementTriggers[idName[i]] !== -1) {
+                        } else if (idCurrentElement[idName[i]] === -1 && idElementTriggers[idName[i]] !== -1) {
                             isBeforeTheElementTrigger = true;
                         }
                         break;
                     }
                 }
             }
-            var updateStepNeeded =false;
+            var updateStepNeeded = false;
             //change the returnCode of the one trigger
-            if( isTheElementTrigger ){
+            if (isTheElementTrigger) {
                 $(this).data("item").returnCode = returnCodeElementTrigger;
-                updateStepNeeded =true;
+                updateStepNeeded = true;
             }
-            if ( isBeforeTheElementTrigger ){
+            if (isBeforeTheElementTrigger) {
                 //change the returnCode if it's untouched
-                if( currentActionControlReturnCode === "NE") {
+                if (currentActionControlReturnCode === "NE") {
                     //change the return code
                     $(this).data("item").returnCode = "OK";
                     $(this).parent().next("div").find("input[id='returncode']").val("OK").change();
-                    updateStepNeeded =true;
+                    updateStepNeeded = true;
                 }
             }
             //An action or a control was changed the step need to be updated
-            if ( updateStepNeeded ){
+            if (updateStepNeeded) {
                 //update the element's step triggered
                 updateStepExecutionReturnCode(idElementTriggers.stepId, returnCodeElementTrigger, true);
                 //then update all the previous step if they are untouched
-                for (var idStep = 0; idStep < idElementTriggers.stepId ; idStep++) {// update all the step below the element trigger
+                for (var idStep = 0; idStep < idElementTriggers.stepId; idStep++) {// update all the step below the element trigger
                     var currentStep = $("#stepList").data("listOfStep")[ idStep ];
                     //if previous element are untouch
-                    if ( currentStep.returnCode === "NE"){
+                    if (currentStep.returnCode === "NE") {
                         updateStepExecutionReturnCode(idStep, "OK", false);
                     }
                 }
@@ -1495,18 +1508,16 @@ function updateActionControlReturnCode(idElementTriggers, returnCodeElementTrigg
  * @param {type} isStepDisplayed
  * @returns {void}
  */
-function updateStepExecutionReturnCode(stepId, returnCodeActionControlTrigger, isStepDisplayed){
+function updateStepExecutionReturnCode(stepId, returnCodeActionControlTrigger, isStepDisplayed) {
 
     var newStepReturnCode = null;
     var currentStep = $("#stepList").data("listOfStep")[stepId]
-    if ( returnCodeActionControlTrigger !== currentStep.returnCode) {
+    if (returnCodeActionControlTrigger !== currentStep.returnCode) {
         if (returnCodeActionControlTrigger === "KO") {
             newStepReturnCode = "KO";
-        }
-        else if (returnCodeActionControlTrigger === "FA" && currentStep.returnCode !=="KO") {
+        } else if (returnCodeActionControlTrigger === "FA" && currentStep.returnCode !== "KO") {
             newStepReturnCode = "FA";
-        }
-        else if (returnCodeActionControlTrigger === "OK") {
+        } else if (returnCodeActionControlTrigger === "OK") {
 
             var everyActionAndControlOK = true;
             var returnMessageCanBeReset = true;
@@ -1518,28 +1529,26 @@ function updateStepExecutionReturnCode(stepId, returnCodeActionControlTrigger, i
 
                     if ($(this).data("item").returnCode === "KO") {
                         newStepReturnCode = "KO";
-                        everyActionAndControlOK =false;
-                        returnMessageCanBeReset =false;
-                    }
-                    else if ( newStepReturnCode !== "KO" && $(this).data("item").returnCode === "FA"){
+                        everyActionAndControlOK = false;
+                        returnMessageCanBeReset = false;
+                    } else if (newStepReturnCode !== "KO" && $(this).data("item").returnCode === "FA") {
                         newStepReturnCode = "FA";
-                        everyActionAndControlOK =false;
-                        returnMessageCanBeReset =false;
-                    }
-                    else if ( newStepReturnCode !== "KO" && newStepReturnCode !== "FA" && $(this).data("item").returnCode === "NE"){
-                        everyActionAndControlOK =false;
+                        everyActionAndControlOK = false;
+                        returnMessageCanBeReset = false;
+                    } else if (newStepReturnCode !== "KO" && newStepReturnCode !== "FA" && $(this).data("item").returnCode === "NE") {
+                        everyActionAndControlOK = false;
                     }
                 }
             });
             //the last step's action or control was check and no option FA or KO was selected we set the step to OK by default
             if (everyActionAndControlOK) {
                 newStepReturnCode = "OK";
-            //reset to defaut
-            }else if (returnMessageCanBeReset){
+                //reset to defaut
+            } else if (returnMessageCanBeReset) {
                 newStepReturnCode = "NE";
             }
         }
-        if ( newStepReturnCode !== null ){
+        if (newStepReturnCode !== null) {
             //update step return code
             var stepUpdated = $("#stepList").data("listOfStep")[ stepId ];
             stepUpdated.returnCode = newStepReturnCode;
@@ -1553,13 +1562,11 @@ function updateStepExecutionReturnCode(stepId, returnCodeActionControlTrigger, i
                 className = "list-group-item-danger";
                 glyphiconName = "glyphicon-remove";
                 glyphiconColor = "text-danger";
-            }
-            else if (newStepReturnCode === "FA") {
+            } else if (newStepReturnCode === "FA") {
                 className = "list-group-item-warning";
                 glyphiconName = "glyphicon-alert";
                 glyphiconColor = "text-warning";
-            }
-            else if (newStepReturnCode === "OK") {
+            } else if (newStepReturnCode === "OK") {
                 className = "list-group-item-success";
                 glyphiconName = "glyphicon-ok";
                 glyphiconColor = "text-success";
@@ -1574,7 +1581,7 @@ function updateStepExecutionReturnCode(stepId, returnCodeActionControlTrigger, i
             }).addClass(glyphiconName);
 
             //if the current step is the one displayed at the center of the screen
-            if (isStepDisplayed){
+            if (isStepDisplayed) {
                 var glyphIcon = $($("#stepInfo h2")[0]).removeClass(function (index, className) {
                     return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
                 });
@@ -1596,31 +1603,28 @@ function updateTestCaseReturnCode() {
 
     var testCaseNewReturnCode = null;
     // go tough every step to see if the testCase need to be update
-    for (var idStep = 0; idStep < $("#stepList").data("listOfStep").length ; idStep++) {
+    for (var idStep = 0; idStep < $("#stepList").data("listOfStep").length; idStep++) {
         var currentStep = $("#stepList").data("listOfStep")[idStep];
         //a step is not complete no need to go further in the list of step
-        if (currentStep.returnCode === "NE"){
-            if( testCaseNewReturnCode !== "FA" && testCaseNewReturnCode !== "KO")
+        if (currentStep.returnCode === "NE") {
+            if (testCaseNewReturnCode !== "FA" && testCaseNewReturnCode !== "KO")
                 testCaseNewReturnCode = "NE";
             break;//no need to continue
-        }
-        else if (currentStep.returnCode === "OK" && testCaseNewReturnCode ===null){
+        } else if (currentStep.returnCode === "OK" && testCaseNewReturnCode === null) {
             testCaseNewReturnCode = "OK";
-        }
-        else if (currentStep.returnCode === "FA" && testCaseNewReturnCode !=="KO"){
+        } else if (currentStep.returnCode === "FA" && testCaseNewReturnCode !== "KO") {
             testCaseNewReturnCode = "FA";
-        }
-        else if (currentStep.returnCode === "KO"){
+        } else if (currentStep.returnCode === "KO") {
             testCaseNewReturnCode = "KO";
         }
     }
 
     var configPanel = $("#testCaseConfig");
-    if ( testCaseNewReturnCode !==null && testCaseNewReturnCode !==  configPanel.find("#controlstatus").val()){
+    if (testCaseNewReturnCode !== null && testCaseNewReturnCode !== configPanel.find("#controlstatus").val()) {
 
         removeColorClass(configPanel.find("#controlstatus"));
         removeColorClass(configPanel.find("#exReturnMessage"));
-        var controlMessage =null;
+        var controlMessage = null;
 
         if (testCaseNewReturnCode === "PE") {
             configPanel.find("#controlstatus").addClass("text-primary");
@@ -1994,7 +1998,7 @@ function triggerControlExecution(element, id, status) {
         $(currentElement).next("div").find("input[id='returncode']").val("OK").change();
         $(currentElement).next("div").find("input[id='returncode']").attr("data-modified", "true");
         $(currentElement).next("div").find("input[id='returnmessage']").val("Action manually executed").change();
-        newReturnCode ="OK";
+        newReturnCode = "OK";
     } else {
         currentElement.removeClass(function (index, className) {
             return (className.match(/(^|\s)list-group-item-\S+/g) || []).join(' ');
@@ -2006,7 +2010,7 @@ function triggerControlExecution(element, id, status) {
         $(currentElement).next("div").find("input[id='returncode']").val("KO").change();
         $(currentElement).next("div").find("input[id='returncode']").attr("data-modified", "true");
         $(currentElement).next("div").find("input[id='returnmessage']").val("Action manually executed").change();
-        newReturnCode ="KO";
+        newReturnCode = "KO";
     }
 
     //Modify style of action of the current actiongroup that have not been modified yet

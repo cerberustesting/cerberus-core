@@ -41,7 +41,6 @@ function displayPageLabel() {
     displayFooter(doc);
 }
 
-
 function feedContent() {
 
     var jqxhr = $.getJSON("ReadCerberusDetailInformation");
@@ -179,7 +178,6 @@ function feedContent() {
 
 }
 
-
 function FormatedExeId(id) {
     if (id === 0) {
         return id
@@ -194,10 +192,4 @@ function FormatedTag(tag) {
     } else {
         return "<a href='ReportingExecutionByTag.jsp?Tag=" + tag + "'>" + tag + "</a>";
     }
-}
-
-function resetThreadPool() {
-    $.get('ExecutionThreadReset', function (data) {
-        alert('Thread Pool Cleaned');
-    });
 }

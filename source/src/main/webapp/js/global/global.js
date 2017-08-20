@@ -105,7 +105,7 @@ function displayInvariantList(selectName, idName, forceReload, defaultValue, add
                 if (defaultValue !== undefined) {
                     $("[name='" + selectName + "']").val(defaultValue);
                 }
-            }
+                    }
         });
     } else {
         for (var index = 0; index < list.length; index++) {
@@ -117,8 +117,8 @@ function displayInvariantList(selectName, idName, forceReload, defaultValue, add
         if (defaultValue !== undefined) {
             $("[name='" + selectName + "']").val(defaultValue);
         }
-    }
-}
+            }
+        }
 
 /**
  * Method that return a list of value retrieved from the invariant list
@@ -1760,7 +1760,7 @@ function displayColumnSearchForClientSideTable(tableData, tableId, oSettings) {
                                     filterForFnFilter += newValue[i] + "|";
                                 }
                                 filterForFnFilter = filterForFnFilter.slice(0, -1);
-                                $("#" + tableId).dataTable().fnFilter("^"+filterForFnFilter+"$", index, true);
+                                $("#" + tableId).dataTable().fnFilter("^" + filterForFnFilter + "$", index, true);
 
                             }
                         });
@@ -2847,4 +2847,10 @@ function defineAceMode(text) {
 function jsonPost(conf) {
     conf.contentType = 'application/json;charset=UTF-8';
     $.post(conf);
+}
+
+function getSys() {
+    var sel = document.getElementById("MySystem");
+    var selectedIndex = sel.selectedIndex;
+    return sel.options[selectedIndex].value;
 }

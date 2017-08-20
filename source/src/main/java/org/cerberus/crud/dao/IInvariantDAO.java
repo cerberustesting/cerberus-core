@@ -19,14 +19,13 @@
  */
 package org.cerberus.crud.dao;
 
+import java.util.List;
+import java.util.Map;
 import org.cerberus.crud.entity.Invariant;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * {Insert class description here}
@@ -38,12 +37,13 @@ import java.util.Map;
 public interface IInvariantDAO {
 
     /**
-     * @param idName
+     * Get a {@link Invariant} in database
+     *
+     * @param id
      * @param value
      * @return
-     * @throws CerberusException
      */
-    Invariant readByKey(String idName, String value) throws CerberusException;
+    AnswerItem readByKey(String id, String value);
 
     /**
      * @param idName
@@ -71,6 +71,8 @@ public interface IInvariantDAO {
     public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch, String PublicPrivateFilter);
 
     /**
+     * @param start
+     * @param amount
      * @param column
      * @param dir
      * @param searchTerm
@@ -78,7 +80,6 @@ public interface IInvariantDAO {
      * @param PublicPrivateFilter
      * @return
      */
-
     public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, String PublicPrivateFilter);
 
     /**
@@ -87,9 +88,9 @@ public interface IInvariantDAO {
      * @param searchTerm
      * @param individualSearch
      * @param PublicPrivateFilter
+     * @param columnName
      * @return
      */
-
     public AnswerList readDistinctValuesByCriteria(String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, String PublicPrivateFilter, String columnName);
 
     /**
@@ -100,18 +101,7 @@ public interface IInvariantDAO {
      * @param nbdays
      * @return
      */
-    public AnswerList readInvariantCountryListEnvironmentLastChanges(String system, Integer nbdays);
-
-    public Integer getNumberOfInvariant(String searchTerm, String PublicPrivateFilter) throws CerberusException;
-
-    /**
-     * Get a {@link Invariant} in database
-     *
-     * @param id
-     * @param value
-     * @return
-     */
-    AnswerItem readByKey2(String id, String value);
+    public AnswerList readCountryListEnvironmentLastChanges(String system, Integer nbdays);
 
     /**
      * Create an {@link Invariant} in database
@@ -119,7 +109,7 @@ public interface IInvariantDAO {
      * @param object
      * @return
      */
-    Answer create2(Invariant object);
+    Answer create(Invariant object);
 
     /**
      * Delete an {@link Invariant} in database
@@ -127,13 +117,15 @@ public interface IInvariantDAO {
      * @param object
      * @return
      */
-    Answer delete2(Invariant object);
+    Answer delete(Invariant object);
 
     /**
      * Update an {@link Invariant} in database
      *
+     * @param idname
+     * @param value
      * @param object
      * @return
      */
-    Answer update2(Invariant object);
+    Answer update(String idname, String value, Invariant object);
 }

@@ -66,6 +66,7 @@ function displayPageLabel() {
     displayHeaderLabel(doc);
     $("#pageTitle").html(doc.getDocLabel("page_application", "title"));
     $("#title").html(doc.getDocOnline("page_application", "title"));
+    $("#applicationListLabel").html(doc.getDocLabel("page_application", "table_application"));
     $("[name='createApplicationField']").html(doc.getDocLabel("page_application", "button_create"));
     $("[name='confirmationField']").html(doc.getDocLabel("page_application", "button_delete"));
     $("[name='editApplicationField']").html(doc.getDocLabel("page_application", "button_edit"));

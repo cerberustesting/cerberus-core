@@ -89,7 +89,7 @@ public interface IBuildRevisionInvariantDAO {
      * @param buildRevisionInvariant
      * @return
      */
-    Answer update(BuildRevisionInvariant buildRevisionInvariant);
+    Answer update(String system, Integer level, Integer seq, BuildRevisionInvariant buildRevisionInvariant);
 
     /**
      *

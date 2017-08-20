@@ -19,12 +19,7 @@
  */
 package org.cerberus.crud.service;
 
-import org.cerberus.crud.service.ITestService;
-import junit.framework.Assert;
-import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.factory.IFactoryTest;
-import org.junit.Ignore;
-import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -39,25 +34,4 @@ public class TestServiceTest {
     @Autowired
     private ITestService testService;
 
-    @Ignore
-    @Test
-    public void testCreateTestInDatabase() throws CerberusException {
-        boolean result;
-        boolean expected = true;
-
-        result = testService.createTest(factoryTest.create("TestServiceTest", "TestDescription", "Y", "Y", null));
-
-        Assert.assertEquals(expected, result);
-    }
-
-    @Ignore
-    @Test
-    public void testDeleteTestInDatabase() {
-        boolean result;
-        boolean expected = true;
-
-        result = testService.deleteTest(factoryTest.create("TestServiceTest", "TestDescription", "Y", "Y", null));
-
-        Assert.assertEquals(expected, result);
-    }
 }

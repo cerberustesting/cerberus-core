@@ -21,7 +21,7 @@ package org.cerberus.crud.service;
 
 import java.util.List;
 import java.util.Map;
-
+import javax.servlet.http.HttpServletRequest;
 import org.cerberus.crud.entity.Parameter;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
@@ -162,6 +162,7 @@ public interface IParameterService extends Observable<String, Parameter> {
      *
      * @param system the system of the {@link Parameter} to get
      * @param param the param of the {@link Parameter} to get
+     * @return 
      */
     AnswerItem readByKey(String system, String param);
 
@@ -188,4 +189,45 @@ public interface IParameterService extends Observable<String, Parameter> {
      * @return {@link AnswerItem}
      */
     Answer save(Parameter object);
+
+    /**
+     *
+     * @param parameter
+     * @param request
+     * @return
+     */
+    boolean hasPermissionsRead(Parameter parameter, HttpServletRequest request);
+
+    /**
+     *
+     * @param parameter
+     * @param request
+     * @return
+     */
+    boolean hasPermissionsUpdate(Parameter parameter, HttpServletRequest request);
+
+    /**
+     *
+     * @param parameter
+     * @param request
+     * @return
+     */
+    boolean hasPermissionsUpdate(String parameter, HttpServletRequest request);
+
+    /**
+     *
+     * @param parameter
+     * @param request
+     * @return
+     */
+    boolean hasPermissionsCreate(Parameter parameter, HttpServletRequest request);
+
+    /**
+     *
+     * @param parameter
+     * @param request
+     * @return
+     */
+    boolean hasPermissionsDelete(Parameter parameter, HttpServletRequest request);
+
 }

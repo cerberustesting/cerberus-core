@@ -80,7 +80,7 @@ public interface IAppServiceContentDAO {
      * @param object
      * @return
      */
-    Answer update(AppServiceContent object);
+    Answer update(String service, String key, AppServiceContent object);
 
     /**
      * Uses data of ResultSet to create object {@link AppServiceContent}

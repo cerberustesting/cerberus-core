@@ -110,10 +110,11 @@ public interface IApplicationService {
 
     /**
      *
+     * @param application
      * @param object
      * @return
      */
-    Answer update(Application object);
+    Answer update(String application, Application object);
 
     /**
      *
