@@ -49,7 +49,6 @@
                         <div class="panel-body collapse in" id="cerberusActivity">
                             <div class="row">
                                 <div class="form-group col-xs-12">
-                                    <button type="button" class="btn btn-default" id="btnReset" name="btnReset"  onclick="resetThreadPool()">Reset Queue</button>
                                     <button type="button" class="btn btn-default" id="btnRefresh" name="btnRefresh"  onclick="feedContent()">Refresh</button>
                                 </div>
                             </div>
@@ -115,20 +114,6 @@
                                     </table>
                                 </div>
                             </div>
-                            <!--                            <div class="row">
-                                                            <div class="form-group col-xs-12">
-                                                                <table class="table table-bordered table-hover nomarginbottom dataTable" id="threadTable">
-                                                                    <thead>
-                                                                        <tr>
-                                                                            <th class="text-center" id="systemHeader" name="systemHeader">Number of Current and Pending Executions / Size of Execution Queue</th>
-                                                                            <th class="text-center" id="systemHeader" name="systemHeader">Number of Workers in Execution</th>
-                                                                        </tr>
-                                                                    </thead>
-                                                                    <tbody id="threadTableBody">
-                                                                    </tbody>
-                                                                </table>
-                                                            </div>
-                                                        </div>-->
                         </div>
                     </div>
                 </div>
