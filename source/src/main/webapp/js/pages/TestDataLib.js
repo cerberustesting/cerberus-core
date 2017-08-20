@@ -24,6 +24,11 @@ $.when($.getScript("js/global/global.js")).then(function () {
         $('.dataTable').DataTable().draw();
         //open navbar menu Data
         openNavbarMenu("navMenuData");
+        
+        $('[data-toggle="popover"]').popover({
+            'placement': 'auto',
+            'container': 'body'}
+        );
     });
 });
 

@@ -151,12 +151,20 @@ Doc.prototype.getDocOnline = function (docTable, docField) {
         if (!(this.table[docTable][docField].havedocDesc)) { // If the entry has no detail documentation, we do not display the ? with access to the detail.
             res = this.table[docTable][docField].docLabel;
         } else {
-            res = this.table[docTable][docField].docLabel + " <a class=\"docOnline\" href=\'javascript:popup(\"Documentation.jsp?DocTable=" + this.table[docTable][docField].docTable +
-                    "&DocField=" + this.table[docTable][docField].docField + "&Lang=" + user.language + "\")\' onclick=\"stopPropagation(event)\"><span class=\"glyphicon glyphicon-question-sign\"></span></a>";
+            var linkToDoc = "";
+            if (this.table[docTable][docField].haveDocAnchor) {
+                linkToDoc = "</br><br><a href='./Documentation1.jsp#" + this.table[docTable][docField].docAnchor + "'><span class=\"glyphicon glyphicon-search\"></span></a>";
+            }
+            res = this.table[docTable][docField].docLabel +
+            " <a data-html='true'  class=\"docOnline\" onclick=\"stopPropagation(event)\" \n\
+            data-toggle='popover' \n\
+            data-placement='auto' \n\
+            title='" + this.table[docTable][docField].docLabel + "' \n\
+            data-content='" + $("<div>" + this.table[docTable][docField].docDesc + linkToDoc + "</div>").prop('outerHTML') + "'>\n\
+            <span class=\"glyphicon glyphicon-question-sign\"></span></a>";
         }
     } catch (err) {
-        res = docField + " <a class=\"nodoc\" href=\'javascript:popup(\"Documentation.jsp?DocTable=" + docTable +
-                "&DocField=" + docField + "&Lang=" + user.language + "\")\' onclick=\"stopPropagation(event)\"><span class=\"glyphicon glyphicon-exclamation-sign\"></span></a>";
+        res = docField + " <a class=\"nodoc\" onclick=\"stopPropagation(event)\"><span class=\"glyphicon glyphicon-exclamation-sign\"></span></a>";
     } finally {
         return res;
     }

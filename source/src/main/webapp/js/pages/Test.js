@@ -19,7 +19,7 @@
  */
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
-       initPage();
+        initPage();
 
         $("#editEntryButton").click(editEntryModalSaveHandler);
         $("#addEntryButton").click(addEntryModalSaveHandler);
@@ -30,6 +30,10 @@ $.when($.getScript("js/global/global.js")).then(function () {
         var config = new TableConfigurationsServerSide("testTable", "ReadTest", "contentTable", aoColumnsFunc(), [1, 'asc']);
         var table = createDataTableWithPermissions(config, renderOptionsForTest, "#testList", undefined, true);
 
+        $('[data-toggle="popover"]').popover({
+            'placement': 'auto',
+            'container': 'body'}
+        );
     });
 });
 

@@ -26,6 +26,10 @@ $.when($.getScript("js/global/global.js")).then(function () {
         initPageModalToEditObject();  
 
         displayModalLabel();
+        $('[data-toggle="popover"]').popover({
+            'placement': 'auto',
+            'container': 'body'}
+        );
     });
     
 });

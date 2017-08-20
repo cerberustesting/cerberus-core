@@ -415,6 +415,11 @@ $.when($.getScript("js/global/global.js")).then(function () {
         }
         //close all Navbar menu
         closeEveryNavbarMenu();
+        
+        $('[data-toggle="popover"]').popover({
+            'placement': 'auto',
+            'container': 'body'}
+        );
     });
 });
 

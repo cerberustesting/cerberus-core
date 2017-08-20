@@ -27,5 +27,5 @@ import org.cerberus.crud.entity.Documentation;
  */
 public interface IFactoryDocumentation {
     
-    Documentation create(String docTable,String docField,String docValue,String docLabel,String docDesc);
+    Documentation create(String docTable,String docField,String docValue,String docLabel,String docDesc, String anchor);
 }

@@ -24,6 +24,11 @@ $.when($.getScript("js/global/global.js")).then(function () {
         /* global */ sockets = [];
         initPage(executionId);
         loadExecutionInformation(executionId, stepList, sockets);
+        
+        $('[data-toggle="popover"]').popover({
+            'placement': 'auto',
+            'container': 'body'}
+        );
     });
 });
 

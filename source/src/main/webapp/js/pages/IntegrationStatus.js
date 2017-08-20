@@ -40,6 +40,11 @@ $.when($.getScript("js/global/global.js")).then(function () {
 
         //open Run navbar Menu
         openNavbarMenu("navMenuIntegration");
+        
+        $('[data-toggle="popover"]').popover({
+            'placement': 'auto',
+            'container': 'body'}
+        );
     });
 });
 

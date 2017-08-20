@@ -26,6 +26,10 @@ $.when($.getScript("js/global/global.js")).then(function () {
         $('body').tooltip({
             selector: '[data-toggle="tooltip"]'
         });
+        $('[data-toggle="popover"]').popover({
+            'placement': 'auto',
+            'container': 'body'}
+        );
 
         $("#tagSettingsModal").on('hidden.bs.modal', modalCloseHandler);
 

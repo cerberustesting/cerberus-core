@@ -23,6 +23,11 @@ $.when($.getScript("js/global/global.js")).then(function () {
         // we can reactivate the button to allow next update.
         $("#buttonApplyDatabase").removeAttr('disabled');
         console.info("Apply Button Reenabled.");
+        
+        $('[data-toggle="popover"]').popover({
+            'placement': 'auto',
+            'container': 'body'}
+        );
     });
 });
 
