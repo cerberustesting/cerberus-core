@@ -1360,7 +1360,7 @@ function loadApplicationObject(dataInit) {
             dataType: "json",
             success: function (data) {
                 for (var i = 0; i < data.contentTable.length; i++) {
-                    array.push(data.contentTable[i].object);
+                    array.push(data.contentTable[i]);
                 }
                 resolve(array);
             }
@@ -2482,6 +2482,28 @@ function addControlAndFocus(oldAction, control) {
     });
 }
 
+/**
+ * Find into tag array if object exist
+ * @param tagToUse
+ * @param label string to search
+ *
+ * @return a boolean : true if exist, false if not exist
+ */
+function objectIntoTagToUseExist(tagToUse, label) {
+    for(var i=0;i <= tagToUse.array.length;i++) {
+        var data = tagToUse.array[i];
+        if(data instanceof String) {
+            if(data==label)
+                return true;
+        } else {
+            if(data.object === label) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 var autocompleteAllFields, getTags, setTags;
 (function () {
     //var accessible only in closure
@@ -2531,7 +2553,7 @@ var autocompleteAllFields, getTags, setTags;
 
                             $(e).parent().parent().parent().parent().find("#ApplicationObjectImg").attr("src", "ReadApplicationObjectImage?application=" + tcInfo.application + "&object=" + name + "&time=" + new Date().getTime());
 
-                            if (TagsToUse[1].array.indexOf(name) < 0) {
+                            if (!objectIntoTagToUseExist(TagsToUse[1],name)) {
                                 objectNotExist = true;
                                 nameNotExist = name;
                                 typeNotExist = "applicationobject";
@@ -2540,7 +2562,7 @@ var autocompleteAllFields, getTags, setTags;
                             name = findname[0];
                             name = name.slice(1, name.length - 1);
 
-                            if (TagsToUse[2].array.indexOf(name) < 0) {
+                            if (!objectIntoTagToUseExist(TagsToUse[1],name)) {
                                 objectNotExist = true;
                                 nameNotExist = name;
                                 typeNotExist = "property";
