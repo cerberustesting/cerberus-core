@@ -69,5 +69,7 @@ public interface ISikuliService {
 
     public MessageEvent doSikuliVerifyElementPresent(Session session, String locator);
     
+    public MessageEvent doSikuliVerifyElementNotPresent(Session session, String locator);
+    
     public MessageEvent doSikuliVerifyTextInPage(Session session, String locator);
 }
