@@ -2492,6 +2492,10 @@ function addControlAndFocus(oldAction, control) {
 function objectIntoTagToUseExist(tagToUse, label) {
     for(var i=0;i <= tagToUse.array.length;i++) {
         var data = tagToUse.array[i];
+        if(data ==  undefined) {
+            continue;
+        }
+
         if(data instanceof String) {
             if(data==label)
                 return true;
