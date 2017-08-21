@@ -2490,13 +2490,13 @@ function addControlAndFocus(oldAction, control) {
  * @return a boolean : true if exist, false if not exist
  */
 function objectIntoTagToUseExist(tagToUse, label) {
-    for(var i=0;i <= tagToUse.array.length;i++) {
+    for(var i=0;i < tagToUse.array.length;i++) {
         var data = tagToUse.array[i];
         if(data ==  undefined) {
             continue;
         }
 
-        if(data instanceof String) {
+        if(typeof data === "string") {
             if(data==label)
                 return true;
         } else {
@@ -2551,6 +2551,7 @@ var autocompleteAllFields, getTags, setTags;
                     var i = betweenPercent.length - 1;
                     while (i >= 0) {
                         var findname = betweenPercent[i].match(/\.[^\.]*(\.|.$)/g);
+
                         if (betweenPercent[i].startsWith("%object.") && findname != null && findname.length > 0) {
                             name = findname[0];
                             name = name.slice(1, name.length - 1);
@@ -2566,7 +2567,7 @@ var autocompleteAllFields, getTags, setTags;
                             name = findname[0];
                             name = name.slice(1, name.length - 1);
 
-                            if (!objectIntoTagToUseExist(TagsToUse[1],name)) {
+                            if (!objectIntoTagToUseExist(TagsToUse[2],name)) {
                                 objectNotExist = true;
                                 nameNotExist = name;
                                 typeNotExist = "property";
