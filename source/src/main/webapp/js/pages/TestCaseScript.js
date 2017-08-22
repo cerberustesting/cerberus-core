@@ -393,7 +393,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
                 });
             });
 
-            $("#runTestCase").attr("onclick", "document.location.href='./RunTests.jsp?test=" + test + "&testcase=" + testcase + "'");
+            $("#runTestCase").attr("href", "RunTests.jsp?test=" + test + "&testcase=" + testcase);
             $("#seeLastExec").parent().attr("href", "./TestCaseExecutionList.jsp?test=" + test + "&testcase=" + testcase);
             $("#seeLogs").parent().attr("href", "./LogEvent.jsp?Test=" + test + "&TestCase=" + testcase);
 
