@@ -2590,12 +2590,25 @@ function autocompleteVariable(identifier, Tags) {
                 },
                 create: function () {
                     $(this).data('ui-autocomplete')._renderItem = function (ul, item) {
+                        $(ul).css("min-height","0px");
                         var icon = "";
-                        if (Tags[this.currentIndexTag].addAfter != "%") {
+                        var tag = Tags[this.currentIndexTag];
+                        if (tag.addAfter != "%") {
                             icon = "<span class='ui-corner-all glyphicon glyphicon-chevron-right' tabindex='-1' style='margin-top:3px; float:right;'></span>";
                         }
+                        // find corresponding data to use more information than item (application / filename etc)
+                        var object = tag.array.find(function (data) {
+                            if(item != undefined)
+                                return data.object === item.label;
+                            return false;
+                        });
+
+                        var hover="";
+                        if(object != null && object.screenshotfilename != undefined && object.screenshotfilename != null) {
+                            hover = 'data-toggle="tooltip" title="<img src=\'http://localhost:8080/Cerberus/ReadApplicationObjectImage?application='+object.application+'&object='+ object.object +'&time='+$.now()+'\' />"';
+                        }
                         return $("<li class='ui-menu-item'>")
-                                .append("<a class='ui-corner-all' tabindex='-1' style='height:100%'><span style='float:left;'>" + item.label + "</span>" + icon + "<span style='clear: both; display: block;'></span></a>")
+                                .append("<a class='ui-corner-all' tabindex='-1' style='height:100%' " + hover + " ><span style='float:left;'>" + item.label + "</span>" + icon + "<span style='clear: both; display: block;'></span></a>")
                                 .appendTo(ul);
                     };
                 },
@@ -2612,9 +2625,18 @@ function autocompleteVariable(identifier, Tags) {
                         while (tag < Tags.length && !found) {
                             //If We find the separator, then we filter with the already written part
                             if ((identifier.match(new RegExp(Tags[tag].regex)) || []).length > 0) {
+                                var arrayLabels = [];
+
+                                if (Tags[tag].regex === "%object\\.") {
+                                    Tags[tag].array.forEach(function (data) {
+                                        arrayLabels.push(data.object);
+                                    });
+                                } else {
+                                    arrayLabels = Tags[tag].array;
+                                }
                                 this.currentIndexTag = tag;
                                 var arrayToDisplay = $.ui.autocomplete.filter(
-                                        Tags[tag].array, extractLast(identifier, Tags[tag].regex));
+                                    arrayLabels, extractLast(identifier, Tags[tag].regex));
                                 if (Tags[tag].isCreatable && extractLast(identifier, Tags[tag].regex) != "") {
                                     arrayToDisplay.push(extractLast(identifier, Tags[tag].regex));
                                 }
@@ -2626,6 +2648,21 @@ function autocompleteVariable(identifier, Tags) {
                     }
                 },
                 focus: function () {
+                    $('a[data-toggle="tooltip"]').each(function (idx, data) {
+                        var direction="top";
+                        if(idx < 4) direction = "bottom";
+
+                        $(data).tooltip({
+                            animated: 'fade',
+                            placement: direction,
+                            html: true
+                        });
+
+                        var parent = $(data).parent().parent();
+                        if(parent.hasClass("ui-autocomplete")) {
+                            parent.css("min-height", "120px"); // add height to do place to display tooltip. else overflow:auto hide tooltip
+                        }
+                    });
                     // prevent value inserted on focus
                     return false;
                 },

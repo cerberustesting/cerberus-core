@@ -286,7 +286,7 @@ function displayHeaderLabel(doc) {
             }
         }
         $("#MyLang option[value=" + user.language + "]").attr("selected", "selected");
-        $("#MySystem option[value=" + user.defaultSystem + "]").attr("selected", "selected");
+        $("#MySystem option[value='" + user.defaultSystem + "']").attr("selected", "selected");
     }
 }
 

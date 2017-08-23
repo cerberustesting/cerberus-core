@@ -20,6 +20,10 @@
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
         initPage();
+        $('[data-toggle="popover"]').popover({
+            'placement': 'auto',
+            'container': 'body'}
+        );
     });
 });
 
@@ -30,7 +34,9 @@ function initPage() {
 
     var lang = $("#MyLang").val();
     var windowsHeight = $(window).height() + 'px';
-    $("#documentationFrame").attr("src", "./documentation/documentation_" + lang + ".html");
+    
+    var hash = window.location.hash.substr(1);
+    $("#documentationFrame").attr("src", "./documentation/documentation_" + lang + ".html#" + hash);
     $('#documentationFrame').css('height', windowsHeight);
 
     $('#documentationFrame').load(function () {

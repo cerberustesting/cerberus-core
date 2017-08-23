@@ -65,7 +65,8 @@ public class DocumentationDAO implements IDocumentationDAO {
                     if (resultSet.first()) {
                         String docLabel = resultSet.getString("DocLabel");
                         String description = resultSet.getString("DocDesc");
-                        result = factoryDocumentation.create(docTable, docField, docValue, docLabel, description);
+                        String docAnchor = resultSet.getString("DocAnchor");
+                        result = factoryDocumentation.create(docTable, docField, docValue, docLabel, description, docAnchor);
                     }else{
                         return null;
                     }
@@ -96,7 +97,7 @@ public class DocumentationDAO implements IDocumentationDAO {
     @Override
     public List<Documentation> findDocumentationsWithNotEmptyValueAndDescription(String docTable, String docField, String lang) {
         List<Documentation> result = new ArrayList<Documentation>();
-        final String query = "SELECT DocValue, DocDesc, DocLabel FROM documentation where DocTable = ? and docfield = ? and Lang = ? and docValue IS NOT NULL and length(docValue) > 1 AND length(docdesc) > 1";
+        final String query = "SELECT DocValue, DocDesc, DocLabel, DocAnchor FROM documentation where DocTable = ? and docfield = ? and Lang = ? and docValue IS NOT NULL and length(docValue) > 1 AND length(docdesc) > 1";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -112,8 +113,9 @@ public class DocumentationDAO implements IDocumentationDAO {
                         String docLabel = resultSet.getString("DocLabel");
                         String description = resultSet.getString("DocDesc");
                         String docValue = resultSet.getString("DocValue");
+                        String docAnchor = resultSet.getString("DocAnchor");
 
-                        result.add(factoryDocumentation.create(docTable, docField, docValue, docLabel, description));
+                        result.add(factoryDocumentation.create(docTable, docField, docValue, docLabel, description, docAnchor));
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
@@ -158,8 +160,9 @@ public class DocumentationDAO implements IDocumentationDAO {
                     while (resultSet.next()) {
                         String docLabel = resultSet.getString("DocLabel");
                         String description = resultSet.getString("DocDesc");
+                        String docAnchor = resultSet.getString("DocAnchor");
 
-                        result.add(factoryDocumentation.create(docTable, docField, "", docLabel, description));
+                        result.add(factoryDocumentation.create(docTable, docField, "", docLabel, description, docAnchor));
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
@@ -280,7 +283,7 @@ public class DocumentationDAO implements IDocumentationDAO {
     public List<Documentation> findAll(String lang) {
 
         List<Documentation> result = new ArrayList<Documentation>();
-        final String query = "SELECT DocTable, DocField, DocValue, DocLabel, DocDesc FROM documentation where Lang = ?";
+        final String query = "SELECT DocTable, DocField, DocValue, DocLabel, DocDesc, DocAnchor FROM documentation where Lang = ?";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -295,8 +298,9 @@ public class DocumentationDAO implements IDocumentationDAO {
                         String value = resultSet.getString("DocValue");
                         String label = resultSet.getString("DocLabel");
                         String description = resultSet.getString("DocDesc");
+                        String docAnchor = resultSet.getString("DocAnchor");
 
-                        result.add(factoryDocumentation.create(table, field, value, label, description));
+                        result.add(factoryDocumentation.create(table, field, value, label, description, docAnchor));
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
@@ -326,7 +330,7 @@ public class DocumentationDAO implements IDocumentationDAO {
     @Override
     public List<Documentation> findAllWithEmptyDocValue(String lang) {
         List<Documentation> result = new ArrayList<Documentation>();
-        final String query = "SELECT DocTable, DocField, DocValue, DocLabel, DocDesc FROM documentation where Lang = ? and docValue='' ORDER BY DocTable, DocField, DocValue asc";
+        final String query = "SELECT DocTable, DocField, DocValue, DocLabel, DocDesc, DocAnchor FROM documentation where Lang = ? and docValue='' ORDER BY DocTable, DocField, DocValue asc";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -341,8 +345,9 @@ public class DocumentationDAO implements IDocumentationDAO {
                         String value = resultSet.getString("DocValue");
                         String label = resultSet.getString("DocLabel");
                         String description = resultSet.getString("DocDesc");
+                        String anchor = resultSet.getString("DocAnchor");
 
-                        result.add(factoryDocumentation.create(table, field, value, label, description));
+                        result.add(factoryDocumentation.create(table, field, value, label, description, anchor));
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(DocumentationDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());

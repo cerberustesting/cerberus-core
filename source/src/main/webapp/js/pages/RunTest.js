@@ -139,6 +139,11 @@ $.when($.getScript("js/global/global.js")).then(function () {
 
         //open Run navbar Menu
         openNavbarMenu("navMenuRun");
+        
+        $('[data-toggle="popover"]').popover({
+            'placement': 'auto',
+            'container': 'body'}
+        );
     });
 });
 

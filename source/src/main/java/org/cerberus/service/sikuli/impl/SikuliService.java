@@ -73,6 +73,7 @@ public class SikuliService implements ISikuliService {
     public static final String SIKULI_WAITVANISH = "waitVanish";
     public static final String SIKULI_MOUSEOVER = "mouseOver";
     public static final String SIKULI_VERIFYELEMENTPRESENT = "exists";
+    public static final String SIKULI_VERIFYELEMENTNOTPRESENT = "notExists";
     public static final String SIKULI_VERIFYTEXTINPAGE = "findText";
 
     public static final String SIKULI_IDENTIFIER_PICTURE = "picture";
@@ -476,6 +477,24 @@ public class SikuliService implements ISikuliService {
 
         if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_SUCCESS).getCodeString())) {
             MessageEvent message = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_PRESENT);
+            message.setDescription(message.getDescription().replace("%STRING1%", locator));
+            return message;
+        }
+        if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_FAILED).getCodeString())) {
+            MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_PRESENT);
+            mes.setDescription(mes.getDescription().replace("%STRING1%", locator));
+            return mes;
+        }
+
+        return actionResult.getResultMessage();
+    }
+    
+    @Override
+    public MessageEvent doSikuliVerifyElementNotPresent(Session session, String locator) {
+        AnswerItem<JSONObject> actionResult = doSikuliAction(session, this.SIKULI_VERIFYELEMENTNOTPRESENT, locator, "");
+
+        if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_SUCCESS).getCodeString())) {
+            MessageEvent message = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_NOTPRESENT);
             message.setDescription(message.getDescription().replace("%STRING1%", locator));
             return message;
         }

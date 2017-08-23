@@ -20,20 +20,26 @@
 package org.cerberus.engine.threadpool.impl;
 
 import java.io.UnsupportedEncodingException;
+import java.net.SocketTimeoutException;
 import java.net.URLEncoder;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.http.HttpEntity;
 import org.apache.http.client.HttpResponseException;
-import org.apache.http.client.fluent.Request;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.protocol.HttpContext;
+import org.apache.http.util.EntityUtils;
 import org.cerberus.crud.entity.TestCaseExecutionQueue;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
-import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.servlet.zzpublic.RunTestCase;
 import org.cerberus.util.ParamRequestMaker;
@@ -205,13 +211,21 @@ public class ExecutionQueueWorkerThread implements Runnable {
 
             LOG.debug("Trigger Execution to URL : " + url.toString());
             LOG.debug("Trigger Execution with TimeOut : " + toExecuteTimeout);
-            return Request
-                    .Get(url.toString())
-                    .connectTimeout(toExecuteTimeout)
-                    .socketTimeout(toExecuteTimeout)
-                    .execute()
-                    .returnContent()
-                    .asString();
+
+            CloseableHttpClient httpclient = HttpClientBuilder.create().disableAutomaticRetries().build();
+            RequestConfig requestConfig = RequestConfig.custom()
+                    .setConnectTimeout(toExecuteTimeout)
+                    .setConnectionRequestTimeout(toExecuteTimeout)
+                    .setSocketTimeout(toExecuteTimeout)
+                    .build();
+
+            HttpGet httpGet = new HttpGet(url.toString());
+            httpGet.setConfig(requestConfig);
+            CloseableHttpResponse response = httpclient.execute(httpGet);
+            HttpEntity entity = response.getEntity();
+            String responseContent = EntityUtils.toString(entity);
+            return responseContent;
+
         } catch (Exception e) {
             final StringBuilder errorMessage = new StringBuilder("An unexpected error occurred during test case execution: ");
             if (e instanceof HttpResponseException) {

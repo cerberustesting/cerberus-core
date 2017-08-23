@@ -582,13 +582,16 @@ public class ControlService implements IControlService {
         LOG.debug("Control : verifyElementNotPresent on : " + elementPath);
         MessageEvent mes;
         if (!StringUtil.isNull(elementPath)) {
+            Identifier identifier = identifierService.convertStringToIdentifier(elementPath);
+
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
                     || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
                     || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
 
                 try {
-                    Identifier identifier = identifierService.convertStringToIdentifier(elementPath);
-                    if (!this.webdriverService.isElementPresent(tCExecution.getSession(), identifier)) {
+                    if (identifier.getIdentifier().equals("picture")) {
+                        return sikuliService.doSikuliVerifyElementNotPresent(tCExecution.getSession(), identifier.getLocator());
+                    } else if (!this.webdriverService.isElementPresent(tCExecution.getSession(), identifier)) {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_NOTPRESENT);
                         mes.setDescription(mes.getDescription().replace("%STRING1%", elementPath));
                         return mes;
@@ -600,6 +603,8 @@ public class ControlService implements IControlService {
                 } catch (WebDriverException exception) {
                     return parseWebDriverException(exception);
                 }
+            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
+                return sikuliService.doSikuliVerifyElementNotPresent(tCExecution.getSession(), identifier.getLocator());
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_SRV)) {
 
                 if (tCExecution.getLastServiceCalled() != null) {

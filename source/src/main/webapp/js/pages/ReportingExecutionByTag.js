@@ -62,6 +62,11 @@ $.when($.getScript("js/global/global.js")).then(function () {
         });
         //open Run navbar Menu
         openNavbarMenu("navMenuExecutionReporting");
+        
+        $('[data-toggle="popover"]').popover({
+            'placement': 'auto',
+            'container': 'body'}
+        );
     });
 });
 
