@@ -160,7 +160,7 @@ Doc.prototype.getDocOnline = function (docTable, docField) {
             data-toggle='popover' \n\
             data-placement='auto' \n\
             title='" + this.table[docTable][docField].docLabel + "' \n\
-            data-content='" + $("<div>" + this.table[docTable][docField].docDesc + linkToDoc + "</div>").prop('outerHTML') + "'>\n\
+            data-content='" + $("<div>" + this.table[docTable][docField].docDesc.split("'").join("") + linkToDoc + "</div>").prop('outerHTML') + "'>\n\
             <span class=\"glyphicon glyphicon-question-sign\"></span></a>";
         }
     } catch (err) {
