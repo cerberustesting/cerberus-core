@@ -46,8 +46,8 @@ public class ExecutionQueueThreadPool {
 
     @PostConstruct
     public void init() {
-        executor = Executors.newFixedThreadPool(500);
-        totalNumberOfThread = 500;
+        executor = Executors.newCachedThreadPool();
+        totalNumberOfThread = 0;
         size = 0;
         inExecution = 0;
         LOG.debug("Starting ExecutionQueueThreadPool.");
@@ -63,7 +63,6 @@ public class ExecutionQueueThreadPool {
 
 //Changer le nombre de tache simultanée...
     public void setNumberOfPool(Integer numberOfPool) {
-        this.executor = Executors.newFixedThreadPool(numberOfPool);
         totalNumberOfThread = numberOfPool;
     }
 

@@ -240,7 +240,7 @@ public class UpdateTestDataLib extends HttpServlet {
             String subdata = ParameterParserUtil.parseStringParamAndDecode(objectJson.getString("subData"), "", charset);
             String value = ParameterParserUtil.parseStringParamAndDecode(objectJson.getString("value"), "", charset);
             String column = ParameterParserUtil.parseStringParamAndDecode(objectJson.getString("column"), "", charset);
-            String parsingAnswer = ParameterParserUtil.parseStringParamAndDecode(objectJson.getString("parsingAnswer"), "", charset);
+            String parsingAnswer = ParameterParserUtil.parseStringParam(objectJson.getString("parsingAnswer"), "");
             String columnPosition = ParameterParserUtil.parseStringParamAndDecode(objectJson.getString("columnPosition"), "", charset);
             String description = ParameterParserUtil.parseStringParamAndDecode(objectJson.getString("description"), "", charset);
 

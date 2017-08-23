@@ -208,8 +208,9 @@ This is the list of fields in Cerberus where you can use those variables.
 - Test Case Properties Value 1 and Value 2.
 - Path, Envelope and Method at Test Data Library (SOAP) level.
 - SQL Script at Test Data Library (SQL) level
+- Column, Parsing Answer and Column Position at Test Data Library Subdata definition level
 - Path, Request, Operation and Attachement URL at Service level.
-- Request detail (all key and value) and Header (all key and value) at Service level.
+- Request detail (all keys and values) and Header (all keys and values) at Service level.
 
 When a variable is detected in one of those field, Cerberus will replace it by the value during the execution.
 
