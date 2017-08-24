@@ -51,7 +51,7 @@ public enum KeyCodeEnum {
     PAUSE(11, "PAUSE", KeyEvent.VK_PAUSE),
     ESCAPE(12, "ESCAPE", KeyEvent.VK_ESCAPE),
     SPACE(13, "SPACE", KeyEvent.VK_SPACE),
-    PAGE_UP(14, "SPACE", KeyEvent.VK_PAGE_UP),
+    PAGE_UP(14, "PAGE_UP", KeyEvent.VK_PAGE_UP),
     PAGE_DOWN(15, "PAGE_DOWN", KeyEvent.VK_PAGE_DOWN),
     END(16, "END", KeyEvent.VK_END),
     HOME(17, "HOME", KeyEvent.VK_HOME),
