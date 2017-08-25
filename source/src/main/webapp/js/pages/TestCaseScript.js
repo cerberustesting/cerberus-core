@@ -1107,7 +1107,14 @@ function changeLib() {
 }
 
 function generateImportInfoId(stepInfo) {
-    return  stepInfo.testCase + stepInfo.description.replace(new RegExp(" ", "g"),"_");
+    var hash = 0;
+    if (stepInfo.description.length == 0) return hash;
+    for (i = 0; i < stepInfo.description.length; i++) {
+        char = stepInfo.description.charCodeAt(i);
+        hash = ((hash<<5)-hash)+char;
+        hash = hash & hash; // Convert to 32bit integer
+    }
+    return hash;
 }
 
 var importInfoIdx=0;
@@ -1210,7 +1217,7 @@ function addStep(event) {
                             sortStep(step);
                         }
                     });
-                    if ($("#" + useStep.description).find("[name='useStep']").prop("checked")) {
+                    if ($("#" + generateImportInfoId(useStep)).find("[name='useStep']").prop("checked")) {
                         step.useStep = "Y";
                         step.useStepTest = useStep.test;
                         step.useStepTestCase = useStep.testCase;
