@@ -42,13 +42,13 @@ function openModalTestCase(test, testcase, mode) {
 
 function initModalTestCase(doc) {
     var doc = new Doc();
-    
+
     console.info("init.");
-    
+
     tinymce.init({
         selector: ".wysiwyg"
     });
-    
+
     $("[name='testField']").html(doc.getDocOnline("test", "Test"));
     $("[name='testCaseField']").html(doc.getDocOnline("testcase", "TestCase"));
     $("[name='lastModifierField']").html(doc.getDocOnline("testcase", "LastModifier"));
@@ -104,7 +104,7 @@ function initModalTestCase(doc) {
     $("[name='lbl_usrcreated']").html(doc.getDocOnline("transversal", "UsrCreated"));
     $("[name='lbl_datemodif']").html(doc.getDocOnline("transversal", "DateModif"));
     $("[name='lbl_usrmodif']").html(doc.getDocOnline("transversal", "UsrModif"));
-    
+
     displayInvariantList("group", "GROUP", false);
     displayInvariantList("status", "TCSTATUS", false);
     displayInvariantList("priority", "PRIORITY", false);
@@ -116,8 +116,8 @@ function initModalTestCase(doc) {
     displayInvariantList("activeUAT", "TCACTIVE", false);
     displayInvariantList("activeProd", "TCACTIVE", false);
     appendProjectList();
-    
-    
+
+
 }
 
 /***
@@ -876,8 +876,9 @@ function appendApplicationList(defautValue, mySystem) {
 }
 
 function appendTestList(defautValue) {
+    console.info(defautValue);
     var user = getUser();
-    $("[name=test]").empty();
+    $("#editTestCaseModal [name=test]").empty();
 
     var jqxhr = $.getJSON("ReadTest", "");
     $.when(jqxhr).then(function (data) {
@@ -886,7 +887,7 @@ function appendTestList(defautValue) {
         for (var index = 0; index < data.contentTable.length; index++) {
             testList.append($('<option></option>').text(data.contentTable[index].test).val(data.contentTable[index].test));
         }
-        $("#test").prop("value", defautValue);
+        testList.val(defautValue);
 
     });
 }

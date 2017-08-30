@@ -864,8 +864,8 @@ function aoColumnsFunc(Columns) {
                                 name="editEntry" data-toggle="tooltip"  title="' + doc.getDocLabel("page_testcaselist", "btn_edit") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-pencil"></span></button>';
                 if (obj.testExist) {
-//                    return editEntry + result;
-                    return result;
+                    return editEntry + result;
+//                    return result;
                 } else {
                     return obj.testCase;
                 }
