@@ -24,7 +24,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
         /* global */ sockets = [];
         initPage(executionId);
         loadExecutionInformation(executionId, stepList, sockets);
-        
+
         $('[data-toggle="popover"]').popover({
             'placement': 'auto',
             'container': 'body'}
@@ -249,18 +249,22 @@ function updatePage(data, stepList) {
                 var newBugURL = dataApp.contentTable.bugTrackerNewUrl;
                 if (data.testCaseObj !== undefined) {
                     if ((data.testCaseObj.bugId === undefined || data.testCaseObj.bugId === "") && newBugURL !== undefined) {
-                        newBugURL = newBugURL.replace("%EXEID%", data.id);
-                        newBugURL = newBugURL.replace("%EXEDATE%", new Date(data.start).toLocaleString());
-                        newBugURL = newBugURL.replace("%TEST%", data.test);
-                        newBugURL = newBugURL.replace("%TESTCASE%", data.testcase);
-                        newBugURL = newBugURL.replace("%TESTCASEDESC%", data.testCaseObj.description);
-                        newBugURL = newBugURL.replace("%COUNTRY%", data.country);
-                        newBugURL = newBugURL.replace("%ENV%", data.environment);
-                        newBugURL = newBugURL.replace("%BUILD%", data.build);
-                        newBugURL = newBugURL.replace("%REV%", data.revision);
-                        newBugURL = newBugURL.replace("%BROWSER%", data.browser);
-                        newBugURL = newBugURL.replace("%BROWSERFULLVERSION%", data.browserFullVersion);
-                        link = $('<a target="_blank" id="bugID">').attr("href", newBugURL).append($("<button class='btn btn-default btn-block'>").text("Open a new bug"));
+                        if (!isEmpty(newBugURL)) {
+                            newBugURL = newBugURL.replace("%EXEID%", data.id);
+                            newBugURL = newBugURL.replace("%EXEDATE%", new Date(data.start).toLocaleString());
+                            newBugURL = newBugURL.replace("%TEST%", data.test);
+                            newBugURL = newBugURL.replace("%TESTCASE%", data.testcase);
+                            newBugURL = newBugURL.replace("%TESTCASEDESC%", data.testCaseObj.description);
+                            newBugURL = newBugURL.replace("%COUNTRY%", data.country);
+                            newBugURL = newBugURL.replace("%ENV%", data.environment);
+                            newBugURL = newBugURL.replace("%BUILD%", data.build);
+                            newBugURL = newBugURL.replace("%REV%", data.revision);
+                            newBugURL = newBugURL.replace("%BROWSER%", data.browser);
+                            newBugURL = newBugURL.replace("%BROWSERFULLVERSION%", data.browserFullVersion);
+                            link = $('<a target="_blank" id="bugID">').attr("href", newBugURL).append($("<button class='btn btn-default btn-block'>").text("Open a new bug"));
+                        } else {
+                            link = $('<a id="bugID">').attr("href", "#").append($("<button class='btn btn-default btn-block'>").text("No 'New Bug' URL Specified.").attr("title", "Please specify 'New Bug' URL at application level."));
+                        }
                     } else {
                         newBugURL = dataApp.contentTable.bugTrackerUrl;
                         if (newBugURL !== undefined && newBugURL !== "") {
