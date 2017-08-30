@@ -558,7 +558,7 @@ function aoColumnsFunc(countries, tableId) {
             "data": "testCase",
             "sName": "tec.testCase",
             "title": doc.getDocOnline("testcase", "TestCase"),
-            "sWidth": "70px",
+            "sWidth": "82px",
             "sDefaultContent": ""
         },
         {
