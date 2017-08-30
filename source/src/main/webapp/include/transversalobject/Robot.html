@@ -1,0 +1,123 @@
+<!--Edit Robot page-->
+<div data-backdrop="static" class="modal fade center" id="editRobotModal" tabindex="-1" role="dialog" aria-labelledby="editRobotModalLabel" aria-hidden="true">
+    <div class="modal-dialog nomargintop nomarginbottom modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="editEntryModalLabel" name="editRobotField">Edit Robot</h4>
+            </div>
+            <div class="modal-body">
+
+                <!--edit form-->
+                <form id="editRobotModalForm" name="editRobotModalForm"  title="Edit Robot" role="form">
+                    <div class="container-fluid center">
+                         <!-- messages area-->
+                         <div id="DialogMessagesArea">
+                            <div class="alert" id="DialogMessagesAlert"  style="display:none;">
+                                <strong><span class="alert-description" id="DialogAlertDescription"></span></strong>
+                                <button type="button" class="close" data-hide="alert"  aria-hidden="true">
+                                    <span class="glyphicon glyphicon-remove alert-right alert-close pull-right"></span>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- tabs definition-->
+                        <ul id="tabsEdit" class="nav nav-tabs" data-tabs="tabs">
+                            <li class="active"><a data-toggle="tab" href="#tabsEdit-1" id="editTab1Text" name="tabDefinition">Definition</a></li>
+                            <li><a data-toggle="tab" href="#tabsEdit-2" id="editTab2Text" name="tabCapabilities">Capabilities</a></li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="center marginTop25 tab-pane fade in active" id="tabsEdit-1">
+                                <div class="row">
+                                    <div class="form-group col-xs-3">
+                                        <label for="robotid" name="robotField">Robot</label>
+                                        <input type="text" class="form-control" name="robotid" id="robotid" aria-describedby="basic-addon1" readonly>
+                                    </div>
+                                    <div class="form-group col-xs-6">
+                                        <label for="robot" name="robotField">Robot</label>
+                                        <input type="text" class="form-control" name="robot" id="robot" aria-describedby="basic-addon1" maxlength="50">
+                                    </div>
+                                    <div class="form-group col-xs-3">
+                                        <label for="active" name="activeField">Active</label>
+                                        <select class="form-control"  id="active" name="active">
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-xs-9">
+                                        <label for="host" name="hostField">Host</label>
+                                        <input type="text" class="form-control" name="host" id="host" aria-describedby="basic-addon1" maxlength="150">
+                                    </div>
+                                    <div class="form-group col-xs-3">
+                                        <label for="port" name="portField">Port</label>
+                                        <input type="text" class="form-control" name="port" id="port" aria-describedby="basic-addon1" maxlength="20">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-xs-6">
+                                        <label for="platform" name="platformField">Platform</label>
+                                        <select class="form-control"  id="platform" name="platform">
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-xs-6">
+                                        <label for="browser" name="browserField">Browser</label>
+                                        <select class="form-control"  id="browser" name="browser">
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-xs-6">
+                                        <label for="version" name="versionField">Version</label>
+                                        <input type="text" class="form-control" name="version" id="version" aria-describedby="basic-addon1" maxlength="45">
+                                    </div>
+                                    <div class="form-group col-xs-6">
+                                        <label for="useragent" name="useragentField">User Agent</label>
+                                        <input type="text" class="form-control" name="useragent" id="useragent" aria-describedby="basic-addon1" maxlength="250">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-xs-12">
+                                        <label for="screensize" name="screensizeField">Screen Size</label>
+                                        <input type="text" class="form-control" name="screensize" id="screensize" aria-describedby="basic-addon1" maxlength="250">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-xs-12">
+                                        <label for="Description" name="descriptionField">Description</label>
+                                        <textarea id="Description" name="description"   
+                                                  class="form-control" maxlength="250"></textarea> 
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="center tab-pane fade marginTop25" id="tabsEdit-2">
+                                <div id="listPanelEditCapabilities">
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <table class="table table-bordered table-hover nomarginbottom" id="editCapabilitiesTable">
+                                                <thead>
+                                                    <tr>
+                                                        <th style="width: 5%;"></th>
+                                                        <th class="text-center" id="editCapabilityHeader" name="editCapabilityHeader">Capability</th>
+                                                        <th class="text-center" id="editValueHeader" name="editValueHeader">Value</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="editCapabilitiesTableBody">
+                                                </tbody>
+                                            </table>
+                                            <button type="button" class="btn btn-default" id="addEditCapability">Add Capability</button>
+                                        </div>
+                                    </div>  
+                                </div>   
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" name="buttonClose">Close</button>
+                <button type="button" id="editRobotButton" class="btn btn-primary" name="buttonEdit">Save</button>
+                <button type="button" id="duplicateRobotButton" class="btn btn-primary" name="buttonDuplicate">Duplicate</button>
+                <button type="button" id="addRobotButton" class="btn btn-primary" name="buttonAdd">Add</button>
+            </div>
+        </div>
+    </div>
+</div>

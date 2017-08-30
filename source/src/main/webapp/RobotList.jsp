@@ -25,7 +25,8 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
-        <script type="text/javascript" src="js/pages/Robot.js"></script>
+        <script type="text/javascript" src="js/pages/RobotList.js"></script>
+        <script type="text/javascript" src="js/transversalobject/Robot.js"></script>
         <title id="pageTitle">Robot</title>
     </head>
     <body>
@@ -33,8 +34,7 @@
         <div class="container-fluid center" id="page-layout">
             <%@ include file="include/global/messagesArea.html"%>
             <%@ include file="include/utils/modal-confirmation.html"%>
-            <%@ include file="include/pages/robot/addRobot.html"%> 
-            <%@ include file="include/pages/robot/editRobot.html"%> 
+            <%@ include file="include/transversalobject/Robot.html"%> 
 
             <h1 class="page-title-line" id="title">Robot</h1>
             <div class="panel panel-default">

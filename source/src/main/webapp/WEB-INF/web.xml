@@ -761,10 +761,6 @@
         <servlet-class>org.cerberus.servlet.information.ReadCerberusDetailInformation</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>ExecutionThreadReset</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.testexecution.ExecutionThreadReset</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>SetTagToExecution</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.testexecution.SetTagToExecution</servlet-class>
     </servlet>
@@ -1613,10 +1609,6 @@
         <url-pattern>/DeleteCountryEnvParam</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>ExecutionThreadReset</servlet-name>
-        <url-pattern>/ExecutionThreadReset</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>SetTagToExecution</servlet-name>
         <url-pattern>/SetTagToExecution</url-pattern>
     </servlet-mapping>
@@ -2212,7 +2204,6 @@
             <url-pattern>/NewRelease</url-pattern>
             <url-pattern>/TestcaseListGrid</url-pattern>
             <url-pattern>/ExecuteNextInQueue</url-pattern>
-            <url-pattern>/ExecutionThreadReset</url-pattern>
             <url-pattern>/VirtualProxy</url-pattern>
             <url-pattern>/ReadTestBatteryContent</url-pattern>
             <url-pattern>/ReadDocumentation</url-pattern>
@@ -2247,7 +2238,7 @@
             <web-resource-name>jsp</web-resource-name>
             <description>jsp</description>
             <url-pattern>/Homepage.jsp</url-pattern>
-            <url-pattern>/Robot.jsp</url-pattern>
+            <url-pattern>/RobotList.jsp</url-pattern>
         </web-resource-collection>
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>

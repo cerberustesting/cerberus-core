@@ -1,0 +1,445 @@
+/*
+ * Cerberus Copyright (C) 2013 - 2017 cerberustesting
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ * This file is part of Cerberus.
+ *
+ * Cerberus is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Cerberus is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/***
+ * Open the modal with robot information.
+ * @param {String} robot - name of the robot (ex : "MyRobot")
+ * @param {String} mode - mode to open the modal. Can take the values : ADD, DUPLICATE, EDIT
+ * @returns {null}
+ */
+function openModalRobot(robot, mode) {
+
+    // We only load the Labels and bind the events once for performance optimisations.
+    if ($('#editRobotModal').data("initLabel") === undefined) {
+        initModalRobot();
+        $('#editRobotModal').data("initLabel", true);
+    }
+
+    if (mode === "EDIT") {
+        editRobotClick(robot);
+    } else if (mode === "ADD") {
+        addRobotClick(robot);
+    } else {
+        // DUPLICATE
+        duplicateRobotClick(robot);
+    }
+}
+
+function initModalRobot() {
+
+    console.info("init");
+    var doc = new Doc();
+    $("[name='buttonClose']").html(doc.getDocLabel("page_global", "buttonClose"));
+    $("[name='buttonAdd']").html(doc.getDocLabel("page_global", "btn_add"));
+    $("[name='buttonDuplicate']").html(doc.getDocLabel("page_global", "btn_duplicate"));
+    $("[name='buttonEdit']").html(doc.getDocLabel("page_global", "btn_edit"));
+
+    $("[name='addEntryField']").html(doc.getDocLabel("page_robot", "button_create"));
+    $("[name='confirmationField']").html(doc.getDocLabel("page_robot", "button_delete"));
+    $("[name='editEntryField']").html(doc.getDocLabel("page_robot", "button_edit"));
+    $("[name='robotField']").html(doc.getDocOnline("robot", "robot"));
+    $("[name='hostField']").html(doc.getDocOnline("robot", "host"));
+    $("[name='portField']").html(doc.getDocOnline("robot", "port"));
+    $("[name='platformField']").html(doc.getDocOnline("robot", "platform"));
+    $("[name='browserField']").html(doc.getDocOnline("robot", "browser"));
+    $("[name='versionField']").html(doc.getDocOnline("robot", "version"));
+    $("[name='activeField']").html(doc.getDocOnline("robot", "active"));
+    $("[name='useragentField']").html(doc.getDocOnline("robot", "useragent"));
+    $("[name='screensizeField']").html(doc.getDocOnline("robot", "screensize"));
+    $("[name='descriptionField']").html(doc.getDocOnline("robot", "description"));
+    $("[name='addCapabilityHeader']").html(doc.getDocOnline("robot", "capabilityCapability"));
+    $("[name='addValueHeader']").html(doc.getDocOnline("robot", "capabilityValue"));
+    $("[name='editCapabilityHeader']").html(doc.getDocOnline("robot", "capabilityCapability"));
+    $("[name='editValueHeader']").html(doc.getDocOnline("robot", "capabilityValue"));
+    displayInvariantList("active", "ROBOTACTIVE", false);
+    displayInvariantList("browser", "BROWSER", false, undefined, "");
+    displayInvariantList("platform", "PLATFORM", false, undefined, "");
+
+    var availableUserAgent = getInvariantArray("USERAGENT", false);
+    $("[name='useragent']").autocomplete({
+        source: availableUserAgent
+    });
+    var availableScreenSize = getInvariantArray("SCREENSIZE", false);
+    $("[name='screensize']").autocomplete({
+        source: availableScreenSize
+    });
+    var availableHost = getInvariantArray("ROBOTHOST", false);
+    $("[name='host']").autocomplete({
+        source: availableHost
+    });
+
+    // Load the select needed in localStorage cache.
+    getSelectInvariant("CAPABILITY", true);
+    // Adding rows in modals.
+    $("#addEditCapability").click(addNewCapabilityRow.bind(null, "editCapabilitiesTableBody"));
+
+
+    $("#editRobotButton").off("click");
+    $("#editRobotButton").click(function () {
+        confirmRobotModalHandler("EDIT");
+    });
+    $("#addRobotButton").off("click");
+    $("#addRobotButton").click(function () {
+        confirmRobotModalHandler("ADD");
+    });
+    $("#duplicateRobotButton").off("click");
+    $("#duplicateRobotButton").click(function () {
+        confirmRobotModalHandler("DUPLICATE");
+    });
+
+}
+
+/***
+ * Open the modal with queue information.
+ * @param {String} robot - robot selected
+ * @returns {null}
+ */
+function editRobotClick(robot) {
+
+    clearResponseMessage($('#editRobotModal'));
+
+    // When editing the execution queue, we can modify, modify and run or cancel.
+    $('#editRobotButton').attr('class', 'btn btn-primary');
+    $('#editRobotButton').removeProp('hidden');
+
+    // We cannot duplicate.
+    $('#duplicateRobotButton').attr('class', '');
+    $('#duplicateRobotButton').attr('hidden', 'hidden');
+    $('#addRobotButton').attr('class', '');
+    $('#addRobotButton').attr('hidden', 'hidden');
+
+    $('#editRobotModalForm select[name="idname"]').off("change");
+    $('#editRobotModalForm select[name="idname"]').change(function () {
+    });
+    $('#editRobotModalForm input[name="value"]').off("change");
+    $('#editRobotModalForm input[name="value"]').change(function () {
+        // Compare with original value in order to display the warning message.
+    });
+
+    feedRobotModal(robot, "editRobotModal", "EDIT");
+}
+
+/***
+ * Open the modal with queue information.
+ * @param {String} robot - name of the robot to duplicate.
+ * @returns {null}
+ */
+function duplicateRobotClick(robot) {
+
+    clearResponseMessage($('#editExecutionQueueModal'));
+
+    $('#editRobotButton').attr('class', '');
+    $('#editRobotButton').attr('hidden', 'hidden');
+    $('#duplicateRobotButton').attr('class', 'btn btn-primary');
+    $('#duplicateRobotButton').removeProp('hidden');
+    $('#addRobotButton').attr('class', '');
+    $('#addRobotButton').attr('hidden', 'hidden');
+
+    $('#editRobotModalForm select[name="idname"]').off("change");
+    $('#editRobotModalForm input[name="value"]').off("change");
+
+    feedRobotModal(robot, "editRobotModal", "DUPLICATE");
+}
+
+/***
+ * Open the modal with queue information.
+ * @param {String} robot - idname of the invariant to duplicate.
+ * @returns {null}
+ */
+function addRobotClick(robot) {
+
+    clearResponseMessage($('#editExecutionQueueModal'));
+
+    $('#editRobotButton').attr('class', '');
+    $('#editRobotButton').attr('hidden', 'hidden');
+    $('#addRobotButton').attr('class', 'btn btn-primary');
+    $('#addRobotButton').removeProp('hidden');
+    $('#duplicateRobotButton').attr('class', '');
+    $('#duplicateRobotButton').attr('hidden', 'hidden');
+
+    $('#editRobotModalForm select[name="idname"]').off("change");
+    $('#editRobotModalForm input[name="value"]').off("change");
+
+    feedRobotModal(robot, "editRobotModal", "ADD");
+}
+
+
+/***
+ * Function that support the modal confirmation. Will call servlet to comit the transaction.
+ * @param {String} mode - either ADD, EDIT or DUPLICATE in order to define the purpose of the modal.
+ * @returns {null}
+ */
+function confirmRobotModalHandler(mode) {
+    clearResponseMessage($('#editRobotModal'));
+
+    var formEdit = $('#editRobotModal #editRobotModalForm');
+
+    // Calculate servlet name to call.
+    var myServlet = "UpdateRobot";
+    if ((mode === "ADD") || (mode === "DUPLICATE")) {
+        myServlet = "CreateRobot";
+    }
+
+    var formEdit = $('#editRobotModal #editRobotModalForm');
+
+    // Getting Data from Capabilities TAB
+    var capabilityTable = $("#editCapabilitiesTableBody tr");
+    var capabilities = [];
+    for (var i = 0; i < capabilityTable.length; i++) {
+        var capability = $(capabilityTable[i]).data("capability");
+        if (!capability.toDelete) {
+            capabilities.push(capability);
+        }
+    }
+
+    // Get the header data from the form.
+    var data = convertSerialToJSONObject(formEdit.serialize());
+    data.capabilities = JSON.stringify(capabilities);
+
+    var tcElement = formEdit.find("#robot");
+    if (isEmpty(data.robot)) {
+        tcElement.parents("div.form-group").addClass("has-error");
+        var localMessage = new Message("danger", "Please specify an robot name !");
+        showMessage(localMessage, $('#editRobotModal'));
+        return;
+    } else {
+        tcElement.parents("div.form-group").removeClass("has-error");
+    }
+
+    showLoaderInModal('#editRobotModal');
+
+    $.ajax({
+        url: myServlet,
+        async: true,
+        method: "POST",
+        data: data,
+        success: function (data) {
+//            data = JSON.parse(data);
+            hideLoaderInModal('#editRobotModal');
+            if (getAlertType(data.messageType) === "success") {
+                var oTable = $("#robotsTable").dataTable();
+                oTable.fnDraw(true);
+                $('#editRobotModal').data("Saved", true);
+                $('#editRobotModal').modal('hide');
+                showMessage(data);
+            } else {
+                showMessage(data, $('#editRobotModal'));
+            }
+        },
+        error: showUnexpectedError
+    });
+
+}
+
+/***
+ * Feed the Robot modal with all the data.
+ * @param {String} robot - name of the robot to load
+ * @param {String} modalId - modal id to feed.
+ * @param {String} mode - either ADD, EDIT or DUPLICATE in order to define the purpose of the modal.
+ * @returns {null}
+ */
+function feedRobotModal(robot, modalId, mode) {
+    clearResponseMessageMainPage();
+
+    var formEdit = $('#' + modalId);
+
+    if (mode === "DUPLICATE" || mode === "EDIT") {
+        $.ajax({
+            url: "ReadRobot",
+            async: true,
+            method: "POST",
+            data: {
+                robot: robot
+            },
+            success: function (data) {
+                if (data.messageType === "OK") {
+
+                    // Feed the data to the screen and manage authorities.
+                    var robotObj = data.contentTable;
+                    var hasPermissions = data.contentTable.hasPermissionsUpdate;
+
+                    feedRobotModalData(robotObj, modalId, mode, hasPermissions);
+
+                    formEdit.modal('show');
+                } else {
+                    showUnexpectedError();
+                }
+            },
+            error: showUnexpectedError
+        });
+
+    } else {
+        var robotObj1 = {};
+        robotObj1.robot = "";
+        robotObj1.active = "Y";
+        robotObj1.host = "";
+        robotObj1.port = "";
+        robotObj1.platform = "";
+        robotObj1.browser = "";
+        robotObj1.version = "";
+        robotObj1.userAgent = "";
+        robotObj1.screenSize = "";
+        robotObj1.description = "";
+        var hasPermissions = true;
+        feedRobotModalData(robotObj1, modalId, mode, hasPermissions);
+
+        formEdit.modal('show');
+
+    }
+
+}
+
+/***
+ * Feed the TestCase modal with all the data from the TestCase.
+ * @param {String} robot - robot object to be loaded.
+ * @param {String} modalId - id of the modal form where to feed the data.
+ * @param {String} mode - either ADD, EDIT or DUPLICATE in order to define the purpose of the modal.
+ * @param {String} hasPermissionsUpdate - boolean if premition is granted.
+ * @returns {null}
+ */
+function feedRobotModalData(robot, modalId, mode, hasPermissionsUpdate) {
+    var formEdit = $('#' + modalId);
+    var doc = new Doc();
+    var isEditable = (((hasPermissionsUpdate) && (mode === "EDIT"))
+            || (mode === "DUPLICATE") || (mode === "ADD"));
+
+    // Data Feed.
+    if (mode === "EDIT") {
+        $("[name='editRobotField']").html(doc.getDocOnline("page_global", "btn_edit"));
+    } else if (mode === "ADD") { // DUPLICATE or ADD
+        $("[name='editRobotField']").html(doc.getDocOnline("page_global", "btn_add"));
+    } else if (mode === "DUPLICATE") { // DUPLICATE or ADD
+        $("[name='editRobotField']").html(doc.getDocOnline("page_global", "btn_duplicate"));
+    }
+
+    if (isEmpty(robot)) {
+        formEdit.find("#robotid").prop("value", "");
+        formEdit.find("#robot").prop("value", "");
+        formEdit.find("#active").val("Y");
+        formEdit.find("#host").prop("value", "");
+        formEdit.find("#port").prop("value", "");
+        formEdit.find("#platform").val("");
+        formEdit.find("#browser").val("");
+        formEdit.find("#version").prop("value", "");
+        formEdit.find("#useragent").prop("value", "");
+        formEdit.find("#screensize").prop("value", "");
+        formEdit.find("#Description").prop("value", "");
+        $('#addCapabilitiesTableBody tr').remove();
+    } else {
+        if (mode !== "DUPLICATE") {
+            formEdit.find("#robotid").prop("value", robot.robotID);
+        } else {
+            formEdit.find("#robotid").prop("value", "");
+        }
+        formEdit.find("#robot").prop("value", robot.robot);
+        formEdit.find("#active").val(robot.active);
+        formEdit.find("#host").prop("value", robot.host);
+        formEdit.find("#port").prop("value", robot.port);
+        formEdit.find("#platform").val(robot.platform);
+        formEdit.find("#browser").val(robot.browser);
+        formEdit.find("#version").prop("value", robot.version);
+        formEdit.find("#useragent").prop("value", robot.userAgent);
+        formEdit.find("#screensize").prop("value", robot.screenSize);
+        formEdit.find("#Description").prop("value", robot.description);
+        $('#addCapabilitiesTableBody tr').remove();
+        loadCapabilitiesTable("editCapabilitiesTableBody", robot.capabilities);
+    }
+
+    // Authorities
+//    if (mode === "EDIT") {
+//    } else {
+//    }
+    formEdit.find("#robotid").prop("readonly", true);
+
+    //We desactivate or activate the access to the fields depending on if user has the credentials to edit.
+    if (isEditable) { // If readonly, we readonly all fields
+        formEdit.find("#robot").prop("readonly", false);
+        formEdit.find("#active").removeAttr("disabled");
+        formEdit.find("#host").prop("readonly", false);
+        formEdit.find("#port").prop("readonly", false);
+        formEdit.find("#platform").removeAttr("disabled");
+        formEdit.find("#browser").removeAttr("disabled");
+        formEdit.find("#version").prop("readonly", false);
+        formEdit.find("#useragent").prop("readonly", false);
+        formEdit.find("#screensize").prop("readonly", false);
+        formEdit.find("#Description").prop("readonly", false);
+    } else {
+        formEdit.find("#robot").prop("readonly", "readonly");
+        formEdit.find("#active").prop("disabled", "disabled");
+        formEdit.find("#host").prop("readonly", "readonly");
+        formEdit.find("#port").prop("readonly", "readonly");
+        formEdit.find("#platform").prop("disabled", "disabled");
+        formEdit.find("#browser").prop("disabled", "disabled");
+        formEdit.find("#version").prop("readonly", "readonly");
+        formEdit.find("#useragent").prop("readonly", "readonly");
+        formEdit.find("#screensize").prop("readonly", "readonly");
+        formEdit.find("#Description").prop("readonly", "readonly");
+    }
+}
+
+function loadCapabilitiesTable(tableBody, capabilities) {
+    $('#' + tableBody + ' tr').remove();
+    $.each(capabilities, function (idx, capability) {
+        capability.toDelete = false;
+        appendCapabilityRow(tableBody, capability);
+    });
+}
+
+function appendCapabilityRow(tableBody, capability) {
+    var doc = new Doc();
+    var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
+    var selectCapability = getSelectInvariant("CAPABILITY", false);
+    var valueInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("robot", "capabilityValue") + " --\">").addClass("form-control input-sm").val(capability.value);
+    var table = $("#" + tableBody);
+
+    var row = $("<tr></tr>");
+    var deleteBtnRow = $("<td></td>").append(deleteBtn);
+    var cap = $("<td></td>").append(selectCapability.val(capability.capability));
+    var value = $("<td></td>").append(valueInput);
+    deleteBtn.click(function () {
+        capability.toDelete = (capability.toDelete) ? false : true;
+        if (capability.toDelete) {
+            row.addClass("danger");
+        } else {
+            row.removeClass("danger");
+        }
+    });
+    selectCapability.change(function () {
+        capability.capability = $(this).val();
+    });
+    valueInput.change(function () {
+        capability.value = $(this).val();
+    });
+    row.append(deleteBtnRow);
+    row.append(cap);
+    row.append(value);
+    capability.capability = selectCapability.prop("value"); // Value that has been requested by dtb parameter may not exist in combo vlaues so we take the real selected value.
+    row.data("capability", capability);
+    table.append(row);
+}
+
+function addNewCapabilityRow(tableBody) {
+    var newCapability = {
+        capability: "",
+        value: ""
+    };
+    appendCapabilityRow(tableBody, newCapability);
+}
+

@@ -21,14 +21,14 @@ package org.cerberus.crud.service.impl;
 
 import java.util.List;
 import java.util.Map;
-
+import javax.servlet.http.HttpServletRequest;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.IRobotDAO;
-import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.crud.entity.Robot;
 import org.cerberus.crud.entity.RobotCapability;
 import org.cerberus.crud.service.IRobotCapabilityService;
 import org.cerberus.crud.service.IRobotService;
+import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
@@ -123,6 +123,30 @@ public class RobotService implements IRobotService {
 
         // Finally return aggregated answer
         return finalAnswer;
+    }
+
+    @Override
+    public boolean hasPermissionsRead(Robot robot, HttpServletRequest request) {
+        // Access right calculation.
+        return true;
+    }
+
+    @Override
+    public boolean hasPermissionsUpdate(Robot robot, HttpServletRequest request) {
+        // Access right calculation.
+        return (request.isUserInRole("RunTest"));
+    }
+
+    @Override
+    public boolean hasPermissionsCreate(Robot robot, HttpServletRequest request) {
+        // Access right calculation.
+        return (request.isUserInRole("RunTest"));
+    }
+
+    @Override
+    public boolean hasPermissionsDelete(Robot robot, HttpServletRequest request) {
+        // Access right calculation.
+        return (request.isUserInRole("RunTest"));
     }
 
     @Override

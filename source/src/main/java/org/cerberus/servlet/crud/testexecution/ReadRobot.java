@@ -122,13 +122,13 @@ public class ReadRobot extends HttpServlet {
                     answer = findRobotByKeyTech(robotid, appContext, userHasPermissions);
                     jsonResponse = (JSONObject) answer.getItem();
                 } else if (!(request.getParameter("robot") == null)) {
-                    answer = findRobotByKey(robot, appContext, userHasPermissions);
+                    answer = findRobotByKey(robot, appContext, request);
                     jsonResponse = (JSONObject) answer.getItem();
                 } else if (!Strings.isNullOrEmpty(columnName)) {
-                //If columnName is present, then return the distinct value of this column.
-                answer = findDistinctValuesOfColumn(appContext, request, columnName);
-                jsonResponse = (JSONObject) answer.getItem();
-            } else {
+                    //If columnName is present, then return the distinct value of this column.
+                    answer = findDistinctValuesOfColumn(appContext, request, columnName);
+                    jsonResponse = (JSONObject) answer.getItem();
+                } else {
                     answer = findRobotList(appContext, userHasPermissions, request);
                     jsonResponse = (JSONObject) answer.getItem();
                 }
@@ -210,15 +210,15 @@ public class ReadRobot extends HttpServlet {
         String columnToSort[] = sColumns.split(",");
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
-        
+
         Map<String, List<String>> individualSearch = new HashMap<>();
         for (int a = 0; a < columnToSort.length; a++) {
-            if (null!=request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
+            if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
                 List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
                 individualSearch.put(columnToSort[a], search);
             }
         }
-        
+
         AnswerList resp = robotService.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
 
         JSONArray jsonArray = new JSONArray();
@@ -261,7 +261,7 @@ public class ReadRobot extends HttpServlet {
         return item;
     }
 
-    private AnswerItem findRobotByKey(String robot, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
+    private AnswerItem findRobotByKey(String robot, ApplicationContext appContext, HttpServletRequest request) throws JSONException, CerberusException {
         AnswerItem item = new AnswerItem();
         JSONObject object = new JSONObject();
 
@@ -272,12 +272,15 @@ public class ReadRobot extends HttpServlet {
 
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item and convert it to JSONformat
-            Robot lib = (Robot) answer.getItem();
-            JSONObject response = convertRobotToJSONObject(lib);
+            Robot robotObj = (Robot) answer.getItem();
+            JSONObject response = convertRobotToJSONObject(robotObj);
+            response.put("hasPermissionsUpdate", libService.hasPermissionsUpdate(robotObj, request));
+            response.put("hasPermissionsDelete", libService.hasPermissionsDelete(robotObj, request));
+
             object.put("contentTable", response);
         }
 
-        object.put("hasPermissions", userHasPermissions);
+        object.put("hasPermissionsCreate", libService.hasPermissionsCreate(null, request));
         item.setItem(object);
         item.setResultMessage(answer.getResultMessage());
 
@@ -296,14 +299,14 @@ public class ReadRobot extends HttpServlet {
         JSONObject object = new JSONObject();
 
         robotService = appContext.getBean(RobotService.class);
-        
+
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
         String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "test,testcase,application,project,ticket,description,behaviororvalueexpected,readonly,bugtrackernewurl,deploytype,mavengroupid");
         String columnToSort[] = sColumns.split(",");
 
         Map<String, List<String>> individualSearch = new HashMap<>();
         for (int a = 0; a < columnToSort.length; a++) {
-            if (null!=request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
+            if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
                 List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
                 individualSearch.put(columnToSort[a], search);
             }
