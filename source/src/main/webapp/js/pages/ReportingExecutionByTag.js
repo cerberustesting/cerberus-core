@@ -62,7 +62,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
         });
         //open Run navbar Menu
         openNavbarMenu("navMenuExecutionReporting");
-        
+
         $('[data-toggle="popover"]').popover({
             'placement': 'auto',
             'container': 'body'}
@@ -840,12 +840,9 @@ function aoColumnsFunc(Columns) {
     var doc = new Doc();
     var colLen = Columns.length;
     var nbColumn = colLen + 5;
-    var testCaseInfoWidth = (1 / 5) * 30;
+    var testCaseInfoWidth = (1 / 6) * 30;
     var testExecWidth = (1 / nbColumn) * 70;
     var tag = $('#selectTag').val();
-    
-    
-
 
     var aoColumns = [
         {
@@ -862,7 +859,12 @@ function aoColumnsFunc(Columns) {
             "title": doc.getDocOnline("testcase", "TestCase"),
             "mRender": function (data, type, obj, meta) {
                 var result = "<a href='./TestCaseScript.jsp?test=" + encodeURIComponent(obj.test) + "&testcase=" + encodeURIComponent(obj.testCase) + "'>" + obj.testCase + "</a>";
+                var editEntry = '<button id="editEntry" onclick="openModalTestCase(\'' + escapeHtml(obj["test"]) + '\',\'' + escapeHtml(obj["testCase"]) + '\',\'EDIT\');"\n\
+                                class="editEntry btn btn-default btn-xs margin-right5" \n\
+                                name="editEntry" data-toggle="tooltip"  title="' + doc.getDocLabel("page_testcaselist", "btn_edit") + '" type="button">\n\
+                                <span class="glyphicon glyphicon-pencil"></span></button>';
                 if (obj.testExist) {
+//                    return editEntry + result;
                     return result;
                 } else {
                     return obj.testCase;
@@ -924,6 +926,14 @@ function aoColumnsFunc(Columns) {
                 "sClass": "priority",
                 "sWidth": testCaseInfoWidth + "%",
                 "title": doc.getDocOnline("invariant", "PRIORITY")
+            };
+    aoColumns.push(col);
+    var col =
+            {
+                "data": "comment",
+                "sName": "tec.comment",
+                "sWidth": testCaseInfoWidth + "%",
+                "title": doc.getDocOnline("testcase", "Comment")
             };
     aoColumns.push(col);
     var col =

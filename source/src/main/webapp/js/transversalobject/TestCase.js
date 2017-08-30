@@ -45,6 +45,10 @@ function initModalTestCase(doc) {
     
     console.info("init.");
     
+    tinymce.init({
+        selector: ".wysiwyg"
+    });
+    
     $("[name='testField']").html(doc.getDocOnline("test", "Test"));
     $("[name='testCaseField']").html(doc.getDocOnline("testcase", "TestCase"));
     $("[name='lastModifierField']").html(doc.getDocOnline("testcase", "LastModifier"));

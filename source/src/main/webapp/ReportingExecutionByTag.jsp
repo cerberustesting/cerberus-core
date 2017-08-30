@@ -31,11 +31,13 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
+        <script type="text/javascript" src="dependencies/Tinymce-4.2.6/tinymce.min.js"></script>
         <link rel="stylesheet" href="css/pages/ReportingExecutionByTag.css" type="text/css"/>
         <script type="text/javascript" src="dependencies/D3js-3.x.x/js/d3.min.js"></script>
         <script type="text/javascript" src="dependencies/D3-tip-0.6.7/js/index.js"></script>
         <script type="text/javascript" src="js/pages/ReportingExecutionByTag.js"></script>
         <script type="text/javascript" src="js/transversalobject/TestCaseExecutionQueue.js"></script>
+        <script type="text/javascript" src="js/transversalobject/TestCase.js"></script>
         <title id="pageTitle">Campaign Reporting</title>
     </head>
     <body>
@@ -43,6 +45,7 @@
         <div class="container-fluid center" id="page-layout">
             <%@ include file="include/global/messagesArea.html"%>
             <%@ include file="include/transversalobject/TestCaseExecutionQueue.html"%>
+            <%@ include file="include/transversalobject/TestCase.html"%>
             
             <h1 class="page-title-line" id="title">Execution reporting by tag</h1>
             <div class="row">

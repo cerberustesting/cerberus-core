@@ -73,9 +73,6 @@ $.when($.getScript("js/global/global.js")).then(function () {
         displayInvariantList("activeProd", "TCACTIVE", false, true);
         displayApplicationList("application", getUser().defaultSystem);
         displayProjectList("project");
-        tinymce.init({
-            selector: ".wysiwyg"
-        });
 
         $.ajax({
             url: "ReadTest",
