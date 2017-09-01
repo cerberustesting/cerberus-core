@@ -2173,7 +2173,7 @@ function Control(json, parentAction, canUpdate) {
         this.objType = "Unknown";
         this.value1 = "";
         this.value2 = "";
-        this.fatal = "Y";
+        this.fatal = "N";
         this.conditionOper = "always";
         this.conditionVal1 = "";
         this.conditionVal2 = "";
