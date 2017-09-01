@@ -38,7 +38,10 @@ function initPage() {
     //clear the modals fields when closed
     $('#editSqlLibraryModal').on('hidden.bs.modal', editEntryModalCloseHandler);
     $('#addSqlLibraryModal').on('hidden.bs.modal', addEntryModalCloseHandler);
-
+    
+    // Invariant Combo loading.
+    displayInvariantList("database", "PROPERTYDATABASE", false, "", "");
+    
     //configure and create the dataTable
     var configurations = new TableConfigurationsServerSide("sqlLibrarysTable", "ReadSqlLibrary", "contentTable", aoColumnsFunc("sqlLibrarysTable"), [1, 'asc']);
     createDataTableWithPermissions(configurations, renderOptionsForSqlLibrary, "#sqlLibraryList", undefined, true);
@@ -122,8 +125,7 @@ function editEntryClick(name) {
                 formEdit.find("#type").prop("value", $('<div/>').html(data.type).text());
                 formEdit.find("#script").text(data.script);
                 formEdit.find("#description").prop("value", $('<div/>').html(data.description).text());
-                formEdit.find("#database").find("option").removeAttr("selected");
-                formEdit.find("#database").find("option[value='" + data.database + "']").attr("selected", "selected");
+                formEdit.find("#database").val(data.database);
 
                 //Highlight envelop on modal loading
                 var editor = ace.edit($("#editSqlLibraryModalForm #script")[0]);
