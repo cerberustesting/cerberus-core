@@ -24,7 +24,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
         $('.dataTable').DataTable().draw();
         //open navbar menu Data
         openNavbarMenu("navMenuData");
-        
+
         $('[data-toggle="popover"]').popover({
             'placement': 'auto',
             'container': 'body'}
@@ -153,18 +153,22 @@ function initPage() {
     $.when(createDataTableWithPermissions(configurations, renderOptionsForTestDataLib, "#testdatalib", undefined, true)).then(function () {
         $("#listOfTestDataLib_wrapper div.ColVis .ColVis_MasterButton").addClass("btn btn-default");
     });
-    
+
 }
 
 function activateSOAPServiceFields(modal, serviceValue) {
     if (serviceValue === "") {
         $(modal + " #servicepath").prop("readonly", false);
         $(modal + " #method").prop("readonly", false);
-        $(modal + " #envelope").prop("contenteditable", true);
+        var editor = ace.edit($(modal + " #envelope")[0]);
+        editor.container.style.opacity = 1;
+        editor.renderer.setStyle("disabled", false);
     } else {
         $(modal + " #servicepath").prop("readonly", true);
         $(modal + " #method").prop("readonly", true);
-        $(modal + " #envelope").prop("contenteditable", false);
+        var editor = ace.edit($(modal + " #envelope")[0]);
+        editor.container.style.opacity = 0.5;
+        editor.renderer.setStyle("disabled", true);
     }
 }
 
@@ -583,7 +587,7 @@ function duplicateTestDataLibClick(testDataLibID) {
     var jqxhr = $.getJSON("ReadTestDataLib", "testdatalibid=" + testDataLibID);
 
     $.when(jqxhr).then(function (data) {
-        
+
         //Destroy the previous Ace object.
         ace.edit($("#duplicateTestDataLibModal #envelope")[0]).destroy();
         ace.edit($("#duplicateTestDataLibModal #script")[0]).destroy();
@@ -745,7 +749,7 @@ function editTestDataLibClick(testDataLibID) {
     var jqxhr = $.getJSON("ReadTestDataLib", "testdatalibid=" + testDataLibID);
 
     $.when(jqxhr).then(function (data) {
-        
+
         //Destroy the previous Ace object.
         ace.edit($("#editTestDataLibModal #envelope")[0]).destroy();
         ace.edit($("#editTestDataLibModal #script")[0]).destroy();
