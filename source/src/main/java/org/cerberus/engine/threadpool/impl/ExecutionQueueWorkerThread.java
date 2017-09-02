@@ -20,7 +20,6 @@
 package org.cerberus.engine.threadpool.impl;
 
 import java.io.UnsupportedEncodingException;
-import java.net.SocketTimeoutException;
 import java.net.URLEncoder;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
@@ -33,10 +32,7 @@ import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 import org.cerberus.crud.entity.TestCaseExecutionQueue;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;

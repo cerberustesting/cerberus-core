@@ -800,10 +800,6 @@ function selectTableToCopy() {
     }
 }
 
-/*
- * Helper functions
- */
-
 function createShortDescRow(row, data, index) {
     var tableAPI = $("#listTable").DataTable();
 
@@ -836,6 +832,22 @@ function generateTooltip(data) {
     return htmlRes;
 }
 
+function openModalTestCase_FromRepTag(element, test, testcase, mode) {
+    openModalTestCase(test, testcase, mode);
+    $('#editTestCaseModal').on("hidden.bs.modal", function (e) {
+        $('#editTestCaseModal').unbind("hidden.bs.modal");
+        console.info("DONE - " + element);
+        var testcaseobj = $('#editTestCaseModal').data("testcase");
+        if ((!(testcaseobj === undefined)) && ($('#editTestCaseModal').data("Saved"))) {
+            // when modal is closed, we check that testcase object exist and has been saved in order to update the comment and bugid on reportbytag screen.
+            var newComment = $('#editTestCaseModal').data("testcase").comment;
+            var newBugId = $('#editTestCaseModal').data("testcase").bugId;
+            $(element).parent().parent().find('td.comment').text(newComment);
+            $(element).parent().parent().find('td.bugid').text(newBugId);
+        }
+    });
+}
+
 function aoColumnsFunc(Columns) {
     var doc = new Doc();
     var colLen = Columns.length;
@@ -859,7 +871,7 @@ function aoColumnsFunc(Columns) {
             "title": doc.getDocOnline("testcase", "TestCase"),
             "mRender": function (data, type, obj, meta) {
                 var result = "<a href='./TestCaseScript.jsp?test=" + encodeURIComponent(obj.test) + "&testcase=" + encodeURIComponent(obj.testCase) + "'>" + obj.testCase + "</a>";
-                var editEntry = '<button id="editEntry" onclick="openModalTestCase(\'' + escapeHtml(obj["test"]) + '\',\'' + escapeHtml(obj["testCase"]) + '\',\'EDIT\');"\n\
+                var editEntry = '<button id="editEntry" onclick="openModalTestCase_FromRepTag(this,\'' + escapeHtml(obj["test"]) + '\',\'' + escapeHtml(obj["testCase"]) + '\',\'EDIT\');"\n\
                                 class="editEntry btn btn-default btn-xs margin-right5" \n\
                                 name="editEntry" data-toggle="tooltip"  title="' + doc.getDocLabel("page_testcaselist", "btn_edit") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-pencil"></span></button>';
@@ -932,6 +944,7 @@ function aoColumnsFunc(Columns) {
             {
                 "data": "comment",
                 "sName": "tec.comment",
+                "sClass": "comment",
                 "sWidth": testCaseInfoWidth + "%",
                 "title": doc.getDocOnline("testcase", "Comment")
             };
@@ -940,11 +953,11 @@ function aoColumnsFunc(Columns) {
             {
                 "data": "bugId.bugId",
                 "mRender": function (data, type, obj) {
-                    if (obj.bugId.bugId !== "") {
-                        var link = '<a href="' + obj.bugId.bugTrackerUrl + '">' + obj.bugId.bugId + "</a>";
+                    if (obj.bugId.bugTrackerUrl !== "") {
+                        var link = '<a target="_blank" href="' + obj.bugId.bugTrackerUrl + '">' + obj.bugId.bugId + "</a>";
                         return link;
                     } else {
-                        return "";
+                        return obj.bugId.bugId;
                     }
                 },
                 "sName": "tec.bugId",

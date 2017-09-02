@@ -1,6 +1,7 @@
 *Bug fixes*
 [square]
-None
+* [GUI] password fix to allow more than 10 caracters.
+* [GUI] small disply issues in campaign and battery screen.
 
 *Improvements / New features*
 [square]
@@ -16,6 +17,16 @@ None
   * Queue screen allow to control the result and followup the executions.
   * 1st tab display the list of queue execution, 2nd tab the list of constrain and level of saturation of every constrain, the 3rd tab display the timing of the last job that analyzed the queue and allow to force a new trigger of that job (should be automatic at the end of every queue successfully submitted).
 * [GUI] Test Cases can now be renamed. When renamed, it loose the execution history.
+* [GUI] in ReportByTag screen, we can now edit the testcase header directly. It allows to modify comment and bugid directly.
+* [GUI] Control are now not Fatal by default.
+* [GUI] columns in all screens can now be resized.
+* [GUI] significant improvements in filtering management of lists.
+* [ENGINE] Improvements on KEYPRESS action.
+* [ENGINE] Variables can now be used inside column definition of Data Lib.
+* [ENGINE] Improvements on Sikuli connection (more actions and controls are supported as well as automatic screenshot).
+* [GUI] Online documentation are now displayed in popup and not inside a new window.
+* [GUI] We can now add multiple steps from the same modal.
+* [GUI] We can now rename a testcase (Warning link with past executions will be lost).
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

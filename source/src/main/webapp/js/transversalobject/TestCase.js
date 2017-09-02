@@ -32,6 +32,9 @@ function openModalTestCase(test, testcase, mode) {
         initModalTestCase();
         $('#editTestCaseModal').data("initLabel", true);
     }
+    // Init the Saved data to false.
+    $('#editTestCaseModal').data("Saved", false);
+    $('#editTestCaseModal').data("testcase", undefined);
 
     if (mode === "EDIT") {
         editTestCaseClick(test, testcase);
@@ -357,16 +360,17 @@ function confirmTestCaseModalHandler(mode) {
             screenSize: data.screenSize,
             labelList: JSON.stringify(table_label),
             countryList: JSON.stringify(table_country)},
-        success: function (data) {
+        success: function (dataMessage) {
             hideLoaderInModal('#editTestCaseModal');
-            if (getAlertType(data.messageType) === "success") {
+            if (getAlertType(dataMessage.messageType) === "success") {
                 var oTable = $("#testCaseTable").dataTable();
                 oTable.fnDraw(true);
                 $('#editTestCaseModal').data("Saved", true);
+                $('#editTestCaseModal').data("testcase", data);
                 $('#editTestCaseModal').modal('hide');
-                showMessage(data);
+                showMessage(dataMessage);
             } else {
-                showMessage(data, $('#editTestCaseModal'));
+                showMessage(dataMessage, $('#editTestCaseModal'));
             }
         },
         error: showUnexpectedError
