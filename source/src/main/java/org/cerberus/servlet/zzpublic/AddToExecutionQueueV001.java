@@ -53,8 +53,10 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.cerberus.crud.factory.IFactoryTestCaseExecutionQueue;
 import org.cerberus.crud.service.IApplicationService;
 import org.cerberus.crud.service.IInvariantService;
+import org.cerberus.crud.service.ITagService;
 import org.cerberus.crud.service.ITestCaseCountryService;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
+import org.cerberus.util.StringUtil;
 
 /**
  * Add a test case to the execution queue (so to be executed later).
@@ -276,6 +278,14 @@ public class AddToExecutionQueueV001 extends HttpServlet {
         String user = request.getRemoteUser() == null ? "" : request.getRemoteUser();
         // Starting the request only if previous parameters exist.
         if (!error) {
+
+            // Create Tag when exist.
+            if (!StringUtil.isNullOrEmpty(tag)) {
+                // We create or update it.
+                ITagService tagService = appContext.getBean(ITagService.class);
+                tagService.createAuto(tag, campaign, user);
+            }
+
             // Part 1: Getting all possible xecution from test cases + countries + environments + browsers which have been sent to this servlet.
             Map<String, String> invariantEnv = invariantService.readToHashMapGp1StringByIdname("ENVIRONMENT", "");
             List<TestCaseExecutionQueue> toInserts = new ArrayList<TestCaseExecutionQueue>();

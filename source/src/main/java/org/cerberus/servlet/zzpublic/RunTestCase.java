@@ -281,6 +281,13 @@ public class RunTestCase extends HttpServlet {
             errorMessage += "Error - Test Case is not selected for country. ";
         }
 
+        // Create Tag when exist.
+        if (!StringUtil.isNullOrEmpty(tag)) {
+            // We create or update it.
+            ITagService tagService = appContext.getBean(ITagService.class);
+            tagService.createAuto(tag, "", executor);
+        }
+
         if (!error) {
             //TODO:FN debug messages to be removed
             LOG.debug("STARTED: Test " + test + "-" + testCase);

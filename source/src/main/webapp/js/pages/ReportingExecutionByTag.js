@@ -183,6 +183,14 @@ function displayPageLabel(doc) {
     $("#statusLabel").html(doc.getDocLabel("testcase", "Status") + " :");
 }
 
+function formatTag(tag) {
+    return tag;
+}
+
+function formatTagSelection(tag) {
+    return tag.tag || tag.description;
+}
+
 function loadTagFilters(urlTag) {
     var jqxhr = $.get("ReadTag", "", "json");
     $.when(jqxhr).then(function (data) {
@@ -190,7 +198,6 @@ function loadTagFilters(urlTag) {
         if (messageType === "success") {
             var index;
             var len = data.contentTable.length;
-
             $('#selectTag').append($('<option></option>').attr("value", "")).attr("placeholder", "Select a Tag");
             for (index = 0; index < len; index++) {
                 //the character " needs a special encoding in order to avoid breaking the string that creates the html element   
@@ -200,6 +207,41 @@ function loadTagFilters(urlTag) {
             }
 
             $('#selectTag').select2();
+
+//            $("#selectTag").select2({
+//                ajax: {
+//                    url: "ReadTag1",
+//                    dataType: 'json',
+//                    delay: 250,
+//                    data: function (params) {
+//                        return {
+//                            tag: params.term, // search term
+//                            page: params.page
+//                        };
+//                    },
+//                    processResults: function (data, params) {
+//                        // parse the results into the format expected by Select2
+//                        // since we are using custom formatting functions we do not need to
+//                        // alter the remote JSON data, except to indicate that infinite
+//                        // scrolling can be used
+//                        params.page = params.page || 1;
+//                        return {
+//                            results: data.contentTable,
+//                            pagination: {
+//                                more: (params.page * 30) < data.total_count
+//                            }
+//                        };
+//                    },
+//                    cache: true
+//                },
+//                escapeMarkup: function (markup) {
+//                    return markup;
+//                }, // let our custom formatter work
+//                minimumInputLength: 1,
+//                templateResult: formatTag // omitted for brevity, see the source of this page
+////                templateSelection: formatTagSelection // omitted for brevity, see the source of this page
+//            });
+
 
             //if the tag is passed as a url parameter, then it loads the report from this tag
             if (urlTag !== null) {

@@ -50,6 +50,7 @@ import org.cerberus.util.servlet.ServletUtil;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.cerberus.crud.factory.IFactoryTestCaseExecutionQueue;
+import org.cerberus.crud.service.ITagService;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 
 /**
@@ -196,6 +197,13 @@ public class AddToExecutionQueue extends HttpServlet {
 
         // Starting the request only if previous parameters exist.
         if (!error) {
+
+            // Create Tag when exist.
+            if (!StringUtil.isNullOrEmpty(tag)) {
+                // We create or update it.
+                ITagService tagService = appContext.getBean(ITagService.class);
+                tagService.createAuto(tag, "", "");
+            }
 
             // Part 1: Getting all test cases which have been sent to this servlet.
             List<TestCaseExecutionQueue> toInserts = null;

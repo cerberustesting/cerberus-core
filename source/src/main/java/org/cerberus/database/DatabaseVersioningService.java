@@ -9306,6 +9306,21 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('usergroup','GroupName','','fr','Nom du groupe',NULL,NULL);");
         SQLInstruction.add(SQLS.toString());
 
+        // AutoIncrement on tag table & Init tag table data.
+        //-- ------------------------ 1211-1214
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `tag` CHANGE COLUMN `id` `id` INT(11) NOT NULL AUTO_INCREMENT ;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `tag` DROP INDEX `IX_tag_01` , ADD UNIQUE INDEX `IX_tag_01` (`Tag` ASC);");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `tag` (`Tag`) (select distinct tag from testcaseexecution a where tag != \"\") ON DUPLICATE KEY UPDATE Tag=a.tag;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `tag` (`Tag`) (select distinct tag from testcaseexecutionqueue a where tag != \"\") ON DUPLICATE KEY UPDATE Tag=a.tag;");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 
