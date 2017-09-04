@@ -527,8 +527,9 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#userAgent").prop("value", "");
         formEdit.find("#screenSize").prop("value", "");
         formEdit.find("#shortDesc").prop("value", "");
-        tinyMCE.get('behaviorOrValueExpected').setContent("");
-        tinyMCE.get('howTo').setContent("");
+        if(tinyMCE.get('behaviorOrValueExpected') != null)
+            tinyMCE.get('behaviorOrValueExpected').setContent("");
+        if(tinyMCE.get('howTo') != null)
         formEdit.find("#active").prop("value", "Y");
         formEdit.find("#bugId").prop("value", "");
         formEdit.find("#conditionOper").prop("value", "always");
@@ -554,8 +555,10 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#userAgent").prop("value", testCase.userAgent);
         formEdit.find("#screenSize").prop("value", testCase.screenSize);
         formEdit.find("#shortDesc").prop("value", testCase.description);
-        tinyMCE.get('behaviorOrValueExpected').setContent(testCase.behaviorOrValueExpected);
-        tinyMCE.get('howTo').setContent(testCase.howTo);
+        if(tinyMCE.get('behaviorOrValueExpected') != null)
+            tinyMCE.get('behaviorOrValueExpected').setContent(testCase.behaviorOrValueExpected);
+        if(tinyMCE.get('howTo') != null)
+            tinyMCE.get('howTo').setContent(testCase.howTo);
         formEdit.find("#active").prop("value", testCase.tcActive);
         formEdit.find("#bugId").prop("value", testCase.bugID);
         formEdit.find("#conditionOper").prop("value", testCase.conditionOper);
@@ -593,8 +596,10 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#userAgent").prop("disabled", "disabled");
         formEdit.find("#screenSize").prop("disabled", "disabled");
         formEdit.find("#shortDesc").prop("readonly", "readonly");
-        tinyMCE.get('behaviorOrValueExpected').getBody().setAttribute('contenteditable', false);
-        tinyMCE.get('howTo').getBody().setAttribute('contenteditable', false);
+        if(tinyMCE.get('behaviorOrValueExpected') != null)
+            tinyMCE.get('behaviorOrValueExpected').getBody().setAttribute('contenteditable', false);
+        if(tinyMCE.get('howTo') != null)
+            tinyMCE.get('howTo').getBody().setAttribute('contenteditable', false);
         formEdit.find("#active").prop("disabled", "disabled");
         formEdit.find("#fromSprint").prop("disabled", "disabled");
         formEdit.find("#fromRev").prop("disabled", "disabled");
@@ -633,8 +638,10 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#userAgent").removeProp("disabled");
         formEdit.find("#screenSize").removeProp("disabled");
         formEdit.find("#shortDesc").removeProp("readonly");
-        tinyMCE.get('behaviorOrValueExpected').getBody().setAttribute('contenteditable', true);
-        tinyMCE.get('howTo').getBody().setAttribute('contenteditable', true);
+        if(tinyMCE.get('behaviorOrValueExpected') != null)
+            tinyMCE.get('behaviorOrValueExpected').getBody().setAttribute('contenteditable', true);
+        if(tinyMCE.get('howTo') != null)
+            tinyMCE.get('howTo').getBody().setAttribute('contenteditable', true);
         formEdit.find("#active").removeProp("disabled");
         formEdit.find("#fromSprint").removeProp("disabled");
         formEdit.find("#fromRev").removeProp("disabled");
