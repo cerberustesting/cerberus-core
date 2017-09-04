@@ -43,6 +43,13 @@ public interface ITagService {
 
     /**
      *
+     * @param tag
+     * @return
+     */
+    AnswerItem readByKeyTech(long id);
+
+    /**
+     *
      * @return
      */
     AnswerList readAll();
@@ -117,7 +124,7 @@ public interface ITagService {
      * @return
      */
     Answer createAuto(String tag, String campaign, String user);
-    
+
     /**
      *
      * @param answerItem
@@ -142,12 +149,12 @@ public interface ITagService {
     void convert(Answer answer) throws CerberusException;
 
     /**
-     * 
+     *
      * @param campaign
      * @param searchParameter
      * @param individualSearch
      * @param columnName
-     * @return 
+     * @return
      */
     AnswerList<String> readDistinctValuesByCriteria(String campaign, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 }

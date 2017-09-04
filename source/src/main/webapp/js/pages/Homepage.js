@@ -186,26 +186,66 @@ function modalCloseHandler() {
     $("#selectTag").empty();
 }
 
+function formatTag(tag) {
+    var markup = "<div class='select2-result-tag clearfix'>" +
+            "<div class='select2-result-tag__title'>" + tag.tag + "</div>";
+
+    if (tag.description) {
+        markup += "<div class='select2-result-tag__description'>" + tag.description + "</div>";
+    }
+    markup += "<div class='select2-result-tag__statistics'>";
+    if (tag.campaign) {
+        markup += "<div class='select2-result-tag__detail'><i class='fa fa-list'></i> " + tag.campaign + "</div>";
+    }
+    if (tag.DateCreated) {
+        markup += "<div class='select2-result-tag__detail'><i class='fa fa-calendar'></i> " + tag.DateCreated + "</div>";
+    }
+    markup += "</div>";
+    markup += "</div>";
+
+    return markup;
+}
+
+function formatTagSelection(tag) {
+    var result = tag.id;
+    if (!isEmpty(tag.campaign)) {
+        result = result + " [" + tag.campaign + "]";
+    }
+    return result;
+}
+
 function loadTagFilter() {
-    var jqxhr = $.get("ReadTag", "", "json");
-
-    $.when(jqxhr).then(function (data) {
-        var messageType = getAlertType(data.messageType);
-
-        if (messageType === "success") {
-            var index;
-            $('#selectTag').append($('<option></option>').attr("value", "")).attr("placeholder", "Select a Tag");
-            for (index = 0; index < data.contentTable.length; index++) {
-                //the character " needs a special encoding in order to avoid breaking the string that creates the html element   
-                var encodedString = data.contentTable[index].replace(/\"/g, "%22");
-                var option = $('<option></option>').attr("value", encodedString).text(data.contentTable[index]);
-                $('#selectTag').append(option);
-            }
-            $('#selectTag').select2();
-        } else {
-            showMessageMainPage(messageType, data.message, false);
-        }
-    }).fail(handleErrorAjaxAfterTimeout);
+    $("#selectTag").select2({
+        ajax: {
+            url: "ReadTag1?iSortCol_0=0&sSortDir_0=desc&sColumns=id,tag,campaign,description&iDisplayLength=30",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    sSearch: params.term, // search term
+                    iDisplayStartPage: params.page
+                };
+            },
+            processResults: function (data, params) {
+                params.page = params.page || 1;
+                return {
+                    results: $.map(data.contentTable, function (obj) {
+                        return {id: obj.tag, text: obj.tag, tag: obj.tag, description: obj.description, campaign: obj.campaign, DateCreated: obj.DateCreated};
+                    }),
+                    pagination: {
+                        more: (params.page * 30) < data.iTotalRecords
+                    }
+                };
+            },
+            cache: true
+        },
+        escapeMarkup: function (markup) {
+            return markup;
+        }, // let our custom formatter work
+        minimumInputLength: 2,
+        templateResult: formatTag, // omitted for brevity, see the source of this page
+        templateSelection: formatTagSelection // omitted for brevity, see the source of this page
+    });
 }
 
 function generateTagLink(tagName) {

@@ -31,6 +31,7 @@ import org.cerberus.crud.entity.TestCaseExecutionQueue;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.crud.factory.IFactoryTestCaseExecutionQueue;
+import org.cerberus.crud.service.ITagService;
 import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.threadpool.IExecutionThreadPoolService;
@@ -137,6 +138,13 @@ public class CreateTestCaseExecutionQueue extends HttpServlet {
         boolean id_error = false;
 
         IExecutionThreadPoolService executionThreadPoolService = appContext.getBean(IExecutionThreadPoolService.class);
+
+        // Create Tag when exist.
+        if (!StringUtil.isNullOrEmpty(tag)) {
+            // We create or update it.
+            ITagService tagService = appContext.getBean(ITagService.class);
+            tagService.createAuto(tag, "", request.getRemoteUser());
+        }
 
         // Prepare the final answer.
         MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);

@@ -221,6 +221,10 @@
         <servlet-class>org.cerberus.servlet.crud.testexecution.ReadTag</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>ReadTag1</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.testexecution.ReadTag1</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>GetCampaignExecutionsCommand</servlet-name>
         <servlet-class>org.cerberus.servlet.zzpublic.GetCampaignExecutionsCommand</servlet-class>
     </servlet>
@@ -1087,6 +1091,10 @@
     <servlet-mapping>
         <servlet-name>ReadTag</servlet-name>
         <url-pattern>/ReadTag</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ReadTag1</servlet-name>
+        <url-pattern>/ReadTag1</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>GetCampaignExecutionsCommand</servlet-name>
@@ -2211,6 +2219,7 @@
             <url-pattern>/ReadTestCaseExecution</url-pattern>
             <url-pattern>/ReadTestCaseExecutionImage</url-pattern>
             <url-pattern>/ReadTag</url-pattern>
+            <url-pattern>/ReadTag1</url-pattern>
             <url-pattern>/ReadParameter</url-pattern>
             <url-pattern>/SaveManualExecutionPictureTest</url-pattern>
             <url-pattern>/ReadCampaign</url-pattern>

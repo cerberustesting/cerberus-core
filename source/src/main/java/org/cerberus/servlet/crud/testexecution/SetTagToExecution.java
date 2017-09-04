@@ -27,8 +27,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.cerberus.crud.service.ITagService;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.ITestCaseExecutionService;
+import org.cerberus.util.StringUtil;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
@@ -56,16 +58,24 @@ public class SetTagToExecution extends HttpServlet {
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         ITestCaseExecutionService executionService = appContext.getBean(ITestCaseExecutionService.class);
-        
+
         try {
             String id = policy.sanitize(request.getParameter("executionId"));
             String tag = policy.sanitize(request.getParameter("newTag"));
             executionService.setTagToExecution(Long.valueOf(id), tag);
+
+            // Create Tag when exist.
+            if (!StringUtil.isNullOrEmpty(tag)) {
+                // We create or update it.
+                ITagService tagService = appContext.getBean(ITagService.class);
+                tagService.createAuto(tag, "", request.getRemoteUser());
+            }
+
             /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet SetTagToExecution</title>");            
+            out.println("<title>Servlet SetTagToExecution</title>");
             out.println("</head>");
             out.println("<body>");
             out.println("<h1>Servlet SetTagToExecution at " + request.getContextPath() + "</h1>");

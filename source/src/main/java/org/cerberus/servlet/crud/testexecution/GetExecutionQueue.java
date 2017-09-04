@@ -59,6 +59,7 @@ import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.cerberus.crud.factory.IFactoryTestCaseExecutionQueue;
+import org.cerberus.crud.service.ITagService;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 
 /**
@@ -310,6 +311,13 @@ public class GetExecutionQueue extends HttpServlet {
             String manualContextRoot = ParameterParserUtil.parseStringParam(request.getParameter(PARAMETER_MANUAL_CONTEXT_ROOT), null);
             String manualLoginRelativeURL = ParameterParserUtil.parseStringParam(request.getParameter(PARAMETER_MANUAL_LOGIN_RELATIVE_URL), null);
             String manualEnvData = ParameterParserUtil.parseStringParam(request.getParameter(PARAMETER_MANUAL_ENV_DATA), null);
+
+            // Create Tag when exist.
+            if (!StringUtil.isNullOrEmpty(tag)) {
+                // We create or update it.
+                ITagService tagService = appContext.getBean(ITagService.class);
+                tagService.createAuto(tag, "", request.getRemoteUser());
+            }
 
             for (int index = 0; index < toAddList.length(); index++) {
                 JSONObject toAdd = toAddList.getJSONObject(index);

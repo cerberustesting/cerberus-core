@@ -59,6 +59,11 @@ public class TagService implements ITagService {
     }
 
     @Override
+    public AnswerItem readByKeyTech(long tag) {
+        return tagDAO.readByKeyTech(tag);
+    }
+
+    @Override
     public AnswerList readAll() {
         return tagDAO.readByVariousByCriteria(null, 0, 0, "sort", "asc", null, null);
     }

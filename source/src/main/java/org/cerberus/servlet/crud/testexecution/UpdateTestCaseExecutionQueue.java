@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.TestCaseExecutionQueue;
 import org.cerberus.crud.service.ILogEventService;
+import org.cerberus.crud.service.ITagService;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.engine.entity.MessageEvent;
@@ -36,6 +37,7 @@ import org.cerberus.engine.threadpool.IExecutionThreadPoolService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerUtil;
@@ -127,6 +129,13 @@ public class UpdateTestCaseExecutionQueue extends HttpServlet {
         // Parameter that we cannot secure as we need the html --> We DECODE them
         String[] myIds = request.getParameterValues("id");
         long id = 0;
+
+        // Create Tag when exist.
+        if (!StringUtil.isNullOrEmpty(tag)) {
+            // We create or update it.
+            ITagService tagService = appContext.getBean(ITagService.class);
+            tagService.createAuto(tag, "", request.getRemoteUser());
+        }
 
         // Prepare the final answer.
         MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);

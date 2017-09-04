@@ -33,10 +33,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.cerberus.crud.entity.Robot;
-import org.cerberus.crud.service.IRobotService;
+import org.cerberus.crud.entity.Tag;
 import org.cerberus.crud.service.ITagService;
-import org.cerberus.crud.service.impl.RobotService;
 import org.cerberus.crud.service.impl.TagService;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
@@ -92,7 +90,7 @@ public class ReadTag1 extends HttpServlet {
         /**
          * Parsing and securing all required parameters.
          */
-        String robot = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("tag"), "");
+        String tag = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("tag"), "");
         String columnName = ParameterParserUtil.parseStringParam(request.getParameter("columnName"), "");
 
         // Global boolean on the servlet that define if the user has permition to edit and delete object.
@@ -103,20 +101,20 @@ public class ReadTag1 extends HttpServlet {
 
         try {
             JSONObject jsonResponse = new JSONObject();
-                if (!(request.getParameter("robotid") == null)) {
-                    answer = findRobotByKeyTech(0, appContext, userHasPermissions);
-                    jsonResponse = (JSONObject) answer.getItem();
-                } else if (!(request.getParameter("robot") == null)) {
-                    answer = findRobotByKey(robot, appContext, request);
-                    jsonResponse = (JSONObject) answer.getItem();
-                } else if (!Strings.isNullOrEmpty(columnName)) {
-                    //If columnName is present, then return the distinct value of this column.
-                    answer = findDistinctValuesOfColumn(appContext, request, columnName);
-                    jsonResponse = (JSONObject) answer.getItem();
-                } else {
-                    answer = findRobotList(appContext, userHasPermissions, request);
-                    jsonResponse = (JSONObject) answer.getItem();
-                }
+            if (!(request.getParameter("id") == null)) {
+                answer = findTagByKeyTech(0, appContext, userHasPermissions);
+                jsonResponse = (JSONObject) answer.getItem();
+            } else if (!(request.getParameter("tag") == null)) {
+                answer = findTagByKey(tag, appContext, request);
+                jsonResponse = (JSONObject) answer.getItem();
+            } else if (!Strings.isNullOrEmpty(columnName)) {
+                //If columnName is present, then return the distinct value of this column.
+                answer = findDistinctValuesOfColumn(appContext, request, columnName);
+                jsonResponse = (JSONObject) answer.getItem();
+            } else {
+                answer = findTagList(appContext, userHasPermissions, request);
+                jsonResponse = (JSONObject) answer.getItem();
+            }
 
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
             jsonResponse.put("message", answer.getResultMessage().getDescription());
@@ -178,22 +176,29 @@ public class ReadTag1 extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findRobotList(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
+    private AnswerItem findTagList(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
         AnswerItem item = new AnswerItem();
         JSONObject object = new JSONObject();
         tagService = appContext.getBean(TagService.class);
 
-        int startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"), "0"));
+        int startPosition = 0;
+        if (request.getParameter("iDisplayStartPage") != null) {
+            startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStartPage"), "0"));
+            startPosition--;
+            startPosition = startPosition * 30;
+        } else {
+            startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"), "0"));
+        }
         int length = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayLength"), "0"));
         /*int sEcho  = Integer.valueOf(request.getParameter("sEcho"));*/
 
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
         int columnToSortParameter = Integer.parseInt(ParameterParserUtil.parseStringParam(request.getParameter("iSortCol_0"), "1"));
-        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "robotID,robot,host,port,platform,browser,version,active,useragent,description");
+        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "id,tag,campaign,description");
         String columnToSort[] = sColumns.split(",");
         String columnName = columnToSort[columnToSortParameter];
-        String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
+        String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "desc");
 
         Map<String, List<String>> individualSearch = new HashMap<>();
         for (int a = 0; a < columnToSort.length; a++) {
@@ -207,8 +212,8 @@ public class ReadTag1 extends HttpServlet {
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (Robot robot : (List<Robot>) resp.getDataList()) {
-                jsonArray.put(convertRobotToJSONObject(robot));
+            for (Tag tagCur : (List<Tag>) resp.getDataList()) {
+                jsonArray.put(convertTagToJSONObject(tagCur));
             }
         }
 
@@ -222,19 +227,19 @@ public class ReadTag1 extends HttpServlet {
         return item;
     }
 
-    private AnswerItem findRobotByKeyTech(Integer id, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
+    private AnswerItem findTagByKeyTech(long id, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
         AnswerItem item = new AnswerItem();
         JSONObject object = new JSONObject();
 
-        IRobotService libService = appContext.getBean(IRobotService.class);
+        ITagService libService = appContext.getBean(ITagService.class);
 
         //finds the project     
         AnswerItem answer = libService.readByKeyTech(id);
 
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item and convert it to JSONformat
-            Robot lib = (Robot) answer.getItem();
-            JSONObject response = convertRobotToJSONObject(lib);
+            Tag tag = (Tag) answer.getItem();
+            JSONObject response = convertTagToJSONObject(tag);
             object.put("contentTable", response);
         }
 
@@ -245,36 +250,36 @@ public class ReadTag1 extends HttpServlet {
         return item;
     }
 
-    private AnswerItem findRobotByKey(String robot, ApplicationContext appContext, HttpServletRequest request) throws JSONException, CerberusException {
+    private AnswerItem findTagByKey(String tag, ApplicationContext appContext, HttpServletRequest request) throws JSONException, CerberusException {
         AnswerItem item = new AnswerItem();
         JSONObject object = new JSONObject();
 
-        IRobotService libService = appContext.getBean(IRobotService.class);
+        ITagService libService = appContext.getBean(ITagService.class);
 
         //finds the project     
-        AnswerItem answer = libService.readByKey(robot);
+        AnswerItem answer = libService.readByKey(tag);
 
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item and convert it to JSONformat
-            Robot robotObj = (Robot) answer.getItem();
-            JSONObject response = convertRobotToJSONObject(robotObj);
-            response.put("hasPermissionsUpdate", libService.hasPermissionsUpdate(robotObj, request));
-            response.put("hasPermissionsDelete", libService.hasPermissionsDelete(robotObj, request));
+            Tag tagObj = (Tag) answer.getItem();
+            JSONObject response = convertTagToJSONObject(tagObj);
+//            response.put("hasPermissionsUpdate", libService.hasPermissionsUpdate(tagObj, request));
+//            response.put("hasPermissionsDelete", libService.hasPermissionsDelete(tagObj, request));
 
             object.put("contentTable", response);
         }
 
-        object.put("hasPermissionsCreate", libService.hasPermissionsCreate(null, request));
+//        object.put("hasPermissionsCreate", libService.hasPermissionsCreate(null, request));
         item.setItem(object);
         item.setResultMessage(answer.getResultMessage());
 
         return item;
     }
 
-    private JSONObject convertRobotToJSONObject(Robot robot) throws JSONException {
+    private JSONObject convertTagToJSONObject(Tag tag) throws JSONException {
 
         Gson gson = new Gson();
-        JSONObject result = new JSONObject(gson.toJson(robot));
+        JSONObject result = new JSONObject(gson.toJson(tag));
         return result;
     }
 
@@ -296,12 +301,12 @@ public class ReadTag1 extends HttpServlet {
             }
         }
 
-//        AnswerList testCaseList = tagService.readDistinctValuesByCriteria(searchParameter, individualSearch, columnName);
+        AnswerList tagList = tagService.readDistinctValuesByCriteria(null, searchParameter, individualSearch, columnName);
 
-//        object.put("distinctValues", testCaseList.getDataList());
+        object.put("distinctValues", tagList.getDataList());
 
         answer.setItem(object);
-//        answer.setResultMessage(testCaseList.getResultMessage());
+        answer.setResultMessage(tagList.getResultMessage());
         return answer;
     }
 
