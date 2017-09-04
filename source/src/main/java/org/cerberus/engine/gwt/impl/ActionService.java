@@ -890,7 +890,8 @@ public class ActionService implements IActionService {
             return new MessageEvent(MessageEventEnum.ACTION_FAILED_OPENAPP);
         }
 
-        if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
+        if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)
+                || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
             return sikuliService.doSikuliActionOpenApp(tCExecution.getSession(), value1);
         }
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
@@ -909,7 +910,8 @@ public class ActionService implements IActionService {
             return new MessageEvent(MessageEventEnum.ACTION_FAILED_CLOSEAPP);
         }
 
-        if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
+        if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)
+                || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
             return sikuliService.doSikuliActionCloseApp(tCExecution.getSession(), value1);
         }
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
@@ -935,7 +937,7 @@ public class ActionService implements IActionService {
                 if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
                     return sikuliService.doSikuliActionWaitVanish(tCExecution.getSession(), identifier.getLocator(), "");
                 } else if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_TEXT)) {
-                    return sikuliService.doSikuliActionWaitVanish(tCExecution.getSession(),"" ,identifier.getLocator());
+                    return sikuliService.doSikuliActionWaitVanish(tCExecution.getSession(), "", identifier.getLocator());
                 } else {
                     identifierService.checkWebElementIdentifier(identifier.getIdentifier());
                     return webdriverService.doSeleniumActionWaitVanish(tCExecution.getSession(), identifier);
@@ -949,7 +951,7 @@ public class ActionService implements IActionService {
                 if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
                     return sikuliService.doSikuliActionWaitVanish(tCExecution.getSession(), identifier.getLocator(), "");
                 } else {
-                    return sikuliService.doSikuliActionWaitVanish(tCExecution.getSession(),"" ,identifier.getLocator());
+                    return sikuliService.doSikuliActionWaitVanish(tCExecution.getSession(), "", identifier.getLocator());
                 }
             } else {
                 return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION)
