@@ -59,7 +59,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
             });
 
             localStorage.setItem("tagList", JSON.stringify(tagList));
-            
+
             $("#tagSettingsModal").modal('hide');
             $('#tagExecStatus').empty();
             loadTagExec();
@@ -69,7 +69,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
             stopPropagation(event);
             var tagListForm = $("#tagList");
             var tagList = JSON.parse(localStorage.getItem("tagList"));
-            
+
             if (tagList !== null) {
                 for (var index = 0; index < tagList.length; index++) {
                     tagListForm.append('<div class="input-group">\n\
@@ -84,7 +84,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
             $(".removeTag").on('click', function () {
                 $(this).parent().remove();
             });
-            
+
             $("#tagSettingsModal").modal('show');
         });
 
@@ -114,11 +114,11 @@ $.when($.getScript("js/global/global.js")).then(function () {
         loadTagExec();
 
         loadBuildRevTable();
-        
+
         //close all sidebar menu
         closeEveryNavbarMenu();
     });
-    
+
 });
 
 function displayPageLabel() {
@@ -163,89 +163,13 @@ function readStatus() {
     return result;
 }
 
-function readLastTagExec() {
-    var tagList = [];
-
-    var nbExe = getParameter("cerberus_homepage_nbdisplayedtag", getUser().defaultSystem, false);
-
-    $.ajax({
-        type: "GET",
-        url: "ReadTag",
-        data: {tagNumber: nbExe.value},
-        async: false,
-        dataType: 'json',
-        success: function (data) {
-            tagList = data.contentTable;
-        }
-    });
-    return tagList;
-}
-
 function modalCloseHandler() {
     $("#tagList").empty();
     $("#selectTag").empty();
 }
 
-function formatTag(tag) {
-    var markup = "<div class='select2-result-tag clearfix'>" +
-            "<div class='select2-result-tag__title'>" + tag.tag + "</div>";
-
-    if (tag.description) {
-        markup += "<div class='select2-result-tag__description'>" + tag.description + "</div>";
-    }
-    markup += "<div class='select2-result-tag__statistics'>";
-    if (tag.campaign) {
-        markup += "<div class='select2-result-tag__detail'><i class='fa fa-list'></i> " + tag.campaign + "</div>";
-    }
-    if (tag.DateCreated) {
-        markup += "<div class='select2-result-tag__detail'><i class='fa fa-calendar'></i> " + tag.DateCreated + "</div>";
-    }
-    markup += "</div>";
-    markup += "</div>";
-
-    return markup;
-}
-
-function formatTagSelection(tag) {
-    var result = tag.id;
-    if (!isEmpty(tag.campaign)) {
-        result = result + " [" + tag.campaign + "]";
-    }
-    return result;
-}
-
 function loadTagFilter() {
-    $("#selectTag").select2({
-        ajax: {
-            url: "ReadTag1?iSortCol_0=0&sSortDir_0=desc&sColumns=id,tag,campaign,description&iDisplayLength=30",
-            dataType: 'json',
-            delay: 250,
-            data: function (params) {
-                return {
-                    sSearch: params.term, // search term
-                    iDisplayStartPage: params.page
-                };
-            },
-            processResults: function (data, params) {
-                params.page = params.page || 1;
-                return {
-                    results: $.map(data.contentTable, function (obj) {
-                        return {id: obj.tag, text: obj.tag, tag: obj.tag, description: obj.description, campaign: obj.campaign, DateCreated: obj.DateCreated};
-                    }),
-                    pagination: {
-                        more: (params.page * 30) < data.iTotalRecords
-                    }
-                };
-            },
-            cache: true
-        },
-        escapeMarkup: function (markup) {
-            return markup;
-        }, // let our custom formatter work
-        minimumInputLength: 2,
-        templateResult: formatTag, // omitted for brevity, see the source of this page
-        templateSelection: formatTagSelection // omitted for brevity, see the source of this page
-    });
+    $("#selectTag").select2(getComboConfigTag());
 }
 
 function generateTagLink(tagName) {
@@ -304,18 +228,39 @@ function loadTagExec() {
     if (tagList === null || tagList.length === 0) {
         tagList = readLastTagExec();
     }
-    
+
     for (var index = 0; index < tagList.length; index++) {
         let : tagName = tagList[index];
         //TODO find a way to remove the use for resendTag
         var requestToServlet = "ReadTestCaseExecutionByTag?Tag=" + tagName + "&" + "outputReport=totalStatsCharts" + "&" + "outputReport=resendTag";
-        var jqxhr = $.get(requestToServlet , null, "json");
-        
-        $.when(jqxhr).then(function (data ) {
-            generateTagReport( data.statsChart.contentTable.total ,  data.tag );
+        var jqxhr = $.get(requestToServlet, null, "json");
+
+        $.when(jqxhr).then(function (data) {
+            generateTagReport(data.statsChart.contentTable.total, data.tag);
         });
     }
-    
+
+}
+
+function readLastTagExec() {
+    var tagList = [];
+
+    var nbExe = getParameter("cerberus_homepage_nbdisplayedtag", getUser().defaultSystem, false);
+
+    $.ajax({
+        type: "GET",
+        url: "ReadTag1?iSortCol_0=0&sSortDir_0=desc&sColumns=id,tag,campaign,description&iDisplayLength=10",
+//        data: {tagNumber: nbExe.value},
+        async: false,
+        dataType: 'json',
+        success: function (data) {
+            for (var s = 0; s < data.contentTable.length; s++) {
+                tagList.push(data.contentTable[s].tag);
+            }
+//            tagList = data.contentTable;
+        }
+    });
+    return tagList;
 }
 
 function getCountryFilter() {
