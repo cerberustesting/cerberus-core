@@ -249,7 +249,7 @@ function readLastTagExec() {
 
     $.ajax({
         type: "GET",
-        url: "ReadTag1?iSortCol_0=0&sSortDir_0=desc&sColumns=id,tag,campaign,description&iDisplayLength=10",
+        url: "ReadTag?iSortCol_0=0&sSortDir_0=desc&sColumns=id,tag,campaign,description&iDisplayLength=10",
 //        data: {tagNumber: nbExe.value},
         async: false,
         dataType: 'json',

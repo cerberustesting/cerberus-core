@@ -2298,7 +2298,7 @@ function getComboConfigTag() {
     var config =
             {
                 ajax: {
-                    url: "ReadTag1?iSortCol_0=0&sSortDir_0=desc&sColumns=id,tag,campaign,description&iDisplayLength=30",
+                    url: "ReadTag?iSortCol_0=0&sSortDir_0=desc&sColumns=id,tag,campaign,description&iDisplayLength=30",
                     dataType: 'json',
                     delay: 250,
                     data: function (params) {
