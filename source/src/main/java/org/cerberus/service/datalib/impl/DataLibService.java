@@ -132,6 +132,7 @@ public class DataLibService implements IDataLibService {
             AnswerItem answerDecode = new AnswerItem();
             columnList = resultColumns.getItem();
             // Now that we have the list of column with subdata and value, we can try to decode it.
+            if (columnList != null) {
             for (Map.Entry<String, String> entry : columnList.entrySet()) { // Loop on all Column in order to decode all values.
                 String eKey = entry.getKey(); // SubData
                 String eValue = entry.getValue(); // Parsing Answer
@@ -152,6 +153,7 @@ public class DataLibService implements IDataLibService {
                 } catch (CerberusEventException cex) {
                     LOG.warn(cex);
                 }
+            }
             }
 
         } else if (resultColumns.getResultMessage().getCode() == MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SUBDATA.getCode()) {

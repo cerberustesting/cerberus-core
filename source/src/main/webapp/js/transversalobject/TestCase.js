@@ -38,7 +38,7 @@ function openModalTestCase(test, testcase, mode) {
 
     if (mode === "EDIT") {
         editTestCaseClick(test, testcase);
-    } else if (mode === "DUPLCATE") {
+    } else if (mode === "DUPLICATE") {
         duplicateTestCaseClick(test, testcase);
     } else {
         addTestCaseClick(test, "ADD");
