@@ -9322,7 +9322,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
 
         // Created Tag table.
-        //-- ------------------------ 1215-1219
+        //-- ------------------------ 1215-1221
         SQLS = new StringBuilder();
         SQLS.append("DROP TABLE `tag`;");
         SQLInstruction.add(SQLS.toString());
@@ -9344,6 +9344,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `tag` ADD CONSTRAINT `FK_tag_1`");
         SQLS.append(" FOREIGN KEY (`Campaign`) REFERENCES `campaign` (`campaign`)  ON DELETE SET NULL  ON UPDATE CASCADE;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `tag` (`Tag`) (select distinct tag from testcaseexecutionqueue a where tag != \"\")  order by id asc ON DUPLICATE KEY UPDATE Tag=a.tag;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `tag` (`Tag`) (select distinct tag from testcaseexecution a where tag != \"\")  order by id asc ON DUPLICATE KEY UPDATE Tag=a.tag;");
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `tag` (`Tag`) (select distinct tag from testcaseexecutionqueue a where tag != \"\")  order by id asc ON DUPLICATE KEY UPDATE Tag=a.tag;");

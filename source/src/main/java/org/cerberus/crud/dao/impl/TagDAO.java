@@ -332,13 +332,20 @@ public class TagDAO implements ITagDAO {
     public Answer create(Tag object) {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
+        StringBuilder queryV = new StringBuilder();
+        query.append("INSERT INTO tag (`tag`, `description`");
+        queryV.append("VALUES (?,?");
         if (!StringUtil.isNullOrEmpty(object.getCampaign())) {
-            query.append("INSERT INTO tag (`tag`, `description`, `campaign`, `usrcreated` ) ");
-            query.append("VALUES (?,?,?,?)");
-        } else {
-            query.append("INSERT INTO tag (`tag`, `description`, `usrcreated` ) ");
-            query.append("VALUES (?,?,?)");
+            query.append(", `campaign`");
+            queryV.append(",?");
         }
+        if (!StringUtil.isNullOrEmpty(object.getUsrCreated())) {
+            query.append(", `usrcreated`");
+            queryV.append(",?");
+        }
+        query.append(") ");
+        queryV.append(");");
+        query.append(queryV);
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -354,7 +361,9 @@ public class TagDAO implements ITagDAO {
                 if (!StringUtil.isNullOrEmpty(object.getCampaign())) {
                     preStat.setString(i++, object.getCampaign());
                 }
-                preStat.setString(i++, object.getUsrCreated());
+                if (!StringUtil.isNullOrEmpty(object.getUsrCreated())) {
+                    preStat.setString(i++, object.getUsrCreated());
+                }
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
