@@ -27,7 +27,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
         displayPageLabel(doc);
 
         appendCampaignList();
-//        $("#campaignSelect").select2();
+        $("#campaignSelect").select2();
 
         var country = GetURLParameter("country");
         appendCountryList(country);
@@ -55,6 +55,11 @@ $.when($.getScript("js/global/global.js")).then(function () {
                 updateUserPreferences();
             }
         });
+
+        $("#robotSettings #robot").change(function () {
+            loadRobotInfo($(this).val());
+        });
+
         //load the data that need to be display in any case
         loadTestCaseEssentialData(test, testcase, environment, country, tag, browser);
 
@@ -91,8 +96,13 @@ $.when($.getScript("js/global/global.js")).then(function () {
             checkExecution(true);
         });
 
-        $("#selectAll").click(function () {
-            $("#testCaseList option").prop("selected", "selected");
+        $("#testcaseSelectAll").click(function () {
+            $("#testCaseList option").prop("selected", true);
+            updatePotentialNumber();
+        });
+
+        $("#testcaseSelectNone").click(function () {
+            $("#testCaseList option").prop("selected", false);
             updatePotentialNumber();
         });
 
@@ -120,10 +130,13 @@ $.when($.getScript("js/global/global.js")).then(function () {
         });
 
         $("#saveRobotPreferences").click(saveRobotPreferences);
+
         $("#saveExecutionParams").click(saveExecutionPreferences);
-        $("#robot").change(function () {
-            loadRobotInfo($(this).val());
+
+        $("#robotCreate").click(function () {
+            openModalRobot_FromRunTest("", "ADD");
         });
+
 
         $("#testCaseList").on("change", updatePotentialNumber);
         $("#envSettingsAuto select").on("change", updatePotentialNumber);
@@ -132,14 +145,14 @@ $.when($.getScript("js/global/global.js")).then(function () {
             $("#countryList input").prop('checked', true);
             updatePotentialNumber();
         });
-        $("#countryUnselectAll").on("click", function () {
+        $("#countrySelectNone").on("click", function () {
             $("#countryList input").prop('checked', false);
             updatePotentialNumber();
         });
 
         //open Run navbar Menu
         openNavbarMenu("navMenuRun");
-        
+
         $('[data-toggle="popover"]').popover({
             'placement': 'auto',
             'container': 'body'}
@@ -175,7 +188,6 @@ function displayPageLabel() {
     $("#lbl_targetRev").text(doc.getDocLabel("page_runtest", "targetrev"));
     $("#lbl_targetSprint").text(doc.getDocLabel("page_runtest", "targetsprint"));
     $("#lbl_size").text(doc.getDocLabel("page_runtest", "size"));
-    $("#selectAll").text(doc.getDocLabel("page_runtest", "select_all"));
     $("input[name='envSettings'][value='auto']").next().text(doc.getDocLabel("page_runtest", "automatic"));
     $("input[name='envSettings'][value='manual']").next().text(doc.getDocLabel("page_runtest", "manual"));
     $("label[for='myhost']").text(doc.getDocLabel("page_runtest", "myhost"));
@@ -200,7 +212,6 @@ function displayPageLabel() {
     $("#saveRobotPreferences").text(doc.getDocLabel("page_runtest", "saverobotpref"));
     $("#executionPanel .panel-heading").text(doc.getDocLabel("page_runtest", "execution_settings"));
     $("#executionPanel label[for='tag']").text(doc.getDocLabel("page_runtest", "tag"));
-    $("#executionPanel label[for='outputFormat']").text(doc.getDocLabel("page_runtest", "outputformat"));
     $("#executionPanel label[for='verbose']").text(doc.getDocLabel("page_runtest", "verbose"));
     $("#executionPanel label[for='screenshot']").text(doc.getDocLabel("page_runtest", "screenshot"));
     $("#executionPanel label[for='pageSource']").text(doc.getDocLabel("page_runtest", "pagesource"));
@@ -457,7 +468,7 @@ function sendForm() {
         var data = {};
         var executionList = $("#queue li");
         var executionArray = [];
-        var browsers = $("#browser").val() ? $("#browser").val() : [];
+        var browsers = $("#robotSettingsForm #browser").val() ? $("#robotSettingsForm #browser").val() : [];
         var robotSettings = convertSerialToJSONObject($("#robotSettingsForm").serialize());
         var execSettings = convertSerialToJSONObject($("#executionSettingsForm").serialize());
 
@@ -467,9 +478,11 @@ function sendForm() {
         });
 
         if (executionArray.length === 1) {
+
             //Call RunTestCase
             setSingleExecutionDataForm(executionArray);
             $("#RunTestCase").submit();
+
         } else if (executionArray.length > 1) {
 
             for (var key in robotSettings) {
@@ -480,10 +493,10 @@ function sendForm() {
             }
 
             if ($('input[name="envSettings"]:checked').val() === "manual") {
-                data.ManualHost = $("#myhost").val();
-                data.ManualContextRoot = $("#mycontextroot").val();
-                data.ManualLoginRelativeURL = $("#myloginrelativeurl").val();
-                data.ManualEnvData = $("#myenvdata").val();
+                data.ManualHost = $("#robotSettingsForm #myhost").val();
+                data.ManualContextRoot = $("#robotSettingsForm #mycontextroot").val();
+                data.ManualLoginRelativeURL = $("#robotSettingsForm #myloginrelativeurl").val();
+                data.ManualEnvData = $("#robotSettingsForm #myenvdata").val();
             }
 
             data.browsers = JSON.stringify(browsers);
@@ -507,7 +520,7 @@ function sendForm() {
 }
 
 function setSingleExecutionDataForm(executionArray) {
-    var browser = $("#browser").val() ? $("#browser").val() : [""];
+    var browser = $("#robotSettingsForm #browser").val() ? $("#robotSettingsForm #browser").val() : [""];
     var settings = $('input[name="envSettings"]:checked').val();
 
     if (settings === "auto") {
@@ -525,7 +538,6 @@ function setSingleExecutionDataForm(executionArray) {
     $("#mycontextrootATQ").val($("#mycontextroot").val());
     $("#myloginrelativeurlATQ").val($("#myloginrelativeurl").val());
     $("#myenvdataATQ").val($("#myenvdata").val());
-    $("#outputformatATQ").val($("#outputFormat").val());
     $("#screenshotATQ").val($("#screenshot").val());
     $("#verboseATQ").val($("#verbose").val());
     $("#timeoutATQ").val($("#timeout").val());
@@ -534,12 +546,12 @@ function setSingleExecutionDataForm(executionArray) {
     $("#seleniumLogATQ").val($("#seleniumLog").val());
     $("#manualExecutionATQ").val($("#manualExecution").val());
     $("#retriesATQ").val($("#retries").val());
-    $("#screenSizeATQ").val($("#screenSize").val());
-    $("#manualRobotATQ").val($("#robot").val());
-    $("#ss_ipATQ").val($("#seleniumIP").val());
-    $("#ss_pATQ").val($("#seleniumPort").val());
-    $("#versionATQ").val($("#version").val());
-    $("#platformATQ").val($("#platform").val());
+    $("#screenSizeATQ").val($("#robotSettingsForm #screenSize").val());
+    $("#manualRobotATQ").val($("#robotSettings #robot").val());
+    $("#ss_ipATQ").val($("#robotSettingsForm #seleniumIP").val());
+    $("#ss_pATQ").val($("#robotSettingsForm #seleniumPort").val());
+    $("#versionATQ").val($("#robotSettingsForm #version").val());
+    $("#platformATQ").val($("#robotSettingsForm #platform").val());
     $("#tagATQ").val($("#tag").val());
 }
 
@@ -643,7 +655,7 @@ function checkExecution(triggerRun) {
     var select = $("#testCaseList option:selected");
     var environment = getEnvironment();
     var countries = getCountries();
-    var browser = $("#browser").val() ? $("#browser").val() : [];
+    var browser = $("#robotSettingsForm #browser").val() ? $("#robotSettingsForm #browser").val() : [];
     var testcase = [];
 
     select.each(function () {
@@ -657,13 +669,12 @@ function checkExecution(triggerRun) {
             "runPROD": item.runPROD});
     });
 
-    $("#error").empty();
     if (testcase.length === 0) {
-        $("#error").text(doc.getDocLabel("page_runtest", "select_one_testcase")); //!!! Please, select at least 1 Test Case !!!
+        showMessageMainPage("danger", doc.getDocLabel("page_runtest", "select_one_testcase"), false);
     } else if (environment.length === 0) {
-        $("#error").text(doc.getDocLabel("page_runtest", "select_one_env")); //"!!! Please, select at least 1 Environment !!!");
+        showMessageMainPage("danger", doc.getDocLabel("page_runtest", "select_one_env"), false);
     } else if (countries.length === 0) {
-        $("#error").text(doc.getDocLabel("page_runtest", "select_one_country")); //"!!! Please, select at least 1 Country !!!");
+        showMessageMainPage("danger", doc.getDocLabel("page_runtest", "select_one_country"), false);
     } else {
         showLoader("#queuePanel");
         $.ajax({
@@ -828,32 +839,40 @@ function loadSelect(idName, selectName, forceReload) {
             var item = list[index].value;
             var desc = list[index].description;
 
-//            $("[name='" + selectName + "']").append($('<option></option>').text(item).val(item));
             $("[name='" + selectName + "']").append($('<option></option>').text(item + " - " + desc).val(item));
         }
     }
 
-//    var jqXHR = $.ajax({
-//        url: "FindInvariantByID",
-//        method: "GET",
-//        data: {idName: idName},
-//        dataType: "json",
-//        async: true,
-//        success: function (data) {
-//            for (var option in data) {
-//                $("[name='" + selectName + "']").append($('<option></option>').text(data[option].value + " - " + data[option].description).val(data[option].value));
-//            }
-//        }
-//    });
-//
-//    return jqXHR;
 }
+
+function openModalRobot_FromRunTest(robot, mode) {
+    openModalRobot(robot, mode);
+    $('#editRobotModal').on("hidden.bs.modal", function (e) {
+        $('#editRobotModal').unbind("hidden.bs.modal");
+        var robotobj = $('#editRobotModal').data("robot");
+        if ((!(robotobj === undefined)) && ($('#editRobotModal').data("Saved"))) {
+            if (mode === "EDIT") {
+                // when modal is closed, we check that robot object exist and has been saved in order to update the current screen.
+                loadRobotInfo($('#editRobotModal').data("robot").robot);
+            }
+            if (mode === "ADD") {
+                var robotList = $("#robotSettings #robot");
+                var newRobot = $('#editRobotModal').data("robot").robot;
+                robotList.append($('<option></option>').text(newRobot).val(newRobot));
+                robotList.val(newRobot);
+                // when modal is closed, we check that robot object exist and has been saved in order to update the current screen.
+                loadRobotInfo(newRobot);
+            }
+        }
+    });
+}
+
 
 function appendRobotList() {
     var doc = new Doc();
     var jqXHR = $.getJSON("ReadRobot");
     $.when(jqXHR).then(function (data) {
-        var robotList = $("#robot");
+        var robotList = $("#robotSettings #robot");
 
         robotList.append($('<option></option>').text(doc.getDocLabel("page_runtest", "custom_config")).val(""));
         for (var index = 0; index < data.contentTable.length; index++) {
@@ -867,6 +886,13 @@ function appendRobotList() {
 function loadRobotInfo(robot) {
 
     if (robot !== "") {
+        // We can edit Robot.
+        $("#robotEdit").removeClass("disabled");
+        $('#robotEdit').unbind("click");
+        $("#robotEdit").click(function (e) {
+            openModalRobot_FromRunTest(robot, "EDIT");
+        });
+
         $.ajax({
             url: "ReadRobot",
             method: "GET",
@@ -875,32 +901,36 @@ function loadRobotInfo(robot) {
             async: true,
             success: function (data) {
                 disableRobotFields();
-                $("#seleniumIP").val(data.contentTable.host);
-                $("#seleniumPort").val(data.contentTable.port);
-                $("#browser").val(data.contentTable.browser);
-                $("#version").val(data.contentTable.version);
-                $("#platform").val(data.contentTable.platform);
-                $("#screenSize").val(data.contentTable.screenSize);
+                $("#robotSettings #seleniumIP").val(data.contentTable.host);
+                $("#robotSettings #seleniumPort").val(data.contentTable.port);
+                $("#robotSettings #browser").val(data.contentTable.browser);
+                $("#robotSettings #version").val(data.contentTable.version);
+                $("#robotSettings #platform").val(data.contentTable.platform);
+                $("#robotSettings #screenSize").val(data.contentTable.screenSize);
             }
         });
     } else {
         var pref = JSON.parse(localStorage.getItem("robotSettings"));
         enableRobotFields();
+        // No need to edit Robot.
+        $("#robotEdit").addClass("disabled");
+        $('#robotEdit').unbind("click");
+
         if (pref !== null && pref.robot === "") {
-            $("#robot").val(pref.robot);
-            $("#seleniumIP").val(pref.ss_ip);
-            $("#seleniumPort").val(pref.ss_p);
-            $("#browser").val(pref.browser);
-            $("#version").val(pref.BrowserVersion);
-            $("#platform").val(pref.Platform);
-            $("#screenSize").val(pref.screenSize);
+            $("#robotSettings #robot").val(pref.robot);
+            $("#robotSettings #seleniumIP").val(pref.ss_ip);
+            $("#robotSettings #seleniumPort").val(pref.ss_p);
+            $("#robotSettings #browser").val(pref.browser);
+            $("#robotSettings #version").val(pref.BrowserVersion);
+            $("#robotSettings #platform").val(pref.platform);
+            $("#robotSettings #screenSize").val(pref.screenSize);
         } else {
-            $("#seleniumIP").val("");
-            $("#seleniumPort").val("");
-            $("#browser").val([]);
-            $("#version").val("");
-            $("#platform").val("");
-            $("#screenSize").val("");
+            $("#robotSettings #seleniumIP").val("");
+            $("#robotSettings #seleniumPort").val("");
+            $("#robotSettings #browser").val([]);
+            $("#robotSettings #version").val("");
+            $("#robotSettings #platform").val("");
+            $("#robotSettings #screenSize").val("");
         }
     }
 }
@@ -917,8 +947,6 @@ function saveExecutionPreferences() {
 
 function loadExecForm(tag) {
     return $.when(
-//    displayInvariantList("group", "GROUP", false);
-            loadSelect("OUTPUTFORMAT", "outputformat"),
             loadSelect("VERBOSE", "Verbose"),
             loadSelect("SCREENSHOT", "Screenshot"),
             loadSelect("SELENIUMLOG", "SeleniumLog"),
@@ -936,11 +964,11 @@ function loadRobotForm(browser) {
     return $.when(
             appendRobotList(),
             loadSelect("BROWSER", "browser"),
-            $("[name=Platform]").append($('<option></option>').text(doc.getDocLabel("page_runtest", "default")).val("")),
-            loadSelect("PLATFORM", "Platform"),
-            $("[name=screenSize]").append($('<option></option>').text(doc.getDocLabel("page_runtest", "default_full_screen")).val("")),
+            $("#robotSettingsForm [name=platform]").append($('<option></option>').text(doc.getDocLabel("page_runtest", "default")).val("")),
+            loadSelect("PLATFORM", "platform"),
+            $("#robotSettingsForm [name=screenSize]").append($('<option></option>').text(doc.getDocLabel("page_runtest", "default_full_screen")).val("")),
 //            loadSelect("screensize", "screenSize")
-            $("[name='screenSize']").autocomplete({source: getInvariantArray("SCREENSIZE", false)})
+            $("#robotSettingsForm [name='screenSize']").autocomplete({source: getInvariantArray("SCREENSIZE", false)})
             ).then(function () {
         applyRobotPref(browser);
     });
@@ -955,7 +983,6 @@ function applyExecPref(tag) {
         } else {
             $("#tag").val(pref.Tag);
         }
-        $("#outputFormat").val(pref.outputformat);
         $("#verbose").val(pref.Verbose);
         $("#screenshot").val(pref.Screenshot);
         $("#pageSource").val(pref.PageSource);
@@ -973,41 +1000,45 @@ function applyRobotPref(browser) {
     if (pref !== null) {
         if (pref.robot === "") {
             enableRobotFields();
-            $("#robot").val(pref.robot);
-            $("#seleniumIP").val(pref.ss_ip);
-            $("#seleniumPort").val(pref.ss_p);
+            // No need to edit Robot.
+            $("#robotEdit").addClass("disabled");
+            $('#robotEdit').unbind("click");
+
+            $("#robotSettings #robot").val(pref.robot);
+            $("#robotSettingsForm #seleniumIP").val(pref.ss_ip);
+            $("#robotSettingsForm #seleniumPort").val(pref.ss_p);
 //            console.debug(browser);
             if (browser !== null) { // if browser defined from URL we take that value.
-                $("#browser").val(browser);
+                $("#robotSettingsForm #browser").val(browser);
             } else {
-                $("#browser").val(pref.browser);
+                $("#robotSettingsForm #browser").val(pref.browser);
             }
-            $("#version").val(pref.BrowserVersion);
-            $("#platform").val(pref.Platform);
-            $("#screenSize").val(pref.screenSize);
+            $("#robotSettingsForm #version").val(pref.BrowserVersion);
+            $("#robotSettingsForm #platform").val(pref.platform);
+            $("#robotSettingsForm #screenSize").val(pref.screenSize);
         } else {
-            $("#robot").val(pref.robot);
+            $("#robotSettings #robot").val(pref.robot);
             loadRobotInfo(pref.robot);
         }
     }
 }
 
 function disableRobotFields() {
-    $("#seleniumIP").prop("readonly", true);
-    $("#seleniumPort").prop("readonly", true);
-    $("#browser").prop("disabled", "disabled");
-    $("#version").prop("readonly", true);
-    $("#platform").prop("disabled", "disabled");
-    $("#screenSize").prop("disabled", "disabled");
+    $("#robotSettings #seleniumIP").prop("readonly", true);
+    $("#robotSettings #seleniumPort").prop("readonly", true);
+    $("#robotSettings #browser").prop("disabled", "disabled");
+    $("#robotSettings #version").prop("readonly", true);
+    $("#robotSettings #platform").prop("disabled", "disabled");
+    $("#robotSettings #screenSize").prop("disabled", "disabled");
 }
 
 function enableRobotFields() {
-    $("#seleniumIP").prop("readonly", false);
-    $("#seleniumPort").prop("readonly", false);
-    $("#browser").prop("disabled", false);
-    $("#version").prop("readonly", false);
-    $("#platform").prop("disabled", false);
-    $("#screenSize").prop("disabled", false);
+    $("#robotSettings #seleniumIP").prop("readonly", false);
+    $("#robotSettings #seleniumPort").prop("readonly", false);
+    $("#robotSettings #browser").prop("disabled", false);
+    $("#robotSettings #version").prop("readonly", false);
+    $("#robotSettings #platform").prop("disabled", false);
+    $("#robotSettings #screenSize").prop("disabled", false);
 }
 
 //Load the data to put in Extended Test Case Filters panel
