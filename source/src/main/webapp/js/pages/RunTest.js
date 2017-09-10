@@ -68,6 +68,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
         $("[name='typeSelect']").on("change", typeSelectHandler);
 
         $("#run").click(sendForm);
+        $("#runList").click(sendForm);
 
         $("#loadFiltersBtn").click(function () {
             loadTestCaseFromFilter(null, null);
@@ -462,7 +463,6 @@ function sendForm() {
             $("#tag").prop("value", tag);
         }
     }
-
 
     if (checkForms()) {
         var data = {};

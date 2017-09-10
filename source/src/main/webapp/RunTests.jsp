@@ -264,6 +264,9 @@
                             <ul class="list-group" id="queue" style="max-height: 500px; min-height: 100px; overflow: hidden; overflow-y: scroll;border: 1px solid #CCC; border-radius: 4px;"></ul>
                         </div>
                     </div>
+                    <div style="padding-bottom: 25px;">
+                        <button type="button" class="btn btn-primary btn-lg btn-block" id="runList">Run</button>
+                    </div>
                 </div>
 
             </div>
