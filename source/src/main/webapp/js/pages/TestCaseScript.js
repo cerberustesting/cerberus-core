@@ -440,6 +440,9 @@ $.when($.getScript("js/global/global.js")).then(function () {
             'placement': 'auto',
             'container': 'body'}
         );
+
+        //open Run navbar Menu
+        openNavbarMenu("navMenuTest");
     });
 });
 

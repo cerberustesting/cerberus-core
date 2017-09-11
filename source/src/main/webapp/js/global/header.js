@@ -97,13 +97,7 @@ function closeEveryNavbarMenu() {
 function openNavbarMenu(idNavMenu){
     //close all other navbar menu
     closeEveryNavbarMenu();
-    //correct a display bug on the testDataLib page
-    if ( idNavMenu ==="navMenuData"){
-        $('.sidebar-nav a').each(function(i, obj) {
-            $(obj).removeClass("active");
-        });
-    }
-    //onpen the menu selected if the navbar is active
+    //open the menu selected if the navbar is active
     if ( !$("#page-layout").hasClass("extended") ){
         $('.sidebar-nav .navbar-side-choice').each(function(i, obj) {
             if ($(obj).attr('id') === idNavMenu){
