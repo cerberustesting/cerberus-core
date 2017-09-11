@@ -57,6 +57,7 @@ services:
     volumes:
       - ./localdata/screenshots:/usr/local/glassfish4/glassfish/domains/domain1/docroot/CerberusPictures
       - ./localdata/logs:/usr/local/glassfish4/glassfish/domains/domain1/logs
+      - ./localdata/lib:/usr/local/glassfish4/glassfish/lib
     depends_on:
       - cerberus-db-mysql
     links:
