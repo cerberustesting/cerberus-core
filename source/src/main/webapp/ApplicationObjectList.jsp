@@ -34,9 +34,9 @@
         <div class="container-fluid center" id="page-layout">
             <%@ include file="include/global/messagesArea.html"%>
             <%@ include file="include/utils/modal-confirmation.html"%>
-            <%@ include file="include/transversalobject/ApplicationObject.html"%>
-            <%@ include file="include/pages/applicationobject/editApplicationObject.html"%>
             <%@ include file="include/utils/modal-generic.html"%>
+            <%@ include file="include/transversalobject/ApplicationObject.html"%>
+
 
             <h1 class="page-title-line" id="title">Application Object</h1>
             <div class="panel panel-default">

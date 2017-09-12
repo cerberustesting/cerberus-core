@@ -20,327 +20,278 @@
 
 var imagePasteFromClipboard = undefined;//stock the picture if the user chose to upload it from his clipboard
 
-/*
- * init an add object modal
- * @param {type} current page name
- * @returns {undefined}
- */
-function initPageModalToAddObject(page){
-    // handle the click for specific action buttons
-    $("#addApplicationObjectButton").click(function(){
-        addApplicationObjectModalSaveHandler(page, '#addApplicationObjectModal');
-    });
-    $('#addApplicationObjectModal').on('hidden.bs.modal', function () {
-        addApplicationObjectModalCloseHandler();
-    });
-    setUpDragAndDrop('#addApplicationObjectModal');
-    
+function openModalApplicationObject(applicationObject, value, mode, page){
+	
+	if ($('#editApplicationObjectModal').data("initLabel") === undefined){
+		if(page === "applicationObject"){
+			initModalApplicationObject("applicationObject", undefined);
+		}else{
+			initModalApplicationObject("testCaseScript", applicationObject);
+		}		
+		$('#editApplicationObjectModal').data("initLabel", true);
+	}
+
+	
+	if (mode === "EDIT"){
+		editApplicationObjectClick(applicationObject, value);
+	}else if (mode == "ADD"){
+		addApplicationObjectClick(applicationObject, value);
+	}
+}
+
+function initModalApplicationObject(page, application){
+	console.info("init");
+	var doc = new Doc();
+	$("[name='buttonClose']").html(
+			doc.getDocLabel("page_global", "buttonClose"));
+	$("[name='buttonAdd']").html(doc.getDocLabel("page_global", "btn_add"));	
+	$("[name='buttonEdit']").html(doc.getDocLabel("page_global", "btn_edit"));
+	$("[name='addEntryField']").html(
+			doc.getDocLabel("page_applicationObject", "button_create"));
+	$("[name='confirmationField']").html(
+			doc.getDocLabel("page_applicationObject", "button_delete"));
+	$("[name='editEntryField']").html(
+			doc.getDocLabel("page_applicationObject", "button_edit"));
+	$("[name='objectField']").html(doc.getDocOnline("page_applicationObject", "Object"));
+	$("[name='applicationField']").html(doc.getDocOnline("page_applicationObject", "Application"));
+	$("[name='screenshotfilenameField']").html(doc.getDocOnline("page_applicationObject", "ScreenshotFileName"));
+	
+	displayApplicationList('application', getSys(), application);
+	
+	$("#editApplicationObjectButton").off("click");
+	$("#editApplicationObjectButton").click(function() {
+		confirmApplicationObjectModalHandler(page,"EDIT");
+	});
+	$("#addApplicationObjectButton").off("click");
+	$("#addApplicationObjectButton").click(function() {
+		confirmApplicationObjectModalHandler(page, "ADD");
+	});
+	
+	setUpDragAndDrop('#editApplicationObjectModal');
+  
     hidePasteMessageIfNotOnFirefox()
 }
 
-/*
- * init an edit object modal
- * @returns {undefined}
- */
-function initPageModalToEditObject(){
-    // handle the click for specific action buttons
-    $("#editApplicationObjectButton").click(function(){
-        editApplicationObjectModalSaveHandler();
-    });
-    //clear the modals fields when closed
-    $('#editApplicationObjectModal').on('hidden.bs.modal', function () {
-        editApplicationObjectModalCloseHandler();;
-    });
-    setUpDragAndDrop('#editApplicationObjectModal');
-    
-    hidePasteMessageIfNotOnFirefox();
+function editApplicationObjectClick(applicationObject, value){
+	
+	clearResponseMessage($('#editApplicationObjectModal'));
+
+	$('#editApplicationObjectButton').attr('class', 'btn btn-primary');
+	$('#editApplicationObjectButton').removeProp('hidden');
+
+	$('#addApplicationObjectButton').attr('class', '');
+	$('#addApplicationObjectButton').attr('hidden', 'hidden');
+
+	$('#editApplicationObjectModalForm select[name="idname"]').off("change");
+	$('#editApplicationObjectModalForm input[name="value"]').off("change");
+
+	feedApplicationObjectModal(applicationObject, value, "editApplicationObjectModal", "EDIT");
+	listennerForInputTypeFile('#editApplicationObjectModal')
+	pasteListennerForClipboardPicture('#editApplicationObjectModal');
 }
 
-/*
- * hide message if not on firefox
- * @returns {undefined}
- */
-function hidePasteMessageIfNotOnFirefox(){
-    var isOnFirefox = typeof InstallTrigger !== 'undefined';
-    if ( !isOnFirefox ){
-        for (var i =0; i < $('[id*="DropzoneClipboardPasteMessage"]').length; i++ ){
-            $('[id*="DropzoneClipboardPasteMessage"]')[i].style.display = 'none';
-        }
+function addApplicationObjectClick(applicationObject, value){
+	
+	clearResponseMessage($('#editApplicationObjectModal'));
+
+	$('#editApplicationObjectButton').attr('class', '');
+	$('#editApplicationObjectButton').attr('hidden', 'hidden');
+	
+	$('#addApplicationObjectButton').attr('class', 'btn btn-primary');
+	$('#addApplicationObjectButton').removeProp('hidden');
+
+	$('#editApplicationObjectModalForm select[name="idname"]').off("change");
+	$('#editApplicationObjectModalForm input[name="value"]').off("change");
+	
+	
+	feedApplicationObjectModal(applicationObject, value, "editApplicationObjectModal", "ADD");
+	listennerForInputTypeFile('#editApplicationObjectModal');
+	pasteListennerForClipboardPicture('#editApplicationObjectModal');
+}
+
+function confirmApplicationObjectModalHandler(page, mode) {
+	clearResponseMessage($('#editApplicationObjectModal'));
+	
+	var formEdit = $('#editApplicationObjectModal #editApplicationObjectModalForm');
+	formEdit.find("#application").attr("disabled", false);
+
+	var sa = formEdit.serializeArray();	
+	var formData = new FormData();
+
+    for (var i in sa) {
+        formData.append(sa[i].name, sa[i].value);
+    }
+    
+    try{
+        if( imagePasteFromClipboard !== undefined ){//imagePasteFromClipboard is undefined, the picture to upload should be taken inside the input
+            formData.append("file",imagePasteFromClipboard);
+        }else{
+            var file = $("#editApplicationObjectModal input[type=file]");
+            formData.append("file",file.prop("files")[0]);
+        };
+    }
+    catch(e){
+    	
     } 
-}
-
-/* functions for add object modal */
-
-/*
- * save the data in the modal's form
- * @param {type} page
- * @returns {undefined}
- */
-function addApplicationObjectModalSaveHandler(page) {
     
-    clearResponseMessage($('#addApplicationObjectModal'));
-    var formAdd = $("#addApplicationObjectModal #addApplicationObjectModalForm");
-    var file = $("#addApplicationObjectModal input[type=file]");
-    // Get the header data from the form
-    var sa = formAdd.serializeArray();
-    var formData = new FormData();
-    
-    for (var i in sa) {
-        formData.append(sa[i].name, sa[i].value);
-    }
-    
-    if( imagePasteFromClipboard !== undefined ){//imagePasteFromClipboard is undefined, the picture to upload should be taken inside the input
-        formData.append("file",imagePasteFromClipboard);
-    }else{
-        var file = $("#addApplicationObjectModal input[type=file]");
-        formData.append("file",file.prop("files")[0]);
-    }
-    showLoaderInModal('#addApplicationObjectModal');
-    
-    var jqxhr = $.ajax({
-        type: "POST",
-        url: "CreateApplicationObject",
-        data: formData,
-        processData: false,
-        contentType: false
-    });
-    $.when(jqxhr).then(function (data) {
-        hideLoaderInModal('#addApplicationObjectModal');
-        
-        if (getAlertType(data.messageType) === 'success') {
-            if(page == "applicationObject") {
-                var oTable = $("#applicationObjectsTable").dataTable();
-                oTable.fnDraw(true);
-            }else if(page == "testCaseScript"){
-                //TestCaseScript.js must be loaded so getTags exist
-                var Tags = getTags();
-                for(var i = 0; i < Tags.length; i++){
-                    if(Tags[i].regex == "%object\\."){
-                        Tags[i].array.push(formData.get("object"));
-                    }
-                }
-                $("div.step-action .content div.fieldRow div:nth-child(n+2) input").trigger("input");
-            }
-            showMessage(data);
-            $('#addApplicationObjectModal').modal('hide');
+	// Calculate servlet name to call.
+	var myServlet = "UpdateApplicationObject";
+	if ((mode === "ADD")) {
+		myServlet = "CreateApplicationObject";
+	}
 
-        } else {
-            showMessage(data, $('#addApplicationObjectModal'));
-        }
-    }).fail(handleErrorAjaxAfterTimeout);
-}
+	// Get the header data from the form.
+	
+	showLoaderInModal('#editApplicationObjectModal');
+	
 
-/*
- * call when the modal is close
- * @returns {undefined}
- */
-function addApplicationObjectModalCloseHandler() {
-    // reset form values
-    $('#addApplicationObjectModal #addApplicationObjectModalForm')[0].reset();
-    // remove all errors on the form fields
-    $(this).find('div.has-error').removeClass("has-error");
-    // clear the response messages of the modal
-    clearResponseMessage($('#addApplicationObjectModal'));
-    //Reset label button text
-    updateDropzone("Drag and drop Files ",'#addApplicationObjectModal');
-    //reset imagePasteFromClipboard
-    imagePasteFromClipboard = undefined;
-}
-
-/*
- * create modal
- * @param {type} event
- * @param {type} object
- * @param {type} application
- * @returns {undefined}
- */
-function addApplicationObjectModalClick(event, object, application) {
-    clearResponseMessageMainPage();
-
-    $('#addApplicationObjectModal #application').empty();
-    displayApplicationList("application","",application);
-
-    if(object != undefined){
-        $("[name='object']").val(object);
-    }
-    // When creating a new applicationObject, System takes the default value of the 
-    // system already selected in header.
-    var formAdd = $('#addApplicationObjectModal');
-    // Default to NONE to Application.
-    formAdd.find("#type").val("NONE");
-
-    $('#addApplicationObjectModal').modal('show');
-    
-    listennerForInputTypeFile('#addApplicationObjectModal');
-    pasteListennerForClipboardPicture('#addApplicationObjectModal');
-}
-
-/* functions edit object modal */
-
-/*
- * save the data in the modal's form
- * @returns {undefined}
- */
-function editApplicationObjectModalSaveHandler() {
-    clearResponseMessage($('#editApplicationObjectModal'));
-    $('#editApplicationObjectModal #editApplicationObjectModalForm select#application').attr("disabled",false);
-    var formEdit = $('#editApplicationObjectModal #editApplicationObjectModalForm');
-    var file = $("#editApplicationObjectModal input[type=file]");
-    
-    // Get the header data from the form.
-    var sa = formEdit.serializeArray();
-    var formData = new FormData();
-    var data = {}
-    for (var i in sa) {
-        formData.append(sa[i].name, sa[i].value);
-    }
-    
-    if( imagePasteFromClipboard !== undefined ){//imagePasteFromClipboard is undefined, the picture to upload should be taken inside the input
-        formData.append("file",imagePasteFromClipboard);
-    }else{
-        var file = $("#editApplicationObjectModal input[type=file]");
-        formData.append("file",file.prop("files")[0]);
-    }
-    showLoaderInModal('#editApplicationObjectModal');  
-    $.ajax({
-        type: "POST",
-        url: "UpdateApplicationObject",
-        data: formData,
-        async: true,
-        processData: false,
+	$.ajax({
+		url : myServlet,
+		async : true,
+		method : "POST",
+		data : formData,
+		processData: false,
         contentType: false,
-        success: function (data) {
-            hideLoaderInModal('#editApplicationObjectModal');
-            if (getAlertType(data.messageType) === "success") {
-                var oTable = $("#applicationObjectsTable").dataTable();
-                oTable.fnDraw(true);
-                $('#editApplicationObjectModal').modal('hide');
-                showMessage(data);
-            } else {
-                console.log(data)
-                showMessage(data, $('#editApplicationObjectModal'));
-            }
-        },
-        error: showUnexpectedError
-    });
+		success : function(data) {
+			// data = JSON.parse(data);
+			if (getAlertType(data.messageType) === "success") {
+				if(page == "applicationObject") {
+	                var oTable = $("#applicationObjectsTable").dataTable();
+	                oTable.fnDraw(true);
+	            }else if(page == "testCaseScript"){
+	                //TestCaseScript.js must be loaded so getTags exist
+	                var Tags = getTags();
+	                for(var i = 0; i < Tags.length; i++){
+	                    if(Tags[i].regex == "%object\\."){
+	                        Tags[i].array.push(formData.get("object"));
+	                    }
+	                }
+	                $("div.step-action .content div.fieldRow div:nth-child(n+2) input").trigger("input");
+	            }
+				
+				$('#editApplicationObjectModal').data("Saved", true);
+				$('#editApplicationObjectModal').modal('hide');
+				showMessage(data);			
+							
+			} else {
+				showMessage(data, $('#editApplicationObjectModal'));
+			}
+			
+			hideLoaderInModal('#editApplicationObjectModal');
+		},
+		error : showUnexpectedError
+	});
 
 }
 
-/*
- * call when the modal is close
- * @returns {undefined}
- */
-function editApplicationObjectModalCloseHandler() {
-    // reset form values
-    $('#editApplicationObjectModal #editApplicationObjectModalForm')[0].reset();
-    // remove all errors on the form fields
-    $(this).find('div.has-error').removeClass("has-error");
-    // clear the response messages of the modal
-    clearResponseMessage($('#editApplicationObjectModal'));
-    //Reset label button text
-    updateDropzone("Drag and drop Files ",'#editApplicationObjectModal');
-    //reset imagePasteFromClipboard
-    imagePasteFromClipboard = undefined;
-}
+
+function feedApplicationObjectModal(application, object, modalId, mode) {
+	clearResponseMessageMainPage();
+
+	var formEdit = $('#' + modalId);
 
 
-/*
- * show modal
- * @param {type} application
- * @param {type} object
- * @returns {undefined}
- */
-function editApplicationObjectClick(application, object) {
-    clearResponseMessageMainPage();
-    $('#editApplicationObjectModal #application').empty();
-    displayApplicationList("application","",application);
-    var jqxhr = $.getJSON("ReadApplicationObject", "application=" + application + "&object=" + object);
-    $.when(jqxhr).then(function (data) {
+	if (mode === "EDIT") {
+		$
+				.ajax({
+					url : "ReadApplicationObject",
+					async : true,
+					method : "POST",
+					data : {
+						application : application,
+						object : object,
+						
 
-        var obj = data["contentTable"];
-        var formEdit = $('#editApplicationObjectModal');
+					},
+					success : function(data) {
+						if (data.messageType === "OK") {
 
-        formEdit.find("#application option[value='" + obj["application"] + "']").prop("selected", true);
-        formEdit.find("#object").prop("value", obj["object"]);
-        formEdit.find("#value").prop("value", obj["value"]);
-        //formEdit.find("#screenshotfilename").prop("value", obj["screenshotfilename"]);
+							// Feed the data to the screen and manage
+							// authorities.
+							var applicationObj = data.contentTable;
+							var hasPermissions = data.hasPermissions;
 
-        formEdit.find("#object").prop("readonly", "readonly");
-        formEdit.find("#application").prop("disabled", "disabled");
+							feedApplicationObjectModalData(applicationObj, modalId, mode,
+									hasPermissions);
 
-        if (!(data["hasPermissions"])) { // If readonly, we only readonly all fields
+							formEdit.modal('show');
+						} else {
+							showUnexpectedError();
+						}
+					},
+					error : showUnexpectedError
+				});
 
-            formEdit.find("#screenshotfilename").prop("readonly", "readonly");
-            formEdit.find("#application").prop("readonly", "readonly");
-            
-            $('#editApplicationObjectButton').attr('class', '');
-            $('#editApplicationObjectButton').attr('hidden', 'hidden');
-        }
-        formEdit.modal('show');
-        listennerForInputTypeFile('#editApplicationObjectModal');
-        pasteListennerForClipboardPicture('#editApplicationObjectModal');
-    });
+	} else {
+		var applicationObj1 = {};
+		applicationObj1.application = application;
+		formEdit.find("#application").val(applicationObj1.application);
+		applicationObj1.object = object;
+		applicationObj1.value = "";
+		applicationObj1.screenshotfilename = "Drag and drop Files";
+		var hasPermissions = true;
+		feedApplicationObjectModalData(applicationObj1, modalId, mode, hasPermissions);
+		formEdit.modal('show');
+	}
 
 }
 
-/* functions used by both modal */
 
-/**
- * add a listenner for an input type file
- * @returns {void}
- */
-function listennerForInputTypeFile(idModal){
-    
-    if (idModal === "#editApplicationObjectModal")
-        var inputs = $(idModal).find("#inputFile_editObject");
-    else
-        var inputs = $(idModal).find("#inputFile");
+function feedApplicationObjectModalData(applicationObject, modalId, mode, hasPermissionsUpdate) {
+	var formEdit = $('#' + modalId);
+	var doc = new Doc();
+	var isEditable = (((hasPermissionsUpdate) && (mode === "EDIT"))
+			|| (mode === "ADD"));
+	
+	
 
-    inputs[0].addEventListener( 'change', function( e ){
-        //check if the input is an image
-        if(  inputs[0].files[0].type.indexOf("image") !== -1 ){
-            var fileName = '';
-            if( this.files && this.files.length > 1 )
-                fileName = ( this.getAttribute( 'data-multiple-caption' ) || '' ).replace( '{count}', this.files.length );
-            else
-                fileName = e.target.value.split( '\\' ).pop();
+	// Data Feed.
+	if (mode === "EDIT") {
+		$("[name='editApplicationObjectField']").html(
+				doc.getDocOnline("page_global", "btn_edit"));
+		formEdit.find("#application").attr("disabled", true);
+		formEdit.find("#object").prop("readonly", true);
+	} else if (mode === "ADD") { // DUPLICATE or ADD
+		$("[name='editApplicationObjectField']").html(
+				doc.getDocOnline("page_global", "btn_add"));
+		formEdit.find("#application").attr("readonly", false);
+		formEdit.find("#object").prop("readonly", false );
+	}
 
-            if( fileName ){
-                updateDropzone(fileName, idModal);
-            }
-        }else{//not an image 
-            var message = new Message("danger", "The file input is not a picture");
-            showMessage(message, $(idModal));
-        }
-    });
-    
+	if (isEmpty(applicationObject)) {
+		formEdit.find("#application")[0].selectedIndex = applicationObject.application;
+		formEdit.find("#object").prop("value", "");
+		formEdit.find("#value").prop("value", "");
+		formEdit.find("#inputFile").val("Drag and drop Files");
+		
+	} else{
+		if(applicationObject.application === undefined){
+			formEdit.find("#application")[0].selectedIndex = 0;
+		}else{
+			formEdit.find("#application").val(applicationObject.application);
+		}
+		
+		
+		if(applicationObject.screenshotfilename == ""){
+			updateDropzone("Drag and drop Files","#" + modalId);
+		}else{
+			updateDropzone(applicationObject.screenshotfilename,"#" + modalId);
+		}
+		
+		formEdit.find("#object").prop("value", applicationObject.object);
+		formEdit.find("#value").prop("value", applicationObject.value);
+		
+		
+	}
+	
+	if (isEditable) { // If readonly, we readonly all fields
+		formEdit.find("#value").prop("readonly", false);
+		formEdit.find("#inputFile").attr("disabled", false);
+	} else {
+		formEdit.find("#value").prop("readonly", true);
+		formEdit.find("#inputFile").attr("disabled", true);
+	}
 }
-/**
- * change the text inside the label specified and add the attribute uploadSources
- * @param {string} id of the input the label link to
- * @param {string} message that will put inside the label
- * @param {boolean} is the picture upload should be taken from the clipboard
- * @returns {void}
- */
-function updateDropzone(messageToDisplay, idModal){
-    
-    var dropzoneText = $(idModal).find("#dropzoneText");
-    var glyphIconUpload = "<span class='glyphicon glyphicon-download-alt'></span>";
-    dropzoneText.html(messageToDisplay +" "+ glyphIconUpload);
-    if( imagePasteFromClipboard !== undefined ){
-        //reset value inside the input
-        if (idModal === "#editApplicationObjectModal")
-            var inputs = $(idModal).find("#inputFile_editObject")[0];
-        else
-            var inputs = $(idModal).find("#inputFile")[0];
-        inputs.value = "";
-    }
-    else{
-        //reset value for the var that stock the picture inside the clipboard
-        imagePasteFromClipboard = undefined;
-    }
-}
-
 
 /**
  * add a listenner for a paste event to catch clipboard if it's a picture
@@ -354,7 +305,9 @@ function pasteListennerForClipboardPicture( idModal) {
     //on paste
     this.paste_auto = function (e) {
         //handle paste event if the user do not select an input
+    	console.log("copy");
         if (e.clipboardData && !$(e.target).is( "input" )) {
+        	console.log(e);
             var items = e.clipboardData.items;
             handlePictureSend(items, idModal);
             e.preventDefault();
@@ -414,9 +367,10 @@ function drop(e, idModal) {
  */
 function handlePictureSend(items,idModal){
     if (!items) return false;
-    //access data directly
+     //access data directly
     for (var i = 0; i < items.length; i++) {
         ///check if the input is an image
+    	console.log(items[i].type);
         if (items[i].type.indexOf("image") !== -1) {
             //image from clipboard found
             var blob = items[i].getAsFile();
@@ -432,3 +386,71 @@ function handlePictureSend(items,idModal){
         }
     }
 }
+
+function hidePasteMessageIfNotOnFirefox(){
+    var isOnFirefox = typeof InstallTrigger !== 'undefined';
+    if ( !isOnFirefox ){
+        for (var i =0; i < $('[id*="DropzoneClipboardPasteMessage"]').length; i++ ){
+            $('[id*="DropzoneClipboardPasteMessage"]')[i].style.display = 'none';
+        }
+    } 
+}
+
+
+/* functions used by both modal */
+
+/**
+ * add a listenner for an input type file
+ * @returns {void}
+ */
+
+function listennerForInputTypeFile(idModal){
+    
+    var inputs = $(idModal).find("#inputFile");
+    
+
+    inputs[0].addEventListener( 'change', function( e ){
+        //check if the input is an image
+        if(  inputs[0].files[0].type.indexOf("image") !== -1 ){
+            var fileName = '';
+            if( this.files && this.files.length > 1 )
+                fileName = ( this.getAttribute( 'data-multiple-caption' ) || '' ).replace( '{count}', this.files.length );
+            else
+                fileName = e.target.value.split( '\\' ).pop();
+
+            if( fileName ){
+                updateDropzone(fileName, idModal);
+            }
+        }else{//not an image 
+            var message = new Message("danger", "The file input is not a picture");
+            showMessage(message, $(idModal));
+        }
+    });
+    
+}
+
+
+/**
+ * change the text inside the label specified and add the attribute uploadSources
+ * @param {string} id of the input the label link to
+ * @param {string} message that will put inside the label
+ * @param {boolean} is the picture upload should be taken from the clipboard
+ * @returns {void}
+ */
+function updateDropzone(messageToDisplay, idModal){
+    
+    var dropzoneText = $(idModal).find("#dropzoneText");
+    var glyphIconUpload = "<span class='glyphicon glyphicon-download-alt'></span>";
+    dropzoneText.html(messageToDisplay +" "+ glyphIconUpload);
+    if( imagePasteFromClipboard !== undefined ){
+        //reset value inside the input
+        var inputs = $(idModal).find("#inputFile")[0];
+        inputs.value = "";
+    }
+    else{
+        //reset value for the var that stock the picture inside the clipboard
+        imagePasteFromClipboard = undefined;
+    }
+}
+	
+

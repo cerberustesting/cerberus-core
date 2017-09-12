@@ -1,17 +1,17 @@
 <!--addApplicationObject custom css-->
 <link rel="stylesheet" type="text/css" href="css/pages/ApplicationObject.css">
 <!--Add an applicationObject -->
-<div data-backdrop="static" class="modal fade center" id="addApplicationObjectModal" tabindex="-1" role="dialog" aria-labelledby="addApplicationObjectModalLabel" aria-hidden="true">
+<div data-backdrop="static" class="modal fade center" id="editApplicationObjectModal" tabindex="-1" role="dialog" aria-labelledby="editApplicationObjectModalLabel" aria-hidden="true">
     <div class="modal-dialog nomargintop nomarginbottom modal-md">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="addApplicationObjectModalLabel" name="createApplicationObjectField">Create Application Object</h4>
+                <h4 class="modal-title" id="editEntryModalLabel" name="editApplicationObjectField">Create Application Object</h4>
             </div>
             <div class="modal-body">
 
                 <!--add form-->
-                <form id="addApplicationObjectModalForm" name="addApplicationObjectModalForm"  title="Add Aplication Object" role="form">
+                <form id="editApplicationObjectModalForm" name="editApplicationObjectModalForm"  title="Edit Application Object" role="form">
                     <div class="container-fluid center">
                          <!-- messages area-->
                          <div id="DialogMessagesArea">
@@ -55,9 +55,11 @@
                     </div>
                 </form>
             </div>
+
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal" name="buttonClose">Close</button>
-                <button type="button" id="addApplicationObjectButton" class="btn btn-primary" name="buttonAdd">Save</button>
+                <button type="button" id="editApplicationObjectButton" class="btn btn-primary" name="buttonEdit">Save</button>
+                <button type="button" id="addApplicationObjectButton" class="btn btn-primary" name="buttonAdd">Add</button>
             </div>
         </div>
     </div>

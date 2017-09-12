@@ -35,6 +35,10 @@ function handleErrorAjaxAfterTimeout(result) {
 
 }
 
+function test(test){
+	console.log(test);
+}
+
 /***
  * Returns a label depending on the type of entry
  * @param {type} type - type selected
@@ -244,9 +248,7 @@ function displayApplicationList(selectName, system, defaultValue) {
     if ((system !== "") && (system !== undefined) && (system !== null)) {
         myData = "system=" + system;
     }
-    if (defaultValue !== undefined && defaultValue !== null) {
-        $("[name='" + selectName + "']").append($('<option></option>').text(defaultValue).val(defaultValue));
-    }
+
     $.when($.getJSON("ReadApplication", myData)).then(function (data) {
         for (var option in data.contentTable) {
             $("[name='" + selectName + "']").append($('<option></option>').text(data.contentTable[option].application + " - " + data.contentTable[option].description).val(data.contentTable[option].application));

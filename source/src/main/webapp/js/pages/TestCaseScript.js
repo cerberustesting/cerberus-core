@@ -19,17 +19,20 @@
  */
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
+    	
+    	$('#createApplicationObjectButton').click(function() {
+            openModalApplicationObject(undefined,undefined, "ADD", "testCaseScript");
+        });
 
         $(window).bind('beforeunload', function () {
             if (getModif()) {
                 return true; //Display alert Message that a modification has been done
             }
         });
+        
 
         var doc = new Doc();
         var stepList = [];
-
-        initPageModalToAddObject("testCaseScript");
 
         // Load invariant list into local storage.
         getSelectInvariant("ACTION", false, true);
@@ -71,7 +74,6 @@ $.when($.getScript("js/global/global.js")).then(function () {
         displayInvariantList("activeQA", "TCACTIVE", false, true);
         displayInvariantList("activeUAT", "TCACTIVE", false, true);
         displayInvariantList("activeProd", "TCACTIVE", false, true);
-        displayApplicationList("application", getUser().defaultSystem);
         displayProjectList("project");
 
         $.ajax({
@@ -2021,8 +2023,8 @@ Action.prototype.generateContent = function () {
     var doc = new Doc();
     var content = $("<div></div>").addClass("content col-lg-9");
     var firstRow = $("<div style='margin-top:15px;'></div>").addClass("fieldRow row form-group");
-    var secondRow = $("<div></div>").addClass("fieldRow row");
-    var thirdRow = $("<div></div>").addClass("fieldRow row").hide();
+    var secondRow = $("<div></div>").addClass("fieldRow row secondRow");
+    var thirdRow = $("<div></div>").addClass("fieldRow row thirdRow").hide();
 
     var actionList = $("<select></select>").addClass("form-control input-sm");
     var descContainer = $("<div class='input-group'></div>");
@@ -2085,17 +2087,21 @@ Action.prototype.generateContent = function () {
     objectField.css("width", "100%");
     objectField.on("change", function () {
         obj.value1 = objectField.val();
+        console.log(obj.value1);
     });
+    
+    
 
     propertyField.val(this.value2);
     propertyField.css("width", "100%");
     propertyField.on("change", function () {
         obj.value2 = propertyField.val();
     });
-
+    
+    
     firstRow.append(descContainer);
     secondRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "action_field"))).append(actionList));
-    secondRow.append($("<div></div>").addClass("col-lg-5 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value1_field"))).append(objectField));
+    secondRow.append($("<div></div>").addClass("col-lg-8 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value1_field"))).append(objectField));
     secondRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value2_field"))).append(propertyField));
     thirdRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_operation_field"))).append(actionconditionoper));
     thirdRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_parameter_field"))).append(actionconditionval1));
@@ -2525,6 +2531,11 @@ var autocompleteAllFields, getTags, setTags;
     setTags = function (tags) {
         TagsToUse = tags;
     };
+    
+    testUI = function (test){
+    	
+    };
+    
     //function accessible everywhere that has access to TagsToUse
     autocompleteAllFields = function (Tags, info, thistest, thistestcase) {
         if (Tags !== undefined) {
@@ -2554,7 +2565,7 @@ var autocompleteAllFields, getTags, setTags;
                 if (betweenPercent != null && betweenPercent.length > 0) {
                     var i = betweenPercent.length - 1;
                     while (i >= 0) {
-                        var findname = betweenPercent[i].match(/\.[^\.]*(\.|.$)/g);
+                        var findname = betweenPercent[i].match(/\.[^\.]*(\.|.$)/g);                    
 
                         if (betweenPercent[i].startsWith("%object.") && findname != null && findname.length > 0) {
                             name = findname[0];
@@ -2565,7 +2576,21 @@ var autocompleteAllFields, getTags, setTags;
                             if (!objectIntoTagToUseExist(TagsToUse[1],name)) {
                                 objectNotExist = true;
                                 nameNotExist = name;
-                                typeNotExist = "applicationobject";
+                                typeNotExist = "applicationObject";
+                                $(e).parent().parent().parent().parent().find(".secondRow").children(".buttonObject").remove();
+                                $(e).parent().parent().parent().parent().find(".secondRow").append($('<button/>').attr("type", "button").attr("class"," buttonObject btn btn-primary").append($("<span></span>").addClass("glyphicon glyphicon-plus spanPlus")));
+                                $(".buttonObject").unbind("click").click(function(){
+                                	openModalApplicationObject(info.application, name, "ADD", "testCaseScript");
+
+                                })
+                            }else if(objectIntoTagToUseExist(TagsToUse[1],name)){
+                            	
+                            	$(e).parent().parent().parent().parent().find(".secondRow").children(".buttonObject").remove();
+                            	$(e).parent().parent().parent().parent().find(".secondRow").append($('<button/>').attr("type", "button").attr("class"," buttonObject btn btn-primary").append($("<span></span>").addClass("glyphicon glyphicon-pencil spanPencil")));                            	$(".buttonObject").unbind("click").click(function(){
+                                	openModalApplicationObject(info.application, name, "EDIT", "testCaseScript");
+                                })
+                                
+                                
                             }
                         } else if (betweenPercent[i].startsWith("%property.") && findname != null && findname.length > 0) {
                             name = findname[0];
@@ -2667,6 +2692,7 @@ editPropertiesModalClick = function (test, testcase, info, propertyToAdd, proper
 
     //$("#propertiesModal").modal('show');
 };
+
 
 function editPropertiesModalSaveHandler() {
     clearResponseMessage($('#propertiesModal'));

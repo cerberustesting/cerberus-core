@@ -22,42 +22,39 @@ $.when($.getScript("js/global/global.js")).then(function () {
     
     $(document).ready(function () {
         initPage();
-        initPageModalToAddObject("applicationObject");   
-        initPageModalToEditObject();  
-
-        displayModalLabel();
-        
-        $('[data-toggle="popover"]').popover({
-            'placement': 'auto',
-            'container': 'body'}
-        );
     });
     
 });
 
 function initPage() {
-    displayPageLabel();
+  
+    var doc = new Doc();
 
     var application = GetURLParameter("application");
-
+    displayPageLabel();
+    
+    $('#editApplicationObjectModal').on('hidden.bs.modal', {extra: "#editApplicationObjectModalForm"}, buttonCloseHandler);
+    
     //configure and create the dataTable
-    var aoColumns =aoColumnsFunc("applicationObjectsTable");
-    var configurations = new TableConfigurationsServerSide("applicationObjectsTable", "ReadApplicationObject?system=" + getUser().defaultSystem, "contentTable", aoColumns, [1, 'asc']);
-    $.when( createDataTableWithPermissions(configurations, renderOptionsForApplicationObject, "#applicationObjectList", undefined, true) );
+    
+    var configurations = new TableConfigurationsServerSide("applicationObjectsTable", "ReadApplicationObject?system=" + getUser().defaultSystem, "contentTable", aoColumnsFunc("applicationObjectsTable"), [1, 'asc']);
+    createDataTableWithPermissions(configurations, renderOptionsForApplicationObject, "#applicationObjectList", undefined, true );
+    
     if(application != null) {
         clearIndividualFilter("applicationObjectsTable",undefined,true);
         filterOnColumn("applicationObjectsTable", "application", application);
     }
+    
 }
 
 function displayPageLabel() {
-    var doc = new Doc();
-
+	var doc = new Doc();
+	
     displayHeaderLabel(doc);
+    displayGlobalLabel(doc);
     $("#pageTitle").html(doc.getDocLabel("page_applicationObject", "title"));
     $("#title").html(doc.getDocOnline("page_applicationObject", "title"));
     $("[name='editApplicationObjectField']").html(doc.getDocLabel("page_applicationObject", "editapplicationobjectfield"));
-
     displayFooter(doc);
 }
 
@@ -75,6 +72,8 @@ function displayModalLabel() {
 }
 
 function renderOptionsForApplicationObject(data) {
+	
+   
     var doc = new Doc();
     //check if user has permissions to perform the add and import operations
     if (data["hasPermissions"]) {
@@ -83,9 +82,9 @@ function renderOptionsForApplicationObject(data) {
             <span class='glyphicon glyphicon-plus-sign'></span> " + doc.getDocLabel("page_applicationObject", "button_create") + "</button></div>";
 
             $("#applicationObjectsTable_wrapper div#applicationObjectsTable_length").before(contentToAdd);
-            
+            $("#applicationObjectList #createApplicationObjectButton").off("click");
             $('#applicationObjectList #createApplicationObjectButton').click(function() {
-                addApplicationObjectModalClick();
+                openModalApplicationObject(undefined,undefined, "ADD", "applicationObject");
             });
         }
     }
@@ -122,6 +121,22 @@ function deleteEntryClick(application, object) {
     showModalConfirmation(deleteEntryHandlerClick, undefined, doc.getDocLabel("page_applicationObject", "button_delete"), messageComplete, application, object, "", "");
 }
 
+function buttonCloseHandler(event) {
+    var modalID = event.data.extra;
+    // reset form values
+    $(modalID)[0].reset();
+    // remove all errors on the form fields
+    $(this).find('div.has-error').removeClass("has-error");
+    // clear the response messages of the modal
+    clearResponseMessage($(modalID));
+    
+    updateDropzone("Drag and drop Files",'#editApplicationObjectModal');
+    //reset imagePasteFromClipboard
+    imagePasteFromClipboard = undefined;
+    
+}
+
+
 function aoColumnsFunc(tableId) {
     var doc = new Doc();
     var aoColumns = [
@@ -132,22 +147,22 @@ function aoColumnsFunc(tableId) {
             "mRender": function (data, type, obj) {
                 var hasPermissions = $("#" + tableId).attr("hasPermissions");
 
-                var editApplicationObject = '<button id="editApplicationObject" onclick="editApplicationObjectClick(\'' + obj["application"] + '\', \'' + obj["object"] + '\');"\n\
+                var editEntry = '<button id="editEntry" onclick="openModalApplicationObject(\'' + obj["application"] + '\', \'' + obj["object"] + '\',\'EDIT\'  ,\'applicationObject\' );"\n\
                                     class="editApplicationObject btn btn-default btn-xs margin-right5" \n\
                                     name="editApplicationObject" title="' + doc.getDocLabel("page_applicationObject", "button_edit") + '" type="button">\n\
                                     <span class="glyphicon glyphicon-pencil"></span></button>';
-                var viewApplicationObject = '<button id="editApplicationObject" onclick="editApplicationObjectClick(\'' + obj["application"] + '\', \'' + obj["object"] + '\');"\n\
+                var viewEntry = '<button id="editEntry" onclick="openModalApplicationObject(\'' + obj["application"] + '\', \'' + obj["object"]+ '\',\'EDIT\' , \'applicationObject\');"\n\
                                     class="editApplicationObject btn btn-default btn-xs margin-right5" \n\
                                     name="editApplicationObject" title="' + doc.getDocLabel("page_applicationObject", "button_edit") + '" type="button">\n\
                                     <span class="glyphicon glyphicon-eye-open"></span></button>';
-                var deleteApplicationObject = '<button id="deleteApplicationObject" onclick="deleteEntryClick(\'' + obj["application"] + '\', \'' + obj["object"] + '\');" \n\
+                var deleteEntry = '<button id="deleteEntry" onclick="deleteEntryClick(\'' + obj["application"] + '\', \'' + obj["object"] + '\');" \n\
                                     class="deleteApplicationObject btn btn-default btn-xs margin-right5" \n\
                                     name="deleteApplicationObject" title="' + doc.getDocLabel("page_applicationObject", "button_delete") + '" type="button">\n\
                                     <span class="glyphicon glyphicon-trash"></span></button>';
                 if (hasPermissions === "true") { //only draws the options if the user has the correct privileges
-                    return '<div class="center btn-group width150">' + editApplicationObject + deleteApplicationObject + '</div>';
+                    return '<div class="center btn-group width150">' + editEntry + deleteEntry + '</div>';
                 }
-                return '<div class="center btn-group width150">' + viewApplicationObject + '</div>';
+                return '<div class="center btn-group width150">' + viewEntry + '</div>';
             }
         },
         {"data": "application",

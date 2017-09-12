@@ -21,6 +21,10 @@
     Author     : cerberus
 */
 
+.secondRow .btn{
+	margin-top:18px;
+}
+
 .separator-left {
     border-left: 1px solid #E3E3E3;
 /*    width: inherit;*/
