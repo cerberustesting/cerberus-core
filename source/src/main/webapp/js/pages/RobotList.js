@@ -131,7 +131,7 @@ function aoColumnsFunc(tableId) {
                                     class="editEntry btn btn-default btn-xs margin-right5" \n\
                                     name="editEntry" title="' + doc.getDocLabel("page_robot", "button_duplicate") + '" type="button">\n\
                                     <span class="glyphicon glyphicon-duplicate"></span></button>';
-                var deleteEntry = '<button id="deleteEntry" onclick="deleteEntryClick(\'' + obj["robot"] + '\',\'' + obj["robot"] + '\');" \n\
+                var deleteEntry = '<button id="deleteEntry" onclick="deleteEntryClick(\'' + obj["robotID"] + '\',\'' + obj["robot"] + '\');" \n\
                                     class="deleteEntry btn btn-default btn-xs margin-right5" \n\
                                     name="deleteEntry" title="' + doc.getDocLabel("page_robot", "button_delete") + '" type="button">\n\
                                     <span class="glyphicon glyphicon-trash"></span></button>';
