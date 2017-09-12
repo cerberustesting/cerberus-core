@@ -19,22 +19,24 @@
  */
 package org.cerberus.servlet.crud.testexecution;
 
+import com.google.common.base.Strings;
+import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
-import java.util.logging.Level;
+import java.util.Map;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.cerberus.crud.entity.Tag;
+import org.cerberus.crud.service.ITagService;
+import org.cerberus.crud.service.impl.TagService;
 import org.cerberus.engine.entity.MessageEvent;
-import org.cerberus.crud.service.ITestCaseExecutionService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
@@ -42,18 +44,22 @@ import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.cerberus.util.answer.AnswerUtil;
 import org.cerberus.util.servlet.ServletUtil;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.owasp.html.PolicyFactory;
+import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 
 /**
  *
- * @author cerberus
+ * @author vertigo
  */
-@WebServlet(name = "ReadTag", urlPatterns = {"/ReadTag"})
+@WebServlet(name = "ReadTag1", urlPatterns = {"/ReadTag1"})
 public class ReadTag extends HttpServlet {
+
+    private ITagService tagService;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -63,10 +69,13 @@ public class ReadTag extends HttpServlet {
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
+     * @throws org.cerberus.exception.CerberusException
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, CerberusException {
+        String echo = request.getParameter("sEcho");
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+        PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
         response.setContentType("application/json");
         response.setCharacterEncoding("utf8");
@@ -74,26 +83,47 @@ public class ReadTag extends HttpServlet {
         // Calling Servlet Transversal Util.
         ServletUtil.servletStart(request);
 
-        int tagNumber = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("tagNumber"), "0"));
+        // Default message to unexpected error.
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+
+        /**
+         * Parsing and securing all required parameters.
+         */
+        String tag = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("tag"), "");
+        String columnName = ParameterParserUtil.parseStringParam(request.getParameter("columnName"), "");
+
+        // Global boolean on the servlet that define if the user has permition to edit and delete object.
+        boolean userHasPermissions = request.isUserInRole("RunTest");
+
+        // Init Answer with potencial error from Parsing parameter.
+        AnswerItem answer = new AnswerItem(msg);
 
         try {
             JSONObject jsonResponse = new JSONObject();
-            AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
-
-            if (tagNumber == 0) {
-                answer = findTagList(appContext);
+            if (!(request.getParameter("id") == null)) {
+                answer = findTagByKeyTech(0, appContext, userHasPermissions);
                 jsonResponse = (JSONObject) answer.getItem();
-            } else if (tagNumber != 0) {
-                answer = findLastTagExec(appContext, tagNumber);
+            } else if (!(request.getParameter("tag") == null)) {
+                answer = findTagByKey(tag, appContext, request);
+                jsonResponse = (JSONObject) answer.getItem();
+            } else if (!Strings.isNullOrEmpty(columnName)) {
+                //If columnName is present, then return the distinct value of this column.
+                answer = findDistinctValuesOfColumn(appContext, request, columnName);
+                jsonResponse = (JSONObject) answer.getItem();
+            } else {
+                answer = findTagList(appContext, userHasPermissions, request);
                 jsonResponse = (JSONObject) answer.getItem();
             }
 
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
             jsonResponse.put("message", answer.getResultMessage().getDescription());
+            jsonResponse.put("sEcho", echo);
 
             response.getWriter().print(jsonResponse.toString());
-        } catch (JSONException ex) {
-            org.apache.log4j.Logger.getLogger(ReadTag.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
+
+        } catch (JSONException e) {
+            org.apache.log4j.Logger.getLogger(ReadTag.class.getName()).log(org.apache.log4j.Level.ERROR, null, e);
             //returns a default error message with the json format that is able to be parsed by the client-side
             response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
         }
@@ -114,7 +144,7 @@ public class ReadTag extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(ReadTag.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ReadTag.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
     }
 
@@ -132,7 +162,7 @@ public class ReadTag extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(ReadTag.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ReadTag.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
     }
 
@@ -146,58 +176,138 @@ public class ReadTag extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findTagList(ApplicationContext appContext)
-            throws CerberusException, JSONException {
-        AnswerItem answer = new AnswerItem();
-        JSONObject jsonResponse = new JSONObject();
+    private AnswerItem findTagList(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
-        ITestCaseExecutionService testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
-        ITestCaseExecutionQueueService inQueueService = appContext.getBean(ITestCaseExecutionQueueService.class);
+        AnswerItem item = new AnswerItem();
+        JSONObject object = new JSONObject();
+        tagService = appContext.getBean(TagService.class);
 
-        AnswerList execTagAns;
-        AnswerList inQueueTagAns;
-
-        execTagAns = testCaseExecutionService.findTagList(0);
-
-        inQueueTagAns = inQueueService.findTagList(0);
-
-        Set<String> tagList = new HashSet<String>();
-
-        for (String tag : (List<String>) execTagAns.getDataList()) {
-            tagList.add(tag);
+        int startPosition = 0;
+        if (request.getParameter("iDisplayStartPage") != null) {
+            startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStartPage"), "0"));
+            startPosition--;
+            startPosition = startPosition * 30;
+        } else {
+            startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"), "0"));
         }
-        for (String tag : (List<String>) inQueueTagAns.getDataList()) {
-            tagList.add(tag);
-        }
-        List sortedList = new ArrayList(tagList);
+        int length = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayLength"), "0"));
+        /*int sEcho  = Integer.valueOf(request.getParameter("sEcho"));*/
 
-        Collections.sort(sortedList, new Comparator<String>() {
-            @Override
-            public int compare(String o1, String o2) {
-                return o1.compareToIgnoreCase(o2);
+        String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
+        int columnToSortParameter = Integer.parseInt(ParameterParserUtil.parseStringParam(request.getParameter("iSortCol_0"), "1"));
+        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "id,tag,campaign,description");
+        String columnToSort[] = sColumns.split(",");
+        String columnName = columnToSort[columnToSortParameter];
+        String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "desc");
+
+        Map<String, List<String>> individualSearch = new HashMap<>();
+        for (int a = 0; a < columnToSort.length; a++) {
+            if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
+                List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
+                individualSearch.put(columnToSort[a], search);
             }
-        });
-        jsonResponse.put("contentTable", sortedList);
+        }
 
-        answer.setItem(jsonResponse);
-        answer.setResultMessage(execTagAns.getResultMessage());
-        return answer;
+        AnswerList resp = tagService.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
+
+        JSONArray jsonArray = new JSONArray();
+        if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
+            for (Tag tagCur : (List<Tag>) resp.getDataList()) {
+                jsonArray.put(convertTagToJSONObject(tagCur));
+            }
+        }
+
+        object.put("hasPermissions", userHasPermissions);
+        object.put("contentTable", jsonArray);
+        object.put("iTotalRecords", resp.getTotalRows());
+        object.put("iTotalDisplayRecords", resp.getTotalRows());
+
+        item.setItem(object);
+        item.setResultMessage(resp.getResultMessage());
+        return item;
     }
 
-    private AnswerItem findLastTagExec(ApplicationContext appContext, int tagNumber) throws JSONException, CerberusException {
+    private AnswerItem findTagByKeyTech(long id, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
+        AnswerItem item = new AnswerItem();
+        JSONObject object = new JSONObject();
+
+        ITagService libService = appContext.getBean(ITagService.class);
+
+        //finds the project     
+        AnswerItem answer = libService.readByKeyTech(id);
+
+        if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            //if the service returns an OK message then we can get the item and convert it to JSONformat
+            Tag tag = (Tag) answer.getItem();
+            JSONObject response = convertTagToJSONObject(tag);
+            object.put("contentTable", response);
+        }
+
+        object.put("hasPermissions", userHasPermissions);
+        item.setItem(object);
+        item.setResultMessage(answer.getResultMessage());
+
+        return item;
+    }
+
+    private AnswerItem findTagByKey(String tag, ApplicationContext appContext, HttpServletRequest request) throws JSONException, CerberusException {
+        AnswerItem item = new AnswerItem();
+        JSONObject object = new JSONObject();
+
+        ITagService libService = appContext.getBean(ITagService.class);
+
+        //finds the project     
+        AnswerItem answer = libService.readByKey(tag);
+
+        if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            //if the service returns an OK message then we can get the item and convert it to JSONformat
+            Tag tagObj = (Tag) answer.getItem();
+            JSONObject response = convertTagToJSONObject(tagObj);
+//            response.put("hasPermissionsUpdate", libService.hasPermissionsUpdate(tagObj, request));
+//            response.put("hasPermissionsDelete", libService.hasPermissionsDelete(tagObj, request));
+
+            object.put("contentTable", response);
+        }
+
+//        object.put("hasPermissionsCreate", libService.hasPermissionsCreate(null, request));
+        item.setItem(object);
+        item.setResultMessage(answer.getResultMessage());
+
+        return item;
+    }
+
+    private JSONObject convertTagToJSONObject(Tag tag) throws JSONException {
+
+        Gson gson = new Gson();
+        JSONObject result = new JSONObject(gson.toJson(tag));
+        return result;
+    }
+
+    private AnswerItem findDistinctValuesOfColumn(ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
         AnswerItem answer = new AnswerItem();
-        JSONObject jsonResponse = new JSONObject();
+        JSONObject object = new JSONObject();
 
-        ITestCaseExecutionService testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
+        tagService = appContext.getBean(TagService.class);
 
-        AnswerList resp;
+        String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
+        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "test,testcase,application,project,ticket,description,behaviororvalueexpected,readonly,bugtrackernewurl,deploytype,mavengroupid");
+        String columnToSort[] = sColumns.split(",");
 
-        resp = testCaseExecutionService.findTagList(tagNumber);
+        Map<String, List<String>> individualSearch = new HashMap<>();
+        for (int a = 0; a < columnToSort.length; a++) {
+            if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
+                List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
+                individualSearch.put(columnToSort[a], search);
+            }
+        }
 
-        jsonResponse.put("contentTable", resp.getDataList());
+        AnswerList tagList = tagService.readDistinctValuesByCriteria(null, searchParameter, individualSearch, columnName);
 
-        answer.setItem(jsonResponse);
-        answer.setResultMessage(resp.getResultMessage());
+        object.put("distinctValues", tagList.getDataList());
+
+        answer.setItem(object);
+        answer.setResultMessage(tagList.getResultMessage());
         return answer;
     }
+
 }

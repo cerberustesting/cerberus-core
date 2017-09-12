@@ -25,7 +25,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.log4j.Logger;
@@ -189,7 +188,7 @@ public class TagDAO implements ITagDAO {
         ans.setResultMessage(msg);
         return ans;
     }
-    
+
     @Override
     public AnswerList<Tag> readByVariousByCriteria(String campaign, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
         AnswerList response = new AnswerList();
@@ -333,8 +332,20 @@ public class TagDAO implements ITagDAO {
     public Answer create(Tag object) {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO tag (`tag`, `description`, `campaign`, `usrcreated` ) ");
-        query.append("VALUES (?,?,?,?)");
+        StringBuilder queryV = new StringBuilder();
+        query.append("INSERT INTO tag (`tag`, `description`");
+        queryV.append("VALUES (?,?");
+        if (!StringUtil.isNullOrEmpty(object.getCampaign())) {
+            query.append(", `campaign`");
+            queryV.append(",?");
+        }
+        if (!StringUtil.isNullOrEmpty(object.getUsrCreated())) {
+            query.append(", `usrcreated`");
+            queryV.append(",?");
+        }
+        query.append(") ");
+        queryV.append(");");
+        query.append(queryV);
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -344,11 +355,15 @@ public class TagDAO implements ITagDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
-                int i=1;
+                int i = 1;
                 preStat.setString(i++, object.getTag());
                 preStat.setString(i++, object.getDescription());
-                preStat.setString(i++, object.getCampaign());
-                preStat.setString(i++, object.getUsrCreated());
+                if (!StringUtil.isNullOrEmpty(object.getCampaign())) {
+                    preStat.setString(i++, object.getCampaign());
+                }
+                if (!StringUtil.isNullOrEmpty(object.getUsrCreated())) {
+                    preStat.setString(i++, object.getUsrCreated());
+                }
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -427,8 +442,11 @@ public class TagDAO implements ITagDAO {
     @Override
     public Answer update(String tag, Tag object) {
         MessageEvent msg = null;
-        final String query = "UPDATE tag SET tag = ?, description = ?, campaign = ?, "
-                + "dateModif = NOW(), usrModif= ?  WHERE Tag = ?";
+        String query = "UPDATE tag SET tag = ?, description = ?, dateModif = NOW(), usrModif= ?";
+        if (!StringUtil.isNullOrEmpty(object.getCampaign())) {
+            query += ", campaign = ?";
+        }
+        query += "  WHERE Tag = ?";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -442,7 +460,9 @@ public class TagDAO implements ITagDAO {
                 int i = 1;
                 preStat.setString(i++, object.getTag());
                 preStat.setString(i++, object.getDescription());
-                preStat.setString(i++, object.getCampaign());
+                if (!StringUtil.isNullOrEmpty(object.getCampaign())) {
+                    preStat.setString(i++, object.getCampaign());
+                }
                 preStat.setString(i++, object.getUsrModif());
                 preStat.setString(i++, tag);
 

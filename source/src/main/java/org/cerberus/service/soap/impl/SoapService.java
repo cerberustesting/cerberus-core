@@ -202,23 +202,18 @@ public class SoapService implements ISoapService {
     }
 
     @Override
-    public AnswerItem<AppService> callSOAP(String envelope, String servicePath, String method, String attachmentUrl, List<AppServiceHeader> header, String token, int timeOutMs, String system) {
+    public AnswerItem<AppService> callSOAP(String envelope, String servicePath, String soapOperation, String attachmentUrl, List<AppServiceHeader> header, String token, int timeOutMs, String system) {
         AnswerItem result = new AnswerItem();
         String unescapedEnvelope = StringEscapeUtils.unescapeXml(envelope);
         boolean is12SoapVersion = SOAP_1_2_NAMESPACE_PATTERN.matcher(unescapedEnvelope).matches();
 
-        AppService serviceSOAP = factoryAppService.create("", AppService.TYPE_SOAP, null, "", "", envelope, "", servicePath, "", method, "", null, "", null);
+        AppService serviceSOAP = factoryAppService.create("", AppService.TYPE_SOAP, null, "", "", envelope, "", servicePath, "", soapOperation, "", null, "", null);
         serviceSOAP.setTimeoutms(timeOutMs);
         ByteArrayOutputStream out = null;
         MessageEvent message = null;
 
         if (StringUtil.isNullOrEmpty(servicePath)) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP_SERVICEPATHMISSING);
-            result.setResultMessage(message);
-            return result;
-        }
-        if (StringUtil.isNullOrEmpty(method)) {
-            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP_METHODMISSING);
             result.setResultMessage(message);
             return result;
         }
@@ -236,7 +231,11 @@ public class SoapService implements ISoapService {
         if (token != null) {
             header.add(factoryAppServiceHeader.create(null, "cerberus-token", token, "Y", 0, "", "", null, "", null));
         }
-        header.add(factoryAppServiceHeader.create(null, "SOAPAction", "\"" + method + "\"", "Y", 0, "", "", null, "", null));
+        if (StringUtil.isNullOrEmpty(soapOperation)) {
+            header.add(factoryAppServiceHeader.create(null, "SOAPAction", "", "Y", 0, "", "", null, "", null));
+        } else {
+            header.add(factoryAppServiceHeader.create(null, "SOAPAction", "\"" + soapOperation + "\"", "Y", 0, "", "", null, "", null));
+        }
         header.add(factoryAppServiceHeader.create(null, "Content-Type", is12SoapVersion ? SOAPConstants.SOAP_1_2_CONTENT_TYPE : SOAPConstants.SOAP_1_1_CONTENT_TYPE, "Y", 0, "", "", null, "", null));
         serviceSOAP.setHeaderList(header);
 
@@ -251,7 +250,7 @@ public class SoapService implements ISoapService {
 
             // Create SOAP Request
             MyLogger.log(SoapService.class.getName(), Level.DEBUG, "Create request");
-            SOAPMessage input = createSoapRequest(envelope, method, header, token);
+            SOAPMessage input = createSoapRequest(envelope, soapOperation, header, token);
 
             //Add attachment File if specified
             if (!StringUtil.isNullOrEmpty(attachmentUrl)) {
@@ -339,7 +338,7 @@ public class SoapService implements ISoapService {
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CALLSOAP);
             message.setDescription(message.getDescription()
                     .replace("%SERVICEPATH%", servicePath)
-                    .replace("%SOAPMETHOD%", method));
+                    .replace("%SOAPMETHOD%", soapOperation));
             result.setResultMessage(message);
 
             //soapResponse.getSOAPPart().getEnvelope().getBody().getFault().getFaultCode();
@@ -356,7 +355,7 @@ public class SoapService implements ISoapService {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
             message.setDescription(message.getDescription()
                     .replace("%SERVICEPATH%", servicePath)
-                    .replace("%SOAPMETHOD%", method)
+                    .replace("%SOAPMETHOD%", soapOperation)
                     .replace("%DESCRIPTION%", e.getMessage()));
             result.setResultMessage(message);
             return result;

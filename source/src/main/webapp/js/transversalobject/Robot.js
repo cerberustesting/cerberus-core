@@ -32,6 +32,10 @@ function openModalRobot(robot, mode) {
         $('#editRobotModal').data("initLabel", true);
     }
 
+    // Init the Saved data to false.
+    $('#editRobotModal').data("Saved", false);
+    $('#editRobotModal').data("robot", undefined);
+    
     if (mode === "EDIT") {
         editRobotClick(robot);
     } else if (mode === "ADD") {
@@ -46,42 +50,42 @@ function initModalRobot() {
 
     console.info("init");
     var doc = new Doc();
-    $("[name='buttonClose']").html(doc.getDocLabel("page_global", "buttonClose"));
-    $("[name='buttonAdd']").html(doc.getDocLabel("page_global", "btn_add"));
-    $("[name='buttonDuplicate']").html(doc.getDocLabel("page_global", "btn_duplicate"));
-    $("[name='buttonEdit']").html(doc.getDocLabel("page_global", "btn_edit"));
+    $("#editRobotModal [name='buttonClose']").html(doc.getDocLabel("page_global", "buttonClose"));
+    $("#editRobotModal [name='buttonAdd']").html(doc.getDocLabel("page_global", "btn_add"));
+    $("#editRobotModal [name='buttonDuplicate']").html(doc.getDocLabel("page_global", "btn_duplicate"));
+    $("#editRobotModal [name='buttonEdit']").html(doc.getDocLabel("page_global", "btn_edit"));
 
-    $("[name='addEntryField']").html(doc.getDocLabel("page_robot", "button_create"));
-    $("[name='confirmationField']").html(doc.getDocLabel("page_robot", "button_delete"));
-    $("[name='editEntryField']").html(doc.getDocLabel("page_robot", "button_edit"));
-    $("[name='robotField']").html(doc.getDocOnline("robot", "robot"));
-    $("[name='hostField']").html(doc.getDocOnline("robot", "host"));
-    $("[name='portField']").html(doc.getDocOnline("robot", "port"));
-    $("[name='platformField']").html(doc.getDocOnline("robot", "platform"));
-    $("[name='browserField']").html(doc.getDocOnline("robot", "browser"));
-    $("[name='versionField']").html(doc.getDocOnline("robot", "version"));
-    $("[name='activeField']").html(doc.getDocOnline("robot", "active"));
-    $("[name='useragentField']").html(doc.getDocOnline("robot", "useragent"));
-    $("[name='screensizeField']").html(doc.getDocOnline("robot", "screensize"));
-    $("[name='descriptionField']").html(doc.getDocOnline("robot", "description"));
-    $("[name='addCapabilityHeader']").html(doc.getDocOnline("robot", "capabilityCapability"));
-    $("[name='addValueHeader']").html(doc.getDocOnline("robot", "capabilityValue"));
-    $("[name='editCapabilityHeader']").html(doc.getDocOnline("robot", "capabilityCapability"));
-    $("[name='editValueHeader']").html(doc.getDocOnline("robot", "capabilityValue"));
-    displayInvariantList("active", "ROBOTACTIVE", false);
-    displayInvariantList("browser", "BROWSER", false, undefined, "");
-    displayInvariantList("platform", "PLATFORM", false, undefined, "");
+    $("#editRobotModal [name='addEntryField']").html(doc.getDocLabel("page_robot", "button_create"));
+    $("#editRobotModal [name='confirmationField']").html(doc.getDocLabel("page_robot", "button_delete"));
+    $("#editRobotModal [name='editEntryField']").html(doc.getDocLabel("page_robot", "button_edit"));
+    $("#editRobotModal [name='robotField']").html(doc.getDocOnline("robot", "robot"));
+    $("#editRobotModal [name='hostField']").html(doc.getDocOnline("robot", "host"));
+    $("#editRobotModal [name='portField']").html(doc.getDocOnline("robot", "port"));
+    $("#editRobotModal [name='platformField']").html(doc.getDocOnline("robot", "platform"));
+    $("#editRobotModal [name='browserField']").html(doc.getDocOnline("robot", "browser"));
+    $("#editRobotModal [name='versionField']").html(doc.getDocOnline("robot", "version"));
+    $("#editRobotModal [name='activeField']").html(doc.getDocOnline("robot", "active"));
+    $("#editRobotModal [name='useragentField']").html(doc.getDocOnline("robot", "useragent"));
+    $("#editRobotModal [name='screensizeField']").html(doc.getDocOnline("robot", "screensize"));
+    $("#editRobotModal [name='descriptionField']").html(doc.getDocOnline("robot", "description"));
+    $("#editRobotModal [name='addCapabilityHeader']").html(doc.getDocOnline("robot", "capabilityCapability"));
+    $("#editRobotModal [name='addValueHeader']").html(doc.getDocOnline("robot", "capabilityValue"));
+    $("#editRobotModal [name='editCapabilityHeader']").html(doc.getDocOnline("robot", "capabilityCapability"));
+    $("#editRobotModal [name='editValueHeader']").html(doc.getDocOnline("robot", "capabilityValue"));
+    displayInvariantList("robotActive", "ROBOTACTIVE", false);
+    displayInvariantList("robotBrowser", "BROWSER", false, undefined, "");
+    displayInvariantList("robotPlatform", "PLATFORM", false, undefined, "");
 
     var availableUserAgent = getInvariantArray("USERAGENT", false);
-    $("[name='useragent']").autocomplete({
+    $("#editRobotModal [name='useragent']").autocomplete({
         source: availableUserAgent
     });
     var availableScreenSize = getInvariantArray("SCREENSIZE", false);
-    $("[name='screensize']").autocomplete({
+    $("#editRobotModal [name='screensize']").autocomplete({
         source: availableScreenSize
     });
     var availableHost = getInvariantArray("ROBOTHOST", false);
-    $("[name='host']").autocomplete({
+    $("#editRobotModal [name='host']").autocomplete({
         source: availableHost
     });
 
@@ -229,18 +233,30 @@ function confirmRobotModalHandler(mode) {
         url: myServlet,
         async: true,
         method: "POST",
-        data: data,
-        success: function (data) {
+        data: {robot: data.robot,
+            robotid: data.robotid,
+            active: data.robotActive,
+            host: data.host,
+            port: data.port,
+            platform: data.robotPlatform,
+            browser: data.robotBrowser,
+            version: data.version,
+            useragent: data.useragent,
+            screensize: data.screensize,
+            description: data.description,
+            capabilities: data.capabilities},
+        success: function (dataMessage) {
 //            data = JSON.parse(data);
             hideLoaderInModal('#editRobotModal');
-            if (getAlertType(data.messageType) === "success") {
+            if (getAlertType(dataMessage.messageType) === "success") {
                 var oTable = $("#robotsTable").dataTable();
                 oTable.fnDraw(true);
                 $('#editRobotModal').data("Saved", true);
+                $('#editRobotModal').data("robot", data);
                 $('#editRobotModal').modal('hide');
-                showMessage(data);
+                showMessage(dataMessage);
             } else {
-                showMessage(data, $('#editRobotModal'));
+                showMessage(dataMessage, $('#editRobotModal'));
             }
         },
         error: showUnexpectedError
@@ -343,7 +359,7 @@ function feedRobotModalData(robot, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#Description").prop("value", "");
         $('#addCapabilitiesTableBody tr').remove();
     } else {
-        if (mode !== "DUPLICATE") {
+        if (mode === "EDIT") {
             formEdit.find("#robotid").prop("value", robot.robotID);
         } else {
             formEdit.find("#robotid").prop("value", "");

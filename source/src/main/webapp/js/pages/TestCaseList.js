@@ -124,9 +124,11 @@ function renderOptionsForTestCaseList(data) {
                 // Getting the Test from the 1st row of the testcase table.
                 if($("#testCaseTable td.sorting_1")[0] != undefined) {
                     var firstRowTest = $("#testCaseTable td.sorting_1")[0].textContent;
-                    addTestCaseClick(firstRowTest);
+//                    addTestCaseClick(firstRowTest);
+                    openModalTestCase(firstRowTest, undefined, "ADD");
                 } else {
-                    addTestCaseClick();
+//                    addTestCaseClick();
+                    openModalTestCase(undefined, undefined, "ADD");
                 }
             });
             $('#testCaseList #createBrpMassButton').click(massActionClick);

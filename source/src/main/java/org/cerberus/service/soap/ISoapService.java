@@ -62,7 +62,7 @@ public interface ISoapService {
      * Call Soap Message 
      * @param envelope
      * @param servicePath
-     * @param method
+     * @param operation
      * @param attachmentUrl
      * @param header
      * @param token
@@ -70,6 +70,6 @@ public interface ISoapService {
      * @param system
      * @return 
      */
-    AnswerItem<AppService> callSOAP(String envelope, String servicePath, String method, String attachmentUrl, List<AppServiceHeader> header, String token, int timeOutMs, String system);
+    AnswerItem<AppService> callSOAP(String envelope, String servicePath, String operation, String attachmentUrl, List<AppServiceHeader> header, String token, int timeOutMs, String system);
     
 }

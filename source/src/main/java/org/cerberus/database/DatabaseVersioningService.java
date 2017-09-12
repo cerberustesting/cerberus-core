@@ -9321,6 +9321,43 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("INSERT INTO `tag` (`Tag`) (select distinct tag from testcaseexecutionqueue a where tag != \"\") ON DUPLICATE KEY UPDATE Tag=a.tag;");
         SQLInstruction.add(SQLS.toString());
 
+        // Created Tag table.
+        //-- ------------------------ 1215-1221
+        SQLS = new StringBuilder();
+        SQLS.append("DROP TABLE `tag`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("CREATE TABLE `tag` (");
+        SQLS.append("  `id` INT(11) NOT NULL AUTO_INCREMENT,");
+        SQLS.append("  `Tag` VARCHAR(50) NOT NULL DEFAULT '',");
+        SQLS.append("  `Description` VARCHAR(300) NOT NULL DEFAULT '',");
+        SQLS.append("  `Campaign` VARCHAR(45) NULL DEFAULT NULL,");
+        SQLS.append("  `UsrCreated` VARCHAR(45) NOT NULL DEFAULT '',");
+        SQLS.append("  `DateCreated` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,");
+        SQLS.append("  `UsrModif` VARCHAR(45) NULL DEFAULT '',");
+        SQLS.append("  `DateModif` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01',");
+        SQLS.append("  PRIMARY KEY (`id`),");
+        SQLS.append("  UNIQUE INDEX `IX_tag_01` (`Tag` ASC),");
+        SQLS.append("  INDEX `IX_tag_02` (`Campaign` ASC)");
+        SQLS.append(") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `tag` ADD CONSTRAINT `FK_tag_1`");
+        SQLS.append(" FOREIGN KEY (`Campaign`) REFERENCES `campaign` (`campaign`)  ON DELETE SET NULL  ON UPDATE CASCADE;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `tag` (`Tag`) (select distinct tag from testcaseexecutionqueue a where tag != \"\")  order by id asc ON DUPLICATE KEY UPDATE Tag=a.tag;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `tag` (`Tag`) (select distinct tag from testcaseexecution a where tag != \"\")  order by id asc ON DUPLICATE KEY UPDATE Tag=a.tag;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `tag` (`Tag`) (select distinct tag from testcaseexecutionqueue a where tag != \"\")  order by id asc ON DUPLICATE KEY UPDATE Tag=a.tag;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `tag` (`Tag`) (select distinct tag from testcaseexecution a where tag != \"\")  order by id asc ON DUPLICATE KEY UPDATE Tag=a.tag;");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 

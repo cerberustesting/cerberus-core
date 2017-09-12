@@ -109,7 +109,7 @@ function displayInvariantList(selectName, idName, forceReload, defaultValue, add
                 if (defaultValue !== undefined) {
                     $("[name='" + selectName + "']").val(defaultValue);
                 }
-                    }
+            }
         });
     } else {
         for (var index = 0; index < list.length; index++) {
@@ -121,8 +121,8 @@ function displayInvariantList(selectName, idName, forceReload, defaultValue, add
         if (defaultValue !== undefined) {
             $("[name='" + selectName + "']").val(defaultValue);
         }
-            }
-        }
+    }
+}
 
 /**
  * Method that return a list of value retrieved from the invariant list
@@ -1918,7 +1918,6 @@ function restrictCharacters(myfield, e, restrictionType) {
  *             }
  *
  */
-
 function autocompleteVariable(identifier, Tags) {
 
     function split(val, separator) {
@@ -1961,7 +1960,7 @@ function autocompleteVariable(identifier, Tags) {
                 },
                 create: function () {
                     $(this).data('ui-autocomplete')._renderItem = function (ul, item) {
-                        $(ul).css("min-height","0px");
+                        $(ul).css("min-height", "0px");
                         var icon = "";
                         var tag = Tags[this.currentIndexTag];
                         if (tag.addAfter != "%") {
@@ -1969,14 +1968,14 @@ function autocompleteVariable(identifier, Tags) {
                         }
                         // find corresponding data to use more information than item (application / filename etc)
                         var object = tag.array.find(function (data) {
-                            if(item != undefined)
+                            if (item != undefined)
                                 return data.object === item.label;
                             return false;
                         });
 
-                        var hover="";
-                        if(object != null && object.screenshotfilename != undefined && object.screenshotfilename != null) {
-                            hover = 'data-toggle="tooltip" title="<img src=\'http://localhost:8080/Cerberus/ReadApplicationObjectImage?application='+object.application+'&object='+ object.object +'&time='+$.now()+'\' />"';
+                        var hover = "";
+                        if (object != null && object.screenshotfilename != undefined && object.screenshotfilename != null) {
+                            hover = 'data-toggle="tooltip" title="<img src=\'http://localhost:8080/Cerberus/ReadApplicationObjectImage?application=' + object.application + '&object=' + object.object + '&time=' + $.now() + '\' />"';
                         }
                         return $("<li class='ui-menu-item'>")
                                 .append("<a class='ui-corner-all' tabindex='-1' style='height:100%' " + hover + " ><span style='float:left;'>" + item.label + "</span>" + icon + "<span style='clear: both; display: block;'></span></a>")
@@ -2007,7 +2006,7 @@ function autocompleteVariable(identifier, Tags) {
                                 }
                                 this.currentIndexTag = tag;
                                 var arrayToDisplay = $.ui.autocomplete.filter(
-                                    arrayLabels, extractLast(identifier, Tags[tag].regex));
+                                        arrayLabels, extractLast(identifier, Tags[tag].regex));
                                 if (Tags[tag].isCreatable && extractLast(identifier, Tags[tag].regex) != "") {
                                     arrayToDisplay.push(extractLast(identifier, Tags[tag].regex));
                                 }
@@ -2020,8 +2019,9 @@ function autocompleteVariable(identifier, Tags) {
                 },
                 focus: function () {
                     $('a[data-toggle="tooltip"]').each(function (idx, data) {
-                        var direction="top";
-                        if(idx < 4) direction = "bottom";
+                        var direction = "top";
+                        if (idx < 4)
+                            direction = "bottom";
 
                         $(data).tooltip({
                             animated: 'fade',
@@ -2030,7 +2030,7 @@ function autocompleteVariable(identifier, Tags) {
                         });
 
                         var parent = $(data).parent().parent();
-                        if(parent.hasClass("ui-autocomplete")) {
+                        if (parent.hasClass("ui-autocomplete")) {
                             parent.css("min-height", "120px"); // add height to do place to display tooltip. else overflow:auto hide tooltip
                         }
                     });
@@ -2262,3 +2262,75 @@ function getSys() {
     var selectedIndex = sel.selectedIndex;
     return sel.options[selectedIndex].value;
 }
+
+
+/********************************SELECT2 COMBO*******************************************/
+
+function comboConfigTag_format(tag) {
+    var markup = "<div class='select2-result-tag clearfix'>" +
+            "<div class='select2-result-tag__title'>" + tag.tag + "</div>";
+
+    if (tag.description) {
+        markup += "<div class='select2-result-tag__description'>" + tag.description + "</div>";
+    }
+    markup += "<div class='select2-result-tag__statistics'>";
+    if (tag.campaign) {
+        markup += "<div class='select2-result-tag__detail'><i class='fa fa-list'></i> " + tag.campaign + "</div>";
+    }
+    if (tag.DateCreated) {
+        markup += "<div class='select2-result-tag__detail'><i class='fa fa-calendar'></i> " + tag.DateCreated + "</div>";
+    }
+    markup += "</div>";
+    markup += "</div>";
+
+    return markup;
+}
+
+function comboConfigTag_formatSelection(tag) {
+    var result = tag.id;
+    if (!isEmpty(tag.campaign)) {
+        result = result + " [" + tag.campaign + "]";
+    }
+    return result;
+}
+
+
+function getComboConfigTag() {
+
+    var config =
+            {
+                ajax: {
+                    url: "ReadTag?iSortCol_0=0&sSortDir_0=desc&sColumns=id,tag,campaign,description&iDisplayLength=30",
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            sSearch: params.term, // search term
+                            iDisplayStartPage: params.page
+                        };
+                    },
+                    processResults: function (data, params) {
+                        params.page = params.page || 1;
+                        return {
+                            results: $.map(data.contentTable, function (obj) {
+                                return {id: obj.tag, text: obj.tag, tag: obj.tag, description: obj.description, campaign: obj.campaign, DateCreated: obj.DateCreated};
+                            }),
+                            pagination: {
+                                more: (params.page * 30) < data.iTotalRecords
+                            }
+                        };
+                    },
+                    cache: true
+                },
+                escapeMarkup: function (markup) {
+                    return markup;
+                }, // let our custom formatter work
+                minimumInputLength: 0,
+                templateResult: comboConfigTag_format, // omitted for brevity, see the source of this page
+                templateSelection: comboConfigTag_formatSelection // omitted for brevity, see the source of this page
+            };
+
+    return config;
+
+}
+
