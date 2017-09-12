@@ -2034,7 +2034,7 @@ Action.prototype.generateContent = function () {
     var descField = $("<input class='description form-control' placeholder='" + doc.getDocLabel("page_testcasescript", "describe_action") + "'>");
     descContainer.append($("<span class='input-group-addon' style='font-weight: 700;' id='labelDiv'></span>"));
     descContainer.append(descField);
-    var objectField = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control input-sm");
+    var objectField = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control default input-sm");
     var propertyField = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control input-sm");
 
     var actionconditionval1 = $("<input>").attr("type", "text").addClass("form-control input-sm");
@@ -2090,7 +2090,6 @@ Action.prototype.generateContent = function () {
     objectField.css("width", "100%");
     objectField.on("change", function () {
         obj.value1 = objectField.val();
-        console.log(obj.value1);
     });
     
     
@@ -2104,7 +2103,7 @@ Action.prototype.generateContent = function () {
     
     firstRow.append(descContainer);
     secondRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "action_field"))).append(actionList));
-    secondRow.append($("<div></div>").addClass("col-lg-8 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value1_field"))).append(objectField));
+    secondRow.append($("<div></div>").addClass("col-lg-8 input-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value1_field"))).append(objectField));
     secondRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value2_field"))).append(propertyField));
     thirdRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_operation_field"))).append(actionconditionoper));
     thirdRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_parameter_field"))).append(actionconditionval1));
@@ -2560,40 +2559,54 @@ var autocompleteAllFields, getTags, setTags;
             $(e).unbind("input").on("input", function (ev) {
                 var name = undefined;
                 var nameNotExist = undefined;
+                
                 var objectNotExist = false;
-                var typeNotExist = undefined;
+                var typeNotExist = undefined;               
                 var doc = new Doc();
                 var checkObject = [];
                 var betweenPercent = $(e).val().match(new RegExp(/%[^%]*%/g));
                 if (betweenPercent != null && betweenPercent.length > 0) {
                     var i = betweenPercent.length - 1;
                     while (i >= 0) {
-                        var findname = betweenPercent[i].match(/\.[^\.]*(\.|.$)/g);                    
+                        var findname = betweenPercent[i].match(/\.[^\.]*(\.|.$)/g);  
 
                         if (betweenPercent[i].startsWith("%object.") && findname != null && findname.length > 0) {
                             name = findname[0];
                             name = name.slice(1, name.length - 1);
-
+                                                    
                             $(e).parent().parent().parent().parent().find("#ApplicationObjectImg").attr("src", "ReadApplicationObjectImage?application=" + tcInfo.application + "&object=" + name + "&time=" + new Date().getTime());
 
                             if (!objectIntoTagToUseExist(TagsToUse[1],name)) {
-                                objectNotExist = true;
-                                nameNotExist = name;
-                                typeNotExist = "applicationObject";
-                                $(e).parent().parent().parent().parent().find(".secondRow").children(".buttonObject").remove();
-                                $(e).parent().parent().parent().parent().find(".secondRow").append($('<button/>').attr("type", "button").attr("class"," buttonObject btn btn-primary").append($("<span></span>").addClass("glyphicon glyphicon-plus spanPlus")));
-                                $(".buttonObject").unbind("click").click(function(){
-                                	openModalApplicationObject(info.application, name, "ADD", "testCaseScript");
-
-                                })
-                            }else if(objectIntoTagToUseExist(TagsToUse[1],name)){
                             	
-                            	$(e).parent().parent().parent().parent().find(".secondRow").children(".buttonObject").remove();
-                            	$(e).parent().parent().parent().parent().find(".secondRow").append($('<button/>').attr("type", "button").attr("class"," buttonObject btn btn-primary").append($("<span></span>").addClass("glyphicon glyphicon-pencil spanPencil")));                            	$(".buttonObject").unbind("click").click(function(){
-                                	openModalApplicationObject(info.application, name, "EDIT", "testCaseScript");
-                                })
+                            		var addEntry = '<span class="input-group-btn"><button id="editEntry" onclick="openModalApplicationObject(\'' + tcInfo.application + '\', \'' + name + '\',\'ADD\'  ,\'testCaseScript\' );"\n\
+                                    class="buttonObject btn btn-default input-sm " \n\
+                                   title="' + doc.getDocLabel("page_applicationObject", "button_create") + '" type="button">\n\
+                                    <span class="glyphicon glyphicon-plus"></span></button></span>';
+                                	
+                                    objectNotExist = true;
+                                    nameNotExist = name;
+                                    typeNotExist = "applicationObject";
+                                    
+                                    $(e).parent().parent().parent().parent().find(".secondRow").find(".input-group-btn").remove();
+                                    $(e).parent().parent().parent().parent().find(".secondRow").find(".default").addClass("inputObj");
+                                    $(e).parent().parent().parent().parent().find(".secondRow").find(".input-group").removeClass("col-lg-8").addClass("col-lg-10").css("display", "block");                              
+                                    $(e).parent().parent().parent().parent().find(".secondRow").children(".input-group").append(addEntry);
+    
+                            	
                                 
-                                
+                            }else if(objectIntoTagToUseExist(TagsToUse[1],name)){
+                            	                          	
+                            	                   
+                            		var editEntry = '<span class="input-group-btn"><button id="editEntry" onclick="openModalApplicationObject(\'' + tcInfo.application + '\', \'' + name + '\',\'EDIT\'  ,\'testCaseScript\' );"\n\
+                            		class="buttonObject btn btn-default input-sm " \n\
+                            		title="' + doc.getDocLabel("page_applicationObject", "button_create") + '" type="button">\n\
+                            		<span class="glyphicon glyphicon-pencil"></span></button></span>';
+                            	      
+                            		$(e).parent().parent().parent().parent().find(".secondRow").find(".input-group-btn").remove();
+                            	    $(e).parent().parent().parent().parent().find(".secondRow").find(".default").addClass("inputObj");
+                            	    $(e).parent().parent().parent().parent().find(".secondRow").find(".input-group").removeClass("col-lg-8").addClass("col-lg-10").css("display", "block");                
+                                	$(e).parent().parent().parent().parent().find(".secondRow").children(".input-group").append(editEntry);	
+                                   
                             }
                         } else if (betweenPercent[i].startsWith("%property.") && findname != null && findname.length > 0) {
                             name = findname[0];

@@ -20,9 +20,8 @@
     Created on : 4 déc. 2015, 16:08:55
     Author     : cerberus
 */
-
-.secondRow .btn{
-	margin-top:18px;
+.inputObj{
+	width:60% !important;
 }
 
 .separator-left {
