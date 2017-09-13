@@ -133,8 +133,21 @@
         'asyncdelay' : delay in ms can be used to call async ressource.
         <br>
         <br>
+        <button ondblclick="myFunction()">Double-click</button>
+
+        <p id="demo"></p>
+
+        <p>A function is triggered when the button is double-clicked. The function outputs some text in a p element with id="demo".</p>
+
+        <script>
+        function myFunction() {
+            document.getElementById("demo").innerHTML = "DoubleClick works!";
+        }
+        </script>      
+        <br>
+        <br>
         <p>Below is part to test iframe switching</p>
-        <iframe src="http://www.cerberus-testing.org/index.php/en/" height="500" width="500">
+        <iframe id="iframeCerberusWebsite" src="http://www.cerberus-testing.org/index.php/en/" height="500" width="500">
 
         </iframe>
     </body>
