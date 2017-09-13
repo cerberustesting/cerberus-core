@@ -100,11 +100,11 @@ OCR (optical character recognition) can be enabled with sikuli, please follow th
 
 - When installing Sikulie, select option 3 :
 
-image:SikuliOptions.PNG[SikuliOptions,200,200]
+image:installationsikulioptions.PNG[SikuliOptions,200,200]
 
 - When installation is done, run sikuli IDE. Click on File > Preferences > More options Then select toolboxes Allow searching for text / Allow OCR : 
 
-image:OCRsettings.PNG[OCRsettings,200,200]
+image:installationOCRsettings.PNG[OCRsettings,200,200]
 
 Cerberus should now be able to find text.
 
