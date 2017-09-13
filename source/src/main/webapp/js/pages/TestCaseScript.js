@@ -2586,7 +2586,8 @@ var autocompleteAllFields, getTags, setTags;
                                     objectNotExist = true;
                                     nameNotExist = name;
                                     typeNotExist = "applicationObject";
-                                                                        
+                                                                   
+                                    $(e).parent().parent().parent().parent().find(".secondRow").find(".input-group").find(".input-group-btn").remove()
                                     $(e).parent().parent().parent().parent().find(".secondRow").find(".default").addClass("inputObj");
                                     $(e).parent().parent().parent().parent().find(".secondRow").find(".col-lg-5").removeClass("col-lg-5").addClass("col-lg-10").css("display", "block");   
                                     $(e).parent().parent().parent().parent().find(".secondRow").find(".col-lg-10").addClass("input-group");
@@ -2602,7 +2603,7 @@ var autocompleteAllFields, getTags, setTags;
                             		title="' + doc.getDocLabel("page_applicationObject", "button_create") + '" type="button">\n\
                             		<span class="glyphicon glyphicon-pencil"></span></button></span>';
                             	    
-                            		
+                            		$(e).parent().parent().parent().parent().find(".secondRow").find(".input-group").find(".input-group-btn").remove()
                             	    $(e).parent().parent().parent().parent().find(".secondRow").find(".default").addClass("inputObj");
                             	    $(e).parent().parent().parent().parent().find(".secondRow").find(".col-lg-5").removeClass("col-lg-5").addClass("col-lg-10").css("display", "block"); 
                             	    $(e).parent().parent().parent().parent().find(".secondRow").find(".col-lg-10").addClass("input-group");
