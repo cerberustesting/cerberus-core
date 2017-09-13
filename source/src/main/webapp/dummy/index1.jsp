@@ -131,6 +131,11 @@
 
         <p> Parameters that can be used on that page :</p>
         'asyncdelay' : delay in ms can be used to call async ressource.
-        
+        <br>
+        <br>
+        <p>Below is part to test iframe switching</p>
+        <iframe src="http://www.cerberus-testing.org/index.php/en/" height="500" width="500">
+
+        </iframe>
     </body>
 </html>
