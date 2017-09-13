@@ -2103,7 +2103,7 @@ Action.prototype.generateContent = function () {
     
     firstRow.append(descContainer);
     secondRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "action_field"))).append(actionList));
-    secondRow.append($("<div></div>").addClass("col-lg-8 input-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value1_field"))).append(objectField));
+    secondRow.append($("<div></div>").addClass("col-lg-5").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value1_field"))).append(objectField));
     secondRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value2_field"))).append(propertyField));
     thirdRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_operation_field"))).append(actionconditionoper));
     thirdRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_parameter_field"))).append(actionconditionval1));
@@ -2586,14 +2586,14 @@ var autocompleteAllFields, getTags, setTags;
                                     objectNotExist = true;
                                     nameNotExist = name;
                                     typeNotExist = "applicationObject";
-                                    
-                                    $(e).parent().parent().parent().parent().find(".secondRow").find(".input-group-btn").remove();
+                                                                        
                                     $(e).parent().parent().parent().parent().find(".secondRow").find(".default").addClass("inputObj");
-                                    $(e).parent().parent().parent().parent().find(".secondRow").find(".input-group").removeClass("col-lg-8").addClass("col-lg-10").css("display", "block");                              
+                                    $(e).parent().parent().parent().parent().find(".secondRow").find(".col-lg-5").removeClass("col-lg-5").addClass("col-lg-10").css("display", "block");   
+                                    $(e).parent().parent().parent().parent().find(".secondRow").find(".col-lg-10").addClass("input-group");
                                     $(e).parent().parent().parent().parent().find(".secondRow").children(".input-group").append(addEntry);
     
                             	
-                                
+                                as
                             }else if(objectIntoTagToUseExist(TagsToUse[1],name)){
                             	                          	
                             	                   
@@ -2601,10 +2601,11 @@ var autocompleteAllFields, getTags, setTags;
                             		class="buttonObject btn btn-default input-sm " \n\
                             		title="' + doc.getDocLabel("page_applicationObject", "button_create") + '" type="button">\n\
                             		<span class="glyphicon glyphicon-pencil"></span></button></span>';
-                            	      
-                            		$(e).parent().parent().parent().parent().find(".secondRow").find(".input-group-btn").remove();
+                            	    
+                            		
                             	    $(e).parent().parent().parent().parent().find(".secondRow").find(".default").addClass("inputObj");
-                            	    $(e).parent().parent().parent().parent().find(".secondRow").find(".input-group").removeClass("col-lg-8").addClass("col-lg-10").css("display", "block");                
+                            	    $(e).parent().parent().parent().parent().find(".secondRow").find(".col-lg-5").removeClass("col-lg-5").addClass("col-lg-10").css("display", "block"); 
+                            	    $(e).parent().parent().parent().parent().find(".secondRow").find(".col-lg-10").addClass("input-group");
                                 	$(e).parent().parent().parent().parent().find(".secondRow").children(".input-group").append(editEntry);	
                                    
                             }
