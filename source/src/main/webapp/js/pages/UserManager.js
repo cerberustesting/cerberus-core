@@ -320,8 +320,9 @@ function editEntryModalSaveHandler() {
         method: "POST",
         data: data,
         success: function (data) {
-            data = JSON.parse(data);
-            hideLoaderInModal('#editUserModal');
+        	
+            data = JSON.parse(data);   
+            console.log(data.messageType);
             if (getAlertType(data.messageType) === 'success') {
                 $('#editUserModal').modal('hide');
                 var oTable = $("#usersTable").dataTable();
@@ -330,6 +331,8 @@ function editEntryModalSaveHandler() {
             } else {
                 showMessage(data, $('#editUserModal'));
             }
+            
+            hideLoaderInModal('#editUserModal');
         },
         error: showUnexpectedError
     });

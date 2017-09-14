@@ -2026,7 +2026,7 @@ Action.prototype.generateContent = function () {
     var doc = new Doc();
     var content = $("<div></div>").addClass("content col-lg-9");
     var firstRow = $("<div style='margin-top:15px;'></div>").addClass("fieldRow row form-group");
-    var secondRow = $("<div></div>").addClass("fieldRow row secondRow");
+    var secondRow = $("<div></div>").addClass("fieldRow row secondRow input-group").css("width", "100%");
     var thirdRow = $("<div></div>").addClass("fieldRow row thirdRow").hide();
 
     var actionList = $("<select></select>").addClass("form-control input-sm");
@@ -2034,7 +2034,7 @@ Action.prototype.generateContent = function () {
     var descField = $("<input class='description form-control' placeholder='" + doc.getDocLabel("page_testcasescript", "describe_action") + "'>");
     descContainer.append($("<span class='input-group-addon' style='font-weight: 700;' id='labelDiv'></span>"));
     descContainer.append(descField);
-    var objectField = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control default input-sm");
+    var objectField = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control input-sm");
     var propertyField = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control input-sm");
 
     var actionconditionval1 = $("<input>").attr("type", "text").addClass("form-control input-sm");
@@ -2102,9 +2102,9 @@ Action.prototype.generateContent = function () {
     
     
     firstRow.append(descContainer);
-    secondRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "action_field"))).append(actionList));
+    secondRow.append($("<div></div>").addClass("col-lg-2 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "action_field"))).append(actionList));
     secondRow.append($("<div></div>").addClass("col-lg-5").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value1_field"))).append(objectField));
-    secondRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value2_field"))).append(propertyField));
+    secondRow.append($("<div></div>").addClass("col-lg-5 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value2_field"))).append(propertyField));
     thirdRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_operation_field"))).append(actionconditionoper));
     thirdRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_parameter_field"))).append(actionconditionval1));
     thirdRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_parameter_field"))).append(actionconditionval2));
@@ -2555,7 +2555,7 @@ var autocompleteAllFields, getTags, setTags;
 
         autocompleteVariable("#propTable .property .row textarea, div.step-action .content div.fieldRow div:nth-child(n+2) input, #stepHeader .step .content .fieldRow div:nth-child(n+2) input, #conditionVal1, #conditionVal2", TagsToUse);
 
-        $("div.step-action .content div.fieldRow div:nth-child(n+2) input").each(function (i, e) {
+        $("div.step-action .content div.fieldRow div:nth-child(n+2) input").each(function (i, e) {        	
             $(e).unbind("input").on("input", function (ev) {
                 var name = undefined;
                 var nameNotExist = undefined;
@@ -2578,39 +2578,46 @@ var autocompleteAllFields, getTags, setTags;
 
                             if (!objectIntoTagToUseExist(TagsToUse[1],name)) {
                             	
-                            		var addEntry = '<span class="input-group-btn"><button id="editEntry" onclick="openModalApplicationObject(\'' + tcInfo.application + '\', \'' + name + '\',\'ADD\'  ,\'testCaseScript\' );"\n\
+                            		var addEntry = '<span class="input-group-btn ' +name+ '"><button id="editEntry" onclick="openModalApplicationObject(\'' + tcInfo.application + '\', \'' + name + '\',\'ADD\'  ,\'testCaseScript\' );"\n\
                                     class="buttonObject btn btn-default input-sm " \n\
                                    title="' + doc.getDocLabel("page_applicationObject", "button_create") + '" type="button">\n\
                                     <span class="glyphicon glyphicon-plus"></span></button></span>';
-                                	
+                            		                                	
                                     objectNotExist = true;
                                     nameNotExist = name;
                                     typeNotExist = "applicationObject";
-                                                                   
-                                    $(e).parent().parent().parent().parent().find(".secondRow").find(".input-group").find(".input-group-btn").remove()
-                                    $(e).parent().parent().parent().parent().find(".secondRow").find(".default").addClass("inputObj");
-                                    $(e).parent().parent().parent().parent().find(".secondRow").find(".col-lg-5").removeClass("col-lg-5").addClass("col-lg-10").css("display", "block");   
-                                    $(e).parent().parent().parent().parent().find(".secondRow").find(".col-lg-10").addClass("input-group");
-                                    $(e).parent().parent().parent().parent().find(".secondRow").children(".input-group").append(addEntry);
+                                    
+                                    try{
+                                    	$(e).parent().find("."+ $(e).parent().data("LastName")).remove();   
+                                    }catch(f){
+                                    	$(e).parent().find(".input-group-btn").remove();
+                                    }
+                                                              
+                                    $(e).parent().append(addEntry);
+                                    $(e).parent().data("LastName", name);
     
                             	
-                                as
+                                
                             }else if(objectIntoTagToUseExist(TagsToUse[1],name)){
-                            	                          	
-                            	                   
-                            		var editEntry = '<span class="input-group-btn"><button id="editEntry" onclick="openModalApplicationObject(\'' + tcInfo.application + '\', \'' + name + '\',\'EDIT\'  ,\'testCaseScript\' );"\n\
+                            	
+                            		var editEntry = '<span class="input-group-btn ' +name+ '"><button id="editEntry" onclick="openModalApplicationObject(\'' + tcInfo.application + '\', \'' + name + '\',\'EDIT\'  ,\'testCaseScript\' );"\n\
                             		class="buttonObject btn btn-default input-sm " \n\
-                            		title="' + doc.getDocLabel("page_applicationObject", "button_create") + '" type="button">\n\
+                            		title="' + doc.getDocLabel("page_applicationObject", "button_edit") + '" type="button">\n\
                             		<span class="glyphicon glyphicon-pencil"></span></button></span>';
-                            	    
-                            		$(e).parent().parent().parent().parent().find(".secondRow").find(".input-group").find(".input-group-btn").remove()
-                            	    $(e).parent().parent().parent().parent().find(".secondRow").find(".default").addClass("inputObj");
-                            	    $(e).parent().parent().parent().parent().find(".secondRow").find(".col-lg-5").removeClass("col-lg-5").addClass("col-lg-10").css("display", "block"); 
-                            	    $(e).parent().parent().parent().parent().find(".secondRow").find(".col-lg-10").addClass("input-group");
-                                	$(e).parent().parent().parent().parent().find(".secondRow").children(".input-group").append(editEntry);	
+                                    
+                                    try{
+                                    	$(e).parent().find("."+ $(e).parent().data("LastName")).remove();   
+                                    }catch(e){
+                                    	$(e).parent().find(".input-group-btn").remove();
+                                    }
+                                                              
+                                    $(e).parent().append(editEntry);
+                                    $(e).parent().data("LastName", name);
                                    
                             }
                         } else if (betweenPercent[i].startsWith("%property.") && findname != null && findname.length > 0) {
+                        	
+                        	$(e).parent().find(".input-group-btn").remove();   
                             name = findname[0];
                             name = name.slice(1, name.length - 1);
 
@@ -2619,9 +2626,14 @@ var autocompleteAllFields, getTags, setTags;
                                 nameNotExist = name;
                                 typeNotExist = "property";
                             }
+                        }else{
+                        	console.log("herrre");
+                        	$(e).parent().find(".input-group-btn").remove();  
                         }
                         i--;
                     }
+                }else{
+                	$(e).parent().find(".input-group-btn").remove();  
                 }
                 if (objectNotExist) {
                     if (typeNotExist == "applicationobject") {
