@@ -90,9 +90,9 @@ public class UpdateUser extends HttpServlet {
          
          if (StringUtil.isNullOrEmpty(login) || StringUtil.isNullOrEmpty(id)) {
              msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-             msg.setDescription(msg.getDescription().replace("%ITEM%", "ApplicationObject")
+             msg.setDescription(msg.getDescription().replace("%ITEM%", "User")
                      .replace("%OPERATION%", "Update")
-                     .replace("%REASON%", "Application name (applicationobject) is missing."));
+                     .replace("%REASON%", "User login is missing."));
              ans.setResultMessage(msg);
              
          }else {

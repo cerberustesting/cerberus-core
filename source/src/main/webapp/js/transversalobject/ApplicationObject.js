@@ -56,7 +56,7 @@ function initModalApplicationObject(page, application){
 	$("[name='applicationField']").html(doc.getDocOnline("page_applicationObject", "Application"));
 	$("[name='screenshotfilenameField']").html(doc.getDocOnline("page_applicationObject", "ScreenshotFileName"));
 	
-	displayApplicationList('application', getSys(), application);
+	displayApplicationList('application', undefined, application);
 	
 	$("#editApplicationObjectButton").off("click");
 	$("#editApplicationObjectButton").click(function() {
