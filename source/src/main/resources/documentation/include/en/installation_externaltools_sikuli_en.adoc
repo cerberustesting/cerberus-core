@@ -94,3 +94,18 @@ start /b java -jar selenium-server-standalone-x.xx.x.jar -role hub -port 5555
 start /b java -cp selenium-server-standalone-x.xx.x.jar;cerberus-extension-sikuli-x.x.x.jar org.openqa.grid.selenium.GridLauncher -role node -hub http://localhost:5555/grid/register -port 5556 -servlets org.sikuliserver.ExecuteSikuliAction
 --------------------------------------
 
+==== OCR setting
+
+OCR (optical character recognition) can be enabled with sikuli, please follow the procedure below to set sikuli.
+
+- When installing Sikulie, select option 3 :
+
+image:installationsikulioptions.PNG[SikuliOptions]
+
+- When installation is done, run sikuli IDE. Click on File > Preferences > More options Then select toolboxes Allow searching for text / Allow OCR : 
+
+image:installationOCRsettings.PNG[OCRsettings]
+
+Cerberus should now be able to find text.
+
+
