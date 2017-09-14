@@ -55,7 +55,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.cerberus.crud.factory.IFactoryUserGroup;
 
 /**
- * @author ip100003
+ * @author ryltar
  */
 @WebServlet(name = "UpdateUser", urlPatterns = {"/UpdateUser"})
 public class UpdateUser extends HttpServlet {
