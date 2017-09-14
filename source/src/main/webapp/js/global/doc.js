@@ -153,7 +153,7 @@ Doc.prototype.getDocOnline = function (docTable, docField) {
         } else {
             var linkToDoc = "";
             if (this.table[docTable][docField].haveDocAnchor) {
-                linkToDoc = "</br><br><a href='./Documentation.jsp#" + this.table[docTable][docField].docAnchor + "'><span class=\"glyphicon glyphicon-search\"></span></a>";
+                linkToDoc = "</br><br><a href='./Documentation.jsp#" + this.table[docTable][docField].docAnchor + "'><span class=\"glyphicon glyphicon-search\"> Documentation</span></a>";
             }
             res = this.table[docTable][docField].docLabel +
             " <a data-html='true'  class=\"docOnline\" onclick=\"stopPropagation(event)\" \n\
