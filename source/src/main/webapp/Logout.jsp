@@ -30,7 +30,7 @@
         <%@ include file="include/global/dependenciesInclusions.html" %>
         <link rel="stylesheet" type="text/css" href="css/crb_style.css">
         
-        <link rel="icon" type="image/png" href="images/Logo_cerberus_menu_fav.png"><!-- Major Browsers -->
+        <link rel="icon" type="image/png" href="images/favicon.ico.png"><!-- Major Browsers -->
         <!--[if IE]><link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico"/><![endif]--><!-- Internet Explorer-->
         
         <script type='text/javascript' src='js/pages/Logout.js'></script>
