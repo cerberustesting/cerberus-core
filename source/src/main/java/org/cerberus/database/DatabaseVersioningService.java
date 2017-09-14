@@ -7136,7 +7136,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `invariant` VALUES ");
-        SQLS.append("('ROBOTHOST', 'localhost', 100, 'Localhost Robot', '10', '', '', '', '', '', '', '', '', '')");
+        SQLS.append("('ROBOTHOST', 'localhost', 100, 'Localhost Robot', '', '10', '', '', '', '', '', '', '', '')");
         SQLS.append(",('INVARIANTPUBLIC', 'ROBOTHOST', '650', '', '', '', '', '', '', '', '', '', '', '');");
         SQLInstruction.add(SQLS.toString());
 
