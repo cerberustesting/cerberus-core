@@ -986,8 +986,8 @@ Step.prototype.update = function (idStep) {
 Step.prototype.show = function () {
     var doc = new Doc();
     var object = $(this).data("item");
-    var stepDesc = $("<div>").addClass("col-sm-10");
-    var stepButton = $("<div id='stepPlus'></a>").addClass("col-sm-1").addClass("paddingLeft0").addClass("paddingTop30").append($("<span class='glyphicon glyphicon-chevron-down'></span>").attr("style", "font-size:1.5em"));
+    var stepDesc = $("<div>").addClass("col-xs-10");
+    var stepButton = $("<div id='stepPlus'></a>").addClass("col-xs-1").addClass("paddingLeft0").addClass("paddingTop30").append($("<span class='glyphicon glyphicon-chevron-down'></span>").attr("style", "font-size:1.5em"));
 
     for (var i = 0; i < object.stepList.length; i++) {
         var step = object.stepList[i];
@@ -998,18 +998,18 @@ Step.prototype.show = function () {
     $("#stepContent").removeClass();
     $(this).addClass("active");
     if (object.returnCode === "OK") {
-        $("#stepInfo").prepend($("<div>").addClass("col-sm-1").append($("<h2>").addClass("glyphicon glyphicon-ok pull-left text-success").attr("style", "font-size:3em")));
+        $("#stepInfo").prepend($("<div>").addClass("col-xs-1").append($("<h2>").addClass("glyphicon glyphicon-ok pull-left text-success").attr("style", "font-size:3em")));
         // $("#stepContent").addClass("col-lg-9");
     } else if (object.returnCode === "PE") {
-        $("#stepInfo").prepend($("<div>").addClass("col-sm-1").append($("<h2>").addClass("glyphicon glyphicon-refresh spin pull-left text-info").attr("style", "font-size:3em")));
+        $("#stepInfo").prepend($("<div>").addClass("col-xs-1").append($("<h2>").addClass("glyphicon glyphicon-refresh spin pull-left text-info").attr("style", "font-size:3em")));
         // $("#stepContent").addClass("col-lg-9");
     } else if (object.returnCode === "KO") {
-        $("#stepInfo").prepend($("<div>").addClass("col-sm-1").append($("<h2>").addClass("glyphicon glyphicon-remove pull-left text-danger").attr("style", "font-size:3em")));
+        $("#stepInfo").prepend($("<div>").addClass("col-xs-1").append($("<h2>").addClass("glyphicon glyphicon-remove pull-left text-danger").attr("style", "font-size:3em")));
         // $("#stepContent").addClass("col-lg-9");
     } else if (object.returnCode === "NE" && isTheExecutionManual) {
-        $("#stepInfo").prepend($("<div>").addClass("col-sm-1").append($("<h2>").addClass("glyphicon glyphicon-question-sign pull-left text-black").attr("style", "font-size:3em")));
+        $("#stepInfo").prepend($("<div>").addClass("col-xs-1").append($("<h2>").addClass("glyphicon glyphicon-question-sign pull-left text-black").attr("style", "font-size:3em")));
     } else {
-        $("#stepInfo").prepend($("<div>").addClass("col-sm-1").append($("<h2>").addClass("glyphicon glyphicon-alert pull-left text-warning").attr("style", "font-size:3em")));
+        $("#stepInfo").prepend($("<div>").addClass("col-xs-1").append($("<h2>").addClass("glyphicon glyphicon-alert pull-left text-warning").attr("style", "font-size:3em")));
         // $("#stepContent").addClass("col-lg-9");
     }
 
@@ -1218,7 +1218,7 @@ Action.prototype.draw = function (idMotherStep, id) {
     var action = this;
     var idCurrentElement = {stepId: idMotherStep, actionId: id, controlId: -1};
 
-    var row = $("<div class='itemContainer'></div>").addClass("col-sm-10");
+    var row = $("<div class='itemContainer'></div>").addClass("col-xs-10");
     var type = $("<div></div>").addClass("type");
 
     var header = this.generateHeader(idCurrentElement);
@@ -1228,7 +1228,7 @@ Action.prototype.draw = function (idMotherStep, id) {
     //give the action an idid
     row.data("id", idCurrentElement);
 
-    var button = $("<div></div>").addClass("marginLeft-15 col-sm-1").append($("<span class='glyphicon glyphicon-chevron-down'></span>").attr("style", "font-size:1.5em"));
+    var button = $("<div></div>").addClass("marginLeft-15 col-xs-1").append($("<span class='glyphicon glyphicon-chevron-down'></span>").attr("style", "font-size:1.5em"));
 
     htmlElement.prepend(button);
     htmlElement.prepend(row);
@@ -1236,33 +1236,33 @@ Action.prototype.draw = function (idMotherStep, id) {
     var content = this.generateContent();
 
     if (action.returnCode === "OK") {
-        htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-ok").attr("style", "font-size:1.5em")));
+        htmlElement.prepend($("<div>").addClass("col-xs-1").append($("<span>").addClass("glyphicon glyphicon-ok").attr("style", "font-size:1.5em")));
         htmlElement.addClass("row list-group-item list-group-item-success");
         content.hide();
     } else if (action.returnCode === "PE") {
-        htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-refresh spin").attr("style", "font-size:1.5em")));
+        htmlElement.prepend($("<div>").addClass("col-xs-1").append($("<span>").addClass("glyphicon glyphicon-refresh spin").attr("style", "font-size:1.5em")));
         htmlElement.addClass("row list-group-item list-group-item-info");
         content.hide();
     } else if (action.returnCode === "KO") {
-        htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-remove").attr("style", "font-size:1.5em")));
+        htmlElement.prepend($("<div>").addClass("col-xs-1").append($("<span>").addClass("glyphicon glyphicon-remove").attr("style", "font-size:1.5em")));
         htmlElement.addClass("row list-group-item list-group-item-danger");
         content.hide();
     } else if (action.returnCode === "NA") {
-        htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-alert").attr("style", "font-size:1.5em")));
+        htmlElement.prepend($("<div>").addClass("col-xs-1").append($("<span>").addClass("glyphicon glyphicon-alert").attr("style", "font-size:1.5em")));
         htmlElement.addClass("row list-group-item list-group-item-info");
         content.hide();
     } else if (action.returnCode === "NE" && isTheExecutionManual) {
-        htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-question-sign").attr("style", "font-size:1.5em")));
+        htmlElement.prepend($("<div>").addClass("col-xs-1").append($("<span>").addClass("glyphicon glyphicon-question-sign").attr("style", "font-size:1.5em")));
         htmlElement.addClass("row list-group-item list-group-item-black");
         content.hide();
     } else {
-        htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-alert").attr("style", "font-size:1.5em")));
+        htmlElement.prepend($("<div>").addClass("col-xs-1").append($("<span>").addClass("glyphicon glyphicon-alert").attr("style", "font-size:1.5em")));
         htmlElement.addClass("row list-group-item list-group-item-warning");
         content.hide();
     }
 
     // Starting to reduce the size of the row by the length of elements.
-    $(header).find("#contentField").removeClass("col-sm-12").addClass("col-sm-" + (12 - this.fileList.length));
+    $(header).find("#contentField").removeClass("col-xs-12").addClass("col-xs-" + (12 - this.fileList.length));
     // Adding all media attached to action execution.
     addFileLink(this.fileList, $(header).find(".row"));
 
@@ -1729,24 +1729,24 @@ Action.prototype.generateContent = function () {
     conditionVal1Field.val(this.conditionVal1);
     conditionVal2Field.val(this.conditionVal2);
 
-    row1.append($("<div></div>").addClass("col-sm-2").append(returncodeGroup));
-    row1.append($("<div></div>").addClass("col-sm-10").append(descGroup));
-    row2.append($("<div></div>").addClass("col-sm-2"));
-    row2.append($("<div></div>").addClass("col-sm-5").append(objectGroupInit));
-    row2.append($("<div></div>").addClass("col-sm-5").append(propertyGroupInit));
-    row3.append($("<div></div>").addClass("col-sm-2").append(actionGroup));
-    row3.append($("<div></div>").addClass("col-sm-5").append(objectGroup));
-    row3.append($("<div></div>").addClass("col-sm-5").append(propertyGroup));
-    row4.append($("<div></div>").addClass("col-sm-2").append(sortGroup));
-    row4.append($("<div></div>").addClass("col-sm-5").append(forceexecGroup));
-    row4.append($("<div></div>").addClass("col-sm-5").append(timeGroup));
-    row5.append($("<div></div>").addClass("col-sm-12").append(returnmessageGroup));
-    row6.append($("<div></div>").addClass("col-sm-2"));
-    row6.append($("<div></div>").addClass("col-sm-5").append(conditionVal1InitGroup));
-    row6.append($("<div></div>").addClass("col-sm-5").append(conditionVal2InitGroup));
-    row7.append($("<div></div>").addClass("col-sm-2").append(conditionOperGroup));
-    row7.append($("<div></div>").addClass("col-sm-5").append(conditionVal1Group));
-    row7.append($("<div></div>").addClass("col-sm-5").append(conditionVal2Group));
+    row1.append($("<div></div>").addClass("col-xs-2").append(returncodeGroup));
+    row1.append($("<div></div>").addClass("col-xs-10").append(descGroup));
+    row2.append($("<div></div>").addClass("col-xs-2"));
+    row2.append($("<div></div>").addClass("col-xs-5").append(objectGroupInit));
+    row2.append($("<div></div>").addClass("col-xs-5").append(propertyGroupInit));
+    row3.append($("<div></div>").addClass("col-xs-2").append(actionGroup));
+    row3.append($("<div></div>").addClass("col-xs-5").append(objectGroup));
+    row3.append($("<div></div>").addClass("col-xs-5").append(propertyGroup));
+    row4.append($("<div></div>").addClass("col-xs-2").append(sortGroup));
+    row4.append($("<div></div>").addClass("col-xs-5").append(forceexecGroup));
+    row4.append($("<div></div>").addClass("col-xs-5").append(timeGroup));
+    row5.append($("<div></div>").addClass("col-xs-12").append(returnmessageGroup));
+    row6.append($("<div></div>").addClass("col-xs-2"));
+    row6.append($("<div></div>").addClass("col-xs-5").append(conditionVal1InitGroup));
+    row6.append($("<div></div>").addClass("col-xs-5").append(conditionVal2InitGroup));
+    row7.append($("<div></div>").addClass("col-xs-2").append(conditionOperGroup));
+    row7.append($("<div></div>").addClass("col-xs-5").append(conditionVal1Group));
+    row7.append($("<div></div>").addClass("col-xs-5").append(conditionVal2Group));
 
     container.append(row1);
     container.append(row2);
@@ -1866,7 +1866,7 @@ function Control(json, parentAction) {
 
 Control.prototype.draw = function (idMotherStep, idMotherAction, idControl) {
     var htmlElement = this.html;
-    var row = $("<div class='itemContainer'></div>").addClass("col-sm-10");
+    var row = $("<div class='itemContainer'></div>").addClass("col-xs-10");
     var type = $("<div></div>").addClass("type");
     var currentControlId = {stepId: idMotherStep, actionId: idMotherAction, controlId: idControl};
 
@@ -1875,39 +1875,39 @@ Control.prototype.draw = function (idMotherStep, idMotherAction, idControl) {
     row.data("item", this);
     row.data("id", currentControlId);
 
-    var button = $("<div></div>").addClass("col-sm-1").append($("<span class='glyphicon glyphicon-chevron-down'></span>").attr("style", "font-size:1.5em"));
+    var button = $("<div></div>").addClass("col-xs-1").append($("<span class='glyphicon glyphicon-chevron-down'></span>").attr("style", "font-size:1.5em"));
 
     htmlElement.prepend(button);
     htmlElement.prepend(row);
 
     var content = this.generateContent();
     if (this.returnCode === "OK") {
-        htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-ok").attr("style", "font-size:1.5em")));
+        htmlElement.prepend($("<div>").addClass("col-xs-1").append($("<span>").addClass("glyphicon glyphicon-ok").attr("style", "font-size:1.5em")));
         htmlElement.addClass("row list-group-item list-group-item-success");
         content.hide();
     } else if (this.returnCode === "PE") {
-        htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-refresh spin").attr("style", "font-size:1.5em")));
+        htmlElement.prepend($("<div>").addClass("col-xs-1").append($("<span>").addClass("glyphicon glyphicon-refresh spin").attr("style", "font-size:1.5em")));
         htmlElement.addClass("row list-group-item list-group-item-info");
         content.hide();
     } else if (this.returnCode === "KO") {
-        htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-remove").attr("style", "font-size:1.5em")));
+        htmlElement.prepend($("<div>").addClass("col-xs-1").append($("<span>").addClass("glyphicon glyphicon-remove").attr("style", "font-size:1.5em")));
         htmlElement.addClass("row list-group-item list-group-item-danger");
         content.hide();
     } else if (this.returnCode === "NA") {
-        htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-alert").attr("style", "font-size:1.5em")));
+        htmlElement.prepend($("<div>").addClass("col-xs-1").append($("<span>").addClass("glyphicon glyphicon-alert").attr("style", "font-size:1.5em")));
         htmlElement.addClass("row list-group-item list-group-item-info");
         content.hide();
     } else if (this.returnCode === "NE" && isTheExecutionManual) {
-        htmlElement.prepend($("<div>").addClass("marginLeft-15 col-sm-1").append($("<span>").addClass("glyphicon glyphicon-question-sign").attr("style", "font-size:1.5em")));
+        htmlElement.prepend($("<div>").addClass("marginLeft-15 col-xs-1").append($("<span>").addClass("glyphicon glyphicon-question-sign").attr("style", "font-size:1.5em")));
         htmlElement.addClass("row list-group-item list-group-item-black");
         content.hide();
     } else {
-        htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-alert").attr("style", "font-size:1.5em")));
+        htmlElement.prepend($("<div>").addClass("col-xs-1").append($("<span>").addClass("glyphicon glyphicon-alert").attr("style", "font-size:1.5em")));
         htmlElement.addClass("row list-group-item list-group-item-warning");
         content.hide();
     }
     // Starting to reduce the size of the row by the length of elements.
-    $(header).find("#contentField").removeClass("col-sm-12").addClass("col-sm-" + (12 - this.fileList.length));
+    $(header).find("#contentField").removeClass("col-xs-12").addClass("col-xs-" + (12 - this.fileList.length));
     // Adding all media attached to control execution.
     addFileLink(this.fileList, $(header).find(".row"));
 
@@ -1945,7 +1945,7 @@ Control.prototype.generateHeader = function (id) {
     var scope = this;
     var content = $("<div></div>").addClass("content");
     var firstRow = $("<div></div>").addClass("row ");
-    var contentField = $("<div></div>").addClass("col-sm-12").attr("id", "contentField");
+    var contentField = $("<div></div>").addClass("col-xs-12").attr("id", "contentField");
     var elapsedTime = $("<h4>").attr("style", "font-size:0.9em;margin:0px;line-height:1;height:0.9em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
     var returnMessageField = $("<h4>").attr("style", "font-size:.9em;margin:0px;line-height:1;height:.95em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
     var descriptionField = $("<h4>").attr("style", "font-size:1.2em;margin:0px;line-height:1;height:1.2em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
@@ -1972,14 +1972,14 @@ Control.prototype.generateHeader = function (id) {
             event.stopPropagation();
             triggerControlExecution(this, id, "KO");
         });
-        contentField.append($("<div class='col-sm-2'>").addClass("btn-group btn-group-xs").attr("role", "group").append(buttonOK).append(buttonFA));
+        contentField.append($("<div class='col-xs-2'>").addClass("btn-group btn-group-xs").attr("role", "group").append(buttonOK).append(buttonFA));
         showSaveTestCaseExecutionButton();
     } else {
-        contentField.append($("<div class='col-sm-2'>").append(elapsedTime));
+        contentField.append($("<div class='col-xs-2'>").append(elapsedTime));
 
     }
 
-    contentField.append($("<div class='col-sm-10'>").append(descriptionField).append(returnMessageField));
+    contentField.append($("<div class='col-xs-10'>").append(descriptionField).append(returnMessageField));
 
     firstRow.append(contentField);
 
@@ -2134,24 +2134,24 @@ Control.prototype.generateContent = function () {
     conditionVal1Field.val(this.conditionVal1);
     conditionVal2Field.val(this.conditionVal2);
 
-    row1.append($("<div></div>").addClass("col-sm-2").append(returncodeGroup));
-    row1.append($("<div></div>").addClass("col-sm-10").append(descGroup));
-    row2.append($("<div></div>").addClass("col-sm-2"));
-    row2.append($("<div></div>").addClass("col-sm-5").append(controlValue1InitGroup));
-    row2.append($("<div></div>").addClass("col-sm-5").append(controlValue2InitGroup));
-    row3.append($("<div></div>").addClass("col-sm-2").append(controlTypeGroup));
-    row3.append($("<div></div>").addClass("col-sm-5").append(controlValue1Group));
-    row3.append($("<div></div>").addClass("col-sm-5").append(controlValue2Group));
-    row4.append($("<div></div>").addClass("col-sm-2").append(sortGroup));
-    row4.append($("<div></div>").addClass("col-sm-5").append(fatalGroup));
-    row4.append($("<div></div>").addClass("col-sm-5").append(timeGroup));
-    row5.append($("<div></div>").addClass("col-sm-12").append(returnmessageGroup));
-    row6.append($("<div></div>").addClass("col-sm-2"));
-    row6.append($("<div></div>").addClass("col-sm-5").append(conditionVal1InitGroup));
-    row6.append($("<div></div>").addClass("col-sm-5").append(conditionVal2InitGroup));
-    row7.append($("<div></div>").addClass("col-sm-2").append(conditionOperGroup));
-    row7.append($("<div></div>").addClass("col-sm-5").append(conditionVal1Group));
-    row7.append($("<div></div>").addClass("col-sm-5").append(conditionVal2Group));
+    row1.append($("<div></div>").addClass("col-xs-2").append(returncodeGroup));
+    row1.append($("<div></div>").addClass("col-xs-10").append(descGroup));
+    row2.append($("<div></div>").addClass("col-xs-2"));
+    row2.append($("<div></div>").addClass("col-xs-5").append(controlValue1InitGroup));
+    row2.append($("<div></div>").addClass("col-xs-5").append(controlValue2InitGroup));
+    row3.append($("<div></div>").addClass("col-xs-2").append(controlTypeGroup));
+    row3.append($("<div></div>").addClass("col-xs-5").append(controlValue1Group));
+    row3.append($("<div></div>").addClass("col-xs-5").append(controlValue2Group));
+    row4.append($("<div></div>").addClass("col-xs-2").append(sortGroup));
+    row4.append($("<div></div>").addClass("col-xs-5").append(fatalGroup));
+    row4.append($("<div></div>").addClass("col-xs-5").append(timeGroup));
+    row5.append($("<div></div>").addClass("col-xs-12").append(returnmessageGroup));
+    row6.append($("<div></div>").addClass("col-xs-2"));
+    row6.append($("<div></div>").addClass("col-xs-5").append(conditionVal1InitGroup));
+    row6.append($("<div></div>").addClass("col-xs-5").append(conditionVal2InitGroup));
+    row7.append($("<div></div>").addClass("col-xs-2").append(conditionOperGroup));
+    row7.append($("<div></div>").addClass("col-xs-5").append(conditionVal1Group));
+    row7.append($("<div></div>").addClass("col-xs-5").append(conditionVal2Group));
 
     container.append(row1);
     container.append(row2);
@@ -2211,7 +2211,7 @@ function addFileLink(fileList, container) {
         if ((fileList[i].fileType === "JPG") || (fileList[i].fileType === "PNG")) {
             var urlImage = "ReadTestCaseExecutionMedia?filename=" + fileList[i].fileName + "&filetype=" + fileList[i].fileType + "&filedesc=" + fileList[i].fileDesc;
             var fileDesc = fileList[i].fileDesc;
-            var linkBox = $("<div name='mediaMiniature'>").addClass("col-sm-1").css("padding", "0px 7px 0px 7px")
+            var linkBox = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px")
                     .append(fileList[i].fileDesc).append($("<img>").attr("src", urlImage + "&h=30").css("height", "30px")
                     .click(function (e) {
                         showPicture(fileDesc, urlImage);
@@ -2224,28 +2224,28 @@ function addFileLink(fileList, container) {
             var fileDesctxt = fileList[i].fileDesc;
             var filetypetxt = fileList[i].fileType.toLowerCase();
             if (i === 0) {
-                var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-sm-1").css("padding", "0px 7px 0px 7px")
+                var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px")
                         .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
                         .css("height", "30px").click(function (f) {
                     showTextArea(fileList[0].fileDesc, "", "ReadTestCaseExecutionMedia?filename=" + fileList[0].fileName + "&filetype=" + fileList[0].fileType + "&filedesc=" + fileList[0].fileDesc);
                     return false;
                 }));
             } else if (i === 1) {
-                var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-sm-1").css("padding", "0px 7px 0px 7px")
+                var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px")
                         .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
                         .css("height", "30px").click(function (f) {
                     showTextArea(fileList[1].fileDesc, "", "ReadTestCaseExecutionMedia?filename=" + fileList[1].fileName + "&filetype=" + fileList[1].fileType + "&filedesc=" + fileList[1].fileDesc);
                     return false;
                 }));
             } else if (i === 2) {
-                var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-sm-1").css("padding", "0px 7px 0px 7px")
+                var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px")
                         .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
                         .css("height", "30px").click(function (f) {
                     showTextArea(fileList[2].fileDesc, "", "ReadTestCaseExecutionMedia?filename=" + fileList[2].fileName + "&filetype=" + fileList[2].fileType + "&filedesc=" + fileList[2].fileDesc);
                     return false;
                 }));
             } else if (i === 3) {
-                var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-sm-1").css("padding", "0px 7px 0px 7px")
+                var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px")
                         .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
                         .css("height", "30px").click(function (f) {
                     showTextArea(fileList[3].fileDesc, "", "ReadTestCaseExecutionMedia?filename=" + fileList[3].fileName + "&filetype=" + fileList[3].fileType + "&filedesc=" + fileList[3].fileDesc);
