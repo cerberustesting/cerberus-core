@@ -20,8 +20,12 @@
     Created on : 4 déc. 2015, 16:08:55
     Author     : cerberus
 */
-.inputObj{
-	width:60% !important;
+label{
+	display:block !important;
+}
+
+.col-lg-5 input{
+	width: 80% !important;
 }
 
 .separator-left {
