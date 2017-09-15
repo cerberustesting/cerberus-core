@@ -658,10 +658,10 @@ public class WebDriverService implements IWebDriverService {
         boolean result = false;
         WebDriverWait wait = new WebDriverWait(session.getDriver(), TIMEOUT_WEBELEMENT);
         String title;
-        
+
         switch (identifier) {
             case Identifier.IDENTIFIER_URL: {
-                
+
                 wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe("about:blank")));
                 return session.getDriver().getCurrentUrl().equals(value);
             }
@@ -804,8 +804,7 @@ public class WebDriverService implements IWebDriverService {
             return message;
         }
     }
-    
-    
+
     @Override
     public MessageEvent doSeleniumActionWaitVanish(Session session, Identifier identifier) {
         MessageEvent message;
@@ -822,10 +821,10 @@ public class WebDriverService implements IWebDriverService {
             return message;
         }
     }
-    
+
     /**
-     * Disable the headless status of the running application
-     * preventing Robot to work through a web container
+     * Disable the headless status of the running application preventing Robot
+     * to work through a web container
      */
     public void disableHeadlessApplicationControl() {
         System.setProperty("java.awt.headless", "false");
@@ -838,42 +837,46 @@ public class WebDriverService implements IWebDriverService {
             MyLogger.log(WebDriverService.class.getName(), Level.ERROR, ex.toString());
         }
     }
-    
+
     /**
-     * Interface to Windows instrumentation in order to have control
-     * over all the others applications running in the OS
+     * Interface to Windows instrumentation in order to have control over all
+     * the others applications running in the OS
      */
     public interface User32 extends W32APIOptions {
+
         User32 instance = (User32) Native.loadLibrary("user32", User32.class, DEFAULT_OPTIONS);
+
         boolean ShowWindow(HWND hWnd, int nCmdShow);
+
         boolean SetForegroundWindow(HWND hWnd);
+
         HWND FindWindow(String winClass, String title);
         int SW_SHOW = 1;
     }
-    
+
     /**
      * Tries to focus the browser window thanks to the title given by the
-     * webdriver in order to put it in foreground for Robot to work
-     * (Only works on Windows so far, another way is to find for Xorg)
+     * webdriver in order to put it in foreground for Robot to work (Only works
+     * on Windows so far, another way is to find for Xorg)
+     *
      * @param session Webdriver session instance
      * @return True if the window is found, False otherwise
      */
     public boolean focusBrowserWindow(Session session) {
         WebDriver driver = session.getDriver();
         String title = driver.getTitle();
-        User32 user32 = User32.instance; 
-        
+        User32 user32 = User32.instance;
+
         // Arbitrary
-        String[] browsers = new String[] {
+        String[] browsers = new String[]{
             "",
-            "Google Chrome", 
+            "Google Chrome",
             "Mozilla Firefox",
             "Opera",
             "Safari",
             "Internet Explorer",
-            "Microsoft Edge",
-        };
-        
+            "Microsoft Edge",};
+
         for (String browser : browsers) {
             HWND window;
             if (browser.isEmpty()) {
@@ -887,7 +890,7 @@ public class WebDriverService implements IWebDriverService {
         }
         return false;
     }
-    
+
     @Override
     public MessageEvent doSeleniumActionKeyPress(Session session, Identifier identifier, String property) {
 
@@ -910,16 +913,18 @@ public class WebDriverService implements IWebDriverService {
 
             } else {
                 try {
-                    //focus the browser window for Robot to work
-                    this.focusBrowserWindow(session);
-                    
-                    //wait until the browser is focused
-                    WebDriverWait wait = new WebDriverWait(session.getDriver(), TIMEOUT_WEBELEMENT);
-                    wait.withTimeout(TIMEOUT_FOCUS, TimeUnit.MILLISECONDS);
-                    
                     //disable headless application warning for Robot
                     this.disableHeadlessApplicationControl();
-                    
+
+                    //create wait action
+                    WebDriverWait wait = new WebDriverWait(session.getDriver(), 01);
+
+                    //focus the browser window for Robot to work
+                    if (this.focusBrowserWindow(session)) {
+                        //wait until the browser is focused
+                        wait.withTimeout(TIMEOUT_FOCUS, TimeUnit.MILLISECONDS);
+                    }
+
                     //gets the robot 
                     Robot r = new Robot();
                     //converts the Key description sent through Cerberus into the AWT key code
@@ -929,6 +934,9 @@ public class WebDriverService implements IWebDriverService {
                         //if the code is valid then presses the key and releases the key
                         r.keyPress(keyCode);
                         r.keyRelease(keyCode);
+                        //wait until the action is performed
+                        wait.withTimeout(TIMEOUT_WEBELEMENT, TimeUnit.MILLISECONDS);
+
                         message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_KEYPRESS_NO_ELEMENT);
                     } else {
                         //the key enterer is not valid

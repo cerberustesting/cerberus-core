@@ -275,6 +275,7 @@ function massActionModalCloseHandler() {
 function massActionClick() {
     var doc = new Doc();
     clearResponseMessageMainPage();
+    $("[name='status']").empty();
     displayInvariantList("status", "TCSTATUS", false);
     // When creating a new item, Define here the default value.
     var formList = $('#massActionForm');
