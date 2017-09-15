@@ -123,6 +123,7 @@ function deleteEntryClick(application, object) {
 
 function buttonCloseHandler(event) {
     var modalID = event.data.extra;
+    $(modalID).find("#application").attr("disabled", false);
     // reset form values
     $(modalID)[0].reset();
     // remove all errors on the form fields
