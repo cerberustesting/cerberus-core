@@ -93,7 +93,6 @@ function initModalTestCase(doc) {
     $("[name='conditionVal2Field']").html(doc.getDocOnline("testcase", "ConditionVal2"));
     $("[name='commentField']").html(doc.getDocOnline("testcase", "Comment"));
     $("#filters").html(doc.getDocOnline("page_testcaselist", "filters"));
-    $("#testCaseListLabel").html(doc.getDocOnline("page_testcaselist", "testcaselist"));
     $("[name='btnLoad']").html(doc.getDocLabel("page_global", "buttonLoad"));
     $("[name='testField']").html(doc.getDocLabel("test", "Test"));
     $("[name='editEntryField']").html(doc.getDocLabel("page_testcaselist", "btn_edit"));
