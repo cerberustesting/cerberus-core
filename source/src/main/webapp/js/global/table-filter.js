@@ -534,6 +534,7 @@ function  focusOnNextSearchInput(startElement) {
                 break;
             }
             $(nextInput).click();
+            $(nextInput).click(); // double click is important !!!
             break;
         }
     }
