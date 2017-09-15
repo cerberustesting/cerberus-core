@@ -60,6 +60,10 @@ $.when($.getScript("js/global/global.js")).then(function () {
 
             localStorage.setItem("tagList", JSON.stringify(tagList));
 
+            var searchStringTag = $("#searchStringTag").val();
+            localStorage.setItem("tagSearchString", searchStringTag);
+
+
             $("#tagSettingsModal").modal('hide');
             $('#tagExecStatus').empty();
             loadTagExec();
@@ -69,6 +73,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
             stopPropagation(event);
             var tagListForm = $("#tagList");
             var tagList = JSON.parse(localStorage.getItem("tagList"));
+            var tagSearchString = localStorage.getItem("tagSearchString");
 
             if (tagList !== null) {
                 for (var index = 0; index < tagList.length; index++) {
@@ -78,8 +83,8 @@ $.when($.getScript("js/global/global.js")).then(function () {
                                         </div>');
                 }
             }
-
             loadTagFilter();
+            $("#searchStringTag").val(tagSearchString);
 
             $(".removeTag").on('click', function () {
                 $(this).parent().remove();
@@ -222,11 +227,12 @@ function generateTagReport(data, tag) {
 }
 
 function loadTagExec() {
-//Get the last tag to display
+    //Get the last tag to display
     var tagList = JSON.parse(localStorage.getItem("tagList"));
+    var searchTag = localStorage.getItem("tagSearchString");
 
     if (tagList === null || tagList.length === 0) {
-        tagList = readLastTagExec();
+        tagList = readLastTagExec(searchTag);
     }
 
     for (var index = 0; index < tagList.length; index++) {
@@ -242,14 +248,24 @@ function loadTagExec() {
 
 }
 
-function readLastTagExec() {
+function readLastTagExec(searchString) {
     var tagList = [];
 
-    var nbExe = getParameter("cerberus_homepage_nbdisplayedtag", getUser().defaultSystem, false);
+    var nbExe = getParameter("cerberus_homepage_nbdisplayedtag", getUser().defaultSystem, true);
+    var paramExe = nbExe.value;
+
+    if (!((paramExe >= 0) && (paramExe <= 20))) {
+        paramExe = 5;
+    }
+
+    var myUrl = "ReadTag?iSortCol_0=0&sSortDir_0=desc&sColumns=id,tag,campaign,description&iDisplayLength=" + paramExe;
+    if (!isEmpty(searchString)) {
+        myUrl = myUrl + "&sSearch=" + searchString;
+    }
 
     $.ajax({
         type: "GET",
-        url: "ReadTag?iSortCol_0=0&sSortDir_0=desc&sColumns=id,tag,campaign,description&iDisplayLength=10",
+        url: myUrl,
 //        data: {tagNumber: nbExe.value},
         async: false,
         dataType: 'json',

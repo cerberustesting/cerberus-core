@@ -21,4 +21,10 @@ image:homepage.png[Homepage]
 
 ==== Customization
 
+You can customize the list of tag in a static way by selecting the tags from the combo.
 image:homepagecustomtag.png[HomepageCustomTag, 300, 300]
+
+But you can also define a search text that will be used to dynamicaly retreive the list of tag.
+image:homepagecustomtagtext.png[HomepageCustomTag, 300, 300]
+
+NB : If the list of tag is defined, the search Text will be ignored.
