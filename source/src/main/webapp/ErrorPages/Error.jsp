@@ -33,7 +33,10 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <link rel="stylesheet" type="text/css" href="css/global/crb_style.css">
-        <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico">
+        
+        <link rel="icon" type="image/png" href="images/favicon.ico.png"><!-- Major Browsers -->
+        <!--[if IE]><link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico"/><![endif]--><!-- Internet Explorer-->
+        
         <title>Error</title>
     </head>
     <body>
