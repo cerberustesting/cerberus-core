@@ -37,7 +37,7 @@ function initPage() {
     displayGlobalLabel(doc);
     displayPageLabel(doc);
     displayFooter(doc);
-
+    
     var table = loadTable();
 
     // MASS ACTION
@@ -68,7 +68,7 @@ function initPage() {
 }
 
 function displayPageLabel(doc) {
-
+    $("#testCaseListLabel").html(doc.getDocOnline("page_testcaselist", "testcaselist"));
 }
 
 function loadTable(selectTest, sortColumn) {
@@ -275,6 +275,8 @@ function massActionModalCloseHandler() {
 function massActionClick() {
     var doc = new Doc();
     clearResponseMessageMainPage();
+    $("[name='status']").empty();
+    displayInvariantList("status", "TCSTATUS", false);
     // When creating a new item, Define here the default value.
     var formList = $('#massActionForm');
     if (formList.serialize().indexOf("test-") === -1) {

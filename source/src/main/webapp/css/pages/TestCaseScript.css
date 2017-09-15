@@ -20,7 +20,7 @@
     Created on : 4 déc. 2015, 16:08:55
     Author     : cerberus
 */
-label{
+.action-group label {
 	display:block !important;
 }
 
