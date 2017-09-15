@@ -201,8 +201,9 @@ function generateTooltip(data, statusOrder, tag) {
     return htmlRes;
 }
 
-function generateTagReport(data, tag) {
-    var reportArea = $("#tagExecStatus");
+function generateTagReport(data, tag, rowId) {
+    var divId = "#tagExecStatusRow" + rowId;
+    var reportArea = $(divId);
     var statusOrder = ["OK", "KO", "FA", "NA", "NE", "PE", "QU", "CA"];
     var buildBar;
     var tooltip = generateTooltip(data, statusOrder, tag);
@@ -227,6 +228,10 @@ function generateTagReport(data, tag) {
 }
 
 function loadTagExec() {
+
+    var reportArea = $("#tagExecStatus");
+    reportArea.empty();
+
     //Get the last tag to display
     var tagList = JSON.parse(localStorage.getItem("tagList"));
     var searchTag = localStorage.getItem("tagSearchString");
@@ -236,13 +241,18 @@ function loadTagExec() {
     }
 
     for (var index = 0; index < tagList.length; index++) {
+        var idDiv = '<div id="tagExecStatusRow' + index + '"></div>';
+        reportArea.append(idDiv);
+    }
+
+    for (var index = 0; index < tagList.length; index++) {
         let : tagName = tagList[index];
         //TODO find a way to remove the use for resendTag
-        var requestToServlet = "ReadTestCaseExecutionByTag?Tag=" + tagName + "&" + "outputReport=totalStatsCharts" + "&" + "outputReport=resendTag";
+        var requestToServlet = "ReadTestCaseExecutionByTag?Tag=" + tagName + "&" + "outputReport=totalStatsCharts" + "&" + "outputReport=resendTag" + "&" + "sEcho=" + index;
         var jqxhr = $.get(requestToServlet, null, "json");
 
         $.when(jqxhr).then(function (data) {
-            generateTagReport(data.statsChart.contentTable.total, data.tag);
+            generateTagReport(data.statsChart.contentTable.total, data.tag, data.sEcho);
         });
     }
 

@@ -89,6 +89,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         response.setContentType("application/json");
         response.setCharacterEncoding("utf8");
+        String echo = request.getParameter("sEcho");
 
         AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
 
@@ -132,6 +133,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
 
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
             jsonResponse.put("message", answer.getResultMessage().getDescription());
+            jsonResponse.put("sEcho", echo);
 
             response.getWriter().print(jsonResponse.toString());
 
