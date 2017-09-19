@@ -516,9 +516,12 @@ var lastSearchInput=null;
 var handlerSearchInputClick = [];
 
 function  focusOnNextSearchInput(startElement) {
+    lastSearchInput=null;
     if(startElement === null) return;
 
     startElement = $("#"+startElement.id);
+
+    if(startElement[0].name!=="searchField") return; // if start element is not an input "searchField", do nothing
 
     //get all text inputs
     var inputs = $('input[name="searchField"]');
@@ -531,6 +534,7 @@ function  focusOnNextSearchInput(startElement) {
                 break;
             }
             $(nextInput).click();
+            $(nextInput).click(); // double click is important !!!
             break;
         }
     }

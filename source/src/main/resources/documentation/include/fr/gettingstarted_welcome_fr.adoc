@@ -24,4 +24,10 @@ image:homepage.png[Homepage]
 
 ==== Personalisation
 
+Il est possible de définir la liste de tag à afficher.
 image:homepagecustomtag.png[HomepageCustomTag, 300, 300]
+
+Mais il est egalement possible de definir un texte qui servira de recherche dyamique des tag.
+image:homepagecustomtagtext.png[HomepageCustomTag, 300, 300]
+
+NB : Le texte de recherche ne sera utilisé que si la liste des tags n'est pas définie.

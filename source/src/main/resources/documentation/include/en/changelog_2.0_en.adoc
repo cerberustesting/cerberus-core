@@ -1,0 +1,9 @@
+*Bug fixes*
+[square]
+
+*Improvements / New features*
+[square]
+* [GUI] On the homepage, we can now dynamically filter the tag from a search text.
+
+*Warning to be considered before applying the version (deprecated features)*
+[square]
