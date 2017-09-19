@@ -40,19 +40,10 @@ function displayPageLabel() {
     var doc = new Doc();
 
     $("#title").html(doc.getDocLabel("appservice", "service"));
-
-    displayAppServiceLabel(doc);
-
     displayHeaderLabel(doc);
-
     displayFooter(doc);
-
     displayGlobalLabel(doc);
 
-    displayInvariantList("type", "SRVTYPE", false);
-    displayInvariantList("method", "SRVMETHOD", false);
-    displayApplicationList("application", "", "");
-//    $('#application').select2();
 }
 
 function renderOptionsForAppService(data) {
@@ -62,7 +53,10 @@ function renderOptionsForAppService(data) {
             var contentToAdd = "<div class='marginBottom10'><button id='createSoapLibraryButton' type='button' class='btn btn-default'>\n\
             <span class='glyphicon glyphicon-plus-sign'></span> " + doc.getDocLabel("page_appservice", "button_create") + "</button></div>";
             $("#soapLibrarysTable_wrapper div#soapLibrarysTable_length").before(contentToAdd);
-            $('#soapLibraryList #createSoapLibraryButton').click(addAppServiceClick);
+            $('#soapLibraryList #createSoapLibraryButton').off("click");
+            $('#soapLibraryList #createSoapLibraryButton').click(function() {
+                openModalAppService(undefined,"ADD");
+            });
         }
     } else {
         if ($("#blankSpace").length === 0) {
@@ -79,12 +73,20 @@ function removeEntryClick(service) {
         $.ajax({
             url: "DeleteAppService?service=" + name,
             async: true,
+            dataType: "json",
             method: "GET",
             success: function (data) {
+            	
+            	 var messageType = getAlertType(data.messageType);
+                 if (messageType === "success") {
+                	 
+                 }
                 hideLoaderInModal('#removeSoapLibraryModal');
                 var oTable = $("#soapLibrarysTable").dataTable();
                 oTable.fnDraw(true);
                 $('#removeSoapLibraryModal').modal('hide');
+                showMessageMainPage(messageType, data.message, false);
+                
             },
             error: showUnexpectedError
         });
@@ -102,33 +104,29 @@ function aoColumnsFunc(tableId) {
             "bSearchable": false,
             "title": doc.getDocLabel("page_global", "columnAction"),
             "mRender": function (data, type, obj) {
-                var hasPermissions = $("#" + tableId).attr("hasPermissions");
+            	var hasPermissions = $("#" + tableId).attr("hasPermissions");
 
-                var editEntry = '<button id="editAppService" onclick="editAppServiceClick(\'' + obj["service"] + '\');"\n\
-                                        class="editAppService btn btn-default btn-xs margin-right5" \n\
-                                        name="editAppService" title="' + doc.getDocLabel("page_appservice", "button_edit") + '" type="button">\n\
-                                        <span class="glyphicon glyphicon-pencil"></span></button>';
-
-                var duplicateEntry = '<button id="duplicateAppService" onclick="duplicateAppServiceClick(\'' + escapeHtml(obj["service"]) + '\');"\n\
-                                        class="duplicateEntry btn btn-default btn-xs margin-right5" \n\
-                                        name="duplicateAppService" data-toggle="tooltip"  title="' + doc.getDocLabel("page_appservice", "btn_duplicate") + '" type="button">\n\
-                                        <span class="glyphicon glyphicon-duplicate"></span></button>';
-
-                var removeEntry = '<button id="removeAppService" onclick="removeEntryClick(\'' + obj["service"] + '\');"\n\
-                                        class="removeAppService btn btn-default btn-xs margin-right5" \n\
-                                        name="removeAppService" title="' + doc.getDocLabel("page_appservice", "button_remove") + '" type="button">\n\
-                                        <span class="glyphicon glyphicon-trash"></span></button>';
-
-                var viewEntry = '<button id="viewAppService" onclick="editAppServiceClick(\'' + obj["service"] + '\');"\n\
-                                    class="editAppService btn btn-default btn-xs margin-right5" \n\
-                                    name="viewAppService" title="' + doc.getDocLabel("page_application", "button_edit") + '" type="button">\n\
+                var editEntry = '<button id="editEntry" onclick="openModalAppService(\'' + obj["service"] + '\', \'EDIT\'  );"\n\
+                                    class="editApplicationObject btn btn-default btn-xs margin-right5" \n\
+                                    name="editApplicationObject" title="' + doc.getDocLabel("page_appservice", "button_edit") + '" type="button">\n\
+                                    <span class="glyphicon glyphicon-pencil"></span></button>';
+                var duplicateEntry = '<button class="btn btn-default btn-xs margin-right5" \n\
+					                    	 name="duplicateApplicationObject" title="' + doc.getDocLabel("page_testdatalib", "tooltip_duplicateEntry") + '"\n\
+					                         type="button" onclick="openModalAppService(\'' + obj["service"] + '\', \'DUPLICATE\'  )">\n\
+					                        <span class="glyphicon glyphicon-duplicate"></span></button>'; //TODO check if we can add this glyphicon glyphicon-duplicate
+                var viewEntry = '<button id="editEntry" onclick="openModalAppService(\'' + obj["service"] + '\',\'EDIT\');"\n\
+                                    class="editApplicationObject btn btn-default btn-xs margin-right5" \n\
+                                    name="editApplicationObject" title="' + doc.getDocLabel("page_appservice", "button_edit") + '" type="button">\n\
                                     <span class="glyphicon glyphicon-eye-open"></span></button>';
-
+                var deleteEntry = '<button id="deleteEntry" onclick="deleteEntryClick(\'' + obj["service"] + '\');" \n\
+                                    class="deleteApplicationObject btn btn-default btn-xs margin-right5" \n\
+                                    name="deleteApplicationObject" title="' + doc.getDocLabel("page_appservice", "button_delete") + '" type="button">\n\
+                                    <span class="glyphicon glyphicon-trash"></span></button>';
                 if (hasPermissions === "true") { //only draws the options if the user has the correct privileges
-                    return '<div class="center btn-group width150">' + editEntry + duplicateEntry + removeEntry + '</div>';
+                    return '<div class="center btn-group width150">' + editEntry + duplicateEntry + deleteEntry + '</div>';
                 }
                 return '<div class="center btn-group width150">' + viewEntry + '</div>';
-
+            
             },
             "width": "75px"
         },
@@ -216,6 +214,39 @@ function aoColumnsFunc(tableId) {
     ];
     return aoColumns;
 }
+
+function deleteEntryHandlerClick() {
+    var application = $('#confirmationModal').find('#hiddenField1').prop("value");
+    var object = $('#confirmationModal').find('#hiddenField2').prop("value");
+    var jqxhr = $.post("DeleteApplicationService", {service:service}, "json");
+    $.when(jqxhr).then(function (data) {
+        var messageType = getAlertType(data.messageType);
+        if (messageType === "success") {
+            //redraw the datatable
+            var oTable = $("#soapLibrarysTable").dataTable();
+            oTable.fnDraw(true);
+            var info = oTable.fnGetData().length;
+
+            if (info === 1) {//page has only one row, then returns to the previous page
+                oTable.fnPageChange('previous');
+            }
+        }
+        //show message in the main page
+        showMessageMainPage(messageType, data.message, false);
+        //close confirmation window
+        $('#confirmationModal').modal('hide');
+    }).fail(handleErrorAjaxAfterTimeout);
+}
+
+
+function deleteEntryClick(service) {
+    clearResponseMessageMainPage();
+    var doc = new Doc();
+    var messageComplete = doc.getDocLabel("page_appservice", "message_delete");
+    messageComplete = messageComplete.replace("%ENTRY%", service);
+    removeEntryClick(service);
+}
+
 
 /**
  * After table feeds, 

@@ -26,6 +26,8 @@
     margin-bottom:30px;  
 }
 
+.modal { overflow: auto !important; }
+
 td
 {
     white-space: nowrap;

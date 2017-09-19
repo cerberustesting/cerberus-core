@@ -17,9 +17,39 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-function displayAppServiceLabel(doc) {
 
+function openModalAppService(service,mode){
+	if ($('#editSoapLibraryModal').data("initLabel") === undefined){
+		initModalAppService()		
+		$('#editSoapLibraryModal').data("initLabel", true);
+		
+	}
+	
+	if (mode === "EDIT"){
+		editAppServiceClick(service);
+	}else if (mode == "ADD"){
+		addAppServiceClick(service);
+	}else{
+		duplicateAppServiceClick(service);
+	}
+}
 
+function initModalAppService(){
+	console.info("init");
+	var doc = new Doc();
+	
+    displayInvariantList("type", "SRVTYPE", false, "SOAP");
+    displayInvariantList("method", "SRVMETHOD", false, "GET");
+    displayApplicationList("application", "", "");
+	
+	$("[name='buttonEdit']").html(doc.getDocLabel("page_appservice", "button_edit"));
+	$("[name='addEntryField']").html(
+			doc.getDocLabel("page_appserivce", "button_create"));
+	$("[name='confirmationField']").html(
+			doc.getDocLabel("page_appservice", "button_delete"));
+	$("[name='editEntryField']").html(
+			doc.getDocLabel("page_appservice", "button_edit"));
+	$("[name='applicationField']").html(doc.getDocOnline("page_applicationObject", "Application"));
     $("[name='soapLibraryField']").html(doc.getDocLabel("appservice", "service"));
     $("[name='typeField']").html(doc.getDocLabel("appservice", "type"));
     $("[name='descriptionField']").html(doc.getDocLabel("appservice", "description"));
@@ -28,16 +58,24 @@ function displayAppServiceLabel(doc) {
     $("[name='buttonClose']").html(doc.getDocLabel("page_appservice", "close_btn"));
     $("[name='buttonAdd']").html(doc.getDocLabel("page_appservice", "save_btn"));
     $("#soapLibraryListLabel").html("<span class='glyphicon glyphicon-list'></span> " + doc.getDocLabel("appservice", "service"));
-    // Tracability
     $("[name='lbl_created']").html(doc.getDocOnline("transversal", "DateCreated"));
     $("[name='lbl_creator']").html(doc.getDocOnline("transversal", "UsrCreated"));
     $("[name='lbl_lastModified']").html(doc.getDocOnline("transversal", "DateModif"));
     $("[name='lbl_lastModifier']").html(doc.getDocOnline("transversal", "UsrModif"));
-    // Tracability
     $("[name='lbl_datecreated']").html(doc.getDocOnline("transversal", "DateCreated"));
     $("[name='lbl_usrcreated']").html(doc.getDocOnline("transversal", "UsrCreated"));
     $("[name='lbl_datemodif']").html(doc.getDocOnline("transversal", "DateModif"));
     $("[name='lbl_usrmodif']").html(doc.getDocOnline("transversal", "UsrModif"));
+	
+	$("#editSoapLibraryButton").off("click");
+	$("#editSoapLibraryButton").click(function() {
+		confirmApplicationObjectModalHandler("EDIT");
+	});
+	$("#addSoapLibraryButton").off("click");
+	$("#addSoapLibraryButton").click(function() {
+		confirmApplicationObjectModalHandler("ADD");
+	});
+	
 }
 
 /***
@@ -96,7 +134,7 @@ function duplicateAppServiceClick(service) {
  * Open the modal in order to create a new testcase.
  * @returns {null}
  */
-function addAppServiceClick() {
+function addAppServiceClick(service) {
     $("#addSoapLibraryButton").off("click");
     $("#addSoapLibraryButton").click(function () {
         confirmAppServiceModalHandler("ADD");
@@ -112,7 +150,7 @@ function addAppServiceClick() {
     $('#addSoapLibraryButton').attr('class', 'btn btn-primary');
     $('#addSoapLibraryButton').removeProp('hidden');
 
-    feedNewAppServiceModal("editSoapLibraryModal");
+    feedAppServiceModal(service, "editSoapLibraryModal", "ADD");
 }
 
 /***
@@ -176,10 +214,11 @@ function confirmAppServiceModalHandler(mode) {
     var table_header = [];
     for (var i = 0; i < table2.length; i++) {
         table_header.push($(table2[i]).data("header"));
+        
+        var toto = [];
     }
 
 
-    showLoaderInModal('#editTestCaseModal');
     $.ajax({
         url: myServlet,
         async: true,
@@ -200,16 +239,19 @@ function confirmAppServiceModalHandler(mode) {
         },
         success: function (data) {
             data = JSON.parse(data);
-            hideLoaderInModal('#editSoapLibraryModal');
+            
             if (getAlertType(data.messageType) === "success") {
                 var oTable = $("#soapLibrarysTable").dataTable();
                 oTable.fnDraw(true);
                 $('#editSoapLibraryModal').data("Saved", true);
                 $('#editSoapLibraryModal').modal('hide');
+                
                 showMessage(data);
             } else {
                 showMessage(data, $('#editSoapLibraryModal'));
             }
+            
+            hideLoaderInModal('#editSoapLibraryModal');
         },
         error: showUnexpectedError
     });
@@ -235,22 +277,6 @@ function refreshDisplayOnTypeChange(newValue) {
 
 /***
  * Feed the TestCase modal with all the data from the TestCase.
- * @param {String} modalId - type selected
- * @returns {null}
- */
-function feedNewAppServiceModal(modalId) {
-    clearResponseMessageMainPage();
-
-    var formEdit = $('#' + modalId);
-
-    // Feed the data to the screen and manage authorities.
-    feedAppServiceModalData(undefined, modalId, "ADD", true);
-
-    formEdit.modal('show');
-}
-
-/***
- * Feed the TestCase modal with all the data from the TestCase.
  * @param {String} serviceName - type selected
  * @param {String} modalId - type selected
  * @param {String} mode - either ADD, EDIT or DUPLICATE in order to define the purpose of the modal.
@@ -258,31 +284,54 @@ function feedNewAppServiceModal(modalId) {
  */
 function feedAppServiceModal(serviceName, modalId, mode) {
     clearResponseMessageMainPage();
-
     var formEdit = $('#' + modalId);
-
-    $.ajax({
-        url: "ReadAppService?service=" + serviceName,
-        async: true,
-        method: "GET",
-        success: function (data) {
-            if (data.messageType === "OK") {
-
-                // Feed the data to the screen and manage authorities.
-                var service = data.contentTable;
-                feedAppServiceModalData(service, modalId, mode, service.hasPermissions);
-
-                // Force a change event on method field.
-                refreshDisplayOnTypeChange(service.type);
-
-                formEdit.modal('show');
-            } else {
-                showUnexpectedError();
-            }
-        },
-        error: showUnexpectedError
-    });
-
+    
+    if(mode === "DUPLICATE" || mode === "EDIT"){
+    	
+	    $.ajax({
+	        url: "ReadAppService?service=" + serviceName,
+	        async: true,
+	        method: "GET",
+	        success: function (data) {
+	            if (data.messageType === "OK") {
+	
+	                // Feed the data to the screen and manage authorities.
+	                var service = data.contentTable;
+	                feedAppServiceModalData(service, modalId, mode, service.hasPermissions);
+	
+	                // Force a change event on method field.
+	                refreshDisplayOnTypeChange(service.type);
+	
+	                formEdit.modal('show');
+	            } else {
+	                showUnexpectedError();
+	            }
+	        },
+	        error: showUnexpectedError
+	    });
+	
+	}else{
+		var serviceObj1 = {};
+		var hasPermissions = true;
+		serviceObj1.service = "";
+		serviceObj1.application = "";
+		serviceObj1.type = "REST";
+		serviceObj1.method = "GET";
+		serviceObj1.servicePath = "";
+		serviceObj1.operation = "";
+		serviceObj1.attachementurl = "";
+		serviceObj1.description = "";
+		serviceObj1.group = "";
+		serviceObj1.serviceRequest = "";
+		serviceObj1.contentList = "";
+		serviceObj1.headerList = "";
+		
+			
+		feedAppServiceModalData(serviceObj1, modalId, mode, hasPermissions);
+		refreshDisplayOnTypeChange(serviceObj1.type);
+		formEdit.modal('show');
+		
+	}
 }
 
 
@@ -320,6 +369,7 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
         } else { // DUPLICATE
             $("[name='editSoapLibraryField']").html(doc.getDocOnline("page_appservice", "button_duplicate"));
             formEdit.find("#service").prop("value", service.service);
+            formEdit.find("#service").prop("value", "");
         }
     }
     if (isEmpty(service)) {
@@ -404,11 +454,13 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
 
 function feedAppServiceModalDataContent(ContentList) {
     $('#contentTableBody tr').remove();
-    $.each(ContentList, function (idx, obj) {
-        obj.toDelete = false;
-        console.debug(obj);
-        appendContentRow(obj);
-    });
+    if(!isEmpty(ContentList)){
+    	$.each(ContentList, function (idx, obj) {
+            obj.toDelete = false;
+            console.debug(obj);
+            appendContentRow(obj);
+        });
+    } 
 }
 
 function appendContentRow(content) {
@@ -476,11 +528,14 @@ function addNewContentRow() {
 }
 
 function feedAppServiceModalDataHeader(headerList) {
-    $('#headerTableBody tr').remove();
-    $.each(headerList, function (idx, obj) {
-        obj.toDelete = false;
-        appendHeaderRow(obj);
-    });
+	
+	$('#headerTableBody tr').remove();
+	if(!isEmpty(headerList)){
+		$.each(headerList, function (idx, obj) {
+	        obj.toDelete = false;
+	        appendHeaderRow(obj);
+	    });
+	}   
 }
 
 function appendHeaderRow(content) {
@@ -506,7 +561,6 @@ function appendHeaderRow(content) {
         if (content.toDelete) {
             row.addClass("danger");
         } else {
-            row.removeClass("danger");
         }
     });
     activeSelect.change(function () {
@@ -545,5 +599,3 @@ function addNewHeaderRow() {
     };
     appendHeaderRow(newHeader);
 }
-
-
