@@ -127,6 +127,63 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
         }
         return list;
     }
+    
+    @Override
+    public List<TestCaseCountryProperties> findOnePropertyPerTestTestCase(String test, String testcase, String oneproperty) {
+        List<TestCaseCountryProperties> list = null;
+        final String query = "SELECT * FROM testcasecountryproperties WHERE test = ? AND testcase = ? AND property = ?";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, test);
+                preStat.setString(2, testcase);
+                preStat.setString(3, oneproperty);
+
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    list = new ArrayList<TestCaseCountryProperties>();
+
+                    while (resultSet.next()) {
+                        String country = resultSet.getString("country");
+                        String property = resultSet.getString("property");
+                        String description = resultSet.getString("description");
+                        String type = resultSet.getString("type");
+                        String database = resultSet.getString("database");
+                        String value1 = resultSet.getString("value1");
+                        String value2 = resultSet.getString("value2");
+                        int length = resultSet.getInt("length");
+                        int rowLimit = resultSet.getInt("rowLimit");
+                        String nature = resultSet.getString("nature");
+                        int retryNb = resultSet.getInt("RetryNb");
+                        int retryPeriod = resultSet.getInt("RetryPeriod");
+                        list.add(factoryTestCaseCountryProperties.create(test, testcase, country, property, description, type, database, value1, value2, length, rowLimit, nature, retryNb, retryPeriod));
+
+                    }
+                } catch (SQLException exception) {
+                    LOG.error("Unable to execute query : " + exception.toString());
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException exception) {
+                LOG.warn(exception.toString());
+            }
+        }
+        return list;
+    }
 
     @Override
     public List<TestCaseCountryProperties> findDistinctPropertiesOfTestCase(String test, String testcase) {

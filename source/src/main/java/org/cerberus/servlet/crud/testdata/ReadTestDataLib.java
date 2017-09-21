@@ -19,6 +19,7 @@
  */
 package org.cerberus.servlet.crud.testdata;
 
+import com.gargoylesoftware.htmlunit.javascript.host.Console;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import java.io.IOException;
@@ -277,8 +278,21 @@ public class ReadTestDataLib extends HttpServlet {
 
         ITestDataLibService testDataService = appContext.getBean(ITestDataLibService.class);
         AnswerList ansList = testDataService.readNameListByName(nameToSearch, limit);
+        
+        JSONArray jsonArray = new JSONArray();
+        if (ansList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
+            for (TestDataLib testDataLib : (List<TestDataLib>) ansList.getDataList()) {
+                jsonArray.put(convertTestDataLibToJSONObject(testDataLib, false));
 
-        object.put("data", ansList.getDataList());
+            }
+        }
+        
+        //recordsFiltered do lado do servidor    
+        object.put("contentTable", jsonArray);
+        object.put("iTotalRecords", ansList.getTotalRows());
+        object.put("iTotalDisplayRecords", ansList.getTotalRows());
+        //recordsFiltered
+
 
         ansItem.setResultMessage(ansList.getResultMessage());
         ansItem.setItem(object);

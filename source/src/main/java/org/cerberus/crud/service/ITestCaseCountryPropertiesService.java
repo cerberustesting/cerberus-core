@@ -33,6 +33,8 @@ public interface ITestCaseCountryPropertiesService {
     List<TestCaseCountryProperties> findListOfPropertyPerTestTestCaseCountry(String test, String testCase, String country);
 
     List<TestCaseCountryProperties> findListOfPropertyPerTestTestCase(String test, String testcase);
+    
+    List<TestCaseCountryProperties> findOnePropertyPerTestTestCase(String test, String testcase, String oneproperty);
 
     List<TestCaseCountryProperties> findDistinctPropertiesOfTestCase(String test, String testcase);
 

@@ -126,7 +126,8 @@ function duplicateAppServiceClick(service) {
     $('#duplicateSoapLibraryButton').removeProp('hidden');
     $('#addSoapLibraryButton').attr('class', '');
     $('#addSoapLibraryButton').attr('hidden', 'hidden');
-
+    
+    
     feedAppServiceModal(service, "editSoapLibraryModal", "DUPLICATE");
 }
 
@@ -149,6 +150,7 @@ function addAppServiceClick(service) {
     $('#duplicateSoapLibraryButton').attr('hidden', 'hidden');
     $('#addSoapLibraryButton').attr('class', 'btn btn-primary');
     $('#addSoapLibraryButton').removeProp('hidden');
+    
 
     feedAppServiceModal(service, "editSoapLibraryModal", "ADD");
 }
@@ -313,7 +315,7 @@ function feedAppServiceModal(serviceName, modalId, mode) {
 	}else{
 		var serviceObj1 = {};
 		var hasPermissions = true;
-		serviceObj1.service = "";
+		serviceObj1.service = serviceName;
 		serviceObj1.application = "";
 		serviceObj1.type = "REST";
 		serviceObj1.method = "GET";
@@ -365,7 +367,7 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#datemodif").prop("value", "");
         if (mode === "ADD") {
             $("[name='editSoapLibraryField']").html(doc.getDocOnline("page_appservice", "button_create"));
-            formEdit.find("#service").prop("value", "");
+            formEdit.find("#service").prop("value", service.service);
         } else { // DUPLICATE
             $("[name='editSoapLibraryField']").html(doc.getDocOnline("page_appservice", "button_duplicate"));
             formEdit.find("#service").prop("value", service.service);

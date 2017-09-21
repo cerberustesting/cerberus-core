@@ -28,7 +28,7 @@
         <title id="pageTitle">Test Data Library</title>        
         <script type="text/javascript" src="js/pages/TestDataLib.js"></script>
         <script type="text/javascript" src="js/transversalobject/DataLib.js"></script>
-        <script type="text/javascript" src="js/transversalobject/AppService.js"></script>   
+        <script type="text/javascript" src="js/transversalobject/AppService.js"></script>
     </head>
     <body>
         <%@ include file="include/global/header.html"%>

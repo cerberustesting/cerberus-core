@@ -633,6 +633,10 @@
         <servlet-class>org.cerberus.servlet.crud.test.GetPropertiesForTestCase</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>GetOnePropertyForTestCase</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.test.GetOnePropertyForTestCase</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>ImportPropertyOfATestCaseToAnOtherTestCase</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.test.ImportPropertyOfATestCaseToAnOtherTestCase</servlet-class>
     </servlet>

@@ -36,6 +36,8 @@ import org.cerberus.util.answer.AnswerList;
 public interface ITestCaseCountryPropertiesDAO {
 
     List<TestCaseCountryProperties> findListOfPropertyPerTestTestCase(String test, String testcase);
+    
+    List<TestCaseCountryProperties> findOnePropertyPerTestTestCase(String test, String testcase, String oneproperty);
 
     List<TestCaseCountryProperties> findDistinctPropertiesOfTestCase(String test, String testcase);
 

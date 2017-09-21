@@ -68,6 +68,11 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
     public List<TestCaseCountryProperties> findListOfPropertyPerTestTestCaseCountry(String test, String testCase, String country) {
         return testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCaseCountry(test, testCase, country);
     }
+    
+    @Override
+    public List<TestCaseCountryProperties> findOnePropertyPerTestTestCase(String test, String testcase, String oneproperty){
+    	return testCaseCountryPropertiesDAO.findOnePropertyPerTestTestCase(test,testcase,oneproperty);
+    }
 
     @Override
     public List<TestCaseCountryProperties> findListOfPropertyPerTestTestCase(String test, String testcase) {

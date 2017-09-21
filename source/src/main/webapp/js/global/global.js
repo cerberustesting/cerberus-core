@@ -35,10 +35,6 @@ function handleErrorAjaxAfterTimeout(result) {
 
 }
 
-function test(test){
-	console.log(test);
-}
-
 /***
  * Returns a label depending on the type of entry
  * @param {type} type - type selected
@@ -235,6 +231,29 @@ function displayAppServiceList(selectName, defaultValue) {
         }
     });
 }
+
+
+function displayDataLibList(selectName, defaultValue) {
+	
+	return new Promise((resolve,reject)=>{
+		 $("select[id='" + selectName + "']").find('option').remove();
+		  $.when($.getJSON("ReadTestDataLib?name="+selectName+"&limit=99")).then(function (data) {
+		
+		        for (var option in data.contentTable) {
+		            $("select[id='" + selectName + "']").append($('<option></option>').text(data.contentTable[option].name+" - "+data.contentTable[option].system+" - "+data.contentTable[option].environment+" - "+data.contentTable[option].country).val(data.contentTable[option].testDataLibID));
+		        }
+		        
+		        if(defaultValue != undefined){
+		        	 $("select[id='" + selectName + "']").val(defaultValue);
+		        }
+		        resolve(data);
+
+		  })
+	})
+	
+	
+}
+
 
 /**
  * Method that display a combo box in all the selectName tags with the value retrieved from the Application list
@@ -2001,7 +2020,12 @@ function autocompleteVariable(identifier, Tags) {
                                     Tags[tag].array.forEach(function (data) {
                                         arrayLabels.push(data.object);
                                     });
-                                } else {
+                                } else if(Tags[tag].regex === "%service\\."){
+                                	Tags[tag].array.forEach(function (data) {
+                                		arrayLabels.push(data.service);
+                                    });
+                                	
+                                }else {
                                     arrayLabels = Tags[tag].array;
                                 }
                                 this.currentIndexTag = tag;

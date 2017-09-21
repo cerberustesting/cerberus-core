@@ -30,7 +30,11 @@
         <script type="text/javascript" src="dependencies/Ace-1.2.6/ext-language_tools.js"></script>
         <script type="text/javascript" src="js/transversalobject/ApplicationObject.js"></script>
         <script type="text/javascript" src="js/transversalobject/TestCase.js"></script>
+        <script type="text/javascript" src="js/transversalobject/AppService.js"></script>
         <script type="text/javascript" src="js/pages/TestCaseScript.js"></script>
+        <script type="text/javascript" src="js/transversalobject/DataLib.js"></script>
+        <script type="text/javascript" src="js/pages/TestDataLib.js"></script>
+        <script type="text/javascript" src="js/transversalobject/AppService.js"></script>
         <link rel="stylesheet" type="text/css" href="css/pages/TestCaseScript.css">
     </head>
     <body>
@@ -42,6 +46,10 @@
             <%@ include file="include/pages/testcasescript/manageProperties.html"%>
             <%@ include file="include/pages/testcasescript/addStep.html"%>
             <%@ include file="include/transversalobject/ApplicationObject.html"%>
+            <%@ include file="include/transversalobject/TestDataLib.html"%>              
+            <%@ include file="include/transversalobject/AppService.html"%> 
+            <%@ include file="include/transversalobject/Property.html"%> 
+            
 
             <h1 class="page-title-line">Test Case Script</h1>
             <div class="panel panel-default" style="margin-top: 10px;">
@@ -92,6 +100,7 @@
                                 <li><a data-toggle="tab" href="#tabProperties" id="editTabProperties" name="tabProperties">Properties</a></li>
                                 <li><a data-toggle="tab" href="#tabInheritedProperties" id="editTabInheritedProperties" name="tabInheritedProperties">InheritedProperties</a></li>
                                 <li><a data-toggle="tab" href="#tabSchema" id="editTabSchema" name="tabSchema">Schema</a></li>
+                                <li><button onclick="test()" >test</button></li>
                           </ul>
                         </div>
                     </div>

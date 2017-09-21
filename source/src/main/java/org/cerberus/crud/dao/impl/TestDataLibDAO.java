@@ -217,15 +217,14 @@ public class TestDataLibDAO implements ITestDataLibDAO {
     public AnswerList readNameListByName(String testDataLibName, int limit) {
         AnswerList answer = new AnswerList();
         MessageEvent msg;
-        List<String> namesList = new ArrayList<String>();
+        List<TestDataLib> list = new ArrayList<TestDataLib>();
 
         StringBuilder query = new StringBuilder();
-        query.append("SELECT distinct(`name`) ")
+        query.append("SELECT * ")
                 .append("FROM testdatalib tdl ")
-                .append(" WHERE `name` like ? ")
-                .append(" order by `name`  ")
+                .append(" WHERE `name` =  ? ")
                 .append(" limit ? ");
-
+        
         if ((limit <= 0) || (limit >= MAX_ROW_SELECTED)) {
             limit = MAX_ROW_SELECTED;
         }
@@ -238,18 +237,17 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
-            preStat.setString(1, "%" + testDataLibName + "%");
+            preStat.setString(1,  testDataLibName);
             preStat.setInt(2, limit);
             try {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
 
                     while (resultSet.next()) {
-                        String name = resultSet.getString("tdl.Name");
-                        namesList.add(name);
+                    	list.add(this.loadFromResultSet(resultSet));
                     }
 
-                    if (namesList.isEmpty()) {
+                    if (list.isEmpty()) {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -260,7 +258,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
                     LOG.error("Unable to execute query : " + exception.toString());
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-                    namesList.clear();
+                    list.clear();
                 } finally {
                     if (resultSet != null) {
                         resultSet.close();
@@ -293,8 +291,8 @@ public class TestDataLibDAO implements ITestDataLibDAO {
             }
         }
 
-        answer.setDataList(namesList);
-        answer.setTotalRows(namesList.size());
+        answer.setDataList(list);
+        answer.setTotalRows(list.size());
         answer.setResultMessage(msg);
         return answer;
     }
