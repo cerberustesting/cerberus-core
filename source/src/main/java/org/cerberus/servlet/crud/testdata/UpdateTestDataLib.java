@@ -96,6 +96,7 @@ public class UpdateTestDataLib extends HttpServlet {
         String databaseCsv = policy.sanitize(request.getParameter("databaseCsv"));
         // Parameter that needs to be secured --> We SECURE+DECODE them
         String name = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("name"), "", charset); //this is mandatory
+        System.out.print(name);
         String group = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("group"), "", charset);
         String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("libdescription"), "", charset);
         String service = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("service"), "", charset);

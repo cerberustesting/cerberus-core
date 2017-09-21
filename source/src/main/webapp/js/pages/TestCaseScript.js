@@ -2760,7 +2760,6 @@ var autocompleteAllFields, getTags, setTags;
                             name = name.slice(1, name.length - 1);
                                                     	
                         	if(!objectIntoTagToUseExist(TagsToUse[4],name)){
-                        		
                         		var addEntry = '<span class="input-group-btn ' +name+ '"><button id="editEntry" onclick="openModalAppService(\'' + name + '\',\'ADD\' );"\n\
                                 class="buttonObject btn btn-default input-sm " \n\
                                title="' + doc.getDocLabel("page_applicationObject", "button_create") + '" type="button">\n\
@@ -3180,11 +3179,12 @@ function setPlaceholderProperty(propertyElement, property) {
     var placeHolders = placeHoldersList[user.language];
 
     $(propertyElement).find('select[name="propertyType"] option:selected').each(function (i, e) {
-    	
+
     	function initChange(){
-    		$("#"+editor.container.id).parent().children('.input-group').remove();
+
     		if($("#"+editor.container.id).parent().parent().find("[name='propertyType']").val() === "getFromDataLib"){
-    		  	
+
+                $("#"+editor.container.id).parent().children('.input-group').remove();
     	    	$.ajax({
     		    	url: "ReadTestDataLib",
     		    	data:{
@@ -3220,6 +3220,8 @@ function setPlaceholderProperty(propertyElement, property) {
     	}
     	
     	var editor = ace.edit($($(e).parents("div[name='propertyLine']").find("pre[name='propertyValue']"))[0]);
+    	console.log("je puis");
+        editor.removeAllListeners('change');
     	  	
         for (var i = 0; i < placeHolders.length; i++) {
             if (placeHolders[i].type === e.value) {
@@ -3235,15 +3237,16 @@ function setPlaceholderProperty(propertyElement, property) {
                     $(e).parents("div[name='propertyLine']").find("div[name='fieldValue1']").removeClass();
                     $(e).parents("div[name='propertyLine']").find("div[name='fieldValue1']").addClass(placeHolders[i].value1Class);
                     //Ace module management
-                    
                     configureAceEditor(editor, placeHolders[i].value1EditorMode, property);
-                    
+
                     if(placeHolders[i].type === "getFromDataLib"){
-                    	editor.off('change');
-                    	if(editor.getValue() != null){
-                    		initChange();
-                    	}
-                    	editor.on('change', initChange);
+                        if((editor.getValue()!= null)){
+                            initChange();
+                        }
+                        editor.on('change', initChange);
+
+                    }else{
+                        $("#"+editor.container.id).parent().children('.input-group').remove();
                     }
 
                 } else {

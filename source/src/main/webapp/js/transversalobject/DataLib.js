@@ -181,7 +181,8 @@ function initModalDataLib(id){
  * @param {String} service - type selected
  * @returns {null}
  */
-function editDataLibClick(service) {
+function
+editDataLibClick(service) {
 	
 	clearResponseMessage($('#editApplicationObjectModal'));
 
@@ -526,6 +527,7 @@ function feedDataLibModalData(service, modalId, mode, hasPermissionsUpdate) {
 
     
     formEdit.find("#testdatalibid").prop("readonly", "readonly");
+    formEdit.find("#name").prop("readonly", "readonly");
 
     // Authorities
     if (mode === "EDIT") {
@@ -544,8 +546,7 @@ function feedDataLibModalData(service, modalId, mode, hasPermissionsUpdate) {
     		    $('#subdataTableBody_edit tr').remove();
     		    formEdit.find("#testdatalibid").val("");
     	}
-    	
-    	formEdit.find("#name").removeAttr("readonly");
+
         
     //We desactivate or activate the access to the fields depending on if user has the credentials to edit.
     if (!(hasPermissionsUpdate)) { // If readonly, we readonly all fields

@@ -267,10 +267,14 @@ function displayHeaderLabel(doc) {
         displayMenuItem(doc);
         $("#headerUserName").html(user.login);
         var systems = getSystem();
+        $("#MySystem option").remove();
         for (var s in systems) {
             $("#MySystem").append($('<option></option>').text(systems[s].value).val(systems[s].value));
         }
+
+        console.log("fzfzfef");
         var languages = getLanguageFromSessionStorage();
+        $("#MyLang option").remove();
         for (var l in languages) {
             $("#MyLang").append($('<option></option>').text(languages[l].description).val(languages[l].value));
             if (languages[l].value === "en") {
