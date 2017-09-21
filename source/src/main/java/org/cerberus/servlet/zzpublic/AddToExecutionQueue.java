@@ -193,6 +193,9 @@ public class AddToExecutionQueue extends HttpServlet {
         if (tag == null || tag.isEmpty()) {
             out.println("Error - Parameter " + PARAMETER_TAG + " is mandatory.");
             error = true;
+        } else if (tag.length() > 255) {
+            out.println("Error - Parameter " + PARAMETER_TAG + " is too big. Maximum size is 255. Current size is : " + tag.length());
+            error = true;
         }
 
         // Starting the request only if previous parameters exist.

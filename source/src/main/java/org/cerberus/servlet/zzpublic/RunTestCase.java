@@ -207,6 +207,10 @@ public class RunTestCase extends HttpServlet {
             errorMessage += "Error - Parameter testCase is mandatory. ";
             error = true;
         }
+        if (!StringUtils.isBlank(tag) && tag.length() > 255) {
+            errorMessage += "Error - Parameter tag value is too big. Tag cannot be larger than 255 Characters. Currently has : " + tag.length();
+            error = true;
+        }
         if (StringUtils.isBlank(country)) {
             errorMessage += "Error - Parameter country is mandatory. ";
             error = true;

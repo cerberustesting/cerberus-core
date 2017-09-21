@@ -4,6 +4,8 @@
 *Improvements / New features*
 [square]
 * [GUI] On the homepage, we can now dynamically filter the tag from a search text.
+* [Engine] tag value can now be defined up to 255 character (used to be 50 characters max). Try to keep it the smallest as possible (for performance, storage and UI reasons).
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
+* SQL 1226 is expected to be very long on systems that have massive number of executions.

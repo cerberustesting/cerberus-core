@@ -346,7 +346,7 @@
                                         <div class="form-group">
                                             <label for="tag" class="col-sm-3 control-label bold">Tag</label>
                                             <div class="col-sm-9">
-                                                <input type="text" class="form-control input-sm" id="tag" name="Tag"/>
+                                                <input type="text" class="form-control input-sm" id="tag" name="Tag" maxlength="255"/>
                                             </div>
                                         </div>
                                         <div class="form-group">
