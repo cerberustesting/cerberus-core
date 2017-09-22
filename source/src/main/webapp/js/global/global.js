@@ -240,7 +240,20 @@ function displayDataLibList(selectName, defaultValue) {
 		  $.when($.getJSON("ReadTestDataLib?name="+selectName+"&limit=99")).then(function (data) {
 		
 		        for (var option in data.contentTable) {
-		            $("select[id='" + selectName + "']").append($('<option></option>').text(data.contentTable[option].name+" - "+data.contentTable[option].system+" - "+data.contentTable[option].environment+" - "+data.contentTable[option].country).val(data.contentTable[option].testDataLibID));
+		        	let system = "";
+		        	let environment = "";
+		        	let country = "";
+		        	if(!isEmpty(data.contentTable[option].system)){
+		        		system = " - " +data.contentTable[option].system
+		        	}
+		        	if(!isEmpty(data.contentTable[option].environment)){
+		        		environment = " - " +data.contentTable[option].environment
+		        	}
+		        	if(!isEmpty(data.contentTable[option].country)){
+		        		country = " - " +data.contentTable[option].country
+		        	}
+		        	
+		            $("select[id='" + selectName + "']").append($('<option></option>').text(data.contentTable[option].name +system+environment+country).val(data.contentTable[option].testDataLibID));
 		        }
 		        
 		        if(defaultValue != undefined){

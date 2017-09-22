@@ -74,6 +74,7 @@ function openModalDataLib(service,mode,id){
 		initModalDataLib(id);	
 		$('#editTestDataLibModal').data("initLabel", true);
 	} 
+	console.log(service);
 	
 	$('[data-toggle="popover"]').popover()
 	
@@ -330,7 +331,10 @@ function confirmDataLibModalHandler(mode,id) {
             	}else{
             		displayDataLibList(id,undefined).then(function(){
             			$("#"+id).parent().find("button").attr('onclick', 'openModalDataLib(' + $("#"+id).val()+ ",'EDIT',"+"'"+id+"')");
+            			$("#"+id).parent().find("button").find('span').removeClass("glyphicon-plus").addClass("glyphicon-pencil")
+            			editor.setValue( $("#"+id).val())
             		})
+            		;
             	}
                 
                 $('#editTestDataLibModal').modal('hide');
@@ -355,6 +359,8 @@ function confirmDataLibModalHandler(mode,id) {
 function feedDataLibModal(serviceName, modalId, mode) {
     clearResponseMessageMainPage();
     var formEdit = $('#' + modalId);
+    
+    console.log(serviceName);
     
     if(mode === "DUPLICATE" || mode === "EDIT"){
     	
@@ -391,7 +397,7 @@ function feedDataLibModal(serviceName, modalId, mode) {
 		DataObj1.envelope = "";
 		DataObj1.group = "";
 		DataObj1.method = "";
-		DataObj1.name = "";
+		DataObj1.name = serviceName;
 		DataObj1.script = "";
 		DataObj1.separator = "";
 		DataObj1.servicepath = "";
@@ -404,7 +410,6 @@ function feedDataLibModal(serviceName, modalId, mode) {
 		formEdit.modal('show');
 	}
     
-    console.log(mode);
 }
 
 
@@ -419,6 +424,7 @@ function feedDataLibModal(serviceName, modalId, mode) {
 function feedDataLibModalData(service, modalId, mode, hasPermissionsUpdate) {
     var formEdit = $('#' + modalId);
     var doc = new Doc();
+    console.log(service);
 
     //Destroy the previous Ace object.
     
@@ -480,8 +486,6 @@ function feedDataLibModalData(service, modalId, mode, hasPermissionsUpdate) {
         
         openModalAppServiceFromHere();
 
-
-
         //loads groups from database
         var jqxhrGroups = $.getJSON("ReadTestDataLib", "groups");
         $.when(jqxhrGroups).then(function (groupsData) {
@@ -535,6 +539,7 @@ function feedDataLibModalData(service, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#name").prop("readonly", "readonly");
     } else {
     	if (mode === "ADD"){
+    		formEdit.find("#name").prop("readonly", "");
     		$('#editTestDataLibModal #types option[value="INTERNAL"]').attr("selected", "selected");
     		$("#editTestDataLibModalLabel").html(doc.getDocOnline("page_testdatalib", "btn_create"));
     	}

@@ -272,7 +272,6 @@ function displayHeaderLabel(doc) {
             $("#MySystem").append($('<option></option>').text(systems[s].value).val(systems[s].value));
         }
 
-        console.log("fzfzfef");
         var languages = getLanguageFromSessionStorage();
         $("#MyLang option").remove();
         for (var l in languages) {

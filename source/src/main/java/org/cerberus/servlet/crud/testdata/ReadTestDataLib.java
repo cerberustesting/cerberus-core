@@ -97,6 +97,7 @@ public class ReadTestDataLib extends HttpServlet {
          */
         String name = policy.sanitize(request.getParameter("name"));
         String country = policy.sanitize(request.getParameter("country"));
+        String like = policy.sanitize(request.getParameter("like"));
         String columnName = ParameterParserUtil.parseStringParam(request.getParameter("columnName"), "");
         Integer testDataLibId = 0;
 
@@ -140,14 +141,17 @@ public class ReadTestDataLib extends HttpServlet {
                     answer = findTestDataLibByID(testDataLibId, appContext, userHasPermissions);
                 }
             } else if (request.getParameter("name") != null && request.getParameter("limit") != null) {
-                answer = findTestDataLibNameList(name, limit, appContext);
+                answer = findTestDataLibNameList(name, limit, like, appContext);
             } else if (request.getParameter("groups") != null) {
                 //gets the list of distinct groups
                 answer = findDistinctGroups(appContext);
             } else if (!Strings.isNullOrEmpty(columnName)) {
                 answer = findDistinctValuesOfColumn(appContext, request, columnName);
                 jsonResponse = (JSONObject) answer.getItem();
-            } else {
+            }else if  (request.getParameter("name") != null && request.getParameter("limit") != null && request.getParameter("like") != null) {
+            	answer = findTestDataLibNameList(name, limit, like, appContext);
+            }
+            else {
                 //no parameters, then retrieves the full list
                 answer = findTestDataLibList(appContext, request);
             }
@@ -270,14 +274,14 @@ public class ReadTestDataLib extends HttpServlet {
      * @return object containing values that match the name
      * @throws JSONException
      */
-    private AnswerItem findTestDataLibNameList(String nameToSearch, int limit, ApplicationContext appContext) throws JSONException {
+    private AnswerItem findTestDataLibNameList(String nameToSearch, int limit, String like, ApplicationContext appContext) throws JSONException {
 
         AnswerItem ansItem = new AnswerItem();
 
         JSONObject object = new JSONObject();
 
         ITestDataLibService testDataService = appContext.getBean(ITestDataLibService.class);
-        AnswerList ansList = testDataService.readNameListByName(nameToSearch, limit);
+        AnswerList ansList = testDataService.readNameListByName(nameToSearch, limit,like);
         
         JSONArray jsonArray = new JSONArray();
         if (ansList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values

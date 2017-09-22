@@ -69,8 +69,8 @@ public class TestDataLibService implements ITestDataLibService {
     }
 
     @Override
-    public AnswerList readNameListByName(String testDataLibName, int limit) {
-        return testDataLibDAO.readNameListByName(testDataLibName, limit);
+    public AnswerList readNameListByName(String testDataLibName, int limit, String like) {
+        return testDataLibDAO.readNameListByName(testDataLibName, limit, like);
     }
 
     @Override

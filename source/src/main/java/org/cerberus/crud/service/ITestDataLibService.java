@@ -59,7 +59,7 @@ public interface ITestDataLibService {
      * @param limit
      * @return
      */
-    AnswerList readNameListByName(String testDataLibName, int limit);
+    AnswerList readNameListByName(String testDataLibName, int limit, String like);
 
     /**
      *

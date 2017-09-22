@@ -18,7 +18,7 @@
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-function openModalAppService(service,mode){
+function openModalAppService(service,mode,page=undefined){
 	if ($('#editSoapLibraryModal').data("initLabel") === undefined){
 		initModalAppService()		
 		$('#editSoapLibraryModal').data("initLabel", true);
@@ -26,9 +26,9 @@ function openModalAppService(service,mode){
 	}
 	
 	if (mode === "EDIT"){
-		editAppServiceClick(service);
+		editAppServiceClick(service,page);
 	}else if (mode == "ADD"){
-		addAppServiceClick(service);
+		addAppServiceClick(service,page);
 	}else{
 		duplicateAppServiceClick(service);
 	}
@@ -65,17 +65,7 @@ function initModalAppService(){
     $("[name='lbl_datecreated']").html(doc.getDocOnline("transversal", "DateCreated"));
     $("[name='lbl_usrcreated']").html(doc.getDocOnline("transversal", "UsrCreated"));
     $("[name='lbl_datemodif']").html(doc.getDocOnline("transversal", "DateModif"));
-    $("[name='lbl_usrmodif']").html(doc.getDocOnline("transversal", "UsrModif"));
-	
-	$("#editSoapLibraryButton").off("click");
-	$("#editSoapLibraryButton").click(function() {
-		confirmApplicationObjectModalHandler("EDIT");
-	});
-	$("#addSoapLibraryButton").off("click");
-	$("#addSoapLibraryButton").click(function() {
-		confirmApplicationObjectModalHandler("ADD");
-	});
-	
+    $("[name='lbl_usrmodif']").html(doc.getDocOnline("transversal", "UsrModif"));	
 }
 
 /***
@@ -83,14 +73,14 @@ function initModalAppService(){
  * @param {String} service - type selected
  * @returns {null}
  */
-function editAppServiceClick(service) {
+function editAppServiceClick(service, page) {
 
     var doc = new Doc();
     $("[name='editSoapLibraryField']").html(doc.getDocLabel("page_appservice", "editSoapLibrary_field"));
 
     $("#editSoapLibraryButton").off("click");
     $("#editSoapLibraryButton").click(function () {
-        confirmAppServiceModalHandler("EDIT");
+        confirmAppServiceModalHandler("EDIT", page);
     });
 
     // Prepare all Events handler of the modal.
@@ -114,7 +104,7 @@ function editAppServiceClick(service) {
 function duplicateAppServiceClick(service) {
     $("#duplicateSoapLibraryButton").off("click");
     $("#duplicateSoapLibraryButton").click(function () {
-        confirmAppServiceModalHandler("DUPLICATE");
+        confirmAppServiceModalHandler("DUPLICATE", undefined);
     });
 
     // Prepare all Events handler of the modal.
@@ -135,10 +125,10 @@ function duplicateAppServiceClick(service) {
  * Open the modal in order to create a new testcase.
  * @returns {null}
  */
-function addAppServiceClick(service) {
+function addAppServiceClick(service, page) {
     $("#addSoapLibraryButton").off("click");
     $("#addSoapLibraryButton").click(function () {
-        confirmAppServiceModalHandler("ADD");
+        confirmAppServiceModalHandler("ADD",page);
     });
 
     // Prepare all Events handler of the modal.
@@ -181,7 +171,7 @@ function prepareAppServiceModal() {
  * @param {String} mode - either ADD, EDIT or DUPLICATE in order to define the purpose of the modal.
  * @returns {null}
  */
-function confirmAppServiceModalHandler(mode) {
+function confirmAppServiceModalHandler(mode,page) {
     clearResponseMessage($('#editSoapLibraryModal'));
 
     var formEdit = $('#editSoapLibraryModal #editSoapLibraryModalForm');
@@ -219,6 +209,8 @@ function confirmAppServiceModalHandler(mode) {
         
         var toto = [];
     }
+    
+    var temp = data.service;
 
 
     $.ajax({
@@ -243,8 +235,20 @@ function confirmAppServiceModalHandler(mode) {
             data = JSON.parse(data);
             
             if (getAlertType(data.messageType) === "success") {
-                var oTable = $("#soapLibrarysTable").dataTable();
-                oTable.fnDraw(true);
+            	if(page === "TestCase"){
+            		 var Tags = getTags();
+  	                for(var i = 0; i < Tags.length; i++){
+  	                    if(Tags[i].regex == "%service\\."){
+  	                        Tags[i].array.push(temp);
+  	                        console.log(temp);
+  	                    }
+  	                }
+  	                $("div.step-action .content div.fieldRow div:nth-child(n+2) input").trigger("input");
+  	            }else{
+  	            	var oTable = $("#soapLibrarysTable").dataTable();
+  	                oTable.fnDraw(true);
+  	            }
+            	
                 $('#editSoapLibraryModal').data("Saved", true);
                 $('#editSoapLibraryModal').modal('hide');
                 

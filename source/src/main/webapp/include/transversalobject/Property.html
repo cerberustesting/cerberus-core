@@ -13,7 +13,7 @@
 					<span aria-hidden="true">&times;</span>
 				</button>
 				<h4 class="modal-title" id="editEntryModalLabel"
-					name="editPropertyField">Create Application Object</h4>
+					name="editPropertyField">Edit a property</h4>
 			</div>
 			<div class="modal-body">
 
@@ -30,116 +30,6 @@
 									<span
 										class="glyphicon glyphicon-remove alert-right alert-close pull-right"></span>
 								</button>
-							</div>
-						</div>
-						<div class="col-sm-11" name="propertyLine" id="propertyLineMYTEXT">
-							<div class="row" id="masterProp" name="masterProp"
-								style="margin-top: 10px;">
-								<div class="col-sm-4 form-group">
-									<input
-										onkeypress="return restrictCharacters(this, event, propertyNameRestriction);"
-										id="propName"
-										style="width: 100%; font-size: 16px; font-weight: 600;"
-										name="propName" placeholder="Feed Property name"
-										class="form-control input-sm">
-								</div>
-								<div class="col-sm-8 form-group">
-									<span role="status" aria-live="polite"
-										class="ui-helper-hidden-accessible" style="display: none;"></span>
-									<textarea rows="1" id="propDescription"
-										placeholder="Feed Property Description"
-										class="form-control input-sm ui-autocomplete-input"></textarea>
-								</div>
-							</div>
-							<div class="row" name="masterProp">
-								<div class="col-sm-2"
-									style="margin-top: 5px; margin-bottom: 5px;">
-									<button class="btn btn-default btn-sm">
-										<span class="glyphicon glyphicon-check"></span>
-									</button>
-									<button class="btn btn-default btn-sm">
-										<span class="glyphicon glyphicon-unchecked"></span>
-									</button>
-								</div>
-								<div class="col-sm-10">
-									<div class="checkbox">
-										<label class="checkbox-inline"><input type="checkbox"
-											name="RX">RX</label>
-									</div>
-								</div>
-							</div>
-							<div class="row" name="masterProp">
-								<div class="col-sm-2 form-group">
-									<label>Type : </label><select class="form-control input-sm"
-										name="propertyType"><option value="text">text</option>
-										<option value="getFromDataLib">getFromDataLib</option>
-										<option value="executeSql">executeSql</option>
-										<option value="getFromHtml">getFromHtml</option>
-										<option value="getFromHtmlVisible">getFromHtmlVisible</option>
-										<option value="getFromJS">getFromJS</option>
-										<option value="getAttributeFromHtml">getAttributeFromHtml</option>
-										<option value="getFromCookie">getFromCookie</option>
-										<option value="getFromXml">getFromXml</option>
-										<option value="getDifferencesFromXml">getDifferencesFromXml</option>
-										<option value="getFromJson">getFromJson</option>
-										<option value="getFromGroovy">getFromGroovy</option>
-										<option value="executeSoapFromLib">executeSoapFromLib</option>
-										<option value="executeSqlFromLib">executeSqlFromLib</option></select>
-								</div>
-								<div class="col-sm-2 form-group" name="fieldDatabase"
-									style="display: none;">
-									<label>Database :</label><select class="form-control input-sm"><option
-											value="VC">VC</option>
-										<option value="ICS">ICS</option>
-										<option value="IDW">IDW</option>
-										<option value="CRB">CRB</option>
-										<option value="IRT">IRT</option></select>
-								</div>
-								<div class="col-sm-8" name="fieldValue">
-									<pre style="min-height:150px" id="envelope" name="envelope"></pre>
-								</div>
-								<div class="col-sm-1 propertyButtonss">
-									<button class="show-btn-field" type="button">
-										<span class="glyphicon glyphicon-chevron-down"></span>
-									</button>
-								</div>
-								<div class="col-sm-6 form-group" name="fieldValue2"
-									style="display: none;">
-									<label>Attribute name :</label><span role="status"
-										aria-live="polite" class="ui-helper-hidden-accessible"
-										style="display: none;"></span>
-								</div>
-							</div>
-							<div class="row unexpected" style="display: block;">
-								<div class="col-sm-2 form-group" name="fieldLength"
-									style="display: none;">
-									<label>[opt] Length :</label><input placeholder="Length"
-										class="form-control input-sm">
-								</div>
-								<div class="col-sm-2 form-group" name="fieldRowLimit"
-									style="display: none;">
-									<label>Row Limit :</label><input placeholder="Row Limit"
-										class="form-control input-sm">
-								</div>
-								<div class="col-sm-2 form-group" name="fieldNature"
-									style="display: none;">
-									<label>Nature :</label><select class="form-control input-sm"><option
-											value="STATIC">STATIC</option>
-										<option value="RANDOM">RANDOM</option>
-										<option value="RANDOMNEW">RANDOMNEW</option>
-										<option value="NOTINUSE">NOTINUSE</option></select>
-								</div>
-								<div class="col-sm-2 form-group" name="fieldRetryNb"
-									style="display: none;">
-									<label>Number of retry (if empty)</label><input
-										placeholder="Retry" class="form-control input-sm">
-								</div>
-								<div class="col-sm-2 form-group" name="fieldRetryPeriod"
-									style="display: none;">
-									<label>Retry period (ms)</label><input placeholder="Period"
-										class="form-control input-sm">
-								</div>
-
 							</div>
 						</div>
 					</div>

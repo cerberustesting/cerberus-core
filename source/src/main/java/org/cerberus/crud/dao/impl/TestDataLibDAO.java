@@ -214,17 +214,26 @@ public class TestDataLibDAO implements ITestDataLibDAO {
     }
 
     @Override
-    public AnswerList readNameListByName(String testDataLibName, int limit) {
+    public AnswerList readNameListByName(String testDataLibName, int limit, String like) {
         AnswerList answer = new AnswerList();
         MessageEvent msg;
         List<TestDataLib> list = new ArrayList<TestDataLib>();
 
         StringBuilder query = new StringBuilder();
-        query.append("SELECT * ")
-                .append("FROM testdatalib tdl ")
-                .append(" WHERE `name` =  ? ")
-                .append(" limit ? ");
         
+        if((like != null) || (like != "")) {
+        	query.append("SELECT * ")
+            .append("FROM testdatalib tdl ")
+            .append(" WHERE `name` like  ? ")
+            .append(" limit ? ");
+        	
+        }else {
+        	query.append("SELECT * ")
+            .append("FROM testdatalib tdl ")
+            .append(" WHERE `name` =  ? ")
+            .append(" limit ? ");
+        }
+               
         if ((limit <= 0) || (limit >= MAX_ROW_SELECTED)) {
             limit = MAX_ROW_SELECTED;
         }
@@ -237,7 +246,12 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
-            preStat.setString(1,  testDataLibName);
+            if((like != null) || (like != "")) {
+            	preStat.setString(1,  "%"+testDataLibName+"%");
+            }else {
+            	preStat.setString(1,  testDataLibName);
+            }
+            
             preStat.setInt(2, limit);
             try {
                 ResultSet resultSet = preStat.executeQuery();

@@ -260,7 +260,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
                             },
                             {
                                 array: availableServices,
-                                regex: "%service\\.",
+                                regex: "get\\.",
                                 addBefore: "",
                                 addAfter: "%",
                                 isCreatable: true
@@ -714,7 +714,7 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
     var selectNature = getSelectInvariant("PROPERTYNATURE", false, true);
     var deleteBtn = $("<button class='btn btn-danger add-btn'></button>").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
     var moreBtn = $("<button class='btn btn-default add-btn'></button>").append($("<span></span>").addClass("glyphicon glyphicon-chevron-down"));
-
+    
     var propertyInput = $("<input onkeypress='return restrictCharacters(this, event, propertyNameRestriction);' id='propName' style='width: 100%; font-size: 16px; font-weight: 600;' name='propName' placeholder='" + doc.getDocLabel("page_testcasescript", "feed_propertyname") + "'>").addClass("form-control input-sm").val(property.property);
     var descriptionInput = $("<textarea rows='1' id='propDescription' placeholder='" + doc.getDocLabel("page_testcasescript", "feed_propertydescription") + "'>").addClass("form-control input-sm").val(property.description);
     var valueInput = $("<pre name='propertyValue' id='propertyValue" + index + "' style='min-height:150px' rows='1' placeholder='" + doc.getDocLabel("page_applicationObject", "Value") + "'></pre>").addClass("form-control input-sm").val(property.value1);
@@ -1942,7 +1942,6 @@ function Action(json, parentStep, canUpdate) {
 }
 
 Action.prototype.draw = function (afterAction) {
-	console.log("je papspas")
     var htmlElement = this.html;
     var action = this;
     var row = $("<div></div>").addClass("step-action row").addClass("action");
@@ -2233,7 +2232,6 @@ function Control(json, parentAction, canUpdate) {
 }
 
 Control.prototype.draw = function (afterControl) {
-	console.log("zzeze")
     var htmlElement = this.html;
     var control = this;
     var drag = $("<div></div>").addClass("drag-step-action col-lg-1").prop("draggable", true);
@@ -2558,6 +2556,7 @@ function objectIntoTagToUseExist(tagToUse, label) {
     return false;
 }
 
+/*
 function LoadForm(test,testcase,property,testcaseinfo){
 	$.ajax({
         url: "ReadTestCase",
@@ -2570,28 +2569,19 @@ function LoadForm(test,testcase,property,testcaseinfo){
                 data: {test: test, testcase:testcase, property:property},
                 dataType: "json",
                 success: function (data) {
-                	console.log(data[0]);
-                	drawProperty(data[0], right.info,right.hasPermissionsUpdate, "");
+                	console.log(data);                	
                 	$("#editPropertyModal").modal("show");
+                	var prop = drawPropertyModal(data[0], right.info,right.hasPermissionsUpdate, "");
+                	console.log(prop);
+                	setPlaceholderProperty(prop[0], prop[1]);
                 	
-                	 $(".show-btn-field").off("click").click(function () {
-                	        var container = $(this).parent().parent().parent();
-                	        
-                	        container.find(".unexpected").toggle();
-                	        console.log(container.find(".unexpected"));
-                	        if ($(this).find("span").hasClass("glyphicon-chevron-down")) {
-                	            $(this).find("span").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-up");
-                	        } else {
-                	            $(this).find("span").removeClass("glyphicon-chevron-up").addClass("glyphicon-chevron-down");
-                	        }
-                	        
-                	        return;
-                	    });
+                	
                 }
         	})
         }
 	})
 }
+*/
 
 var autocompleteAllFields, getTags, setTags;
 (function () {
@@ -2653,9 +2643,6 @@ var autocompleteAllFields, getTags, setTags;
 
                             if (!objectIntoTagToUseExist(TagsToUse[1],name)) {
                             	
-                            	console.log(testcase);
-                            	console.log(test);
-                            	
                             		var addEntry = '<span class="input-group-btn ' +name+ '"><button id="editEntry" onclick="openModalApplicationObject(\'' + tcInfo.application + '\', \'' + name + '\',\'ADD\'  ,\'testCaseScript\' );"\n\
                                     class="buttonObject btn btn-default input-sm " \n\
                                    title="' + doc.getDocLabel("page_applicationObject", "button_create") + '" type="button">\n\
@@ -2698,13 +2685,7 @@ var autocompleteAllFields, getTags, setTags;
                             name = findname[0];
                             name = name.slice(1, name.length - 1);
                             
-                            console.log(name);
-                            console.log(objectIntoTagToUseExist(TagsToUse[2],name));
-
-                            
                             if (!objectIntoTagToUseExist(TagsToUse[2],name)) {
-                            	
-                       
 
                         		var addEntry = '<span class="input-group-btn ' +name+ '"><button id="'+name+ '"\n\
                                 class="buttonObject btn btn-default input-sm " \n\
@@ -2715,6 +2696,7 @@ var autocompleteAllFields, getTags, setTags;
                                 nameNotExist = name;
                                 typeNotExist = "applicationObject";
                                 
+                                /*
                                 try{
                                 	$(e).parent().find("."+ $(e).parent().data("LastName")).remove();   
                                 }catch(f){
@@ -2723,44 +2705,47 @@ var autocompleteAllFields, getTags, setTags;
                                                        
                                 $(e).parent().append(addEntry);
                                 $("#"+name).off("click");
+                                
                                 $("#"+name).click(function(){
                                 	LoadForm(test,testcase,name,tcInfo);
                                 })
-                                console.log("ouiui");
+                                */
                                 $(e).parent().data("LastName", name);
                                 
                             }else{
-                            	var addEntry = '<span class="input-group-btn ' +name+ '"><button id="'+name+ '"\n\
+                            	var editEntry = '<span class="input-group-btn ' +name+ '"><button id="'+name+ '"\n\
                                 class="buttonObject btn btn-default input-sm " \n\
                                title="' + doc.getDocLabel("page_applicationObject", "button_edit") + '" type="button">\n\
-                                <span class="glyphicon glyphicon-plus"></span></button></span>';
+                                <span class="glyphicon glyphicon-pencil"></span></button></span>';
                         		                                	
                                 objectNotExist = true;
                                 nameNotExist = name;
                                 typeNotExist = "applicationObject";
                                 
+                                /*
                                 try{
                                 	$(e).parent().find("."+ $(e).parent().data("LastName")).remove();   
                                 }catch(f){
                                 	$(e).parent().find(".input-group-btn").remove();
                                 }
-                                                       
-                                $(e).parent().append(addEntry);
+                                
+                                
+                                $(e).parent().append(editEntry);
                                 $("#"+name).off("click");
+                                
                                 $("#"+name).click(function(){
                                 	LoadForm(test,testcase,name,tcInfo);
                                 })
-                                console.log("ouiui");
+                                */
                                 $(e).parent().data("LastName", name);
                             }
                         }else if (betweenPercent[i].startsWith("%service.") && findname != null && findname.length > 0){
                         	
-                        	$(e).parent().find(".input-group-btn").remove();   
                             name = findname[0];
                             name = name.slice(1, name.length - 1);
                                                     	
                         	if(!objectIntoTagToUseExist(TagsToUse[4],name)){
-                        		var addEntry = '<span class="input-group-btn ' +name+ '"><button id="editEntry" onclick="openModalAppService(\'' + name + '\',\'ADD\' );"\n\
+                        		var addEntry = '<span class="input-group-btn ' +name+ '"><button id="editEntry" onclick="openModalAppService(\'' + name + '\',\'ADD\'  ,\'TestCase\' );"\n\
                                 class="buttonObject btn btn-default input-sm " \n\
                                title="' + doc.getDocLabel("page_applicationObject", "button_create") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-plus"></span></button></span>';
@@ -2769,16 +2754,30 @@ var autocompleteAllFields, getTags, setTags;
                                 nameNotExist = name;
                                 typeNotExist = "appService";
                                 
+                                try{
+                                	$(e).parent().find("."+ $(e).parent().data("LastName")).remove();   
+                                }catch(e){
+                                	$(e).parent().find(".input-group-btn").remove();
+                                }
+                                                          
                                 $(e).parent().append(addEntry);
+                                $(e).parent().data("LastName", name);
                                 
                         	}else if (objectIntoTagToUseExist(TagsToUse[4],name)) {
                                 
-                                var editEntry = '<span class="input-group-btn ' +name+ '"><button id="editEntry" onclick="openModalAppService(\'' + name + '\',\'EDIT\' );"\n\
+                                var editEntry = '<span class="input-group-btn ' +name+ '"><button id="editEntry" onclick="openModalAppService(\'' + name + '\',\'EDIT\'  ,\'TestCase\' );"\n\
                         		class="buttonObject btn btn-default input-sm " \n\
                         		title="' + doc.getDocLabel("page_applicationObject", "button_edit") + '" type="button">\n\
                         		<span class="glyphicon glyphicon-pencil"></span></button></span>';
                                 
+                                try{
+                                	$(e).parent().find("."+ $(e).parent().data("LastName")).remove();   
+                                }catch(e){
+                                	$(e).parent().find(".input-group-btn").remove();
+                                }
+                                                          
                                 $(e).parent().append(editEntry);
+                                $(e).parent().data("LastName", name);
                             }
                         }else{
                         	$(e).parent().find(".input-group-btn").remove();
@@ -3183,44 +3182,53 @@ function setPlaceholderProperty(propertyElement, property) {
     	function initChange(){
 
     		if($("#"+editor.container.id).parent().parent().find("[name='propertyType']").val() === "getFromDataLib"){
-
                 $("#"+editor.container.id).parent().children('.input-group').remove();
-    	    	$.ajax({
-    		    	url: "ReadTestDataLib",
-    		    	data:{
-    		    		name:editor.getValue(),
-    		    		limit:99
-    		    	},
-    		        async: true,
-    		        method: "GET",
-    		        success: function (data) {
-    		            if (data.messageType === "OK") {
-    		                // Feed the data to the screen and manage authorities.
-    		                var service = data.contentTable;
-    		                if(!isEmpty(service)){          	
-    		            		var editEntry = '<div class="input-group col-sm-5 col-sm-offset-3"><select id="'+editor.getValue()+ '"  class="datalib form-control"></select><span class="input-group-btn"><button class="btn btn-secondary" type="button"><span class="glyphicon glyphicon-pencil"></span></button></span></div>';                  		                	
-    		                    $("#"+editor.container.id).parent().append(editEntry);
-    		                    displayDataLibList(editor.getValue(), undefined).then(function(){
-    		                    	 $("#"+editor.getValue()).parent().find("button").attr('onclick', 'openModalDataLib(' + $("#"+editor.getValue()).val()+ ",'EDIT',"+"'"+editor.getValue()+"')");
-    		                    });
-    		                    $("#"+editor.getValue()).change(function(){
-    		                    	$("#"+editor.getValue()).parent().find("button").attr('onclick', 'openModalDataLib(' + $("#"+editor.getValue()).val()+ ",'EDIT',"+"'"+editor.getValue()+"')");
-    		                    })   
-    		                }else{
-    		                	var addEntry = '<select></select>';
-    		                    objectNotExist = true;
-    		                    nameNotExist = name;
-    		                    typeNotExist = "applicationObject";                 		                	
-    		                }
-    		            } 
-    		        },
-    		        error: showUnexpectedError
-    		    });
+                if(!isEmpty(editor.getValue())){
+                	$.ajax({
+        		    	url: "ReadTestDataLib",
+        		    	data:{
+        		    		name:editor.getValue(),
+        		    		limit:99,
+        		    		like:""
+        		    	},
+        		        async: true,
+        		        method: "GET",
+        		        success: function (data) {
+        		            if (data.messageType === "OK") {
+        		                // Feed the data to the screen and manage authorities.
+        		                var service = data.contentTable;
+        		                if(!isEmpty(service)){          	
+        		            		var editEntry = '<div class="input-group col-sm-5 col-sm-offset-3"><select id="'+editor.getValue()+ '"  class="datalib form-control"></select><span class="input-group-btn"><button class="btn btn-secondary" type="button"><span class="glyphicon glyphicon-pencil"></span></button></span></div>';                  		                	
+        		            		$("#"+editor.container.id).parent().append(editEntry);
+        		                    displayDataLibList(editor.getValue(), undefined).then(function(){
+        		                    	 $("#"+editor.getValue()).parent().find("button").attr('onclick', 'openModalDataLib(' + $("#"+editor.getValue()).val()+ ",'EDIT',"+"'"+editor.getValue()+"')");
+        		                    });
+        		                    $("#"+editor.getValue()).unbind("change").change(function(){
+        		                    	$("#"+editor.getValue()).parent().find("button").remove();
+        		                    	$("#"+editor.getValue()).parent().find("button").attr('onclick', 'openModalDataLib(' + $("#"+editor.getValue()).val()+ ",'EDIT',"+"'"+editor.getValue()+"')");
+        		                    })   
+        		                }else{
+        		                	
+        		                	var addEntry = '<div class="input-group col-sm-5 col-sm-offset-3"><select id="'+editor.getValue()+ '"  class="datalib form-control"></select><span class="input-group-btn"><button class="btn btn-secondary" type="button"><span class="glyphicon glyphicon-plus"></span></button></span></div>';                  		                	
+        		            		$("#"+editor.container.id).parent().append(addEntry);
+        		            		  $("#"+editor.getValue()).append($('<option>', {
+        		            		    value: editor.getValue(),
+        		            		    text: editor.getValue()
+        		            		}));
+        		                         		                    
+        		                    $("#"+editor.getValue()).parent().find("button").attr('onclick', 'openModalDataLib(\''  + editor.getValue()  + "\','ADD',"+"'"+editor.getValue()+"')");
+        		                    
+      		                }
+        		            } 
+        		        },
+        		        error: showUnexpectedError
+        		    });
+                }
     		}
     	}
     	
     	var editor = ace.edit($($(e).parents("div[name='propertyLine']").find("pre[name='propertyValue']"))[0]);
-    	console.log("je puis");
+
         editor.removeAllListeners('change');
     	  	
         for (var i = 0; i < placeHolders.length; i++) {
@@ -3294,6 +3302,18 @@ function setPlaceholderProperty(propertyElement, property) {
 
 }
 
+var staticWordCompleter = {
+	    getCompletions: function(editor, session, pos, prefix, callback) {	    	
+            $.getJSON("ReadTestDataLib?name="+editor.getValue()+"&limit=15&like=yes", function(wordList) {
+                callback(null, wordList.contentTable.map(function(ea)  {           
+                    return {name: ea.name, value: ea.name, meta: "DataLib"}
+                }));
+            })
+
+	    }
+	}
+
+
 
 /*
  * main function of ace editor
@@ -3306,26 +3326,38 @@ function configureAceEditor(editor, mode, property) {
     var commandNameForIssueDetection = "cerberusIssueDetection";
     //event listenner
     editor.commands.on("afterExec", function (e) {
+    	var langTools = ace.require('ace/ext/language_tools');
+    	
+        if(property.type === "getFromDataLib"){
+        	   editor.setOptions({
+                   enableLiveAutocompletion: true
+               });
+               
+               editor.completers = [staticWordCompleter]
+        }else{
 
-        if (e.command.name == "insertstring" || e.command.name == "paste" || e.command.name == "backspace") {
-            //recreate the array at each loop
-            var allKeyword = createAllKeywordList(getKeywordList("object"), getKeywordList("property"));
-
-            if (e.command.name != "backspace") {
-                addCommandForCustomAutoCompletePopup(editor, allKeyword, commandNameForAutoCompletePopup);
-                editor.commands.exec(commandNameForAutoCompletePopup);//set autocomplete popup
-            }
-
-            addCommandToDetectKeywordIssue(editor, allKeyword, commandNameForIssueDetection);
-            editor.commands.exec(commandNameForIssueDetection);//set annotation
-
-            createGuterCellListenner(editor);
-            property.value1 = editor.session.getValue();
+	        if (e.command.name == "insertstring" || e.command.name == "paste" || e.command.name == "backspace") {
+	            //recreate the array at each loop
+	            var allKeyword = createAllKeywordList(getKeywordList("object"), getKeywordList("property"));
+	
+	            if (e.command.name != "backspace") {
+	                addCommandForCustomAutoCompletePopup(editor, allKeyword, commandNameForAutoCompletePopup);
+	                editor.commands.exec(commandNameForAutoCompletePopup);//set autocomplete popup
+	            }
+	
+	            addCommandToDetectKeywordIssue(editor, allKeyword, commandNameForIssueDetection);
+	            editor.commands.exec(commandNameForIssueDetection);//set annotation
+	
+	            createGuterCellListenner(editor);
+	            property.value1 = editor.session.getValue();
+	        }
         }
     });
 
     //editor option
     editor.getSession().setMode(mode);
+    
+
 
     
     editor.off('change');
