@@ -224,6 +224,9 @@ public class AddToExecutionQueueV001 extends HttpServlet {
         if (tag == null || tag.isEmpty()) {
             out.println("Error - Parameter " + PARAMETER_TAG + " is mandatory.");
             error = true;
+        } else if (tag.length() > 255) {
+            out.println("Error - Parameter " + PARAMETER_TAG + " is too big. Maximum size if 255. Current size is : " + tag.length());
+            error = true;
         }
         if (campaign != null && !campaign.isEmpty()) {
             final AnswerItem<Map<String, List<String>>> parsedCampaignParameters = campaignParameterService.parseParametersByCampaign(campaign);
