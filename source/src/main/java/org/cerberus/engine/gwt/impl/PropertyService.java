@@ -1244,7 +1244,7 @@ public class PropertyService implements IPropertyService {
 
         } else {//no TestDataLib found was returned
             //the library does not exist at all
-            AnswerList nameExistsAnswer = testDataLibService.readNameListByName(testCaseExecutionData.getValue1(), 1);
+            AnswerList nameExistsAnswer = testDataLibService.readNameListByName(testCaseExecutionData.getValue1(), 1, null);
             if (nameExistsAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && nameExistsAnswer.getTotalRows() > 0) {
                 //if the library name exists but was not available or does not exist for the current specification but exists for other countries/environments/systems
                 res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_NOT_FOUND_ERROR);
