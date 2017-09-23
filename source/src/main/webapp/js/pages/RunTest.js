@@ -65,7 +65,12 @@ $.when($.getScript("js/global/global.js")).then(function () {
 
         var system = getUser().defaultSystem;
 
-        $("[name='typeSelect']").on("change", typeSelectHandler);
+        $("#SelectionManual").on("click", function () {
+            selectionManual();
+        });
+        $("#SelectionCampaign").on("click", function () {
+            selectionCampaign();
+        });
 
         $("#run").click(sendForm);
         $("#runList").click(sendForm);
@@ -229,45 +234,59 @@ function displayPageLabel() {
     $("#run").text(doc.getDocLabel("page_runtest", "run"));
 }
 
-function typeSelectHandler(test, testcase, environment, country) {
-    var value = $("[name='typeSelect']:checked").val();
-//    console.log(value);
-    if (value === "filters") {
+function selectionCampaign() {
 
-        $("#envSettingsAuto select").prop("disabled", false).val("");
-        var mysize = $("#countryList input.countrycb").length;
-        $("#countryList input.countrycb").each(function () {
-            if (($(this).attr("name") == country) || (mysize <= 1)) { // We select the the country if it is the one from the URL or if there is only 1 country.
-                $(this).prop("disabled", false).prop("checked", true);
-            } else {
-                $(this).prop("disabled", false).prop("checked", false);
-            }
-        });
+    $("#SelectionManual").removeClass("btn-success");
+    $("#SelectionManual").addClass("btn-default");
+    $("#SelectionCampaign").removeClass("btn-default");
+    $("#SelectionCampaign").addClass("btn-success");
 
-        $("#testCaseList").prop("disabled", false);
-        $("input[name='envSettings']").prop("disabled", false);
-        $("#envSettingsAuto select").empty();
-        if (environment !== undefined && environment !== null) {
-            $("[name='environment']").append($('<option></option>').text(environment).val(environment));
-            $("[name='environment']").val(environment);
-        } else {
-            displayUniqueEnvList("environment", getUser().defaultSystem, environment);
-        }
-        $("#campaignSelection").hide();
-        $("#filters").show();
-        $("#resetbutton").show();
-        $("#filtersPanelContainer").show();
-
-        loadTestCaseFromFilter(test, testcase);
-
-    } else if (value === "campaign") {
-        $("#filtersPanelContainer").hide();
-        $("#campaignSelection").show();
-        $("#testCaseList").empty();
-        $("#envSettingsAuto select").empty();
-        displayUniqueEnvList("environment", "");
-    }
+    $("#filtersPanelContainer").hide();
+    $("#campaignSelection").show();
+    $("#testCaseList").empty();
+    $("#envSettingsAuto select").empty();
+    displayUniqueEnvList("environment", "");
+    
     updatePotentialNumber();
+
+}
+
+function selectionManual(test, testcase, environment, country) {
+
+    $("#SelectionManual").removeClass("btn-default");
+    $("#SelectionManual").addClass("btn-success");
+    $("#SelectionCampaign").removeClass("btn-success");
+    $("#SelectionCampaign").addClass("btn-default");
+
+    $("#envSettingsAuto select").prop("disabled", false).val("");
+    var mysize = $("#countryList input.countrycb").length;
+    $("#countryList input.countrycb").each(function () {
+        if (($(this).attr("name") == country) || (mysize <= 1)) { // We select the the country if it is the one from the URL or if there is only 1 country.
+            $(this).prop("disabled", false).prop("checked", true);
+        } else {
+            $(this).prop("disabled", false).prop("checked", false);
+        }
+    });
+
+    $("#testCaseList").prop("disabled", false);
+    $("input[name='envSettings']").prop("disabled", false);
+    $("#envSettingsAuto select").empty();
+    if (environment !== undefined && environment !== null) {
+        $("[name='environment']").append($('<option></option>').text(environment).val(environment));
+        $("[name='environment']").val(environment);
+    } else {
+        displayUniqueEnvList("environment", getUser().defaultSystem, environment);
+    }
+
+    $("#campaignSelection").hide();
+    $("#filters").show();
+    $("#resetbutton").show();
+    $("#filtersPanelContainer").show();
+
+    loadTestCaseFromFilter(test, testcase);
+
+    updatePotentialNumber();
+
 }
 
 function loadTestCaseFromFilter(defTest, defTestcase) {
@@ -276,6 +295,7 @@ function loadTestCaseFromFilter(defTest, defTestcase) {
     showLoader("#chooseTest");
     var testURL = "";
     var testCaseURL = "";
+
     if ((defTest !== null) && (defTest !== undefined)) { // If test is defined, we limit the testcase list on that test.
         testURL = "&test=" + defTest;
     }
@@ -1073,7 +1093,7 @@ function loadTestCaseEssentialData(test, testcase, environment, country, tag, br
             loadHardDefinedSingleSelect("length", [{label: '50', value: 50}, {label: '100', value: 100}, {label: '>100', value: -1}], 0)
             )
             .then(function () {
-                typeSelectHandler(test, testcase, environment, country);
+                selectionManual(test, testcase, environment, country);
             });
 
 }
