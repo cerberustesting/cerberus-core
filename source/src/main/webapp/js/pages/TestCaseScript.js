@@ -260,7 +260,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
                             },
                             {
                                 array: availableServices,
-                                regex: "get\\.",
+                                regex: "%service\\.",
                                 addBefore: "",
                                 addAfter: "%",
                                 isCreatable: true
