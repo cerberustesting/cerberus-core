@@ -330,9 +330,9 @@ function confirmDataLibModalHandler(mode,id) {
                     oTable.fnDraw(true);
             	}else{
             		displayDataLibList(id,undefined).then(function(){
-            			$("#"+id).parent().find("button").attr('onclick', 'openModalDataLib(' + $("#"+id).val()+ ",'EDIT',"+"'"+id+"')");
-            			$("#"+id).parent().find("button").find('span').removeClass("glyphicon-plus").addClass("glyphicon-pencil")
-            			editor.setValue( $("#"+id).val())
+            			$("."+id).parent().find("button").attr('onclick', 'openModalDataLib(' + $("."+id).val()+ ",'EDIT',"+"'"+id+"')");
+            			$("."+id).parent().find("button").find('span').removeClass("glyphicon-plus").addClass("glyphicon-pencil")
+            			editor.setValue( $("."+id).val())
             		})
             		;
             	}

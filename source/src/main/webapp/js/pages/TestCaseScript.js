@@ -3210,8 +3210,9 @@ function setPlaceholderProperty(propertyElement, property) {
 
     		if($("#"+editor.container.id).parent().parent().find("[name='propertyType']").val() === "getFromDataLib"){
                 $("#"+editor.container.id).parent().find('.input-group').remove();
-                console.log( $("#"+editor.container.id).parent().parent().find("div"))
-                if(!isEmpty(editor.getValue())){
+                var escaped = editor.getValue().replace(/[^\w\s]/gi, '');
+                console.log(escaped);
+                if(!isEmpty(escaped)){
                 	$.ajax({
         		    	url: "ReadTestDataLib",
         		    	data:{
@@ -3225,26 +3226,27 @@ function setPlaceholderProperty(propertyElement, property) {
         		            if (data.messageType === "OK") {
         		                // Feed the data to the screen and manage authorities.
         		                var service = data.contentTable;
-        		                if(!isEmpty(service)){          	
-        		            		var editEntry = '<div class="input-group col-sm-5 col-sm-offset-3"><select id="'+editor.getValue()+ '"  class="datalib form-control"></select><span class="input-group-btn"><button class="btn btn-secondary" type="button"><span class="glyphicon glyphicon-pencil"></span></button></span></div>';                  		                	
+        		                if(!isEmpty(service)){
+        		                    console.log(service);
+        		            		var editEntry = '<div class="input-group col-sm-5 col-sm-offset-3"><select class="datalib '+escaped+ ' form-control"></select><span class="input-group-btn"><button class="btn btn-secondary" type="button"><span class="glyphicon glyphicon-pencil"></span></button></span></div>';
         		            		$("#"+editor.container.id).parent().append(editEntry);
-        		                    displayDataLibList(editor.getValue(), undefined).then(function(){
-        		                    	 $("#"+editor.getValue()).parent().find("button").attr('onclick', 'openModalDataLib(' + $("#"+editor.getValue()).val()+ ",'EDIT',"+"'"+editor.getValue()+"')");
+        		                    displayDataLibList(escaped, undefined).then(function(){
+        		                    	 $("."+escaped).parent().find("button").attr('onclick', 'openModalDataLib(' + $("."+escaped).val()+ ",'EDIT',"+"'"+escaped+"')");
         		                    });
-        		                    $("#"+editor.getValue()).unbind("change").change(function(){
-        		                    	$("#"+editor.getValue()).parent().find("button").attr('onclick', 'openModalDataLib(' + $("#"+editor.getValue()).val()+ ",'EDIT',"+"'"+editor.getValue()+"')");
+        		                    $("."+escaped).unbind("change").change(function(){
+        		                    	$("."+escaped).parent().find("button").attr('onclick', 'openModalDataLib(' + $("."+escaped).val()+ ",'EDIT',"+"'"+escaped+"')");
         		                    })   
         		                }else{
-        		                	console.log(editor.getValue());
+                                    $("#"+editor.container.id).parent().find('.input-group').remove();
         		                	
-        		                	var addEntry = '<div class="input-group col-sm-5 col-sm-offset-3"><select id="'+editor.getValue()+ '"  class="datalib form-control"></select><span class="input-group-btn"><button class="btn btn-secondary" type="button"><span class="glyphicon glyphicon-plus"></span></button></span></div>';                  		                	
+        		                	var addEntry = '<div class="input-group col-sm-5 col-sm-offset-3"><select class="datalib '+escaped+ ' form-control"></select><span class="input-group-btn"><button class="btn btn-secondary" type="button"><span class="glyphicon glyphicon-plus"></span></button></span></div>';
         		            		$("#"+editor.container.id).parent().append(addEntry);
-        		            		  $("#"+editor.getValue()).append($('<option>', {
-        		            		    value: editor.getValue(),
-        		            		    text: editor.getValue()
+        		            		  $("."+escaped).append($('<option>', {
+        		            		    value: escaped,
+        		            		    text: escaped
         		            		}));
         		                         		                    
-        		                    $("#"+editor.getValue()).parent().find("button").attr('onclick', 'openModalDataLib(\''  + editor.getValue()  + "\','ADD',"+"'"+editor.getValue()+"')");
+        		                    $("."+escaped).parent().find("button").attr('onclick', 'openModalDataLib(\''  + escaped  + "\','ADD',"+"'"+escaped+"')");
         		                    
       		                }
         		            } 

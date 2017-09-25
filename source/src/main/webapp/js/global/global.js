@@ -236,8 +236,8 @@ function displayAppServiceList(selectName, defaultValue) {
 function displayDataLibList(selectName, defaultValue) {
 	
 	return new Promise((resolve,reject)=>{
-		 $("select[id='" + selectName + "']").find('option').remove();
-		  $.when($.getJSON("ReadTestDataLib?name="+selectName+"&limit=99")).then(function (data) {
+            $("."+selectName).find('option').remove();
+		  $.when($.getJSON("ReadTestDataLib?name="+selectName+"&limit=15&like=no")).then(function (data) {
 		
 		        for (var option in data.contentTable) {
 		        	let system = "";
@@ -253,11 +253,11 @@ function displayDataLibList(selectName, defaultValue) {
 		        		country = " - " +data.contentTable[option].country
 		        	}
 		        	
-		            $("select[id='" + selectName + "']").append($('<option></option>').text(data.contentTable[option].name +system+environment+country).val(data.contentTable[option].testDataLibID));
+		            $("."+selectName).append($('<option></option>').text(data.contentTable[option].name +system+environment+country).val(data.contentTable[option].testDataLibID));
 		        }
 		        
 		        if(defaultValue != undefined){
-		        	 $("select[id='" + selectName + "']").val(defaultValue);
+                    $("."+selectName).val(defaultValue);
 		        }
 		        resolve(data);
 

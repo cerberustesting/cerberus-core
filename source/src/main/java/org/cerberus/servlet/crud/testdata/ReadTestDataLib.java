@@ -142,6 +142,7 @@ public class ReadTestDataLib extends HttpServlet {
                     answer = findTestDataLibByID(testDataLibId, appContext, userHasPermissions);
                 }
             } else if (request.getParameter("name") != null && request.getParameter("limit") != null && request.getParameter("like") != null) {
+                System.out.print("ici");
                 answer = findTestDataLibNameList(name, limit, like, appContext);
             } else if (request.getParameter("groups") != null) {
                 //gets the list of distinct groups

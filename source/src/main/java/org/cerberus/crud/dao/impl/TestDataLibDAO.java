@@ -248,9 +248,9 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
-            if((like != null) || (like != "")) {
+            if((like.equals("yes"))) {
             	preStat.setString(1,  "%"+testDataLibName+"%");
-            }else {
+            }else if (like.equals("no")) {
             	preStat.setString(1,  testDataLibName);
             }
             
