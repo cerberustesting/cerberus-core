@@ -357,6 +357,8 @@ public class ActionService implements IActionService {
              * Get element to use String object if not empty, String property if
              * object empty, throws Exception if both empty)
              */
+        	System.out.print(value1);
+
             element = getElementToUse(value1, value2, TestCaseStepAction.ACTION_CLICK, tCExecution);
             /**
              * Get Identifier (identifier, locator) and check it's valid

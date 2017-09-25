@@ -221,13 +221,15 @@ public class TestDataLibDAO implements ITestDataLibDAO {
 
         StringBuilder query = new StringBuilder();
         
-        if((like != null) || (like != "")) {
+        System.out.print(like);
+        
+        if(like.equals("yes")){
         	query.append("SELECT * ")
             .append("FROM testdatalib tdl ")
             .append(" WHERE `name` like  ? ")
             .append(" limit ? ");
         	
-        }else {
+        }else if(like.equals("no")) {
         	query.append("SELECT * ")
             .append("FROM testdatalib tdl ")
             .append(" WHERE `name` =  ? ")

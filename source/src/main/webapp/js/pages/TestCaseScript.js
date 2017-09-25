@@ -2068,6 +2068,7 @@ Action.prototype.generateContent = function () {
     descContainer.append($("<span class='input-group-addon' style='font-weight: 700;' id='labelDiv'></span>"));
     descContainer.append(descField);
     var objectField = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control input-sm");
+ 
     var propertyField = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control input-sm");
 
     var actionconditionval1 = $("<input>").attr("type", "text").addClass("form-control input-sm");
@@ -2137,6 +2138,10 @@ Action.prototype.generateContent = function () {
     firstRow.append(descContainer);
     secondRow.append($("<div></div>").addClass("col-lg-2 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "action_field"))).append(actionList));
     secondRow.append($("<div></div>").addClass("col-lg-5").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value1_field"))).append(objectField));
+    /*if(secondRow.find("col-lg-6").find("label").text() === "Chemin vers l'élement" ){
+    	console.log(".append(choiceField)")
+    }*/
+    console.log(secondRow.find("col-lg-6").find("label"))
     secondRow.append($("<div></div>").addClass("col-lg-5 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value2_field"))).append(propertyField));
     thirdRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_operation_field"))).append(actionconditionoper));
     thirdRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_parameter_field"))).append(actionconditionval1));
@@ -2618,7 +2623,29 @@ var autocompleteAllFields, getTags, setTags;
         
         autocompleteVariable("#propTable .property .row textarea, div.step-action .content div.fieldRow div:nth-child(n+2) input, #stepHeader .step .content .fieldRow div:nth-child(n+2) input, #conditionVal1, #conditionVal2", TagsToUse);
 
-        $("div.step-action .content div.fieldRow div:nth-child(n+2) input").each(function (i, e) {        	
+        var choiceField = '<span class="input-group-addon input-sm" style="display:inline-table;border:0px;padding:0px;float:left;"><select style="width:100px;" class="form-control input-sm"> \n\
+        	<option value=""> </option> \n\
+        	<option value="id">id</option> \n\
+        	<option value="name">name</option> \n\
+        	<option value="class">class</option> \n\
+        	<option value="css">css</option> \n\
+        	<option value="xpath">xpath</option> \n\
+        	<option value="link">link</option> \n\
+        	<option value="data-cerberus">data-cerberus</option> \n\
+        	<option value="coord">coord</option> \n\
+        	<option value="picture">picture</option> \n\
+        	</select></span>'
+        
+        $("div.step-action .content div.fieldRow div:nth-child(n+2) input").each(function (i, e) { 
+        	
+        	
+        	if($(e).parent().find("label").text().includes("Chemin vers l'élement") === true){
+        		$(e).parent().removeClass("col-lg-5").addClass("col-lg-6");
+        		$(e).parent().find("label").after(choiceField);
+        		$(e).css("width","50%");
+        		$(e).parent().parent().find(".col-lg-5").removeClass("col-lg-5").addClass("col-lg-4").find("input").css("width","84%");
+        	}
+        	
             $(e).unbind("input").on("input", function (ev) {
 
                 var name = undefined;
@@ -3182,14 +3209,15 @@ function setPlaceholderProperty(propertyElement, property) {
     	function initChange(){
 
     		if($("#"+editor.container.id).parent().parent().find("[name='propertyType']").val() === "getFromDataLib"){
-                $("#"+editor.container.id).parent().children('.input-group').remove();
+                $("#"+editor.container.id).parent().find('.input-group').remove();
+                console.log( $("#"+editor.container.id).parent().parent().find("div"))
                 if(!isEmpty(editor.getValue())){
                 	$.ajax({
         		    	url: "ReadTestDataLib",
         		    	data:{
         		    		name:editor.getValue(),
-        		    		limit:99,
-        		    		like:""
+        		    		limit:15,
+        		    		like:"no"
         		    	},
         		        async: true,
         		        method: "GET",
@@ -3204,10 +3232,10 @@ function setPlaceholderProperty(propertyElement, property) {
         		                    	 $("#"+editor.getValue()).parent().find("button").attr('onclick', 'openModalDataLib(' + $("#"+editor.getValue()).val()+ ",'EDIT',"+"'"+editor.getValue()+"')");
         		                    });
         		                    $("#"+editor.getValue()).unbind("change").change(function(){
-        		                    	$("#"+editor.getValue()).parent().find("button").remove();
         		                    	$("#"+editor.getValue()).parent().find("button").attr('onclick', 'openModalDataLib(' + $("#"+editor.getValue()).val()+ ",'EDIT',"+"'"+editor.getValue()+"')");
         		                    })   
         		                }else{
+        		                	console.log(editor.getValue());
         		                	
         		                	var addEntry = '<div class="input-group col-sm-5 col-sm-offset-3"><select id="'+editor.getValue()+ '"  class="datalib form-control"></select><span class="input-group-btn"><button class="btn btn-secondary" type="button"><span class="glyphicon glyphicon-plus"></span></button></span></div>';                  		                	
         		            		$("#"+editor.container.id).parent().append(addEntry);
@@ -3250,6 +3278,7 @@ function setPlaceholderProperty(propertyElement, property) {
                     if(placeHolders[i].type === "getFromDataLib"){
                         if((editor.getValue()!= null)){
                             initChange();
+                            console.log("je repasse")
                         }
                         editor.on('change', initChange);
 
@@ -3319,8 +3348,6 @@ var staticWordCompleter = {
  * main function of ace editor
  */
 function configureAceEditor(editor, mode, property) {
-
-
     //command Name
     var commandNameForAutoCompletePopup = "cerberusPopup";
     var commandNameForIssueDetection = "cerberusIssueDetection";
@@ -3328,30 +3355,44 @@ function configureAceEditor(editor, mode, property) {
     editor.commands.on("afterExec", function (e) {
     	var langTools = ace.require('ace/ext/language_tools');
     	
-        if(property.type === "getFromDataLib"){
-        	   editor.setOptions({
-                   enableLiveAutocompletion: true
-               });
-               
-               editor.completers = [staticWordCompleter]
-        }else{
 
 	        if (e.command.name == "insertstring" || e.command.name == "paste" || e.command.name == "backspace") {
-	            //recreate the array at each loop
-	            var allKeyword = createAllKeywordList(getKeywordList("object"), getKeywordList("property"));
-	
-	            if (e.command.name != "backspace") {
-	                addCommandForCustomAutoCompletePopup(editor, allKeyword, commandNameForAutoCompletePopup);
-	                editor.commands.exec(commandNameForAutoCompletePopup);//set autocomplete popup
-	            }
-	
-	            addCommandToDetectKeywordIssue(editor, allKeyword, commandNameForIssueDetection);
-	            editor.commands.exec(commandNameForIssueDetection);//set annotation
-	
+	            //recreate the array at each loop     
+		            
+	        	if(property.type === "getFromDataLib"){
+	        		
+		                 
+		            editor.completers = [staticWordCompleter]
+		            
+		            editor.setOptions({
+	        			enableLiveAutocompletion: true
+		            });
+	        	}
+		       
+	        	else{
+	        		     		
+		            var allKeyword = createAllKeywordList(getKeywordList("object"), getKeywordList("property"));
+		            editor.completers = [allKeyword]	         
+		            	
+		            	if (e.command.name != "backspace") {
+		            		console.log(editor.completer);
+			                addCommandForCustomAutoCompletePopup(editor, allKeyword, commandNameForAutoCompletePopup);
+			                editor.commands.exec(commandNameForAutoCompletePopup);//set autocomplete popup
+			            }else{
+			            	addCommandToDetectKeywordIssue(editor, allKeyword, commandNameForIssueDetection);
+			            	editor.commands.exec(commandNameForIssueDetection);//set annotation
+			            }
+		            	
+		            	
+		            }
+	        	
+	        	editor.setOptions({maxLines: 10, enableBasicAutocompletion: true});
+	        }
+
 	            createGuterCellListenner(editor);
 	            property.value1 = editor.session.getValue();
-	        }
-        }
+	        
+        
     });
 
     //editor option
@@ -3365,7 +3406,7 @@ function configureAceEditor(editor, mode, property) {
 
     editor.setTheme("ace/theme/chrome");
     editor.$blockScrolling = "Infinity";//disable error message
-    editor.setOptions({maxLines: 10, enableBasicAutocompletion: true});
+    
     //set text previously input
     editor.setValue(property.value1);
     //lose focus when loaded
