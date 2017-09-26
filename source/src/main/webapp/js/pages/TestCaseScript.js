@@ -2667,7 +2667,7 @@ var autocompleteAllFields, getTags, setTags;
                         },
                 		source: function( request, response ) {
         			        $.ajax({
-        			          url: "ReadAppService?&iDisplayLength=2",
+        			          url: "ReadAppService?service="+$(e).val()+"&limit=15",
         			          dataType: "json",
         			          success: function( data ) {
         			        	 var array =  $.map(data.contentTable, function (item) {
@@ -2688,29 +2688,34 @@ var autocompleteAllFields, getTags, setTags;
         		                $(e).trigger("input");
         			      }
                 	})
-                	
-                	console.log(TagsToUse[4]);
-                	
-                	if(!objectIntoTagToUseExist(TagsToUse[4],$(e).val())){
-                		var addEntry = '<span class="input-group-btn ' +$(e).val().replace(/[^\w\s]/gi, '')+ '"><button id="editEntry" onclick="openModalAppService(\'' + name + '\',\'ADD\'  ,\'TestCase\' );"\n\
+
+                    var addEntry = '<span class="input-group-btn ' +$(e).val().replace(/[^\w\s]/gi, '')+ '"><button id="editEntry" onclick="openModalAppService(\'' + name + '\',\'ADD\'  ,\'TestCase\' );"\n\
                         class="buttonObject btn btn-default input-sm " \n\
                        title="' + doc.getDocLabel("page_applicationObject", "button_create") + '" type="button">\n\
                         <span class="glyphicon glyphicon-plus"></span></button></span>';
 
-                		$(e).parent().find(".input-group-btn").remove();
-                        $(e).parent().append(addEntry);
-                        
-                        
-                	}else if (objectIntoTagToUseExist(TagsToUse[4],$(e).val())) {
-
-                        var editEntry = '<span class="input-group-btn ' +$(e).val()+ '"><button id="editEntry" onclick="openModalAppService(\'' + $(e).val() + '\',\'EDIT\'  ,\'TestCase\' );"\n\
+                    var editEntry = '<span class="input-group-btn ' +$(e).val()+ '"><button id="editEntry" onclick="openModalAppService(\'' + $(e).val() + '\',\'EDIT\'  ,\'TestCase\' );"\n\
                 		class="buttonObject btn btn-default input-sm " \n\
                 		title="' + doc.getDocLabel("page_applicationObject", "button_edit") + '" type="button">\n\
                 		<span class="glyphicon glyphicon-pencil"></span></button></span>';
-                        
-                        $(e).parent().find(".input-group-btn").remove();
-                        $(e).parent().append(editEntry);
-                    }
+
+                    $.ajax({
+                        url: "ReadAppService?service="+$(e).val(),
+                        dataType: "json",
+                        success: function( data ) {
+                            var dataContent = data.contentTable
+                            $(e).parent().find(".input-group-btn").remove();
+                            if(dataContent != null){
+                                $(e).parent().append(editEntry);
+                            }else{
+                                if(!isEmpty($(e).val())){
+                                    $(e).parent().append(addEntry);
+                                }
+                            }
+                        }
+                    });
+                	
+
             	};
             	
                 var name = undefined;

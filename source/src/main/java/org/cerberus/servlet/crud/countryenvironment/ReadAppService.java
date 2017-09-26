@@ -22,10 +22,13 @@ package org.cerberus.servlet.crud.countryenvironment;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import org.apache.log4j.Level;
+import org.cerberus.crud.entity.Application;
+import org.cerberus.crud.service.impl.ApplicationService;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.AppService;
 import org.cerberus.crud.service.impl.AppServiceService;
 import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
@@ -66,6 +69,7 @@ public class ReadAppService extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         //Get SoapLibrarys
+
         String echo = request.getParameter("sEcho");
         String columnName = ParameterParserUtil.parseStringParam(request.getParameter("columnName"), "");
 
@@ -94,9 +98,9 @@ public class ReadAppService extends HttpServlet {
         AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
 
         try {
-            JSONObject jsonResponse;
 
             String system;
+            JSONObject jsonResponse = new JSONObject();
 
             if (request.getParameter("service") == null && Strings.isNullOrEmpty(columnName)) {
                 answer = findAppServiceList(appContext, userHasPermissions, request);
@@ -104,7 +108,10 @@ public class ReadAppService extends HttpServlet {
             } else if (!Strings.isNullOrEmpty(columnName)) {
                 answer = findDistinctValuesOfColumn(appContext, request, columnName);
                 jsonResponse = (JSONObject) answer.getItem();
-            } else {
+            }else if (request.getParameter("service") != null && request.getParameter("limit") != null ){
+                answer = findAppServiceByLikeName(request.getParameter("service"), appContext, Integer.parseInt(request.getParameter("limit")));
+                jsonResponse = (JSONObject) answer.getItem();
+            }else {
                 answer = findAppServiceBySystemByKey(request.getParameter("service"), appContext, userHasPermissions);
                 jsonResponse = (JSONObject) answer.getItem();
             }
@@ -182,6 +189,28 @@ public class ReadAppService extends HttpServlet {
         resp.setItem(response);
 
         return resp;
+    }
+
+    private AnswerItem findAppServiceByLikeName(String key, ApplicationContext appContext, int limit) throws JSONException {
+        AnswerItem answerItem = new AnswerItem();
+        JSONObject response = new JSONObject();
+        appServiceService = appContext.getBean(AppServiceService.class);
+        AnswerList resp = appServiceService.readByLikeName(key, limit);
+        AppService p = null;
+        JSONArray jsonArray = new JSONArray();
+        if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
+            for (AppService appService : (List<AppService>) resp.getDataList()) {
+                jsonArray.put(convertSoapLibraryToJSONObject(appService));
+            }
+        }
+
+        response.put("contentTable", jsonArray);
+        response.put("iTotalRecords", resp.getTotalRows());
+        response.put("iTotalDisplayRecords", resp.getTotalRows());
+
+        answerItem.setItem(response);
+        answerItem.setResultMessage(resp.getResultMessage());
+        return answerItem;
     }
 
     private AnswerItem findDistinctValuesOfColumn(ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {

@@ -98,7 +98,6 @@ public class ReadTestDataLib extends HttpServlet {
         String name = policy.sanitize(request.getParameter("name"));
         String country = policy.sanitize(request.getParameter("country"));
         String like = policy.sanitize(request.getParameter("like"));
-        System.out.println(like);
         String columnName = ParameterParserUtil.parseStringParam(request.getParameter("columnName"), "");
         Integer testDataLibId = 0;
 
@@ -142,7 +141,6 @@ public class ReadTestDataLib extends HttpServlet {
                     answer = findTestDataLibByID(testDataLibId, appContext, userHasPermissions);
                 }
             } else if (request.getParameter("name") != null && request.getParameter("limit") != null && request.getParameter("like") != null) {
-                System.out.print("ici");
                 answer = findTestDataLibNameList(name, limit, like, appContext);
             } else if (request.getParameter("groups") != null) {
                 //gets the list of distinct groups
