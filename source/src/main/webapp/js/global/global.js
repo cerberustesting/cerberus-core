@@ -233,11 +233,11 @@ function displayAppServiceList(selectName, defaultValue) {
 }
 
 
-function displayDataLibList(selectName, defaultValue) {
+function displayDataLibList(selectName, defaultValue, name) {
 	
 	return new Promise((resolve,reject)=>{
-            $("."+selectName).find('option').remove();
-		  $.when($.getJSON("ReadTestDataLib?name="+selectName+"&limit=15&like=no")).then(function (data) {
+			$("#"+selectName).parent().find("select").find('option').remove();
+		  $.when($.getJSON("ReadTestDataLib?name="+name+"&limit=15&like=no")).then(function (data) {
 		
 		        for (var option in data.contentTable) {
 		        	let system = "";
@@ -253,11 +253,11 @@ function displayDataLibList(selectName, defaultValue) {
 		        		country = " - " +data.contentTable[option].country
 		        	}
 		        	
-		            $("."+selectName).append($('<option></option>').text(data.contentTable[option].name +system+environment+country).val(data.contentTable[option].testDataLibID));
+		        	$("#"+selectName).parent().find("select").append($('<option></option>').text(data.contentTable[option].name +system+environment+country).val(data.contentTable[option].testDataLibID));
 		        }
 		        
 		        if(defaultValue != undefined){
-                    $("."+selectName).val(defaultValue);
+		        	$("#"+selectName).parent().find("select").val(defaultValue);
 		        }
 		        resolve(data);
 
@@ -2033,11 +2033,7 @@ function autocompleteVariable(identifier, Tags) {
                                     Tags[tag].array.forEach(function (data) {
                                         arrayLabels.push(data.object);
                                     });
-                                } else if(Tags[tag].regex === "%service\\."){
-                                	Tags[tag].array.forEach(function (data) {
-                                		arrayLabels.push(data.service);
-                                    });
-                                	
+                                
                                 }else {
                                     arrayLabels = Tags[tag].array;
                                 }

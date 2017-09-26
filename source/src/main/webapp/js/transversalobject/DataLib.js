@@ -69,12 +69,10 @@ function openModalAppServiceFromHere(){
 
 
 function openModalDataLib(service,mode,id){
-	console.log(mode);
 	if ($('#editTestDataLibModal').data("initLabel") === undefined){
 		initModalDataLib(id);	
 		$('#editTestDataLibModal').data("initLabel", true);
 	} 
-	console.log(service);
 	
 	$('[data-toggle="popover"]').popover()
 	
@@ -360,8 +358,6 @@ function feedDataLibModal(serviceName, modalId, mode) {
     clearResponseMessageMainPage();
     var formEdit = $('#' + modalId);
     
-    console.log(serviceName);
-    
     if(mode === "DUPLICATE" || mode === "EDIT"){
     	
 	    $.ajax({
@@ -424,7 +420,6 @@ function feedDataLibModal(serviceName, modalId, mode) {
 function feedDataLibModalData(service, modalId, mode, hasPermissionsUpdate) {
     var formEdit = $('#' + modalId);
     var doc = new Doc();
-    console.log(service);
 
     //Destroy the previous Ace object.
     
@@ -511,8 +506,6 @@ function feedDataLibModalData(service, modalId, mode, hasPermissionsUpdate) {
 
 //Highlight envelop on modal loading
         var editor = ace.edit($("#editTestDataLibModal #envelope")[0]);
-        console.log($("#editTestDataLibModal #envelope"))
-        console.log(editor);
         editor.setTheme("ace/theme/chrome");
         editor.getSession().setMode("ace/mode/xml");
         editor.setOptions({

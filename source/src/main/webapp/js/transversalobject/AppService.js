@@ -238,9 +238,8 @@ function confirmAppServiceModalHandler(mode,page) {
             	if(page === "TestCase"){
             		 var Tags = getTags();
   	                for(var i = 0; i < Tags.length; i++){
-  	                    if(Tags[i].regex == "%service\\."){
+  	                    if(Tags[i].regex == null){
   	                        Tags[i].array.push(temp);
-  	                        console.log(temp);
   	                    }
   	                }
   	                $("div.step-action .content div.fieldRow div:nth-child(n+2) input").trigger("input");
