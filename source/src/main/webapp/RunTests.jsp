@@ -51,16 +51,14 @@
                         </div>
                         <div class="panel-body">
                             <div class="row">
-                                <div class="col-xs-3">
-                                    <label class="radio-inline">
-                                        <input name="typeSelect" value="filters" checked type="radio"/><span>Select a list of test</span>
-                                    </label>
-                                    <label class="radio-inline">
-                                        <input name="typeSelect" value="campaign" type="radio"/><span>Select a campaign</span>
-                                    </label>
+                                <div class="col-xs-5">
+                                    <div class="btn-group">
+                                        <button type="button" id="SelectionManual" class="btn btn-success">Manual Selection</button>
+                                        <button type="button" id="SelectionCampaign" class="btn btn-default">Campaign Selection</button>
+                                    </div>
                                 </div>
-                                <form id="campaignSelection" style="display: none;">
-                                    <div class="form-group col-xs-7">
+                                <form id="campaignSelection"  style="display: none;">
+                                    <div class="form-group col-xs-5">
                                         <div class="input-group">
                                             <select class="form-control" id="campaignSelect" style="width: 300px"></select>
                                         </div>
