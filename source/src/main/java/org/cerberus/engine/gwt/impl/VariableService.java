@@ -54,8 +54,6 @@ public class VariableService implements IVariableService {
     @Autowired
     private ApplicationObjectVariableService applicationObjectVariableService;
     @Autowired
-    private AppServiceVariableService appServiceService;
-    @Autowired
     private IRecorderService recorderService;
 
     @Override
@@ -121,25 +119,6 @@ public class VariableService implements IVariableService {
             } else {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Stop Decoding : No more things to decode on (exit when trying to decode ApplicationObject variable) : " + result);
-                }
-                answer.setItem(result);
-                return answer;
-            }
-
-            /**
-             * Decode AppService.
-             */
-            if (result.contains("%")) {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Starting to decode (Application Service) string iteration#" + count_decode + ": " + result);
-                }
-                result = appServiceService.decodeStringWithAppService(result, testCaseExecution, forceCalculation);
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Finished to decode (Application Service) iteration#" + count_decode + ". Result : " + result);
-                }
-            } else {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Stop Decoding : No more things to decode on (exit when trying to decode ApplicationService variable) : " + result);
                 }
                 answer.setItem(result);
                 return answer;
