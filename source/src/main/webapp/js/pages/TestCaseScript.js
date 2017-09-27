@@ -189,10 +189,12 @@ $.when($.getScript("js/global/global.js")).then(function () {
 
                     var propertiesPromise = loadProperties(test, testcase, data.info, property, data.hasPermissionsUpdate);
                     var objectsPromise = loadApplicationObject(data);
+                    var servicesPromise = loadServices()//here we add the code
 
-                    Promise.all([propertiesPromise, objectsPromise]).then(function (data2) {
+                    Promise.all([propertiesPromise, objectsPromise, servicesPromise]).then(function (data2) {
                         var properties = data2[0];
-                        var availableObjects = data2[1];   
+                        var availableObjects = data2[1];
+                        var availableServices = data2[2];
                         var availableProperties = properties.concat(inheritedProperties.filter(function (item) {
                             return properties.indexOf(item) < 0;
                         }));
@@ -253,6 +255,13 @@ $.when($.getScript("js/global/global.js")).then(function () {
                                 regex: "%system\\.",
                                 addBefore: "",
                                 addAfter: "%",
+                                isCreatable: false
+                            },
+                            {
+                                array: availableServices,
+                                regex: null,
+                                addBefore: "",
+                                addAfter: ".",
                                 isCreatable: false
                             },
                             
@@ -2630,11 +2639,7 @@ var autocompleteAllFields, getTags, setTags;
         	
         	
         	
-        	if($(e).parent().parent().find("select").val() != "callService" ){
-        		 autocompleteVariable($(e), TagsToUse);
-        	}
-        	
-        	
+	
         	        	
         	/*
         	if($(e).parent().find("label").text().includes("Chemin vers l'élement") === true){
@@ -2648,7 +2653,8 @@ var autocompleteAllFields, getTags, setTags;
             $(e).unbind("input").on("input", function (ev) {
             	var doc = new Doc()
             	
-            	if($(e).parent().parent().find("select").val() === "callService"){         		
+            	if($(e).parent().parent().find("select").val() === "callService"){ 
+
             		$(e).autocomplete({
             			minLength: 1,
             			messages: {
@@ -2661,24 +2667,35 @@ var autocompleteAllFields, getTags, setTags;
         			          url: "ReadAppService?service="+$(e).val()+"&limit=15",
         			          dataType: "json",
         			          success: function( data ) {
-        			        	 var array =  $.map(data.contentTable, function (item) {
+        			        	 var MyArray =  $.map(data.contentTable, function (item) {
         		        	            return {
         		        	                label: item.service,
         		        	                value: item.service
         		        	            };
         		        	        });
         			        	 
-        			        	 response($.ui.autocomplete.filter(array, request.term));
+        			        	 response($.ui.autocomplete.filter(MyArray, request.term));
 			        	  
         			          }
         			        });
         			      },
+        			     
+       			      
         			      select: function(event, ui) {
         		                var selectedObj = ui.item;        		               
         		                $(e).val(selectedObj.value.replace(/[^\w\s]/gi, ''));
         		                $(e).trigger("input");
+        		                $(e).autocomplete("close")
         			      }
-                	})
+
+                	}).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+                		  return $( "<li>" )
+                		    .data( "ui-autocomplete-item", item )
+                		    .append( "<a>" + item.label + "</a>" )
+                		    .appendTo( ul );
+                		};
+                
+                	
 
                     var addEntry = '<span class="input-group-btn ' +$(e).val().replace(/[^\w\s]/gi, '')+ '"><button id="editEntry" onclick="openModalAppService(\'' + name + '\',\'ADD\'  ,\'TestCase\' );"\n\
                         class="buttonObject btn btn-default input-sm " \n\
@@ -2709,6 +2726,28 @@ var autocompleteAllFields, getTags, setTags;
 
             	}else{
             		autocompleteVariable($(e), TagsToUse);
+            		  $(e).autocomplete({}).data('ui-autocomplete')._renderItem = function (ul, item) {
+                          $(ul).css("min-height", "0px");
+                          var icon = "";
+                          var tag = TagsToUse[this.currentIndexTag];
+                          if (tag.addAfter != "%") {
+                              icon = "<span class='ui-corner-all glyphicon glyphicon-chevron-right' tabindex='-1' style='margin-top:3px; float:right;'></span>";
+                          }
+                          // find corresponding data to use more information than item (application / filename etc)
+                          var object = tag.array.find(function (data) {
+                              if (item != undefined)
+                                  return data.object === item.label;
+                              return false;
+                          });
+
+                          var hover = "";
+                          if (object != null && object.screenshotfilename != undefined && object.screenshotfilename != null) {
+                              hover = 'data-toggle="tooltip" title="<img src=\'http://localhost:8080/Cerberus/ReadApplicationObjectImage?application=' + object.application + '&object=' + object.object + '&time=' + $.now() + '\' />"';
+                          }
+                          return $("<li class='ui-menu-item'>")
+                                  .append("<a class='ui-corner-all' tabindex='-1' style='height:100%' " + hover + " ><span style='float:left;'>" + item.label + "</span>" + icon + "<span style='clear: both; display: block;'></span></a>")
+                                  .appendTo(ul);
+            		  }
             	}
             	
                 var name = undefined;
