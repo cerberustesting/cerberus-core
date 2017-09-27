@@ -133,6 +133,67 @@ public class AppServiceDAO implements IAppServiceDAO {
     }
 
     @Override
+    public AnswerList findAppServiceByLikeName(String service, int limit) {
+        AnswerList response = new AnswerList();
+        boolean throwEx = false;
+        AppService result = null;
+        final String query = "SELECT * FROM appservice srv WHERE `service` LIKE ? limit ?";
+        List<AppService> objectList = new ArrayList<AppService>();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+
+            try {
+                preStat.setString(1, "%"+service+"%");
+                preStat.setInt(2, limit);
+
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    while (resultSet.next()) {
+                        objectList.add(this.loadFromResultSet(resultSet));
+                    }
+
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+
+                    resultSet = preStat.executeQuery("SELECT FOUND_ROWS()");
+                    int nrTotalRows = 0;
+
+                    if (resultSet != null && resultSet.next()) {
+                        nrTotalRows = resultSet.getInt(1);
+                    }
+                    response = new AnswerList(objectList, nrTotalRows);
+                } catch (SQLException exception) {
+                    MyLogger.log(AppServiceDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(AppServiceDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(AppServiceDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(AppServiceDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+
+        response.setResultMessage(msg);
+        response.setDataList(objectList);
+        return response;
+    }
+
+    @Override
     public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
 
         AnswerList response = new AnswerList();
@@ -312,6 +373,7 @@ public class AppServiceDAO implements IAppServiceDAO {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
                 preStat.setString(1, key);
+                System.out.print(preStat);
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     if (resultSet.first()) {

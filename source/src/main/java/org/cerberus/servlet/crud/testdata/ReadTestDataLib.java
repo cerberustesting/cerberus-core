@@ -77,8 +77,8 @@ public class ReadTestDataLib extends HttpServlet {
     }
 
     protected void process(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
-        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+    	
+    	ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
         // Default message to unexpected error.
@@ -140,7 +140,7 @@ public class ReadTestDataLib extends HttpServlet {
                     //gets a lib by id
                     answer = findTestDataLibByID(testDataLibId, appContext, userHasPermissions);
                 }
-            } else if (request.getParameter("name") != null && request.getParameter("limit") != null) {
+            } else if (request.getParameter("name") != null && request.getParameter("limit") != null && request.getParameter("like") != null) {
                 answer = findTestDataLibNameList(name, limit, like, appContext);
             } else if (request.getParameter("groups") != null) {
                 //gets the list of distinct groups
@@ -148,8 +148,6 @@ public class ReadTestDataLib extends HttpServlet {
             } else if (!Strings.isNullOrEmpty(columnName)) {
                 answer = findDistinctValuesOfColumn(appContext, request, columnName);
                 jsonResponse = (JSONObject) answer.getItem();
-            }else if  (request.getParameter("name") != null && request.getParameter("limit") != null && request.getParameter("like") != null) {
-            	answer = findTestDataLibNameList(name, limit, like, appContext);
             }
             else {
                 //no parameters, then retrieves the full list

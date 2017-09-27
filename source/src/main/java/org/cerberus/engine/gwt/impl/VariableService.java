@@ -124,6 +124,7 @@ public class VariableService implements IVariableService {
                 return answer;
             }
 
+
             /**
              * Decode Properties.
              */
@@ -183,7 +184,7 @@ public class VariableService implements IVariableService {
     private List<String> getVariableListFromString(String str) {
         List<String> variable = new ArrayList<String>();
 
-        final String regex = "%(property|system|object)\\..*?%";
+        final String regex = "%(property|system|object|service)\\..*?%";
 
         final Pattern pattern = Pattern.compile(regex);
         final Matcher matcher = pattern.matcher(str);

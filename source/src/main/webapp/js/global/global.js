@@ -233,11 +233,11 @@ function displayAppServiceList(selectName, defaultValue) {
 }
 
 
-function displayDataLibList(selectName, defaultValue) {
+function displayDataLibList(selectName, defaultValue, name) {
 	
 	return new Promise((resolve,reject)=>{
-		 $("select[id='" + selectName + "']").find('option').remove();
-		  $.when($.getJSON("ReadTestDataLib?name="+selectName+"&limit=99")).then(function (data) {
+			$("#"+selectName).parent().find("select").find('option').remove();
+		  $.when($.getJSON("ReadTestDataLib?name="+name+"&limit=15&like=no")).then(function (data) {
 		
 		        for (var option in data.contentTable) {
 		        	let system = "";
@@ -253,11 +253,11 @@ function displayDataLibList(selectName, defaultValue) {
 		        		country = " - " +data.contentTable[option].country
 		        	}
 		        	
-		            $("select[id='" + selectName + "']").append($('<option></option>').text(data.contentTable[option].name +system+environment+country).val(data.contentTable[option].testDataLibID));
+		        	$("#"+selectName).parent().find("select").append($('<option></option>').text(data.contentTable[option].name +system+environment+country).val(data.contentTable[option].testDataLibID));
 		        }
 		        
 		        if(defaultValue != undefined){
-		        	 $("select[id='" + selectName + "']").val(defaultValue);
+		        	$("#"+selectName).parent().find("select").val(defaultValue);
 		        }
 		        resolve(data);
 
@@ -1990,30 +1990,6 @@ function autocompleteVariable(identifier, Tags) {
                     }
                     return false;
                 },
-                create: function () {
-                    $(this).data('ui-autocomplete')._renderItem = function (ul, item) {
-                        $(ul).css("min-height", "0px");
-                        var icon = "";
-                        var tag = Tags[this.currentIndexTag];
-                        if (tag.addAfter != "%") {
-                            icon = "<span class='ui-corner-all glyphicon glyphicon-chevron-right' tabindex='-1' style='margin-top:3px; float:right;'></span>";
-                        }
-                        // find corresponding data to use more information than item (application / filename etc)
-                        var object = tag.array.find(function (data) {
-                            if (item != undefined)
-                                return data.object === item.label;
-                            return false;
-                        });
-
-                        var hover = "";
-                        if (object != null && object.screenshotfilename != undefined && object.screenshotfilename != null) {
-                            hover = 'data-toggle="tooltip" title="<img src=\'http://localhost:8080/Cerberus/ReadApplicationObjectImage?application=' + object.application + '&object=' + object.object + '&time=' + $.now() + '\' />"';
-                        }
-                        return $("<li class='ui-menu-item'>")
-                                .append("<a class='ui-corner-all' tabindex='-1' style='height:100%' " + hover + " ><span style='float:left;'>" + item.label + "</span>" + icon + "<span style='clear: both; display: block;'></span></a>")
-                                .appendTo(ul);
-                    };
-                },
                 source: function (request, response) {
                     //Get the part of the string we want (between the last % before our cursor and the cursor)
                     var selectionStart = this.element[0].selectionStart;
@@ -2033,11 +2009,7 @@ function autocompleteVariable(identifier, Tags) {
                                     Tags[tag].array.forEach(function (data) {
                                         arrayLabels.push(data.object);
                                     });
-                                } else if(Tags[tag].regex === "%service\\."){
-                                	Tags[tag].array.forEach(function (data) {
-                                		arrayLabels.push(data.service);
-                                    });
-                                	
+                                
                                 }else {
                                     arrayLabels = Tags[tag].array;
                                 }

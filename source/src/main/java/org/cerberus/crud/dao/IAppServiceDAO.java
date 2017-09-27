@@ -39,6 +39,8 @@ public interface IAppServiceDAO {
 
     AppService findAppServiceByKey(String name) throws CerberusException;
 
+    AnswerList findAppServiceByLikeName(String service, int limit);
+
     /**
      * Get the {@link AppService} List of the given {@link System} with the
      * given Criteria

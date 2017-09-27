@@ -34,6 +34,16 @@ import org.cerberus.util.answer.AnswerList;
  */
 public interface IAppServiceService {
 
+    /**
+     * Get the {@link AppService} List with the
+     * given Criteria
+     *
+     * @param name the name of the service
+     * @param limit the number of {@link AppService} to get
+     * @return
+     */
+    AnswerList readByLikeName(String name, int limit);
+
     AppService findAppServiceByKey(String name) throws CerberusException;
 
     /**

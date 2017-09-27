@@ -225,8 +225,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
                         var availableTags = [
                             "property",
                             "object",
-                            "system",
-                            "service"
+                            "system"
                         ];
 
                         Tags = [
@@ -260,16 +259,17 @@ $.when($.getScript("js/global/global.js")).then(function () {
                             },
                             {
                                 array: availableServices,
-                                regex: "get\\.",
+                                regex: null,
                                 addBefore: "",
-                                addAfter: "%",
-                                isCreatable: true
+                                addAfter: ".",
+                                isCreatable: false
                             },
+                            
                             {
                                 array: availableTags,
                                 regex: "%",
                                 addBefore: "",
-                                addAfter: "%",
+                                addAfter: ".",
                                 isCreatable: false
                             }
                             
@@ -2068,6 +2068,7 @@ Action.prototype.generateContent = function () {
     descContainer.append($("<span class='input-group-addon' style='font-weight: 700;' id='labelDiv'></span>"));
     descContainer.append(descField);
     var objectField = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control input-sm");
+ 
     var propertyField = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control input-sm");
 
     var actionconditionval1 = $("<input>").attr("type", "text").addClass("form-control input-sm");
@@ -2137,6 +2138,9 @@ Action.prototype.generateContent = function () {
     firstRow.append(descContainer);
     secondRow.append($("<div></div>").addClass("col-lg-2 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "action_field"))).append(actionList));
     secondRow.append($("<div></div>").addClass("col-lg-5").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value1_field"))).append(objectField));
+    /*if(secondRow.find("col-lg-6").find("label").text() === "Chemin vers l'élement" ){
+    	console.log(".append(choiceField)")
+    }*/
     secondRow.append($("<div></div>").addClass("col-lg-5 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value2_field"))).append(propertyField));
     thirdRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_operation_field"))).append(actionconditionoper));
     thirdRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_parameter_field"))).append(actionconditionval1));
@@ -2343,7 +2347,8 @@ Control.prototype.generateContent = function () {
     var doc = new Doc();
     var content = $("<div></div>").addClass("content col-lg-9");
     var firstRow = $("<div style='margin-top:15px;'></div>").addClass("fieldRow row form-group");
-    var secondRow = $("<div></div>").addClass("fieldRow row");
+    var secondRow = $("<div></div>").addClass("fieldRow row secondRow input-group");
+    secondRow.css("width","100%");
     var thirdRow = $("<div></div>").addClass("fieldRow row").hide();
 
     var controlList = $("<select></select>").addClass("form-control input-sm").css("width", "100%");
@@ -2355,6 +2360,7 @@ Control.prototype.generateContent = function () {
     var controlValueField = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").addClass("form-control input-sm").css("width", "100%");
     var controlPropertyField = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").addClass("form-control input-sm").css("width", "100%");
 
+    
     var controlconditionval1 = $("<input>").attr("type", "text").addClass("form-control input-sm");
     var controlconditionval2 = $("<input>").attr("type", "text").addClass("form-control input-sm");
     var controlconditionoper = $("<select></select>").addClass("form-control input-sm");
@@ -2388,13 +2394,13 @@ Control.prototype.generateContent = function () {
     });
 
     controlValueField.val(this.value1);
-    controlValueField.css("width", "100%")
+    controlValueField.css("width", "84%")
     controlValueField.on("change", function () {
         obj.value1 = controlValueField.val();
     });
 
     controlPropertyField.val(this.value2);
-    controlPropertyField.css("width", "100%");
+    controlPropertyField.css("width", "84%");
     controlPropertyField.on("change", function () {
         obj.value2 = controlPropertyField.val();
     });
@@ -2615,12 +2621,135 @@ var autocompleteAllFields, getTags, setTags;
         if (thistestcase !== undefined) {
             testcase = thistestcase;
         }
+
+        var choiceField = '<span class="input-group-addon input-sm" style="display:inline-table;border:0px;padding:0px;float:left;"><select style="width:100px;" class="form-control input-sm"> \n\
+        	<option value=""> </option> \n\
+        	<option value="id">id</option> \n\
+        	<option value="name">name</option> \n\
+        	<option value="class">class</option> \n\
+        	<option value="css">css</option> \n\
+        	<option value="xpath">xpath</option> \n\
+        	<option value="link">link</option> \n\
+        	<option value="data-cerberus">data-cerberus</option> \n\
+        	<option value="coord">coord</option> \n\
+        	<option value="picture">picture</option> \n\
+        	</select></span>'
         
-        autocompleteVariable("#propTable .property .row textarea, div.step-action .content div.fieldRow div:nth-child(n+2) input, #stepHeader .step .content .fieldRow div:nth-child(n+2) input, #conditionVal1, #conditionVal2", TagsToUse);
-
-        $("div.step-action .content div.fieldRow div:nth-child(n+2) input").each(function (i, e) {        	
+        $("div.step-action .content div.fieldRow div:nth-child(n+2) input").each(function (i, e) { 
+        	
+        	
+        	
+	
+        	        	
+        	/*
+        	if($(e).parent().find("label").text().includes("Chemin vers l'élement") === true){
+        		$(e).parent().removeClass("col-lg-5").addClass("col-lg-6");
+        		$(e).parent().find("label").after(choiceField);
+        		$(e).css("width","50%");
+        		$(e).parent().parent().find(".col-lg-5").removeClass("col-lg-5").addClass("col-lg-4").find("input").css("width","84%");
+        	}
+        	*/
+        	
             $(e).unbind("input").on("input", function (ev) {
+            	var doc = new Doc()
+            	
+            	if($(e).parent().parent().find("select").val() === "callService"){ 
 
+            		$(e).autocomplete({
+            			minLength: 1,
+            			messages: {
+                            noResults: '',
+                            results: function () {
+                            }
+                        },
+                		source: function( request, response ) {
+        			        $.ajax({
+        			          url: "ReadAppService?service="+$(e).val()+"&limit=15",
+        			          dataType: "json",
+        			          success: function( data ) {
+        			        	 var MyArray =  $.map(data.contentTable, function (item) {
+        		        	            return {
+        		        	                label: item.service,
+        		        	                value: item.service
+        		        	            };
+        		        	        });
+        			        	 
+        			        	 response($.ui.autocomplete.filter(MyArray, request.term));
+			        	  
+        			          }
+        			        });
+        			      },
+        			     
+       			      
+        			      select: function(event, ui) {
+        		                var selectedObj = ui.item;        		               
+        		                $(e).val(selectedObj.value.replace("%", ''));
+        		                $(e).trigger("input");
+        		                $(e).autocomplete("close")
+        			      }
+
+                	}).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+                		  return $( "<li>" )
+                		    .data( "ui-autocomplete-item", item )
+                		    .append( "<a>" + item.label + "</a>" )
+                		    .appendTo( ul );
+                		};
+                
+                	
+
+                    var addEntry = '<span class="input-group-btn ' +$(e).val().replace(/[^\w\s]/gi, '')+ '"><button id="editEntry" onclick="openModalAppService(\'' + name + '\',\'ADD\'  ,\'TestCase\' );"\n\
+                        class="buttonObject btn btn-default input-sm " \n\
+                       title="' + doc.getDocLabel("page_applicationObject", "button_create") + '" type="button">\n\
+                        <span class="glyphicon glyphicon-plus"></span></button></span>';
+
+                    var editEntry = '<span class="input-group-btn ' +$(e).val()+ '"><button id="editEntry" onclick="openModalAppService(\'' + $(e).val() + '\',\'EDIT\'  ,\'TestCase\' );"\n\
+                		class="buttonObject btn btn-default input-sm " \n\
+                		title="' + doc.getDocLabel("page_applicationObject", "button_edit") + '" type="button">\n\
+                		<span class="glyphicon glyphicon-pencil"></span></button></span>';
+
+                    $.ajax({
+                        url: "ReadAppService?service="+$(e).val(),
+                        dataType: "json",
+                        success: function( data ) {
+                            var dataContent = data.contentTable
+                            $(e).parent().find(".input-group-btn").remove();
+                            if(dataContent != null){
+                                $(e).parent().append(editEntry);
+                            }else{
+                                if(!isEmpty($(e).val())){
+                                    $(e).parent().append(addEntry);
+                                }
+                            }
+                        }
+                    });
+                	
+
+            	}else{
+            		autocompleteVariable($(e), TagsToUse);
+            		  $(e).autocomplete({}).data('ui-autocomplete')._renderItem = function (ul, item) {
+                          $(ul).css("min-height", "0px");
+                          var icon = "";
+                          var tag = TagsToUse[this.currentIndexTag];
+                          if (tag.addAfter != "%") {
+                              icon = "<span class='ui-corner-all glyphicon glyphicon-chevron-right' tabindex='-1' style='margin-top:3px; float:right;'></span>";
+                          }
+                          // find corresponding data to use more information than item (application / filename etc)
+                          var object = tag.array.find(function (data) {
+                              if (item != undefined)
+                                  return data.object === item.label;
+                              return false;
+                          });
+
+                          var hover = "";
+                          if (object != null && object.screenshotfilename != undefined && object.screenshotfilename != null) {
+                              hover = 'data-toggle="tooltip" title="<img src=\'http://localhost:8080/Cerberus/ReadApplicationObjectImage?application=' + object.application + '&object=' + object.object + '&time=' + $.now() + '\' />"';
+                          }
+                          return $("<li class='ui-menu-item'>")
+                                  .append("<a class='ui-corner-all' tabindex='-1' style='height:100%' " + hover + " ><span style='float:left;'>" + item.label + "</span>" + icon + "<span style='clear: both; display: block;'></span></a>")
+                                  .appendTo(ul);
+            		  }
+            	}
+            	
                 var name = undefined;
                 var nameNotExist = undefined;                               
                 var objectNotExist = false;
@@ -2679,6 +2808,8 @@ var autocompleteAllFields, getTags, setTags;
                                     $(e).parent().append(editEntry);
                                     $(e).parent().data("LastName", name);
                                    
+                            }else{
+                            	$(e).parent().find(".input-group-btn").remove();
                             }
                         } else if (betweenPercent[i].startsWith("%property.") && findname != null && findname.length > 0) {
                         	
@@ -2696,20 +2827,6 @@ var autocompleteAllFields, getTags, setTags;
                                 nameNotExist = name;
                                 typeNotExist = "applicationObject";
                                 
-                                /*
-                                try{
-                                	$(e).parent().find("."+ $(e).parent().data("LastName")).remove();   
-                                }catch(f){
-                                	$(e).parent().find(".input-group-btn").remove();
-                                }
-                                                       
-                                $(e).parent().append(addEntry);
-                                $("#"+name).off("click");
-                                
-                                $("#"+name).click(function(){
-                                	LoadForm(test,testcase,name,tcInfo);
-                                })
-                                */
                                 $(e).parent().data("LastName", name);
                                 
                             }else{
@@ -2721,62 +2838,7 @@ var autocompleteAllFields, getTags, setTags;
                                 objectNotExist = true;
                                 nameNotExist = name;
                                 typeNotExist = "applicationObject";
-                                
-                                /*
-                                try{
-                                	$(e).parent().find("."+ $(e).parent().data("LastName")).remove();   
-                                }catch(f){
-                                	$(e).parent().find(".input-group-btn").remove();
-                                }
-                                
-                                
-                                $(e).parent().append(editEntry);
-                                $("#"+name).off("click");
-                                
-                                $("#"+name).click(function(){
-                                	LoadForm(test,testcase,name,tcInfo);
-                                })
-                                */
-                                $(e).parent().data("LastName", name);
-                            }
-                        }else if (betweenPercent[i].startsWith("%service.") && findname != null && findname.length > 0){
-                        	
-                            name = findname[0];
-                            name = name.slice(1, name.length - 1);
-                                                    	
-                        	if(!objectIntoTagToUseExist(TagsToUse[4],name)){
-                        		var addEntry = '<span class="input-group-btn ' +name+ '"><button id="editEntry" onclick="openModalAppService(\'' + name + '\',\'ADD\'  ,\'TestCase\' );"\n\
-                                class="buttonObject btn btn-default input-sm " \n\
-                               title="' + doc.getDocLabel("page_applicationObject", "button_create") + '" type="button">\n\
-                                <span class="glyphicon glyphicon-plus"></span></button></span>';
-                        		                                	
-                                objectNotExist = true;
-                                nameNotExist = name;
-                                typeNotExist = "appService";
-                                
-                                try{
-                                	$(e).parent().find("."+ $(e).parent().data("LastName")).remove();   
-                                }catch(e){
-                                	$(e).parent().find(".input-group-btn").remove();
-                                }
-                                                          
-                                $(e).parent().append(addEntry);
-                                $(e).parent().data("LastName", name);
-                                
-                        	}else if (objectIntoTagToUseExist(TagsToUse[4],name)) {
-                                
-                                var editEntry = '<span class="input-group-btn ' +name+ '"><button id="editEntry" onclick="openModalAppService(\'' + name + '\',\'EDIT\'  ,\'TestCase\' );"\n\
-                        		class="buttonObject btn btn-default input-sm " \n\
-                        		title="' + doc.getDocLabel("page_applicationObject", "button_edit") + '" type="button">\n\
-                        		<span class="glyphicon glyphicon-pencil"></span></button></span>';
-                                
-                                try{
-                                	$(e).parent().find("."+ $(e).parent().data("LastName")).remove();   
-                                }catch(e){
-                                	$(e).parent().find(".input-group-btn").remove();
-                                }
-                                                          
-                                $(e).parent().append(editEntry);
+                             
                                 $(e).parent().data("LastName", name);
                             }
                         }else{
@@ -2785,8 +2847,8 @@ var autocompleteAllFields, getTags, setTags;
                         
                         i--;
                     }
-                }else{
-                	$(e).parent().find(".input-group-btn").remove();  
+                }else if ($(e).parent().parent().find("#actionSelect").val() != "callService"){
+                	$(e).parent().find(".input-group-btn").remove();
                 }
                 if (objectNotExist) {
                     if (typeNotExist == "applicationobject") {
@@ -3178,18 +3240,20 @@ function setPlaceholderProperty(propertyElement, property) {
     var placeHolders = placeHoldersList[user.language];
 
     $(propertyElement).find('select[name="propertyType"] option:selected').each(function (i, e) {
+    	
 
     	function initChange(){
 
     		if($("#"+editor.container.id).parent().parent().find("[name='propertyType']").val() === "getFromDataLib"){
-                $("#"+editor.container.id).parent().children('.input-group').remove();
-                if(!isEmpty(editor.getValue())){
+                $("#"+editor.container.id).parent().find('.input-group').remove();
+                var escaped = editor.getValue().replace(/[^\w\s]/gi, '');
+                if(!isEmpty(escaped)){
                 	$.ajax({
         		    	url: "ReadTestDataLib",
         		    	data:{
         		    		name:editor.getValue(),
-        		    		limit:99,
-        		    		like:""
+        		    		limit:15,
+        		    		like:"no"
         		    	},
         		        async: true,
         		        method: "GET",
@@ -3197,26 +3261,26 @@ function setPlaceholderProperty(propertyElement, property) {
         		            if (data.messageType === "OK") {
         		                // Feed the data to the screen and manage authorities.
         		                var service = data.contentTable;
-        		                if(!isEmpty(service)){          	
-        		            		var editEntry = '<div class="input-group col-sm-5 col-sm-offset-3"><select id="'+editor.getValue()+ '"  class="datalib form-control"></select><span class="input-group-btn"><button class="btn btn-secondary" type="button"><span class="glyphicon glyphicon-pencil"></span></button></span></div>';                  		                	
+        		                if(!isEmpty(service)){
+        		            		var editEntry = '<div class="input-group col-sm-5 col-sm-offset-3"><select class="datalib  form-control"></select><span class="input-group-btn"><button class="btn btn-secondary" type="button"><span class="glyphicon glyphicon-pencil"></span></button></span></div>';
         		            		$("#"+editor.container.id).parent().append(editEntry);
-        		                    displayDataLibList(editor.getValue(), undefined).then(function(){
-        		                    	 $("#"+editor.getValue()).parent().find("button").attr('onclick', 'openModalDataLib(' + $("#"+editor.getValue()).val()+ ",'EDIT',"+"'"+editor.getValue()+"')");
+        		                    displayDataLibList(editor.container.id, undefined,escaped).then(function(){
+        		                    	$("#"+editor.container.id).parent().find("button").attr('onclick', 'openModalDataLib(' + $("#"+editor.container.id).parent().find("select").val() + ",'EDIT',"+"'"+escaped+"')");
         		                    });
-        		                    $("#"+editor.getValue()).unbind("change").change(function(){
-        		                    	$("#"+editor.getValue()).parent().find("button").remove();
-        		                    	$("#"+editor.getValue()).parent().find("button").attr('onclick', 'openModalDataLib(' + $("#"+editor.getValue()).val()+ ",'EDIT',"+"'"+editor.getValue()+"')");
+        		                    $("#"+editor.container.id).parent().find("select").unbind("change").change(function(){
+        		                    	$("#"+editor.container.id).parent().find("button").attr('onclick', 'openModalDataLib(' + $("#"+editor.container.id).parent().find("select").val() + ",'EDIT',"+"'"+escaped+"')");
         		                    })   
         		                }else{
+                                    $("#"+editor.container.id).parent().find('.input-group').remove();
         		                	
-        		                	var addEntry = '<div class="input-group col-sm-5 col-sm-offset-3"><select id="'+editor.getValue()+ '"  class="datalib form-control"></select><span class="input-group-btn"><button class="btn btn-secondary" type="button"><span class="glyphicon glyphicon-plus"></span></button></span></div>';                  		                	
+        		                	var addEntry = '<div class="input-group col-sm-5 col-sm-offset-3"><select class="datalib '+escaped+ ' form-control"></select><span class="input-group-btn"><button class="btn btn-secondary" type="button"><span class="glyphicon glyphicon-plus"></span></button></span></div>';
         		            		$("#"+editor.container.id).parent().append(addEntry);
-        		            		  $("#"+editor.getValue()).append($('<option>', {
-        		            		    value: editor.getValue(),
-        		            		    text: editor.getValue()
+        		            		$("#"+editor.container.id).parent().find("select").append($('<option>', {
+        		            		    value: escaped,
+        		            		    text: escaped
         		            		}));
         		                         		                    
-        		                    $("#"+editor.getValue()).parent().find("button").attr('onclick', 'openModalDataLib(\''  + editor.getValue()  + "\','ADD',"+"'"+editor.getValue()+"')");
+        		                    $("."+escaped).parent().find("button").attr('onclick', 'openModalDataLib(\''  + escaped  + "\','ADD',"+"'"+escaped+"')");
         		                    
       		                }
         		            } 
@@ -3245,6 +3309,7 @@ function setPlaceholderProperty(propertyElement, property) {
                     $(e).parents("div[name='propertyLine']").find("div[name='fieldValue1']").removeClass();
                     $(e).parents("div[name='propertyLine']").find("div[name='fieldValue1']").addClass(placeHolders[i].value1Class);
                     //Ace module management
+                    console.log(placeHolders[i].type)
                     configureAceEditor(editor, placeHolders[i].value1EditorMode, property);
 
                     if(placeHolders[i].type === "getFromDataLib"){
@@ -3319,8 +3384,6 @@ var staticWordCompleter = {
  * main function of ace editor
  */
 function configureAceEditor(editor, mode, property) {
-
-
     //command Name
     var commandNameForAutoCompletePopup = "cerberusPopup";
     var commandNameForIssueDetection = "cerberusIssueDetection";
@@ -3328,30 +3391,43 @@ function configureAceEditor(editor, mode, property) {
     editor.commands.on("afterExec", function (e) {
     	var langTools = ace.require('ace/ext/language_tools');
     	
-        if(property.type === "getFromDataLib"){
-        	   editor.setOptions({
-                   enableLiveAutocompletion: true
-               });
-               
-               editor.completers = [staticWordCompleter]
-        }else{
 
 	        if (e.command.name == "insertstring" || e.command.name == "paste" || e.command.name == "backspace") {
-	            //recreate the array at each loop
-	            var allKeyword = createAllKeywordList(getKeywordList("object"), getKeywordList("property"));
-	
-	            if (e.command.name != "backspace") {
-	                addCommandForCustomAutoCompletePopup(editor, allKeyword, commandNameForAutoCompletePopup);
-	                editor.commands.exec(commandNameForAutoCompletePopup);//set autocomplete popup
-	            }
-	
-	            addCommandToDetectKeywordIssue(editor, allKeyword, commandNameForIssueDetection);
-	            editor.commands.exec(commandNameForIssueDetection);//set annotation
-	
+	            //recreate the array at each loop     
+		            
+	        	if(property.type === "getFromDataLib"){
+	        		
+		                 
+		            editor.completers = [staticWordCompleter]
+		            
+		            editor.setOptions({
+	        			enableLiveAutocompletion: true
+		            });
+	        	}
+		       
+	        	else{
+	        		     		
+		            var allKeyword = createAllKeywordList(getKeywordList("object"), getKeywordList("property"));
+		            editor.completers = [allKeyword]	         
+		            	
+		            	if (e.command.name != "backspace") {
+			                addCommandForCustomAutoCompletePopup(editor, allKeyword, commandNameForAutoCompletePopup);
+			                editor.commands.exec(commandNameForAutoCompletePopup);//set autocomplete popup
+			            }else{
+			            	addCommandToDetectKeywordIssue(editor, allKeyword, commandNameForIssueDetection);
+			            	editor.commands.exec(commandNameForIssueDetection);//set annotation
+			            }
+		            	
+		            	
+		            }
+	        	
+	        	editor.setOptions({maxLines: 10, enableBasicAutocompletion: true});
+	        }
+
 	            createGuterCellListenner(editor);
 	            property.value1 = editor.session.getValue();
-	        }
-        }
+	        
+        
     });
 
     //editor option
@@ -3365,7 +3441,7 @@ function configureAceEditor(editor, mode, property) {
 
     editor.setTheme("ace/theme/chrome");
     editor.$blockScrolling = "Infinity";//disable error message
-    editor.setOptions({maxLines: 10, enableBasicAutocompletion: true});
+    
     //set text previously input
     editor.setValue(property.value1);
     //lose focus when loaded
