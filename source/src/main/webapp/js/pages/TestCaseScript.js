@@ -2707,7 +2707,9 @@ var autocompleteAllFields, getTags, setTags;
                     });
                 	
 
-            	};
+            	}else{
+            		autocompleteVariable($(e), TagsToUse);
+            	}
             	
                 var name = undefined;
                 var nameNotExist = undefined;                               
