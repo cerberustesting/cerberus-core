@@ -23,6 +23,12 @@
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
     	
+    	 $(document).on('mouseenter', 'a', function () {
+    	        console.log("je montre");
+    	    }).on('mouseleave', 'a', function () {
+    	    	console.log("je cache");
+    	    });
+    	
     	$('#propName').trigger("change");
     	
     	$('#propName').change(function(){
@@ -708,6 +714,7 @@ function saveScript() {
 function drawPropertyList(property, index) {
     var htmlElement = $("<li></li>").addClass("list-group-item list-group-item-calm row").css("margin-left", "0px");
     $(htmlElement).append($("<a></a>").attr("href", "#propertyLine" + property).text(property));
+    $(htmlElement).find("a").append("<button style='padding:0px;float:right' type='button' class='btn btn-danger'><span class='glyphicon glyphicon-trash'></span></button>")
     $("#propList").append(htmlElement);
 }
 
@@ -1025,6 +1032,11 @@ function loadProperties(test, testcase, testcaseinfo, propertyToFocus, canUpdate
             async: true,
             success: function (data) {
 
+            	 data.sort(function(a, b) {
+                	  return compareStrings(a.property, b.property);
+              	})
+            	
+
                 for (var index = 0; index < data.length; index++) {
                     var property = data[index];
                     array.push(data[index].property);
@@ -1053,6 +1065,13 @@ function loadProperties(test, testcase, testcaseinfo, propertyToFocus, canUpdate
                 for (var index = 0; index < propertyListUnique.length; index++) {
                     drawPropertyList(propertyListUnique[index], index);
                 }
+                
+                array.sort(function(a, b) {
+                	  return compareStrings(a, b);
+              	})
+              	
+              	console.log(array);
+              	
 
                 resolve(array);
 
