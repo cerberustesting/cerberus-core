@@ -18,6 +18,8 @@
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+
+
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
     	
@@ -184,6 +186,9 @@ $.when($.getScript("js/global/global.js")).then(function () {
                     loadTestCaseInfo(data.info);
                     json = data.stepList;
                     sortData(json);
+                    data.inheritedProp.sort(function(a, b) {
+                  	  return compareStrings(a.property, b.property);
+                  	})
                     createStepList(json, stepList, step, data.hasPermissionsUpdate, data.hasPermissionsStepLibrary);
                     var inheritedProperties = drawInheritedProperty(data.inheritedProp);
 
@@ -1578,6 +1583,13 @@ function sortData(agreg) {
     agreg.sort(function (a, b) {
         return a.sort - b.sort;
     });
+}
+
+function compareStrings(a, b) {
+	  a = a.toLowerCase();
+	  b = b.toLowerCase();
+	 
+	  return (a < b) ? -1 : (a > b) ? 1 : 0;
 }
 
 /** JAVASCRIPT OBJECT **/
