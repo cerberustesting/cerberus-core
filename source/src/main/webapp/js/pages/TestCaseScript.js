@@ -2683,7 +2683,7 @@ var autocompleteAllFields, getTags, setTags;
        			      
         			      select: function(event, ui) {
         		                var selectedObj = ui.item;        		               
-        		                $(e).val(selectedObj.value.replace(/[^\w\s]/gi, ''));
+        		                $(e).val(selectedObj.value.replace("%", ''));
         		                $(e).trigger("input");
         		                $(e).autocomplete("close")
         			      }
@@ -3309,6 +3309,7 @@ function setPlaceholderProperty(propertyElement, property) {
                     $(e).parents("div[name='propertyLine']").find("div[name='fieldValue1']").removeClass();
                     $(e).parents("div[name='propertyLine']").find("div[name='fieldValue1']").addClass(placeHolders[i].value1Class);
                     //Ace module management
+                    console.log(placeHolders[i].type)
                     configureAceEditor(editor, placeHolders[i].value1EditorMode, property);
 
                     if(placeHolders[i].type === "getFromDataLib"){
