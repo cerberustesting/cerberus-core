@@ -27,21 +27,27 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 /**
  *
  * @author memiks
-@Entity
-@Table(catalog = "cerberus", schema = "", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"campaign"})})
-@XmlRootElement
-@NamedQueries({
-    @NamedQuery(name = "Campaign.findAll", query = "SELECT c FROM campaign c"),
-    @NamedQuery(name = "Campaign.findByCampaignID", query = "SELECT c FROM campaign c WHERE c.campaignID = :campaignID"),
-    @NamedQuery(name = "Campaign.findByCampaign", query = "SELECT c FROM campaign c WHERE c.campaign = :campaign"),
-    @NamedQuery(name = "Campaign.findByDescription", query = "SELECT c FROM campaign c WHERE c.description = :description")})
+ * @Entity
+ * @Table(catalog = "cerberus", schema = "", uniqueConstraints = {
+ * @UniqueConstraint(columnNames = {"campaign"})})
+ * @XmlRootElement
+ * @NamedQueries({
+ * @NamedQuery(name = "Campaign.findAll", query = "SELECT c FROM campaign c"),
+ * @NamedQuery(name = "Campaign.findByCampaignID", query = "SELECT c FROM
+ * campaign c WHERE c.campaignID = :campaignID"),
+ * @NamedQuery(name = "Campaign.findByCampaign", query = "SELECT c FROM campaign
+ * c WHERE c.campaign = :campaign"),
+ * @NamedQuery(name = "Campaign.findByDescription", query = "SELECT c FROM
+ * campaign c WHERE c.description = :description")})
  */
 public class Campaign implements Serializable {
+
     private static final long serialVersionUID = 1L;
 
     private Integer campaignID;
     private String campaign;
+    private String distribList;
+    private String notifyEndTagExecution;
     private String description;
 
     private List<CampaignParameter> campaignParameterList;
@@ -75,6 +81,22 @@ public class Campaign implements Serializable {
 
     public void setCampaign(String campaign) {
         this.campaign = campaign;
+    }
+
+    public String getDistribList() {
+        return distribList;
+    }
+
+    public void setDistribList(String distribList) {
+        this.distribList = distribList;
+    }
+
+    public String getNotifyEndTagExecution() {
+        return notifyEndTagExecution;
+    }
+
+    public void setNotifyEndTagExecution(String notifyEndTagExecution) {
+        this.notifyEndTagExecution = notifyEndTagExecution;
     }
 
     public String getDescription() {

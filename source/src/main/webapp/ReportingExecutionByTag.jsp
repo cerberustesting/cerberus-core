@@ -111,8 +111,10 @@
                             </div>
                                     <label for="selectTag">Start :</label>
                                     <input type="text" class="form-control" name="startExe" id="startExe" readonly aria-describedby="basic-addon1" >
-                                    <label for="selectTag">End :</label>
+                                    <label for="selectTag">End : (When all execution queue has been closed)</label>
                                     <input type="text" class="form-control" name="endExe" id="endExe" readonly aria-describedby="basic-addon1" >
+                                    <label for="selectTag">Last Execution :</label>
+                                    <input type="text" class="form-control" name="endLastExe" id="endLastExe" readonly aria-describedby="basic-addon1" >
                                 </div>
                             </div>
                         </div>

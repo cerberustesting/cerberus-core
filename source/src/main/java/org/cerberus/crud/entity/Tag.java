@@ -30,6 +30,7 @@ public class Tag {
     private String tag;
     private String description;
     private String campaign;
+    private Timestamp DateEndQueue;
     private String UsrCreated;
     private Timestamp DateCreated;
     private String UsrModif;
@@ -59,6 +60,13 @@ public class Tag {
         this.campaign = campaign;
     }
 
+    public Timestamp getDateEndQueue() {
+        return DateEndQueue;
+    }
+
+    public void setDateEndQueue(Timestamp DateEndQueue) {
+        this.DateEndQueue = DateEndQueue;
+    }
 
     public String getUsrCreated() {
         return UsrCreated;

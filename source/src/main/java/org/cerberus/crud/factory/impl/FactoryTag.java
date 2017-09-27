@@ -31,13 +31,14 @@ import org.springframework.stereotype.Service;
 public class FactoryTag implements IFactoryTag {
 
     @Override
-    public Tag create(long id, String tag, String description, String campaign,
+    public Tag create(long id, String tag, String description, String campaign, Timestamp dateEndQueue,
             String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif) {
         Tag newObject = new Tag();
         newObject.setId(id);
         newObject.setTag(tag);
         newObject.setDescription(description);
         newObject.setCampaign(campaign);
+        newObject.setDateEndQueue(dateEndQueue);
         newObject.setUsrModif(usrModif);
         newObject.setUsrCreated(usrCreated);
         newObject.setDateModif(dateModif);

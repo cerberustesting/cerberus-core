@@ -86,7 +86,7 @@ public interface ITestCaseExecutionQueueDAO {
      * @param stateList list of state to filter.
      * @return @throws CerberusException
      */
-    public AnswerList readQueueToTreatOrRunning(List<String> stateList) throws CerberusException;
+    public AnswerList readByVarious2(List<String> stateList) throws CerberusException;
 
     /**
      *

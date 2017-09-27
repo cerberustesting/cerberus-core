@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.service.impl;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 import org.apache.log4j.Logger;
@@ -105,12 +106,18 @@ public class TagService implements ITagService {
     }
 
     @Override
+    public Answer updateDateEndQueue(String tag, Timestamp newDate) {
+        return tagDAO.updateDateEndQueue(tag, newDate);
+    }
+
+    @Override
     public Answer createAuto(String tagS, String campaign, String user) {
         AnswerItem answerTag;
         answerTag = readByKey(tagS);
         Tag tag = (Tag) answerTag.getItem();
         if (tag == null) {
-            return tagDAO.create(factoryTag.create(0, tagS, "", campaign, user, null, user, null));
+            return tagDAO.create(factoryTag.create(0, tagS, "", campaign, null, user, null, user, null));
+            // If campaign is not empty, we could notify the Start of campaign execution.
         } else {
             if ((StringUtil.isNullOrEmpty(tag.getCampaign())) && !StringUtil.isNullOrEmpty(campaign)) {
                 tag.setCampaign(campaign);

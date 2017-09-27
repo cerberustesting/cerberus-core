@@ -377,6 +377,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
+            LOG.debug("SQL.param.tag : " + tag);
         }
 
         List<TestCaseExecutionQueue> testCaseExecutionInQueueList = new ArrayList<TestCaseExecutionQueue>();
@@ -440,7 +441,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
     }
 
     @Override
-    public AnswerList readQueueToTreatOrRunning(List<String> stateList) throws CerberusException {
+    public AnswerList readByVarious2(List<String> stateList) throws CerberusException {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
         AnswerList answer = new AnswerList();
 

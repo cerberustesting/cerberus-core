@@ -186,7 +186,7 @@ function displayPageLabel(doc) {
 
 
 function loadTagFilters(urlTag) {
-    
+
     $("#selectTag").select2(getComboConfigTag());
 
     if (urlTag !== null) {
@@ -217,9 +217,12 @@ function loadReportingData(selectTag) {
     var params = $("#splitFilter input");
     $("#startExe").val("");
     $("#endExe").val("");
+    $("#endLastExe").val("");
     //Retrieve data for charts and draw them
     var jqxhr = $.get("ReadTestCaseExecutionByTag?Tag=" + selectTag + "&" + statusFilter.serialize() + "&" + countryFilter.serialize() + "&" + params.serialize(), null, "json");
     $.when(jqxhr).then(function (data) {
+        $("#startExe").val(data.tagObject.DateCreated);
+        $("#endExe").val(data.tagObject.DateEndQueue);
         loadByStatusAndByfunctionReports(data.functionChart, selectTag);
         loadEnvCountryBrowserReport(data.statsChart);
         loadReportList(data.table, selectTag);
@@ -249,8 +252,7 @@ function loadByStatusAndByfunctionReports(data, selectTag) {
     $("#ReportByfunctionChart").empty();
     loadReportByStatusTable(data, selectTag);
     loadReportByFunctionChart(data, selectTag);
-    $("#startExe").val(data.globalStart);
-    $("#endExe").val(data.globalEnd);
+    $("#endLastExe").val(data.globalEnd);
 
 }
 

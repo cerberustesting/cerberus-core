@@ -493,11 +493,56 @@ public class TagDAO implements ITagDAO {
     }
 
     @Override
+    public Answer updateDateEndQueue(String tag, Timestamp newDate) {
+        MessageEvent msg = null;
+        String query = "UPDATE tag SET DateEndQueue = ? WHERE Tag = ?";
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.tag : " + tag);
+        }
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                int i = 1;
+                preStat.setTimestamp(i++, newDate);
+                preStat.setString(i++, tag);
+
+                preStat.executeUpdate();
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
+            }
+        }
+        return new Answer(msg);
+    }
+
+    @Override
     public Tag loadFromResultSet(ResultSet rs) throws SQLException {
         long id = ParameterParserUtil.parseLongParam(rs.getString("tag.id"), 0);
         String tag = ParameterParserUtil.parseStringParam(rs.getString("tag.tag"), "");
         String description = ParameterParserUtil.parseStringParam(rs.getString("tag.description"), "");
         String campaign = ParameterParserUtil.parseStringParam(rs.getString("tag.campaign"), "");
+        Timestamp dateEndQueue = rs.getTimestamp("tag.DateEndQueue");
         String usrModif = ParameterParserUtil.parseStringParam(rs.getString("tag.UsrModif"), "");
         String usrCreated = ParameterParserUtil.parseStringParam(rs.getString("tag.UsrCreated"), "");
         Timestamp dateModif = rs.getTimestamp("tag.DateModif");
@@ -505,7 +550,7 @@ public class TagDAO implements ITagDAO {
 
         //TODO remove when working in test with mockito and autowired
         factoryTag = new FactoryTag();
-        return factoryTag.create(id, tag, description, campaign, usrCreated, dateCreated, usrModif, dateModif);
+        return factoryTag.create(id, tag, description, campaign, dateEndQueue, usrCreated, dateCreated, usrModif, dateModif);
     }
 
     @Override

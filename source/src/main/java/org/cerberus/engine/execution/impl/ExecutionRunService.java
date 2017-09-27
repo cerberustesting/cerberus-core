@@ -20,6 +20,7 @@
 package org.cerberus.engine.execution.impl;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -28,6 +29,7 @@ import org.apache.log4j.Level;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.CountryEnvLink;
 import org.cerberus.crud.entity.CountryEnvParam;
+import org.cerberus.crud.entity.Tag;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.crud.entity.TestCaseExecution;
@@ -48,6 +50,7 @@ import org.cerberus.crud.service.ICountryEnvLinkService;
 import org.cerberus.crud.service.ICountryEnvParamService;
 import org.cerberus.crud.service.ILoadTestCaseService;
 import org.cerberus.crud.service.IParameterService;
+import org.cerberus.crud.service.ITagService;
 import org.cerberus.crud.service.ITestCaseCountryPropertiesService;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.crud.service.ITestCaseExecutionService;
@@ -72,7 +75,9 @@ import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
+import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
 import org.cerberus.websocket.TestCaseExecutionEndPoint;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.WebDriverException;
@@ -137,6 +142,8 @@ public class ExecutionRunService implements IExecutionRunService {
     private IVariableService variableService;
     @Autowired
     private IParameterService parameterService;
+    @Autowired
+    private ITagService tagService;
 
     @Override
     public TestCaseExecution executeTestCase(TestCaseExecution tCExecution) throws CerberusException {
@@ -698,6 +705,41 @@ public class ExecutionRunService implements IExecutionRunService {
                 executionQueueService.create(newExeQueue);
             }
 
+            /**
+             * After every execution finished, <br>
+             * if the execution has a tag that has a campaign associated  <br>
+             * and no more executions are in the queue, <br>
+             * we trigger : <br>
+             * 1/ The update of the EndExeQueue of the tag <br>
+             * 2/ We notify the Distribution List with execution report status
+             */
+            try {
+                if (!StringUtil.isNullOrEmpty(tCExecution.getTag())) {
+                    Tag currentTag = tagService.convert(tagService.readByKey(tCExecution.getTag()));
+                    if ((currentTag != null)) {
+                        if (currentTag.getDateEndQueue().before(Timestamp.valueOf("1980-01-01 01:01:01.000000001"))) {
+                            AnswerList answerListQueue = new AnswerList();
+                            answerListQueue = executionQueueService.readQueueOpen(tCExecution.getTag());
+                            if (answerListQueue.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && (answerListQueue.getDataList().isEmpty())) {
+                                LOG.debug("No More executions in (queue) on tag : " + tCExecution.getTag() + " - " + answerListQueue.getDataList().size() + " " + answerListQueue.getMessageCodeString() + " - ");
+                                tagService.updateDateEndQueue(tCExecution.getTag(), new Timestamp(new Date().getTime()));
+                                if (!StringUtil.isNullOrEmpty(currentTag.getCampaign())) {
+                                    // We get the campaig here and potencially send the notification.
+                                }
+                            } else {
+                                LOG.debug("Still executions in queue on tag : " + tCExecution.getTag() + " - " + answerListQueue.getDataList().size() + " " + answerListQueue.getMessageCodeString());
+                            }
+                        } else {
+                            LOG.debug("Tag is already flaged with recent timstamp. " + currentTag.getDateEndQueue());
+                        }
+
+                    }
+                }
+            } catch (Exception e) {
+                LOG.error(e);
+            }
+
+            //
             // After every execution finished we try to trigger more from the queue;-).
             executionThreadPoolService.executeNextInQueueAsynchroneously(false);
 

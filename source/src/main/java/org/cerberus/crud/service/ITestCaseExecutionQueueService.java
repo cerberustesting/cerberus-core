@@ -63,7 +63,7 @@ public interface ITestCaseExecutionQueueService {
      * @return
      * @throws CerberusException
      */
-    public AnswerList readByTagByCriteria(String tag, int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException;
+    AnswerList readByTagByCriteria(String tag, int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException;
 
     /**
      *
@@ -73,19 +73,27 @@ public interface ITestCaseExecutionQueueService {
      * @return
      * @throws CerberusException
      */
-    public AnswerList readByVarious1(String tag, List<String> stateList, boolean withDependencies) throws CerberusException;
+    AnswerList readByVarious1(String tag, List<String> stateList, boolean withDependencies) throws CerberusException;
 
     /**
      *
      * @return @throws CerberusException
      */
-    public AnswerList readQueueToTreat() throws CerberusException;
+    AnswerList readQueueToTreat() throws CerberusException;
 
     /**
      *
      * @return @throws CerberusException
      */
-    public AnswerList readQueueRunning() throws CerberusException;
+    AnswerList readQueueRunning() throws CerberusException;
+
+    /**
+     *
+     * @param tag
+     * @return
+     * @throws org.cerberus.exception.CerberusException
+     */
+    AnswerList readQueueOpen(String tag) throws CerberusException;
 
     /**
      *

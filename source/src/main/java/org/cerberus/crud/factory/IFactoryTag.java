@@ -33,13 +33,14 @@ public interface IFactoryTag {
      * @param tag
      * @param description
      * @param campaign
+     * @param dateEndQueue
      * @param usrCreated
      * @param dateCreated
      * @param usrModif
      * @param dateModif
      * @return
      */
-    Tag create(long id, String tag, String description, String campaign,
+    Tag create(long id, String tag, String description, String campaign, Timestamp dateEndQueue,
             String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif);
 
     /**
