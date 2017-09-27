@@ -189,12 +189,10 @@ $.when($.getScript("js/global/global.js")).then(function () {
 
                     var propertiesPromise = loadProperties(test, testcase, data.info, property, data.hasPermissionsUpdate);
                     var objectsPromise = loadApplicationObject(data);
-                    var servicesPromise = loadServices()//here we add the code
 
-                    Promise.all([propertiesPromise, objectsPromise, servicesPromise]).then(function (data2) {
+                    Promise.all([propertiesPromise, objectsPromise]).then(function (data2) {
                         var properties = data2[0];
-                        var availableObjects = data2[1];
-                        var availableServices = data2[2];
+                        var availableObjects = data2[1];   
                         var availableProperties = properties.concat(inheritedProperties.filter(function (item) {
                             return properties.indexOf(item) < 0;
                         }));
@@ -255,13 +253,6 @@ $.when($.getScript("js/global/global.js")).then(function () {
                                 regex: "%system\\.",
                                 addBefore: "",
                                 addAfter: "%",
-                                isCreatable: false
-                            },
-                            {
-                                array: availableServices,
-                                regex: null,
-                                addBefore: "",
-                                addAfter: ".",
                                 isCreatable: false
                             },
                             
