@@ -9398,6 +9398,19 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ALTER TABLE `testcaseexecution` CHANGE COLUMN `Tag` `Tag` VARCHAR(255) NULL DEFAULT NULL ;");
         SQLInstruction.add(SQLS.toString());
 
+        // Adding Distrib list to Campaign and Tag.
+        //-- ------------------------ 1227-1228
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `tag` ");
+        SQLS.append("ADD COLUMN `DateEndQueue` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01' AFTER `Campaign`; ");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `campaign` ");
+        SQLS.append("ADD COLUMN `DistribList` TEXT NOT NULL AFTER `campaign`, ");
+        SQLS.append("ADD COLUMN `NotifyEndTagExecution` VARCHAR(5) NOT NULL DEFAULT 'N' AFTER `DistribList`;");
+
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 
