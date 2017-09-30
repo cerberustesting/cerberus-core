@@ -263,7 +263,8 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                         ttcObject.put("shortDesc", testCaseExecution.getDescription());
                         ttcObject.put("status", testCaseExecution.getStatus());
                         ttcObject.put("application", testCaseExecution.getApplication());
-                        if (testCaseExecution.getTestCaseObj() != null) {
+                        boolean testExist = ((testCaseExecution.getTestCaseObj() != null) && (testCaseExecution.getTestCaseObj().getTest() != null));
+                        if (testExist) {
                             ttcObject.put("function", testCaseExecution.getTestCaseObj().getFunction());
                             ttcObject.put("priority", testCaseExecution.getTestCaseObj().getPriority());
                             ttcObject.put("comment", testCaseExecution.getTestCaseObj().getComment());
@@ -274,12 +275,12 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                             }
                         } else {
                             ttcObject.put("function", "");
-                            ttcObject.put("priority", "");
+                            ttcObject.put("priority", 0);
                             ttcObject.put("comment", "");
                             ttcObject.put("bugId", new JSONObject("{\"bugId\":\"\",\"bugTrackerUrl\":\"\"}"));
                         }
                         // Flag that report if test case still exist.
-                        ttcObject.put("testExist", testCaseExecution.getTestCaseObj().getTest() != null);
+                        ttcObject.put("testExist", testExist);
 
                         execTab.put(execKey, execution);
                         ttcObject.put("execTab", execTab);
