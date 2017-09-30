@@ -24,7 +24,6 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import org.cerberus.crud.entity.Campaign;
-import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
@@ -34,33 +33,17 @@ import org.cerberus.util.answer.AnswerList;
  */
 public interface ICampaignDAO {
 
-    List<Campaign> findAll() throws CerberusException;
-
-    Campaign findCampaignByKey(Integer campaignID) throws CerberusException;
-
-    Campaign findCampaignByCampaignName(String campaign) throws CerberusException;
-
-    boolean updateCampaign(Campaign campaign);
-
-    boolean createCampaign(Campaign campaign);
-
-    boolean deleteCampaign(Campaign campaign);
-
-    List<Campaign> findCampaignByCriteria(Integer campaignID, String campaign, String description) throws CerberusException;
-
-    public AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchParameter, String individualSearch);
-
     Campaign loadFromResultSet(ResultSet rs) throws SQLException;
 
     /**
      * Get the {@link Campaign} List of the given {@link System} with the given
      * Criteria
      *
-     * @param startPosition    the start index to look for
-     * @param length           the number of {@link Campaign} to get
-     * @param columnName       the Column name to sort
+     * @param startPosition the start index to look for
+     * @param length the number of {@link Campaign} to get
+     * @param columnName the Column name to sort
      * @param sort
-     * @param searchParameter  the string to search in the {@link Campaign}
+     * @param searchParameter the string to search in the {@link Campaign}
      * @param individualSearch the string to search for each column
      * @return
      */
@@ -73,6 +56,14 @@ public interface ICampaignDAO {
      * @return
      */
     AnswerItem readByKey(String key);
+
+    /**
+     * Get the {@link Campaign} with the given {@link System} and the given key
+     *
+     * @param key the key of the {@link Campaign}
+     * @return
+     */
+    AnswerItem readByKeyTech(int key);
 
     /**
      * @param searchParameter

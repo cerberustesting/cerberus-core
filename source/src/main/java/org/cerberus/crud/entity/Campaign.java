@@ -47,6 +47,7 @@ public class Campaign implements Serializable {
     private Integer campaignID;
     private String campaign;
     private String distribList;
+    private String notifyStartTagExecution;
     private String notifyEndTagExecution;
     private String description;
 
@@ -89,6 +90,14 @@ public class Campaign implements Serializable {
 
     public void setDistribList(String distribList) {
         this.distribList = distribList;
+    }
+
+    public String getNotifyStartTagExecution() {
+        return notifyStartTagExecution;
+    }
+
+    public void setNotifyStartTagExecution(String notifyStartTagExecution) {
+        this.notifyStartTagExecution = notifyStartTagExecution;
     }
 
     public String getNotifyEndTagExecution() {

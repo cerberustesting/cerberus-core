@@ -387,7 +387,7 @@ function editEntryModalSaveHandler() {
 
     showLoaderInModal('#editTestcampaignModal');
     $.ajax({
-        url: "UpdateCampaign2",
+        url: "UpdateCampaign",
         async: true,
         method: "POST",
         data: {
@@ -542,7 +542,7 @@ function removeEntryClick(key) {
     showModalConfirmation(function (ev) {
         var id = $('#confirmationModal #hiddenField1').prop("value");
         $.ajax({
-            url: "DeleteCampaign2?key=" + key,
+            url: "DeleteCampaign?key=" + key,
             async: true,
             method: "GET",
             success: function (data) {

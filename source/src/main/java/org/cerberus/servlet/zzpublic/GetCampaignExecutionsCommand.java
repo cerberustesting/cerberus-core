@@ -152,9 +152,9 @@ public class GetCampaignExecutionsCommand extends HttpServlet {
         try {
             Campaign campaign;
             if (campaignName != null && !"".equals(campaignName.trim())) {
-                campaign = campaignService.findCampaignByCampaignName(campaignName);
+                campaign = campaignService.convert(campaignService.readByKey(campaignName));
             } else {
-                campaign = campaignService.findCampaignByKey(Integer.parseInt(campaignId));
+                campaign = campaignService.convert(campaignService.readByKeyTech(Integer.parseInt(campaignId)));
             }
 
             List<CampaignContent> campaignContentList = campaignService.findCampaignContentsByCampaignName(campaign.getCampaign());
