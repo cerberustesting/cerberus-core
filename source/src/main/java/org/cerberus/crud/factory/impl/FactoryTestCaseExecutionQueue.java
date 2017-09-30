@@ -89,7 +89,7 @@ public class FactoryTestCaseExecutionQueue implements IFactoryTestCaseExecutionQ
     public TestCaseExecutionQueue create(String test, String testCase, String country, String environment, String robot, String robotIP, String robotPort, String browser,
             String browserVersion, String platform, String screenSize, int manualURL, String manualHost, String manualContextRoot, String manualLoginRelativeURL, String manualEnvData,
             String tag, int screenshot, int verbose, String timeout, int pageSource, int seleniumLog, long exeId, Integer retries,
-            String manualExecution, String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif)
+            String manualExecution, int priority, String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif)
             throws FactoryCreationException {
         TestCaseExecutionQueue inQueue = create(NEW_ENTRY_INDEX, test, testCase, country, environment, robot, robotIP, robotPort, browser, browserVersion, platform, screenSize, manualURL, manualHost,
                 manualContextRoot, manualLoginRelativeURL, manualEnvData, tag, screenshot, verbose, timeout, pageSource, seleniumLog, exeId,
@@ -97,7 +97,7 @@ public class FactoryTestCaseExecutionQueue implements IFactoryTestCaseExecutionQ
         inQueue.setState(TestCaseExecutionQueue.State.QUEUED);
         inQueue.setComment("");
         inQueue.setDebugFlag("N");
-        inQueue.setPriority(TestCaseExecutionQueue.PRIORITY_DEFAULT);
+        inQueue.setPriority(priority);
         return inQueue;
     }
     

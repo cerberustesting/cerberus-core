@@ -46,7 +46,7 @@
             <%@ include file="include/global/messagesArea.html"%>
             <%@ include file="include/transversalobject/TestCaseExecutionQueue.html"%>
             <%@ include file="include/transversalobject/TestCase.html"%>
-            
+
             <h1 class="page-title-line" id="title">Execution reporting by tag</h1>
             <div class="row">
                 <div class="col-lg-6" id="FiltersPanel">
@@ -68,53 +68,69 @@
                                         </div>
                                     </div>
                                     <label id="countryLabel" class="bold">Country :</label>
-                            <button id="countrySelectAll" class="glyphicon glyphicon-check" title="select all countries"></button>
-                            <button id="countryUnselectAll" class="glyphicon glyphicon-unchecked" title="unselect all countries"></button>
-                            <div class="form-group" id="countryFilter">
-                            </div>
-                            <label id="statusLabel" class="bold">Status :</label>
-                            <button id="statusSelectAll" class="glyphicon glyphicon-check" title="select all countries"></button>
-                            <button id="statusUnselectAll" class="glyphicon glyphicon-unchecked" title="unselect all countries"></button>
-                            <div class="form-group marginBottom20" id="statusFilter">
-                                <label class="checkbox-inline">
-                                    <input type="checkbox" name="OK" checked/>
-                                    OK
-                                </label>
-                                <label class="checkbox-inline">
-                                    <input type="checkbox" name="KO" checked/>
-                                    KO
-                                </label>
-                                <label class="checkbox-inline">
-                                    <input type="checkbox" name="FA" checked/>
-                                    FA
-                                </label>
-                                <label class="checkbox-inline">
-                                    <input type="checkbox" name="NA" checked/>
-                                    NA
-                                </label>
-                                <label class="checkbox-inline">
-                                    <input type="checkbox" name="NE" checked/>
-                                    NE
-                                </label>
-                                <label class="checkbox-inline">
-                                    <input type="checkbox" name="QU" checked/>
-                                    QU
-                                </label>
-                                <label class="checkbox-inline">
-                                    <input type="checkbox" name="PE" checked/>
-                                    PE
-                                </label>
-                                <label class="checkbox-inline">
-                                    <input type="checkbox" name="CA" checked/>
-                                    CA
-                                </label>
-                            </div>
-                                    <label for="selectTag">Start :</label>
-                                    <input type="text" class="form-control" name="startExe" id="startExe" readonly aria-describedby="basic-addon1" >
-                                    <label for="selectTag">End : (When all execution queue has been closed)</label>
-                                    <input type="text" class="form-control" name="endExe" id="endExe" readonly aria-describedby="basic-addon1" >
-                                    <label for="selectTag">Last Execution :</label>
-                                    <input type="text" class="form-control" name="endLastExe" id="endLastExe" readonly aria-describedby="basic-addon1" >
+                                    <button id="countrySelectAll" class="glyphicon glyphicon-check" title="select all countries"></button>
+                                    <button id="countryUnselectAll" class="glyphicon glyphicon-unchecked" title="unselect all countries"></button>
+                                    <div class="form-group" id="countryFilter">
+                                    </div>
+                                    <label id="statusLabel" class="bold">Status :</label>
+                                    <button id="statusSelectAll" class="glyphicon glyphicon-check" title="select all countries"></button>
+                                    <button id="statusUnselectAll" class="glyphicon glyphicon-unchecked" title="unselect all countries"></button>
+                                    <div class="form-group marginBottom20" id="statusFilter">
+                                        <label class="checkbox-inline">
+                                            <input type="checkbox" name="OK" checked/>
+                                            OK
+                                        </label>
+                                        <label class="checkbox-inline">
+                                            <input type="checkbox" name="KO" checked/>
+                                            KO
+                                        </label>
+                                        <label class="checkbox-inline">
+                                            <input type="checkbox" name="FA" checked/>
+                                            FA
+                                        </label>
+                                        <label class="checkbox-inline">
+                                            <input type="checkbox" name="NA" checked/>
+                                            NA
+                                        </label>
+                                        <label class="checkbox-inline">
+                                            <input type="checkbox" name="NE" checked/>
+                                            NE
+                                        </label>
+                                        <label class="checkbox-inline">
+                                            <input type="checkbox" name="QU" checked/>
+                                            QU
+                                        </label>
+                                        <label class="checkbox-inline">
+                                            <input type="checkbox" name="PE" checked/>
+                                            PE
+                                        </label>
+                                        <label class="checkbox-inline">
+                                            <input type="checkbox" name="CA" checked/>
+                                            CA
+                                        </label>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <label for="startExe">Start :</label>
+                                            <input type="text" class="form-control" name="startExe" id="startExe" readonly aria-describedby="basic-addon1" >
+                                        </div>
+                                    </div>
+                                    <div class="row" id="panelDuration">
+                                        <div class="col-lg-6">
+                                            <label for="endExe">End : (When all execution queue has been closed)</label>
+                                            <input type="text" class="form-control" name="endExe" id="endExe" readonly aria-describedby="basic-addon1" >
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <label for="durExe">Duration (Minutes) :</label>
+                                            <input type="text" class="form-control" name="durExe" id="durExe" readonly aria-describedby="basic-addon1" >
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <label for="endLastExe">Last Execution :</label>
+                                            <input type="text" class="form-control" name="endLastExe" id="endLastExe" readonly aria-describedby="basic-addon1" >
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

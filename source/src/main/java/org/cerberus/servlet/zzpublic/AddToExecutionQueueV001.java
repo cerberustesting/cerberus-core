@@ -94,6 +94,7 @@ public class AddToExecutionQueueV001 extends HttpServlet {
     private static final String PARAMETER_SELENIUM_LOG = "seleniumlog";
     private static final String PARAMETER_RETRIES = "retries";
     private static final String PARAMETER_MANUAL_EXECUTION = "manualexecution";
+    private static final String PARAMETER_EXEPRIORITY = "priority";
 
     private static final int DEFAULT_VALUE_SCREENSHOT = 0;
     private static final int DEFAULT_VALUE_MANUAL_URL = 0;
@@ -103,6 +104,7 @@ public class AddToExecutionQueueV001 extends HttpServlet {
     private static final int DEFAULT_VALUE_SELENIUM_LOG = 1;
     private static final int DEFAULT_VALUE_RETRIES = 0;
     private static final String DEFAULT_VALUE_MANUAL_EXECUTION = "N";
+    private static final int DEFAULT_VALUE_PRIORITY = 1000;
 
     private static final String LINE_SEPARATOR = "\n";
 
@@ -187,6 +189,7 @@ public class AddToExecutionQueueV001 extends HttpServlet {
         int seleniumLog = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_SELENIUM_LOG), DEFAULT_VALUE_SELENIUM_LOG, charset);
         int retries = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_RETRIES), DEFAULT_VALUE_RETRIES, charset);
         String manualExecution = ParameterParserUtil.parseStringParamAndDecode(request.getParameter(PARAMETER_MANUAL_EXECUTION), DEFAULT_VALUE_MANUAL_EXECUTION, charset);
+        int priority = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_EXEPRIORITY), DEFAULT_VALUE_PRIORITY, charset);
 
         // Defining help message.
         String helpMessage = "\nThis servlet is used to add to Cerberus execution queue a list of execution. Execution list will be calculated from cartesian product of "
@@ -216,7 +219,8 @@ public class AddToExecutionQueueV001 extends HttpServlet {
                 + "- " + PARAMETER_PAGE_SOURCE + " : Record Page Source during for every execution triggered. [" + pageSource + "]\n"
                 + "- " + PARAMETER_SELENIUM_LOG + " : Get the SeleniumLog at the end of the execution for every execution triggered. [" + seleniumLog + "]\n"
                 + "- " + PARAMETER_MANUAL_EXECUTION + " : Execute testcase in manual mode for every execution triggered. [" + manualExecution + "]\n"
-                + "- " + PARAMETER_RETRIES + " : Number of tries if the result is not OK for every execution triggered. [" + retries + "]\n";
+                + "- " + PARAMETER_RETRIES + " : Number of tries if the result is not OK for every execution triggered. [" + retries + "]\n"
+                + "- " + PARAMETER_EXEPRIORITY + " : Priority that will be used in the queue for every execution triggered. [" + priority + "]\n";
 
 //        try {
         // Checking the parameter validity.
@@ -317,7 +321,7 @@ public class AddToExecutionQueueV001 extends HttpServlet {
                                                 try {
                                                     toInserts.add(inQueueFactoryService.create(test, testCase, country.getCountry(), environment, robot, robotIP, robotPort, browser, browserVersion,
                                                             platform, screenSize, manualURL, manualHost, manualContextRoot, manualLoginRelativeURL, manualEnvData, tag, screenshot, verbose,
-                                                            timeout, pageSource, seleniumLog, 0, retries, manualExecution, user, null, null, null));
+                                                            timeout, pageSource, seleniumLog, 0, retries, manualExecution, priority, user, null, null, null));
                                                 } catch (FactoryCreationException e) {
                                                     LOG.error("Unable to insert record due to: " + e, e);
                                                     LOG.error("test: " + test + "-" + testCase + "-" + country.getCountry() + "-" + environment + "-" + robot);
@@ -329,7 +333,7 @@ public class AddToExecutionQueueV001 extends HttpServlet {
                                             try {
                                                 toInserts.add(inQueueFactoryService.create(test, testCase, country.getCountry(), environment, robot, robotIP, robotPort, "", browserVersion,
                                                         platform, screenSize, manualURL, manualHost, manualContextRoot, manualLoginRelativeURL, manualEnvData, tag, screenshot, verbose,
-                                                        timeout, pageSource, seleniumLog, 0, retries, manualExecution, user, null, null, null));
+                                                        timeout, pageSource, seleniumLog, 0, retries, manualExecution, priority, user, null, null, null));
                                             } catch (FactoryCreationException e) {
                                                 LOG.error("Unable to insert record due to: " + e, e);
                                                 LOG.error("test: " + test + "-" + testCase + "-" + country.getCountry() + "-" + environment + "-" + robot);

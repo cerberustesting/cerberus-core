@@ -223,6 +223,14 @@ function loadReportingData(selectTag) {
     $.when(jqxhr).then(function (data) {
         $("#startExe").val(data.tagObject.DateCreated);
         $("#endExe").val(data.tagObject.DateEndQueue);
+        $("#durExe").val(data.tagDuration);
+        if (data.tagDuration >= 0) {
+            $("#panelDuration").removeClass("hidden");
+            $("#durExe").removeClass("hidden");
+        } else {
+            $("#panelDuration").addClass("hidden");
+            $("#durExe").addClass("hidden");
+        }
         loadByStatusAndByfunctionReports(data.functionChart, selectTag);
         loadEnvCountryBrowserReport(data.statsChart);
         loadReportList(data.table, selectTag);
