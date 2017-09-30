@@ -19,6 +19,7 @@
  */
 package org.cerberus.service.email.impl;
 
+import org.cerberus.service.email.entity.Email;
 import org.cerberus.service.email.IEmailFactory;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +30,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class EmailFactory implements IEmailFactory {
 
+    @Override
     public Email create(String host, int smtpPort, String userName, String password, boolean setTls, String subject, String body,
             String from, String to, String cc) {
         Email email = new Email();

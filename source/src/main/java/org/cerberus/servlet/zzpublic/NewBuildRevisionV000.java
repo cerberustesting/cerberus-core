@@ -45,7 +45,7 @@ import org.cerberus.version.Infos;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.cerberus.service.email.IEmailService;
-import org.cerberus.service.email.impl.Email;
+import org.cerberus.service.email.entity.Email;
 
 /**
  * @author vertigo

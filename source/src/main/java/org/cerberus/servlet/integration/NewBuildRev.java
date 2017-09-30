@@ -38,7 +38,7 @@ import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.service.email.IEmailGenerationService;
-import org.cerberus.service.email.impl.Email;
+import org.cerberus.service.email.entity.Email;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.version.Infos;

@@ -82,7 +82,8 @@ public class UpdateCampaign extends HttpServlet {
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         ans.setResultMessage(msg);
 
-        response.setContentType("text/html;charset=UTF-8");
+        response.setContentType("application/json");
+        response.setCharacterEncoding("utf8");
         PrintWriter out = response.getWriter();
         String charset = request.getCharacterEncoding();
 
@@ -90,7 +91,11 @@ public class UpdateCampaign extends HttpServlet {
         // Parameter that needs to be secured --> We SECURE+DECODE them
         int cID = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("CampaignID"), 0, charset);
         String c = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("Campaign"), null, charset);
+        String notifystart = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("NotifyStart"), null, charset);
+        String notifyend = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("NotifyEnd"), null, charset);
         String desc = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("Description"), null, charset);
+        // Parameter that we cannot secure as we need the html --> We DECODE them
+        String distriblist = ParameterParserUtil.parseStringParam(request.getParameter("DistribList"), "");
 
         if (StringUtil.isNullOrEmpty(c)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
@@ -114,16 +119,17 @@ public class UpdateCampaign extends HttpServlet {
                 finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) resp);
             } else {
                 Campaign camp = (Campaign) resp.getItem();
-                if (!desc.equals(camp.getDescription())) {
-                    camp.setDescription(desc);
-                    finalAnswer = campaignService.update(camp);
-                    if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                        /**
-                         * Adding Log entry.
-                         */
-                        ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                        logEventService.createForPrivateCalls("/UpdateCampaign", "UPDATE", "Update Campaign : " + c, request);
-                    }
+                camp.setDistribList(distriblist);
+                camp.setNotifyStartTagExecution(notifystart);
+                camp.setNotifyEndTagExecution(notifyend);
+                camp.setDescription(desc);
+                finalAnswer = campaignService.update(camp);
+                if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                    /**
+                     * Adding Log entry.
+                     */
+                    ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                    logEventService.createForPrivateCalls("/UpdateCampaign", "UPDATE", "Update Campaign : " + c, request);
                 }
 
                 if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && battery != null) {

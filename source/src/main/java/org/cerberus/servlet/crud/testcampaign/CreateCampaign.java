@@ -77,7 +77,8 @@ public class CreateCampaign extends HttpServlet {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
-        response.setContentType("text/html;charset=UTF-8");
+        response.setContentType("application/json");
+        response.setCharacterEncoding("utf8");
         String charset = request.getCharacterEncoding();
 
         // Parameter that are already controled by GUI (no need to decode) --> We SECURE them

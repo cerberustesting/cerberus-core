@@ -21,7 +21,7 @@ package org.cerberus.service.email;
 
 import org.cerberus.crud.entity.User;
 import org.cerberus.engine.entity.MessageEvent;
-import org.cerberus.service.email.impl.Email;
+import org.cerberus.service.email.entity.Email;
 
 /**
  *
@@ -40,5 +40,9 @@ public interface IEmailService {
     public MessageEvent generateAndSendDisableEnvEmail(String system, String country, String env);
 
     public MessageEvent generateAndSendNewChainEmail(String system, String country, String env, String chain);
+
+    public MessageEvent generateAndSendNotifyStartTagExecution(String tag, String campaign);
+
+    public MessageEvent generateAndSendNotifyEndTagExecution(String tag, String campaign);
 
 }

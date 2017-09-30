@@ -19,13 +19,17 @@
  */
 package org.cerberus.service.email.impl;
 
+import org.cerberus.service.email.entity.Email;
 import com.mysql.jdbc.StringUtils;
 import org.apache.commons.mail.HtmlEmail;
+import org.cerberus.crud.entity.Campaign;
 import org.cerberus.crud.entity.User;
+import org.cerberus.crud.service.ICampaignService;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.service.email.IEmailGenerationService;
 import org.cerberus.service.email.IEmailService;
+import org.cerberus.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -40,6 +44,8 @@ public class EmailService implements IEmailService {
 
     @Autowired
     private IEmailGenerationService emailGenerationService;
+    @Autowired
+    private ICampaignService campaignService;
 
     @Override
     public void sendHtmlMail(Email cerberusEmail) throws Exception {
@@ -58,7 +64,6 @@ public class EmailService implements IEmailService {
         }
 
         String[] destinataire = cerberusEmail.getTo().split(";");
-
         for (int i = 0; i < destinataire.length; i++) {
             String name;
             String emailaddress;
@@ -73,20 +78,22 @@ public class EmailService implements IEmailService {
             email.addTo(emailaddress, name);
         }
 
-        String[] copy = cerberusEmail.getCc().split(";");
+        if (!StringUtil.isNullOrEmpty(cerberusEmail.getCc())) {
+            String[] copy = cerberusEmail.getCc().split(";");
 
-        for (int i = 0; i < copy.length; i++) {
-            String namecc;
-            String emailaddresscc;
-            if (copy[i].contains("<")) {
-                String[] copydata = copy[i].split("<");
-                namecc = copydata[0].trim();
-                emailaddresscc = copydata[1].replace(">", "").trim();
-            } else {
-                namecc = "";
-                emailaddresscc = copy[i];
+            for (int i = 0; i < copy.length; i++) {
+                String namecc;
+                String emailaddresscc;
+                if (copy[i].contains("<")) {
+                    String[] copydata = copy[i].split("<");
+                    namecc = copydata[0].trim();
+                    emailaddresscc = copydata[1].replace(">", "").trim();
+                } else {
+                    namecc = "";
+                    emailaddresscc = copy[i];
+                }
+                email.addCc(emailaddresscc, namecc);
             }
-            email.addCc(emailaddresscc, namecc);
         }
 
         email.send();
@@ -197,4 +204,68 @@ public class EmailService implements IEmailService {
 
         return new MessageEvent(MessageEventEnum.GENERIC_OK);
     }
+
+    @Override
+    public MessageEvent generateAndSendNotifyStartTagExecution(String tag, String campaign) {
+
+        try {
+            Campaign myCampaign = campaignService.convert(campaignService.readByKey(campaign));
+            if (!StringUtil.isNullOrEmpty(myCampaign.getDistribList()) && myCampaign.getNotifyStartTagExecution().equalsIgnoreCase("Y")) {
+
+                Email email = null;
+
+                email = emailGenerationService.generateNotifyStartTagExecution(tag, campaign, myCampaign.getDistribList());
+
+                try {
+
+                } catch (Exception ex) {
+                    LOG.warn("Exception generating email for Start Tag Execution :" + ex);
+                    return new MessageEvent(MessageEventEnum.GENERIC_ERROR).resolveDescription("REASON", ex.toString());
+                }
+
+                try {
+                    this.sendHtmlMail(email);
+                } catch (Exception ex) {
+                    LOG.warn("Exception sending email for Start Tag Execution :" + ex);
+                    return new MessageEvent(MessageEventEnum.GENERIC_ERROR).resolveDescription("REASON", ex.toString());
+                }
+            }
+        } catch (Exception ex) {
+            LOG.warn("Exception generating email for Start Tag Execution :" + ex);
+            return new MessageEvent(MessageEventEnum.GENERIC_ERROR).resolveDescription("REASON", ex.toString());
+        }
+
+        return new MessageEvent(MessageEventEnum.GENERIC_OK);
+    }
+
+    @Override
+    public MessageEvent generateAndSendNotifyEndTagExecution(String tag, String campaign) {
+
+        try {
+            Campaign myCampaign = campaignService.convert(campaignService.readByKey(campaign));
+            if (!StringUtil.isNullOrEmpty(myCampaign.getDistribList()) && myCampaign.getNotifyEndTagExecution().equalsIgnoreCase("Y")) {
+
+                Email email = null;
+                try {
+                    email = emailGenerationService.generateNotifyEndTagExecution(tag, campaign, myCampaign.getDistribList());
+                } catch (Exception ex) {
+                    LOG.warn("Exception generating email for End Tag Execution :" + ex);
+                    return new MessageEvent(MessageEventEnum.GENERIC_ERROR).resolveDescription("REASON", ex.toString());
+                }
+
+                try {
+                    this.sendHtmlMail(email);
+                } catch (Exception ex) {
+                    LOG.warn("Exception sending email for End Tag Execution :" + ex);
+                    return new MessageEvent(MessageEventEnum.GENERIC_ERROR).resolveDescription("REASON", ex.toString());
+                }
+
+            }
+        } catch (Exception ex) {
+            LOG.warn("Exception generating email for End Tag Execution :" + ex);
+            return new MessageEvent(MessageEventEnum.GENERIC_ERROR).resolveDescription("REASON", ex.toString());
+        }
+        return new MessageEvent(MessageEventEnum.GENERIC_OK);
+    }
+
 }

@@ -2569,7 +2569,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ALTER TABLE `testcasestepaction` ADD COLUMN `Description` VARCHAR(255) NOT NULL DEFAULT ''  AFTER `Property` ;");
         SQLInstruction.add(SQLS.toString());
 
-// Creating table to host test data inside Cerberus (used when we cannot dynamically retreive data from the system).
+        // Creating table to host test data inside Cerberus (used when we cannot dynamically retreive data from the system).
         SQLS = new StringBuilder();
         SQLS.append("CREATE TABLE `testdata` (");
         SQLS.append("  `key` varchar(200) NOT NULL ,");
@@ -2578,7 +2578,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(") ENGINE=InnoDB DEFAULT CHARSET=utf8");
         SQLInstruction.add(SQLS.toString());
 
-//Add parameters for the cerberus acount creation emailing
+        //Add parameters for the cerberus acount creation emailing
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ");
         SQLS.append("('', 'cerberus_accountcreation_defaultpassword', 'Cerberus2014', 'Default Password when creating an account.')");
@@ -2589,17 +2589,17 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('', 'cerberus_notification_accountcreation_activatenotification','N', 'Activation boolean for sending automatic email on account creation. Y value will activate the notifications. Any other value will not.')");
         SQLInstruction.add(SQLS.toString());
 
-//Add email column in user table
+        //Add email column in user table
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `user` ADD COLUMN `Email` VARCHAR(100) NULL AFTER `DefaultSystem`");
         SQLInstruction.add(SQLS.toString());
 
-// Removing internal column inside application table.
+        // Removing internal column inside application table.
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `application` DROP COLUMN `internal` ;");
         SQLInstruction.add(SQLS.toString());
 
-// Fixing a typo ACTON --> ACTION in invariant table.
+        // Fixing a typo ACTON --> ACTION in invariant table.
         SQLS = new StringBuilder();
         SQLS.append("UPDATE `invariant` SET `idname`='ACTION' WHERE `id`='12' and`sort`='45';");
         SQLInstruction.add(SQLS.toString());
@@ -9412,6 +9412,17 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `campaign` ");
         SQLS.append("ADD COLUMN `NotifyStartTagExecution` VARCHAR(5) NOT NULL DEFAULT 'N' AFTER `DistribList` ; ");
+        SQLInstruction.add(SQLS.toString());
+
+        //Add parameters for the cerberus tag execution notification
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ");
+        SQLS.append("('', 'cerberus_notification_tagexecutionstart_subject', '[Cerberus] Tag Execution %TAG% [%CAMPAIGN%] started.', 'Subject of Cerberus start of tag execution notification email. %TAG% and %CAMPAIGN% can be used as variables.')");
+        SQLS.append(",('', 'cerberus_notification_tagexecutionstart_body', 'Hello,<br><br>The Cerberus Tag Execution %TAG% from campaign %CAMPAIGN% has just started.<br><br>You can follow its execution <a href=\"%URLTAGREPORT%\">here</a>.','Cerberus start of tag execution notification email body. %TAG%, %URLTAGREPORT% and %CAMPAIGN% can be used as variables.')");
+        SQLS.append(",('', 'cerberus_notification_tagexecutionstart_from','Cerberus <no.reply@cerberus-testing.org>', 'From field of Cerberus start of tag execution notification email.')");
+        SQLS.append(",('', 'cerberus_notification_tagexecutionend_subject', '[Cerberus] Tag Execution %TAG% [%CAMPAIGN%] finished.', 'Subject of Cerberus end of tag execution notification email. %TAG% and %CAMPAIGN% can be used as variables.')");
+        SQLS.append(",('', 'cerberus_notification_tagexecutionend_body', 'Hello,<br><br>The Cerberus Tag Execution %TAG% from campaign %CAMPAIGN% has just finished.<br><br>You can analyse the result <a href=\"%URLTAGREPORT%\">here</a>.','Cerberus End of tag execution notification email body. %TAG%, %URLTAGREPORT% and %CAMPAIGN% can be used as variables.')");
+        SQLS.append(",('', 'cerberus_notification_tagexecutionend_from','Cerberus <no.reply@cerberus-testing.org>', 'From field of Cerberus end of tag execution notification email.')");
         SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;

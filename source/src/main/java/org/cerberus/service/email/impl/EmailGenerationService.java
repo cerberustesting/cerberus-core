@@ -19,6 +19,7 @@
  */
 package org.cerberus.service.email.impl;
 
+import org.cerberus.service.email.entity.Email;
 import org.cerberus.crud.entity.BatchInvariant;
 import org.cerberus.crud.entity.CountryEnvParam;
 import org.cerberus.crud.entity.User;
@@ -268,4 +269,67 @@ public class EmailGenerationService implements IEmailGenerationService {
         return email;
 
     }
+
+    @Override
+    public Email generateNotifyStartTagExecution(String tag, String campaign, String to) throws Exception {
+        Email email = new Email();
+        String system = "";
+
+        String from = parameterService.getParameterStringByKey("cerberus_notification_tagexecutionstart_from", system,"Cerberus <no.reply@cerberus-testing.org>");
+        String host = parameterService.findParameterByKey("integration_smtp_host", system).getValue();
+        int port = Integer.valueOf(parameterService.findParameterByKey("integration_smtp_port", system).getValue());
+        String userName = parameterService.findParameterByKey("integration_smtp_username", system).getValue();
+        String password = parameterService.findParameterByKey("integration_smtp_password", system).getValue();
+        String subject = parameterService.getParameterStringByKey("cerberus_notification_tagexecutionstart_subject", system, "Empty Subject. Please define parameter 'cerberus_notification_tagexecutionstart_subject'.");
+        String body = parameterService.getParameterStringByKey("cerberus_notification_tagexecutionstart_body", system, "Empty Body. Please define parameter 'cerberus_notification_tagexecutionstart_body'.");
+
+        String cerberusUrl = parameterService.findParameterByKey("cerberus_url", system).getValue();
+        StringBuilder urlreporttag = new StringBuilder();
+        urlreporttag.append(cerberusUrl);
+        urlreporttag.append("/ReportingExecutionByTag.jsp?Tag=");
+        urlreporttag.append(tag);
+        body = body.replace("%TAG%", tag);
+        body = body.replace("%URLTAGREPORT%", urlreporttag.toString());
+        body = body.replace("%CAMPAIGN%", campaign);
+
+        subject = subject.replace("%TAG%", tag);
+        subject = subject.replace("%CAMPAIGN%", campaign);
+        
+        email = emailFactory.create(host, port, userName, password, true, subject, body, from, to, null);
+
+        return email;
+
+    }
+
+    @Override
+    public Email generateNotifyEndTagExecution(String tag, String campaign, String to) throws Exception {
+        Email email = new Email();
+        String system = "";
+
+        String from = parameterService.getParameterStringByKey("cerberus_notification_tagexecutionend_from", system,"Cerberus <no.reply@cerberus-testing.org>");
+        String host = parameterService.findParameterByKey("integration_smtp_host", system).getValue();
+        int port = Integer.valueOf(parameterService.findParameterByKey("integration_smtp_port", system).getValue());
+        String userName = parameterService.findParameterByKey("integration_smtp_username", system).getValue();
+        String password = parameterService.findParameterByKey("integration_smtp_password", system).getValue();
+        String subject = parameterService.getParameterStringByKey("cerberus_notification_tagexecutionend_subject", system, "Empty Subject. Please define parameter 'cerberus_notification_tagexecutionend_subject'.");
+        String body = parameterService.getParameterStringByKey("cerberus_notification_tagexecutionend_body", system, "Empty Body. Please define parameter 'cerberus_notification_tagexecutionend_body'.");
+
+        String cerberusUrl = parameterService.findParameterByKey("cerberus_url", system).getValue();
+        StringBuilder urlreporttag = new StringBuilder();
+        urlreporttag.append(cerberusUrl);
+        urlreporttag.append("/ReportingExecutionByTag.jsp?Tag=");
+        urlreporttag.append(tag);
+        body = body.replace("%TAG%", tag);
+        body = body.replace("%URLTAGREPORT%", urlreporttag.toString());
+        body = body.replace("%CAMPAIGN%", campaign);
+
+        subject = subject.replace("%TAG%", tag);
+        subject = subject.replace("%CAMPAIGN%", campaign);
+        
+        email = emailFactory.create(host, port, userName, password, true, subject, body, from, to, null);
+
+        return email;
+
+    }
+
 }

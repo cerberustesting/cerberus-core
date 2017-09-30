@@ -20,7 +20,7 @@
 package org.cerberus.service.email;
 
 import org.cerberus.crud.entity.User;
-import org.cerberus.service.email.impl.Email;
+import org.cerberus.service.email.entity.Email;
 
 /**
  *
@@ -37,4 +37,8 @@ public interface IEmailGenerationService {
     public Email generateAccountCreationEmail(User user) throws Exception;
 
     public Email generateForgotPasswordEmail(User user) throws Exception;
+    
+    public Email generateNotifyStartTagExecution(String Tag, String campaign, String to) throws Exception;
+    
+    public Email generateNotifyEndTagExecution(String Tag, String campaign, String to) throws Exception;
 }

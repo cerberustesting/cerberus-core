@@ -327,7 +327,7 @@ function editEntryClick(id, system) {
         if ($("#editApplicationModal #applicationObjectsTable_wrapper").length > 0) {
             $("#editApplicationModal #applicationObjectsTable").DataTable().draw();
         } else {
-            var configurations = new TableConfigurationsServerSide("applicationObjectsTable", "ReadApplicationObject?application="+id, "contentTable", aoColumnsFunc2("applicationObjectsTable"), [1, 'asc']);
+            var configurations = new TableConfigurationsServerSide("applicationObjectsTable", "ReadApplicationObject?application="+id, "contentTable", aoColumnsFunc_object("applicationObjectsTable"), [1, 'asc']);
             var table = createDataTableWithPermissions(configurations, function(data){renderOptionsForApplication2(id,data);}, "#applicationObjectList", undefined, true);
         }
 
@@ -524,12 +524,12 @@ function aoColumnsFunc(tableId) {
     return aoColumns;
 }
 
-function aoColumnsFunc2(tableId) {
+function aoColumnsFunc_object(tableId) {
     var doc = new Doc();
     var aoColumns = [
         {"data": "application",
             "sName": "application",
-            "title": doc.getDocOnline("applicationObject", "Application")},
+            "title": doc.getDocOnline("application", "Application")},
         {"data": "object",
             "sName": "object",
             "title": doc.getDocOnline("applicationObject", "Object")},
@@ -541,17 +541,17 @@ function aoColumnsFunc2(tableId) {
             "title": doc.getDocOnline("applicationObject", "ScreenshotFileName")},
         {"data": "usrcreated",
             "sName": "usrcreated",
-            "title": doc.getDocOnline("applicationObject", "UsrCreated")},
+            "title": doc.getDocOnline("transversal", "UsrCreated")},
         {"data": "datecreated",
             "sName": "datecreated",
-            "title": doc.getDocOnline("applicationObject", "DateCreated")},
+            "title": doc.getDocOnline("transversal", "DateCreated")},
         {"data": "usrmodif",
             "sName": "usrmodif",
-            "title": doc.getDocOnline("applicationObject", "UsrModif")
+            "title": doc.getDocOnline("transversal", "UsrModif")
         },
         {"data": "datemodif",
             "sName": "datemodif",
-            "title": doc.getDocOnline("applicationObject", "DateModif")
+            "title": doc.getDocOnline("transversal", "DateModif")
         }
     ];
     return aoColumns;
