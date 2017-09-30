@@ -7319,6 +7319,58 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // New updated Documentation.
         //-- ------------------------ 1222-1223
         SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Add Français invariant.
+        //-- ------------------------ 1224
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `veryshortdesc`) VALUES ('LANGUAGE', 'fr', 200, 'Francais', 'Francais');");
+        SQLInstruction.add(SQLS.toString());
+
+        // Enlarge Tag column size.
+        //-- ------------------------ 1225-1226
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `tag` CHANGE COLUMN `Tag` `Tag` VARCHAR(255) NOT NULL DEFAULT '' ;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcaseexecution` CHANGE COLUMN `Tag` `Tag` VARCHAR(255) NULL DEFAULT NULL ;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Adding Distrib list to Campaign and Tag.
+        //-- ------------------------ 1227-1229
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `tag` ");
+        SQLS.append("ADD COLUMN `DateEndQueue` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01' AFTER `Campaign`; ");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `campaign` ");
+        SQLS.append("ADD COLUMN `DistribList` TEXT NOT NULL AFTER `campaign`, ");
+        SQLS.append("ADD COLUMN `NotifyEndTagExecution` VARCHAR(5) NOT NULL DEFAULT 'N' AFTER `DistribList`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `campaign` ");
+        SQLS.append("ADD COLUMN `NotifyStartTagExecution` VARCHAR(5) NOT NULL DEFAULT 'N' AFTER `DistribList` ; ");
+        SQLInstruction.add(SQLS.toString());
+
+        //Add parameters for the cerberus tag execution notification
+        //-- ------------------------ 1230
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ");
+        SQLS.append("('', 'cerberus_notification_tagexecutionstart_subject', '[Cerberus] Tag Execution %TAG% [%CAMPAIGN%] started.', 'Subject of Cerberus start of tag execution notification email. %TAG% and %CAMPAIGN% can be used as variables.')");
+        SQLS.append(",('', 'cerberus_notification_tagexecutionstart_body', 'Hello,<br><br>The Cerberus Tag Execution %TAG% from campaign %CAMPAIGN% has just started.<br><br>You can follow its execution <a href=\"%URLTAGREPORT%\">here</a>.','Cerberus start of tag execution notification email body. %TAG%, %URLTAGREPORT% and %CAMPAIGN% can be used as variables.')");
+        SQLS.append(",('', 'cerberus_notification_tagexecutionstart_from','Cerberus <no.reply@cerberus-testing.org>', 'From field of Cerberus start of tag execution notification email.')");
+        SQLS.append(",('', 'cerberus_notification_tagexecutionend_subject', '[Cerberus] Tag Execution %TAG% [%CAMPAIGN%] finished.', 'Subject of Cerberus end of tag execution notification email. %TAG% and %CAMPAIGN% can be used as variables.')");
+        SQLS.append(",('', 'cerberus_notification_tagexecutionend_body', 'Hello,<br><br>The Cerberus Tag Execution %TAG% from campaign %CAMPAIGN% has just finished.<br><br>You can analyse the result <a href=\"%URLTAGREPORT%\">here</a>.','Cerberus End of tag execution notification email body. %TAG%, %URLTAGREPORT% and %CAMPAIGN% can be used as variables.')");
+        SQLS.append(",('', 'cerberus_notification_tagexecutionend_from','Cerberus <no.reply@cerberus-testing.org>', 'From field of Cerberus end of tag execution notification email.')");
+        SQLInstruction.add(SQLS.toString());
+
+        // New updated Documentation.
+        //-- ------------------------ 1231-1232
+        SQLS = new StringBuilder();
         SQLS.append("DELETE FROM `documentation`;");
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
@@ -7344,6 +7396,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('application','system','','fr','Système','Un <code class=\\'doc-crbvvoca\\'>système</code> est un groupe d\\'<code class=\\'doc-crbvvoca\\'>applications</code> pour lesquels il y a de temps en temps necessité de faire les changements en même temps.<br> La plupart du temps ces <code class=\\'doc-crbvvoca\\'>applications</code> partagent une même base de donnée et donc une structure de donnée unique.','_application_attributes')");
         SQLS.append(",('application','type','','en','Type','The Type of the <code class=\\'doc-crbvvoca\\'>application</code> define whether the <code class=\\'doc-crbvvoca\\'>application</code> is a GUI, a Service or a Batch Treatment.<br>An automated <code class=\\'doc-crbvvoca\\'>testcase</code> based on a GUI <code class=\\'doc-crbvvoca\\'>application</code> will require a selenium server to execute.','_application_attributes')");
         SQLS.append(",('application','type','','fr','Type','Le type de l\\'<code class=\\'doc-crbvvoca\\'>application</code> defini si l\\'<code class=\\'doc-crbvvoca\\'>application</code> est une interface graphique (GUI), un fournisseur de Service ou un traitement batch.<br>Un <code class=\\'doc-crbvvoca\\'>cas de test</code> automatisé basé sur une <code class=\\'doc-crbvvoca\\'>application</code> de type GUI necessitera un serveur Selenium pour s\\'executer.','_application_attributes')");
+        SQLS.append(",('applicationObject','Object','','en','Object','',NULL)");
+        SQLS.append(",('applicationObject','Object','','fr','Objet','',NULL)");
+        SQLS.append(",('applicationObject','ScreenshotFileName','','en','Image Filename','',NULL)");
+        SQLS.append(",('applicationObject','ScreenshotFileName','','fr','Nom de fichier de l\\'image','',NULL)");
+        SQLS.append(",('applicationObject','Value','','en','Value','',NULL)");
+        SQLS.append(",('applicationObject','Value','','fr','Valeur','',NULL)");
         SQLS.append(",('appservice','application','','en','Application','','_service_library')");
         SQLS.append(",('appservice','application','','fr','Application','','_librairie_de_services')");
         SQLS.append(",('appservice','description','','en','Description','','_service_library')");
@@ -9063,6 +9121,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('test','Description','','fr','Description du test','Description du <code class=\\'doc-crbvvoca\\'>test</code>.','_test')");
         SQLS.append(",('test','Test','','en','Test','A <code class=\\'doc-crbvvoca\\'>test</code> is grouping some <code class=\\'doc-crbvvoca\\'>test case</code> together. The criteria that groups the <code class=\\'doc-crbvvoca\\'>test cases</code> can be an application page or a feature.','_test')");
         SQLS.append(",('test','Test','','fr','Test','Un <code class=\\'doc-crbvvoca\\'>test</code> regroupe plusieurs <code class=\\'doc-crbvvoca\\'>Cas de tests</code> ensemble.','_test')");
+        SQLS.append(",('testcampaign','distribList','','en','Distribution List','',NULL)");
+        SQLS.append(",('testcampaign','distribList','','fr','Liste de distribution','',NULL)");
+        SQLS.append(",('testcampaign','notifyEndTagExecution','','en','Notify the end of execution','',NULL)");
+        SQLS.append(",('testcampaign','notifyEndTagExecution','','fr','Notifier la fin de l\\'execution','',NULL)");
+        SQLS.append(",('testcampaign','notifyStartTagExecution','','en','Notify the start of execution','',NULL)");
+        SQLS.append(",('testcampaign','notifyStartTagExecution','','fr','Notifier le debut de l\\'execution','',NULL)");
         SQLS.append(",('testcase','activePROD','','en','Active PROD','Define whether the <code class=\\'doc-crbvvoca\\'>test case</code> can be executed in PROD environments.<br>If the environment gp1 (attached to the invariant) is PROD and Active PROD is No, the <code class=\\'doc-crbvvoca\\'>test case</code> will never be executed.','_testcase')");
         SQLS.append(",('testcase','activePROD','','fr','Actif PROD',NULL,'_cas_de_test')");
         SQLS.append(",('testcase','activeQA','','en','Active QA','Define whether the <code class=\\'doc-crbvvoca\\'>test case</code> can be executed in QA environments.<br>If the environment gp1 (attached to the invariant) is QA and Active QA is No, the <code class=\\'doc-crbvvoca\\'>test case</code> will never be executed.','_testcase')");
@@ -9075,6 +9139,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('testcase','BugID','','fr','BugID','','_cas_de_test')");
         SQLS.append(",('testcase','Comment','','en','Comment','This is where to add any interesting comment about the <code class=\\'doc-crbvvoca\\'>test case</code>.','_testcase')");
         SQLS.append(",('testcase','Comment','','fr','Commentaire','This is where to add any interesting comment about the <code class=\\'doc-crbvvoca\\'>test case</code>.','_cas_de_test')");
+        SQLS.append(",('testcase','ConditionOper','','en','Condition Operator','',NULL)");
+        SQLS.append(",('testcase','ConditionOper','','fr','Condition Opérateur','',NULL)");
+        SQLS.append(",('testcase','ConditionVal1','','en','Condition Value1','',NULL)");
+        SQLS.append(",('testcase','ConditionVal1','','fr','Condition Value1','',NULL)");
+        SQLS.append(",('testcase','ConditionVal2','','en','Condition Value2','',NULL)");
+        SQLS.append(",('testcase','ConditionVal2','','fr','Condition Value2','',NULL)");
         SQLS.append(",('testcase','countryList','','en','Country List','The list of countries where the test case is defined','_testcase')");
         SQLS.append(",('testcase','countryList','','fr','Liste des pays','La liste des pays sur lesquels le cas de test est défini','_cas_de_test')");
         SQLS.append(",('testcase','Creator','','en','Creator','This is the name of the Cerberus user who created the <code class=\\'doc-crbvvoca\\'>test case</code>.','_testcase')");
@@ -9381,48 +9451,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('user','Team','','fr','Equipe','Correspond à l\\'équipe de l\\'utilisateur','_management_des_utilisateurs')");
         SQLS.append(",('usergroup','GroupName','','en','Group Name','Authorities are managed by group. In order to be granted to a set of feature, you must belong to the corresponding group.<br>Every user can of course belong to as many group as necessary in order to get access to as many feature as required.<br>In order to get the full access to the system you must belong to every group.<br>Some groups are linked together on the test perimeter and integration perimeter.<br><br><b>Test perimeter :</b><br><br><code class=\\'doc-fixed\\'>TestRO</code>: Has read only access to the information related to test cases and also has access to execution reporting options.<br><br><code class=\\'doc-fixed\\'>Test</code>: Can modify non WORKING test cases but cannot delete test cases.<br><br><code class=\\'doc-fixed\\'>TestAdmin</code>: Can modify or delete any test case (including Pre Testing test cases). Can also create or delete a test.<br><br>The minimum group you need to belong is <code class=\\'doc-fixed\\'>TestRO</code> that will give you access in read only to all test data (including its execution reporting page).<br>If you want to be able to modify the testcases (except the WORKING ones), you need <code class=\\'doc-fixed\\'>Test</code> group on top of <code class=\\'doc-fixed\\'>TestRO</code> group.<br>If you want the full access to all testcase (including beeing able to delete any testcase), you will need <code class=\\'doc-fixed\\'>TestAdmin</code> on top of <code class=\\'doc-fixed\\'>TestRO</code> and <code class=\\'doc-fixed\\'>Test</code> group.<br><br><b>Test Data perimeter :</b><br><br><code class=\\'doc-fixed\\'>TestDataManager</code>: Can modify the test data..<br><br><b>Test Execution perimeter :</b><br><br><code class=\\'doc-fixed\\'>RunTest</code>: Can run both Manual and Automated test cases from GUI.<br><br><b>Integration perimeter :</b><br><br><code class=\\'doc-fixed\\'>IntegratorRO</code>: Has access to the integration status.<br><br><code class=\\'doc-fixed\\'>Integrator</code>: Can add an application. Can change parameters of the environments.<br><br><code class=\\'doc-fixed\\'>IntegratorNewChain</code>: Can register the end of the chain execution. Has read only access to the other informations on the same page.<br><br><code class=\\'doc-fixed\\'>IntegratorDeploy</code>: Can disable or enable environments and register new build / revision.<br><br>The minimum group you need to belong is <code class=\\'doc-fixed\\'>IntegratorRO</code> that will give you access in read only to all environment data.<br>If you want to be able to modify the environment data, you need <code class=\\'doc-fixed\\'>Integrator</code> group on top of <code class=\\'doc-fixed\\'>IntegratorRO</code> group.<br><code class=\\'doc-fixed\\'>IntegratorNewChain</code> and <code class=\\'doc-fixed\\'>IntegratorDeploy</code> are used on top of <code class=\\'doc-fixed\\'>Integrator</code> Group to be able to create a new chain on an environment or perform a deploy operation.<br><br><b>Administration perimeter :</b><br><br><code class=\\'doc-fixed\\'>Administrator</code>: Can create, modify or delete users. Has access to log Event and Database Maintenance. Can change Parameter values.','_user_management')");
         SQLS.append(",('usergroup','GroupName','','fr','Nom du groupe',NULL,'_management_des_utilisateurs')");
-        SQLInstruction.add(SQLS.toString());
-
-        // Add Français invariant.
-        //-- ------------------------ 1224
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `veryshortdesc`) VALUES ('LANGUAGE', 'fr', 200, 'Francais', 'Francais');");
-        SQLInstruction.add(SQLS.toString());
-
-        // Enlarge Tag column size.
-        //-- ------------------------ 1225-1226
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `tag` CHANGE COLUMN `Tag` `Tag` VARCHAR(255) NOT NULL DEFAULT '' ;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcaseexecution` CHANGE COLUMN `Tag` `Tag` VARCHAR(255) NULL DEFAULT NULL ;");
-        SQLInstruction.add(SQLS.toString());
-
-        // Adding Distrib list to Campaign and Tag.
-        //-- ------------------------ 1227-1229
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `tag` ");
-        SQLS.append("ADD COLUMN `DateEndQueue` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01' AFTER `Campaign`; ");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `campaign` ");
-        SQLS.append("ADD COLUMN `DistribList` TEXT NOT NULL AFTER `campaign`, ");
-        SQLS.append("ADD COLUMN `NotifyEndTagExecution` VARCHAR(5) NOT NULL DEFAULT 'N' AFTER `DistribList`;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `campaign` ");
-        SQLS.append("ADD COLUMN `NotifyStartTagExecution` VARCHAR(5) NOT NULL DEFAULT 'N' AFTER `DistribList` ; ");
-        SQLInstruction.add(SQLS.toString());
-
-        //Add parameters for the cerberus tag execution notification
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ");
-        SQLS.append("('', 'cerberus_notification_tagexecutionstart_subject', '[Cerberus] Tag Execution %TAG% [%CAMPAIGN%] started.', 'Subject of Cerberus start of tag execution notification email. %TAG% and %CAMPAIGN% can be used as variables.')");
-        SQLS.append(",('', 'cerberus_notification_tagexecutionstart_body', 'Hello,<br><br>The Cerberus Tag Execution %TAG% from campaign %CAMPAIGN% has just started.<br><br>You can follow its execution <a href=\"%URLTAGREPORT%\">here</a>.','Cerberus start of tag execution notification email body. %TAG%, %URLTAGREPORT% and %CAMPAIGN% can be used as variables.')");
-        SQLS.append(",('', 'cerberus_notification_tagexecutionstart_from','Cerberus <no.reply@cerberus-testing.org>', 'From field of Cerberus start of tag execution notification email.')");
-        SQLS.append(",('', 'cerberus_notification_tagexecutionend_subject', '[Cerberus] Tag Execution %TAG% [%CAMPAIGN%] finished.', 'Subject of Cerberus end of tag execution notification email. %TAG% and %CAMPAIGN% can be used as variables.')");
-        SQLS.append(",('', 'cerberus_notification_tagexecutionend_body', 'Hello,<br><br>The Cerberus Tag Execution %TAG% from campaign %CAMPAIGN% has just finished.<br><br>You can analyse the result <a href=\"%URLTAGREPORT%\">here</a>.','Cerberus End of tag execution notification email body. %TAG%, %URLTAGREPORT% and %CAMPAIGN% can be used as variables.')");
-        SQLS.append(",('', 'cerberus_notification_tagexecutionend_from','Cerberus <no.reply@cerberus-testing.org>', 'From field of Cerberus end of tag execution notification email.')");
         SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;
