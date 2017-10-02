@@ -217,7 +217,7 @@
         <servlet-class>org.cerberus.servlet.zzpublic.GetCampaignExecutionsCommand</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>UpdateCampaign2</servlet-name>
+        <servlet-name>UpdateCampaign</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.testcampaign.UpdateCampaign</servlet-class>
     </servlet>
     <servlet>
@@ -225,7 +225,7 @@
         <servlet-class>org.cerberus.servlet.crud.testcampaign.CreateCampaign</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>DeleteCampaign2</servlet-name>
+        <servlet-name>DeleteCampaign</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.testcampaign.DeleteCampaign</servlet-class>
     </servlet>
     <servlet>
@@ -1029,16 +1029,16 @@
         <url-pattern>/GetCampaignExecutionsCommand</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>UpdateCampaign2</servlet-name>
-        <url-pattern>/UpdateCampaign2</url-pattern>
+        <servlet-name>UpdateCampaign</servlet-name>
+        <url-pattern>/UpdateCampaign</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>CreateCampaign</servlet-name>
         <url-pattern>/CreateCampaign</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>DeleteCampaign2</servlet-name>
-        <url-pattern>/DeleteCampaign2</url-pattern>
+        <servlet-name>DeleteCampaign</servlet-name>
+        <url-pattern>/DeleteCampaign</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ReadTestBattery</servlet-name>
@@ -2062,18 +2062,8 @@
             <url-pattern>/GetCampaignExecutionsCommand</url-pattern>
             <url-pattern>/ListCampaignParameter</url-pattern>
             <url-pattern>/UpdateCampaign</url-pattern>
-            <url-pattern>/UpdateCampaign2</url-pattern>
-            <url-pattern>/UpdateCampaignParameter</url-pattern>
-            <url-pattern>/AddCampaign</url-pattern>
             <url-pattern>/CreateCampaign</url-pattern>
-            <url-pattern>/AddCampaignContent</url-pattern>
-            <url-pattern>/AddCampaignContent2</url-pattern>
-            <url-pattern>/AddCampaignParameter</url-pattern>
             <url-pattern>/DeleteCampaign</url-pattern>
-            <url-pattern>/DeleteCampaign2</url-pattern>
-            <url-pattern>/DeleteCampaignContent</url-pattern>
-            <url-pattern>/DeleteCampaignContent2</url-pattern>
-            <url-pattern>/DeleteCampaignParameter</url-pattern>
             <url-pattern>/GetTestBattery</url-pattern>
             <url-pattern>/AddTestBattery</url-pattern>
             <url-pattern>/AddTestBatteryContent</url-pattern>
@@ -2098,7 +2088,6 @@
             <url-pattern>/ReadParameter</url-pattern>
             <url-pattern>/SaveManualExecutionPictureTest</url-pattern>
             <url-pattern>/ReadCampaign</url-pattern>
-            <url-pattern>/ReadCampaignContent</url-pattern>
             <url-pattern>/ReadCampaignParameter</url-pattern>
             <url-pattern>/ReadTestBattery</url-pattern>
             <url-pattern>/ReadInvariant</url-pattern>
