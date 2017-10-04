@@ -19,108 +19,108 @@
  */
 
 $(function () {
-  $('[data-toggle="popover"]').popover()
-  $('#editTestDataLibModal #types').change(function () {
-   if ($(this).val() === "SQL") {
-       $("#panelSQLEdit").collapse("show");
-       $("#panelSERVICEEdit").collapse("hide");
-       $("#panelCSVEdit").collapse("hide");
-   } else if ($(this).val() === "SERVICE") {
-       $("#panelSQLEdit").collapse("hide");
-       $("#panelSERVICEEdit").collapse("show");
-       $("#panelCSVEdit").collapse("hide");
-   } else if ($(this).val() === "CSV") {
-       $("#panelSQLEdit").collapse("hide");
-       $("#panelSERVICEEdit").collapse("hide");
-       $("#panelCSVEdit").collapse("show");
-   } else {
-       $("#panelSQLEdit").collapse("hide");
-       $("#panelSERVICEEdit").collapse("hide");
-       $("#panelCSVEdit").collapse("hide");
-   }
-   
-  });
-  
-  $('#editTestDataLibModal #service').change(function(){
-	  openModalAppServiceFromHere();
-  });
-	  
+    $('[data-toggle="popover"]').popover()
+    $('#editTestDataLibModal #types').change(function () {
+        if ($(this).val() === "SQL") {
+            $("#panelSQLEdit").collapse("show");
+            $("#panelSERVICEEdit").collapse("hide");
+            $("#panelCSVEdit").collapse("hide");
+        } else if ($(this).val() === "SERVICE") {
+            $("#panelSQLEdit").collapse("hide");
+            $("#panelSERVICEEdit").collapse("show");
+            $("#panelCSVEdit").collapse("hide");
+        } else if ($(this).val() === "CSV") {
+            $("#panelSQLEdit").collapse("hide");
+            $("#panelSERVICEEdit").collapse("hide");
+            $("#panelCSVEdit").collapse("show");
+        } else {
+            $("#panelSQLEdit").collapse("hide");
+            $("#panelSERVICEEdit").collapse("hide");
+            $("#panelCSVEdit").collapse("hide");
+        }
+
+    });
+
+    $('#editTestDataLibModal #service').change(function () {
+        openModalAppServiceFromHere();
+    });
+
 })
 
 
-function openModalAppServiceFromHere(){
-	  var doc = new Doc();
-	  
-	  $('#editTestDataLibModal #service').parent().find(".input-group-btn").remove();
-	  
-		if(!isEmpty($('#editTestDataLibModal #service').val())){
-			var formEdit = $("#editTestDataLibModal #editTestLibData");
-			
-			formEdit.find("#methods").prop("disabled", "disabled");
-	        formEdit.find("#servicepaths").prop("readonly", true);
-			
-			var addEntry = '<span class="input-group-btn  ' +name+ '" style="vertical-align:bottom!important"><button id="editEntry" onclick="openModalAppService(\'' + $('#editTestDataLibModal #service').val() + '\',\'EDIT\' );"\n\
+function openModalAppServiceFromHere() {
+    var doc = new Doc();
+
+    $('#editTestDataLibModal #service').parent().find(".input-group-btn").remove();
+
+    if (!isEmpty($('#editTestDataLibModal #service').val())) {
+        var formEdit = $("#editTestDataLibModal #editTestLibData");
+
+        formEdit.find("#methods").prop("disabled", "disabled");
+        formEdit.find("#servicepaths").prop("readonly", true);
+
+        var addEntry = '<span class="input-group-btn  ' + name + '" style="vertical-align:bottom!important"><button id="editEntry" onclick="openModalAppService(\'' + $('#editTestDataLibModal #service').val() + '\',\'EDIT\' );"\n\
             class="buttonObject btn btn-default " \n\
            title="' + doc.getDocLabel("page_applicationObject", "button_create") + '" type="button">\n\
             <span class="glyphicon glyphicon-pencil"></span></button></span>';
-			$('#editTestDataLibModal #service').parent().append(addEntry);
-		}	
+        $('#editTestDataLibModal #service').parent().append(addEntry);
+    }
 }
 
 
-function openModalDataLib(service,mode,id){
-	if ($('#editTestDataLibModal').data("initLabel") === undefined){
-		initModalDataLib(id);	
-		$('#editTestDataLibModal').data("initLabel", true);
-	} 
-	
-	$('[data-toggle="popover"]').popover()
-	
-	
-	if (mode === "EDIT"){
-		editDataLibClick(service);
-	}else if (mode == "ADD"){
-		addDataLibClick(service);
-	}else{
-		duplicateDataLibClick(service);
-	}
+function openModalDataLib(service, mode, id) {
+    if ($('#editTestDataLibModal').data("initLabel") === undefined) {
+        initModalDataLib(id);
+        $('#editTestDataLibModal').data("initLabel", true);
+    }
+
+    $('[data-toggle="popover"]').popover()
+
+
+    if (mode === "EDIT") {
+        editDataLibClick(service);
+    } else if (mode == "ADD") {
+        addDataLibClick(service);
+    } else {
+        duplicateDataLibClick(service);
+    }
 }
 
-function initModalDataLib(id){
-	
-	$('[data-toggle="popover"]').popover({
+function initModalDataLib(id) {
+
+    $('[data-toggle="popover"]').popover({
         'placement': 'auto',
-        'z-index': 1060,          
+        'z-index': 1060,
         'container': 'body'}
     )
-	
-	console.info("init");
-	var doc = new Doc();
-	
+
+    console.info("init");
+    var doc = new Doc();
+
     $("#editDataLibButton").off("click");
     $("#editDataLibButton").click(function () {
-        confirmDataLibModalHandler("EDIT",id);
-    });
-    
-    $("#addDataLibButton").off("click");
-    $("#addDataLibButton").click(function () {
-        confirmDataLibModalHandler("ADD",id);
-    });
-    
-    $("#duplicateDataLibButton").off("click");
-    $("#duplicateDataLibButton").click(function () {
-        confirmDataLibModalHandler("DUPLICATE",id);
+        confirmDataLibModalHandler("EDIT", id);
     });
 
-	displayInvariantList("system", "SYSTEM", false, "", "");
+    $("#addDataLibButton").off("click");
+    $("#addDataLibButton").click(function () {
+        confirmDataLibModalHandler("ADD", id);
+    });
+
+    $("#duplicateDataLibButton").off("click");
+    $("#duplicateDataLibButton").click(function () {
+        confirmDataLibModalHandler("DUPLICATE", id);
+    });
+
+    displayInvariantList("system", "SYSTEM", false, "", "");
     displayInvariantList("environment", "ENVIRONMENT", false, "", "");
     displayInvariantList("country", "COUNTRY", false, "", "");
     displayInvariantList("database", "PROPERTYDATABASE", false, "", "");
     displayInvariantList("databaseUrl", "PROPERTYDATABASE", false, "", "");
     displayInvariantList("databaseCsv", "PROPERTYDATABASE", false, "", "");
     displayInvariantList("types", "TESTDATATYPE", false, "INTERNAL");
-	
-    
+
+
     $("#testCaseListModalLabel").text(doc.getDocLabel("page_testdatalib_m_gettestcases", "title"));
     // TestDataLib content
     $("[name='lbl_name']").html(doc.getDocOnline("testdatalib", "name"));
@@ -180,14 +180,13 @@ function initModalDataLib(id){
  * @param {String} service - type selected
  * @returns {null}
  */
-function
-editDataLibClick(service) {
-	
-	clearResponseMessage($('#editApplicationObjectModal'));
+function editDataLibClick(service) {
+
+    clearResponseMessage($('#editApplicationObjectModal'));
 
     var doc = new Doc();
     $("[name='editSoapLibraryField']").html(doc.getDocLabel("page_appservice", "editSoapLibrary_field"));
-  
+
 
     $('#editDataLibButton').attr('class', 'btn btn-primary');
     $('#editDataLibButton').removeProp('hidden');
@@ -205,7 +204,7 @@ editDataLibClick(service) {
  * @returns {null}
  */
 function duplicateDataLibClick(service) {
-    
+
     $('#editDataLibButton').attr('class', '');
     $('#editDataLibButton').attr('hidden', 'hidden');
     $('#duplicateDataLibButton').attr('class', 'btn btn-primary');
@@ -218,6 +217,7 @@ function duplicateDataLibClick(service) {
 
 /***
  * Open the modal in order to create a new testcase.
+ * @param {String} service - type selected
  * @returns {null}
  */
 function addDataLibClick(service) {
@@ -226,10 +226,10 @@ function addDataLibClick(service) {
 
     $('#editDataLibButton').attr('class', '');
     $('#editDataLibButton').attr('hidden', 'hidden');
-    
+
     $('#addDataLibButton').attr('class', 'btn btn-primary');
     $('#addDataLibButton').removeProp('hidden');
-    
+
     $('#duplicateDataLibButton').attr('class', '');
     $('#duplicateDataLibButton').attr('hidden', 'hidden');
 
@@ -243,11 +243,11 @@ function addDataLibClick(service) {
  * @param {String} id - id of the selected service item if GetFromDataLib is selected.
  * @returns {null}
  */
-function confirmDataLibModalHandler(mode,id) {
+function confirmDataLibModalHandler(mode, id) {
     //shows the modal that allows the creation of test data lib 
     var formEdit = $("#editTestDataLibModal #editTestLibData");
-    
- // Enable the test combo before submit the form.
+
+    // Enable the test combo before submit the form.
     if (mode === 'EDIT') {
         formEdit.find("#service").removeAttr("disabled");
     }
@@ -256,7 +256,7 @@ function confirmDataLibModalHandler(mode,id) {
     if ((mode === "ADD") || (mode === "DUPLICATE")) {
         myServlet = "CreateTestDataLib";
     }
-    
+
     //START client-side validation
     //validates if the property name is not empty
     var nameElement = formEdit.find("#name");
@@ -296,7 +296,7 @@ function confirmDataLibModalHandler(mode,id) {
     dataForm.envelope = encodeURIComponent(editorEnv.getSession().getDocument().getValue());
     var editorScr = ace.edit($("#editTestLibData #script")[0]);
     dataForm.script = encodeURIComponent(editorScr.getSession().getDocument().getValue());
-    
+
     $.ajax({
         url: myServlet,
         async: true,
@@ -323,18 +323,18 @@ function confirmDataLibModalHandler(mode,id) {
         success: function (data) {
             hideLoaderInModal('#editTestDataLibModal');
             if (getAlertType(data.messageType) === "success") {
-            	if(isEmpty(id)){
-            		var oTable = $("#listOfTestDataLib").dataTable();
+                if (isEmpty(id)) {
+                    var oTable = $("#listOfTestDataLib").dataTable();
                     oTable.fnDraw(true);
-            	}else{
-            		displayDataLibList(id,undefined).then(function(){
-            			$("."+id).parent().find("button").attr('onclick', 'openModalDataLib(' + $("."+id).val()+ ",'EDIT',"+"'"+id+"')");
-            			$("."+id).parent().find("button").find('span').removeClass("glyphicon-plus").addClass("glyphicon-pencil")
-            			editor.setValue( $("."+id).val())
-            		})
-            		;
-            	}
-                
+                } else {
+                    displayDataLibList(id, undefined).then(function () {
+                        $("." + id).parent().find("button").attr('onclick', 'openModalDataLib(' + $("." + id).val() + ",'EDIT'," + "'" + id + "')");
+                        $("." + id).parent().find("button").find('span').removeClass("glyphicon-plus").addClass("glyphicon-pencil")
+                        editor.setValue($("." + id).val())
+                    })
+                            ;
+                }
+
                 $('#editTestDataLibModal').modal('hide');
                 showMessage(data);
             } else {
@@ -357,55 +357,55 @@ function confirmDataLibModalHandler(mode,id) {
 function feedDataLibModal(serviceName, modalId, mode) {
     clearResponseMessageMainPage();
     var formEdit = $('#' + modalId);
-    
-    if(mode === "DUPLICATE" || mode === "EDIT"){
-    	
-	    $.ajax({
-	    	url: "ReadTestDataLib?testdatalibid=" + serviceName,
-	        async: true,
-	        method: "GET",
-	        success: function (data) {
-	            if (data.messageType === "OK") {
-	                // Feed the data to the screen and manage authorities.
-	                var service = data.testDataLib;
-	                feedDataLibModalData(service, modalId, mode, data.hasPermissions);
-	
-	                formEdit.modal('show');
-	            } else {
-	                showUnexpectedError();
-	            }
-	        },
-	        error: showUnexpectedError
-	    });
-	
-	}else{
-		
-		var DataObj1 = {};
-		var hasPermissions = true;
-		DataObj1.system = "";
-		DataObj1.country = "";
-		DataObj1.environment = "";
-		DataObj1.libdescription = "";
-		DataObj1.cvsUrl = "";
-		DataObj1.database = "";
-		DataObj1.databaseCsv = "";
-		DataObj1.databaseUrl = "";
-		DataObj1.envelope = "";
-		DataObj1.group = "";
-		DataObj1.method = "";
-		DataObj1.name = serviceName;
-		DataObj1.script = "";
-		DataObj1.separator = "";
-		DataObj1.servicepath = "";
-		DataObj1.service = "";
-		DataObj1.testdatalibid = "";
-		DataObj1.type = "";
-		DataObj1.subDataList = "";
-					
-		feedDataLibModalData(DataObj1, modalId, mode, hasPermissions);
-		formEdit.modal('show');
-	}
-    
+
+    if (mode === "DUPLICATE" || mode === "EDIT") {
+
+        $.ajax({
+            url: "ReadTestDataLib?testdatalibid=" + serviceName,
+            async: true,
+            method: "GET",
+            success: function (data) {
+                if (data.messageType === "OK") {
+                    // Feed the data to the screen and manage authorities.
+                    var service = data.testDataLib;
+                    feedDataLibModalData(service, modalId, mode, data.hasPermissions);
+
+                    formEdit.modal('show');
+                } else {
+                    showUnexpectedError();
+                }
+            },
+            error: showUnexpectedError
+        });
+
+    } else {
+
+        var DataObj1 = {};
+        var hasPermissions = true;
+        DataObj1.system = "";
+        DataObj1.country = "";
+        DataObj1.environment = "";
+        DataObj1.libdescription = "";
+        DataObj1.cvsUrl = "";
+        DataObj1.database = "";
+        DataObj1.databaseCsv = "";
+        DataObj1.databaseUrl = "";
+        DataObj1.envelope = "";
+        DataObj1.group = "";
+        DataObj1.method = "";
+        DataObj1.name = serviceName;
+        DataObj1.script = "";
+        DataObj1.separator = "";
+        DataObj1.servicepath = "";
+        DataObj1.service = "";
+        DataObj1.testdatalibid = "";
+        DataObj1.type = "";
+        DataObj1.subDataList = "";
+
+        feedDataLibModalData(DataObj1, modalId, mode, hasPermissions);
+        formEdit.modal('show');
+    }
+
 }
 
 
@@ -422,23 +422,23 @@ function feedDataLibModalData(service, modalId, mode, hasPermissionsUpdate) {
     var doc = new Doc();
 
     //Destroy the previous Ace object.
-    
-	ace.edit($("#editTestDataLibModal #envelope")[0]).destroy();
+
+    ace.edit($("#editTestDataLibModal #envelope")[0]).destroy();
     ace.edit($("#editTestDataLibModal #script")[0]).destroy();
-    
+
     if (isEmpty(service)) {
-    	activateSOAPServiceFields("#editTestDataLibModal", "");
+        activateSOAPServiceFields("#editTestDataLibModal", "");
     } else {
         var obj = service;
         $('#editTestDataLibModal #testdatalibid').val(obj.testDataLibID);
         $('#editTestDataLibModal #name').prop("value", obj.name);
-        
+
 //        $('#editTestDataLibModal #type option[value="' + obj.type + '"]').attr("selected", "selected");
         $('#editTestDataLibModal #types').prop("value", obj.type);
         $('#editTestDataLibModal #system').find('option[value="' + obj.system + '"]').prop("selected", true);
         $('#editTestDataLibModal #environment').find('option[value="' + obj.environment + '"]').prop("selected", true);
         $('#editTestDataLibModal #country').find('option[value="' + obj.country + '"]').prop("selected", true);
-        
+
         //loads the information for the entries
         $('#editTestDataLibModal #databaseUrl').find('option[value="' + obj.databaseUrl + '"]:first').prop("selected", "selected");
         $('#editTestDataLibModal #service').find('option[value="' + obj.service + '"]:first').prop("selected", "selected");
@@ -478,7 +478,7 @@ function feedDataLibModalData(service, modalId, mode, hasPermissionsUpdate) {
             $("#panelSERVICEEdit").collapse("hide");
             $("#panelCSVEdit").collapse("hide");
         }
-        
+
         openModalAppServiceFromHere();
 
         //loads groups from database
@@ -496,11 +496,11 @@ function feedDataLibModalData(service, modalId, mode, hasPermissionsUpdate) {
 
         // Permission management.
         /*
-        if (!(data["hasPermissions"])) { // If readonly, we only readonly all fields
-            $('#saveTestDataLib').attr('class', '');
-            $('#saveTestDataLib').attr('hidden', 'hidden');
-        }
-        */
+         if (!(data["hasPermissions"])) { // If readonly, we only readonly all fields
+         $('#saveTestDataLib').attr('class', '');
+         $('#saveTestDataLib').attr('hidden', 'hidden');
+         }
+         */
 
         // Loading the list of subdata.       
 
@@ -519,33 +519,32 @@ function feedDataLibModalData(service, modalId, mode, hasPermissionsUpdate) {
         editor.setOptions({
             maxLines: Infinity
         });
-    
+
     }
 
-    
+
     formEdit.find("#testdatalibid").prop("readonly", "readonly");
     formEdit.find("#name").prop("readonly", "readonly");
 
     // Authorities
     if (mode === "EDIT") {
-    	loadTestDataLibSubdataTable(obj.testDataLibID, "subdataTableBody_edit");
-        formEdit.find("#name").prop("readonly", "readonly");
+        loadTestDataLibSubdataTable(obj.testDataLibID, "subdataTableBody_edit");
+        formEdit.find("#name").prop("readonly", "");
     } else {
-    	if (mode === "ADD"){
-    		formEdit.find("#name").prop("readonly", "");
-    		$('#editTestDataLibModal #types option[value="INTERNAL"]').attr("selected", "selected");
-    		$("#editTestDataLibModalLabel").html(doc.getDocOnline("page_testdatalib", "btn_create"));
-    	}
-    	else{
-    		$("#editTestDataLibModalLabel").html(doc.getDocOnline("page_testdatalib", "tooltip_duplicateEntry"));	
-    	}
+        formEdit.find("#name").prop("readonly", "");
+        if (mode === "ADD") {
+            $('#editTestDataLibModal #types option[value="INTERNAL"]').attr("selected", "selected");
+            $("#editTestDataLibModalLabel").html(doc.getDocOnline("page_testdatalib", "btn_create"));
+        } else {
+            $("#editTestDataLibModalLabel").html(doc.getDocOnline("page_testdatalib", "tooltip_duplicateEntry"));
+        }
 
-    		// Cleaning the Subdata Table.
-    		    $('#subdataTableBody_edit tr').remove();
-    		    formEdit.find("#testdatalibid").val("");
-    	}
+        // Cleaning the Subdata Table.
+        $('#subdataTableBody_edit tr').remove();
+        formEdit.find("#testdatalibid").val("");
+    }
 
-        
+
     //We desactivate or activate the access to the fields depending on if user has the credentials to edit.
     if (!(hasPermissionsUpdate)) { // If readonly, we readonly all fields
         formEdit.find("#application").prop("readonly", "readonly");

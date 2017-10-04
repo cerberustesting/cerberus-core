@@ -806,7 +806,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
     public Answer update(TestDataLib testDataLib) {
         Answer answer = new Answer();
         MessageEvent msg;
-        String query = "UPDATE testdatalib SET `type`=?, `group`= ?, `system`=?, `environment`=?, `country`=?, `database`= ? , `script`= ? , "
+        String query = "UPDATE testdatalib SET `name`=?, `type`=?, `group`= ?, `system`=?, `environment`=?, `country`=?, `database`= ? , `script`= ? , "
                 + "`databaseUrl`= ? , `servicepath`= ? , `method`= ? , `envelope`= ? , `DatabaseCsv` = ? , `csvUrl` = ? ,`separator`= ?,  `description`= ? , `LastModifier`= ?, `LastModified` = NOW() ";
         if ((testDataLib.getService() != null) && (!testDataLib.getService().equals(""))) {
             query += " ,`service` = ? ";
@@ -827,7 +827,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
                 int i = 1;
-                //name is not editable
+                preStat.setString(i++, testDataLib.getName());
                 preStat.setString(i++, testDataLib.getType());
                 preStat.setString(i++, testDataLib.getGroup());
                 preStat.setString(i++, testDataLib.getSystem());
