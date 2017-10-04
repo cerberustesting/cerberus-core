@@ -135,28 +135,8 @@ public class TestDataLibService implements ITestDataLibService {
     }
 
     @Override
-    public Answer create(TestDataLib object) {
-        Answer answer;
-        Answer answer1;
-        if (object.getSubDataLib() == null) { // We only create the TestDataLib
-            return testDataLibDAO.create(object);
-
-        } else { //We create TestDataLib and all its subdata.
-
-            answer = testDataLibDAO.create(object);
-            if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                List<TestDataLibData> completeSubDataList = new ArrayList<TestDataLibData>();
-
-                //if success, then enrich the list of subdata with id of the created object.
-                for (TestDataLibData libData : object.getSubDataLib()) {
-                    TestDataLibData data = testDataLibDataFactory.create(-1, object.getTestDataLibID(), libData.getSubData(), libData.getValue(),
-                            libData.getColumn(), libData.getParsingAnswer(), libData.getColumnPosition(), libData.getDescription());
-                    completeSubDataList.add(data);
-                }
-                answer1 = testDataLibDataService.createList(completeSubDataList);
-            }
-            return answer;
-        }
+    public AnswerItem create(TestDataLib object) {
+        return testDataLibDAO.create(object);
     }
 
     @Override

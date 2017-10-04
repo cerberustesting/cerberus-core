@@ -53,10 +53,11 @@ function openModalAppServiceFromHere() {
 
     $('#editTestDataLibModal #service').parent().find(".input-group-btn").remove();
 
-    if (!isEmpty($('#editTestDataLibModal #service').val())) {
-        var formEdit = $("#editTestDataLibModal #editTestLibData");
+    var formEdit = $("#editTestDataLibModal #editTestLibData");
 
-        formEdit.find("#methods").prop("disabled", "disabled");
+    if (!isEmpty($('#editTestDataLibModal #service').val())) {
+
+        formEdit.find("#methods").prop("readonly", true);
         formEdit.find("#servicepaths").prop("readonly", true);
 
         var addEntry = '<span class="input-group-btn  ' + name + '" style="vertical-align:bottom!important"><button id="editEntry" onclick="openModalAppService(\'' + $('#editTestDataLibModal #service').val() + '\',\'EDIT\' );"\n\
@@ -64,9 +65,14 @@ function openModalAppServiceFromHere() {
            title="' + doc.getDocLabel("page_applicationObject", "button_create") + '" type="button">\n\
             <span class="glyphicon glyphicon-pencil"></span></button></span>';
         $('#editTestDataLibModal #service').parent().append(addEntry);
+
+    } else {
+
+        formEdit.find("#methods").prop("readonly", false);
+        formEdit.find("#servicepaths").prop("readonly", false);
+
     }
 }
-
 
 function openModalDataLib(service, mode, id) {
     if ($('#editTestDataLibModal').data("initLabel") === undefined) {
@@ -236,7 +242,6 @@ function addDataLibClick(service) {
     feedDataLibModal(service, "editTestDataLibModal", "ADD");
 }
 
-
 /***
  * Function that support the modal confirmation. Will call servlet to comit the transaction.
  * @param {String} mode - either ADD, EDIT or DUPLICATE in order to define the purpose of the modal.
@@ -345,8 +350,6 @@ function confirmDataLibModalHandler(mode, id) {
     });
 }
 
-
-
 /***
  * Feed the TestCase modal with all the data from the TestCase.
  * @param {String} serviceName - type selected
@@ -408,16 +411,15 @@ function feedDataLibModal(serviceName, modalId, mode) {
 
 }
 
-
 /***
  * Feed the TestCase modal with all the data from the TestCase.
- * @param {String} service - service object to be loaded.
+ * @param {String} testDataLib - service object to be loaded.
  * @param {String} modalId - id of the modal form where to feed the data.
  * @param {String} mode - either ADD, EDIT or DUPLICATE in order to define the purpose of the modal.
  * @param {String} hasPermissionsUpdate - boolean if premition is granted.
  * @returns {null}
  */
-function feedDataLibModalData(service, modalId, mode, hasPermissionsUpdate) {
+function feedDataLibModalData(testDataLib, modalId, mode, hasPermissionsUpdate) {
     var formEdit = $('#' + modalId);
     var doc = new Doc();
 
@@ -426,10 +428,12 @@ function feedDataLibModalData(service, modalId, mode, hasPermissionsUpdate) {
     ace.edit($("#editTestDataLibModal #envelope")[0]).destroy();
     ace.edit($("#editTestDataLibModal #script")[0]).destroy();
 
-    if (isEmpty(service)) {
+    if (isEmpty(testDataLib)) {
         activateSOAPServiceFields("#editTestDataLibModal", "");
+        // Cleaning the Subdata Table.
+        $('#subdataTableBody_edit tr').remove();
     } else {
-        var obj = service;
+        var obj = testDataLib;
         $('#editTestDataLibModal #testdatalibid').val(obj.testDataLibID);
         $('#editTestDataLibModal #name').prop("value", obj.name);
 
@@ -481,6 +485,14 @@ function feedDataLibModalData(service, modalId, mode, hasPermissionsUpdate) {
 
         openModalAppServiceFromHere();
 
+        // Loading the list of subdata.       
+        if ((mode === "EDIT") || (mode === "DUPLICATE")) {
+            loadTestDataLibSubdataTable(obj.testDataLibID, "subdataTableBody_edit");
+        } else {
+            // Cleaning the Subdata Table.
+            $('#subdataTableBody_edit tr').remove();
+        }
+
         //loads groups from database
         var jqxhrGroups = $.getJSON("ReadTestDataLib", "groups");
         $.when(jqxhrGroups).then(function (groupsData) {
@@ -502,9 +514,8 @@ function feedDataLibModalData(service, modalId, mode, hasPermissionsUpdate) {
          }
          */
 
-        // Loading the list of subdata.       
 
-//Highlight envelop on modal loading
+        //Highlight envelop on modal loading
         var editor = ace.edit($("#editTestDataLibModal #envelope")[0]);
         editor.setTheme("ace/theme/chrome");
         editor.getSession().setMode("ace/mode/xml");
@@ -512,7 +523,7 @@ function feedDataLibModalData(service, modalId, mode, hasPermissionsUpdate) {
             maxLines: Infinity
         });
 
-//Highlight envelop on modal loading
+        //Highlight envelop on modal loading
         var editor = ace.edit($("#editTestDataLibModal #script")[0]);
         editor.setTheme("ace/theme/chrome");
         editor.getSession().setMode("ace/mode/sql");
@@ -528,44 +539,42 @@ function feedDataLibModalData(service, modalId, mode, hasPermissionsUpdate) {
 
     // Authorities
     if (mode === "EDIT") {
-        loadTestDataLibSubdataTable(obj.testDataLibID, "subdataTableBody_edit");
         formEdit.find("#name").prop("readonly", "");
     } else {
         formEdit.find("#name").prop("readonly", "");
         if (mode === "ADD") {
-            $('#editTestDataLibModal #types option[value="INTERNAL"]').attr("selected", "selected");
+            $('#editTestDataLibModal #types option[value="INTERNAL"]').prop("selected", true);
             $("#editTestDataLibModalLabel").html(doc.getDocOnline("page_testdatalib", "btn_create"));
         } else {
             $("#editTestDataLibModalLabel").html(doc.getDocOnline("page_testdatalib", "tooltip_duplicateEntry"));
         }
 
-        // Cleaning the Subdata Table.
-        $('#subdataTableBody_edit tr').remove();
         formEdit.find("#testdatalibid").val("");
+
     }
 
 
     //We desactivate or activate the access to the fields depending on if user has the credentials to edit.
-    if (!(hasPermissionsUpdate)) { // If readonly, we readonly all fields
-        formEdit.find("#application").prop("readonly", "readonly");
-        formEdit.find("#types").attr("disabled", true);
-        formEdit.find("#methods").prop("disabled", "disabled");
-        formEdit.find("#servicepaths").prop("readonly", true);
-        formEdit.find("#attachementurl").prop("readonly", true);
-        formEdit.find("#srvRequest").prop("readonly", "readonly");
-        formEdit.find("#description").prop("readonly", "readonly");
-        // We hide Save button.
-        $('#editSoapLibraryButton').attr('class', '');
-        $('#editSoapLibraryButton').attr('hidden', 'hidden');
-    } else {
-        formEdit.find("#application").removeProp("readonly");
-        formEdit.find("#types").attr("disabled", false);
-        formEdit.find("#methods").removeProp("disabled");
-        formEdit.find("#servicepaths").prop("readonly", false);
-        formEdit.find("#attachementurl").prop("readonly", false);
-        formEdit.find("#srvRequest").removeProp("readonly");
-        formEdit.find("#description").removeProp("disabled");
-    }
+//    if (!(hasPermissionsUpdate)) { // If readonly, we readonly all fields
+//        formEdit.find("#application").prop("readonly", "readonly");
+//        formEdit.find("#types").attr("disabled", true);
+//        formEdit.find("#methods").prop("disabled", "disabled");
+//        formEdit.find("#servicepaths").prop("readonly", true);
+//        formEdit.find("#attachementurl").prop("readonly", true);
+//        formEdit.find("#srvRequest").prop("readonly", "readonly");
+//        formEdit.find("#description").prop("readonly", "readonly");
+//        // We hide Save button.
+//        $('#editSoapLibraryButton').attr('class', '');
+//        $('#editSoapLibraryButton').attr('hidden', 'hidden');
+//    } else {
+//        formEdit.find("#application").removeProp("readonly");
+//        formEdit.find("#types").attr("disabled", false);
+//        formEdit.find("#methods").removeProp("disabled");
+//        formEdit.find("#servicepaths").prop("readonly", false);
+//        formEdit.find("#attachementurl").prop("readonly", false);
+//        formEdit.find("#srvRequest").removeProp("readonly");
+//        formEdit.find("#description").removeProp("disabled");
+//    }
 
 
 }
@@ -639,7 +648,6 @@ function appendSubDataRow(subdata, targetTableBody) {
     table.append(row);
 }
 
-
 //Function to append 1 new line of Subdata in the various SubData lists.
 function addNewSubDataRow(dataTableBody) {
     var nbRows = $("#" + dataTableBody + " tr").size();
@@ -674,8 +682,6 @@ function loadTestDataLibSubdataTable(testDataLibID, subDataTableBody) {
  * @param {type} checkOnesMarkedToRemove
  * @returns {Boolean}
  */
-
-
 function validateSubDataEntriesRepeated(dialog, tableBody, checkOnesMarkedToRemove) {
     var arrayValues = [];
 
@@ -721,7 +727,6 @@ function validateSubDataEntriesRepeated(dialog, tableBody, checkOnesMarkedToRemo
 /**
  * Handler method that uploads a XML file
  */
-
 function uploadTestDataLibFromXMLFile() {
     //gets the form and translates it in order to be uploadedshowModalUpload 
     var form = document.getElementById('formUpload');

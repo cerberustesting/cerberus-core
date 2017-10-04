@@ -647,9 +647,9 @@ public class TestDataLibDAO implements ITestDataLibDAO {
     }
 
     @Override
-    public Answer create(TestDataLib testDataLib) {
+    public AnswerItem create(TestDataLib testDataLib) {
         MessageEvent msg;
-        Answer answer = new AnswerItem();
+        AnswerItem answer = new AnswerItem();
         StringBuilder query = new StringBuilder();
         TestDataLib createdTestDataLib;
         query.append("INSERT INTO testdatalib (`name`, `system`, `environment`, `country`, `group`, `type`, `database`, `script`, `databaseUrl`, ");
@@ -703,6 +703,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
                         if (LOG.isDebugEnabled()) {
                             LOG.debug("SQL.result.TestDataLibID : " + testDataLib.getTestDataLibID());
                         }
+                        answer.setItem(testDataLib);
                     }
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                     msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT"));
