@@ -2589,7 +2589,7 @@ function LoadForm(test,testcase,property,testcaseinfo){
 }
 */
 
-var autocompleteAllFields, getTags, setTags;
+var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange=[];
 (function () {
     //var accessible only in closure
     var TagsToUse = [];
@@ -2653,77 +2653,76 @@ var autocompleteAllFields, getTags, setTags;
             $(e).unbind("input").on("input", function (ev) {
             	var doc = new Doc()
             	
-            	if($(e).parent().parent().find("select").val() === "callService"){ 
+            	if($(e).parent().parent().find("select").val() === "callService"){
+                    // prevent multiple autocomplete handler on $(e)
+                    if (!$(e).hasClass('ui-autocomplete-input')) {
+                        $(e).autocomplete({
+                            minLength: 1,
+                            messages: {
+                                noResults: '',
+                                results: function () {
+                                }
+                            },
+                            source: function (request, response) {
+                                $.ajax({
+                                    url: "ReadAppService?service=" + $(e).val() + "&limit=15",
+                                    dataType: "json",
+                                    success: function (data) {
+                                        var MyArray = $.map(data.contentTable, function (item) {
+                                            return {
+                                                label: item.service,
+                                                value: item.service
+                                            };
+                                        });
 
-            		$(e).autocomplete({
-            			minLength: 1,
-            			messages: {
-                            noResults: '',
-                            results: function () {
+                                        response($.ui.autocomplete.filter(MyArray, request.term));
+
+                                    }
+                                });
+                            },
+
+
+                            select: function (event, ui) {
+                                var selectedObj = ui.item;
+                                $(e).val(selectedObj.value.replace("%", ''));
+                                $(e).trigger("input");
+                                $(e).autocomplete("close")
                             }
-                        },
-                		source: function( request, response ) {
-        			        $.ajax({
-        			          url: "ReadAppService?service="+$(e).val()+"&limit=15",
-        			          dataType: "json",
-        			          success: function( data ) {
-        			        	 var MyArray =  $.map(data.contentTable, function (item) {
-        		        	            return {
-        		        	                label: item.service,
-        		        	                value: item.service
-        		        	            };
-        		        	        });
-        			        	 
-        			        	 response($.ui.autocomplete.filter(MyArray, request.term));
-			        	  
-        			          }
-        			        });
-        			      },
-        			     
-       			      
-        			      select: function(event, ui) {
-        		                var selectedObj = ui.item;        		               
-        		                $(e).val(selectedObj.value.replace("%", ''));
-        		                $(e).trigger("input");
-        		                $(e).autocomplete("close")
-        			      }
 
-                	}).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
-                		  return $( "<li>" )
-                		    .data( "ui-autocomplete-item", item )
-                		    .append( "<a>" + item.label + "</a>" )
-                		    .appendTo( ul );
-                		};
-                
-                	
+                        }).data("ui-autocomplete")._renderItem = function (ul, item) {
+                            return $("<li>")
+                                .data("ui-autocomplete-item", item)
+                                .append("<a>" + item.label + "</a>")
+                                .appendTo(ul);
+                        };
 
-                    var addEntry = '<span class="input-group-btn ' +$(e).val().replace(/[^\w\s]/gi, '')+ '"><button id="editEntry" onclick="openModalAppService(\'' + name + '\',\'ADD\'  ,\'TestCase\' );"\n\
+                        var addEntry = '<span class="input-group-btn ' + $(e).val().replace(/[^\w\s]/gi, '') + '"><button id="editEntry" onclick="openModalAppService(\'' + name + '\',\'ADD\'  ,\'TestCase\' );"\n\
                         class="buttonObject btn btn-default input-sm " \n\
                        title="' + doc.getDocLabel("page_applicationObject", "button_create") + '" type="button">\n\
                         <span class="glyphicon glyphicon-plus"></span></button></span>';
 
-                    var editEntry = '<span class="input-group-btn ' +$(e).val()+ '"><button id="editEntry" onclick="openModalAppService(\'' + $(e).val() + '\',\'EDIT\'  ,\'TestCase\' );"\n\
+                        var editEntry = '<span class="input-group-btn ' + $(e).val() + '"><button id="editEntry" onclick="openModalAppService(\'' + $(e).val() + '\',\'EDIT\'  ,\'TestCase\' );"\n\
                 		class="buttonObject btn btn-default input-sm " \n\
                 		title="' + doc.getDocLabel("page_applicationObject", "button_edit") + '" type="button">\n\
                 		<span class="glyphicon glyphicon-pencil"></span></button></span>';
 
-                    $.ajax({
-                        url: "ReadAppService?service="+$(e).val(),
-                        dataType: "json",
-                        success: function( data ) {
-                            var dataContent = data.contentTable
-                            $(e).parent().find(".input-group-btn").remove();
-                            if(dataContent != null){
-                                $(e).parent().append(editEntry);
-                            }else{
-                                if(!isEmpty($(e).val())){
-                                    $(e).parent().append(addEntry);
+                        $.ajax({
+                            url: "ReadAppService?service=" + $(e).val(),
+                            dataType: "json",
+                            success: function (data) {
+                                var dataContent = data.contentTable
+                                $(e).parent().find(".input-group-btn").remove();
+                                if (dataContent != null) {
+                                    $(e).parent().append(editEntry);
+                                } else {
+                                    if (!isEmpty($(e).val())) {
+                                        $(e).parent().append(addEntry);
+                                    }
                                 }
                             }
-                        }
-                    });
-                	
+                        });
 
+                    }
             	}else{
             		autocompleteVariable($(e), TagsToUse);
             		  $(e).autocomplete({}).data('ui-autocomplete')._renderItem = function (ul, item) {
@@ -3379,7 +3378,7 @@ var staticWordCompleter = {
 	}
 
 
-
+var oldCompleters=null;
 /*
  * main function of ace editor
  */
@@ -3396,19 +3395,22 @@ function configureAceEditor(editor, mode, property) {
 	            //recreate the array at each loop     
 		            
 	        	if(property.type === "getFromDataLib"){
-	        		
-		                 
-		            editor.completers = [staticWordCompleter]
-		            
+                    oldCompleters = editor.completers;
+
+		            editor.completers = [staticWordCompleter];
+                    /* TODO - autocompletion rollback (issue #1498)  see why
 		            editor.setOptions({
 	        			enableLiveAutocompletion: true
-		            });
+		            });*/
 	        	}
 		       
 	        	else{
-	        		     		
+	        	    if(oldCompleters != null) {
+                        editor.completers = oldCompleters;
+                        oldCompleters = null;
+                    }
 		            var allKeyword = createAllKeywordList(getKeywordList("object"), getKeywordList("property"));
-		            editor.completers = [allKeyword]	         
+		            //editor.completers = [allKeyword]
 		            	
 		            	if (e.command.name != "backspace") {
 			                addCommandForCustomAutoCompletePopup(editor, allKeyword, commandNameForAutoCompletePopup);
