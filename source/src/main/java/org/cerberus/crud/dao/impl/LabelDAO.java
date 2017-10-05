@@ -141,7 +141,7 @@ public class LabelDAO implements ILabelDAO {
         }
 
         if (!StringUtil.isNullOrEmpty(system)) {
-            searchSQL.append(" and (`System` = ? )");
+            searchSQL.append(" and (`System` = ? or `System` = '')");
         }
         query.append(searchSQL);
 

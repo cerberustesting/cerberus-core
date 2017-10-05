@@ -647,9 +647,9 @@ public class TestDataLibDAO implements ITestDataLibDAO {
     }
 
     @Override
-    public Answer create(TestDataLib testDataLib) {
+    public AnswerItem create(TestDataLib testDataLib) {
         MessageEvent msg;
-        Answer answer = new AnswerItem();
+        AnswerItem answer = new AnswerItem();
         StringBuilder query = new StringBuilder();
         TestDataLib createdTestDataLib;
         query.append("INSERT INTO testdatalib (`name`, `system`, `environment`, `country`, `group`, `type`, `database`, `script`, `databaseUrl`, ");
@@ -703,6 +703,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
                         if (LOG.isDebugEnabled()) {
                             LOG.debug("SQL.result.TestDataLibID : " + testDataLib.getTestDataLibID());
                         }
+                        answer.setItem(testDataLib);
                     }
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                     msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT"));
@@ -806,7 +807,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
     public Answer update(TestDataLib testDataLib) {
         Answer answer = new Answer();
         MessageEvent msg;
-        String query = "UPDATE testdatalib SET `type`=?, `group`= ?, `system`=?, `environment`=?, `country`=?, `database`= ? , `script`= ? , "
+        String query = "UPDATE testdatalib SET `name`=?, `type`=?, `group`= ?, `system`=?, `environment`=?, `country`=?, `database`= ? , `script`= ? , "
                 + "`databaseUrl`= ? , `servicepath`= ? , `method`= ? , `envelope`= ? , `DatabaseCsv` = ? , `csvUrl` = ? ,`separator`= ?,  `description`= ? , `LastModifier`= ?, `LastModified` = NOW() ";
         if ((testDataLib.getService() != null) && (!testDataLib.getService().equals(""))) {
             query += " ,`service` = ? ";
@@ -827,7 +828,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
                 int i = 1;
-                //name is not editable
+                preStat.setString(i++, testDataLib.getName());
                 preStat.setString(i++, testDataLib.getType());
                 preStat.setString(i++, testDataLib.getGroup());
                 preStat.setString(i++, testDataLib.getSystem());

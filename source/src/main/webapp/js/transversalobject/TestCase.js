@@ -841,7 +841,7 @@ function loadLabel(labelList, mySystem, myLabelDiv, labelSize) {
                 //the character " needs a special encoding in order to avoid breaking the string that creates the html element   
                 var labelTag = '<div style="float:left" align="center"><input name="labelid" id="labelId' + data.contentTable[index].id + '" value="' + data.contentTable[index].id + '" type="checkbox">\n\
                 <span class="label label-primary" style="cursor:pointer;background-color:' + data.contentTable[index].color + '">' + data.contentTable[index].label + '</span></div> ';
-                var option = $('<div style="float:left" name="itemLabelDiv" id="itemLabelId' + data.contentTable[index].id + '" class="col-xs-' + labelSize + ' list-group-item list-label"></div>')
+                var option = $('<div style="float:left; height:60px" name="itemLabelDiv" id="itemLabelId' + data.contentTable[index].id + '" class="col-xs-' + labelSize + ' list-group-item list-label"></div>')
                         .attr("value", data.contentTable[index].label).html(labelTag);
                 $(labelDiv).append(option);
             }
