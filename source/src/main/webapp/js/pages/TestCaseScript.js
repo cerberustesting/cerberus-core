@@ -3859,7 +3859,7 @@ function addObjectWithAce(keywordValue) {
 }
 //Get the CURRENT list of keyword for each type
 function getKeywordList(type) {
-    if (getTags() != undefined) {
+    if (getTags() != undefined && getTags().length > 0) {
         var idType = -1;
         switch (type) {
             case "object":
