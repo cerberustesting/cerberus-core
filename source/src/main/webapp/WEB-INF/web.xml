@@ -1827,6 +1827,7 @@
             <url-pattern>/CreateSqlLibrary</url-pattern>
             <url-pattern>/DeleteSqlLibrary</url-pattern>
             <url-pattern>/UpdateSqlLibrary</url-pattern>
+            <url-pattern>/ReadAppService</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>TestAdmin</description>
