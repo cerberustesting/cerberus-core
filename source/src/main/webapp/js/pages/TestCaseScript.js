@@ -1798,9 +1798,6 @@ Step.prototype.show = function () {
     $("#stepConditionOper").attr("disabled", activateDisableWithUseStep);
     $("#stepConditionVal1").attr("disabled", activateDisableWithUseStep);
     $("#stepConditionVal2").attr("disabled", activateDisableWithUseStep);
-
-    object.stepActionContainer.find("div.fieldRow div:nth-child(n+2) input").trigger("input");
-
 };
 
 Step.prototype.setActionList = function (actionList, canUpdate) {
