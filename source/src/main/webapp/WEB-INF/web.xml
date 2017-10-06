@@ -1781,6 +1781,7 @@
             <url-pattern>/ReadLabel</url-pattern>
             <url-pattern>/SaveTestCaseLabel</url-pattern>
             <url-pattern>/ReadTestCaseLabel</url-pattern>
+            <url-pattern>/ReadAppService</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>Test</description>
@@ -1827,7 +1828,6 @@
             <url-pattern>/CreateSqlLibrary</url-pattern>
             <url-pattern>/DeleteSqlLibrary</url-pattern>
             <url-pattern>/UpdateSqlLibrary</url-pattern>
-            <url-pattern>/ReadAppService</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>TestAdmin</description>
@@ -2138,6 +2138,7 @@
             <url-pattern>/GetTestCaseForTest</url-pattern>
             <url-pattern>/GetEnvironmentsPerBuildRevision</url-pattern>
             <url-pattern>/GetEnvironmentsLastChangePerCountry</url-pattern>
+            <url-pattern>/ReadAppService</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description/>
