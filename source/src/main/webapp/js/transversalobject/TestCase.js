@@ -494,13 +494,13 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#datecreated").prop("value", testCase.dateCreated);
         formEdit.find("#usrmodif").prop("value", testCase.usrModif);
         formEdit.find("#datemodif").prop("value", testCase.dateModif);
-        formEdit.find("#actProd").prop("value", testCase.activePROD);
+        formEdit.find("#actProd").val(testCase.activePROD);
     } else { // DUPLICATE or ADD
         formEdit.find("#usrcreated").prop("value", "");
         formEdit.find("#datecreated").prop("value", "");
         formEdit.find("#usrmodif").prop("value", "");
         formEdit.find("#datemodif").prop("value", "");
-        formEdit.find("#actProd").prop("value", "N");
+        formEdit.find("#actProd").val("N");
         formEdit.find("#status option:nth(0)").attr("selected", "selected"); // We select the 1st entry of the status combobox.
         if (mode === "ADD") {
             $("[name='editTestCaseField']").html(doc.getDocOnline("page_testcaselist", "btn_create"));
@@ -521,10 +521,10 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#project").prop("value", "");
         formEdit.find("#ticket").prop("value", "");
         formEdit.find("#function").prop("value", "");
-        formEdit.find("#group").prop("value", "AUTOMATED");
-        formEdit.find("#priority").prop("value", "");
-        formEdit.find("#actQA").prop("value", "Y");
-        formEdit.find("#actUAT").prop("value", "Y");
+        formEdit.find("#group").val("AUTOMATED");
+        formEdit.find("#priority option:nth(0)").attr("selected", "selected");
+        formEdit.find("#actQA").val("Y");
+        formEdit.find("#actUAT").val("Y");
         formEdit.find("#userAgent").prop("value", "");
         formEdit.find("#screenSize").prop("value", "");
         formEdit.find("#shortDesc").prop("value", "");

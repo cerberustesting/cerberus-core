@@ -59,7 +59,7 @@ public interface ITestDataLibDAO {
      * @param like
      * @return
      */
-    AnswerList readNameListByName(String testDataLibName, int limit, String like);
+    AnswerList readNameListByName(String testDataLibName, int limit, boolean like);
 
     /**
      *

@@ -608,23 +608,23 @@ function getPropertyContent(property) {
     var retryNbField = $("<input type='text' class='form-control' id='retryNb'>").prop("readonly", true);
     var retryPeriodField = $("<input type='text' class='form-control' id='retryPeriod'>").prop("readonly", true);
 
-    var typeGroup = $("<div class='form-group'></div>").append($("<label for='action'>" + doc.getDocLabel("page_executiondetail", "type") + "</label>")).append(typeField);
+    var typeGroup = $("<div class='form-group'></div>").append($("<label for='type'>" + doc.getDocLabel("testcaseexecutiondata", "type") + "</label>")).append(typeField);
     var descGroup = $("<div class='form-group'></div>").append($("<label for='description'>" + doc.getDocLabel("page_executiondetail", "description") + "</label>")).append(descField);
     var value1Group = $("<div class='form-group'></div>").append($("<label for='value1'>" + doc.getDocLabel("page_executiondetail", "value1") + "</label>")).append(value1Field);
     var value1InitGroup = $("<div class='form-group'></div>").append($("<label for='value1init'>" + doc.getDocLabel("page_executiondetail", "value1init") + "</label>")).append(value1InitField);
     var timeGroup = $("<div class='form-group'></div>").append($("<label for='time'>" + doc.getDocLabel("page_executiondetail", "time") + "</label>")).append(timeField);
-    var valueGroup = $("<div class='form-group'></div>").append($("<label for='forceexec'>" + doc.getDocLabel("page_executiondetail", "value") + "</label>")).append(valueField);
+    var valueGroup = $("<div class='form-group'></div>").append($("<label for='value'>" + doc.getDocLabel("testcaseexecutiondata", "Value") + "</label>")).append(valueField);
     var value2Group = $("<div class='form-group'></div>").append($("<label for='value2'>" + doc.getDocLabel("page_executiondetail", "value2") + "</label>")).append(value2Field);
     var value2InitGroup = $("<div class='form-group'></div>").append($("<label for='value2init'>" + doc.getDocLabel("page_executiondetail", "value2init") + "</label>")).append(value2InitField);
     var returncodeGroup = $("<div class='form-group'></div>").append($("<label for='returncode'>" + doc.getDocLabel("page_executiondetail", "return_code") + "</label>")).append(returnCodeField);
     var returnmessageGroup = $("<div class='form-group'></div>").append($("<label for='returnmessage'>" + doc.getDocLabel("page_executiondetail", "return_message") + "</label>")).append(returnMessageField);
-    var indexGroup = $("<div class='form-group'></div>").append($("<label for='sort'>" + doc.getDocLabel("page_executiondetail", "index") + "</label>")).append(indexField);
-    var natureGroup = $("<div class='form-group'></div>").append($("<label for='conditionOper'>" + doc.getDocLabel("page_executiondetail", "nature") + "</label>")).append(natureField);
-    var lengthGroup = $("<div class='form-group'></div>").append($("<label for='conditionVal1Init'>" + doc.getDocLabel("page_executiondetail", "length") + "</label>")).append(lengthField);
-    var databaseGroup = $("<div class='form-group'></div>").append($("<label for='conditionVal1Init'>" + doc.getDocLabel("page_executiondetail", "database") + "</label>")).append(databaseField);
-    var rowLimitGroup = $("<div class='form-group'></div>").append($("<label for='conditionVal2Init'>" + doc.getDocLabel("page_executiondetail", "rowLimit") + "</label>")).append(rowLimitField);
-    var retryNbGroup = $("<div class='form-group'></div>").append($("<label for='conditionVal1'>" + doc.getDocLabel("page_executiondetail", "retryNb") + "</label>")).append(retryNbField);
-    var retryPeriodGroup = $("<div class='form-group'></div>").append($("<label for='conditionVal2'>" + doc.getDocLabel("page_executiondetail", "retryPeriod") + "</label>")).append(retryPeriodField);
+    var indexGroup = $("<div class='form-group'></div>").append($("<label for='sort'>" + doc.getDocLabel("testcaseexecutiondata", "index") + "</label>")).append(indexField);
+    var natureGroup = $("<div class='form-group'></div>").append($("<label for='conditionOper'>" + doc.getDocLabel("testcaseexecutiondata", "nature") + "</label>")).append(natureField);
+    var lengthGroup = $("<div class='form-group'></div>").append($("<label for='conditionVal1Init'>" + doc.getDocLabel("testcaseexecutiondata", "length") + "</label>")).append(lengthField);
+    var databaseGroup = $("<div class='form-group'></div>").append($("<label for='database'>" + doc.getDocLabel("testcaseexecutiondata", "database") + "</label>")).append(databaseField);
+    var rowLimitGroup = $("<div class='form-group'></div>").append($("<label for='conditionVal2Init'>" + doc.getDocLabel("testcaseexecutiondata", "rowlimit") + "</label>")).append(rowLimitField);
+    var retryNbGroup = $("<div class='form-group'></div>").append($("<label for='conditionVal1'>" + doc.getDocLabel("testcaseexecutiondata", "retry") + "</label>")).append(retryNbField);
+    var retryPeriodGroup = $("<div class='form-group'></div>").append($("<label for='conditionVal2'>" + doc.getDocLabel("testcaseexecutiondata", "retryperiod") + "</label>")).append(retryPeriodField);
 
     databaseField.val(property.database);
     descField.val(property.description);
