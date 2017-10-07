@@ -41,6 +41,7 @@ import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.servlet.ServletUtil;
@@ -195,7 +196,7 @@ public class CreateTestCaseLabel extends HttpServlet {
 
                                 Application myApplication = (Application) resp.getItem();
 
-                                if (myApplication.getSystem().equals(myLab.getSystem())) {
+                                if ((StringUtil.isNullOrEmpty(myLab.getSystem())) || (myApplication.getSystem().equals(myLab.getSystem()))) {
                                     TestCaseLabel tcLabel = factoryTestCaseLabel.create(0, myTest, myTestCase, myIdInt, request.getRemoteUser(), null, "", null, null);
                                     ans = testCaseLabelService.create(tcLabel);
 
