@@ -48,8 +48,6 @@ function openModalTestCase(test, testcase, mode) {
 function initModalTestCase(doc) {
     var doc = new Doc();
 
-    console.info("init.");
-
     tinymce.init({
         selector: ".wysiwyg"
     });
@@ -448,12 +446,6 @@ function feedTestCaseModal(test, testCase, modalId, mode) {
             // Loading application combo from the system of the current application.
             appendApplicationList(testCase.application, appData.contentTable.system);
 
-            if (appData.contentTable.system !== currentSys) {
-                $("[name=application]").empty();
-                formEdit.find("#application").append($('<option></option>').text(testCase.application).val(testCase.application));
-            }
-            formEdit.find("#application").prop("value", testCase.application);
-
             var newbugTrackerUrl = "";
             if (testCase.bugID !== "" && bugTrackerUrl) {
                 newbugTrackerUrl = bugTrackerUrl.replace("%BUGID%", testCase.bugID);
@@ -843,7 +835,11 @@ function loadLabel(labelList, mySystem, myLabelDiv, labelSize) {
                 <span class="label label-primary" style="cursor:pointer;background-color:' + data.contentTable[index].color + '">' + data.contentTable[index].label + '</span></div> ';
                 var option = $('<div style="float:left; height:60px" name="itemLabelDiv" id="itemLabelId' + data.contentTable[index].id + '" class="col-xs-' + labelSize + ' list-group-item list-label"></div>')
                         .attr("value", data.contentTable[index].label).html(labelTag);
-                $(labelDiv).append(option);
+                if (data.contentTable[index].system === targetSystem) {
+                    $(labelDiv).prepend(option);
+                } else {
+                    $(labelDiv).append(option);
+                }
             }
         } else {
             showMessageMainPage(messageType, data.message, true);
@@ -876,19 +872,23 @@ function appendApplicationList(defautValue, mySystem) {
         targetSystem = getUser().defaultSystem;
     }
 
-    var jqxhr = $.getJSON("ReadApplication", "system=" + targetSystem);
+    var jqxhr = $.getJSON("ReadApplication");
     $.when(jqxhr).then(function (data) {
         var applicationList = $("[name=application]");
 
         for (var index = 0; index < data.contentTable.length; index++) {
-            applicationList.append($('<option></option>').text(data.contentTable[index].application).val(data.contentTable[index].application));
+            if (data.contentTable[index].system === targetSystem) {
+                applicationList.prepend($('<option></option>').addClass('bold-option').text(data.contentTable[index].application).val(data.contentTable[index].application));
+            } else {
+                applicationList.append($('<option></option>').text(data.contentTable[index].application).val(data.contentTable[index].application));
+            }
         }
-        $("#application").prop("value", defautValue);
+        $("#application").val(defautValue);
     });
 }
 
 function appendTestList(defautValue) {
-    console.info(defautValue);
+
     var user = getUser();
     $("#editTestCaseModal [name=test]").empty();
 

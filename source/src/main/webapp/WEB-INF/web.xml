@@ -1781,7 +1781,6 @@
             <url-pattern>/ReadLabel</url-pattern>
             <url-pattern>/SaveTestCaseLabel</url-pattern>
             <url-pattern>/ReadTestCaseLabel</url-pattern>
-            <url-pattern>/ReadAppService</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>Test</description>
@@ -1912,7 +1911,6 @@
             <url-pattern>/ReadCountryEnvironmentDatabase</url-pattern>
             <url-pattern>/ReadCountryEnvironmentParameters</url-pattern>
             <url-pattern>/ReadCountryEnvLink</url-pattern>
-            <url-pattern>/ReadAppService</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>IntegratorRO</description>
@@ -2035,7 +2033,6 @@
             <url-pattern>/Login.jsp</url-pattern>
             <url-pattern>/Logout.jsp</url-pattern>
             <url-pattern>/Error.jsp</url-pattern>
-            <url-pattern>/header.jsp</url-pattern>
             <url-pattern>/function.jsp</url-pattern>
             <url-pattern>/index1.jsp</url-pattern>
             <url-pattern>/index2.jsp</url-pattern>

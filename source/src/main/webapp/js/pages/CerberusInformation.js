@@ -67,6 +67,13 @@ function feedContent() {
         row.append(cel1);
         table.append(row);
 
+        var table = $("#appjvmTableBody");
+        table.empty();
+        var row = $("<tr></tr>");
+        var cel1 = $("<td></td>").append(data.applicationServerInfo);
+        row.append(cel1);
+        table.append(row);
+
         var table = $("#jvmMemTableBody");
         table.empty();
         var row = $("<tr></tr>");
@@ -130,15 +137,6 @@ function feedContent() {
             row.append(cel1);
             table.append(row);
         });
-
-//        var table = $("#threadTableBody");
-//        table.empty();
-//        var row = $("<tr></tr>");
-//        var cel1 = $("<td></td>").append(data.queue_in_execution + " / " + data.size_queue);
-//        var cel2 = $("<td></td>").append(data.number_of_thread);
-//        row.append(cel1);
-//        row.append(cel2);
-//        table.append(row);
 
         var table = $("#databaseTableBody");
         table.empty();
