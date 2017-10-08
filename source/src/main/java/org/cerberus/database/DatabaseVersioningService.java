@@ -7392,6 +7392,15 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // New updated Documentation.
         //-- ------------------------ 1234-1235
         SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+
+        // New updated Documentation.
+        //-- ------------------------ 1236-1237
+        SQLS = new StringBuilder();
         SQLS.append("DELETE FROM `documentation`;");
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
@@ -7693,6 +7702,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_application','button_delete','','fr','Supprimer l\\'Application','',NULL)");
         SQLS.append(",('page_application','button_edit','','en','Edit Application','',NULL)");
         SQLS.append(",('page_application','button_edit','','fr','Modifier l\\'Application','',NULL)");
+        SQLS.append(",('page_application','button_manage','','en','Manage Objects','',NULL)");
+        SQLS.append(",('page_application','button_manage','','fr','Gerer les Objets','',NULL)");
         SQLS.append(",('page_application','message_delete','','en','Do you want to delete application <b>\\'%ENTRY%\\'</b> ?<br>WARNING : All corresponding Test Cases will be removed as well !!!','',NULL)");
         SQLS.append(",('page_application','message_delete','','fr','Confirmez vous la suppression de l\\'application <b>\\'%ENTRY%\\'</b> ?<br> ATTENTION : Tous les Cas de Test associés seront également supprimés !!!','',NULL)");
         SQLS.append(",('page_application','tabDef','','en','Definition','',NULL)");
