@@ -198,7 +198,6 @@ function deleteEntryHandlerClick() {
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
-
 function selectAll() {
     if ($(this).prop("checked"))
         $("[data-line='select']").prop("checked", true);
@@ -278,7 +277,6 @@ function massActionModalSaveHandler_update() {
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
-
 function massActionModalCloseHandler() {
     // reset form values
     $('#massActionTestCaseModal #massActionTestCaseModalForm')[0].reset();
@@ -332,7 +330,6 @@ function massActionClick() {
         $('#massActionTestCaseModal').modal('show');
     }
 }
-
 
 function loadTestFilters(selectTest) {
     var jqxhr = $.get("ReadTest", "system=" + getUser().defaultSystem);

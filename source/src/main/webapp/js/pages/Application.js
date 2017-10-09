@@ -134,6 +134,9 @@ function renderOptionsForApplicationObject(id, data) {
 
 function deleteEntryHandlerClick() {
     var idApplication = $('#confirmationModal').find('#hiddenField1').prop("value");
+    
+    
+   
     var jqxhr = $.post("DeleteApplication", {application: idApplication}, "json");
     $.when(jqxhr).then(function (data) {
         var messageType = getAlertType(data.messageType);

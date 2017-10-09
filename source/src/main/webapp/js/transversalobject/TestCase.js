@@ -43,6 +43,8 @@ function openModalTestCase(test, testcase, mode) {
     } else {
         addTestCaseClick(test, "ADD");
     }
+    $('#editTestCaseModalForm #application').parents("div.form-group").removeClass("has-error");
+    clearResponseMessage($('#editTestCaseModal'));
 }
 
 function initModalTestCase(doc) {
@@ -296,6 +298,21 @@ function confirmTestCaseModalHandler(mode) {
     clearResponseMessage($('#editTestCaseModal'));
 
     var formEdit = $('#editTestCaseModalForm');
+
+    var nameElement = formEdit.find("#application");
+    var nameElementEmpty = nameElement.prop("value") === '';
+    if (nameElementEmpty) {
+        var localMessage = new Message("danger", "Please specify the name of the application!");
+        nameElement.parents("div.form-group").addClass("has-error");
+        showMessage(localMessage, $('#editTestCaseModal'));
+    } else {
+        nameElement.parents("div.form-group").removeClass("has-error");
+    }
+
+    // verif if all mendatory fields are not empty
+    if (nameElementEmpty)
+        return;
+
     tinyMCE.triggerSave();
 
     showLoaderInModal('#editTestCaseModal');
@@ -390,7 +407,6 @@ function confirmTestCaseModalHandler(mode) {
 
 }
 
-
 /***
  * Feed the TestCase modal with all the data from the TestCase.
  * @param {String} modalId - Id of the modal to feed.
@@ -470,7 +486,6 @@ function feedTestCaseModal(test, testCase, modalId, mode) {
     });
 
 }
-
 
 function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, defaultTest) {
     var formEdit = $('#' + modalId);
@@ -652,7 +667,6 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
     }
 
 }
-
 
 /***
  * Feed Build and Revision combo on the testcase modal.
