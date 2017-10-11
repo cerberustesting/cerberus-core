@@ -218,6 +218,13 @@ function duplicateTestCaseClick(test, testCase) {
         feedTestCaseField(null, "editTestCaseModalForm");
     });
 
+    // In Add and duplicate TestCase form, if we change the test, we don't display any warning.
+    $('#editTestCaseModalForm select[name="test"]').off("change");
+    $('#editTestCaseModalForm select[name="test"]').change(function () {
+        feedTestCaseField(null, "editTestCaseModalForm");
+    });
+    $('#editTestCaseModalForm input[name="testCase"]').off("change");
+
     feedTestCaseModal(test, testCase, "editTestCaseModal", "DUPLICATE");
 }
 
@@ -247,6 +254,13 @@ function addTestCaseClick(defaultTest) {
     $('#editTestCaseModalForm select[name="test"]').change(function () {
         feedTestCaseField(null, "editTestCaseModalForm");
     });
+
+    // In Add and duplicate TestCase form, if we change the test, we don't display any warning.
+    $('#editTestCaseModalForm select[name="test"]').off("change");
+    $('#editTestCaseModalForm select[name="test"]').change(function () {
+        feedTestCaseField(null, "editTestCaseModalForm");
+    });
+    $('#editTestCaseModalForm input[name="testCase"]').off("change");
 
     feedNewTestCaseModal("editTestCaseModal", defaultTest);
 }
