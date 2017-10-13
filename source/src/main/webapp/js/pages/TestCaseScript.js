@@ -2561,13 +2561,13 @@ function objectIntoTagToUseExist(tagToUse, label) {
  data: {test: test, testcase:testcase, property:property},
  dataType: "json",
  success: function (data) {
- console.log(data);                	
+ console.log(data);
  $("#editPropertyModal").modal("show");
  var prop = drawPropertyModal(data[0], right.info,right.hasPermissionsUpdate, "");
  console.log(prop);
  setPlaceholderProperty(prop[0], prop[1]);
- 
- 
+
+
  }
  })
  }
@@ -3231,46 +3231,46 @@ function setPlaceholderProperty(propertyElement, property) {
             if ($("#" + editor.container.id).parent().parent().find("[name='propertyType']").val() === "getFromDataLib") {
                 $("#" + editor.container.id).parent().find('.input-group').remove();
                 var escaped = editor.getValue().replace(/[^\w\s]/gi, '');
-                if (!isEmpty(escaped)) {
-                    $.ajax({
-                        url: "ReadTestDataLib",
-                        data: {
-                            name: editor.getValue(),
-                            limit: 15,
-                            like: "N"
-                        },
-                        async: true,
-                        method: "GET",
-                        success: function (data) {
-                            if (data.messageType === "OK") {
-                                // Feed the data to the screen and manage authorities.
-                                var service = data.contentTable;
-                                if (!isEmpty(service)) {
-                                    var editEntry = '<div class="input-group col-sm-5 col-sm-offset-3"><select class="datalib  form-control"></select><span class="input-group-btn"><button class="btn btn-secondary" type="button"><span class="glyphicon glyphicon-pencil"></span></button></span></div>';
-                                    $("#" + editor.container.id).parent().append(editEntry);
-                                    displayDataLibList(editor.container.id, undefined, escaped).then(function () {
-                                        $("#" + editor.container.id).parent().find("button").attr('onclick', 'openModalDataLib(' + $("#" + editor.container.id).parent().find("select").val() + ",'EDIT'," + "'" + escaped + "')");
-                                    });
-                                    $("#" + editor.container.id).parent().find("select").unbind("change").change(function () {
-                                        $("#" + editor.container.id).parent().find("button").attr('onclick', 'openModalDataLib(' + $("#" + editor.container.id).parent().find("select").val() + ",'EDIT'," + "'" + escaped + "')");
-                                    })
-                                } else {
-                                    $("#" + editor.container.id).parent().find('.input-group').remove();
+                if(!isEmpty(escaped)){
+                	$.ajax({
+        		    	url: "ReadTestDataLib",
+        		    	data:{
+        		    		name:editor.getValue(),
+        		    		limit:15,
+        		    		like:"N"
+        		    	},
+        		        async: true,
+        		        method: "GET",
+        		        success: function (data) {
+        		/* FIXME, I comment this code to rollback autocomplete problem.            if (data.messageType === "OK") {
+        		                // Feed the data to the screen and manage authorities.
+        		                var service = data.contentTable;
+        		                if(!isEmpty(service)){
+        		            		var editEntry = '<div class="input-group col-sm-5 col-sm-offset-3"><select class="datalib  form-control"></select><span class="input-group-btn"><button class="btn btn-secondary" type="button"><span class="glyphicon glyphicon-pencil"></span></button></span></div>';
+        		            		$("#"+editor.container.id).parent().append(editEntry);
+        		                    displayDataLibList(editor.container.id, undefined,escaped).then(function(){
+        		                    	$("#"+editor.container.id).parent().find("button").attr('onclick', 'openModalDataLib(' + $("#"+editor.container.id).parent().find("select").val() + ",'EDIT',"+"'"+escaped+"')");
+        		                    });
+        		                    $("#"+editor.container.id).parent().find("select").unbind("change").change(function(){
+        		                    	$("#"+editor.container.id).parent().find("button").attr('onclick', 'openModalDataLib(' + $("#"+editor.container.id).parent().find("select").val() + ",'EDIT',"+"'"+escaped+"')");
+        		                    })
+        		                }else{
+                                    $("#"+editor.container.id).parent().find('.input-group').remove();
 
-                                    var addEntry = '<div class="input-group col-sm-5 col-sm-offset-3"><select class="datalib ' + escaped + ' form-control"></select><span class="input-group-btn"><button class="btn btn-secondary" type="button"><span class="glyphicon glyphicon-plus"></span></button></span></div>';
-                                    $("#" + editor.container.id).parent().append(addEntry);
-                                    $("#" + editor.container.id).parent().find("select").append($('<option>', {
-                                        value: escaped,
-                                        text: escaped
-                                    }));
+        		                	var addEntry = '<div class="input-group col-sm-5 col-sm-offset-3"><select class="datalib '+escaped+ ' form-control"></select><span class="input-group-btn"><button class="btn btn-secondary" type="button"><span class="glyphicon glyphicon-plus"></span></button></span></div>';
+        		            		$("#"+editor.container.id).parent().append(addEntry);
+        		            		$("#"+editor.container.id).parent().find("select").append($('<option>', {
+        		            		    value: escaped,
+        		            		    text: escaped
+        		            		}));
 
-                                    $("." + escaped).parent().find("button").attr('onclick', 'openModalDataLib(\'' + escaped + "\','ADD'," + "'" + escaped + "')");
+        		                    $("."+escaped).parent().find("button").attr('onclick', 'openModalDataLib(\''  + escaped  + "\','ADD',"+"'"+escaped+"')");
 
-                                }
-                            }
-                        },
-                        error: showUnexpectedError
-                    });
+      		                }
+        		            } */
+        		        },
+        		        error: showUnexpectedError
+        		    });
                 }
             }
         }
@@ -3377,7 +3377,7 @@ function configureAceEditor(editor, mode, property) {
 
 
         if (e.command.name == "insertstring" || e.command.name == "paste" || e.command.name == "backspace") {
-            //recreate the array at each loop     
+            //recreate the array at each loop
 
             if (property.type === "getFromDataLib") {
                 oldCompleters = editor.completers;

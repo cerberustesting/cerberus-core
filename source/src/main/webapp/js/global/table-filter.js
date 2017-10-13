@@ -200,7 +200,7 @@ function displayColumnSearch(tableId, contentUrl, oSettings) {
 }
 
 
-
+var firstclickOnShowHide = true;
 function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) {
     // init special var for client side
     var fctClearIndividualFilter="clearIndividualFilter";
@@ -420,8 +420,21 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
     //call the displayColumnSearch when table configuration is changed
 
     $("#" + tableId + "_wrapper #showHideColumnsButton").click(function () {
+        // FIX #1508, auto datatable to show/hide column display documation (<a href= ....)
+        // To fix it, i replace correct name of column on firest click on show/hide button
+        if(firstclickOnShowHide) {
+            $(".dt-button.buttons-columnVisibility.active").each(function (index, value) {
+                $(value).find("a").text($($("#" + tableId + "_wrapper th.ui-state-default")[index]).text());
+            });
+            firstclickOnShowHide=false;
+
+            // Important! Recharge screen with a double click on button to recalculate position of the box
+            $("#" + tableId + "_wrapper #showHideColumnsButton").click();
+            $("#" + tableId + "_wrapper #showHideColumnsButton").click();
+        }
+        // end FIX #1508
         $('ul[class="dt-button-collection dropdown-menu"] li').click(function () {
-            privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide);
+           privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide);
         });
     });
 
