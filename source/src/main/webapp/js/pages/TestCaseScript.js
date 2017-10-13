@@ -3254,6 +3254,7 @@ function setPlaceholderProperty(propertyElement, property) {
         		        async: true,
         		        method: "GET",
         		        success: function (data) {
+        		    	    /* FIXME, I comment this code to rollback autocomplete problem.
         		            if (data.messageType === "OK") {
         		                // Feed the data to the screen and manage authorities.
         		                var service = data.contentTable;
@@ -3268,7 +3269,8 @@ function setPlaceholderProperty(propertyElement, property) {
         		                    })   
         		                }else{
                                     $("#"+editor.container.id).parent().find('.input-group').remove();
-        		                	
+
+
         		                	var addEntry = '<div class="input-group col-sm-5 col-sm-offset-3"><select class="datalib '+escaped+ ' form-control"></select><span class="input-group-btn"><button class="btn btn-secondary" type="button"><span class="glyphicon glyphicon-plus"></span></button></span></div>';
         		            		$("#"+editor.container.id).parent().append(addEntry);
         		            		$("#"+editor.container.id).parent().find("select").append($('<option>', {
@@ -3278,8 +3280,8 @@ function setPlaceholderProperty(propertyElement, property) {
         		                         		                    
         		                    $("."+escaped).parent().find("button").attr('onclick', 'openModalDataLib(\''  + escaped  + "\','ADD',"+"'"+escaped+"')");
         		                    
-      		                }
-        		            } 
+      		                    }
+        		            } */
         		        },
         		        error: showUnexpectedError
         		    });
