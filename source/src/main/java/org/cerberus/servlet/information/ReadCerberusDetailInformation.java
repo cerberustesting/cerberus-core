@@ -136,6 +136,9 @@ public class ReadCerberusDetailInformation extends HttpServlet {
             jsonResponse.put("javaUsedMemory", (instance.totalMemory() - instance.freeMemory()) / mb);
             jsonResponse.put("javaMaxMemory", instance.maxMemory() / mb);
 
+            String str1 = getServletContext().getServerInfo();
+            jsonResponse.put("applicationServerInfo", str1);
+
         } catch (JSONException ex) {
             Logger.getLogger(ReadCerberusDetailInformation.class.getName()).log(Level.SEVERE, null, ex);
         }

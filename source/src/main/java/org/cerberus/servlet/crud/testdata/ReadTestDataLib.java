@@ -19,7 +19,6 @@
  */
 package org.cerberus.servlet.crud.testdata;
 
-import com.gargoylesoftware.htmlunit.javascript.host.Console;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import java.io.IOException;
@@ -77,8 +76,8 @@ public class ReadTestDataLib extends HttpServlet {
     }
 
     protected void process(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    	
-    	ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+
+        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
         // Default message to unexpected error.
@@ -97,7 +96,7 @@ public class ReadTestDataLib extends HttpServlet {
          */
         String name = policy.sanitize(request.getParameter("name"));
         String country = policy.sanitize(request.getParameter("country"));
-        String like = policy.sanitize(request.getParameter("like"));
+        boolean like = ParameterParserUtil.parseBooleanParam(request.getParameter("like"), false);
         String columnName = ParameterParserUtil.parseStringParam(request.getParameter("columnName"), "");
         Integer testDataLibId = 0;
 
@@ -148,8 +147,7 @@ public class ReadTestDataLib extends HttpServlet {
             } else if (!Strings.isNullOrEmpty(columnName)) {
                 answer = findDistinctValuesOfColumn(appContext, request, columnName);
                 jsonResponse = (JSONObject) answer.getItem();
-            }
-            else {
+            } else {
                 //no parameters, then retrieves the full list
                 answer = findTestDataLibList(appContext, request);
             }
@@ -200,12 +198,12 @@ public class ReadTestDataLib extends HttpServlet {
 
         Map<String, List<String>> individualSearch = new HashMap<String, List<String>>();
         for (int a = 0; a < columnToSort.length; a++) {
-            if (null!=request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
+            if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
                 List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
                 individualSearch.put(columnToSort[a], search);
             }
         }
-        
+
         AnswerList resp = testDataLibService.readByVariousByCriteria(null, null, null, null, null, startPosition, length, columnName, sort, searchParameter, individualSearch);
 
         JSONArray jsonArray = new JSONArray();
@@ -272,15 +270,15 @@ public class ReadTestDataLib extends HttpServlet {
      * @return object containing values that match the name
      * @throws JSONException
      */
-    private AnswerItem findTestDataLibNameList(String nameToSearch, int limit, String like, ApplicationContext appContext) throws JSONException {
+    private AnswerItem findTestDataLibNameList(String nameToSearch, int limit, boolean like, ApplicationContext appContext) throws JSONException {
 
         AnswerItem ansItem = new AnswerItem();
 
         JSONObject object = new JSONObject();
 
         ITestDataLibService testDataService = appContext.getBean(ITestDataLibService.class);
-        AnswerList ansList = testDataService.readNameListByName(nameToSearch, limit,like);
-        
+        AnswerList ansList = testDataService.readNameListByName(nameToSearch, limit, like);
+
         JSONArray jsonArray = new JSONArray();
         if (ansList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
             for (TestDataLib testDataLib : (List<TestDataLib>) ansList.getDataList()) {
@@ -288,13 +286,12 @@ public class ReadTestDataLib extends HttpServlet {
 
             }
         }
-        
+
         //recordsFiltered do lado do servidor    
         object.put("contentTable", jsonArray);
         object.put("iTotalRecords", ansList.getTotalRows());
         object.put("iTotalDisplayRecords", ansList.getTotalRows());
         //recordsFiltered
-
 
         ansItem.setResultMessage(ansList.getResultMessage());
         ansItem.setItem(object);
@@ -411,7 +408,7 @@ public class ReadTestDataLib extends HttpServlet {
             testDataLib.setServicePath(StringEscapeUtils.unescapeHtml4(testDataLib.getServicePath()));
             testDataLib.setMethod(StringEscapeUtils.unescapeHtml4(testDataLib.getMethod()));
             testDataLib.setEnvelope(StringEscapeUtils.unescapeXml(testDataLib.getEnvelope()));
-            
+
             //CSV
             testDataLib.setCsvUrl(StringEscapeUtils.unescapeHtml4(testDataLib.getCsvUrl()));
             testDataLib.setSeparator(StringEscapeUtils.unescapeHtml4(testDataLib.getSeparator()));
@@ -421,20 +418,20 @@ public class ReadTestDataLib extends HttpServlet {
         JSONObject result = new JSONObject(gson.toJson(testDataLib));
         return result;
     }
-    
-    private AnswerItem findDistinctValuesOfColumn( ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException{
+
+    private AnswerItem findDistinctValuesOfColumn(ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
         AnswerItem answer = new AnswerItem();
         JSONObject object = new JSONObject();
 
         testDataLibService = appContext.getBean(ITestDataLibService.class);
-        
+
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
         String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "test,testcase,application,project,ticket,description,behaviororvalueexpected,readonly,bugtrackernewurl,deploytype,mavengroupid");
         String columnToSort[] = sColumns.split(",");
 
         Map<String, List<String>> individualSearch = new HashMap<>();
         for (int a = 0; a < columnToSort.length; a++) {
-            if (null!=request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
+            if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
                 List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
                 individualSearch.put(columnToSort[a], search);
             }

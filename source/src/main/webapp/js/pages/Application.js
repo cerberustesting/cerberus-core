@@ -23,7 +23,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
         $('[data-toggle="popover"]').popover({
             'placement': 'auto',
             'container': 'body'}
-        ); 
+        );
     });
 });
 
@@ -55,7 +55,7 @@ function initPage() {
     });
 
 
-            //configure and create the dataTable
+    //configure and create the dataTable
     var configurations = new TableConfigurationsServerSide("applicationsTable", "ReadApplication?system=" + getUser().defaultSystem, "contentTable", aoColumnsFunc("applicationsTable"), [3, 'asc']);
     createDataTableWithPermissions(configurations, renderOptionsForApplication, "#applicationList", undefined, true);
 }
@@ -91,13 +91,13 @@ function displayPageLabel() {
 
     $("#environmentHeader").html(doc.getDocOnline("invariant", "ENVIRONMENT"));
     $("#countryHeader").html(doc.getDocOnline("invariant", "COUNTRY"));
-    $("#ipHeader").html(doc.getDocOnline("countryenvironmentparameters", "IP") 
+    $("#ipHeader").html(doc.getDocOnline("countryenvironmentparameters", "IP")
             + '<br>' + doc.getDocOnline("countryenvironmentparameters", "URLLOGIN"));
-    $("#urlHeader").html(doc.getDocOnline("countryenvironmentparameters", "URL") 
+    $("#urlHeader").html(doc.getDocOnline("countryenvironmentparameters", "URL")
             + '<br>' + doc.getDocOnline("countryenvironmentparameters", "domain"));
-    $("#var1Header").html(doc.getDocOnline("countryenvironmentparameters", "Var1") 
+    $("#var1Header").html(doc.getDocOnline("countryenvironmentparameters", "Var1")
             + '<br>' + doc.getDocOnline("countryenvironmentparameters", "Var2"));
-    $("#var3Header").html(doc.getDocOnline("countryenvironmentparameters", "Var3") 
+    $("#var3Header").html(doc.getDocOnline("countryenvironmentparameters", "Var3")
             + '<br>' + doc.getDocOnline("countryenvironmentparameters", "Var4"));
     $("#poolSizeHeader").html(doc.getDocOnline("countryenvironmentparameters", "poolSize"));
 
@@ -121,11 +121,11 @@ function renderOptionsForApplication(data) {
     }
 }
 
-function renderOptionsForApplication2(id, data) {
+function renderOptionsForApplicationObject(id, data) {
     var doc = new Doc();
     //check if user has permissions to perform the add and import operations
     if ($("#createApplicationObjectButton").length === 0) {
-        var contentToAdd = "<div class='marginBottom10'><a href='ApplicationObject.jsp?application="+id+"' target='_blank'><button id='createApplicationObjectButton' type='button' class='btn btn-default'>\n\
+        var contentToAdd = "<div class='marginBottom10'><a href='ApplicationObjectList.jsp?application=" + id + "' target='_blank'><button id='createApplicationObjectButton' type='button' class='btn btn-default'>\n\
         " + doc.getDocLabel("page_application", "button_manage") + "</button></a></div>";
 
         $("#applicationObjectsTable_wrapper div#applicationObjectsTable_length").before(contentToAdd);
@@ -134,6 +134,9 @@ function renderOptionsForApplication2(id, data) {
 
 function deleteEntryHandlerClick() {
     var idApplication = $('#confirmationModal').find('#hiddenField1').prop("value");
+    
+    
+   
     var jqxhr = $.post("DeleteApplication", {application: idApplication}, "json");
     $.when(jqxhr).then(function (data) {
         var messageType = getAlertType(data.messageType);
@@ -186,14 +189,14 @@ function addEntryModalSaveHandler() {
     } else {
         deployTypeElement.parents("div.form-group").removeClass("has-error");
     }
-    
+
     // verif if all mendatory fields are not empty
     if ((nameElementEmpty) || (deployTypeElementEmpty))
         return;
 
     // Get the header data from the form.
     var dataForm = convertSerialToJSONObject(formAdd.serialize());
-    
+
     showLoaderInModal('#addApplicationModal');
     var jqxhr = $.post("CreateApplication", dataForm);
     $.when(jqxhr).then(function (data) {
@@ -252,6 +255,7 @@ function editEntryModalSaveHandler() {
         async: true,
         method: "POST",
         data: {application: data.application,
+            originalApplication: data.originalApplication,
             description: data.description,
             sort: data.sort,
             type: data.type,
@@ -290,13 +294,23 @@ function editEntryModalCloseHandler() {
 
 function editEntryClick(id, system) {
     clearResponseMessageMainPage();
+
+    // In Edit TestCase form, if we change the test, we get the latest testcase from that test.
+    $('#editApplicationModalForm input[name="application"]').off("change");
+    $('#editApplicationModalForm input[name="application"]').change(function () {
+        // Compare with original value in order to display the warning message.
+        displayWarningOnChangeApplicationKey();
+    });
+
+
     var jqxhr = $.getJSON("ReadApplication", "application=" + id);
     $.when(jqxhr).then(function (data) {
         var obj = data["contentTable"];
 
         var formEdit = $('#editApplicationModal');
 
-        formEdit.find("#application").prop("value", id);
+        formEdit.find("#originalApplication").prop("value", obj["application"]);
+        formEdit.find("#application").prop("value", obj["application"]);
         formEdit.find("#description").prop("value", obj["description"]);
         formEdit.find("#sort").prop("value", obj["sort"]);
         formEdit.find("#type").prop("value", obj["type"]);
@@ -327,8 +341,10 @@ function editEntryClick(id, system) {
         if ($("#editApplicationModal #applicationObjectsTable_wrapper").length > 0) {
             $("#editApplicationModal #applicationObjectsTable").DataTable().draw();
         } else {
-            var configurations = new TableConfigurationsServerSide("applicationObjectsTable", "ReadApplicationObject?application="+id, "contentTable", aoColumnsFunc_object("applicationObjectsTable"), [1, 'asc']);
-            var table = createDataTableWithPermissions(configurations, function(data){renderOptionsForApplication2(id,data);}, "#applicationObjectList", undefined, true);
+            var configurations = new TableConfigurationsServerSide("applicationObjectsTable", "ReadApplicationObject?application=" + obj["application"], "contentTable", aoColumnsFunc_object("applicationObjectsTable"), [1, 'asc']);
+            var table = createDataTableWithPermissions(configurations, function (data) {
+                renderOptionsForApplicationObject(obj["application"], data);
+            }, "#applicationObjectList", undefined, true);
         }
 
         formEdit.modal('show');
@@ -445,6 +461,19 @@ function addNewEnvironmentRow() {
         toDelete: false
     };
     appendEnvironmentRow(newEnvironment);
+}
+
+function displayWarningOnChangeApplicationKey() {
+    // Compare with original value in order to display the warning message.
+    let old1 = $("#originalApplication").val();
+    let new1 = $('#editApplicationModal input[name="application"]').val();
+    console.info(old1 + " " + new1);
+    if (old1 !== new1) {
+        var localMessage = new Message("WARNING", "If you rename that application, All the corresponding execution historic will stay on old application name.");
+        showMessage(localMessage, $('#editApplicationModal'));
+    } else {
+        clearResponseMessage($('#editApplicationModal'));
+    }
 }
 
 function aoColumnsFunc(tableId) {

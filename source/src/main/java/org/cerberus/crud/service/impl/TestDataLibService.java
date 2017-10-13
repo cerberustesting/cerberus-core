@@ -69,7 +69,7 @@ public class TestDataLibService implements ITestDataLibService {
     }
 
     @Override
-    public AnswerList readNameListByName(String testDataLibName, int limit, String like) {
+    public AnswerList readNameListByName(String testDataLibName, int limit, boolean like) {
         return testDataLibDAO.readNameListByName(testDataLibName, limit, like);
     }
 

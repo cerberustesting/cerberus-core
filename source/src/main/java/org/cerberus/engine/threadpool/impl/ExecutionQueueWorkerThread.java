@@ -22,8 +22,6 @@ package org.cerberus.engine.threadpool.impl;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.concurrent.Future;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.http.HttpEntity;
@@ -181,10 +179,10 @@ public class ExecutionQueueWorkerThread implements Runnable {
                 queueService.updateToError(queueId, e.getMessage());
 
             } catch (CerberusException again) {
-                LOG.warn("Unable to mark execution in queue " + queueId + " as in error", again);
+                LOG.error("Unable to mark execution in queue " + queueId + " as in error", again);
             }
         } catch (Exception ex) {
-            Logger.getLogger(ExecutionQueueWorkerThread.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.error(ex);
         } finally {
         }
     }
@@ -230,6 +228,7 @@ public class ExecutionQueueWorkerThread implements Runnable {
                 errorMessage.append(e.getMessage());
                 errorMessage.append(". Check server logs");
             }
+            LOG.error(errorMessage.toString(), e);
             throw new RunQueueProcessException(errorMessage.toString(), e);
         }
     }

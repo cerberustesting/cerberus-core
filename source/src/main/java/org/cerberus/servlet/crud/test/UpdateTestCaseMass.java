@@ -87,8 +87,9 @@ public class UpdateTestCaseMass extends HttpServlet {
          */
         // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
         // Parameter that needs to be secured --> We SECURE+DECODE them
-        String function = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("function"), "", charset);
-        String status = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("status"), "", charset);
+        String function = request.getParameter("massFunction");
+        String status = request.getParameter("massStatus");
+        String application = request.getParameter("massApplication");
         // Parameter that we cannot secure as we need the html --> We DECODE them
 
         String[] myTest = request.getParameterValues("test");
@@ -137,10 +138,11 @@ public class UpdateTestCaseMass extends HttpServlet {
                     massErrorCounter++;
                     output_message.append("<br>id : ").append(cur_test).append("|").append(cur_testcase).append(" - ").append(msg.getDescription());
                 } else // We test that at least a data to update has been defined.
-                if ((request.getParameter("function") != null) || (request.getParameter("status") != null)) {
+                if ((function != null) || (status != null) || (application != null)) {
                     tcData.setUsrModif(request.getRemoteUser());
-                    tcData.setFunction(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("function"), tcData.getFunction(), charset));
-                    tcData.setStatus(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("status"), tcData.getStatus(), charset));
+                    tcData.setFunction(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(function, tcData.getFunction(), charset));
+                    tcData.setStatus(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(status, tcData.getStatus(), charset));
+                    tcData.setApplication(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(application, tcData.getApplication(), charset));
                     ans = testCaseService.update(tcData.getTest(), tcData.getTestCase(), tcData);
 
                     if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {

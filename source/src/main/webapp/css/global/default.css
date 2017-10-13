@@ -701,7 +701,7 @@ img.selectedPicture{
         transform: rotate(359deg);
     }
 }
-#envelope:focus { outline: 0px solid transparent; }
+#envelope:focus { outline: 0px solid transparent; } 
 
 .highlightedContainer {
     border-color: #66afe9;
@@ -758,3 +758,6 @@ a.list-group-item.selected, button.list-group-item.selected {
     max-width : 300px;
     max-height : 40px;
 }
+
+.bold-option{font-weight: bolder;}
+

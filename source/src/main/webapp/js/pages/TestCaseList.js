@@ -22,7 +22,7 @@
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
         initPage();
-        
+
         $('[data-toggle="popover"]').popover({
             'placement': 'auto',
             'container': 'body'}
@@ -37,34 +37,50 @@ function initPage() {
     displayGlobalLabel(doc);
     displayPageLabel(doc);
     displayFooter(doc);
-    
+
     var table = loadTable();
 
     // MASS ACTION
     $("#massActionTestCaseButtonAddLabel").click(massActionModalSaveHandler_addLabel);
     $("#massActionTestCaseButtonRemoveLabel").click(massActionModalSaveHandler_removeLabel);
     $("#massActionTestCaseButtonUpdate").click(massActionModalSaveHandler_update);
-    $("#massActionTestCaseModal #status").prop("disabled", true);
-    $("#statusCheckbox").change(function () {
-        if ($(this).prop("checked")) {
-            $("#massActionTestCaseModal #status").prop("disabled", false);
-        } else {
-            $("#massActionTestCaseModal #status").prop("disabled", true);
-        }
-    });
-    $("#massActionTestCaseModal #function").prop("disabled", true);
-    $("#functionCheckbox").change(function () {
-        if ($(this).prop("checked")) {
-            $("#massActionTestCaseModal #function").prop("disabled", false);
-        } else {
-            $("#massActionTestCaseModal #function").prop("disabled", true);
-        }
-    });
 
     // MASS ACTION
     $('#massActionTestCaseModal').on('hidden.bs.modal', massActionModalCloseHandler);
     $('[data-toggle="tooltip"]').tooltip();
 
+    initMassActionModal();
+
+}
+
+function initMassActionModal() {
+    $("#massActionTestCaseModal #massStatus").prop("disabled", true);
+    $("#statusCheckbox").prop("checked", false);
+    $("#statusCheckbox").change(function () {
+        if ($(this).prop("checked")) {
+            $("#massActionTestCaseModal #massStatus").prop("disabled", false);
+        } else {
+            $("#massActionTestCaseModal #massStatus").prop("disabled", true);
+        }
+    });
+    $("#massActionTestCaseModal #massFunction").prop("disabled", true);
+    $("#functionCheckbox").prop("checked", false);
+    $("#functionCheckbox").change(function () {
+        if ($(this).prop("checked")) {
+            $("#massActionTestCaseModal #massFunction").prop("disabled", false);
+        } else {
+            $("#massActionTestCaseModal #massFunction").prop("disabled", true);
+        }
+    });
+    $("#massActionTestCaseModal #massApplication").prop("disabled", true);
+    $("#applicationCheckbox").prop("checked", false);
+    $("#applicationCheckbox").change(function () {
+        if ($(this).prop("checked")) {
+            $("#massActionTestCaseModal #massApplication").prop("disabled", false);
+        } else {
+            $("#massActionTestCaseModal #massApplication").prop("disabled", true);
+        }
+    });
 }
 
 function displayPageLabel(doc) {
@@ -122,7 +138,7 @@ function renderOptionsForTestCaseList(data) {
 
             $('#testCaseList #createTestCaseButton').click(data, function () {
                 // Getting the Test from the 1st row of the testcase table.
-                if($("#testCaseTable td.sorting_1")[0] != undefined) {
+                if ($("#testCaseTable td.sorting_1")[0] !== undefined) {
                     var firstRowTest = $("#testCaseTable td.sorting_1")[0].textContent;
 //                    addTestCaseClick(firstRowTest);
                     openModalTestCase(firstRowTest, undefined, "ADD");
@@ -181,7 +197,6 @@ function deleteEntryHandlerClick() {
         $('#confirmationModal').modal('hide');
     }).fail(handleErrorAjaxAfterTimeout);
 }
-
 
 function selectAll() {
     if ($(this).prop("checked"))
@@ -262,7 +277,6 @@ function massActionModalSaveHandler_update() {
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
-
 function massActionModalCloseHandler() {
     // reset form values
     $('#massActionTestCaseModal #massActionTestCaseModalForm')[0].reset();
@@ -275,8 +289,7 @@ function massActionModalCloseHandler() {
 function massActionClick() {
     var doc = new Doc();
     clearResponseMessageMainPage();
-    $("[name='status']").empty();
-    displayInvariantList("status", "TCSTATUS", false);
+
     // When creating a new item, Define here the default value.
     var formList = $('#massActionForm');
     if (formList.serialize().indexOf("test-") === -1) {
@@ -285,12 +298,38 @@ function massActionClick() {
     } else {
         // Title of the label list.
         $("[name='labelMassField']").html("Labels from system : " + getUser().defaultSystem);
+
         // Labels
         loadLabel(undefined, getUser().defaultSystem, "#selectLabelAdd", "4");
+
+        // Load Status.
+        $("[name='massStatus']").empty();
+        displayInvariantList("massStatus", "TCSTATUS", false);
+
+        // Load Function.
+        var availableFunctions = getInvariantArray("FUNCTION", false);
+        $('#massActionTestCaseModal').find("#massFunction").autocomplete({
+            source: availableFunctions
+        });
+
+        // Load Applications.
+        $("[name='massApplication']").empty();
+        var jqxhr = $.getJSON("ReadApplication");
+        $.when(jqxhr).then(function (data) {
+            var applicationList = $("[name='massApplication']");
+
+            for (var index = 0; index < data.contentTable.length; index++) {
+                if (data.contentTable[index].system === getUser().defaultSystem) {
+                    applicationList.prepend($('<option></option>').addClass('bold-option').text(data.contentTable[index].application).val(data.contentTable[index].application));
+                } else {
+                    applicationList.append($('<option></option>').text(data.contentTable[index].application).val(data.contentTable[index].application));
+                }
+            }
+        });
+
         $('#massActionTestCaseModal').modal('show');
     }
 }
-
 
 function loadTestFilters(selectTest) {
     var jqxhr = $.get("ReadTest", "system=" + getUser().defaultSystem);

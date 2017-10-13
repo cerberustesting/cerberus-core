@@ -432,12 +432,13 @@ function feedDataLibModalData(testDataLib, modalId, mode, hasPermissionsUpdate) 
         activateSOAPServiceFields("#editTestDataLibModal", "");
         // Cleaning the Subdata Table.
         $('#subdataTableBody_edit tr').remove();
+        addNewSubDataKeyRow("subdataTableBody_edit");
+
     } else {
         var obj = testDataLib;
         $('#editTestDataLibModal #testdatalibid').val(obj.testDataLibID);
         $('#editTestDataLibModal #name').prop("value", obj.name);
 
-//        $('#editTestDataLibModal #type option[value="' + obj.type + '"]').attr("selected", "selected");
         $('#editTestDataLibModal #types').prop("value", obj.type);
         $('#editTestDataLibModal #system').find('option[value="' + obj.system + '"]').prop("selected", true);
         $('#editTestDataLibModal #environment').find('option[value="' + obj.environment + '"]').prop("selected", true);
@@ -491,6 +492,7 @@ function feedDataLibModalData(testDataLib, modalId, mode, hasPermissionsUpdate) 
         } else {
             // Cleaning the Subdata Table.
             $('#subdataTableBody_edit tr').remove();
+            addNewSubDataKeyRow("subdataTableBody_edit");
         }
 
         //loads groups from database
@@ -653,6 +655,20 @@ function addNewSubDataRow(dataTableBody) {
     var nbRows = $("#" + dataTableBody + " tr").size();
     var newSubData = {
         subData: "SUBDATA" + nbRows,
+        value: "",
+        column: "",
+        parsingAnswer: "",
+        columnPosition: "",
+        description: "",
+        testDataLibDataID: -1,
+        toDelete: false
+    };
+    appendSubDataRow(newSubData, dataTableBody);
+}
+
+function addNewSubDataKeyRow(dataTableBody) {
+    var newSubData = {
+        subData: "",
         value: "",
         column: "",
         parsingAnswer: "",

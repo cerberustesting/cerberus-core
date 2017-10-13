@@ -7371,6 +7371,36 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // New updated Documentation.
         //-- ------------------------ 1231-1232
         SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Adding potencial missed key subdata. #1505
+        //-- ------------------------ 1233
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `testdatalibdata` (`TestDataLibID`, `SubData`, `Value`, `Column`, `ParsingAnswer`, `ColumnPosition`, `Description`) ");
+        SQLS.append(" SELECT a1.testdatalibid, '', '', '', '', '', '' FROM testdatalib a1 ");
+        SQLS.append(" LEFT OUTER JOIN ( ");
+        SQLS.append("  SELECT a.testdatalibid FROM testdatalib a JOIN testdatalibdata b ON a.testdatalibid = b.testdatalibid and b.subdata='' ");
+        SQLS.append(" ) as toto");
+        SQLS.append(" ON toto.testdatalibid = a1.testdatalibID ");
+        SQLS.append("WHERE toto.testdatalibid is null;");
+        SQLInstruction.add(SQLS.toString());
+
+        // New updated Documentation.
+        //-- ------------------------ 1234-1235
+        SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+
+        // New updated Documentation.
+        //-- ------------------------ 1236-1237
+        SQLS = new StringBuilder();
         SQLS.append("DELETE FROM `documentation`;");
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
@@ -7672,6 +7702,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_application','button_delete','','fr','Supprimer l\\'Application','',NULL)");
         SQLS.append(",('page_application','button_edit','','en','Edit Application','',NULL)");
         SQLS.append(",('page_application','button_edit','','fr','Modifier l\\'Application','',NULL)");
+        SQLS.append(",('page_application','button_manage','','en','Manage Objects','',NULL)");
+        SQLS.append(",('page_application','button_manage','','fr','Gerer les Objets','',NULL)");
         SQLS.append(",('page_application','message_delete','','en','Do you want to delete application <b>\\'%ENTRY%\\'</b> ?<br>WARNING : All corresponding Test Cases will be removed as well !!!','',NULL)");
         SQLS.append(",('page_application','message_delete','','fr','Confirmez vous la suppression de l\\'application <b>\\'%ENTRY%\\'</b> ?<br> ATTENTION : Tous les Cas de Test associés seront également supprimés !!!','',NULL)");
         SQLS.append(",('page_application','tabDef','','en','Definition','',NULL)");
@@ -9128,13 +9160,13 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('testcampaign','notifyStartTagExecution','','en','Notify the start of execution','',NULL)");
         SQLS.append(",('testcampaign','notifyStartTagExecution','','fr','Notifier le debut de l\\'execution','',NULL)");
         SQLS.append(",('testcase','activePROD','','en','Active PROD','Define whether the <code class=\\'doc-crbvvoca\\'>test case</code> can be executed in PROD environments.<br>If the environment gp1 (attached to the invariant) is PROD and Active PROD is No, the <code class=\\'doc-crbvvoca\\'>test case</code> will never be executed.','_testcase')");
-        SQLS.append(",('testcase','activePROD','','fr','Actif PROD',NULL,'_cas_de_test')");
+        SQLS.append(",('testcase','activePROD','','fr','Actif PROD','','_cas_de_test')");
         SQLS.append(",('testcase','activeQA','','en','Active QA','Define whether the <code class=\\'doc-crbvvoca\\'>test case</code> can be executed in QA environments.<br>If the environment gp1 (attached to the invariant) is QA and Active QA is No, the <code class=\\'doc-crbvvoca\\'>test case</code> will never be executed.','_testcase')");
-        SQLS.append(",('testcase','activeQA','','fr','Actif QA',NULL,'_cas_de_test')");
+        SQLS.append(",('testcase','activeQA','','fr','Actif QA','','_cas_de_test')");
         SQLS.append(",('testcase','activeUAT','','en','Active UAT','Define whether the <code class=\\'doc-crbvvoca\\'>test case</code> can be executed in UAT environments.<br>If the environment gp1 (attached to the invariant) is UAT and Active UAT is No, the <code class=\\'doc-crbvvoca\\'>test case</code> will never be executed.','_testcase')");
-        SQLS.append(",('testcase','activeUAT','','fr','Actif UAT',NULL,'_cas_de_test')");
+        SQLS.append(",('testcase','activeUAT','','fr','Actif UAT','','_cas_de_test')");
         SQLS.append(",('testcase','BehaviorOrValueExpected','','en','Detailed Description / Value Expected','It is a full description of the <code class=\\'doc-crbvvoca\\'>application</code> feature that we expect to be tested with that <code class=\\'doc-crbvvoca\\'>test case</code>.','_testcase')");
-        SQLS.append(",('testcase','BehaviorOrValueExpected','','fr','Description détaillée / Valeur attendue',NULL,'_cas_de_test')");
+        SQLS.append(",('testcase','BehaviorOrValueExpected','','fr','Description détaillée / Valeur attendue','','_cas_de_test')");
         SQLS.append(",('testcase','BugID','','en','Bug ID','This is the bug ID that will fix the pending KO.','_testcase')");
         SQLS.append(",('testcase','BugID','','fr','BugID','','_cas_de_test')");
         SQLS.append(",('testcase','Comment','','en','Comment','This is where to add any interesting comment about the <code class=\\'doc-crbvvoca\\'>test case</code>.','_testcase')");
@@ -9148,41 +9180,43 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('testcase','countryList','','en','Country List','The list of countries where the test case is defined','_testcase')");
         SQLS.append(",('testcase','countryList','','fr','Liste des pays','La liste des pays sur lesquels le cas de test est défini','_cas_de_test')");
         SQLS.append(",('testcase','Creator','','en','Creator','This is the name of the Cerberus user who created the <code class=\\'doc-crbvvoca\\'>test case</code>.','_testcase')");
-        SQLS.append(",('testcase','Creator','','fr','Créateur',NULL,'_cas_de_test')");
+        SQLS.append(",('testcase','Creator','','fr','Créateur','','_cas_de_test')");
         SQLS.append(",('testcase','Description','','en','Test case short description','It is a synthetic description of what the <code class=\\'doc-crbvvoca\\'>test case</code> do.','_testcase')");
         SQLS.append(",('testcase','Description','','fr','Description courte','','_cas_de_test')");
         SQLS.append(",('testcase','FromBuild','','en','From Sprint',' ','_testcase')");
-        SQLS.append(",('testcase','FromBuild','','fr','Depuis le sprint',NULL,'_cas_de_test')");
+        SQLS.append(",('testcase','FromBuild','','fr','Depuis le Sprint','','_cas_de_test')");
         SQLS.append(",('testcase','FromRev','','en','From Rev',' ','_testcase')");
-        SQLS.append(",('testcase','FromRev','','fr','Depuis la révision',NULL,'_cas_de_test')");
+        SQLS.append(",('testcase','FromRev','','fr','Depuis la Révision','','_cas_de_test')");
         SQLS.append(",('testcase','Function','','en','Function','The function is the functionnality that the <code class=\\'doc-crbvvoca\\'>test case</code> is testing.','_testcase')");
         SQLS.append(",('testcase','Function','','fr','Fonction','','_cas_de_test')");
         SQLS.append(",('testcase','HowTo','','en','How To','<i>How to</i> field is used to define the step by step procedure used in order to execute the <code class=\\'doc-crbvvoca\\'>test case</code>. This is mainly used for MANUAL group <code class=\\'doc-crbvvoca\\'>test cases</code>.','_testcase')");
-        SQLS.append(",('testcase','HowTo','','fr','Comment',NULL,'_cas_de_test')");
+        SQLS.append(",('testcase','HowTo','','fr','Comment Reproduire','','_cas_de_test')");
         SQLS.append(",('testcase','Implementer','','en','Implementer','This is the name of the Cerberus user who implemented the <code class=\\'doc-crbvvoca\\'>test case</code>.','_testcase')");
+        SQLS.append(",('testcase','Implementer','','fr','Réalisateur','Nom de l\\'utilisateur Cerberus qui a implementé le cas de test.','_testcase')");
         SQLS.append(",('testcase','LastModifier','','en','LastModifier','This is the name of the Cerberus user who last modified the <code class=\\'doc-crbvvoca\\'>test case</code>.','_testcase')");
-        SQLS.append(",('testcase','LastModifier','','fr','Dernier Modificateur',NULL,'_cas_de_test')");
+        SQLS.append(",('testcase','LastModifier','','fr','Dernier Modificateur','','_cas_de_test')");
         SQLS.append(",('testcase','Origine','','en','Origin','This is the country or the team that identified the scenario of the <code class=\\'doc-crbvvoca\\'>test case</code>.','_testcase')");
         SQLS.append(",('testcase','Origine','','fr','Origine',NULL,'_cas_de_test')");
         SQLS.append(",('testcase','RefOrigine','','en','RefOrigin','This is the external reference of the <code class=\\'doc-crbvvoca\\'>test case</code> when coming from outside Cerberus.','_testcase')");
-        SQLS.append(",('testcase','RefOrigine','','fr','RefOrigine',NULL,'_cas_de_test')");
+        SQLS.append(",('testcase','RefOrigine','','fr','RefOrigine','','_cas_de_test')");
         SQLS.append(",('testcase','Status','','en','Status','It is the workflow status of the <code class=\\'doc-crbvvoca\\'>test case</code> used to follow-up the implementation of the tests.<br>It can take any values depending on the workflow that manage the <code class=\\'doc-crbvvoca\\'>test case</code> life cycle.<br><br>The first status defined on the invariant table (based on the sequence) will be the default value for any new <code class=\\'doc-crbvvoca\\'>test case</code>.<br>The only status that is mandatory to define and create is the WORKING status that correspond to fully working and stable <code class=\\'doc-crbvvoca\\'>test case</code>.','_testcase')");
         SQLS.append(",('testcase','Status','','fr','Status','','_cas_de_test')");
         SQLS.append(",('testcase','TargetBuild','','en','Target Sprint','This is the Target Build that should fix the bug. Until we reach that Build, the <code class=\\'doc-crbvvoca\\'>test case</code> execution will be discarded.','_testcase')");
-        SQLS.append(",('testcase','TargetBuild','','fr','Sprint cible',NULL,'_cas_de_test')");
+        SQLS.append(",('testcase','TargetBuild','','fr','Sprint Cible','','_cas_de_test')");
         SQLS.append(",('testcase','TargetRev','','en','Target Rev','This is the Revision that should fix the bug. Until we reach that Revision, the <code class=\\'doc-crbvvoca\\'>test case</code> execution will be discarded.','_testcase')");
+        SQLS.append(",('testcase','TargetRev','','fr','Revision Cible','Correpond à la Revision à partir de laquelle le bug est corrigé.','_testcase')");
         SQLS.append(",('testcase','TcActive','','en','Act','This field define if the test is active or not. A <code class=\\'doc-crbvvoca\\'>test case</code> that is not active cannot be executed.','_testcase')");
-        SQLS.append(",('testcase','TcActive','','fr','Actif',NULL,'_cas_de_test')");
+        SQLS.append(",('testcase','TcActive','','fr','Actif','','_cas_de_test')");
         SQLS.append(",('testcase','TCDateCrea','','en','Creation Date','This is the <code class=\\'doc-crbvvoca\\'>test case</code> creation date.','_testcase')");
-        SQLS.append(",('testcase','TCDateCrea','','fr','Date de création',NULL,'_cas_de_test')");
+        SQLS.append(",('testcase','TCDateCrea','','fr','Date de création','','_cas_de_test')");
         SQLS.append(",('testcase','TestCase','','en','Testcase ID','A <code class=\\'doc-crbvvoca\\'>test case</code> is a scenario that test a specific feature of an <code class=\\'doc-crbvvoca\\'>application</code>.','_testcase')");
         SQLS.append(",('testcase','TestCase','','fr','ID du Cas de test','','_cas_de_test')");
         SQLS.append(",('testcase','ticket','','en','Ticket','The is the Ticket Number that provided the implementation of the <code class=\\'doc-crbvvoca\\'>test case</code>.','_testcase')");
-        SQLS.append(",('testcase','ticket','','fr','Ticket',NULL,'_cas_de_test')");
+        SQLS.append(",('testcase','ticket','','fr','Ticket','','_cas_de_test')");
         SQLS.append(",('testcase','ToBuild','','en','To Sprint',' ','_testcase')");
-        SQLS.append(",('testcase','ToBuild','','fr','Depuis le Sprint',NULL,'_cas_de_test')");
+        SQLS.append(",('testcase','ToBuild','','fr','Jusqu\\'au Sprint','','_cas_de_test')");
         SQLS.append(",('testcase','ToRev','','en','To Rev',' ','_testcase')");
-        SQLS.append(",('testcase','ToRev','','fr','Depuis la Revision',NULL,'_cas_de_test')");
+        SQLS.append(",('testcase','ToRev','','fr','Jusqu\\'à la Revision','','_cas_de_test')");
         SQLS.append(",('testcasecountryproperties','Database','','en','DTB','Database where the SQL will be executed.<br>This is only applicable if the property type is <code class=\\'doc-fixed\\'>executeSql</code> or <code class=\\'doc-fixed\\'>executeSqlFromLib</code>.',NULL)");
         SQLS.append(",('testcasecountryproperties','Description','','en','Description','Description of the property.',NULL)");
         SQLS.append(",('testcasecountryproperties','Length','','en','Length','It is the length parameter of the property.<br>The parameter usage depend on the <code class=\\'doc-fixed\\'>type</code> of the property.',NULL)");
@@ -9239,7 +9273,24 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('testcaseexecution','tag','','en','Tag','The Tag is just a string defined by the user that will be recorded with the execution. Its purpose is to help to find back some specific executions.',NULL)");
         SQLS.append(",('testcaseexecution','URL','','en','URL','Full URL used to connect to the application.',NULL)");
         SQLS.append(",('testcaseexecution','verbose','','en','Verbose','This correspond to the level if information that Cerberus will keep when performing the execution. It can take the following values :<br><br><b>0</b> : The test will keep minimum login information in order to preserve the response times. This is to be used when a massive amout of tests are performed. No details on action will be saved.<br><b>1</b> : This is the standard level of log. Detailed action execution information will also be stored.<br><b>2</b> : This is the highest level of detailed information that can be chosen. Detailed web traffic information will be stored. This is to be used only on very specific cases where all hits information of an execution are required.<br><br>NB : Verbose level higher that 0 rely on Network traffic (only available on firefox browser).',NULL)");
+        SQLS.append(",('testcaseexecutiondata','database','','en','Database','',NULL)");
+        SQLS.append(",('testcaseexecutiondata','database','','fr','Base de Donnée','',NULL)");
+        SQLS.append(",('testcaseexecutiondata','index','','en','Index','',NULL)");
+        SQLS.append(",('testcaseexecutiondata','index','','fr','Index','',NULL)");
+        SQLS.append(",('testcaseexecutiondata','length','','en','Length','',NULL)");
+        SQLS.append(",('testcaseexecutiondata','length','','fr','Longueur','',NULL)");
+        SQLS.append(",('testcaseexecutiondata','nature','','en','Nature','',NULL)");
+        SQLS.append(",('testcaseexecutiondata','nature','','fr','Nature','',NULL)");
+        SQLS.append(",('testcaseexecutiondata','retry','','en','Retry','',NULL)");
+        SQLS.append(",('testcaseexecutiondata','retry','','fr','Retry','',NULL)");
+        SQLS.append(",('testcaseexecutiondata','retryperiod','','en','Retry Period','',NULL)");
+        SQLS.append(",('testcaseexecutiondata','retryperiod','','fr','Periode de Retry','',NULL)");
+        SQLS.append(",('testcaseexecutiondata','rowlimit','','en','Row Limit','',NULL)");
+        SQLS.append(",('testcaseexecutiondata','rowlimit','','fr','Row Limit','',NULL)");
+        SQLS.append(",('testcaseexecutiondata','type','','en','Type','',NULL)");
+        SQLS.append(",('testcaseexecutiondata','type','','fr','Type','',NULL)");
         SQLS.append(",('testcaseexecutiondata','Value','','en','Property Value','This is the Value of the calculated Property.',NULL)");
+        SQLS.append(",('testcaseexecutiondata','Value','','fr','Valeur','',NULL)");
         SQLS.append(",('testcaseexecutionqueue','debugFlag','','en','Activate Debug Mode',NULL,NULL)");
         SQLS.append(",('testcaseexecutionqueue','debugFlag','','fr','Activation du mode debug',NULL,NULL)");
         SQLS.append(",('testcaseexecutionqueue','priority','','en','Priority',NULL,NULL)");
