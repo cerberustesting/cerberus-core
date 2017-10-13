@@ -49,6 +49,8 @@ function initPage() {
     $('#massActionTestCaseModal').on('hidden.bs.modal', massActionModalCloseHandler);
     $('[data-toggle="tooltip"]').tooltip();
 
+    initModalTestCase();
+    $('#editTestCaseModal').data("initLabel", true);
     initMassActionModal();
 
 }

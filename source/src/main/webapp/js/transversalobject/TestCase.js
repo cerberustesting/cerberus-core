@@ -47,7 +47,7 @@ function openModalTestCase(test, testcase, mode) {
     clearResponseMessage($('#editTestCaseModal'));
 }
 
-function initModalTestCase(doc) {
+function initModalTestCase() {
     var doc = new Doc();
 
     tinymce.init({
