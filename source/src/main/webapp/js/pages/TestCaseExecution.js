@@ -1332,7 +1332,7 @@ Action.prototype.generateHeader = function (id) {
     var scope = this;
     var content = $("<div></div>").addClass("content");
     var firstRow = $("<div></div>").addClass("row ");
-    var contentField = $("<div></div>").addClass("col-sm-12").attr("id", "contentField");
+    var contentField = $("<div></div>").addClass("col-xs-12").attr("id", "contentField");
     var elapsedTime = $("<h4>").attr("style", "font-size:0.9em;margin:0px;line-height:1;height:0.9em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
     var returnMessageField = $("<h4>").attr("style", "font-size:.9em;margin:0px;line-height:1;height:.95em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
     var descriptionField = $("<h4>").attr("style", "font-size:1.2em;margin:0px;line-height:1;height:1.2em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
@@ -2212,7 +2212,7 @@ function addFileLink(fileList, container) {
             var urlImage = "ReadTestCaseExecutionMedia?filename=" + fileList[i].fileName + "&filetype=" + fileList[i].fileType + "&filedesc=" + fileList[i].fileDesc;
             var fileDesc = fileList[i].fileDesc;
             var linkBox = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px")
-                    .append(fileList[i].fileDesc).append($("<img>").attr("src", urlImage + "&h=30").css("height", "30px")
+                    .append(fileList[i].fileDesc).append($("<img>").attr("src", urlImage + "&h=30&w=60").css("max-height", "30px").css("max-width", "60px")
                     .click(function (e) {
                         showPicture(fileDesc, urlImage);
                         return false;
