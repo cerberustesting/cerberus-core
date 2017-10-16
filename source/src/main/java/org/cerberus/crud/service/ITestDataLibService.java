@@ -57,9 +57,10 @@ public interface ITestDataLibService {
      *
      * @param testDataLibName
      * @param limit
+     * @param like
      * @return
      */
-    AnswerList readNameListByName(String testDataLibName, int limit, String like);
+    AnswerList readNameListByName(String testDataLibName, int limit, boolean like);
 
     /**
      *
@@ -124,7 +125,7 @@ public interface ITestDataLibService {
      * @param object
      * @return
      */
-    Answer create(TestDataLib object);
+    AnswerItem create(TestDataLib object);
 
     /**
      *

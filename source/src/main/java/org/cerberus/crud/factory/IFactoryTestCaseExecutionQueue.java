@@ -41,7 +41,7 @@ public interface IFactoryTestCaseExecutionQueue {
     TestCaseExecutionQueue create(String test, String testCase, String country, String environment, String robot, String robotIP, String robotPort, String browser,
             String browserVersion, String platform, String screenSize, int manualURL, String manualHost, String manualContextRoot, String manualLoginRelativeURL, String manualEnvData,
             String tag, int screenshot, int verbose, String timeout, int pageSource, int seleniumLog, long exeId, Integer retries, 
-            String manualExecution, String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif)
+            String manualExecution, int priority, String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif)
             throws FactoryCreationException;
 
     TestCaseExecutionQueue create(long id, String test, String testCase, String country, String environment, String robot, String robotIP, String robotPort, String browser,

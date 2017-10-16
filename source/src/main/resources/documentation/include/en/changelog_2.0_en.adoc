@@ -3,8 +3,15 @@
 
 *Improvements / New features*
 [square]
+* [GUI] We can now edit or add service directly from TestCaseScript page.
+* [GUI] Autocompletion is now available for callservice action field.
+* [GUI] Cerberus is now available in french language.
+* [GUI] New Cerberus logo.
 * [GUI] On the homepage, we can now dynamically filter the tag from a search text.
-* [Engine] tag value can now be defined up to 255 character (used to be 50 characters max). Try to keep it the smallest as possible (for performance, storage and UI reasons).
+* [GUI] On testcase list page, mass action now allow to change application.
+* [GUI] Testcase header allow to modify testcase on an application outside the current system.
+* [Engine] Tag value can now be defined up to 255 character (used to be 50 characters max). Try to keep it the smallest as possible (for performance, storage and UI reasons).
+* [Engine] Automatic notification at the beginning or the end of a tag execution can be configured at campaign level. Body, From and Subject email can be configured with parameters that start by cerberus_notification_tagexecution
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

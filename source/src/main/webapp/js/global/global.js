@@ -237,12 +237,13 @@ function displayDataLibList(selectName, defaultValue, name) {
 	
 	return new Promise((resolve,reject)=>{
 			$("#"+selectName).parent().find("select").find('option').remove();
-		  $.when($.getJSON("ReadTestDataLib?name="+name+"&limit=15&like=no")).then(function (data) {
+		  $.when($.getJSON("ReadTestDataLib?name="+name+"&limit=15&like=N")).then(function (data) {
 		
 		        for (var option in data.contentTable) {
 		        	let system = "";
 		        	let environment = "";
 		        	let country = "";
+		        	let value = "";
 		        	if(!isEmpty(data.contentTable[option].system)){
 		        		system = " - " +data.contentTable[option].system
 		        	}
@@ -252,8 +253,13 @@ function displayDataLibList(selectName, defaultValue, name) {
 		        	if(!isEmpty(data.contentTable[option].country)){
 		        		country = " - " +data.contentTable[option].country
 		        	}
+		        	if(data.contentTable[option].type === "INTERNAL"){
+			  			if(!isEmpty(data.contentTable[option].value)){
+			  				value = " - " +data.contentTable[option].value
+			  			}
+		        	}
 		        	
-		        	$("#"+selectName).parent().find("select").append($('<option></option>').text(data.contentTable[option].name +system+environment+country).val(data.contentTable[option].testDataLibID));
+		        	$("#"+selectName).parent().find("select").append($('<option></option>').text(data.contentTable[option].name +value+system+environment+country).val(data.contentTable[option].testDataLibID));
 		        }
 		        
 		        if(defaultValue != undefined){

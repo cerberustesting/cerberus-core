@@ -39,6 +39,10 @@ function initPage() {
     $('#editTestcampaignModal').on('hidden.bs.modal', editEntryModalCloseHandler);
     $('#addTestcampaignModal').on('hidden.bs.modal', addEntryModalCloseHandler);
     $('#viewTestcampaignModal').on('hidden.bs.modal', viewEntryModalCloseHandler);
+    
+    displayInvariantList("notifystart", "APPSERVICECONTENTACT", false);
+    displayInvariantList("notifyend", "APPSERVICECONTENTACT", false);
+    
 
     $('#editTestcampaignModal a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
         var target = $(e.target).attr("href"); // activated tab
@@ -89,7 +93,11 @@ function displayPageLabel() {
     $("[name='tabParameters']").html(doc.getDocLabel("page_testcampaign", "parameter_tab"));
     $("[name='buttonClose']").html(doc.getDocLabel("page_testcampaign", "close_btn"));
     $("[name='buttonAdd']").html(doc.getDocLabel("page_testcampaign", "save_btn"));
-
+    
+    $("[name='distriblistField']").html(doc.getDocLabel("testcampaign", "distribList"));
+    $("[name='notifystartField']").html(doc.getDocLabel("testcampaign", "notifyStartTagExecution"));
+    $("[name='notifyendField']").html(doc.getDocLabel("testcampaign", "notifyEndTagExecution"));
+     
     displayHeaderLabel(doc);
 
     displayFooter(doc);
@@ -276,8 +284,10 @@ function editEntryClick(param) {
     $.when(jqxhr).then(function (data) {
         var obj = data["contentTable"];
 
-
         formEdit.find("#campaign").prop("value", obj["campaign"]);
+        formEdit.find("#notifystart").val(obj["notifyStartTagExecution"]);
+        formEdit.find("#notifyend").val(obj["notifyEndTagExecution"]);
+        formEdit.find("#distriblist").prop("value", obj["distribList"]);
         formEdit.find("#description").prop("value", obj["description"]);
         formEdit.find("#id").prop("value", obj["campaignID"]);
 
@@ -387,19 +397,22 @@ function editEntryModalSaveHandler() {
 
     showLoaderInModal('#editTestcampaignModal');
     $.ajax({
-        url: "UpdateCampaign2",
+        url: "UpdateCampaign",
         async: true,
         method: "POST",
         data: {
             Campaign: data.campaign,
             CampaignID: data.id,
+            DistribList: data.distriblist,
+            NotifyStart: data.notifystart,
+            NotifyEnd: data.notifyend,
             Description: data.description,
             Batteries: JSON.stringify(batteries),
             Labels: JSON.stringify(labels),
             Parameters: JSON.stringify(parameters)
         },
         success: function (data) {
-            data = JSON.parse(data);
+//            data = JSON.parse(data);
             hideLoaderInModal('#editTestcampaignModal');
             if (getAlertType(data.messageType) === 'success') {
                 var oTable = $("#testcampaignsTable").dataTable();
@@ -506,13 +519,16 @@ function addEntryModalSaveHandler() {
         method: "POST",
         data: {
             Campaign: data.campaign,
+            DistribList: data.distriblist,
+            NotifyStart: data.notifystart,
+            NotifyEnd: data.notifyend,
             Description: data.description,
             Batteries: JSON.stringify(batteries),
             Labels: JSON.stringify(labels),
             Parameters: JSON.stringify(parameters)
         },
         success: function (data) {
-            data = JSON.parse(data);
+//            data = JSON.parse(data);
             hideLoaderInModal('#addTestcampaignModal');
             if (getAlertType(data.messageType) === 'success') {
                 var oTable = $("#testcampaignsTable").dataTable();
@@ -542,7 +558,7 @@ function removeEntryClick(key) {
     showModalConfirmation(function (ev) {
         var id = $('#confirmationModal #hiddenField1').prop("value");
         $.ajax({
-            url: "DeleteCampaign2?key=" + key,
+            url: "DeleteCampaign?key=" + key,
             async: true,
             method: "GET",
             success: function (data) {
@@ -729,6 +745,21 @@ function aoColumnsFunc(tableId) {
             }
         },
         {"data": "campaign", "sName": "campaign", "title": doc.getDocLabel("page_testcampaign", "testcampaign_col")},
+        {
+            "data": "distribList",
+            "sName": "distribList",
+            "title": doc.getDocLabel("testcampaign", "distribList")
+        },
+        {
+            "data": "notifyStartTagExecution",
+            "sName": "notifyStartTagExecution",
+            "title": doc.getDocLabel("testcampaign", "notifyStartTagExecution")
+        },
+        {
+            "data": "notifyEndTagExecution",
+            "sName": "notifyEndTagExecution",
+            "title": doc.getDocLabel("testcampaign", "notifyEndTagExecution")
+        },
         {
             "data": "description",
             "sName": "description",

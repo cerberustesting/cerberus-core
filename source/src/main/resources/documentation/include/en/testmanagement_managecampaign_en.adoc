@@ -1,9 +1,19 @@
 In this section, you will find information on test campaign management in Cerberus.
 
-=== Test battery
-
-A battery is a list of testcase.
-
 === Test campaign
 
-A campaign is a list of test battery for one(several) country(ies) on one(several) environment(s).
+A campaign is composed of
+- a list of testcases (that can be specified either by test battery of labels)
+- a list of country(ies)
+- a list of environment(s)
+- a list of browser.
+
+Campaign is used when you want to trigger a perimeter of testcase on a given country and environment.
+Campaign name can be specified when calling public API AddToExecutionQueue.
+
+When a Campaign execution is triggered, notifications can be sent to a distribution list at the beginning or the end of the campaign execution.
+Flags can be used in order to activate the sending of the email.
+Distribution list can be configured.
+Email from, subject and body can be configured by changing parameters that start by _cerberus_notification_tagexecutionend_ and _cerberus_notification_tagexecutionstart_
+
+image:testcampaign.png[Campaign]

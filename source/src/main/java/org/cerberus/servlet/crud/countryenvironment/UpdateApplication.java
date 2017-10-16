@@ -99,6 +99,7 @@ public class UpdateApplication extends HttpServlet {
         String deployType = policy.sanitize(request.getParameter("deploytype"));
         // Parameter that needs to be secured --> We SECURE+DECODE them
         String application = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("application"), null, charset);
+        String originalApplication = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("originalApplication"), null, charset);
         String subSystem = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("subsystem"), "", charset);
         String mavenGpID = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("mavengroupid"), "", charset);
         String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("description"), "", charset);
@@ -152,7 +153,7 @@ public class UpdateApplication extends HttpServlet {
              */
             IApplicationService applicationService = appContext.getBean(IApplicationService.class);
 
-            AnswerItem resp = applicationService.readByKey(application);
+            AnswerItem resp = applicationService.readByKey(originalApplication);
             if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem() != null)) {
                 /**
                  * Object could not be found. We stop here and report the error.
@@ -165,6 +166,7 @@ public class UpdateApplication extends HttpServlet {
                  * object exist, then we can update it.
                  */
                 Application applicationData = (Application) resp.getItem();
+                applicationData.setApplication(application);
                 applicationData.setSystem(system);
                 applicationData.setSubsystem(subSystem);
                 applicationData.setType(type);
@@ -176,7 +178,7 @@ public class UpdateApplication extends HttpServlet {
                 applicationData.setDescription(description);
                 applicationData.setSort(sort);
                 applicationData.setUsrModif(request.getRemoteUser());
-                ans = applicationService.update(applicationData.getApplication(), applicationData);
+                ans = applicationService.update(originalApplication, applicationData);
                 finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
 
                 if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
@@ -184,12 +186,13 @@ public class UpdateApplication extends HttpServlet {
                      * Update was succesfull. Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createForPrivateCalls("/UpdateApplication", "UPDATE", "Updated Application : ['" + application + "']", request);
-                }
+                    logEventService.createForPrivateCalls("/UpdateApplication", "UPDATE", "Updated Application : ['" + originalApplication + "']", request);
 
-                // Update the Database with the new list.
-                ans = ceaService.compareListAndUpdateInsertDeleteElements(system, application, ceaList);
-                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                    // Update the Database with the new list.
+                    ans = ceaService.compareListAndUpdateInsertDeleteElements(system, application, ceaList);
+                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+
+                }
 
             }
         }
@@ -232,8 +235,7 @@ public class UpdateApplication extends HttpServlet {
             int poolSize;
             if (strPoolSize.isEmpty()) {
                 poolSize = CountryEnvironmentParameters.DEFAULT_POOLSIZE;
-            }
-            else {
+            } else {
                 try {
                     poolSize = Integer.parseInt(strPoolSize);
                 } catch (NumberFormatException e) {

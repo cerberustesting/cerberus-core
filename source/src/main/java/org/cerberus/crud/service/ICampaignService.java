@@ -34,59 +34,19 @@ import org.cerberus.util.answer.AnswerList;
  */
 public interface ICampaignService {
 
-    List<Campaign> findAll() throws CerberusException;
-
-    Campaign findCampaignByKey(Integer campaignID) throws CerberusException;
-
-    CampaignParameter findCampaignParameterByKey(Integer campaignParameterID) throws CerberusException;
-
-    CampaignContent findCampaignContentByKey(Integer campaignContentID) throws CerberusException;
-
-    Campaign findCampaignByCampaignName(String campaign) throws CerberusException;
-
     List<CampaignContent> findCampaignContentsByCampaignName(String campaign) throws CerberusException;
 
     List<CampaignParameter> findCampaignParametersByCampaignName(String campaign) throws CerberusException;
-
-    boolean updateCampaign(Campaign campaign);
-
-    boolean updateCampaignContent(CampaignContent campaignContent);
-
-    boolean updateCampaignParameter(CampaignParameter campaignParameter);
-
-    boolean createCampaign(Campaign campaign);
-
-    boolean createCampaignContent(CampaignContent campaignContent);
-
-    boolean createCampaignParameter(CampaignParameter campaignParameter);
-
-    boolean deleteCampaign(Campaign campaign);
-
-    boolean deleteCampaignContent(CampaignContent campaignContent);
-
-    boolean deleteCampaignParameter(CampaignParameter campaignParameter);
-
-    List<Campaign> findCampaignByCriteria(Integer campaignID, String campaign, String description) throws CerberusException;
-
-    List<CampaignContent> findCampaignContentByCriteria(String campaign, Integer campaignContentID, String testBattery) throws CerberusException;
-
-    List<CampaignParameter> findCampaignParameterByCriteria(Integer campaignparameterID, String campaign, String parameter, String value) throws CerberusException;
-
-
-    List<String> findCountries(String campaignName) throws CerberusException;
-
-    public AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchParameter, String individualSearch);
 
     /**
      * Get the {@link Campaign} List of the given {@link System} with the given
      * Criteria
      *
-     * @param system           the {@link System} To look for
-     * @param startPosition    the start index to look for
-     * @param length           the number of {@link Campaign} to get
-     * @param columnName       the Column name to sort
+     * @param startPosition the start index to look for
+     * @param length the number of {@link Campaign} to get
+     * @param columnName the Column name to sort
      * @param sort
-     * @param searchParameter  the string to search in the {@link Campaign}
+     * @param searchParameter the string to search in the {@link Campaign}
      * @param individualSearch the string to search for each column
      * @return
      */
@@ -99,6 +59,14 @@ public interface ICampaignService {
      * @return
      */
     AnswerItem readByKey(String key);
+
+    /**
+     * Get the {@link Campaign} with the given {@link System} and the given key
+     *
+     * @param key the key of the {@link Campaign}
+     * @return
+     */
+    AnswerItem readByKeyTech(int key);
 
     /**
      * @param searchParameter
@@ -115,7 +83,6 @@ public interface ICampaignService {
     Answer create(Campaign object);
 
     /**
-     * @param campaign
      * @param object the {@link Campaign} to Update
      * @return {@link AnswerItem}
      */
@@ -126,4 +93,28 @@ public interface ICampaignService {
      * @return {@link AnswerItem}
      */
     Answer delete(Campaign object);
+
+    /**
+     *
+     * @param answerItem
+     * @return
+     * @throws CerberusException
+     */
+    Campaign convert(AnswerItem answerItem) throws CerberusException;
+
+    /**
+     *
+     * @param answerList
+     * @return
+     * @throws CerberusException
+     */
+    List<Campaign> convert(AnswerList answerList) throws CerberusException;
+
+    /**
+     *
+     * @param answer
+     * @throws CerberusException
+     */
+    void convert(Answer answer) throws CerberusException;
+
 }

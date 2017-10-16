@@ -77,7 +77,7 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
     public AnswerList readQueueToTreat() throws CerberusException {
         List<String> stateList = new ArrayList<>();
         stateList.add(TestCaseExecutionQueue.State.QUEUED.name());
-        return testCaseExecutionInQueueDAO.readQueueToTreatOrRunning(stateList);
+        return testCaseExecutionInQueueDAO.readByVarious2(stateList);
     }
 
     @Override
@@ -86,7 +86,17 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
         stateList.add(TestCaseExecutionQueue.State.WAITING.name());
         stateList.add(TestCaseExecutionQueue.State.STARTING.name());
         stateList.add(TestCaseExecutionQueue.State.EXECUTING.name());
-        return testCaseExecutionInQueueDAO.readQueueToTreatOrRunning(stateList);
+        return testCaseExecutionInQueueDAO.readByVarious2(stateList);
+    }
+
+    @Override
+    public AnswerList readQueueOpen(String tag) throws CerberusException {
+        List<String> stateList = new ArrayList<>();
+        stateList.add(TestCaseExecutionQueue.State.QUEUED.name());
+        stateList.add(TestCaseExecutionQueue.State.WAITING.name());
+        stateList.add(TestCaseExecutionQueue.State.STARTING.name());
+        stateList.add(TestCaseExecutionQueue.State.EXECUTING.name());
+        return testCaseExecutionInQueueDAO.readByVarious1(tag, stateList, false);
     }
 
     @Override

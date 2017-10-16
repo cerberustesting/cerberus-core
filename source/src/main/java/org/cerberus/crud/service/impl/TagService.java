@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.service.impl;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 import org.apache.log4j.Logger;
@@ -30,6 +31,7 @@ import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.service.email.IEmailService;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -48,6 +50,8 @@ public class TagService implements ITagService {
     private ITagDAO tagDAO;
     @Autowired
     private IFactoryTag factoryTag;
+    @Autowired
+    private IEmailService emailService;
 
     private static final Logger LOG = Logger.getLogger("TagService");
 
@@ -105,12 +109,22 @@ public class TagService implements ITagService {
     }
 
     @Override
+    public Answer updateDateEndQueue(String tag, Timestamp newDate) {
+        return tagDAO.updateDateEndQueue(tag, newDate);
+    }
+
+    @Override
     public Answer createAuto(String tagS, String campaign, String user) {
         AnswerItem answerTag;
         answerTag = readByKey(tagS);
         Tag tag = (Tag) answerTag.getItem();
         if (tag == null) {
-            return tagDAO.create(factoryTag.create(0, tagS, "", campaign, user, null, user, null));
+            Answer ans = tagDAO.create(factoryTag.create(0, tagS, "", campaign, null, user, null, user, null));
+            if (!StringUtil.isNullOrEmpty(campaign)) {
+                emailService.generateAndSendNotifyStartTagExecution(tagS, campaign);
+            }
+            return ans;
+            // If campaign is not empty, we could notify the Start of campaign execution.
         } else {
             if ((StringUtil.isNullOrEmpty(tag.getCampaign())) && !StringUtil.isNullOrEmpty(campaign)) {
                 tag.setCampaign(campaign);

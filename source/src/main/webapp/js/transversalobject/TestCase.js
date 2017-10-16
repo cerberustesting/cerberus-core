@@ -43,12 +43,12 @@ function openModalTestCase(test, testcase, mode) {
     } else {
         addTestCaseClick(test, "ADD");
     }
+    $('#editTestCaseModalForm #application').parents("div.form-group").removeClass("has-error");
+    clearResponseMessage($('#editTestCaseModal'));
 }
 
-function initModalTestCase(doc) {
+function initModalTestCase() {
     var doc = new Doc();
-
-    console.info("init.");
 
     tinymce.init({
         selector: ".wysiwyg"
@@ -218,6 +218,13 @@ function duplicateTestCaseClick(test, testCase) {
         feedTestCaseField(null, "editTestCaseModalForm");
     });
 
+    // In Add and duplicate TestCase form, if we change the test, we don't display any warning.
+    $('#editTestCaseModalForm select[name="test"]').off("change");
+    $('#editTestCaseModalForm select[name="test"]').change(function () {
+        feedTestCaseField(null, "editTestCaseModalForm");
+    });
+    $('#editTestCaseModalForm input[name="testCase"]').off("change");
+
     feedTestCaseModal(test, testCase, "editTestCaseModal", "DUPLICATE");
 }
 
@@ -247,6 +254,13 @@ function addTestCaseClick(defaultTest) {
     $('#editTestCaseModalForm select[name="test"]').change(function () {
         feedTestCaseField(null, "editTestCaseModalForm");
     });
+
+    // In Add and duplicate TestCase form, if we change the test, we don't display any warning.
+    $('#editTestCaseModalForm select[name="test"]').off("change");
+    $('#editTestCaseModalForm select[name="test"]').change(function () {
+        feedTestCaseField(null, "editTestCaseModalForm");
+    });
+    $('#editTestCaseModalForm input[name="testCase"]').off("change");
 
     feedNewTestCaseModal("editTestCaseModal", defaultTest);
 }
@@ -298,6 +312,21 @@ function confirmTestCaseModalHandler(mode) {
     clearResponseMessage($('#editTestCaseModal'));
 
     var formEdit = $('#editTestCaseModalForm');
+
+    var nameElement = formEdit.find("#application");
+    var nameElementEmpty = nameElement.prop("value") === '';
+    if (nameElementEmpty) {
+        var localMessage = new Message("danger", "Please specify the name of the application!");
+        nameElement.parents("div.form-group").addClass("has-error");
+        showMessage(localMessage, $('#editTestCaseModal'));
+    } else {
+        nameElement.parents("div.form-group").removeClass("has-error");
+    }
+
+    // verif if all mendatory fields are not empty
+    if (nameElementEmpty)
+        return;
+
     tinyMCE.triggerSave();
 
     showLoaderInModal('#editTestCaseModal');
@@ -392,7 +421,6 @@ function confirmTestCaseModalHandler(mode) {
 
 }
 
-
 /***
  * Feed the TestCase modal with all the data from the TestCase.
  * @param {String} modalId - Id of the modal to feed.
@@ -448,12 +476,6 @@ function feedTestCaseModal(test, testCase, modalId, mode) {
             // Loading application combo from the system of the current application.
             appendApplicationList(testCase.application, appData.contentTable.system);
 
-            if (appData.contentTable.system !== currentSys) {
-                $("[name=application]").empty();
-                formEdit.find("#application").append($('<option></option>').text(testCase.application).val(testCase.application));
-            }
-            formEdit.find("#application").prop("value", testCase.application);
-
             var newbugTrackerUrl = "";
             if (testCase.bugID !== "" && bugTrackerUrl) {
                 newbugTrackerUrl = bugTrackerUrl.replace("%BUGID%", testCase.bugID);
@@ -479,7 +501,6 @@ function feedTestCaseModal(test, testCase, modalId, mode) {
 
 }
 
-
 function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, defaultTest) {
     var formEdit = $('#' + modalId);
     var doc = new Doc();
@@ -494,13 +515,13 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#datecreated").prop("value", testCase.dateCreated);
         formEdit.find("#usrmodif").prop("value", testCase.usrModif);
         formEdit.find("#datemodif").prop("value", testCase.dateModif);
-        formEdit.find("#actProd").prop("value", testCase.activePROD);
+        formEdit.find("#actProd").val(testCase.activePROD);
     } else { // DUPLICATE or ADD
         formEdit.find("#usrcreated").prop("value", "");
         formEdit.find("#datecreated").prop("value", "");
         formEdit.find("#usrmodif").prop("value", "");
         formEdit.find("#datemodif").prop("value", "");
-        formEdit.find("#actProd").prop("value", "N");
+        formEdit.find("#actProd").val("N");
         formEdit.find("#status option:nth(0)").attr("selected", "selected"); // We select the 1st entry of the status combobox.
         if (mode === "ADD") {
             $("[name='editTestCaseField']").html(doc.getDocOnline("page_testcaselist", "btn_create"));
@@ -521,10 +542,10 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#project").prop("value", "");
         formEdit.find("#ticket").prop("value", "");
         formEdit.find("#function").prop("value", "");
-        formEdit.find("#group").prop("value", "AUTOMATED");
-        formEdit.find("#priority").prop("value", "");
-        formEdit.find("#actQA").prop("value", "Y");
-        formEdit.find("#actUAT").prop("value", "Y");
+        formEdit.find("#group").val("AUTOMATED");
+        formEdit.find("#priority option:nth(0)").attr("selected", "selected");
+        formEdit.find("#actQA").val("Y");
+        formEdit.find("#actUAT").val("Y");
         formEdit.find("#userAgent").prop("value", "");
         formEdit.find("#screenSize").prop("value", "");
         formEdit.find("#shortDesc").prop("value", "");
@@ -660,7 +681,6 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
     }
 
 }
-
 
 /***
  * Feed Build and Revision combo on the testcase modal.
@@ -841,9 +861,13 @@ function loadLabel(labelList, mySystem, myLabelDiv, labelSize) {
                 //the character " needs a special encoding in order to avoid breaking the string that creates the html element   
                 var labelTag = '<div style="float:left" align="center"><input name="labelid" id="labelId' + data.contentTable[index].id + '" value="' + data.contentTable[index].id + '" type="checkbox">\n\
                 <span class="label label-primary" style="cursor:pointer;background-color:' + data.contentTable[index].color + '">' + data.contentTable[index].label + '</span></div> ';
-                var option = $('<div style="float:left" name="itemLabelDiv" id="itemLabelId' + data.contentTable[index].id + '" class="col-xs-' + labelSize + ' list-group-item list-label"></div>')
+                var option = $('<div style="float:left; height:60px" name="itemLabelDiv" id="itemLabelId' + data.contentTable[index].id + '" class="col-xs-' + labelSize + ' list-group-item list-label"></div>')
                         .attr("value", data.contentTable[index].label).html(labelTag);
-                $(labelDiv).append(option);
+                if (data.contentTable[index].system === targetSystem) {
+                    $(labelDiv).prepend(option);
+                } else {
+                    $(labelDiv).append(option);
+                }
             }
         } else {
             showMessageMainPage(messageType, data.message, true);
@@ -876,19 +900,23 @@ function appendApplicationList(defautValue, mySystem) {
         targetSystem = getUser().defaultSystem;
     }
 
-    var jqxhr = $.getJSON("ReadApplication", "system=" + targetSystem);
+    var jqxhr = $.getJSON("ReadApplication");
     $.when(jqxhr).then(function (data) {
         var applicationList = $("[name=application]");
 
         for (var index = 0; index < data.contentTable.length; index++) {
-            applicationList.append($('<option></option>').text(data.contentTable[index].application).val(data.contentTable[index].application));
+            if (data.contentTable[index].system === targetSystem) {
+                applicationList.prepend($('<option></option>').addClass('bold-option').text(data.contentTable[index].application).val(data.contentTable[index].application));
+            } else {
+                applicationList.append($('<option></option>').text(data.contentTable[index].application).val(data.contentTable[index].application));
+            }
         }
-        $("#application").prop("value", defautValue);
+        $("#application").val(defautValue);
     });
 }
 
 function appendTestList(defautValue) {
-    console.info(defautValue);
+
     var user = getUser();
     $("#editTestCaseModal [name=test]").empty();
 

@@ -20,22 +20,18 @@
 package org.cerberus.servlet.crud.transversaltables;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.List;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.Level;
 import org.cerberus.crud.entity.Invariant;
 import org.cerberus.crud.service.IInvariantService;
-import org.cerberus.crud.service.ITestCaseService;
 import org.cerberus.crud.service.impl.InvariantService;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.log.MyLogger;
-import org.cerberus.servlet.crud.test.GetShortTests;
 import org.cerberus.util.answer.AnswerList;
+import org.cerberus.util.servlet.ServletUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -63,22 +59,27 @@ public class FindInvariantByID extends HttpServlet {
             throws ServletException, IOException, CerberusException, JSONException {
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
         String idName = policy.sanitize(request.getParameter("idName"));
-        
+
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+        response.setContentType("application/json");
+        response.setCharacterEncoding("utf8");
+
+        // Calling Servlet Transversal Util.
+        ServletUtil.servletStart(request);
+
         IInvariantService invariantService = appContext.getBean(InvariantService.class);
 
         JSONArray array = new JSONArray();
         AnswerList answer = invariantService.readByIdname(idName); //TODO: handle if the response does not turn ok
-        for (Invariant myInvariant : (List<Invariant>)answer.getDataList()) {
+        for (Invariant myInvariant : (List<Invariant>) answer.getDataList()) {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("value", myInvariant.getValue());
             jsonObject.put("description", myInvariant.getDescription());
             array.put(jsonObject);
         }
-        
-            response.setContentType("application/json");
-            response.getWriter().print(array.toString());
-        
+
+        response.getWriter().print(array.toString());
+
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

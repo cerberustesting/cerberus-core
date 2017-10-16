@@ -34,11 +34,13 @@ import org.cerberus.crud.entity.TestDataLibData;
 import org.cerberus.crud.factory.IFactoryTestDataLib;
 import org.cerberus.crud.factory.IFactoryTestDataLibData;
 import org.cerberus.crud.service.ILogEventService;
+import org.cerberus.crud.service.ITestDataLibDataService;
 import org.cerberus.crud.service.ITestDataLibService;
 import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -70,6 +72,7 @@ public class CreateTestDataLib extends HttpServlet {
 
         JSONObject jsonResponse = new JSONObject();
         Answer ans = new Answer();
+        AnswerItem ansItem = new AnswerItem();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         ans.setResultMessage(msg);
@@ -105,13 +108,16 @@ public class CreateTestDataLib extends HttpServlet {
             /**
              * Checking all constrains before calling the services.
              */
+            // Prepare the final answer.
+            MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
+            Answer finalAnswer = new Answer(msg1);
 
             if (StringUtil.isNullOrEmpty(name)) {
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
                 msg.setDescription(msg.getDescription().replace("%ITEM%", "Test Data Library")
                         .replace("%OPERATION%", "Create")
                         .replace("%REASON%", "Test data library name is missing! "));
-                ans.setResultMessage(msg);
+                finalAnswer.setResultMessage(msg);
             } else {
                 /**
                  * All data seems cleans so we can call the services.
@@ -119,35 +125,45 @@ public class CreateTestDataLib extends HttpServlet {
                 ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
                 ITestDataLibService libService = appContext.getBean(ITestDataLibService.class);
                 IFactoryTestDataLib factoryLibService = appContext.getBean(IFactoryTestDataLib.class);
+                ITestDataLibDataService tdldService = appContext.getBean(ITestDataLibDataService.class);
 
                 TestDataLib lib = factoryLibService.create(0, name, system, environment, country, group,
                         type, database, script, databaseUrl, service, servicePath, method, envelope, databaseCsv, csvUrl, separator, description,
                         request.getRemoteUser(), null, "", null, null, null, null, null);
 
-                // Getting list of application from JSON Call
-                JSONArray objSubDataArray = new JSONArray(request.getParameter("subDataList"));
-                List<TestDataLibData> tdldList = new ArrayList();
-                tdldList = getSubDataFromParameter(request, appContext, -1, objSubDataArray);
-
-                lib.setSubDataLib(tdldList);
                 //Creates the entries and the subdata list
-                ans = libService.create(lib);
+                ansItem = libService.create(lib);
+                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ansItem);
 
                 /**
                  * Object created. Adding Log entry.
                  */
-                if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                if (ansItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
                     logEventService.createForPrivateCalls("/CreateTestDataLib", "CREATE", "Create TestDataLib  : " + request.getParameter("name"), request);
                 }
+
+                // Getting list of application from JSON Call
+                if (request.getParameter("subDataList") != null) {
+                    JSONArray objSubDataArray = new JSONArray(request.getParameter("subDataList"));
+                    List<TestDataLibData> tdldList = new ArrayList();
+                    TestDataLib toto = (TestDataLib) ansItem.getItem();
+                    tdldList = getSubDataFromParameter(request, appContext, toto.getTestDataLibID(), objSubDataArray);
+
+                    // Update the Database with the new list.
+                    ans = tdldService.compareListAndUpdateInsertDeleteElements(toto.getTestDataLibID(), tdldList);
+                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+
+                }
+
             }
 
             /**
              * Formating and returning the json result.
              */
             //sets the message returned by the operations
-            jsonResponse.put("messageType", ans.getResultMessage().getMessage().getCodeString());
-            jsonResponse.put("message", ans.getResultMessage().getDescription());
+            jsonResponse.put("messageType", finalAnswer.getResultMessage().getMessage().getCodeString());
+            jsonResponse.put("message", finalAnswer.getResultMessage().getDescription());
             response.getWriter().print(jsonResponse);
             response.getWriter().flush();
         } catch (JSONException ex) {

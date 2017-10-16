@@ -46,16 +46,22 @@ public final class ServletUtil {
     public static void servletStart(HttpServletRequest request) {
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Servlet " + request.getServletPath() + " - Waiting : " + DEFAULT_WAIT_MS);
+
+            // Wait in order to simulate some slow response time.
+            long timeToWait = DEFAULT_WAIT_MS;
             try {
                 switch (request.getServletPath()) {
                     case "/ReadCampaign":
-                        Thread.sleep(10);
+                        timeToWait = 10;
+                        break;
+                    case "/FindInvariantByID":
+                        timeToWait = 30;
                         break;
                     default:
                 }
-
-                Thread.sleep(DEFAULT_WAIT_MS);
+                LOG.debug("Servlet " + request.getServletPath() + " - Waiting : " + timeToWait);
+                Thread.sleep(timeToWait);
+                
             } catch (InterruptedException ex) {
                 LOG.error(ex);
             }

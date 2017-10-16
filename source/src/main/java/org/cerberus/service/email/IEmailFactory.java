@@ -19,7 +19,7 @@
  */
 package org.cerberus.service.email;
 
-import org.cerberus.service.email.impl.Email;
+import org.cerberus.service.email.entity.Email;
 
 /**
  *

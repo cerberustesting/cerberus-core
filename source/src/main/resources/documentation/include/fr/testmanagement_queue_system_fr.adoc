@@ -85,6 +85,7 @@ In order to prevent that issue, 3 levels of constrains can be defined.
 
 image:queuerobothost.png[QueueRobotHost]
 
+
  A default value can be configured with parameter _cerberus_queueexecution_defaultrobothost_threadpoolsize_. That parameter will be used in case the invariant entry does not exist or cannot be converted to numeric value.
 
 - NB1 : Only the applications that require a robot will enter to that constrain (GUI, IPA, APK, FAT).

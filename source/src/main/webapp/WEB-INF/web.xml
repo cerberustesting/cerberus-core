@@ -189,16 +189,8 @@
         <servlet-class>org.cerberus.servlet.crud.transversaltables.GetInvariantList</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>GetCampaign</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.testcampaign.GetCampaign</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>ReadCampaign</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.testcampaign.ReadCampaign</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>ReadCampaignContent</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.testcampaign.ReadCampaignContent</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ReadCampaignParameter</servlet-name>
@@ -225,64 +217,16 @@
         <servlet-class>org.cerberus.servlet.zzpublic.GetCampaignExecutionsCommand</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>ListCampaignParameter</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.testcampaign.ListCampaignParameter</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>UpdateCampaign</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.testcampaign.UpdateCampaign</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>UpdateCampaign2</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.testcampaign.UpdateCampaign2</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>UpdateCampaignParameter</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.testcampaign.UpdateCampaignParameter</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>AddCampaign</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.testcampaign.AddCampaign</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>CreateCampaign</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.testcampaign.CreateCampaign</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>AddCampaignParameter</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.testcampaign.AddCampaignParameter</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>AddCampaignContent</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.testcampaign.AddCampaignContent</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>AddCampaignContent2</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.testcampaign.AddCampaignContent2</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>DeleteCampaign</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.testcampaign.DeleteCampaign</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>DeleteCampaign2</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.testcampaign.DeleteCampaign2</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>DeleteCampaignParameter</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.testcampaign.DeleteCampaignParameter</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>DeleteCampaignContent</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.testcampaign.DeleteCampaignContent</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>DeleteCampaignContent2</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.testcampaign.DeleteCampaignContent2</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>GetTestBattery</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.testcampaign.GetTestBattery</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ReadTestBattery</servlet-name>
@@ -467,10 +411,6 @@
     <servlet>
         <servlet-name>DeleteBuildRevisionInvariant</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.buildrevisionchange.DeleteBuildRevisionInvariant</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>GetDataForTestCaseSearch</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.test.GetDataForTestCaseSearch</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ReadParameter</servlet-name>
@@ -1061,16 +1001,8 @@
         <url-pattern>/GetInvariantList</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>GetCampaign</servlet-name>
-        <url-pattern>/GetCampaign</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>ReadCampaign</servlet-name>
         <url-pattern>/ReadCampaign</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>ReadCampaignContent</servlet-name>
-        <url-pattern>/ReadCampaignContent</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ReadCampaignParameter</servlet-name>
@@ -1097,64 +1029,16 @@
         <url-pattern>/GetCampaignExecutionsCommand</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>ListCampaignParameter</servlet-name>
-        <url-pattern>/ListCampaignParameter</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>UpdateCampaign</servlet-name>
         <url-pattern>/UpdateCampaign</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>UpdateCampaign2</servlet-name>
-        <url-pattern>/UpdateCampaign2</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>UpdateCampaignParameter</servlet-name>
-        <url-pattern>/UpdateCampaignParameter</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>AddCampaign</servlet-name>
-        <url-pattern>/AddCampaign</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>CreateCampaign</servlet-name>
         <url-pattern>/CreateCampaign</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>AddCampaignContent</servlet-name>
-        <url-pattern>/AddCampaignContent</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>AddCampaignContent2</servlet-name>
-        <url-pattern>/AddCampaignContent2</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>AddCampaignParameter</servlet-name>
-        <url-pattern>/AddCampaignParameter</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>DeleteCampaign</servlet-name>
         <url-pattern>/DeleteCampaign</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>DeleteCampaign2</servlet-name>
-        <url-pattern>/DeleteCampaign2</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>DeleteCampaignContent</servlet-name>
-        <url-pattern>/DeleteCampaignContent</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>DeleteCampaignContent2</servlet-name>
-        <url-pattern>/DeleteCampaignContent2</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>DeleteCampaignParameter</servlet-name>
-        <url-pattern>/DeleteCampaignParameter</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>GetTestBattery</servlet-name>
-        <url-pattern>/GetTestBattery</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ReadTestBattery</servlet-name>
@@ -1339,10 +1223,6 @@
     <servlet-mapping>
         <servlet-name>DeleteBuildRevisionInvariant</servlet-name>
         <url-pattern>/DeleteBuildRevisionInvariant</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>GetDataForTestCaseSearch</servlet-name>
-        <url-pattern>/GetDataForTestCaseSearch</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ReadParameter</servlet-name>
@@ -2031,7 +1911,6 @@
             <url-pattern>/ReadCountryEnvironmentDatabase</url-pattern>
             <url-pattern>/ReadCountryEnvironmentParameters</url-pattern>
             <url-pattern>/ReadCountryEnvLink</url-pattern>
-            <url-pattern>/ReadAppService</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>IntegratorRO</description>
@@ -2154,7 +2033,6 @@
             <url-pattern>/Login.jsp</url-pattern>
             <url-pattern>/Logout.jsp</url-pattern>
             <url-pattern>/Error.jsp</url-pattern>
-            <url-pattern>/header.jsp</url-pattern>
             <url-pattern>/function.jsp</url-pattern>
             <url-pattern>/index1.jsp</url-pattern>
             <url-pattern>/index2.jsp</url-pattern>
@@ -2182,18 +2060,8 @@
             <url-pattern>/GetCampaignExecutionsCommand</url-pattern>
             <url-pattern>/ListCampaignParameter</url-pattern>
             <url-pattern>/UpdateCampaign</url-pattern>
-            <url-pattern>/UpdateCampaign2</url-pattern>
-            <url-pattern>/UpdateCampaignParameter</url-pattern>
-            <url-pattern>/AddCampaign</url-pattern>
             <url-pattern>/CreateCampaign</url-pattern>
-            <url-pattern>/AddCampaignContent</url-pattern>
-            <url-pattern>/AddCampaignContent2</url-pattern>
-            <url-pattern>/AddCampaignParameter</url-pattern>
             <url-pattern>/DeleteCampaign</url-pattern>
-            <url-pattern>/DeleteCampaign2</url-pattern>
-            <url-pattern>/DeleteCampaignContent</url-pattern>
-            <url-pattern>/DeleteCampaignContent2</url-pattern>
-            <url-pattern>/DeleteCampaignParameter</url-pattern>
             <url-pattern>/GetTestBattery</url-pattern>
             <url-pattern>/AddTestBattery</url-pattern>
             <url-pattern>/AddTestBatteryContent</url-pattern>
@@ -2218,7 +2086,6 @@
             <url-pattern>/ReadParameter</url-pattern>
             <url-pattern>/SaveManualExecutionPictureTest</url-pattern>
             <url-pattern>/ReadCampaign</url-pattern>
-            <url-pattern>/ReadCampaignContent</url-pattern>
             <url-pattern>/ReadCampaignParameter</url-pattern>
             <url-pattern>/ReadTestBattery</url-pattern>
             <url-pattern>/ReadInvariant</url-pattern>
@@ -2268,6 +2135,7 @@
             <url-pattern>/GetTestCaseForTest</url-pattern>
             <url-pattern>/GetEnvironmentsPerBuildRevision</url-pattern>
             <url-pattern>/GetEnvironmentsLastChangePerCountry</url-pattern>
+            <url-pattern>/ReadAppService</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description/>

@@ -91,7 +91,7 @@ public class ReadTestCaseExecutionMedia extends HttpServlet {
         int iterator = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("iterator"), 0, charset);
         boolean autoContentType = ParameterParserUtil.parseBooleanParam(request.getParameter("autoContentType"), true);
         long id = ParameterParserUtil.parseLongParamAndDecode(request.getParameter("id"), 0, charset);
-        
+
         // Calling Servlet Transversal Util.
         ServletUtil.servletStart(request);
 
@@ -222,11 +222,27 @@ public class ReadTestCaseExecutionMedia extends HttpServlet {
             } else {
                 image = ImageIO.read(picture);
 
-                ResampleOp rop = new ResampleOp(DimensionConstrain.createMaxDimension(width, height, true));
-                rop.setNumberOfThreads(4);
-                b = rop.filter(image, null);
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                ImageIO.write(b, "png", baos);
+                // We test if file is too thin or too long. That prevent 500 error in case files are not compatible with resize. In that case, we crop the file.
+                if ((image.getHeight() * width / image.getWidth() < 3) || (image.getWidth() * height / image.getHeight() < 3)) {
+                    b = ImageIO.read(picture);
+                    int minwidth = width;
+                    if (width > image.getWidth()) {
+                        minwidth = image.getWidth();
+                    }
+                    int minheight = width;
+                    if (height > image.getHeight()) {
+                        minheight = image.getHeight();
+                    }
+                    BufferedImage crop = ((BufferedImage) b).getSubimage(0, 0, minwidth, minheight);
+
+                    b = crop;
+                    response.setHeader("Format-Status", "ERROR");
+                } else {
+                    ResampleOp rop = new ResampleOp(DimensionConstrain.createMaxDimension(width, height, true));
+                    rop.setNumberOfThreads(4);
+                    b = rop.filter(image, null);
+                    response.setHeader("Format-Status", "OK");
+                }
             }
         } catch (IOException e) {
 

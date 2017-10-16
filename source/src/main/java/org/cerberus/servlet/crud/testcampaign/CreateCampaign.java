@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -55,16 +56,17 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 /**
  * @author cte
  */
+@WebServlet(name = "CreateCampaign", urlPatterns = {"/CreateCampaign"})
 public class CreateCampaign extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     final void processRequest(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException, IOException, CerberusException, JSONException {
@@ -75,14 +77,18 @@ public class CreateCampaign extends HttpServlet {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
-        response.setContentType("text/html;charset=UTF-8");
+        response.setContentType("application/json");
+        response.setCharacterEncoding("utf8");
         String charset = request.getCharacterEncoding();
 
         // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
         // Parameter that needs to be secured --> We SECURE+DECODE them
         String name = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("Campaign"), null, charset);
+        String notifyStart = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("NotifyStart"), "N", charset);
+        String notifyEnd = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("NotifyEnd"), "N", charset);
         String desc = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("Description"), null, charset);
         // Parameter that we cannot secure as we need the html --> We DECODE them
+        String distribList = ParameterParserUtil.parseStringParam(request.getParameter("DistribList"), "");
         String battery = ParameterParserUtil.parseStringParam(request.getParameter("Batteries"), null);
         String parameter = ParameterParserUtil.parseStringParam(request.getParameter("Parameters"), null);
         String label = ParameterParserUtil.parseStringParam(request.getParameter("Labels"), null);
@@ -97,7 +103,7 @@ public class CreateCampaign extends HttpServlet {
             ICampaignService campaignService = appContext.getBean(ICampaignService.class);
             IFactoryCampaign factoryCampaign = appContext.getBean(IFactoryCampaign.class);
 
-            Campaign camp = factoryCampaign.create(0, name, desc);
+            Campaign camp = factoryCampaign.create(0, name, distribList, notifyStart, notifyEnd, desc);
             finalAnswer = campaignService.create(camp);
             if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                 /**
@@ -166,12 +172,11 @@ public class CreateCampaign extends HttpServlet {
                     }
                 }
 
-                if(ans != null && !ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
+                if (ans != null && !ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                     finalAnswer = ans;
                 }
             }
         }
-
 
         /**
          * Formating and returning the json result.
@@ -187,10 +192,10 @@ public class CreateCampaign extends HttpServlet {
     /**
      * Handles the HTTP <code>GET</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -207,10 +212,10 @@ public class CreateCampaign extends HttpServlet {
     /**
      * Handles the HTTP <code>POST</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

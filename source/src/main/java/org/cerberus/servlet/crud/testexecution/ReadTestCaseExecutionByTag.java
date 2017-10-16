@@ -21,6 +21,7 @@ package org.cerberus.servlet.crud.testexecution;
 
 import com.google.gson.Gson;
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -36,9 +37,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.Invariant;
+import org.cerberus.crud.entity.Tag;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseLabel;
 import org.cerberus.crud.service.IInvariantService;
+import org.cerberus.crud.service.ITagService;
 import org.cerberus.crud.service.ITestCaseExecutionService;
 import org.cerberus.crud.service.ITestCaseLabelService;
 import org.cerberus.crud.service.impl.InvariantService;
@@ -66,6 +69,7 @@ import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 public class ReadTestCaseExecutionByTag extends HttpServlet {
 
     private ITestCaseExecutionService testCaseExecutionService;
+    private ITagService tagService;
     private ITestCaseExecutionQueueService testCaseExecutionInQueueService;
     private ITestCaseLabelService testCaseLabelService;
 
@@ -94,6 +98,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
 
         testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
+        tagService = appContext.getBean(ITagService.class);
         testCaseExecutionInQueueService = appContext.getBean(ITestCaseExecutionQueueService.class);
 
         try {
@@ -127,6 +132,10 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                     jsonResponse.put("tag", Tag);
                 }
             }
+            Tag mytag = tagService.convert(tagService.readByKey(Tag));
+            JSONObject tagJSON = convertTagToJSONObject(mytag);
+            jsonResponse.put("tagObject", tagJSON);
+            jsonResponse.put("tagDuration", (mytag.getDateEndQueue().getTime()-mytag.getDateCreated().getTime())/60000);
 
             answer.setItem(jsonResponse);
             answer.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
@@ -254,7 +263,8 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                         ttcObject.put("shortDesc", testCaseExecution.getDescription());
                         ttcObject.put("status", testCaseExecution.getStatus());
                         ttcObject.put("application", testCaseExecution.getApplication());
-                        if (testCaseExecution.getTestCaseObj() != null) {
+                        boolean testExist = ((testCaseExecution.getTestCaseObj() != null) && (testCaseExecution.getTestCaseObj().getTest() != null));
+                        if (testExist) {
                             ttcObject.put("function", testCaseExecution.getTestCaseObj().getFunction());
                             ttcObject.put("priority", testCaseExecution.getTestCaseObj().getPriority());
                             ttcObject.put("comment", testCaseExecution.getTestCaseObj().getComment());
@@ -265,13 +275,13 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                             }
                         } else {
                             ttcObject.put("function", "");
-                            ttcObject.put("priority", "");
+                            ttcObject.put("priority", 0);
                             ttcObject.put("comment", "");
                             ttcObject.put("bugId", new JSONObject("{\"bugId\":\"\",\"bugTrackerUrl\":\"\"}"));
                         }
                         // Flag that report if test case still exist.
-                        ttcObject.put("testExist", testCaseExecution.getTestCaseObj().getTest() != null);
-                        
+                        ttcObject.put("testExist", testExist);
+
                         execTab.put(execKey, execution);
                         ttcObject.put("execTab", execTab);
 
@@ -372,11 +382,13 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
             }
         }
 
+        Gson gson = new Gson();
         jsonResult.put("axis", axisMap.values());
         jsonResult.put("tag", tag);
-        jsonResult.put("globalEnd", globalEnd);
+        jsonResult.put("globalEnd", gson.toJson(new Timestamp(globalEndL)).replace("\"", ""));
         jsonResult.put("globalStart", globalStart);
         jsonResult.put("globalStatus", globalStatus);
+
         return jsonResult;
     }
 
@@ -486,6 +498,13 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
             color = "#000000";
         }
         return color;
+    }
+
+    private JSONObject convertTagToJSONObject(Tag tag) throws JSONException {
+
+        Gson gson = new Gson();
+        JSONObject result = new JSONObject(gson.toJson(tag));
+        return result;
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

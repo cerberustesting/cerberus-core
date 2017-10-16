@@ -30,7 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.service.email.impl.Email;
+import org.cerberus.service.email.entity.Email;
 import org.cerberus.util.answer.Answer;
 import org.json.JSONException;
 import org.json.JSONObject;

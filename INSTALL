@@ -2,11 +2,13 @@ Required Packages
 -----------------
 
 Make sure you've installed the following packages before continuing. 
-MySQL 5.6.xx
+MySQL 5.6.xx or MariaDb 10.1.xx
 Java 1.8
 Glassfish Server v4.1.1
   - if necessary, copy the mysql jdbc drivers jar file on the glassfish/lib folder of your Glassfish installation.
-    The drivers can be downloaded at http://dev.mysql.com/downloads/connector/j/
+    The drivers can be downloaded at 
+        http://dev.mysql.com/downloads/connector/j/ (mysql)
+        https://mariadb.com/kb/en/library/about-mariadb-connector-j/ (MariaDb)
   - In case your default distribution does not use Oracle jdk, you can get it from the web and modify glassfish config :
       file : glassfish/config/asenv.conf
       can be modified in order to add the following line :

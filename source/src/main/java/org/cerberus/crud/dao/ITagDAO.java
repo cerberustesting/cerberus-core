@@ -21,6 +21,7 @@ package org.cerberus.crud.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 import org.cerberus.crud.entity.Tag;
@@ -86,6 +87,14 @@ public interface ITagDAO {
      * @return
      */
     Answer update(String tag, Tag object);
+
+    /**
+     *
+     * @param tag
+     * @param newDate
+     * @return
+     */
+    Answer updateDateEndQueue(String tag, Timestamp newDate);
 
     /**
      * Uses data of ResultSet to create object {@link Application}

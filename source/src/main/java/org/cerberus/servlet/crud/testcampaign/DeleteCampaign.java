@@ -20,38 +20,163 @@
 package org.cerberus.servlet.crud.testcampaign;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.cerberus.crud.factory.IFactoryCampaign;
+import org.cerberus.crud.entity.Campaign;
+import org.cerberus.crud.service.ICampaignContentService;
 import org.cerberus.crud.service.ICampaignService;
-import org.owasp.html.PolicyFactory;
-import org.owasp.html.Sanitizers;
+import org.cerberus.crud.service.ILogEventService;
+import org.cerberus.crud.service.impl.LogEventService;
+import org.cerberus.engine.entity.MessageEvent;
+import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.exception.CerberusException;
+import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.StringUtil;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
- *
- * @author memiks
+ * @author cte
  */
 @WebServlet(name = "DeleteCampaign", urlPatterns = {"/DeleteCampaign"})
 public class DeleteCampaign extends HttpServlet {
 
-    private ICampaignService campaignService;
-    private IFactoryCampaign factoryCampaign;
-
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    /**
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
+     *
+     * @param request  servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException      if an I/O error occurs
+     */
+    final void processRequest(final HttpServletRequest request, final HttpServletResponse response)
+            throws ServletException, IOException, CerberusException, JSONException {
+        JSONObject jsonResponse = new JSONObject();
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        campaignService = appContext.getBean(ICampaignService.class);
-        factoryCampaign = appContext.getBean(IFactoryCampaign.class);
-        PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
+        Answer ans = new Answer();
+        Answer finalAnswer = new Answer();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+        ans.setResultMessage(msg);
 
-        String id = policy.sanitize(request.getParameter("id"));
+        response.setContentType("application/json");
+        response.setCharacterEncoding("utf8");
+        String charset = request.getCharacterEncoding();
 
-        response.setContentType("text/html");
-        campaignService.deleteCampaign(factoryCampaign.create(Integer.parseInt(id), null, null));
+        // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
+        // Parameter that needs to be secured --> We SECURE+DECODE them
+        String key = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("key"), "", charset);
+        // Parameter that we cannot secure as we need the html --> We DECODE them
+
+        if (StringUtil.isNullOrEmpty(key)) {
+            /**
+             * Missing key
+             */
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "Campaign")
+                    .replace("%OPERATION%", "Delete")
+                    .replace("%REASON%", "Campaign name is missing!"));
+            finalAnswer.setResultMessage(msg);
+        } else {
+            ICampaignService campaignService = appContext.getBean(ICampaignService.class);
+
+            AnswerItem resp = campaignService.readByKey(key);
+            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) && resp.getItem() != null) {
+                /**
+                 * Object could not be found. We stop here and report the error.
+                 */
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "Campaign")
+                        .replace("%OPERATION%", "Delete")
+                        .replace("%REASON%", "Campaign can not be found"));
+                finalAnswer.setResultMessage(msg);
+            } else {
+                Campaign camp = (Campaign) resp.getItem();
+                ICampaignContentService campaignContentService = appContext.getBean(ICampaignContentService.class);
+                finalAnswer = campaignContentService.deleteByCampaign(camp.getCampaign());
+                if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                    finalAnswer = campaignService.delete(camp);
+
+                    if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                        /**
+                         * Adding Log entry.
+                         */
+                        ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                        logEventService.createForPrivateCalls("/DeleteCampaign", "DELETE", "Delete Campaign : " + key, request);
+
+                    }
+                }
+            }
+        }
+
+        /**
+         * Formating and returning the json result.
+         */
+        jsonResponse.put("messageType", finalAnswer.getResultMessage().getMessage().getCodeString());
+        jsonResponse.put("message", finalAnswer.getResultMessage().getDescription());
+
+        response.getWriter().print(jsonResponse);
+        response.getWriter().flush();
     }
+
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+
+    /**
+     * Handles the HTTP <code>GET</code> method.
+     *
+     * @param request  servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException      if an I/O error occurs
+     */
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        try {
+            this.processRequest(request, response);
+        } catch (CerberusException ex) {
+            Logger.getLogger(DeleteCampaign.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (JSONException ex) {
+            Logger.getLogger(DeleteCampaign.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+    }
+
+    /**
+     * Handles the HTTP <code>POST</code> method.
+     *
+     * @param request  servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException      if an I/O error occurs
+     */
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        try {
+            this.processRequest(request, response);
+        } catch (CerberusException ex) {
+            Logger.getLogger(DeleteCampaign.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (JSONException ex) {
+            Logger.getLogger(DeleteCampaign.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+    }
+
+    /**
+     * Returns a short description of the servlet.
+     *
+     * @return a String containing servlet description
+     */
+    @Override
+    public String getServletInfo() {
+        return "Short description";
+    }// </editor-fold>
 }

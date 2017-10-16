@@ -1,5 +1,5 @@
 <!--Edit application page-->
-<div data-backdrop="static" class="modal fade center" id="editApplicationModal" tabindex="-1" role="dialog" aria-labelledby="editAplicationModalLabel" aria-hidden="true">
+<div data-backdrop="static" class="modal fade center" id="editApplicationModal" tabindex="-1" role="dialog" aria-labelledby="editApplicationModalLabel" aria-hidden="true">
     <div class="modal-dialog nomargintop nomarginbottom modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -23,14 +23,16 @@
                         <div class="row">
                             <div class="form-group col-xs-12">
                                 <label for="application" name="applicationField">Application</label>
-                                <input type="text" class="form-control" name="application" id="application" aria-describedby="basic-addon1" readonly>
+                                <input type="text" class="form-control" name="application" id="application" aria-describedby="basic-addon1">
+                                <input type="text" class="form-control input-sm" name="originalApplication" id="originalApplication" style="display:none;"/>
                             </div>
                         </div>
                         <!-- tabs definition-->
                         <ul id="tabsEdit" class="nav nav-tabs" data-tabs="tabs">
                             <li class="active"><a data-toggle="tab" href="#tabsEdit-1" id="tab1Text" name="tabsEdit1">Definition</a></li>
-                            <li><a data-toggle="tab" href="#tabsEdit-2" id="tab3Text" name="tabsEdit2">Environment</a></li>
-                            <li><a data-toggle="tab" href="#tabsEdit-3" id="tab4Text" name="tabsEdit3">Object</a></li>
+                            <li><a data-toggle="tab" href="#tabsEdit-2" id="tab2Text" name="tabsEdit2">Environment</a></li>
+                            <li><a data-toggle="tab" href="#tabsEdit-4" id="tab4Text" name="tabsEdit4">Bug Tracker</a></li>
+                            <li><a data-toggle="tab" href="#tabsEdit-3" id="tab3Text" name="tabsEdit3">Object</a></li>
                         </ul>
                         <div class="tab-content">
                             <div class="center marginTop25 tab-pane fade in active" id="tabsEdit-1">
@@ -69,6 +71,19 @@
                                     </div>
                                 </div>
                                 <div class="row">
+                                    <div class="form-group col-xs-6">
+                                        <label for="deploytype" name="deploytypeField">Deploy Type</label>
+                                        <select class="form-control"  id="deploytype" name="deploytype">
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-xs-6">
+                                        <label for="mavengroupid" name="mavengroupidField">Maven Group Id</label>
+                                        <input type="text" class="form-control" name="mavengroupid" id="mavengroupid" aria-describedby="basic-addon1" maxlength="50">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="center marginTop25 tab-pane fade" id="tabsEdit-4">
+                                <div class="row">
                                     <div class="form-group col-xs-12">
                                         <label for="bugtrackerurl" name="bugtrackerurlField">Bug Tracker URL</label>
                                         <textarea id="bugtrackerurl" name="bugtrackerurl"
@@ -80,17 +95,6 @@
                                         <label for="bugtrackernewurl" name="bugtrackernewurlField">Bug Tracker New URL</label>
                                         <textarea id="bugtrackernewurl" name="bugtrackernewurl"
                                                   class="form-control" maxlength="5000"></textarea>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group col-xs-6">
-                                        <label for="deploytype" name="deploytypeField">Deploy Type</label>
-                                        <select class="form-control"  id="deploytype" name="deploytype">
-                                        </select>
-                                    </div>
-                                    <div class="form-group col-xs-6">
-                                        <label for="mavengroupid" name="mavengroupidField">Maven Group Id</label>
-                                        <input type="text" class="form-control" name="mavengroupid" id="mavengroupid" aria-describedby="basic-addon1" maxlength="50">
                                     </div>
                                 </div>
                             </div>

@@ -71,7 +71,7 @@ public class DeleteTestCaseLabel extends HttpServlet {
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         ILogEventService logEventService = appContext.getBean(LogEventService.class);
         Answer ans = new Answer();
-        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         ans.setResultMessage(msg);
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);

@@ -21,12 +21,23 @@
 
 
 $.when($.getScript("js/global/global.js")).then(function () {
-    $(document).ready(function () {
-    	
-    	 $(document).on('mouseenter', 'a', function () {
-    	        console.log("je montre");
-    	    }).on('mouseleave', 'a', function () {
-    	    	console.log("je cache");
+    $(document).ready(function () {	
+    	 $(document).on('mouseenter', 'a', function (ev) {
+    		 try{
+    			 ev.target.firstElementChild.style.display ="block";
+    			 $(ev.target.firstElementChild).find("span").css("display","inline");
+    		 }catch(e){
+    			 
+    		 }
+    		 
+    	    }).on('mouseleave', 'a', function (ev) {
+    	    	try{
+    	    		ev.target.firstElementChild.style.display ="none";
+    	    		$(ev.target.firstElementChild).find("span").css("display","none");
+    	    	}catch(e){
+    	    		
+    	    	}
+    	    	
     	    });
     	
     	$('#propName').trigger("change");
@@ -37,6 +48,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
  	
     	$('#createApplicationObjectButton').click(function() {
             openModalApplicationObject(undefined,undefined, "ADD", "testCaseScript");
+
         });
 
         $(window).bind('beforeunload', function () {
@@ -44,7 +56,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
                 return true; //Display alert Message that a modification has been done
             }
         });
-        
+
 
         var doc = new Doc();
         var stepList = [];
@@ -78,18 +90,6 @@ $.when($.getScript("js/global/global.js")).then(function () {
         displayPageLabel(doc);
 
         $("#addStepModal [name='buttonAdd']").html(doc.getDocLabel("page_global", "btn_add"));
-
-        displayInvariantList("conditionOper", "TESTCASECONDITIONOPER", false);
-        displayInvariantList("group", "GROUP", false, true);
-        displayInvariantList("status", "TCSTATUS", false, true);
-        displayInvariantList("priority", "PRIORITY", false, true);
-        $('[name="origin"]').append('<option value="All">' + doc.getDocLabel("page_global", "lbl_all") + '</option>');
-        displayInvariantList("origin", "ORIGIN", false, true);
-        displayInvariantList("active", "TCACTIVE", false, true);
-        displayInvariantList("activeQA", "TCACTIVE", false, true);
-        displayInvariantList("activeUAT", "TCACTIVE", false, true);
-        displayInvariantList("activeProd", "TCACTIVE", false, true);
-        displayProjectList("project");
 
         $.ajax({
             url: "ReadTest",
@@ -158,8 +158,6 @@ $.when($.getScript("js/global/global.js")).then(function () {
                     $('#editTestCaseModal').unbind("hidden.bs.modal");
                     var t = $('#editTestCaseModal').find("#test option:selected");
                     var tc = $('#editTestCaseModal').find("#testCase");
-                    console.info(t.val() + " " + tc.val());
-                    console.info(test + " " + testcase);
                     if (!((t.val() === test) && (tc.val() === testcase))) {
                         // Key was modified.
                         if ($('#editTestCaseModal').data("Saved")) {
@@ -275,7 +273,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
                                 addAfter: ".",
                                 isCreatable: false
                             },
-                            
+
                             {
                                 array: availableTags,
                                 regex: "%",
@@ -283,7 +281,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
                                 addAfter: ".",
                                 isCreatable: false
                             }
-                            
+
                         ];
 
                         autocompleteAllFields(Tags, data.info, test, testcase);
@@ -382,11 +380,11 @@ $.when($.getScript("js/global/global.js")).then(function () {
                 $("#useStep").prop("checked", false);
                 $("#importDetail").hide();
                 $("#importDetail div.row").remove();
-                $(".sub-sub-item.selected").each(function (idx,element) {
+                $(".sub-sub-item.selected").each(function (idx, element) {
                     $(element).removeClass("selected");
                     $(element).find("[name='idx']").remove();
                 });
-                importInfoIdx=0;
+                importInfoIdx = 0;
             });
 
             $("#deleteStep").click(function () {
@@ -463,7 +461,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
         }
         //close all Navbar menu
         closeEveryNavbarMenu();
-        
+
         $('[data-toggle="popover"]').popover({
             'placement': 'auto',
             'container': 'body'}
@@ -630,7 +628,8 @@ function setAllSort() {
     return stepArr;
 }
 
-function saveScript() {
+
+function saveScript(property) {
     // Disable the save button to avoid double click.
     $("#saveScript").attr("disabled", true);
 
@@ -649,6 +648,16 @@ function saveScript() {
             propertyWithoutName = true;
         }
         propArr.push($(properties[i]).data("property"));
+    }
+    
+    if(property != undefined){
+    	 for(i in propArr){
+    	    	if(propArr[i].property === property){
+    	    		propArr[i].toDelete = true
+    	    	}
+    	 }
+    	 
+    	
     }
 
     var saveProp = function () {
@@ -690,6 +699,8 @@ function saveScript() {
             error: showUnexpectedError
         });
     };
+    
+    
 
     if (propertyWithoutCountry) {
         showModalConfirmation(function () {
@@ -711,10 +722,74 @@ function saveScript() {
 
 }
 
+function deleteFnct(property){
+	console.log($(this));
+    console.log(property);
+     var linkToProperty = null;
+     //go though every link and look for the right one
+     $("#propListWrapper li a").each(function () {
+         if ($(this).text() === property)
+             linkToProperty = $(this).parent();
+     });
+     if (linkToProperty !== null) {
+         if (property.toDelete) {
+             linkToProperty.addClass("list-group-item-danger");
+         } else {
+             linkToProperty.removeClass("list-group-item-danger");
+         }
+     }
+}
+
+function prevent(e){
+	e.preventDefault();
+}
+
 function drawPropertyList(property, index) {
     var htmlElement = $("<li></li>").addClass("list-group-item list-group-item-calm row").css("margin-left", "0px");
-    $(htmlElement).append($("<a></a>").attr("href", "#propertyLine" + property).text(property));
-    $(htmlElement).find("a").append("<button style='padding:0px;float:right' type='button' class='btn btn-danger'><span class='glyphicon glyphicon-trash'></span></button>")
+    $(htmlElement).append($("<a onclick= prevent(event)></a>").attr("href", "#propertyLine" + property).text(property));
+    var deleteBtn = $("<button style='padding:0px;float:right;display:none' class='btn btn-danger add-btn'></button>").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
+/*
+    deleteBtn.click(function () {
+        property.toDelete = (property.toDelete) ? false : true;
+        //set the property in red (or remove the red color)
+        if (property.toDelete) {
+            content.addClass("list-group-item-danger");
+        } else {
+            content.removeClass("list-group-item-danger");
+        }
+        //set the link to the property in red (or remove the red color)
+        var propertyName = property.property;
+        var linkToProperty = null;
+        //go though every link and look for the right one
+        $("#propListWrapper li a").each(function () {
+            if ($(this).text() === propertyName)
+                linkToProperty = $(this).parent();
+        });
+        if (linkToProperty !== null) {
+            if (property.toDelete) {
+                linkToProperty.addClass("list-group-item-danger");
+            } else {
+                linkToProperty.removeClass("list-group-item-danger");
+            }
+        }
+    });
+    */
+    
+    $(htmlElement).find("a").append(deleteBtn);
+    deleteBtn.click(function(ev){
+    	if(!$(ev.target).parent().parent().parent().hasClass("list-group-item-danger")){
+    		$(ev.target).parent().parent().parent().addClass("list-group-item-danger");
+    		$("div.list-group-item").each(function(){
+    			if($(this).find("#propName").val() === property){
+    				$(this).find("button.add-btn.btn-danger").trigger("click");
+    			}
+    		})
+    	}else{
+    		$(ev.target).parent().parent().parent().removeClass("list-group-item-danger");
+    	}
+    	
+    })
+    
     $("#propList").append(htmlElement);
 }
 
@@ -726,7 +801,7 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
     var selectNature = getSelectInvariant("PROPERTYNATURE", false, true);
     var deleteBtn = $("<button class='btn btn-danger add-btn'></button>").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
     var moreBtn = $("<button class='btn btn-default add-btn'></button>").append($("<span></span>").addClass("glyphicon glyphicon-chevron-down"));
-    
+
     var propertyInput = $("<input onkeypress='return restrictCharacters(this, event, propertyNameRestriction);' id='propName' style='width: 100%; font-size: 16px; font-weight: 600;' name='propName' placeholder='" + doc.getDocLabel("page_testcasescript", "feed_propertyname") + "'>").addClass("form-control input-sm").val(property.property);
     var descriptionInput = $("<textarea rows='1' id='propDescription' placeholder='" + doc.getDocLabel("page_testcasescript", "feed_propertydescription") + "'>").addClass("form-control input-sm").val(property.description);
     var valueInput = $("<pre name='propertyValue' id='propertyValue" + index + "' style='min-height:150px' rows='1' placeholder='" + doc.getDocLabel("page_applicationObject", "Value") + "'></pre>").addClass("form-control input-sm").val(property.value1);
@@ -1003,20 +1078,20 @@ function drawInheritedProperty(propList) {
 }
 
 
-function loadServices(){
-	return new Promise(function(resolve, reject){
-		var array = [];
-		var propertyList = [];
-		
-		 $.ajax({
-			 url: "ReadAppService",
-	            async: true,
-	            success: function (data) {
-	                resolve(data.contentTable);
-	            },
-	            error: showUnexpectedError
-	        });
-	})
+function loadServices() {
+    return new Promise(function (resolve, reject) {
+        var array = [];
+        var propertyList = [];
+
+        $.ajax({
+            url: "ReadAppService",
+            async: true,
+            success: function (data) {
+                resolve(data.contentTable);
+            },
+            error: showUnexpectedError
+        });
+    })
 }
 
 
@@ -1069,8 +1144,6 @@ function loadProperties(test, testcase, testcaseinfo, propertyToFocus, canUpdate
                 array.sort(function(a, b) {
                 	  return compareStrings(a, b);
               	})
-              	
-              	console.log(array);
               	
 
                 resolve(array);
@@ -1167,21 +1240,22 @@ function changeLib() {
 
 function generateImportInfoId(stepInfo) {
     var hash = 0;
-    if (stepInfo.description.length == 0) return hash;
+    if (stepInfo.description.length == 0)
+        return hash;
     for (i = 0; i < stepInfo.description.length; i++) {
         char = stepInfo.description.charCodeAt(i);
-        hash = ((hash<<5)-hash)+char;
+        hash = ((hash << 5) - hash) + char;
         hash = hash & hash; // Convert to 32bit integer
     }
     return hash;
 }
 
-var importInfoIdx=0;
+var importInfoIdx = 0;
 function showImportStepDetail(element) {
 
     var stepInfo = $(element).data("stepInfo");
 
-    if($(element).hasClass("selected")) {
+    if ($(element).hasClass("selected")) {
         $(element).removeClass("selected");
         $(element).find("[name='idx']").remove();
         $("#" + generateImportInfoId(stepInfo)).remove();
@@ -1189,21 +1263,21 @@ function showImportStepDetail(element) {
         importInfoIdx++;
         $(element).addClass("selected");
         $(element).append('<span class="badge" name="idx">' + importInfoIdx + ' </span>');
-        var importInfoId =  generateImportInfoId(stepInfo);
+        var importInfoId = generateImportInfoId(stepInfo);
 
         var importInfo =
-        '<div id="'+importInfoId+'" class="row">' +
-        '   <div class="col-sm-5"><span class="badge">' + importInfoIdx + ' </span>&nbsp;' + stepInfo.description + '</div>' +
-        '   <div name="importInfo" class="col-sm-5"></div>' +
-        '   <div class="col-sm-2">'+
-        '    <label class="checkbox-inline">'+
-        '        <input type="checkbox" name="useStep" checked> Use Step'+
-        '    </label>'+
-        '   </div>'+
-        '</div>';
+                '<div id="' + importInfoId + '" class="row">' +
+                '   <div class="col-sm-5"><span class="badge">' + importInfoIdx + ' </span>&nbsp;' + stepInfo.description + '</div>' +
+                '   <div name="importInfo" class="col-sm-5"></div>' +
+                '   <div class="col-sm-2">' +
+                '    <label class="checkbox-inline">' +
+                '        <input type="checkbox" name="useStep" checked> Use Step' +
+                '    </label>' +
+                '   </div>' +
+                '</div>';
 
         $("#importDetail").append(importInfo);
-        $("#"+importInfoId).find("[name='importInfo']").text("Imported from " + stepInfo.test + " - " + stepInfo.testCase + " - " + stepInfo.sort + ")").data("stepInfo", stepInfo);
+        $("#" + importInfoId).find("[name='importInfo']").text("Imported from " + stepInfo.test + " - " + stepInfo.testCase + " - " + stepInfo.sort + ")").data("stepInfo", stepInfo);
 
         $("#importDetail[name='useStep']").prop("checked", true);
 
@@ -1241,7 +1315,7 @@ function addStep(event) {
         setModif(true);
 
 
-        if($("[name='importInfo']").length == 0 ) { // added a new step
+        if ($("[name='importInfo']").length == 0) { // added a new step
             var step = initStep();
             step.description = $("#addStepModal #description").val();
 
@@ -1829,9 +1903,6 @@ Step.prototype.show = function () {
     $("#stepConditionOper").attr("disabled", activateDisableWithUseStep);
     $("#stepConditionVal1").attr("disabled", activateDisableWithUseStep);
     $("#stepConditionVal2").attr("disabled", activateDisableWithUseStep);
-
-    object.stepActionContainer.find("div.fieldRow div:nth-child(n+2) input").trigger("input");
-
 };
 
 Step.prototype.setActionList = function (actionList, canUpdate) {
@@ -2099,7 +2170,7 @@ Action.prototype.generateContent = function () {
     descContainer.append($("<span class='input-group-addon' style='font-weight: 700;' id='labelDiv'></span>"));
     descContainer.append(descField);
     var objectField = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control input-sm");
- 
+
     var propertyField = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control input-sm");
 
     var actionconditionval1 = $("<input>").attr("type", "text").addClass("form-control input-sm");
@@ -2156,22 +2227,22 @@ Action.prototype.generateContent = function () {
     objectField.on("change", function () {
         obj.value1 = objectField.val();
     });
-    
-    
+
+
 
     propertyField.val(this.value2);
     propertyField.css("width", "100%");
     propertyField.on("change", function () {
         obj.value2 = propertyField.val();
     });
-    
-    
+
+
     firstRow.append(descContainer);
     secondRow.append($("<div></div>").addClass("col-lg-2 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "action_field"))).append(actionList));
     secondRow.append($("<div></div>").addClass("col-lg-5").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value1_field"))).append(objectField));
     /*if(secondRow.find("col-lg-6").find("label").text() === "Chemin vers l'élement" ){
-    	console.log(".append(choiceField)")
-    }*/
+     console.log(".append(choiceField)")
+     }*/
     secondRow.append($("<div></div>").addClass("col-lg-5 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value2_field"))).append(propertyField));
     thirdRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_operation_field"))).append(actionconditionoper));
     thirdRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_parameter_field"))).append(actionconditionval1));
@@ -2379,7 +2450,7 @@ Control.prototype.generateContent = function () {
     var content = $("<div></div>").addClass("content col-lg-9");
     var firstRow = $("<div style='margin-top:15px;'></div>").addClass("fieldRow row form-group");
     var secondRow = $("<div></div>").addClass("fieldRow row secondRow input-group");
-    secondRow.css("width","100%");
+    secondRow.css("width", "100%");
     var thirdRow = $("<div></div>").addClass("fieldRow row").hide();
 
     var controlList = $("<select></select>").addClass("form-control input-sm").css("width", "100%");
@@ -2391,7 +2462,7 @@ Control.prototype.generateContent = function () {
     var controlValueField = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").addClass("form-control input-sm").css("width", "100%");
     var controlPropertyField = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").addClass("form-control input-sm").css("width", "100%");
 
-    
+
     var controlconditionval1 = $("<input>").attr("type", "text").addClass("form-control input-sm");
     var controlconditionval2 = $("<input>").attr("type", "text").addClass("form-control input-sm");
     var controlconditionoper = $("<select></select>").addClass("form-control input-sm");
@@ -2572,55 +2643,28 @@ function addControlAndFocus(oldAction, control) {
  * @return a boolean : true if exist, false if not exist
  */
 function objectIntoTagToUseExist(tagToUse, label) {
-    for(var i=0;i < tagToUse.array.length;i++) {
+    for (var i = 0; i < tagToUse.array.length; i++) {
         var data = tagToUse.array[i];
-        
-        if(data ==  undefined) {
+
+        if (data == undefined) {
             continue;
         }
 
-        if(typeof data === "string") {
-            if(data===label)
+        if (typeof data === "string") {
+            if (data === label)
                 return true;
         } else {
-            if(data.object === label) {
+            if (data.object === label) {
                 return true;
-            }else if(data.service === label){
-            	return true;
+            } else if (data.service === label) {
+                return true;
             }
         }
     }
     return false;
 }
 
-/*
-function LoadForm(test,testcase,property,testcaseinfo){
-	$.ajax({
-        url: "ReadTestCase",
-        data: {test: test, testCase: testcase, withStep: true},
-        dataType: "json",
-        success: function (data) {
-        	var right = data
-        	$.ajax({
-                url: "GetOnePropertyForTestCase",
-                data: {test: test, testcase:testcase, property:property},
-                dataType: "json",
-                success: function (data) {
-                	console.log(data);                	
-                	$("#editPropertyModal").modal("show");
-                	var prop = drawPropertyModal(data[0], right.info,right.hasPermissionsUpdate, "");
-                	console.log(prop);
-                	setPlaceholderProperty(prop[0], prop[1]);
-                	
-                	
-                }
-        	})
-        }
-	})
-}
-*/
-
-var autocompleteAllFields, getTags, setTags;
+var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 (function () {
     //var accessible only in closure
     var TagsToUse = [];
@@ -2633,11 +2677,11 @@ var autocompleteAllFields, getTags, setTags;
     setTags = function (tags) {
         TagsToUse = tags;
     };
-    
-    testUI = function (test){
-    	
+
+    testUI = function (test) {
+
     };
-    
+
     //function accessible everywhere that has access to TagsToUse
     autocompleteAllFields = function (Tags, info, thistest, thistestcase) {
         if (Tags !== undefined) {
@@ -2665,221 +2709,220 @@ var autocompleteAllFields, getTags, setTags;
         	<option value="coord">coord</option> \n\
         	<option value="picture">picture</option> \n\
         	</select></span>'
-        
-        $("div.step-action .content div.fieldRow div:nth-child(n+2) input").each(function (i, e) { 
-        	
-        	
-        	
-	
-        	        	
-        	/*
-        	if($(e).parent().find("label").text().includes("Chemin vers l'élement") === true){
-        		$(e).parent().removeClass("col-lg-5").addClass("col-lg-6");
-        		$(e).parent().find("label").after(choiceField);
-        		$(e).css("width","50%");
-        		$(e).parent().parent().find(".col-lg-5").removeClass("col-lg-5").addClass("col-lg-4").find("input").css("width","84%");
-        	}
-        	*/
-        	
+
+        $("div.step-action .content div.fieldRow div:nth-child(n+2) input").each(function (i, e) {
+
+
+
+
+
+            /*
+             if($(e).parent().find("label").text().includes("Chemin vers l'élement") === true){
+             $(e).parent().removeClass("col-lg-5").addClass("col-lg-6");
+             $(e).parent().find("label").after(choiceField);
+             $(e).css("width","50%");
+             $(e).parent().parent().find(".col-lg-5").removeClass("col-lg-5").addClass("col-lg-4").find("input").css("width","84%");
+             }
+             */
+
             $(e).unbind("input").on("input", function (ev) {
-            	var doc = new Doc()
-            	
-            	if($(e).parent().parent().find("select").val() === "callService"){ 
+                var doc = new Doc()
 
-            		$(e).autocomplete({
-            			minLength: 1,
-            			messages: {
-                            noResults: '',
-                            results: function () {
-                            }
-                        },
-                		source: function( request, response ) {
-        			        $.ajax({
-        			          url: "ReadAppService?service="+$(e).val()+"&limit=15",
-        			          dataType: "json",
-        			          success: function( data ) {
-        			        	 var MyArray =  $.map(data.contentTable, function (item) {
-        		        	            return {
-        		        	                label: item.service,
-        		        	                value: item.service
-        		        	            };
-        		        	        });
-        			        	 
-        			        	 response($.ui.autocomplete.filter(MyArray, request.term));
-			        	  
-        			          }
-        			        });
-        			      },
-        			     
-       			      
-        			      select: function(event, ui) {
-        		                var selectedObj = ui.item;        		               
-        		                $(e).val(selectedObj.value.replace("%", ''));
-        		                $(e).trigger("input");
-        		                $(e).autocomplete("close")
-        			      }
-
-                	}).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
-                		  return $( "<li>" )
-                		    .data( "ui-autocomplete-item", item )
-                		    .append( "<a>" + item.label + "</a>" )
-                		    .appendTo( ul );
-                		};
-                
-                	
-
-                    var addEntry = '<span class="input-group-btn ' +$(e).val().replace(/[^\w\s]/gi, '')+ '"><button id="editEntry" onclick="openModalAppService(\'' + name + '\',\'ADD\'  ,\'TestCase\' );"\n\
-                        class="buttonObject btn btn-default input-sm " \n\
-                       title="' + doc.getDocLabel("page_applicationObject", "button_create") + '" type="button">\n\
-                        <span class="glyphicon glyphicon-plus"></span></button></span>';
-
-                    var editEntry = '<span class="input-group-btn ' +$(e).val()+ '"><button id="editEntry" onclick="openModalAppService(\'' + $(e).val() + '\',\'EDIT\'  ,\'TestCase\' );"\n\
-                		class="buttonObject btn btn-default input-sm " \n\
-                		title="' + doc.getDocLabel("page_applicationObject", "button_edit") + '" type="button">\n\
-                		<span class="glyphicon glyphicon-pencil"></span></button></span>';
-
-                    $.ajax({
-                        url: "ReadAppService?service="+$(e).val(),
-                        dataType: "json",
-                        success: function( data ) {
-                            var dataContent = data.contentTable
-                            $(e).parent().find(".input-group-btn").remove();
-                            if(dataContent != null){
-                                $(e).parent().append(editEntry);
-                            }else{
-                                if(!isEmpty($(e).val())){
-                                    $(e).parent().append(addEntry);
+                if ($(e).parent().parent().find("select").val() === "callService") {
+                    // prevent multiple autocomplete handler on $(e)
+                    if (!$(e).hasClass('ui-autocomplete-input')) {
+                        $(e).autocomplete({
+                            minLength: 1,
+                            messages: {
+                                noResults: '',
+                                results: function () {
                                 }
+                            },
+                            source: function (request, response) {
+                                $.ajax({
+                                    url: "ReadAppService?service=" + $(e).val() + "&limit=15",
+                                    dataType: "json",
+                                    success: function (data) {
+                                        var MyArray = $.map(data.contentTable, function (item) {
+                                            return {
+                                                label: item.service,
+                                                value: item.service
+                                            };
+                                        });
+
+                                        response($.ui.autocomplete.filter(MyArray, request.term));
+
+                                    }
+                                });
+                            },
+
+                            select: function (event, ui) {
+                                var selectedObj = ui.item;
+                                $(e).val(selectedObj.value.replace("%", ''));
+                                $(e).trigger('change');
+                                $(e).autocomplete("close")
                             }
+
+                        }).data("ui-autocomplete")._renderItem = function (ul, item) {
+                            return $("<li>")
+                                    .data("ui-autocomplete-item", item)
+                                    .append("<a>" + item.label + "</a>")
+                                    .appendTo(ul);
+                        };
+                        
+                        $(e).change(function(){
+                            var addEntry = '<span class="input-group-btn ' + $(e).val().replace(/[^\w\s]/gi, '') + '"><button id="editEntry" onclick="openModalAppService(\'' + name + '\',\'ADD\'  ,\'TestCase\' );"\n\
+                            class="buttonObject btn btn-default input-sm " \n\
+                           title="' + doc.getDocLabel("page_applicationObject", "button_create") + '" type="button">\n\
+                            <span class="glyphicon glyphicon-plus"></span></button></span>';
+
+                            var editEntry = '<span class="input-group-btn ' + $(e).val() + '"><button id="editEntry" onclick="openModalAppService(\'' + $(e).val() + '\',\'EDIT\'  ,\'TestCase\' );"\n\
+                    		class="buttonObject btn btn-default input-sm " \n\
+                    		title="' + doc.getDocLabel("page_applicationObject", "button_edit") + '" type="button">\n\
+                    		<span class="glyphicon glyphicon-pencil"></span></button></span>';
+
+                            $.ajax({
+                                url: "ReadAppService?service=" + $(e).val(),
+                                dataType: "json",
+                                success: function (data) {
+                                    var dataContent = data.contentTable
+                                    $(e).parent().find(".input-group-btn").remove();
+                                    if (dataContent != null) {
+                                        $(e).parent().append(editEntry);
+                                    } else {
+                                        if (!isEmpty($(e).val())) {
+                                            $(e).parent().append(addEntry);
+                                        }
+                                    }
+                                }
+                            });
+                        }).trigger('change')
+                    }
+                } else {
+                    autocompleteVariable($(e), TagsToUse);
+                    $(e).autocomplete({}).data('ui-autocomplete')._renderItem = function (ul, item) {
+                        $(ul).css("min-height", "0px");
+                        var icon = "";
+                        var tag = TagsToUse[this.currentIndexTag];
+                        if (tag.addAfter != "%") {
+                            icon = "<span class='ui-corner-all glyphicon glyphicon-chevron-right' tabindex='-1' style='margin-top:3px; float:right;'></span>";
                         }
-                    });
-                	
+                        // find corresponding data to use more information than item (application / filename etc)
+                        var object = tag.array.find(function (data) {
+                            if (item != undefined)
+                                return data.object === item.label;
+                            return false;
+                        });
 
-            	}else{
-            		autocompleteVariable($(e), TagsToUse);
-            		  $(e).autocomplete({}).data('ui-autocomplete')._renderItem = function (ul, item) {
-                          $(ul).css("min-height", "0px");
-                          var icon = "";
-                          var tag = TagsToUse[this.currentIndexTag];
-                          if (tag.addAfter != "%") {
-                              icon = "<span class='ui-corner-all glyphicon glyphicon-chevron-right' tabindex='-1' style='margin-top:3px; float:right;'></span>";
-                          }
-                          // find corresponding data to use more information than item (application / filename etc)
-                          var object = tag.array.find(function (data) {
-                              if (item != undefined)
-                                  return data.object === item.label;
-                              return false;
-                          });
+                        var hover = "";
+                        if (object != null && object.screenshotfilename != undefined && object.screenshotfilename != null) {
+                            hover = 'data-toggle="tooltip" title="<img src=\'http://localhost:8080/Cerberus/ReadApplicationObjectImage?application=' + object.application + '&object=' + object.object + '&time=' + $.now() + '\' />"';
+                        }
+                        return $("<li class='ui-menu-item'>")
+                                .append("<a class='ui-corner-all' tabindex='-1' style='height:100%' " + hover + " ><span style='float:left;'>" + item.label + "</span>" + icon + "<span style='clear: both; display: block;'></span></a>")
+                                .appendTo(ul);
+                    }
+                }
 
-                          var hover = "";
-                          if (object != null && object.screenshotfilename != undefined && object.screenshotfilename != null) {
-                              hover = 'data-toggle="tooltip" title="<img src=\'http://localhost:8080/Cerberus/ReadApplicationObjectImage?application=' + object.application + '&object=' + object.object + '&time=' + $.now() + '\' />"';
-                          }
-                          return $("<li class='ui-menu-item'>")
-                                  .append("<a class='ui-corner-all' tabindex='-1' style='height:100%' " + hover + " ><span style='float:left;'>" + item.label + "</span>" + icon + "<span style='clear: both; display: block;'></span></a>")
-                                  .appendTo(ul);
-            		  }
-            	}
-            	
                 var name = undefined;
-                var nameNotExist = undefined;                               
+                var nameNotExist = undefined;
                 var objectNotExist = false;
-                var typeNotExist = undefined;               
+                var typeNotExist = undefined;
                 var doc = new Doc();
                 var checkObject = [];
                 var betweenPercent = $(e).val().match(new RegExp(/%[^%]*%/g));
-               
-                
+
+
                 if (betweenPercent != null && betweenPercent.length > 0) {
                     var i = betweenPercent.length - 1;
                     while (i >= 0) {
-                        var findname = betweenPercent[i].match(/\.[^\.]*(\.|.$)/g);  
+                        var findname = betweenPercent[i].match(/\.[^\.]*(\.|.$)/g);
 
                         if (betweenPercent[i].startsWith("%object.") && findname != null && findname.length > 0) {
                             name = findname[0];
                             name = name.slice(1, name.length - 1);
-                                                    
+
                             $(e).parent().parent().parent().parent().find("#ApplicationObjectImg").attr("src", "ReadApplicationObjectImage?application=" + tcInfo.application + "&object=" + name + "&time=" + new Date().getTime());
 
-                            if (!objectIntoTagToUseExist(TagsToUse[1],name)) {
-                            	
-                            		var addEntry = '<span class="input-group-btn ' +name+ '"><button id="editEntry" onclick="openModalApplicationObject(\'' + tcInfo.application + '\', \'' + name + '\',\'ADD\'  ,\'testCaseScript\' );"\n\
+                            if (!objectIntoTagToUseExist(TagsToUse[1], name)) {
+
+                                var addEntry = '<span class="input-group-btn ' + name + '"><button id="editEntry" onclick="openModalApplicationObject(\'' + tcInfo.application + '\', \'' + name + '\',\'ADD\'  ,\'testCaseScript\' );"\n\
                                     class="buttonObject btn btn-default input-sm " \n\
                                    title="' + doc.getDocLabel("page_applicationObject", "button_create") + '" type="button">\n\
                                     <span class="glyphicon glyphicon-plus"></span></button></span>';
-                            		                                	
-                                    objectNotExist = true;
-                                    nameNotExist = name;
-                                    typeNotExist = "applicationObject";
-                                    
-                                    try{
-                                    	$(e).parent().find("."+ $(e).parent().data("LastName")).remove();   
-                                    }catch(f){
-                                    	$(e).parent().find(".input-group-btn").remove();
-                                    }
-                                                              
-                                    $(e).parent().append(addEntry);
-                                    $(e).parent().data("LastName", name);
-    
-                            	
-                                
-                            }else if(objectIntoTagToUseExist(TagsToUse[1],name)){
-                            	                           	
-                            		var editEntry = '<span class="input-group-btn ' +name+ '"><button id="editEntry" onclick="openModalApplicationObject(\'' + tcInfo.application + '\', \'' + name + '\',\'EDIT\'  ,\'testCaseScript\' );"\n\
+
+                                objectNotExist = true;
+                                nameNotExist = name;
+                                typeNotExist = "applicationObject";
+
+                                try {
+                                    $(e).parent().find("." + $(e).parent().data("LastName")).remove();
+                                } catch (f) {
+                                    $(e).parent().find(".input-group-btn").remove();
+                                }
+
+                                $(e).parent().append(addEntry);
+                                $(e).parent().data("LastName", name);
+
+
+
+                            } else if (objectIntoTagToUseExist(TagsToUse[1], name)) {
+
+                                var editEntry = '<span class="input-group-btn ' + name + '"><button id="editEntry" onclick="openModalApplicationObject(\'' + tcInfo.application + '\', \'' + name + '\',\'EDIT\'  ,\'testCaseScript\' );"\n\
                             		class="buttonObject btn btn-default input-sm " \n\
                             		title="' + doc.getDocLabel("page_applicationObject", "button_edit") + '" type="button">\n\
                             		<span class="glyphicon glyphicon-pencil"></span></button></span>';
-                                    
-                                    try{
-                                    	$(e).parent().find("."+ $(e).parent().data("LastName")).remove();   
-                                    }catch(e){
-                                    	$(e).parent().find(".input-group-btn").remove();
-                                    }
-                                                              
-                                    $(e).parent().append(editEntry);
-                                    $(e).parent().data("LastName", name);
-                                   
-                            }else{
-                            	$(e).parent().find(".input-group-btn").remove();
+
+                                try {
+                                    $(e).parent().find("." + $(e).parent().data("LastName")).remove();
+                                } catch (e) {
+                                    $(e).parent().find(".input-group-btn").remove();
+                                }
+
+                                $(e).parent().append(editEntry);
+                                $(e).parent().data("LastName", name);
+
+                            } else {
+                                $(e).parent().find(".input-group-btn").remove();
                             }
                         } else if (betweenPercent[i].startsWith("%property.") && findname != null && findname.length > 0) {
-                        	
+
                             name = findname[0];
                             name = name.slice(1, name.length - 1);
-                            
-                            if (!objectIntoTagToUseExist(TagsToUse[2],name)) {
 
-                        		var addEntry = '<span class="input-group-btn ' +name+ '"><button id="'+name+ '"\n\
+                            if (!objectIntoTagToUseExist(TagsToUse[2], name)) {
+
+                                var addEntry = '<span class="input-group-btn ' + name + '"><button id="' + name + '"\n\
                                 class="buttonObject btn btn-default input-sm " \n\
                                title="' + doc.getDocLabel("page_applicationObject", "button_create") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-plus"></span></button></span>';
-                        		                                	
+
                                 objectNotExist = true;
                                 nameNotExist = name;
                                 typeNotExist = "applicationObject";
-                                
+
                                 $(e).parent().data("LastName", name);
-                                
-                            }else{
-                            	var editEntry = '<span class="input-group-btn ' +name+ '"><button id="'+name+ '"\n\
+
+                            } else {
+                                var editEntry = '<span class="input-group-btn ' + name + '"><button id="' + name + '"\n\
                                 class="buttonObject btn btn-default input-sm " \n\
                                title="' + doc.getDocLabel("page_applicationObject", "button_edit") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-pencil"></span></button></span>';
-                        		                                	
+
                                 objectNotExist = true;
                                 nameNotExist = name;
                                 typeNotExist = "applicationObject";
-                             
+
                                 $(e).parent().data("LastName", name);
                             }
-                        }else{
-                        	$(e).parent().find(".input-group-btn").remove();
+                        } else {
+                            $(e).parent().find(".input-group-btn").remove();
                         }
-                        
+
                         i--;
                     }
-                }else if ($(e).parent().parent().find("#actionSelect").val() != "callService"){
-                	$(e).parent().find(".input-group-btn").remove();
+                } else if ($(e).parent().parent().find("#actionSelect").val() != "callService") {
+                    $(e).parent().find(".input-group-btn").remove();
                 }
                 if (objectNotExist) {
                     if (typeNotExist == "applicationobject") {
@@ -2964,7 +3007,7 @@ editPropertiesModalClick = function (test, testcase, info, propertyToAdd, proper
 
         var prop = drawProperty(newProperty, info, true, $("div[name='propertyLine']").length);
         setPlaceholderProperty(prop[0], prop[1]);
-        
+
     }
 
     //$("#propertiesModal").modal('show');
@@ -3271,12 +3314,12 @@ function setPlaceholderProperty(propertyElement, property) {
     var placeHolders = placeHoldersList[user.language];
 
     $(propertyElement).find('select[name="propertyType"] option:selected').each(function (i, e) {
-    	
 
-    	function initChange(){
 
-    		if($("#"+editor.container.id).parent().parent().find("[name='propertyType']").val() === "getFromDataLib"){
-                $("#"+editor.container.id).parent().find('.input-group').remove();
+        function initChange() {
+
+            if ($("#" + editor.container.id).parent().parent().find("[name='propertyType']").val() === "getFromDataLib") {
+                $("#" + editor.container.id).parent().find('.input-group').remove();
                 var escaped = editor.getValue().replace(/[^\w\s]/gi, '');
                 if(!isEmpty(escaped)){
                 	$.ajax({
@@ -3284,48 +3327,58 @@ function setPlaceholderProperty(propertyElement, property) {
         		    	data:{
         		    		name:editor.getValue(),
         		    		limit:15,
-        		    		like:"no"
+        		    		like:"N"
         		    	},
         		        async: true,
         		        method: "GET",
         		        success: function (data) {
-        		            if (data.messageType === "OK") {
+        		           if (data.messageType === "OK") {
         		                // Feed the data to the screen and manage authorities.
         		                var service = data.contentTable;
-        		                if(!isEmpty(service)){
-        		            		var editEntry = '<div class="input-group col-sm-5 col-sm-offset-3"><select class="datalib  form-control"></select><span class="input-group-btn"><button class="btn btn-secondary" type="button"><span class="glyphicon glyphicon-pencil"></span></button></span></div>';
-        		            		$("#"+editor.container.id).parent().append(editEntry);
-        		                    displayDataLibList(editor.container.id, undefined,escaped).then(function(){
-        		                    	$("#"+editor.container.id).parent().find("button").attr('onclick', 'openModalDataLib(' + $("#"+editor.container.id).parent().find("select").val() + ",'EDIT',"+"'"+escaped+"')");
-        		                    });
-        		                    $("#"+editor.container.id).parent().find("select").unbind("change").change(function(){
-        		                    	$("#"+editor.container.id).parent().find("button").attr('onclick', 'openModalDataLib(' + $("#"+editor.container.id).parent().find("select").val() + ",'EDIT',"+"'"+escaped+"')");
-        		                    })   
-        		                }else{
-                                    $("#"+editor.container.id).parent().find('.input-group').remove();
+        		                if(service.length >= 2){
         		                	
-        		                	var addEntry = '<div class="input-group col-sm-5 col-sm-offset-3"><select class="datalib '+escaped+ ' form-control"></select><span class="input-group-btn"><button class="btn btn-secondary" type="button"><span class="glyphicon glyphicon-plus"></span></button></span></div>';
-        		            		$("#"+editor.container.id).parent().append(addEntry);
-        		            		$("#"+editor.container.id).parent().find("select").append($('<option>', {
-        		            		    value: escaped,
-        		            		    text: escaped
-        		            		}));
-        		                         		                    
-        		                    $("."+escaped).parent().find("button").attr('onclick', 'openModalDataLib(\''  + escaped  + "\','ADD',"+"'"+escaped+"')");
-        		                    
-      		                }
+        		                		$("#"+editor.container.id).parent().find('.input-group').remove();
+        		                		$("#"+editor.container.id).parent().parent().find('.col-btn').remove();
+ 
+            		            		var editEntry = '<div class="input-group col-sm-5 col-sm-offset-3"><label>Choose one data library</label><select class="datalib  form-control"></select><span class="input-group-btn"  style="vertical-align:bottom"><button class="btn btn-secondary" type="button"><span class="glyphicon glyphicon-pencil"></span></button></span></div>';
+            		            		
+            		            		$("#"+editor.container.id).parent().append(editEntry);
+            		                    displayDataLibList(editor.container.id, undefined,escaped).then(function(){
+            		                    	$("#"+editor.container.id).parent().find("button").attr('onclick', 'openModalDataLib(' + $("#"+editor.container.id).parent().find("select").val() + ",'EDIT',"+"'"+escaped+"')");
+            		                    });
+            		                    $("#"+editor.container.id).parent().find("select").unbind("change").change(function(){
+            		                    	$("#"+editor.container.id).parent().find("button").attr('onclick', 'openModalDataLib(' + $("#"+editor.container.id).parent().find("select").val() + ",'EDIT',"+"'"+escaped+"')");
+            		                    })
+             
+        		                }else{
+        		                	$("#"+editor.container.id).parent().find('.input-group').remove();
+        		                	$("#"+editor.container.id).parent().parent().find('.col-btn').remove();
+        		                	if(service.length == 1){
+        		                		var addEntry = '<div class="col-btn col-sm-1"><button class="btn btn-secondary" type="button"><span class="glyphicon glyphicon-pencil"></span></button></div>';
+            		                	$("#"+editor.container.id).parent().removeClass("col-sm-10").addClass("col-sm-9")
+            		            		$("#"+editor.container.id).parent().parent().append(addEntry);
+            		                	$("#"+editor.container.id).parent().parent().find("button").attr('onclick', 'openModalDataLib(\''  + service[0].testDataLibID  + "\','EDIT',"+"'"+escaped+"')");
+        		                	}else{
+        		                		var addEntry = '<div class="col-btn col-sm-1"><button class="btn btn-secondary" type="button"><span class="glyphicon glyphicon-plus"></span></button></div>';
+            		                	$("#"+editor.container.id).parent().removeClass("col-sm-10").addClass("col-sm-9")
+            		            		$("#"+editor.container.id).parent().parent().append(addEntry);
+            		                	$("#"+editor.container.id).parent().parent().find("button").attr('onclick', 'openModalDataLib(\''  + escaped  + "\','ADD',"+"'"+escaped+"')");
+        		                	}
+
+        		                	
+        		                }       		                
         		            } 
         		        },
         		        error: showUnexpectedError
         		    });
                 }
-    		}
-    	}
-    	
-    	var editor = ace.edit($($(e).parents("div[name='propertyLine']").find("pre[name='propertyValue']"))[0]);
+            }
+        }
+
+        var editor = ace.edit($($(e).parents("div[name='propertyLine']").find("pre[name='propertyValue']"))[0]);
 
         editor.removeAllListeners('change');
-    	  	
+
         for (var i = 0; i < placeHolders.length; i++) {
             if (placeHolders[i].type === e.value) {
                 if (placeHolders[i].database !== null) {
@@ -3340,17 +3393,17 @@ function setPlaceholderProperty(propertyElement, property) {
                     $(e).parents("div[name='propertyLine']").find("div[name='fieldValue1']").removeClass();
                     $(e).parents("div[name='propertyLine']").find("div[name='fieldValue1']").addClass(placeHolders[i].value1Class);
                     //Ace module management
-                    console.log(placeHolders[i].type)
                     configureAceEditor(editor, placeHolders[i].value1EditorMode, property);
 
-                    if(placeHolders[i].type === "getFromDataLib"){
-                        if((editor.getValue()!= null)){
+                    if (placeHolders[i].type === "getFromDataLib") {
+                        if ((editor.getValue() != null)) {
                             initChange();
                         }
                         editor.on('change', initChange);
 
-                    }else{
-                        $("#"+editor.container.id).parent().children('.input-group').remove();
+                    } else {
+                        $("#" + editor.container.id).parent().children('.input-group').remove();
+                    	$("#"+editor.container.id).parent().parent().find('.col-btn').remove();
                     }
 
                 } else {
@@ -3398,19 +3451,32 @@ function setPlaceholderProperty(propertyElement, property) {
 
 }
 
-var staticWordCompleter = {
-	    getCompletions: function(editor, session, pos, prefix, callback) {	    	
-            $.getJSON("ReadTestDataLib?name="+editor.getValue()+"&limit=15&like=yes", function(wordList) {
-                callback(null, wordList.contentTable.map(function(ea)  {           
-                    return {name: ea.name, value: ea.name, meta: "DataLib"}
-                }));
-            })
+
+function CompleterForAllDataLib(){
+
+	var langTools = ace.require("ace/ext/language_tools");	
+	langTools.setCompleters([]);//clear the autocompleter list
+
+	var staticWordCompleter = {
+		
+	    getCompletions: function (editor, session, pos, prefix, callback) {
+	        $.getJSON("ReadTestDataLib?name=" + editor.getValue() + "&limit=15&like=Y", function (wordList) {
+	            callback(null, wordList.contentTable.map(function (ea) {
+	                return {name: ea.name, value: ea.name, meta: "DataLib"}
+	            }));
+	        })
 
 	    }
+
 	}
 
+	langTools.addCompleter(staticWordCompleter);
+
+}
 
 
+
+var oldCompleters = null;
 /*
  * main function of ace editor
  */
@@ -3420,59 +3486,46 @@ function configureAceEditor(editor, mode, property) {
     var commandNameForIssueDetection = "cerberusIssueDetection";
     //event listenner
     editor.commands.on("afterExec", function (e) {
-    	var langTools = ace.require('ace/ext/language_tools');
-    	
+        var langTools = ace.require('ace/ext/language_tools');
 
-	        if (e.command.name == "insertstring" || e.command.name == "paste" || e.command.name == "backspace") {
-	            //recreate the array at each loop     
-		            
-	        	if(property.type === "getFromDataLib"){
-	        		
-		                 
-		            editor.completers = [staticWordCompleter]
-		            
-		            editor.setOptions({
-	        			enableLiveAutocompletion: true
-		            });
-	        	}
-		       
-	        	else{
-	        		     		
-		            var allKeyword = createAllKeywordList(getKeywordList("object"), getKeywordList("property"));
-		            editor.completers = [allKeyword]	         
-		            	
-		            	if (e.command.name != "backspace") {
-			                addCommandForCustomAutoCompletePopup(editor, allKeyword, commandNameForAutoCompletePopup);
-			                editor.commands.exec(commandNameForAutoCompletePopup);//set autocomplete popup
-			            }else{
-			            	addCommandToDetectKeywordIssue(editor, allKeyword, commandNameForIssueDetection);
-			            	editor.commands.exec(commandNameForIssueDetection);//set annotation
-			            }
-		            	
-		            	
-		            }
-	        	
-	        	editor.setOptions({maxLines: 10, enableBasicAutocompletion: true});
-	        }
 
-	            createGuterCellListenner(editor);
-	            property.value1 = editor.session.getValue();
-	        
-        
+        if (e.command.name == "insertstring" || e.command.name == "paste" || e.command.name == "backspace") {
+            //recreate the array at each loop
+
+            if (property.type === "getFromDataLib") {
+            	CompleterForAllDataLib();              
+                editor.setOptions({maxLines : 15, enableBasicAutocompletion: false, enableLiveAutocompletion: true});
+            } else {
+            	 editor.setOptions({maxLines : 15, enableBasicAutocompletion: true, enableLiveAutocompletion: false});
+
+                var allKeyword = createAllKeywordList(getKeywordList("object"), getKeywordList("property"));
+                //editor.completers = [allKeyword]
+                if (e.command.name != "backspace") {
+                    addCommandForCustomAutoCompletePopup(editor, allKeyword, commandNameForAutoCompletePopup);
+                    editor.commands.exec(commandNameForAutoCompletePopup);//set autocomplete popup*/
+                   
+                } else {
+                    addCommandToDetectKeywordIssue(editor, allKeyword, commandNameForIssueDetection);
+                    editor.commands.exec(commandNameForIssueDetection);//set annotation
+                }
+
+
+            }
+
+        }
+
+        createGuterCellListenner(editor);
+        property.value1 = editor.session.getValue();
+
+
     });
 
     //editor option
     editor.getSession().setMode(mode);
-    
-
-
-    
     editor.off('change');
-    
-
     editor.setTheme("ace/theme/chrome");
     editor.$blockScrolling = "Infinity";//disable error message
-    
+
     //set text previously input
     editor.setValue(property.value1);
     //lose focus when loaded
@@ -3531,11 +3584,11 @@ function createAllKeywordList(objectList, propertyList) {
  * add an ace command to display autocomplete popup
  */
 function addCommandForCustomAutoCompletePopup(editor, allKeyword, commandName) {
+	
 
     editor.commands.addCommand({
         name: commandName,
         exec: function () {
-
             var cursorPositionY = editor.getCursorPosition().row;
             var editorValueAtTheLine = editor.session.getLine(cursorPositionY);//value on the line the cursor is currently in
             var numberOfPercentCaractereAtLine = (editorValueAtTheLine.match(/\%/g) || []).length;//start autocomplete when there is an odd number of %
@@ -3545,6 +3598,7 @@ function addCommandForCustomAutoCompletePopup(editor, allKeyword, commandName) {
                 var subStringCursorOn = editorValueAtTheLine.slice(editorValueAtTheLine.lastIndexOf('%', cursorPositionX) + 1, cursorPositionX);
                 //Create an array of all the word separated by "." contain between "%" caractere
                 var keywordInputList = subStringCursorOn.split(".");
+                
 
                 var potentiallyNeddApoint = true;
                 var allKeywordCorrect = true;
@@ -3565,6 +3619,7 @@ function addCommandForCustomAutoCompletePopup(editor, allKeyword, commandName) {
                         allKeywordCorrect = false;
 
                 }
+                
                 var currentKeyword = keywordInputList[keywordInputList.length - 1];
                 //All the keyword are correct set autocompletion
                 if (allKeywordCorrect) {
@@ -3577,6 +3632,7 @@ function addCommandForCustomAutoCompletePopup(editor, allKeyword, commandName) {
                         editor.session.insert(editor.getCursorPosition(), "%");
                     }
                     //change the autocompletionList
+                    
                     if (currentKeyword == undefined) {
                         changeAceCompletionList(allKeyword[0]["listKeyword"], "", editor);
                         editor.execCommand("startAutocomplete");
@@ -3677,6 +3733,7 @@ function changeAceCompletionList(keywordList, label, editor) {
             callback(null, completions);
         }
     }
+
     langTools.addCompleter(completer);
 }
 
@@ -3888,7 +3945,7 @@ function addObjectWithAce(keywordValue) {
 }
 //Get the CURRENT list of keyword for each type
 function getKeywordList(type) {
-    if (getTags() != undefined) {
+    if (getTags() != undefined && getTags().length > 0) {
         var idType = -1;
         switch (type) {
             case "object":

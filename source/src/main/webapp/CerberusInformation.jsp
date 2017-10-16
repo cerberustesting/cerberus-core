@@ -175,6 +175,19 @@
                                     </div>
                                     <div class="row">
                                         <div class="form-group col-xs-12">
+                                            <table class="table table-bordered table-hover nomarginbottom dataTable" id="appjvmTable">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="text-center" id="appVer" name="appVer">Application Server Version</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="appjvmTableBody">
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group col-xs-12">
                                             <table class="table table-bordered table-hover nomarginbottom dataTable" id="jvmMemTable">
                                                 <thead>
                                                     <tr>

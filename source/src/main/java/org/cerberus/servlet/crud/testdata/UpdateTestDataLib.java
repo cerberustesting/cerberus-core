@@ -134,13 +134,13 @@ public class UpdateTestDataLib extends HttpServlet {
                 msg.setDescription(msg.getDescription().replace("%ITEM%", "Test data library")
                         .replace("%OPERATION%", "Update")
                         .replace("%REASON%", "Test data library name is missing."));
-                ans.setResultMessage(msg);
+                finalAnswer.setResultMessage(msg);
             } else if (testdatalibid_error) {
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
                 msg.setDescription(msg.getDescription().replace("%ITEM%", "Test data library")
                         .replace("%OPERATION%", "Update")
                         .replace("%REASON%", "Could not manage to convert testdatalibid to an integer value or testdatalibid is missing."));
-                ans.setResultMessage(msg);
+                finalAnswer.setResultMessage(msg);
             } else {
                 /**
                  * All data seems cleans so we can call the services.
