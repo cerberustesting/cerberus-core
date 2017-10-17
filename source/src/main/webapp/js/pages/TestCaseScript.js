@@ -2191,7 +2191,6 @@ Action.prototype.generateContent = function () {
     actionList.on("change", function () {
         obj.action = actionList.val();
         setPlaceholderAction($(this).parents(".action"));
-        console.log($(actionList).parent().find("input-group-btn"));
         
     });
 
@@ -2712,7 +2711,12 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
              */
 
             $(e).unbind("input").on("input", function (ev) {
-            	console.log($(e).parent().parent().find("select").val())
+            	
+            	$(e).parent().parent().find("#actionSelect").unbind("change").on("change",function(){
+            		$(e).parent().parent().find(".input-group-btn").remove();
+            		$(e).parent().parent().find("input").trigger("input");
+            	})
+            	
                 var doc = new Doc()
 
                 if ($(e).parent().parent().find("select").val() === "callService") {
@@ -2783,6 +2787,8 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 
                     
                 } else {
+                	
+                	console.log("oui")
                     autocompleteVariable($(e), TagsToUse);
                     $(e).autocomplete({}).data('ui-autocomplete')._renderItem = function (ul, item) {
                         $(ul).css("min-height", "0px");
