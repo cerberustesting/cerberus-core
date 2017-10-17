@@ -25,7 +25,7 @@
 
     <groupId>org.cerberus</groupId>
     <artifactId>cerberus-testing</artifactId>
-    <version>1.1.15-SNAPSHOT</version>
+    <version>2.0.0</version>
     <packaging>pom</packaging>
 
     <name>Cerberus Testing</name>
@@ -37,7 +37,7 @@
 
     <scm>
         <developerConnection>scm:git:https://github.com/cerberustesting/cerberus-source.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>cerberus-testing-2.0.0</tag>
     </scm>
 
     <modules>
