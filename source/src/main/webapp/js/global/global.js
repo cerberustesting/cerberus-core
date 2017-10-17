@@ -244,22 +244,28 @@ function displayDataLibList(selectName, defaultValue, name) {
 		        	let environment = "";
 		        	let country = "";
 		        	let value = "";
+		        	let context = "";
 		        	if(!isEmpty(data.contentTable[option].system)){
-		        		system = " - " +data.contentTable[option].system
+		        		system = data.contentTable[option].system + " - "
 		        	}
 		        	if(!isEmpty(data.contentTable[option].environment)){
-		        		environment = " - " +data.contentTable[option].environment
+		        		environment = data.contentTable[option].environment + " - "
 		        	}
 		        	if(!isEmpty(data.contentTable[option].country)){
-		        		country = " - " +data.contentTable[option].country
+		        		country = data.contentTable[option].country + " - "
 		        	}
+
 		        	if(data.contentTable[option].type === "INTERNAL"){
-			  			if(!isEmpty(data.contentTable[option].value)){
-			  				value = " - " +data.contentTable[option].value
+			  			if(!isEmpty(data.contentTable[option].subDataValue)){
+			  				value = data.contentTable[option].subDataValue + " - "
 			  			}
 		        	}
 		        	
-		        	$("#"+selectName).parent().find("select").append($('<option></option>').text(data.contentTable[option].name +value+system+environment+country).val(data.contentTable[option].testDataLibID));
+		        	if(!isEmpty(system) || !isEmpty(environment) || !isEmpty(country) || !isEmpty(value)){
+		        		context = " [" + system + environment + country + value + "]"
+		        	}
+		        	
+		        	$("#"+selectName).parent().find("select").append($('<option></option>').text(data.contentTable[option].name +context).val(data.contentTable[option].testDataLibID));
 		        }
 		        
 		        if(defaultValue != undefined){

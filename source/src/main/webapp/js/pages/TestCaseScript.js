@@ -18,10 +18,11 @@
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
+var canUpdate = false;
 
 $.when($.getScript("js/global/global.js")).then(function () {
-    $(document).ready(function () {	
+    $(document).ready(function () {
+    	
     	 $(document).on('mouseenter', 'a', function (ev) {
     		 try{
     			 ev.target.firstElementChild.style.display ="block";
@@ -185,6 +186,8 @@ $.when($.getScript("js/global/global.js")).then(function () {
                 data: {test: test, testCase: testcase, withStep: true},
                 dataType: "json",
                 success: function (data) {
+                	
+                	canUpdate = data.hasPermissionsUpdate;
 
                     testcaseinfo = data.info;
                     loadTestCaseInfo(data.info);
@@ -723,8 +726,6 @@ function saveScript(property) {
 }
 
 function deleteFnct(property){
-	console.log($(this));
-    console.log(property);
      var linkToProperty = null;
      //go though every link and look for the right one
      $("#propListWrapper li a").each(function () {
@@ -748,46 +749,16 @@ function drawPropertyList(property, index) {
     var htmlElement = $("<li></li>").addClass("list-group-item list-group-item-calm row").css("margin-left", "0px");
     $(htmlElement).append($("<a onclick= prevent(event)></a>").attr("href", "#propertyLine" + property).text(property));
     var deleteBtn = $("<button style='padding:0px;float:right;display:none' class='btn btn-danger add-btn'></button>").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
-/*
-    deleteBtn.click(function () {
-        property.toDelete = (property.toDelete) ? false : true;
-        //set the property in red (or remove the red color)
-        if (property.toDelete) {
-            content.addClass("list-group-item-danger");
-        } else {
-            content.removeClass("list-group-item-danger");
-        }
-        //set the link to the property in red (or remove the red color)
-        var propertyName = property.property;
-        var linkToProperty = null;
-        //go though every link and look for the right one
-        $("#propListWrapper li a").each(function () {
-            if ($(this).text() === propertyName)
-                linkToProperty = $(this).parent();
-        });
-        if (linkToProperty !== null) {
-            if (property.toDelete) {
-                linkToProperty.addClass("list-group-item-danger");
-            } else {
-                linkToProperty.removeClass("list-group-item-danger");
-            }
-        }
-    });
-    */
-    
+  
     $(htmlElement).find("a").append(deleteBtn);
     deleteBtn.click(function(ev){
-    	if(!$(ev.target).parent().parent().parent().hasClass("list-group-item-danger")){
-    		$(ev.target).parent().parent().parent().addClass("list-group-item-danger");
+    	
     		$("div.list-group-item").each(function(){
     			if($(this).find("#propName").val() === property){
     				$(this).find("button.add-btn.btn-danger").trigger("click");
     			}
     		})
-    	}else{
-    		$(ev.target).parent().parent().parent().removeClass("list-group-item-danger");
-    	}
-    	
+  	
     })
     
     $("#propList").append(htmlElement);
@@ -858,28 +829,45 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
     var btnRow = $("<div class='col-sm-2'></div>").css("margin-top", "5px").css("margin-bottom", "5px").append(selectAllBtn).append(selectNoneBtn);
 
     deleteBtn.click(function () {
+    	var allDelete = false;
+    	var linkToProperty = null;
         property.toDelete = (property.toDelete) ? false : true;
+        
+		 if (property.toDelete) {
+	            content.addClass("list-group-item-danger");
+	        } else {
+	            content.removeClass("list-group-item-danger");
+	        }
+        
+        $("div.list-group-item").each(function(){
+			if($(this).find("#propName").val() === property.property){
+				if($(this).hasClass("list-group-item-danger")){
+					allDelete = true;
+				}else{
+					allDelete = false;
+					return false;
+				}
+			}
+		})
+
+			$("#propListWrapper li a").each(function () {
+	            if ($(this).text() === property.property)
+	                linkToProperty = $(this).parent();
+	        });
+		
         //set the property in red (or remove the red color)
-        if (property.toDelete) {
-            content.addClass("list-group-item-danger");
-        } else {
-            content.removeClass("list-group-item-danger");
-        }
+       
         //set the link to the property in red (or remove the red color)
         var propertyName = property.property;
-        var linkToProperty = null;
+        
         //go though every link and look for the right one
-        $("#propListWrapper li a").each(function () {
-            if ($(this).text() === propertyName)
-                linkToProperty = $(this).parent();
-        });
-        if (linkToProperty !== null) {
-            if (property.toDelete) {
-                linkToProperty.addClass("list-group-item-danger");
-            } else {
-                linkToProperty.removeClass("list-group-item-danger");
-            }
-        }
+        
+        if (allDelete === true) {       
+        	linkToProperty.css("background-color", "#c94350");
+        } else {
+            linkToProperty.css("background-color", "#fff");
+          }
+        
     });
 
     moreBtn.click(function () {
@@ -2228,8 +2216,6 @@ Action.prototype.generateContent = function () {
         obj.value1 = objectField.val();
     });
 
-
-
     propertyField.val(this.value2);
     propertyField.css("width", "100%");
     propertyField.on("change", function () {
@@ -2712,10 +2698,6 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 
         $("div.step-action .content div.fieldRow div:nth-child(n+2) input").each(function (i, e) {
 
-
-
-
-
             /*
              if($(e).parent().find("label").text().includes("Chemin vers l'élement") === true){
              $(e).parent().removeClass("col-lg-5").addClass("col-lg-6");
@@ -2759,7 +2741,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
                             select: function (event, ui) {
                                 var selectedObj = ui.item;
                                 $(e).val(selectedObj.value.replace("%", ''));
-                                $(e).trigger('change');
+                                $(e).trigger('input');
                                 $(e).autocomplete("close")
                             }
 
@@ -2770,33 +2752,33 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
                                     .appendTo(ul);
                         };
                         
-                        $(e).change(function(){
-                            var addEntry = '<span class="input-group-btn ' + $(e).val().replace(/[^\w\s]/gi, '') + '"><button id="editEntry" onclick="openModalAppService(\'' + name + '\',\'ADD\'  ,\'TestCase\' );"\n\
-                            class="buttonObject btn btn-default input-sm " \n\
-                           title="' + doc.getDocLabel("page_applicationObject", "button_create") + '" type="button">\n\
-                            <span class="glyphicon glyphicon-plus"></span></button></span>';
-
-                            var editEntry = '<span class="input-group-btn ' + $(e).val() + '"><button id="editEntry" onclick="openModalAppService(\'' + $(e).val() + '\',\'EDIT\'  ,\'TestCase\' );"\n\
-                    		class="buttonObject btn btn-default input-sm " \n\
-                    		title="' + doc.getDocLabel("page_applicationObject", "button_edit") + '" type="button">\n\
-                    		<span class="glyphicon glyphicon-pencil"></span></button></span>';
-
-                            $.ajax({
+                        $(e).unbind("input").on("input",function(){
+                        	
+                           $.ajax({
                                 url: "ReadAppService?service=" + $(e).val(),
                                 dataType: "json",
                                 success: function (data) {
                                     var dataContent = data.contentTable
                                     $(e).parent().find(".input-group-btn").remove();
-                                    if (dataContent != null) {
+                                    if (dataContent != undefined) {
+                                    	 var editEntry = '<span class="input-group-btn ' + $(e).val() + '"><button id="editEntry" onclick="openModalAppService(\'' + $(e).val() + '\',\'EDIT\'  ,\'TestCase\' );"\n\
+                                 		class="buttonObject btn btn-default input-sm " \n\
+                                 		title="' + doc.getDocLabel("page_applicationObject", "button_edit") + '" type="button">\n\
+                                 		<span class="glyphicon glyphicon-pencil"></span></button></span>';
                                         $(e).parent().append(editEntry);
-                                    } else {
-                                        if (!isEmpty($(e).val())) {
-                                            $(e).parent().append(addEntry);
-                                        }
+                                    } else { 
+                                    	  var addEntry = '<span class="input-group-btn ' + $(e).val().replace(/[^\w\s]/gi, '') + '"><button id="editEntry" onclick="openModalAppService(\'' + $(e).val() + '\',\'ADD\'  ,\'TestCase\' );"\n\
+                                          class="buttonObject btn btn-default input-sm " \n\
+                                         title="' + doc.getDocLabel("page_applicationObject", "button_create") + '" type="button">\n\
+                                          <span class="glyphicon glyphicon-plus"></span></button></span>';
+
+                                           $(e).parent().append(addEntry);
                                     }
                                 }
                             });
-                        }).trigger('change')
+                        }).trigger("input", function(){
+                        	$(e).autocomplete("close");
+                        });
                     }
                 } else {
                     autocompleteVariable($(e), TagsToUse);
@@ -3340,9 +3322,10 @@ function setPlaceholderProperty(propertyElement, property) {
         		                		$("#"+editor.container.id).parent().find('.input-group').remove();
         		                		$("#"+editor.container.id).parent().parent().find('.col-btn').remove();
  
-            		            		var editEntry = '<div class="input-group col-sm-5 col-sm-offset-3"><label>Choose one data library</label><select class="datalib  form-control"></select><span class="input-group-btn"  style="vertical-align:bottom"><button class="btn btn-secondary" type="button"><span class="glyphicon glyphicon-pencil"></span></button></span></div>';
-            		            		
+            		            		var editEntry = $('<div class="input-group col-sm-5 col-sm-offset-3"><label>Choose one data library</label><select class="datalib  form-control"></select><span class="input-group-btn"  style="vertical-align:bottom"><button class="btn btn-secondary" type="button"><span class="glyphicon glyphicon-pencil"></span></button></span></div>');
+            		            		editEntry.find("button").attr("disabled", !canUpdate);
             		            		$("#"+editor.container.id).parent().append(editEntry);
+            		            		$(editEntry).find("button").attr("disabled", true);
             		                    displayDataLibList(editor.container.id, undefined,escaped).then(function(){
             		                    	$("#"+editor.container.id).parent().find("button").attr('onclick', 'openModalDataLib(' + $("#"+editor.container.id).parent().find("select").val() + ",'EDIT',"+"'"+escaped+"')");
             		                    });
@@ -3354,13 +3337,16 @@ function setPlaceholderProperty(propertyElement, property) {
         		                	$("#"+editor.container.id).parent().find('.input-group').remove();
         		                	$("#"+editor.container.id).parent().parent().find('.col-btn').remove();
         		                	if(service.length == 1){
-        		                		var addEntry = '<div class="col-btn col-sm-1"><button class="btn btn-secondary" type="button"><span class="glyphicon glyphicon-pencil"></span></button></div>';
+        		                		var editEntry = $('<div class="col-btn col-sm-1"><button class="btn btn-secondary" type="button"><span class="glyphicon glyphicon-pencil"></span></button></div>');
             		                	$("#"+editor.container.id).parent().removeClass("col-sm-10").addClass("col-sm-9")
-            		            		$("#"+editor.container.id).parent().parent().append(addEntry);
+            		                	editEntry.find("button").attr("disabled", !canUpdate);
+            		            		$("#"+editor.container.id).parent().parent().append(editEntry);
+            		                	$(addEntry).find("button").attr("disabled", true);
             		                	$("#"+editor.container.id).parent().parent().find("button").attr('onclick', 'openModalDataLib(\''  + service[0].testDataLibID  + "\','EDIT',"+"'"+escaped+"')");
         		                	}else{
-        		                		var addEntry = '<div class="col-btn col-sm-1"><button class="btn btn-secondary" type="button"><span class="glyphicon glyphicon-plus"></span></button></div>';
-            		                	$("#"+editor.container.id).parent().removeClass("col-sm-10").addClass("col-sm-9")
+        		                		var addEntry = $('<div class="col-btn col-sm-1"><button class="btn btn-secondary" type="button"><span class="glyphicon glyphicon-plus"></span></button></div>');
+        		                		addEntry.find("button").attr("disabled", !canUpdate);
+        		                		$("#"+editor.container.id).parent().removeClass("col-sm-10").addClass("col-sm-9")
             		            		$("#"+editor.container.id).parent().parent().append(addEntry);
             		                	$("#"+editor.container.id).parent().parent().find("button").attr('onclick', 'openModalDataLib(\''  + escaped  + "\','ADD',"+"'"+escaped+"')");
         		                	}
