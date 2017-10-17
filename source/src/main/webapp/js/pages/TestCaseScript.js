@@ -750,6 +750,8 @@ function drawPropertyList(property, index) {
     $(htmlElement).append($("<a onclick= prevent(event)></a>").attr("href", "#propertyLine" + property).text(property));
     var deleteBtn = $("<button style='padding:0px;float:right;display:none' class='btn btn-danger add-btn'></button>").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
   
+    deleteBtn.attr("disabled", !canUpdate);
+    
     $(htmlElement).find("a").append(deleteBtn);
     deleteBtn.click(function(ev){
     	
@@ -2189,6 +2191,8 @@ Action.prototype.generateContent = function () {
     actionList.on("change", function () {
         obj.action = actionList.val();
         setPlaceholderAction($(this).parents(".action"));
+        console.log($(actionList).parent().find("input-group-btn"));
+        
     });
 
     forceExeStatusList = getSelectInvariant("ACTIONFORCEEXESTATUS", false, true).css("width", "100%");
@@ -2708,11 +2712,13 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
              */
 
             $(e).unbind("input").on("input", function (ev) {
+            	console.log($(e).parent().parent().find("select").val())
                 var doc = new Doc()
 
                 if ($(e).parent().parent().find("select").val() === "callService") {
                     // prevent multiple autocomplete handler on $(e)
-                    if (!$(e).hasClass('ui-autocomplete-input')) {
+                	console.log("heress")
+
                         $(e).autocomplete({
                             minLength: 1,
                             messages: {
@@ -2751,9 +2757,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
                                     .append("<a>" + item.label + "</a>")
                                     .appendTo(ul);
                         };
-                        
-                        $(e).unbind("input").on("input",function(){
-                        	
+                      	
                            $.ajax({
                                 url: "ReadAppService?service=" + $(e).val(),
                                 dataType: "json",
@@ -2761,10 +2765,10 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
                                     var dataContent = data.contentTable
                                     $(e).parent().find(".input-group-btn").remove();
                                     if (dataContent != undefined) {
-                                    	 var editEntry = '<span class="input-group-btn ' + $(e).val() + '"><button id="editEntry" onclick="openModalAppService(\'' + $(e).val() + '\',\'EDIT\'  ,\'TestCase\' );"\n\
+                                    	 var editEntry = $('<span class="input-group-btn ' + $(e).val() + '"><button id="editEntry" onclick="openModalAppService(\'' + $(e).val() + '\',\'EDIT\'  ,\'TestCase\' );"\n\
                                  		class="buttonObject btn btn-default input-sm " \n\
                                  		title="' + doc.getDocLabel("page_applicationObject", "button_edit") + '" type="button">\n\
-                                 		<span class="glyphicon glyphicon-pencil"></span></button></span>';
+                                 		<span class="glyphicon glyphicon-pencil"></span></button></span>');                                   	 
                                         $(e).parent().append(editEntry);
                                     } else { 
                                     	  var addEntry = '<span class="input-group-btn ' + $(e).val().replace(/[^\w\s]/gi, '') + '"><button id="editEntry" onclick="openModalAppService(\'' + $(e).val() + '\',\'ADD\'  ,\'TestCase\' );"\n\
@@ -2776,10 +2780,8 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
                                     }
                                 }
                             });
-                        }).trigger("input", function(){
-                        	$(e).autocomplete("close");
-                        });
-                    }
+
+                    
                 } else {
                     autocompleteVariable($(e), TagsToUse);
                     $(e).autocomplete({}).data('ui-autocomplete')._renderItem = function (ul, item) {
@@ -2828,10 +2830,10 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 
                             if (!objectIntoTagToUseExist(TagsToUse[1], name)) {
 
-                                var addEntry = '<span class="input-group-btn ' + name + '"><button id="editEntry" onclick="openModalApplicationObject(\'' + tcInfo.application + '\', \'' + name + '\',\'ADD\'  ,\'testCaseScript\' );"\n\
+                                var addEntry = $('<span class="input-group-btn ' + name + '"><button id="editEntry" onclick="openModalApplicationObject(\'' + tcInfo.application + '\', \'' + name + '\',\'ADD\'  ,\'testCaseScript\' );"\n\
                                     class="buttonObject btn btn-default input-sm " \n\
                                    title="' + doc.getDocLabel("page_applicationObject", "button_create") + '" type="button">\n\
-                                    <span class="glyphicon glyphicon-plus"></span></button></span>';
+                                    <span class="glyphicon glyphicon-plus"></span></button></span>');
 
                                 objectNotExist = true;
                                 nameNotExist = name;
@@ -2845,8 +2847,6 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 
                                 $(e).parent().append(addEntry);
                                 $(e).parent().data("LastName", name);
-
-
 
                             } else if (objectIntoTagToUseExist(TagsToUse[1], name)) {
 
@@ -3323,9 +3323,8 @@ function setPlaceholderProperty(propertyElement, property) {
         		                		$("#"+editor.container.id).parent().parent().find('.col-btn').remove();
  
             		            		var editEntry = $('<div class="input-group col-sm-5 col-sm-offset-3"><label>Choose one data library</label><select class="datalib  form-control"></select><span class="input-group-btn"  style="vertical-align:bottom"><button class="btn btn-secondary" type="button"><span class="glyphicon glyphicon-pencil"></span></button></span></div>');
-            		            		editEntry.find("button").attr("disabled", !canUpdate);
             		            		$("#"+editor.container.id).parent().append(editEntry);
-            		            		$(editEntry).find("button").attr("disabled", true);
+
             		                    displayDataLibList(editor.container.id, undefined,escaped).then(function(){
             		                    	$("#"+editor.container.id).parent().find("button").attr('onclick', 'openModalDataLib(' + $("#"+editor.container.id).parent().find("select").val() + ",'EDIT',"+"'"+escaped+"')");
             		                    });
@@ -3339,9 +3338,7 @@ function setPlaceholderProperty(propertyElement, property) {
         		                	if(service.length == 1){
         		                		var editEntry = $('<div class="col-btn col-sm-1"><button class="btn btn-secondary" type="button"><span class="glyphicon glyphicon-pencil"></span></button></div>');
             		                	$("#"+editor.container.id).parent().removeClass("col-sm-10").addClass("col-sm-9")
-            		                	editEntry.find("button").attr("disabled", !canUpdate);
             		            		$("#"+editor.container.id).parent().parent().append(editEntry);
-            		                	$(addEntry).find("button").attr("disabled", true);
             		                	$("#"+editor.container.id).parent().parent().find("button").attr('onclick', 'openModalDataLib(\''  + service[0].testDataLibID  + "\','EDIT',"+"'"+escaped+"')");
         		                	}else{
         		                		var addEntry = $('<div class="col-btn col-sm-1"><button class="btn btn-secondary" type="button"><span class="glyphicon glyphicon-plus"></span></button></div>');
