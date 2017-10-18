@@ -2208,6 +2208,14 @@ Action.prototype.generateContent = function () {
 					results: function () {
 					}
 				},
+				
+				select: function(event,ui){
+					var selectedObj = ui.item;
+					console.log(event)
+					$(event.target).val(selectedObj.value.replace("%", ''));
+					$(event.target).autocomplete("close")
+					$(event.target).trigger('input');
+				}
 
 			}).data("ui-autocomplete")._renderItem = function (ul, item) {
 				return $("<li>")
@@ -2218,6 +2226,7 @@ Action.prototype.generateContent = function () {
 		}
 		setPlaceholderAction($(this).parents(".action"));
 		$(actionList).parent().parent().find(".input-group-btn").remove();
+
 	});
 
 	forceExeStatusList = getSelectInvariant("ACTIONFORCEEXESTATUS", false, true).css("width", "100%");
@@ -2266,6 +2275,7 @@ Action.prototype.generateContent = function () {
 
 	actionconditionoper.trigger("change");
 	actionList.trigger("change");
+		
 	if ((this.parentStep.useStep === "Y") || (!obj.hasPermissionsUpdate)) {
 		descField.prop("readonly", true);
 		objectField.prop("readonly", true);
@@ -2745,18 +2755,12 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 			</select></span>'
 
 			$("div.step-action .content div.fieldRow div:nth-child(n+2) input").each(function (i, e) {
-				
-				function handler(){
-					$(e).trigger("input");
-				}
 
 				$(e).unbind("input").on("input", function (ev) {
 
 					var doc = new Doc()
-					
-					$(e).parent().parent().find("select").unbind("change", handler).on("change", handler)
 
-					if ($(e).parent().parent().find("select").val() === "callService") {	
+					if ($(e).parent().parent().find("select").val() === "callService") {					
 
 						// prevent multiple autocomplete handler on $(e)
 						$( e ).autocomplete('option', 'source', function(request,response){							
@@ -2774,14 +2778,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 									response($.ui.autocomplete.filter(MyArray, request.term));
 								}
 							})
-						})
-					
-						$( e ).autocomplete('option', 'select', function(event,ui){
-							var selectedObj = ui.item;
-							$(e).val(selectedObj.value.replace("%", ''));
-							$(e).trigger('input');
-							$(e).autocomplete("close")
-						})				
+						})			
 				
 						$.ajax({
 							url: "ReadAppService?service=" + $(e).val(),
@@ -2808,6 +2805,11 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 
 					} else if($(e).parent().parent().find("select").val() === "calculateProperty"){
 						
+						
+						$(e).parent().parent().find("select").on("change",function(){
+							$(e).trigger("input");
+						})
+						
 						$( e ).autocomplete('option', 'source', function(request,response){
 							var MyArray = $.map(loadGuiProperties(), function (item) {
 								return {
@@ -2818,12 +2820,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 							response($.ui.autocomplete.filter(MyArray, request.term));
 						})
 						
-						$( e ).autocomplete('option', 'select', function(event,ui){
-							var selectedObj = ui.item;
-							$(e).val(selectedObj.value.replace("%", ''));
-							$(e).trigger('input');
-							$(e).autocomplete("close")
-						})
+						
 						
 						var viewEntry = $('<span class="input-group-btn ' + $(e).val() + '"><button id="editEntry" data-toggle="modal" data-target="#modalProperty" "\n\
 								class="buttonObject btn btn-default input-sm " \n\
@@ -2839,6 +2836,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 						}
 						
 						if(propArr[$(e).val()]){
+							viewEntry.find("button").unbind("click")
 							viewEntry.find("button").click(function(){
 								let propArr = loadGuiProperties()
 								let firstRow = $('<p style="text-align:center" > Type : '+ propArr[$(e).val()].type +'</p>');
