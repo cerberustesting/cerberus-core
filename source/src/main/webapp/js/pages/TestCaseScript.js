@@ -2218,7 +2218,6 @@ Action.prototype.generateContent = function () {
 		}
 		setPlaceholderAction($(this).parents(".action"));
 		$(actionList).parent().parent().find(".input-group-btn").remove();
-		
 	});
 
 	forceExeStatusList = getSelectInvariant("ACTIONFORCEEXESTATUS", false, true).css("width", "100%");
@@ -2239,7 +2238,6 @@ Action.prototype.generateContent = function () {
 		}
 	});
 	actionconditionoper.val(this.conditionOper).trigger("change");
-
 	objectField.val(this.value1);
 	objectField.css("width", "100%");
 	objectField.on("change", function () {
@@ -2268,7 +2266,6 @@ Action.prototype.generateContent = function () {
 
 	actionconditionoper.trigger("change");
 	actionList.trigger("change");
-
 	if ((this.parentStep.useStep === "Y") || (!obj.hasPermissionsUpdate)) {
 		descField.prop("readonly", true);
 		objectField.prop("readonly", true);
@@ -2686,6 +2683,21 @@ function objectIntoTagToUseExist(tagToUse, label) {
 	return false;
 }
 
+function loadGuiProperties(){
+	
+	let propArr = new Object();
+	$("div.list-group-item").each(function(){
+		var editor = ace.edit($(this).find("pre").attr("id"));
+		let info = new Object();
+		info["name"] = $(this).find("#propName").val()
+		info["type"] = $(this).find("select").val();
+		info["value"] = editor.getValue();
+		propArr[$(this).find("#propName").val()] = info;
+	})
+	
+	return propArr;
+}
+
 var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 (function () {
 	// var accessible only in closure
@@ -2734,23 +2746,18 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 
 			$("div.step-action .content div.fieldRow div:nth-child(n+2) input").each(function (i, e) {
 
-				/*
-				 * if($(e).parent().find("label").text().includes("Chemin vers
-				 * l'élement") === true){
-				 * $(e).parent().removeClass("col-lg-5").addClass("col-lg-6");
-				 * $(e).parent().find("label").after(choiceField);
-				 * $(e).css("width","50%");
-				 * $(e).parent().parent().find(".col-lg-5").removeClass("col-lg-5").addClass("col-lg-4").find("input").css("width","84%"); }
-				 */
-
 				$(e).unbind("input").on("input", function (ev) {
 
 					var doc = new Doc()
+					
+					$(e).parent().parent().find("select").on("change", function(){
+						$(e).trigger("input");
+					})
 
-					if ($(e).parent().parent().find("select").val() === "callService") {
+					if ($(e).parent().parent().find("select").val() === "callService") {	
 
 						// prevent multiple autocomplete handler on $(e)
-						$( e ).autocomplete('option', 'source', function(request,response){
+						$( e ).autocomplete('option', 'source', function(request,response){							
 							$.ajax({
 								url: "ReadAppService?service=" +$(e).val() + "&limit=15",
 								dataType: "json",
@@ -2766,9 +2773,8 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 								}
 							})
 						})
-						
+					
 						$( e ).autocomplete('option', 'select', function(event,ui){
-							
 							var selectedObj = ui.item;
 							$(e).val(selectedObj.value.replace("%", ''));
 							$(e).trigger('input');
@@ -2792,7 +2798,6 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 									class="buttonObject btn btn-default input-sm " \n\
 									title="' + doc.getDocLabel("page_applicationObject", "button_create") + '" type="button">\n\
 									<span class="glyphicon glyphicon-plus"></span></button></span>';
-
 									$(e).parent().append(addEntry);
 								}
 							}
@@ -2801,22 +2806,50 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 
 					} else if($(e).parent().parent().find("select").val() === "calculateProperty"){
 						
-						let propArr = []
-						
-						$("div.list-group-item").each(function(){
-							propArr.push($(this).find("#propName").val())
+						$( e ).autocomplete('option', 'source', function(request,response){
+							var MyArray = $.map(loadGuiProperties(), function (item) {
+								return {
+									label: item.name,
+									value: item.name
+								};
+							});
+							response($.ui.autocomplete.filter(MyArray, request.term));
 						})
 						
-						propArr = propArr.filter((x, i, a) => a.indexOf(x) == i)
-						
-						$( e ).autocomplete('option', 'source', propArr)
 						$( e ).autocomplete('option', 'select', function(event,ui){
-							
 							var selectedObj = ui.item;
 							$(e).val(selectedObj.value.replace("%", ''));
 							$(e).trigger('input');
 							$(e).autocomplete("close")
-						})				
+						})
+						
+						var viewEntry = $('<span class="input-group-btn ' + $(e).val() + '"><button id="editEntry" data-toggle="modal" data-target="#modalProperty" "\n\
+								class="buttonObject btn btn-default input-sm " \n\
+								title="' + doc.getDocLabel("page_applicationObject", "button_edit") + '" type="button">\n\
+						<span class="glyphicon glyphicon-eye-open"></span></button></span>');
+						
+						let propArr = loadGuiProperties()
+						
+						try {
+							$(e).parent().find("." + $(e).parent().data("LastName")).remove();
+						} catch (e) {
+							$(e).parent().find(".input-group-btn").remove();
+						}
+						
+						if(propArr[$(e).val()]){
+							viewEntry.find("button").click(function(){
+								let propArr = loadGuiProperties()
+								let firstRow = $('<p style="text-align:center" > Type : '+ propArr[$(e).val()].type +'</p>');
+								let secondRow = $('<p style="text-align:center"> Value : '+ propArr[$(e).val()].value +'</p>');
+								$("#modalProperty").find("#firstRowProperty").find("p").remove();
+								$("#modalProperty").find("#secondRowProperty").find("p").remove();
+								$("#modalProperty").find("#firstRowProperty").append(firstRow);
+								$("#modalProperty").find("#secondRowProperty").append(secondRow);
+							});
+							
+							$(e).parent().append(viewEntry);
+							$(e).parent().data("LastName", $(e).val());
+						}
 
 					}else{
 
@@ -2907,44 +2940,13 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 								}
 							} else if (betweenPercent[i].startsWith("%property.") && findname != null && findname.length > 0) {
 
-								name = findname[0];
-								name = name.slice(1, name.length - 1);
-
-								if (!objectIntoTagToUseExist(TagsToUse[2], name)) {
-
-									var addEntry = '<span class="input-group-btn ' + name + '"><button id="' + name + '"\n\
-									class="buttonObject btn btn-default input-sm " \n\
-									title="' + doc.getDocLabel("page_applicationObject", "button_create") + '" type="button">\n\
-									<span class="glyphicon glyphicon-plus"></span></button></span>';
-
-									objectNotExist = true;
-									nameNotExist = name;
-									typeNotExist = "applicationObject";
-
-									$(e).parent().data("LastName", name);
-
-								} else {
-									var editEntry = '<span class="input-group-btn ' + name + '"><button id="' + name + '"\n\
-									class="buttonObject btn btn-default input-sm " \n\
-									title="' + doc.getDocLabel("page_applicationObject", "button_edit") + '" type="button">\n\
-									<span class="glyphicon glyphicon-pencil"></span></button></span>';
-
-									objectNotExist = true;
-									nameNotExist = name;
-									typeNotExist = "applicationObject";
-
-									$(e).parent().data("LastName", name);
-								}
 							} else {
 								$(e).parent().find(".input-group-btn").remove();
 							}
 
 							i--;
 						}
-					} else if ($(e).parent().parent().find("#actionSelect").val() != "callService") {
-						$(e).parent().find(".input-group-btn").remove();
-
-					}
+					} 
 					if (objectNotExist) {
 						if (typeNotExist == "applicationobject") {
 							var newTitle = "<a style='color: #fff;' href='#' onclick='addApplicationObjectModalClick(undefined, \"" + nameNotExist + "\",\"" + tcInfo.application + "\")'><span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span>" + doc.getDocLabel("page_global", "warning") + ": " + nameNotExist + " " + doc.getDocLabel("page_testcasescript", "not_application_object") + "</a>";
