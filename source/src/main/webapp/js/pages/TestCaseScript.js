@@ -2745,14 +2745,16 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 			</select></span>'
 
 			$("div.step-action .content div.fieldRow div:nth-child(n+2) input").each(function (i, e) {
+				
+				function handler(){
+					$(e).trigger("input");
+				}
 
 				$(e).unbind("input").on("input", function (ev) {
 
 					var doc = new Doc()
 					
-					$(e).parent().parent().find("select").on("change", function(){
-						$(e).trigger("input");
-					})
+					$(e).parent().parent().find("select").unbind("change", handler).on("change", handler)
 
 					if ($(e).parent().parent().find("select").val() === "callService") {	
 
