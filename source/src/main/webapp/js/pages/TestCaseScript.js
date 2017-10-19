@@ -2757,8 +2757,6 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 			$("div.step-action .content div.fieldRow div:nth-child(n+2) input").each(function (i, e) {
 
 				$(e).unbind("input").on("input", function (ev) {
-					
-					console.log("test");
 
 					var doc = new Doc()
 
@@ -3298,6 +3296,7 @@ function setPlaceholderProperty(propertyElement, property) {
 	/**
 	 * Todo : GetFromDatabase Translate for FR
 	 */
+
 	var placeHoldersList = {"fr": [
 		{"type": "text", "value1": "Value :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/cerberus", "value2": null, "database": null, "length": "[opt] Length :", "rowLimit": null, "nature": "Nature :", "retry": null, "period": null},
 		{"type": "executeSql", "value1": "SQL Query :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/sql", "value2": null, "database": "Database :", "length": null, "rowLimit": "Row Limit :", "nature": "Nature :", "retry": "Number of retry (if empty)", "period": "Retry period (ms)"},
