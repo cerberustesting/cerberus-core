@@ -31,3 +31,63 @@ Mais il est egalement possible de definir un texte qui servira de recherche dyam
 image:homepagecustomtagtext.png[HomepageCustomTag, 300, 300]
 
 NB : Le texte de recherche ne sera utilisé que si la liste des tags n'est pas définie.
+
+=== Premiers pas
+
+==== Lexique
+
+Ci-dessous vous trouverez la définition des termes couramment utilisés dans Cerberus
+
+* *Application* : Composant technique
+* *Batterie* : Groupement de cas de test voués à être exécutés ensemble. Cette fonctionnalité devrait être remplacée par les labels prochainement.
+* *Campagne* : Batterie ou ensemble de batteries auxquelles on vient ajouter des paramètres d'exécution (pays - environnement - navigateur)
+* *Cas de test* : Scénario de test composé d’étapes, d’actions et de contrôles. (User story)
+* *Label* : Etiquette de description des cas de test, il offre la possibilité de grouper et filtrer facilement.
+* *Système* : Application métier ou CI
+* *Test* : Ensemble de cas de tests regroupés découpés par fonction d'application. Les exécutions de cas de tests peuvent être triées par Test.
+
+==== Tutoriels
+
+*Mes premiers pas en tant qu’administrateur*
+
+NOTE: Pour les utilisateurs sans droits d'administration veuillez vous reporter à la section suivante : "Mes premiers pas"
+
+Ci-dessous vous trouverez les étapes de configuration pour une application à tester.
+
+* Créez un système. Voir création des <<Invariants>>
+
+NOTE: _Vérifiez que vous êtes sur ce système (menu déroulant en haut à droite)_ image:homepagesystem.png[MenuSystem,200,200,float="right",align="center"]
+
+* Créez un environnement.  Exemple : PROD FR (cf <<Environnement>>) 
+* Créez une application. Exemple : Google (cf <<Application>>)
+* Editez de nouveau cette application, vous avez maintenant accès à plus de paramètres. Dans l’onglet environnement, créer l’environnement PROD FR (pour cette application) et indiquer l’url : http://www.google.fr
+
+Cette étape termine la partie paramètres « techniques » de ce tutoriel. Veuillez-vous référer à la section suivante pour l'implémentation du cas de test
+
+*Mes premiers pas* 
+
+NOTE: Avant de vous lancer dans les étapes suivantes veillez à ce que votre administrateur de Cerberus ait bien créé le système et l'application.
+
+Ci-dessous vous trouverez les étapes de création d'un cas de test et son éxecution.
+
+* Créez un test. Exemple : « Moteur de recherche » (cf <<Create test>>)
+* Accédez à la liste de cas de test et créez un cas de test (cf <<Create TestCase>>). Champs obligatoires : Test /  Application / TestCase ID (normalement pré-rempli par une référence)
+
+NOTE: _Onglet critère d’activation : veillez à activer votre cas de test en PROD si vous souhaitez le lancer sur cet environnement. (par defaut non actif en PROD) Pour l’exemple de google nous allons lancer sur l’environnement de PROD_
+
+* Votre cas de test maintenant créé, retrouvez le dans la liste à l’aide des filtres. 
+* Editez-le (cf <<Implement TestCase>>)
+* Créez maintenant une première étape « Ouvrir google »
+* Ajoutez une première action : *[red]#OpenURL#* en remplissant le champ «  www.google.com » ou *[red]#OpenURLWithBase#* en remplissant le champ avec « / » (si l’URL a déjà été définie dans les paramètres de l’application)
+* Vous pouvez ajouter un contrôle : *[red]#VerifyTitle#* Title = Google
+* Sauvegarder le script et cliquer sur le bouton Run.
+* Vous êtes à présent dans la page d'execution. Selectionnez le pays / environnement
+* Indiquer les informations de votre robot. Paramètres robot obligatoires :  IP / port / navigateur. 
+
+NOTE: _Vous devez au préalable avoir lancé votre selenium (cf <<Selenium>>)_
+
+TIP: Astuce pour voir l’execution en direct modifier le paramètre Synchroneous à N. Vous assisterez en direct à l’execution pas à pas
+
+* Cliquez sur le bouton d'éxecution. image:runbuttonexecution.png[BoutonRun,200,200,float="right",align="center"]
+
+*Bravo, vous venez d’éxecuter votre premier cas de test sur Cerberus !*
