@@ -28,3 +28,64 @@ But you can also define a search text that will be used to dynamicaly retreive t
 image:homepagecustomtagtext.png[HomepageCustomTag, 300, 300]
 
 NB : If the list of tag is defined, the search Text will be ignored.
+
+
+=== First steps
+
+==== Glossary
+
+You will find below definitions of Cerberus common terms.
+
+* *Application* : Technical component
+* *Battery* : Group of TestCase to be executed together. This feature should be replaced by labels soon.
+* *Campaign* : One or several batteries with execution parameters (country - environment - browser). Can also be created with labels instead of batteries.
+* *TestCase* : Test scénario made of steps, actions and controls. (User story)
+* *Label* : Mark to describe TestCases, so you can group and filter easily.
+* *System* : Business Application ou CI
+* *Test* : Group of TestCases, Test is also considered as an application function. Executions can be sorted by Test.
+
+==== Tutorials
+
+*First steps as an administrator*
+
+NOTE: For non-admin users, please go to the next section : "First steps"
+
+You will find below setting steps for an application to test.
+
+* Create a system. More information here <<Invariants>>
+
+NOTE: _Check you are on the system you have just created (dropdown menu at top right)_ image:homepagesystem.png[MenuSystem,200,200,float="right",align="center"]
+
+* Create an environment.  Example : PROD FR (see <<Environment>>) 
+* Create an application. Example : Google (see <<Application>>)
+* Edit once again your application, you can now set new parameters. In tab environment, create PROD FR environment and fill http://www.google.fr in host section.
+
+Technical settings are now finished. Please refer to the following section to implement a TestCase.
+
+*First steps* 
+
+NOTE: Please verify with your administrator if system and application are already created.
+
+You will find below step to create and execute a TestCase.
+
+* Create a Test. Example : « Search Engine » (see <<Create test>>)
+* Access to TestCase list  and create a TestCase (cf <<Create TestCase>>). Mandatory fields : Test /  Application / TestCase ID (Should already be filled with a reference)
+
+NOTE: _Activation criteria tab : Activate for PROD your TestCase. (default setting not active for PROD) For the example, We will run our TestCase on PROD environment_
+
+* Your TestCase is now created, find it in the list using filters. 
+* Edit it (cf <<Implement TestCase>>)
+* Create your first step « Open Google »
+* Add your first action : *[red]#OpenURL#* value =   www.google.com  or *[red]#OpenURLWithBase#* value =  /  (if URL is already defined in application settings)
+* You can add a control : *[red]#VerifyTitle#* Title = Google
+* Save the script and click on Run button.
+* You are now on execution page. Select country / environment
+* Fill robot information. Mandatory fields :  IP / port / browser. 
+
+NOTE: _You must first run your selenium server (see <<Selenium>>)_
+
+TIP: To see execution step by step parameter Synchroneous to N.
+
+* Click on the execution button. image:runbuttonexecution.png[BoutonRun,200,200,float="right",align="center"]
+
+*Congratulations, you've just executed your first Cerberus TestCase !*
