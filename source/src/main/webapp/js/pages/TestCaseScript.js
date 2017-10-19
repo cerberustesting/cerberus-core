@@ -19,7 +19,6 @@
  */
 
 var canUpdate = false;
-var properties = null;
 
 $.when($.getScript("js/global/global.js")).then(function () {
 	$(document).ready(function () {
@@ -733,6 +732,7 @@ function saveScript(property) {
 
 function deleteFnct(property){
 	var linkToProperty = null;
+	
 	// go though every link and look for the right one
 	$("#propListWrapper li a").each(function () {
 		if ($(this).text() === property)
@@ -847,7 +847,7 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
 			content.removeClass("list-group-item-danger");
 		}
 
-		$("div.list-group-item").each(function(){
+		$(table).find("div.list-group-item").each(function(){
 			if($(this).find("#propName").val() === property.property){
 				if($(this).hasClass("list-group-item-danger")){
 					allDelete = true;
@@ -869,11 +869,12 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
 		var propertyName = property.property;
 
 		// go though every link and look for the right one
-
-		if (allDelete === true) {       
-			linkToProperty.css("background-color", "#c94350");
-		} else {
-			linkToProperty.css("background-color", "#fff");
+		if(linkToProperty != null){
+			if (allDelete === true )  {       
+				linkToProperty.css("background-color", "#c94350");
+			} else {
+				linkToProperty.css("background-color", "#fff");
+			}
 		}
 
 	});
@@ -2211,7 +2212,6 @@ Action.prototype.generateContent = function () {
 				
 				select: function(event,ui){
 					var selectedObj = ui.item;
-					console.log(event)
 					$(event.target).val(selectedObj.value.replace("%", ''));
 					$(event.target).autocomplete("close")
 					$(event.target).trigger('input');
@@ -2667,7 +2667,7 @@ function addControlAndFocus(oldAction, control) {
  * 
  * @param tagToUse
  * @param label
- *            string to search
+ * string to search
  * 
  * @return a boolean : true if exist, false if not exist
  */
@@ -2757,6 +2757,8 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 			$("div.step-action .content div.fieldRow div:nth-child(n+2) input").each(function (i, e) {
 
 				$(e).unbind("input").on("input", function (ev) {
+					
+					console.log("test");
 
 					var doc = new Doc()
 
@@ -2820,8 +2822,6 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 							response($.ui.autocomplete.filter(MyArray, request.term));
 						})
 						
-						
-						
 						var viewEntry = $('<span class="input-group-btn ' + $(e).val() + '"><button id="editEntry" data-toggle="modal" data-target="#modalProperty" "\n\
 								class="buttonObject btn btn-default input-sm " \n\
 								title="' + doc.getDocLabel("page_applicationObject", "button_edit") + '" type="button">\n\
@@ -2852,7 +2852,6 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 						}
 
 					}else{
-
 						autocompleteVariable($(e), TagsToUse);
 						$(e).autocomplete({}).data('ui-autocomplete')._renderItem = function (ul, item) {
 							$(ul).css("min-height", "0px");
@@ -2877,8 +2876,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 							.append("<a class='ui-corner-all' tabindex='-1' style='height:100%' " + hover + " ><span style='float:left;'>" + item.label + "</span>" + icon + "<span style='clear: both; display: block;'></span></a>")
 							.appendTo(ul);
 						}
-					}
-
+					
 					var name = undefined;
 					var nameNotExist = undefined;
 					var objectNotExist = false;
@@ -2935,17 +2933,15 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 									$(e).parent().append(editEntry);
 									$(e).parent().data("LastName", name);
 
-								} else {
-									$(e).parent().find(".input-group-btn").remove();
-								}
+								} 
 							} else if (betweenPercent[i].startsWith("%property.") && findname != null && findname.length > 0) {
 
-							} else {
-								$(e).parent().find(".input-group-btn").remove();
 							}
 
 							i--;
 						}
+					}else{
+						$(e).parent().find(".input-group-btn").remove();
 					} 
 					if (objectNotExist) {
 						if (typeNotExist == "applicationobject") {
@@ -2966,9 +2962,12 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 						}
 					} else {
 						$(e).attr('data-original-title', "").attr('title', "").tooltip('destroy');
+					  }
 					}
-				});
-			}).trigger("input");
+				}).trigger("input");;
+			})
+			
+		
 	};
 })();
 
@@ -3371,19 +3370,20 @@ function setPlaceholderProperty(propertyElement, property) {
 									$("#"+editor.container.id).parent().find("select").unbind("change").change(function(){
 										$("#"+editor.container.id).parent().find("button").attr('onclick', 'openModalDataLib(' + $("#"+editor.container.id).parent().find("select").val() + ",'EDIT',"+"'"+escaped+"')");
 									})
+									
 
 								}else{
 									$("#"+editor.container.id).parent().find('.input-group').remove();
 									$("#"+editor.container.id).parent().parent().find('.col-btn').remove();
 									if(service.length == 1){
-										var editEntry = $('<div class="col-btn col-sm-1"><button class="btn btn-secondary" type="button"><span class="glyphicon glyphicon-pencil"></span></button></div>');
-										$("#"+editor.container.id).parent().removeClass("col-sm-10").addClass("col-sm-9")
+										var editEntry = $('<div class="col-btn col-sm-2" style="text-align:center"><label style="width:100%">Edit the DataLib</label><button class="btn btn-secondary" type="button"><span class="glyphicon glyphicon-pencil"></span></button></div>');
+										$("#"+editor.container.id).parent().removeClass("col-sm-10").addClass("col-sm-8")
 										$("#"+editor.container.id).parent().parent().append(editEntry);
 										$("#"+editor.container.id).parent().parent().find("button").attr('onclick', 'openModalDataLib(\''  + service[0].testDataLibID  + "\','EDIT',"+"'"+escaped+"')");
 									}else{
-										var addEntry = $('<div class="col-btn col-sm-1"><button class="btn btn-secondary" type="button"><span class="glyphicon glyphicon-plus"></span></button></div>');
+										var addEntry = $('<div class="col-btn col-sm-2" style="text-align:center"><label style="width:100%">Add the DataLib</label><button class="btn btn-secondary" type="button"><span class="glyphicon glyphicon-plus"></span></button></div>');
 										addEntry.find("button").attr("disabled", !canUpdate);
-										$("#"+editor.container.id).parent().removeClass("col-sm-10").addClass("col-sm-9")
+										$("#"+editor.container.id).parent().removeClass("col-sm-10").addClass("col-sm-8")
 										$("#"+editor.container.id).parent().parent().append(addEntry);
 										$("#"+editor.container.id).parent().parent().find("button").attr('onclick', 'openModalDataLib(\''  + escaped  + "\','ADD',"+"'"+escaped+"')");
 									}
