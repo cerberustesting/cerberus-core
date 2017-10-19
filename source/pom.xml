@@ -606,11 +606,11 @@
             <id>qa-demo-deploy</id>
             <properties>
                 <env>qa-demo</env>
-                <cerberus.demo.host>5.196.23.185</cerberus.demo.host>
+                <cerberus.demo.host>137.74.112.94</cerberus.demo.host>
                 <cerberus.demo.upload.path>/opt/delivery</cerberus.demo.upload.path>
                 <cerberus.demo.glassfish.asadmin-path>/opt/glassfish4/glassfish/bin/asadmin</cerberus.demo.glassfish.asadmin-path>
                 <cerberus.demo.glassfish.application>CerberusQA</cerberus.demo.glassfish.application>
-                <cerberus.demo.glassfish.cluster>cerberusQA</cerberus.demo.glassfish.cluster>
+                <cerberus.demo.glassfish.cluster>cerberusinstanceqa</cerberus.demo.glassfish.cluster>
                 <cerberus.demo.glassfish.context-root>/CerberusQA</cerberus.demo.glassfish.context-root>
             </properties>
             <build>
