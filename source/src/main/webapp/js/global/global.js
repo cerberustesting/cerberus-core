@@ -1700,7 +1700,7 @@ function displayFooter(doc) {
     $("#footer").html(footerString + " - " + footerBugString);
 
     // Background color is light yellow if the environment is not production.
-    if ((cerberusInformation.environment !== "prd") && (cerberusInformation.environment !== "PROD")) {
+    if ((cerberusInformation.environment !== "prd") && (cerberusInformation.environment !== "prod") && (cerberusInformation.environment !== "PROD")) {
         document.body.style.background = "#FFFFCC";
     }
 

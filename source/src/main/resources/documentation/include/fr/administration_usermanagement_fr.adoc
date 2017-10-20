@@ -1,7 +1,24 @@
-In this section, you will find information about Cerberus user management.
+Dans cette partie vous trouverez les informations concernant la gestion des utilisateurs.
 
-=== User creation
+=== Création des utilisateurs
 
-=== User rights
+. Allez dans *[red]#Administration -> Gestion des Utilisateurs#*.
+. Cliquez sur *[red]#Créer un Utilisateur#*.
+.. Remplissez l'*[red]#Identifiant#*.
+.. Remplissez le *[red]#Nom#*.
+.. Selectionnez l'*[red]#Equipe#* (optionnel).
+.. Selectionnez le *[red]#Système par defaut#*.
+.. Selectionnez 'Y' pour la requête pour un nouvel utlisateur. L'utilisateur pourra modifier son mot de passe à la première connexion.
+.. Remplissez l'*[red]#Email#*.
+.. Affecter le niveau de droits souhaité dans l'onglet Groupes.
+.. Cliquer sur *[red]#Sauvegarder#*.
 
-=== Access by system
+
+
+=== Droits des utilisateurs
+
+Selectionnez les groupes souhaités pour affecter les droits correspondant.
+
+image:usermanagementgroup.png[usermanagementgroup]
+
+=== Acces par système
