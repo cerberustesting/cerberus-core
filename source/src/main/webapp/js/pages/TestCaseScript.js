@@ -1078,6 +1078,7 @@ function drawInheritedProperty(propList) {
 
 		var htmlElement = $("<li></li>").addClass("list-group-item list-group-item-calm row").css("margin-left", "0px");
 		$(htmlElement).append($("<a></a>").attr("href", "#inheritPropertyLine" + property.property).text(property.property));
+		
 		$("#inheritPropList").append(htmlElement);
 	}
 
@@ -1697,7 +1698,6 @@ function compareStrings(a, b) {
 
 function Step(json, stepList, canUpdate, hasPermissionsStepLibrary) {
 	this.stepActionContainer = $("<div></div>").addClass("step-container").css("display", "none");
-
 	this.test = json.test;
 	this.testcase = json.testCase;
 	this.step = json.step;
@@ -1768,6 +1768,8 @@ Step.prototype.draw = function () {
 
 	$("#stepList").append(htmlElement);
 	$("#actionContainer").append(this.stepActionContainer);
+	
+	
 
 	this.refreshSort();
 };
@@ -2751,21 +2753,11 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 		if (thistestcase !== undefined) {
 			testcase = thistestcase;
 		}
+		
 
-		var choiceField = '<span class="input-group-addon input-sm" style="display:inline-table;border:0px;padding:0px;float:left;"><select style="width:100px;" class="form-control input-sm"> \n\
-			<option value=""> </option> \n\
-			<option value="id">id</option> \n\
-			<option value="name">name</option> \n\
-			<option value="class">class</option> \n\
-			<option value="css">css</option> \n\
-			<option value="xpath">xpath</option> \n\
-			<option value="link">link</option> \n\
-			<option value="data-cerberus">data-cerberus</option> \n\
-			<option value="coord">coord</option> \n\
-			<option value="picture">picture</option> \n\
-			</select></span>'
-
-			$("div.step-action .content div.fieldRow div:nth-child(n+2) input").each(function (i, e) {
+			$("div.step-action .content div.fieldRow:nth-child(2) input").each(function (i, e) {
+				
+				console.log("test")
 				
 				function trigger(){
 					$(e).trigger("input");
@@ -2887,6 +2879,8 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 							.append("<a class='ui-corner-all' tabindex='-1' style='height:100%' " + hover + " ><span style='float:left;'>" + item.label + "</span>" + icon + "<span style='clear: both; display: block;'></span></a>")
 							.appendTo(ul);
 						}
+						
+					}
 					
 					var name = undefined;
 					var nameNotExist = undefined;
@@ -2974,7 +2968,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 					} else {
 						$(e).attr('data-original-title', "").attr('title', "").tooltip('destroy');
 					  }
-					}
+					
 				}).trigger("input");;
 			})
 			
@@ -3389,9 +3383,12 @@ function setPlaceholderProperty(propertyElement, property) {
 									$("#"+editor.container.id).parent().parent().find('.col-btn').remove();
 									if(service.length == 1){
 										var editEntry = $('<div class="col-btn col-sm-2" style="text-align:center"><label style="width:100%">Edit the DataLib</label><button class="btn btn-secondary" type="button"><span class="glyphicon glyphicon-pencil"></span></button></div>');
+										var addEntry = $('<div class="col-btn col-sm-2" style="text-align:center"><label style="width:100%">Add the DataLib</label><button class="btn btn-secondary" type="button"><span class="glyphicon glyphicon-plus"></span></button></div>');
 										$("#"+editor.container.id).parent().removeClass("col-sm-10").addClass("col-sm-8")
 										$("#"+editor.container.id).parent().parent().append(editEntry);
-										$("#"+editor.container.id).parent().parent().find("button").attr('onclick', 'openModalDataLib(\''  + service[0].testDataLibID  + "\','EDIT',"+"'"+escaped+"')");
+										$("#"+editor.container.id).parent().parent().append(addEntry);
+										$("#"+editor.container.id).parent().parent().find("button:eq(0)").attr('onclick', 'openModalDataLib(\''  + service[0].testDataLibID  + "\','EDIT',"+"'"+escaped+"')");
+										$("#"+editor.container.id).parent().parent().find("button:eq(1)").attr('onclick', 'openModalDataLib(\''  + escaped  + "\','ADD',"+"'"+escaped+"')");
 									}else{
 										var addEntry = $('<div class="col-btn col-sm-2" style="text-align:center"><label style="width:100%">Add the DataLib</label><button class="btn btn-secondary" type="button"><span class="glyphicon glyphicon-plus"></span></button></div>');
 										addEntry.find("button").attr("disabled", !canUpdate);
@@ -3399,8 +3396,6 @@ function setPlaceholderProperty(propertyElement, property) {
 										$("#"+editor.container.id).parent().parent().append(addEntry);
 										$("#"+editor.container.id).parent().parent().find("button").attr('onclick', 'openModalDataLib(\''  + escaped  + "\','ADD',"+"'"+escaped+"')");
 									}
-
-
 								}       		                
 							} 
 						},

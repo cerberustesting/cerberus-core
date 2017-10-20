@@ -232,7 +232,6 @@ function displayAppServiceList(selectName, defaultValue) {
     });
 }
 
-
 function displayDataLibList(selectName, defaultValue, name) {
 	
 	return new Promise((resolve,reject)=>{
@@ -262,7 +261,9 @@ function displayDataLibList(selectName, defaultValue, name) {
 		        	}
 		        	
 		        	if(!isEmpty(system) || !isEmpty(environment) || !isEmpty(country) || !isEmpty(value)){
-		        		context = " [" + system + environment + country + value + "]"
+		        		context = system + environment + country + value
+		        		context = context.substr(0, context.length - 3)
+		        		context =  " [" + context + "]"
 		        	}
 		        	
 		        	$("#"+selectName).parent().find("select").append($('<option></option>').text(data.contentTable[option].name +context).val(data.contentTable[option].testDataLibID));
