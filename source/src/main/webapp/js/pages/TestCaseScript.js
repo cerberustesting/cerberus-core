@@ -19,7 +19,7 @@
  */
 
 var canUpdate = false;
-
+var allDelete = false;
 $.when($.getScript("js/global/global.js")).then(function () {
 	$(document).ready(function () {
 
@@ -454,15 +454,15 @@ $.when($.getScript("js/global/global.js")).then(function () {
 			});
 
 
-//			wrap.resize(function (e) {
-//			if ($("#testCaseTitle").width() != $("#testCaseTitle").parent().width() - 30)
-//			{
-//			$("#testCaseTitle").width($("#testCaseTitle").parent().width() - 30);
-//			$("#list-wrapper").width($("#nav-execution").width());
-//			}
-//			$('.action [data-toggle="tooltip"], .control
-//			[data-toggle="tooltip"]').tooltip('show');
-//			})
+// wrap.resize(function (e) {
+// if ($("#testCaseTitle").width() != $("#testCaseTitle").parent().width() - 30)
+// {
+// $("#testCaseTitle").width($("#testCaseTitle").parent().width() - 30);
+// $("#list-wrapper").width($("#nav-execution").width());
+// }
+// $('.action [data-toggle="tooltip"], .control
+// [data-toggle="tooltip"]').tooltip('show');
+// })
 
 			if (tabactive !== null) {
 				$("a[name='" + tabactive + "']").click();
@@ -753,20 +753,29 @@ function prevent(e){
 
 function drawPropertyList(property, index) {
 	var htmlElement = $("<li></li>").addClass("list-group-item list-group-item-calm row").css("margin-left", "0px");
-	$(htmlElement).append($("<a onclick= prevent(event)></a>").attr("href", "#propertyLine" + property).text(property));
-	var deleteBtn = $("<button style='padding:0px;float:right;display:none' class='btn btn-danger add-btn'></button>").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
+	$(htmlElement).append($("<a ></a>").attr("href", "#propertyLine" + property).text(property));
+	var deleteBtn = $("<button  style='padding:0px;float:right;display:none' class='btn btn-danger add-btn'></button>").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
 
 	deleteBtn.attr("disabled", !canUpdate);
 
 	$(htmlElement).find("a").append(deleteBtn);
 	deleteBtn.click(function(ev){
 
-		$("div.list-group-item").each(function(){
-			if($(this).find("#propName").val() === property){
-				$(this).find("button.add-btn.btn-danger").trigger("click");
-			}
-		})
-
+		if(allDelete != true){
+			$("div.list-group-item").each(function(){
+				if($(this).find("#propName").val() === property){
+					if(!$(this).hasClass("list-group-item-danger")){
+						$(this).find("button.add-btn.btn-danger").trigger("click");
+					}
+				}
+			})
+		}else{
+			$("div.list-group-item").each(function(){
+				if($(this).find("#propName").val() === property){
+					$(this).find("button.add-btn.btn-danger").trigger("click");
+				}
+			})
+		}
 	})
 
 	$("#propList").append(htmlElement);
@@ -837,7 +846,6 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
 	var btnRow = $("<div class='col-sm-2'></div>").css("margin-top", "5px").css("margin-bottom", "5px").append(selectAllBtn).append(selectNoneBtn);
 
 	deleteBtn.click(function () {
-		var allDelete = false;
 		var linkToProperty = null;
 		property.toDelete = (property.toDelete) ? false : true;
 
@@ -862,6 +870,7 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
 			if ($(this).text() === property.property)
 				linkToProperty = $(this).parent();
 		});
+		
 
 		// set the property in red (or remove the red color)
 
@@ -876,6 +885,8 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
 				linkToProperty.css("background-color", "#fff");
 			}
 		}
+		
+		
 
 	});
 
@@ -1209,9 +1220,9 @@ function getTestCaseCountry(countryList, countryToCheck, isDisabled) {
 				.append(country));
 
 		cpt++;
-//		if (cpt % 10 === 0) {
-//		div = $("<div></div>").addClass("checkbox");
-//		}
+// if (cpt % 10 === 0) {
+// div = $("<div></div>").addClass("checkbox");
+// }
 		html.push(div);
 	});
 
@@ -2199,7 +2210,7 @@ Action.prototype.generateContent = function () {
 
 	actionList = getSelectInvariant("ACTION", false, true).css("width", "100%").attr("id", "actionSelect");
 	actionList.val(this.action);
-	actionList.on("change", function () {
+	actionList.unbind("change").on("change", function () {
 		obj.action = actionList.val();
 		if(obj.action === "callService" || obj.action === "calculateProperty"){
 			$(actionList).parent().parent().find("input").autocomplete({
@@ -2667,7 +2678,7 @@ function addControlAndFocus(oldAction, control) {
  * 
  * @param tagToUse
  * @param label
- * string to search
+ *            string to search
  * 
  * @return a boolean : true if exist, false if not exist
  */
@@ -2754,7 +2765,13 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 			<option value="picture">picture</option> \n\
 			</select></span>'
 
-			$("div.step-action .content div.fieldRow div:nth-child(n+2) input").each(function (i, e) {
+			$("div.step-action .content div.fieldRow div:nth-child(n+2) input:visible").each(function (i, e) {
+				
+				function trigger(){
+					$(e).trigger("input");
+				}
+				
+				$(e).parent().parent().find("select").unbind("change",trigger).on("change",trigger)
 
 				$(e).unbind("input").on("input", function (ev) {
 
@@ -2805,11 +2822,6 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 
 					} else if($(e).parent().parent().find("select").val() === "calculateProperty"){
 						
-						
-						$(e).parent().parent().find("select").on("change",function(){
-							$(e).trigger("input");
-						})
-						
 						$( e ).autocomplete('option', 'source', function(request,response){
 							var MyArray = $.map(loadGuiProperties(), function (item) {
 								return {
@@ -2858,7 +2870,8 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 							if (tag.addAfter != "%") {
 								icon = "<span class='ui-corner-all glyphicon glyphicon-chevron-right' tabindex='-1' style='margin-top:3px; float:right;'></span>";
 							}
-							// find corresponding data to use more information than
+							// find corresponding data to use more information
+							// than
 							// item (application / filename etc)
 							var object = tag.array.find(function (data) {
 								if (item != undefined)
@@ -3886,7 +3899,7 @@ function createAceAnnotationObject(lineNumber, annotationText, annotationType, k
 	}
 }
 
-//set the list of ace annotion object as annotation
+// set the list of ace annotion object as annotation
 function setAceAnnotation(editor, annotationObjectList) {
 	// Set annotation replace all the annotation so if you use it you need to
 	// resend every annotation for each change
@@ -3926,7 +3939,7 @@ function createGuterCellListenner(editor) {
 	}
 }
 
-//Add keywordValue as a new property
+// Add keywordValue as a new property
 function addPropertyWithAce(keywordValue) {
 
 	var test = GetURLParameter("test");
@@ -3976,7 +3989,7 @@ function addPropertyWithAce(keywordValue) {
 	});
 	getKeywordList("property").push(keywordValue);
 }
-//Add keywordValue as a new object
+// Add keywordValue as a new object
 function addObjectWithAce(keywordValue) {
 
 	var test = GetURLParameter("test");
@@ -4000,7 +4013,7 @@ function addObjectWithAce(keywordValue) {
 		}
 	});
 }
-//Get the CURRENT list of keyword for each type
+// Get the CURRENT list of keyword for each type
 function getKeywordList(type) {
 	if (getTags() != undefined && getTags().length > 0) {
 		var idType = -1;
