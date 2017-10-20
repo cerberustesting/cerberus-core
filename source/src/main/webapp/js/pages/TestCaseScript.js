@@ -2756,9 +2756,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 		
 
 			$("div.step-action .content div.fieldRow:nth-child(2) input").each(function (i, e) {
-				
-				console.log("test")
-				
+
 				function trigger(){
 					$(e).trigger("input");
 				}
@@ -2880,7 +2878,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 							.appendTo(ul);
 						}
 						
-					}
+
 					
 					var name = undefined;
 					var nameNotExist = undefined;
@@ -2942,6 +2940,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 							} else if (betweenPercent[i].startsWith("%property.") && findname != null && findname.length > 0) {
 
 							}
+						
 
 							i--;
 						}
@@ -2968,6 +2967,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 					} else {
 						$(e).attr('data-original-title', "").attr('title', "").tooltip('destroy');
 					  }
+					}
 					
 				}).trigger("input");;
 			})
