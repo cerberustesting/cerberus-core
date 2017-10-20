@@ -754,7 +754,7 @@ function prevent(e){
 function drawPropertyList(property, index) {
 	var htmlElement = $("<li></li>").addClass("list-group-item list-group-item-calm row").css("margin-left", "0px");
 	$(htmlElement).append($("<a ></a>").attr("href", "#propertyLine" + property).text(property));
-	var deleteBtn = $("<button  style='padding:0px;float:right;display:none' class='btn btn-danger add-btn'></button>").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
+	var deleteBtn = $("<button style='padding:0px;float:right;display:none' class='btn btn-danger add-btn'></button>").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
 
 	deleteBtn.attr("disabled", !canUpdate);
 
@@ -2765,7 +2765,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 			<option value="picture">picture</option> \n\
 			</select></span>'
 
-			$("div.step-action .content div.fieldRow div:nth-child(n+2) input:visible").each(function (i, e) {
+			$("div.step-action .content div.fieldRow div:nth-child(n+2) input").each(function (i, e) {
 				
 				function trigger(){
 					$(e).trigger("input");
