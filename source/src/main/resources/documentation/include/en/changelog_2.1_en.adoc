@@ -1,0 +1,16 @@
+*Bug fixes*
+[square]
+
+*Improvements / New features*
+[square]
+* [GUI] Added parameter cerberus_loginpage_welcomemessagehtml in order to be able to define a message in login page. This parameter replace parameter cerberus_support_email that should now contain only the support email.
+* [GUI] Property Quick delete picto in testcase script page.
+* [GUI] Inline Add/Modify of TestDataLib from testcase script page.
+* [GUI] Display property detail in modal from testcase script page without changing tab.
+
+*Warning to be considered before applying the version (deprecated features)*
+[square]
+
+
+
+

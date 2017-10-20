@@ -9504,6 +9504,18 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('usergroup','GroupName','','fr','Nom du groupe',NULL,'_management_des_utilisateurs')");
         SQLInstruction.add(SQLS.toString());
 
+        // New Parameter for login message.
+        //-- ------------------------ 1238-1239
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) ");
+        SQLS.append(" SELECT '', 'cerberus_loginpage_welcomemessagehtml', concat('If you don\\'t have login, please contact ' , p.`value`) , 'Message that will appear in login page. %SUPPORTEMAIL% will be replaced by parameter cerberus_support_email.'");
+        SQLS.append(" FROM parameter p");
+        SQLS.append(" WHERE param = 'cerberus_support_email' and system=''; ");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `parameter` SET `value`='', `description`='Support Email for Cerberus.' WHERE `system`='' and`param`='cerberus_support_email';");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 

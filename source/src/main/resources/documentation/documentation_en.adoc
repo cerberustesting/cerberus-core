@@ -332,3 +332,9 @@ include::include/en/{file-to-include}[]
 
 link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
 
+== 2.1
+:file-to-include: changelog_2.1_en.adoc
+include::include/en/{file-to-include}[]
+
+link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
