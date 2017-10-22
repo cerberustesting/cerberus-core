@@ -28,6 +28,9 @@ function initPage() {
 
     displayPageLabel();
 
+    initModalRobot();
+    $('#editRobotModal').data("initLabel", true);
+
     $("[name=screensize]").append($('<option></option>').text(doc.getDocLabel("page_runtest", "default_full_screen")).val(""));
 
     //clear the modals fields when closed
