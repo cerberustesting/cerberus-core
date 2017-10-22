@@ -38,32 +38,35 @@ public interface ITestCaseStepDAO {
     List<String> getLoginStepFromTestCase(String countryCode, String application);
 
     List<TestCaseStep> findTestCaseStepByTestCase(String test, String testcase);
-    
-    void insertTestCaseStep(TestCaseStep testCaseStep) throws CerberusException;
-    
+
     TestCaseStep findTestCaseStep(String test, String testcase, Integer Step);
 
     public void deleteTestCaseStep(TestCaseStep tcs) throws CerberusException;
 
     public void updateTestCaseStep(TestCaseStep tcs) throws CerberusException;
-    
+
     List<TestCaseStep> getTestCaseStepUsingStepInParamter(String test, String testCase, int step) throws CerberusException;
-    
+
     List<TestCaseStep> getTestCaseStepUsingTestCaseInParamter(String test, String testCase) throws CerberusException;
 
     List<TestCaseStep> getTestCaseStepsUsingTestInParameter(final String test) throws CerberusException;
-    
+
     List<TestCaseStep> getStepUsedAsLibraryInOtherTestCaseByApplication(String application) throws CerberusException;
 
     List<TestCaseStep> getStepLibraryBySystem(String system) throws CerberusException;
-    
+
     List<TestCaseStep> getStepLibraryBySystemTest(String system, String test) throws CerberusException;
-    
+
     List<TestCaseStep> getStepLibraryBySystemTestTestCase(String system, String test, String testCase) throws CerberusException;
 
     AnswerList readByTestTestCase(String test, String testcase);
 
     AnswerList readByLibraryUsed(String test, String testcase, int step);
 
+    /**
+     *
+     * @param testCaseStep
+     * @return
+     */
     Answer create(TestCaseStep testCaseStep);
 }

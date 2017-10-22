@@ -1883,7 +1883,7 @@ Step.prototype.show = function () {
 			showModalConfirmation(function () {
 				object.useStep = "N";
 				object.useStepStep = -1;
-				object.useStepTest = ";";
+				object.useStepTest = "";
 				object.useStepTestCase = "";
 				saveScript();
 			}, undefined, doc.getDocLabel("page_testcasescript", "unlink_useStep"), doc.getDocLabel("page_testcasescript", "unlink_useStep_warning"), "", "", "", "");

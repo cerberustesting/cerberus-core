@@ -43,21 +43,7 @@ public interface ITestCaseStepService {
 
     List<String> getLoginStepFromTestCase(String countryCode, String application);
 
-    /**
-     * InsertTestCaseStep
-     *
-     * @param testCaseStep
-     * @throws CerberusException
-     */
-    void insertTestCaseStep(TestCaseStep testCaseStep) throws CerberusException;
 
-    /**
-     * InsertListTestCaseStep
-     *
-     * @param testCaseStepList
-     * @return true if no exception reached
-     */
-    boolean insertListTestCaseStep(List<TestCaseStep> testCaseStepList);
 
     /**
      * FindTestCaseStep
