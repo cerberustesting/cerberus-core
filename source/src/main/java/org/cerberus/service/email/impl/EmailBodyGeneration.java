@@ -267,12 +267,6 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
             Logger.getLogger(EmailBodyGeneration.class.getName()).log(Level.DEBUG, Infos.getInstance().getProjectNameAndVersion() + " - SQL : " + contentSQL);
 
             ResultSet rsBC = stmtBuildContent.executeQuery(contentSQL);
-            String Cerberus_URL = parameterService.findParameterByKey("cerberus_reporting_url", "").getValue();
-            Cerberus_URL = Cerberus_URL.replace("%ENV%", "");
-            Cerberus_URL = Cerberus_URL.replace("%APPLI%", "");
-            Cerberus_URL = Cerberus_URL.replace("%SYSTEM%", system);
-            Cerberus_URL = Cerberus_URL.replace("%BUILD%", build);
-            Cerberus_URL = Cerberus_URL.replace("%REV%", revision);
 
             String CountryListSQL = "SELECT value from invariant where idname='COUNTRY';";
             ResultSet rsCountry = stmtCountryList.executeQuery(CountryListSQL);
@@ -282,15 +276,12 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
                 CountryList.append("&Country=");
             }
 
-            String Cerberus_URL_ALL = Cerberus_URL.replace("%COUNTRY%", CountryList.toString());
-            Cerberus_URL = Cerberus_URL.replace("%COUNTRY%", country);
-
             if (rsBC.first()) {
 
                 if (country.equalsIgnoreCase("ALL")) {
-                    TestRecapTable = "Here is the Test Execution Recap accross all countries for <a target=\"_blank\" href=\"" + Cerberus_URL_ALL + "\">" + build + "/" + revision + "</a> :";
+                    TestRecapTable = "Here is the Test Execution Recap accross all countries for " + build + "/" + revision + " :";
                 } else {
-                    TestRecapTable = "Here is the Test Execution Recap for your country for <a target=\"_blank\" href=\"" + Cerberus_URL + "\">" + build + "/" + revision + "</a> :";
+                    TestRecapTable = "Here is the Test Execution Recap for your country for " + build + "/" + revision + " :";
                 }
                 TestRecapTable = TestRecapTable + "<table>";
                 TestRecapTable = TestRecapTable + "<tr style=\"background-color:#cad3f1; font-style:bold\">"
@@ -343,9 +334,9 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
                 TestRecapTable += buf.toString() + "</table><br>";
 
             } else if (country.equalsIgnoreCase("ALL")) {
-                TestRecapTable = "Unfortunatly, no test have been executed for any country for <a target=\"_blank\" href=\"" + Cerberus_URL_ALL + "\">" + build + "/" + revision + "</a> :-(<br><br>";
+                TestRecapTable = "Unfortunatly, no test have been executed for any country for " + build + "/" + revision + " :-(<br><br>";
             } else {
-                TestRecapTable = "Unfortunatly, no test have been executed for your country for <a target=\"_blank\" href=\"" + Cerberus_URL + "\">" + build + "/" + revision + "</a> :-(<br><br>";
+                TestRecapTable = "Unfortunatly, no test have been executed for your country for " + build + "/" + revision + " :-(<br><br>";
             }
 
             rsBC.close();

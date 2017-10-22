@@ -68,17 +68,6 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
     private final String SQL_DUPLICATED_CODE = "23000";
     private final int MAX_ROW_SELECTED = 100000;
 
-    /**
-     * Short one line description.
-     * <p/>
-     * Longer description. If there were any, it would be here.
-     * <p>
-     * And even more explanations to follow in consecutive paragraphs separated
-     * by HTML paragraph breaks.
-     *
-     * @param variable Description text text text.
-     * @return Description text text text.
-     */
     @Override
     public List<TestCaseStep> findTestCaseStepByTestCase(String test, String testcase) {
         List<TestCaseStep> list = null;

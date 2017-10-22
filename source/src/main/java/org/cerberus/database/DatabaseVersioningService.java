@@ -9516,6 +9516,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("UPDATE `parameter` SET `value`='', `description`='Support Email for Cerberus.' WHERE `system`='' and`param`='cerberus_support_email';");
         SQLInstruction.add(SQLS.toString());
 
+        // Clean old Parameter no longuer used.
+        //-- ------------------------ 1240
+        SQLS = new StringBuilder();
+        SQLS.append("DELETE FROM parameter where param in ('cerberus_mediastorage_url','cerberus_picture_testcase_path','cerberus_reporting_url','cerberus_selenium_firefoxextension_firebug','cerberus_selenium_firefoxextension_netexport','cerberus_testcase_function_booleanListOfFunction','cerberus_testcase_function_urlForListOfFunction','cerberus_testexecutiondetailpage_nbmaxexe','cerberus_testexecutiondetailpage_nbmaxexe_max','index_alert_subject','index_alert_from','index_alert_body','index_alert_to','index_notification_body_between','index_notification_body_end','index_notification_body_top','index_notification_subject','index_smtp_from','index_smtp_host','index_smtp_port','jenkins_application_pipeline_url','jenkins_deploy_pipeline_url','selenium_chromedriver_download_url','selenium_download_url','selenium_iedriver_download_url','solr_url','sonar_application_dashboard_url','ticketing tool_bugtracking_url','ticketing tool_newbugtracking_url','ticketing tool_ticketservice_url');");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 
