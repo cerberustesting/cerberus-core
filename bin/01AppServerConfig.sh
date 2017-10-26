@@ -15,6 +15,7 @@ $GLASSFISHPATH/asadmin start-domain
 
 ### Configuring server.
 $GLASSFISHPATH/asadmin create-jvm-options --target server "-Dorg.cerberus.environment=prd"
+$GLASSFISHPATH/asadmin set server-config.thread-pools.thread-pool.http-thread-pool.max-thread-pool-size=100
 
 ### Ressources and Connection Pool.
 echo Deleting Resources and Connection Pool...

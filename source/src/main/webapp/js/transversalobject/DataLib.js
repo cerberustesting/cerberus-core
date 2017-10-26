@@ -508,15 +508,11 @@ function feedDataLibModalData(testDataLib, modalId, mode, hasPermissionsUpdate) 
             $('#editTestDataLibModal #groupedit').change();
         });
 
-        // Permission management.
-        /*
-         if (!(data["hasPermissions"])) { // If readonly, we only readonly all fields
-         $('#saveTestDataLib').attr('class', '');
-         $('#saveTestDataLib').attr('hidden', 'hidden');
+         if (!hasPermissionsUpdate) { // If readonly, we only readonly all fields
+	         $('#editDataLibButton').attr('class', '');
+	         $('#editDataLibButton').attr('hidden', 'hidden');
          }
-         */
-
-
+         
         //Highlight envelop on modal loading
         var editor = ace.edit($("#editTestDataLibModal #envelope")[0]);
         editor.setTheme("ace/theme/chrome");
@@ -532,9 +528,7 @@ function feedDataLibModalData(testDataLib, modalId, mode, hasPermissionsUpdate) 
         editor.setOptions({
             maxLines: Infinity
         });
-
     }
-
 
     formEdit.find("#testdatalibid").prop("readonly", "readonly");
     formEdit.find("#name").prop("readonly", "readonly");

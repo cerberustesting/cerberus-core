@@ -232,28 +232,41 @@ function displayAppServiceList(selectName, defaultValue) {
     });
 }
 
-
 function displayDataLibList(selectName, defaultValue, name) {
 	
 	return new Promise((resolve,reject)=>{
 			$("#"+selectName).parent().find("select").find('option').remove();
-		  $.when($.getJSON("ReadTestDataLib?name="+name+"&limit=15&like=no")).then(function (data) {
+		  $.when($.getJSON("ReadTestDataLib?name="+name+"&limit=15&like=N")).then(function (data) {
 		
 		        for (var option in data.contentTable) {
 		        	let system = "";
 		        	let environment = "";
 		        	let country = "";
+		        	let value = "";
+		        	let context = "";
 		        	if(!isEmpty(data.contentTable[option].system)){
-		        		system = " - " +data.contentTable[option].system
+		        		system = data.contentTable[option].system + " - "
 		        	}
 		        	if(!isEmpty(data.contentTable[option].environment)){
-		        		environment = " - " +data.contentTable[option].environment
+		        		environment = data.contentTable[option].environment + " - "
 		        	}
 		        	if(!isEmpty(data.contentTable[option].country)){
-		        		country = " - " +data.contentTable[option].country
+		        		country = data.contentTable[option].country + " - "
+		        	}
+
+		        	if(data.contentTable[option].type === "INTERNAL"){
+			  			if(!isEmpty(data.contentTable[option].subDataValue)){
+			  				value = data.contentTable[option].subDataValue + " - "
+			  			}
 		        	}
 		        	
-		        	$("#"+selectName).parent().find("select").append($('<option></option>').text(data.contentTable[option].name +system+environment+country).val(data.contentTable[option].testDataLibID));
+		        	if(!isEmpty(system) || !isEmpty(environment) || !isEmpty(country) || !isEmpty(value)){
+		        		context = system + environment + country + value
+		        		context = context.substr(0, context.length - 3)
+		        		context =  " [" + context + "]"
+		        	}
+		        	
+		        	$("#"+selectName).parent().find("select").append($('<option></option>').text(data.contentTable[option].name +context).val(data.contentTable[option].testDataLibID));
 		        }
 		        
 		        if(defaultValue != undefined){
@@ -1688,7 +1701,7 @@ function displayFooter(doc) {
     $("#footer").html(footerString + " - " + footerBugString);
 
     // Background color is light yellow if the environment is not production.
-    if ((cerberusInformation.environment !== "prd") && (cerberusInformation.environment !== "PROD")) {
+    if ((cerberusInformation.environment !== "prd") && (cerberusInformation.environment !== "prod") && (cerberusInformation.environment !== "PROD")) {
         document.body.style.background = "#FFFFCC";
     }
 

@@ -48,7 +48,6 @@ function openModalRobot(robot, mode) {
 
 function initModalRobot() {
 
-    console.info("init");
     var doc = new Doc();
     $("#editRobotModal [name='buttonClose']").html(doc.getDocLabel("page_global", "buttonClose"));
     $("#editRobotModal [name='buttonAdd']").html(doc.getDocLabel("page_global", "btn_add"));

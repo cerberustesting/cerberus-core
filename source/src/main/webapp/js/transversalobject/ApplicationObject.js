@@ -242,8 +242,6 @@ function feedApplicationObjectModalData(applicationObject, modalId, mode, hasPer
 	var doc = new Doc();
 	var isEditable = (((hasPermissionsUpdate) && (mode === "EDIT"))
 			|| (mode === "ADD"));
-	
-	
 
 	// Data Feed.
 	if (mode === "EDIT") {
@@ -290,6 +288,8 @@ function feedApplicationObjectModalData(applicationObject, modalId, mode, hasPer
 	} else {
 		formEdit.find("#value").prop("readonly", true);
 		formEdit.find("#inputFile").attr("disabled", true);
+		$('#editApplicationObjectButton').attr('class', '');
+        $('#editApplicationObjectButton').attr('hidden', 'hidden');
 	}
 }
 

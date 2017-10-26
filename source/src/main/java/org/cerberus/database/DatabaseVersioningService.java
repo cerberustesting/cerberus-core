@@ -5993,7 +5993,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ALTER TABLE `usersystem` ADD CONSTRAINT `FK_usersystem_01` FOREIGN KEY (`Login`) REFERENCES `user` (`Login`) ON DELETE CASCADE ON UPDATE CASCADE;");
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `usergroup` ADD CONSTRAINT `FK_usergroup_01` FOREIGN KEY (`Login`) REFERENCES `cerberus`.`user` (`Login`) ON DELETE CASCADE ON UPDATE CASCADE;");
+        SQLS.append("ALTER TABLE `usergroup` ADD CONSTRAINT `FK_usergroup_01` FOREIGN KEY (`Login`) REFERENCES `user` (`Login`) ON DELETE CASCADE ON UPDATE CASCADE;");
         SQLInstruction.add(SQLS.toString());
 
         // Add path to picture for appliation object in paramaters
@@ -9502,6 +9502,67 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('user','Team','','fr','Equipe','Correspond à l\\'équipe de l\\'utilisateur','_management_des_utilisateurs')");
         SQLS.append(",('usergroup','GroupName','','en','Group Name','Authorities are managed by group. In order to be granted to a set of feature, you must belong to the corresponding group.<br>Every user can of course belong to as many group as necessary in order to get access to as many feature as required.<br>In order to get the full access to the system you must belong to every group.<br>Some groups are linked together on the test perimeter and integration perimeter.<br><br><b>Test perimeter :</b><br><br><code class=\\'doc-fixed\\'>TestRO</code>: Has read only access to the information related to test cases and also has access to execution reporting options.<br><br><code class=\\'doc-fixed\\'>Test</code>: Can modify non WORKING test cases but cannot delete test cases.<br><br><code class=\\'doc-fixed\\'>TestAdmin</code>: Can modify or delete any test case (including Pre Testing test cases). Can also create or delete a test.<br><br>The minimum group you need to belong is <code class=\\'doc-fixed\\'>TestRO</code> that will give you access in read only to all test data (including its execution reporting page).<br>If you want to be able to modify the testcases (except the WORKING ones), you need <code class=\\'doc-fixed\\'>Test</code> group on top of <code class=\\'doc-fixed\\'>TestRO</code> group.<br>If you want the full access to all testcase (including beeing able to delete any testcase), you will need <code class=\\'doc-fixed\\'>TestAdmin</code> on top of <code class=\\'doc-fixed\\'>TestRO</code> and <code class=\\'doc-fixed\\'>Test</code> group.<br><br><b>Test Data perimeter :</b><br><br><code class=\\'doc-fixed\\'>TestDataManager</code>: Can modify the test data..<br><br><b>Test Execution perimeter :</b><br><br><code class=\\'doc-fixed\\'>RunTest</code>: Can run both Manual and Automated test cases from GUI.<br><br><b>Integration perimeter :</b><br><br><code class=\\'doc-fixed\\'>IntegratorRO</code>: Has access to the integration status.<br><br><code class=\\'doc-fixed\\'>Integrator</code>: Can add an application. Can change parameters of the environments.<br><br><code class=\\'doc-fixed\\'>IntegratorNewChain</code>: Can register the end of the chain execution. Has read only access to the other informations on the same page.<br><br><code class=\\'doc-fixed\\'>IntegratorDeploy</code>: Can disable or enable environments and register new build / revision.<br><br>The minimum group you need to belong is <code class=\\'doc-fixed\\'>IntegratorRO</code> that will give you access in read only to all environment data.<br>If you want to be able to modify the environment data, you need <code class=\\'doc-fixed\\'>Integrator</code> group on top of <code class=\\'doc-fixed\\'>IntegratorRO</code> group.<br><code class=\\'doc-fixed\\'>IntegratorNewChain</code> and <code class=\\'doc-fixed\\'>IntegratorDeploy</code> are used on top of <code class=\\'doc-fixed\\'>Integrator</code> Group to be able to create a new chain on an environment or perform a deploy operation.<br><br><b>Administration perimeter :</b><br><br><code class=\\'doc-fixed\\'>Administrator</code>: Can create, modify or delete users. Has access to log Event and Database Maintenance. Can change Parameter values.','_user_management')");
         SQLS.append(",('usergroup','GroupName','','fr','Nom du groupe',NULL,'_management_des_utilisateurs')");
+        SQLInstruction.add(SQLS.toString());
+
+        // New Parameter for login message.
+        //-- ------------------------ 1238-1239
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) ");
+        SQLS.append(" SELECT '', 'cerberus_loginpage_welcomemessagehtml', concat('If you don\\'t have login, please contact ' , p.`value`) , 'Message that will appear in login page. %SUPPORTEMAIL% will be replaced by parameter cerberus_support_email.'");
+        SQLS.append(" FROM parameter p");
+        SQLS.append(" WHERE param = 'cerberus_support_email' and system=''; ");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `parameter` SET `value`='', `description`='Support Email for Cerberus.' WHERE `system`='' and`param`='cerberus_support_email';");
+        SQLInstruction.add(SQLS.toString());
+
+        // Clean old Parameter no longuer used.
+        //-- ------------------------ 1240
+        SQLS = new StringBuilder();
+        SQLS.append("DELETE FROM parameter where param in ('cerberus_mediastorage_url','cerberus_picture_testcase_path','cerberus_reporting_url','cerberus_selenium_firefoxextension_firebug','cerberus_selenium_firefoxextension_netexport','cerberus_testcase_function_booleanListOfFunction','cerberus_testcase_function_urlForListOfFunction','cerberus_testexecutiondetailpage_nbmaxexe','cerberus_testexecutiondetailpage_nbmaxexe_max','index_alert_subject','index_alert_from','index_alert_body','index_alert_to','index_notification_body_between','index_notification_body_end','index_notification_body_top','index_notification_subject','index_smtp_from','index_smtp_host','index_smtp_port','jenkins_application_pipeline_url','jenkins_deploy_pipeline_url','selenium_chromedriver_download_url','selenium_download_url','selenium_iedriver_download_url','solr_url','sonar_application_dashboard_url','ticketing tool_bugtracking_url','ticketing tool_newbugtracking_url','ticketing tool_ticketservice_url');");
+        SQLInstruction.add(SQLS.toString());
+
+        // Force data integrity on useStep.
+        //-- ------------------------ 1241-1248
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestep` ");
+        SQLS.append("CHANGE COLUMN `useStepStep` `useStepStep` INT(10) NULL DEFAULT NULL ;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testcasestep set usestepstep = null where usestepstep < 0;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestep` ");
+        SQLS.append("CHANGE COLUMN `useStepTest` `useStepTest` VARCHAR(45) NULL DEFAULT NULL ,");
+        SQLS.append("CHANGE COLUMN `useStepTestCase` `useStepTestCase` VARCHAR(45) NULL DEFAULT NULL ,");
+        SQLS.append("CHANGE COLUMN `useStepStep` `useStepStep` INT(10) UNSIGNED NULL DEFAULT NULL ,");
+        SQLS.append("ADD INDEX `IX_testcasestep_01` (`useStepTest` ASC, `useStepTestCase` ASC, `useStepStep` ASC);");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testcasestep set usesteptest = null where usesteptest='';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testcasestep set usesteptestcase = null where usesteptestcase='';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testcasestep set usestepstep = null where usesteptest is null;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testcasestep c");
+        SQLS.append(" SET UsrModif='DatabaseVersioningService', useStep='N', useStepTest=null, useStepTestCase=null, useStepStep=null, DateModif = now()");
+        SQLS.append("WHERE EXISTS ");
+        SQLS.append("( Select 1 from (");
+        SQLS.append("select a.test, a.testcase, a.step from testcasestep a");
+        SQLS.append(" left outer join testcasestep b on a.usesteptest=b.test and a.usesteptestcase=b.testcase and a.usestepstep=b.step");
+        SQLS.append(" where b.test is null and a.usesteptest is not null and a.usesteptest != ''");
+        SQLS.append(") as t where t.test=c.test and t.testcase=c.testcase and t.step=c.step and c.usesteptest is not null and c.usesteptest != '');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestep` ");
+        SQLS.append("ADD CONSTRAINT `FK_testcasestep_02`");
+        SQLS.append("  FOREIGN KEY (`useStepTest` , `useStepTestCase`)");
+        SQLS.append("  REFERENCES `testcase` (`Test` , `TestCase` )");
+        SQLS.append("  ON DELETE SET NULL  ON UPDATE CASCADE;");
         SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;

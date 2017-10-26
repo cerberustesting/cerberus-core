@@ -2047,29 +2047,37 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
 
     private TestCaseExecutionQueueToTreat loadQueueToTreatFromResultSet(ResultSet resultSet) throws SQLException {
         TestCaseExecutionQueueToTreat inQueue = new TestCaseExecutionQueueToTreat();
-        inQueue.setId(resultSet.getInt("exq.id"));
-        inQueue.setManualExecution(resultSet.getString("exq.manualexecution"));
-        inQueue.setSystem(resultSet.getString("app.system"));
-        inQueue.setEnvironment(resultSet.getString("cea.environment"));
-        inQueue.setCountry(resultSet.getString("cea.country"));
-        inQueue.setApplication(resultSet.getString("cea.application"));
-        inQueue.setPoolSizeApplication(resultSet.getInt("cea.poolsize"));
-        inQueue.setDebugFlag(resultSet.getString("exq.DebugFlag"));
-        /**
-         * Robot host is feed only if application type really required a robot.
-         * data comes from robot by priority or exe when exist.
-         */
-        String robotHost = "";
-        String appType = resultSet.getString("app.type");
-        if ((appType.equals(Application.TYPE_APK)) || (appType.equals(Application.TYPE_GUI)) || (appType.equals(Application.TYPE_FAT)) || (appType.equals(Application.TYPE_IPA))) {
-            robotHost = resultSet.getString("rbt.host");
-            if (StringUtil.isNullOrEmpty(robotHost)) {
-                robotHost = resultSet.getString("exq.robotIP");
-            }
-        }
-        inQueue.setRobotHost(robotHost);
-        return inQueue;
+        try {
 
+            inQueue.setId(resultSet.getInt("exq.id"));
+            inQueue.setManualExecution(resultSet.getString("exq.manualexecution"));
+            inQueue.setSystem(resultSet.getString("app.system"));
+            inQueue.setEnvironment(resultSet.getString("cea.environment"));
+            inQueue.setCountry(resultSet.getString("cea.country"));
+            inQueue.setApplication(resultSet.getString("cea.application"));
+            inQueue.setPoolSizeApplication(resultSet.getInt("cea.poolsize"));
+            inQueue.setDebugFlag(resultSet.getString("exq.DebugFlag"));
+            /**
+             * Robot host is feed only if application type really required a
+             * robot. data comes from robot by priority or exe when exist.
+             */
+            String robotHost = "";
+            String appType = resultSet.getString("app.type");
+            if (appType == null) {
+                appType = "";
+            }
+            // If application type require a selenium/appium/sikuli server, we get the robot host from robot and not execution queue.
+            if ((appType.equals(Application.TYPE_APK)) || (appType.equals(Application.TYPE_GUI)) || (appType.equals(Application.TYPE_FAT)) || (appType.equals(Application.TYPE_IPA))) {
+                robotHost = resultSet.getString("rbt.host");
+                if (StringUtil.isNullOrEmpty(robotHost)) {
+                    robotHost = resultSet.getString("exq.robotIP");
+                }
+            }
+            inQueue.setRobotHost(robotHost);
+        } catch (Exception e) {
+            LOG.debug("Exception in load queue from resultset : " + e.toString());
+        }
+        return inQueue;
     }
 
     /**

@@ -71,7 +71,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author cerberus
  */
-@WebServlet(name = "CreateTestCase2", urlPatterns = {"/CreateTestCase2"})
+@WebServlet(name = "CreateTestCase", urlPatterns = {"/CreateTestCase"})
 public class CreateTestCase extends HttpServlet {
 
     private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(UpdateTestCase.class);

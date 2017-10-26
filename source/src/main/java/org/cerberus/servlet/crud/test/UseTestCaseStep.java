@@ -96,7 +96,7 @@ public class UseTestCaseStep extends HttpServlet {
          * Import Step, properties
          */
         MyLogger.log(ImportTestCaseStep.class.getName(), org.apache.log4j.Level.DEBUG, "Use Step");
-        testCaseStepService.insertTestCaseStep(tcs);
+        testCaseStepService.create(tcs);
         if (importProperty.equalsIgnoreCase("Y")) {
             /**
              * Get List of Country of the origin testcase and the destination

@@ -302,9 +302,10 @@ function feedInvariantModal(invariant, value, modalId, mode) {
         });
 
     } else {
+
         var inv = {};
         inv.idName = invariant;
-        inv.value = value;
+        inv.value = "";
         inv.sort = "";
         inv.description = "";
         inv.veryShortDesc = "";

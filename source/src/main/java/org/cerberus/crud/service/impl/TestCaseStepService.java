@@ -20,24 +20,15 @@
 package org.cerberus.crud.service.impl;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import org.apache.log4j.Level;
 import org.cerberus.crud.dao.ITestCaseStepDAO;
-import org.cerberus.crud.entity.TestCase;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.TestCaseStep;
-import org.cerberus.crud.entity.TestCaseStepAction;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.ITestCaseStepService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.answer.Answer;
-import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -61,24 +52,6 @@ public class TestCaseStepService implements ITestCaseStepService {
     @Override
     public List<String> getLoginStepFromTestCase(String countryCode, String application) {
         return testCaseStepDAO.getLoginStepFromTestCase(countryCode, application);
-    }
-
-    @Override
-    public void insertTestCaseStep(TestCaseStep testCaseStep) throws CerberusException {
-        testCaseStepDAO.insertTestCaseStep(testCaseStep);
-    }
-
-    @Override
-    public boolean insertListTestCaseStep(List<TestCaseStep> testCaseStepList) {
-        for (TestCaseStep tcs : testCaseStepList) {
-            try {
-                insertTestCaseStep(tcs);
-            } catch (CerberusException ex) {
-                MyLogger.log(TestCaseStepService.class.getName(), Level.FATAL, ex.toString());
-                return false;
-            }
-        }
-        return true;
     }
 
     @Override
@@ -168,7 +141,7 @@ public class TestCaseStepService implements ITestCaseStepService {
         }
 
         // We insert only at the end (after deletion of all potencial enreg - linked with #1281)
-        this.insertListTestCaseStep(tcsToUpdateOrInsert);
+        this.createList(tcsToUpdateOrInsert);
         updateTestCaseStepUsingTestCaseStepInList(tcsToUpdateOrInsert);
     }
 

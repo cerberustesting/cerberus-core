@@ -166,7 +166,7 @@ public class ImportTestCaseStep extends HttpServlet {
          * testcasestepactioncontrol
          */
         MyLogger.log(ImportTestCaseStep.class.getName(), org.apache.log4j.Level.DEBUG, "Import Step");
-        testCaseStepService.insertTestCaseStep(fromTcs);
+        testCaseStepService.create(fromTcs);
         testCaseStepActionService.insertListTestCaseStepAction(tcsaToImport);
         testCaseStepActionControlService.insertListTestCaseStepActionControl(tcsacToImport);
         if (importProperty.equalsIgnoreCase("Y")) {
