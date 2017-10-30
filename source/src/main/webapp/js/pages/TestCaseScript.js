@@ -23,22 +23,16 @@ var allDelete = false;
 $.when($.getScript("js/global/global.js")).then(function () {
 	$(document).ready(function () {
 
-		$(document).on('mouseenter', 'a', function (ev) {
+		$("#nav-property").on('mouseenter', 'a', function (ev) {
 			try{
-				ev.target.firstElementChild.style.display ="block";
-				$(ev.target.firstElementChild).find("span").css("display","inline");
-			}catch(e){
-
-			}
+				$(this).find("button").show();
+			}catch(e){}
 
 		}).on('mouseleave', 'a', function (ev) {
 			try{
-				ev.target.firstElementChild.style.display ="none";
-				$(ev.target.firstElementChild).find("span").css("display","none");
-			}catch(e){
+				$(this).find("button").hide();
 
-			}
-
+			}catch(e){}
 		});
 
 		$('#propName').trigger("change");
@@ -846,7 +840,10 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
 	var btnRow = $("<div class='col-sm-2'></div>").css("margin-top", "5px").css("margin-bottom", "5px").append(selectAllBtn).append(selectNoneBtn);
 
 	deleteBtn.click(function () {
+		var stopAllDelete = false;
+		var stopNothing = false;
 		var linkToProperty = null;
+		var nothing = false;
 		property.toDelete = (property.toDelete) ? false : true;
 
 		if (property.toDelete) {
@@ -858,10 +855,23 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
 		$(table).find("div.list-group-item").each(function(){
 			if($(this).find("#propName").val() === property.property){
 				if($(this).hasClass("list-group-item-danger")){
-					allDelete = true;
+					if(stopAllDelete != true){
+						allDelete = true;
+					}
+					if(stopNothing != true){
+						nothing = false
+						stopNothing = true;
+					}
+						
 				}else{
-					allDelete = false;
-					return false;
+					if(stopAllDelete != true){
+						allDelete = false;
+						stopAllDelete = true;
+					}
+					
+					if(stopNothing != true){
+						nothing = true;
+					}
 				}
 			}
 		})
@@ -879,15 +889,15 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
 
 		// go though every link and look for the right one
 		if(linkToProperty != null){
-			if (allDelete === true )  {       
+			if (allDelete === true && nothing === false )  {       
 				linkToProperty.css("background-color", "#c94350");
-			} else {
+			} else if(nothing === true){
 				linkToProperty.css("background-color", "#fff");
+			}else {
+				linkToProperty.css("background-color", "#f2dede");
 			}
+			
 		}
-		
-		
-
 	});
 
 	moreBtn.click(function () {
