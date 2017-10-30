@@ -353,7 +353,6 @@ public class ServiceService implements IServiceService {
                         switch (appService.getMethod()) {
                             case AppService.METHOD_HTTPGET:
                             case AppService.METHOD_HTTPPOST:
-
                                 /**
                                  * Call REST and store it into the execution.
                                  */
@@ -361,6 +360,13 @@ public class ServiceService implements IServiceService {
                                         appService.getHeaderList(), appService.getContentList(), token, timeOutMs, system);
                                 message = result.getResultMessage();
                                 break;
+                            case AppService.METHOD_HTTPDELETE:
+
+                                result = restService.callREST(decodedServicePath, decodedRequest, appService.getMethod(),
+                                        appService.getHeaderList(), appService.getContentList(), token, timeOutMs, system);
+                                message = result.getResultMessage();
+                                break;
+                            	
 
                             default:
                                 message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);

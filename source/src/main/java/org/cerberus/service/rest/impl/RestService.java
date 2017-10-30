@@ -299,8 +299,9 @@ public class RestService implements IRestService {
 
                     }  
                     break;
-                    /*
+                    
                 case AppService.METHOD_HTTPDELETE:
+                	System.out.println("oui");
                 	LOG.info("Start preparing the REST Call (DELETE). " + servicePath);
                     servicePath = StringUtil.addQueryString(servicePath, requestString);
                     serviceREST.setServicePath(servicePath);
@@ -329,7 +330,7 @@ public class RestService implements IRestService {
                     }
 
                 	break;
-                	*/
+                	
             }
 
             // Get result Content Type.
