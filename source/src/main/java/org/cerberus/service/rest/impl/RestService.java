@@ -38,6 +38,7 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -66,6 +67,8 @@ import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.gargoylesoftware.htmlunit.javascript.host.Console;
 
 /**
  *
@@ -294,9 +297,39 @@ public class RestService implements IRestService {
                         result.setResultMessage(message);
                         return result;
 
+                    }  
+                    break;
+                    /*
+                case AppService.METHOD_HTTPDELETE:
+                	LOG.info("Start preparing the REST Call (DELETE). " + servicePath);
+                    servicePath = StringUtil.addQueryString(servicePath, requestString);
+                    serviceREST.setServicePath(servicePath);
+                    HttpDelete httpDelete = new HttpDelete(servicePath);
+
+                    // Timeout setup.
+                    httpDelete.setConfig(requestConfig);
+
+                    // Header.
+                    for (AppServiceHeader contentHeader : headerList) {
+                        httpDelete.addHeader(contentHeader.getKey(), contentHeader.getValue());
+                    }
+                    serviceREST.setHeaderList(headerList);
+
+                    // Saving the service before the call Just in case it goes wrong (ex : timeout).
+                    result.setItem(serviceREST);
+
+                    LOG.info("Executing request " + httpDelete.getRequestLine());
+                    responseHttp = executeHTTPCall(httpclient, httpDelete);
+
+                    if (responseHttp != null) {
+                        serviceREST.setResponseHTTPBody(responseHttp.getResponseHTTPBody());
+                        serviceREST.setResponseHTTPCode(responseHttp.getResponseHTTPCode());
+                        serviceREST.setResponseHTTPVersion(responseHttp.getResponseHTTPVersion());
+                        serviceREST.setResponseHeaderList(responseHttp.getResponseHeaderList());
                     }
 
-                    break;
+                	break;
+                	*/
             }
 
             // Get result Content Type.
