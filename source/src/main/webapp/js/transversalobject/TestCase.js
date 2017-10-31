@@ -455,11 +455,16 @@ function feedTestCaseModal(test, testCase, modalId, mode) {
     clearResponseMessageMainPage();
 
     var formEdit = $('#' + modalId);
+    
+    console.log(testCase);
+    
 
     var jqxhr = $.getJSON("ReadTestCase", "test=" + encodeURIComponent(test) + "&testCase=" + encodeURIComponent(testCase));
     $.when(jqxhr).then(function (data) {
 
         var testCase = data.contentTable;
+        
+        console.log(testCase)
 
         var appInfo = $.getJSON("ReadApplication", "application=" + encodeURIComponent(testCase.application));
 

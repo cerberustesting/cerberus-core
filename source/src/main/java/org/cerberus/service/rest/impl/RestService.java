@@ -41,6 +41,7 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.BasicCredentialsProvider;
@@ -67,7 +68,6 @@ import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.gargoylesoftware.htmlunit.javascript.host.Console;
 
 /**
@@ -95,13 +95,14 @@ public class RestService implements IRestService {
      * into database)
      */
     private static final boolean DEFAULT_PROXY_ACTIVATE = false;
-    private static final String DEFAULT_PROXY_HOST = "proxy";
+    private static final String DEFAULT_PROXY_HOST = "proxy.siege.red";
     private static final int DEFAULT_PROXY_PORT = 80;
     private static final boolean DEFAULT_PROXYAUTHENT_ACTIVATE = false;
     private static final String DEFAULT_PROXYAUTHENT_USER = "squid";
     private static final String DEFAULT_PROXYAUTHENT_PASSWORD = "squid";
 
     private static final Logger LOG = Logger.getLogger(RestService.class);
+    
 
     private AppService executeHTTPCall(CloseableHttpClient httpclient, HttpRequestBase httpget) throws Exception {
         try {
@@ -301,7 +302,6 @@ public class RestService implements IRestService {
                     break;
                     
                 case AppService.METHOD_HTTPDELETE:
-                	System.out.println("oui");
                 	LOG.info("Start preparing the REST Call (DELETE). " + servicePath);
                     servicePath = StringUtil.addQueryString(servicePath, requestString);
                     serviceREST.setServicePath(servicePath);
@@ -330,6 +330,60 @@ public class RestService implements IRestService {
                     }
 
                 	break;
+                
+                case AppService.METHOD_HTTPPUT:
+                	LOG.info("Start preparing the REST Call (PUT). " + servicePath);
+
+                    serviceREST.setServicePath(servicePath);
+                    HttpPut httpPut = new HttpPut(servicePath);
+
+                    // Timeout setup.
+                    httpPut.setConfig(requestConfig);
+
+                    // Content
+                    if (!(StringUtil.isNullOrEmpty(requestString))) {
+                        // If requestString is defined, we POST it.
+                        InputStream stream = new ByteArrayInputStream(requestString.getBytes(StandardCharsets.UTF_8));
+                        InputStreamEntity reqEntity = new InputStreamEntity(stream);
+                        reqEntity.setChunked(true);
+                        httpPut.setEntity(reqEntity);
+                        serviceREST.setServiceRequest(requestString);
+                    } else {
+                        // If requestString is not defined, we PUT the list of key/value request.
+                        List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+                        for (AppServiceContent contentVal : contentList) {
+                            nvps.add(new BasicNameValuePair(contentVal.getKey(), contentVal.getValue()));
+                        }
+                        httpPut.setEntity(new UrlEncodedFormEntity(nvps));
+                        serviceREST.setContentList(contentList);
+                    }
+
+                    // Header.
+                    for (AppServiceHeader contentHeader : headerList) {
+                        httpPut.addHeader(contentHeader.getKey(), contentHeader.getValue());
+                    }
+                    serviceREST.setHeaderList(headerList);
+
+                    // Saving the service before the call Just in case it goes wrong (ex : timeout).
+                    result.setItem(serviceREST);
+
+                    LOG.info("Executing request " + httpPut.getRequestLine());
+                    responseHttp = executeHTTPCall(httpclient, httpPut);
+
+                    if (responseHttp != null) {
+                        serviceREST.setResponseHTTPBody(responseHttp.getResponseHTTPBody());
+                        serviceREST.setResponseHTTPCode(responseHttp.getResponseHTTPCode());
+                        serviceREST.setResponseHTTPVersion(responseHttp.getResponseHTTPVersion());
+                        serviceREST.setResponseHeaderList(responseHttp.getResponseHeaderList());
+                    } else {
+                        message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
+                        message.setDescription(message.getDescription().replace("%SERVICE%", servicePath));
+                        message.setDescription(message.getDescription().replace("%DESCRIPTION%", "Any issue was found when calling the service. Coud be a reached timeout during the call (." + timeOutMs + ")"));
+                        result.setResultMessage(message);
+                        return result;
+
+                    }  
+                    break;
                 	
             }
 

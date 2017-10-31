@@ -75,6 +75,7 @@ public class AppService {
     public static final String METHOD_HTTPPOST = "POST";
     public static final String METHOD_HTTPGET = "GET";
     public static final String METHOD_HTTPDELETE = "DELETE";
+    public static final String METHOD_HTTPPUT = "PUT";
     public static final String RESPONSEHTTPBODYCONTENTTYPE_XML = "XML";
     public static final String RESPONSEHTTPBODYCONTENTTYPE_JSON = "JSON";
     public static final String RESPONSEHTTPBODYCONTENTTYPE_TXT = "TXT";

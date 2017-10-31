@@ -346,12 +346,15 @@ public class ServiceService implements IServiceService {
                         break;
 
                     case AppService.TYPE_REST:
+                    	System.out.println(appService.getMethod());
 
                         /**
                          * REST.
                          */
                         switch (appService.getMethod()) {
+                        	
                             case AppService.METHOD_HTTPGET:
+                            	
                             case AppService.METHOD_HTTPPOST:
                                 /**
                                  * Call REST and store it into the execution.
@@ -366,8 +369,13 @@ public class ServiceService implements IServiceService {
                                         appService.getHeaderList(), appService.getContentList(), token, timeOutMs, system);
                                 message = result.getResultMessage();
                                 break;
+                            case AppService.METHOD_HTTPPUT:
+                            	 result = restService.callREST(decodedServicePath, decodedRequest, appService.getMethod(),
+                                         appService.getHeaderList(), appService.getContentList(), token, timeOutMs, system);
+                                 message = result.getResultMessage();
+                                 break;
                             	
-
+                       
                             default:
                                 message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
                                 message.setDescription(message.getDescription().replace("%DESCRIPTION%", "Method : '" + appService.getMethod() + "' for REST Service is not supported by the engine."));

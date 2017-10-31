@@ -21,6 +21,19 @@
     Author     : cerberus
 */
 
+
+#NavtabsScriptEdit{
+	height:40px;
+	background-color:white;
+}
+
+@media (max-width: 768px){
+    #NavtabsScriptEdit{
+		height:80px;
+    }
+}
+
+
 .separator-left {
     border-left: 1px solid #E3E3E3;
     width: inherit;
