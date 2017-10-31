@@ -29,6 +29,7 @@
         <script type="text/javascript" src="dependencies/Tinymce-4.2.6/tinymce.min.js"></script>
         <script type="text/javascript" src="js/pages/TestCaseExecution.js"></script>
         <script type="text/javascript" src="js/transversalobject/TestCaseExecutionQueue.js"></script>
+        <script type="text/javascript" src="js/transversalobject/TestCase.js"></script>
         <link rel="stylesheet" type="text/css" href="css/pages/TestCaseExecution.css">
         <link rel="stylesheet" type="text/css" href="dependencies/Bootstrap-inversebutton/inversebutton.css">
     </head>
@@ -39,9 +40,10 @@
         <div id="page-layout" class="container-fluid center">
             <%@ include file="include/global/messagesArea.html"%>
             <%@ include file="include/transversalobject/TestCaseExecutionQueue.html"%>
+            <%@ include file="include/transversalobject/TestCase.html"%>
             <h1 class="page-title-line">Execution Detail</h1>
             <div class="panel panel-default" id="testCaseConfig">
-                <div style="min-height:150px">
+                <div>
                     <div id="divPanelDefault" class="panel-default" style="z-index:10; top: 0">
                         <div class="panel-heading" id="executionHeader"  style="z-index:2; top: 0">
                             <div class="progress">
@@ -73,45 +75,47 @@
                             <div class="col-lg-6" style="padding: 0px;">
                                 <div id="TestCaseButton">
                                     <a href="#" class="btn btn-default pull-right" id="saveTestCaseExecution" data-toggle="tooltip" style="margin-left: 1px; display: none;"><span class="glyphicon glyphicon-save"></span> Save</a>
-                                    <a href="#" class="btn btn-default pull-right" id="runTestCase" data-toggle="tooltip" style="margin-left: 1px;"><span class="glyphicon glyphicon-play"></span> Run</a>
+                                     <div class="btn-group pull-right">
+	                                    <a href="#" class="btn btn-default" id="runTestCase" data-toggle="tooltip" style="margin-left: 1px;"><span class="glyphicon glyphicon-fast-backward"></span> Run</a>
+	                                    <a type="button" class="btn btn-default dropdown-toggle"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <span class="caret"></span>
+                                            <span class="sr-only">Toggle Dropdown</span>
+                                        </a>
+	                                    <ul class="dropdown-menu">
+	                                    	<li><a href="#" class="btn btn-default" id="ExecutionQueueDup"><span class="glyphicon glyphicon-tasks"></span> Duplicate new Execution</a></li>
+	                                    </ul>
+	                                </div>
                                     <div class="btn-group pull-right">
-                                        <a href="#" class="btn btn-default" id="lastExecution" style="margin-left: 1px"><span class="glyphicon glyphicon-fast-backward"></span> Last Executions</a>
+                                        <a href="#" class="btn btn-default pull-left" id="lastExecution" style="margin-left: 1px"><span class="glyphicon glyphicon-fast-backward"></span> Last Executions</a>
                                         <a type="button" class="btn btn-default dropdown-toggle"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             <span class="caret"></span>
                                             <span class="sr-only">Toggle Dropdown</span>
                                         </a>
                                         <ul class="dropdown-menu">
-                                            <li><a href="#" class="btn btn-default pull-right" id="lastExecutionwithEnvCountry"><span class="glyphicon glyphicon-fast-backward"></span> Last Executions With Country Env</a></li>
+                                            <li><a href="#" class="btn btn-default" id="lastExecutionwithEnvCountry"><span class="glyphicon glyphicon-fast-backward"></span> Last Executions With Country Env</a></li>
+                                            <li><a href="#" class="btn btn-default" id="ExecutionByTag" style="margin-left: 1px; margin-right: 1px;"><span class="glyphicon glyphicon-tasks"></span> See Execution By Tag</a></li>
+                                            <li><a href="#" class="btn btn-default" id="ExecutionQueue"><span class="glyphicon glyphicon-tasks"></span> See Queue Parameters</a></li>
                                         </ul>
                                     </div>
                                     <div class="btn-group pull-right">
-                                        <a href="#" class="btn btn-default pull-left" id="editTcInfo"><span class="glyphicon glyphicon-pencil"></span> Edit Test Case</a>
+                                        <a href="#" class="btn btn-default pull-left" id="editTcInfo" ><span class="glyphicon glyphicon-pencil"></span> Edit Test Case</a>
                                         <a type="button" id="editTcToggleButton" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             <span class="caret"></span>
                                             <span class="sr-only">Toggle Dropdown</span>
                                         </a>
                                         <ul class="dropdown-menu">
                                             <li><a href="#" class="btn btn-default" id="editTcStepInfo"><span class="glyphicon glyphicon-pencil"></span> Edit Test Case from the current Step</a></li>
+                                            <li><a href="#" class="btn btn-default" id="editTcHeader"><span class="glyphicon glyphicon-pencil"></span> Edit Test Case Header</a></li>
                                         </ul>
                                     </div>
-                                    <div class="btn-group pull-right">
-                                        <a href="#" class="btn btn-default pull-left" id="ExecutionQueue"><span class="glyphicon glyphicon-tasks"></span> See Queue Parameters</a>
-                                        <a type="button" id="editTcToggleButton" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            <span class="caret"></span>
-                                            <span class="sr-only">Toggle Dropdown</span>
-                                        </a>
-                                        <ul class="dropdown-menu">
-                                            <li><a href="#" class="btn btn-default" id="ExecutionQueueDup"><span class="glyphicon glyphicon-tasks"></span> Duplicate new Execution</a></li>
-                                        </ul>
-                                    </div>
-                                    <a href="#" class="btn btn-default pull-right" id="ExecutionByTag" style="margin-left: 1px; margin-right: 1px;"><span class="glyphicon glyphicon-tasks"></span> See Execution By Tag</a>
+                                    
                                     <div class="side-item pull-right"></div>
 
                                 </div>
                             </div>
                             <div class="clearfix"></div>
                         </div>
-                        <div style="height:40px; background-color: white">
+                        <div id="NavtabsScriptEdit" background-color: white">
                             <ul id="tabsScriptEdit" class="nav nav-tabs" data-tabs="tabs">
                                 <li class="active"><a data-toggle="tab" href="#tabSteps" id="editTabStep" name="tabSteps">Steps</a></li>
                                 <li><a data-toggle="tab" href="#tabProperties" id="editTabProperties" name="tabProperties">Properties</a></li>

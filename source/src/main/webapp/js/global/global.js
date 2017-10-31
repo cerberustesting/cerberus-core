@@ -22,6 +22,22 @@
  */
 //$.getScript("js/jquery.blockUI.js");
 
+
+var show = false;
+
+(function(){
+	$("#burger").unbind("click").click(function(){
+		if(show === false){
+			$("#side-menu li").show();
+			show = true;
+		}else{
+			$("#side-menu li:not(.MainItem)").hide();
+			show = false;
+		}
+		
+	})
+})()
+
 function handleErrorAjaxAfterTimeout(result) {
     var doc = new Doc();
 

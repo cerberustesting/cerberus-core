@@ -53,7 +53,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author cerberus
  */
-@WebServlet(name = "DeleteTestCase2", urlPatterns = {"/DeleteTestCase2"})
+@WebServlet(name = "DeleteTestCase", urlPatterns = {"/DeleteTestCase"})
 public class DeleteTestCase extends HttpServlet {
 
     /**
