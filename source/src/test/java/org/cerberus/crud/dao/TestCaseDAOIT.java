@@ -19,13 +19,12 @@
  */
 package org.cerberus.crud.dao;
 
-import org.cerberus.crud.dao.ITestCaseDAO;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+//import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * {Insert class description here}
@@ -34,7 +33,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * @version 1.0, 29/12/2012
  * @since 2.0.0
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+//@RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/applicationContextTest.xml"})
 public class TestCaseDAOIT {
 
