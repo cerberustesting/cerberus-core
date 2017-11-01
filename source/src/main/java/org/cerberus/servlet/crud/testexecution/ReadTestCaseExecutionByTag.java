@@ -171,6 +171,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         result.put("ControlStatus", JavaScriptUtils.javaScriptEscape(testCaseExecution.getControlStatus()));
         result.put("ControlMessage", JavaScriptUtils.javaScriptEscape(testCaseExecution.getControlMessage()));
         result.put("Status", JavaScriptUtils.javaScriptEscape(testCaseExecution.getStatus()));
+        result.put("QueueState", JavaScriptUtils.javaScriptEscape(testCaseExecution.getQueueState()));
 
         String bugId;
         if (testCaseExecution.getTestCaseObj() != null) {
