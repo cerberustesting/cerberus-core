@@ -68,7 +68,6 @@ import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.gargoylesoftware.htmlunit.javascript.host.Console;
 
 /**
  *
