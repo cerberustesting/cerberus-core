@@ -20,7 +20,6 @@
 package org.cerberus.servlet.crud.test;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import javax.annotation.Nullable;
@@ -34,10 +33,8 @@ import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import org.apache.log4j.Logger;
-import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.crud.service.IParameterService;
-import org.cerberus.crud.service.ITestCaseService;
 import org.cerberus.crud.service.ITestCaseStepService;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.Test;
@@ -193,6 +190,11 @@ public class DeleteTest extends HttpServlet {
             @Override
             public boolean apply(@Nullable final TestCaseStep input) {
                 return !input.getTest().equals(test.getTest());
+            }
+
+            @Override
+            public boolean test(TestCaseStep t) {
+                return Predicate.super.test(t); //To change body of generated methods, choose Tools | Templates.
             }
         });
     }

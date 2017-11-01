@@ -44,6 +44,7 @@ function loadExecutionInformation(executionId, stepList, sockets) {
         async: true,
         success: function (data) {
             var tce = data.testCaseExecution;
+           
             //store in a global var if the manualExecution is set to yes to double check with the control status
             if (tce.manualExecution === "Y")
                 isTheExecutionManual = true;
@@ -178,6 +179,7 @@ function displayPageLabel(doc) {
     $("#steps h3").text(doc.getDocLabel("page_executiondetail", "steps"));
     $("#actions h3").text(doc.getDocLabel("page_global", "columnAction"));
     $("#editTcInfo").html("<span class='glyphicon glyphicon-new-window'></span> " + doc.getDocLabel("page_executiondetail", "edittc"));
+    $("#editTcHeader").html("<span class='glyphicon glyphicon-pencil'></span> " + doc.getDocLabel("page_testcaselist", "btn_edit"));
     $("#editTcStepInfo").html("<span class='glyphicon glyphicon-new-window'></span> " + doc.getDocLabel("page_executiondetail", "edittcstep"));
     $("#runTestCase").html("<span class='glyphicon glyphicon-forward'></span> " + doc.getDocLabel("page_executiondetail", "runtc"));
     $("#saveTestCaseExecution").html("<span class='glyphicon glyphicon-save'></span> " + doc.getDocLabel("page_executiondetail", "save"));
@@ -296,6 +298,10 @@ function setConfigPanel(data) {
     configPanel.find("#testcase").text(data.testcase);
     configPanel.find("#exReturnMessage").text(data.controlMessage);
     configPanel.find("#controlstatus").text(data.controlStatus);
+    
+    $("#editTcHeader").unbind("click").click(function(){
+    	openModalTestCase(data.test,data.testcase,"EDIT")
+    })
 
     configPanel.find("#environment").text(data.environment);
     configPanel.find("#country").text(data.country);

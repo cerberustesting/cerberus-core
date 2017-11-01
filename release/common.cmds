@@ -1,0 +1,79 @@
+# List of commands to execute a common Cerberus release.
+#
+# A common Cerberus release upgrades version of the following projects:
+#   - cerberus-source, the main project's sources
+#   - cerberus-docker's cerberus-as-glassfish, the associated Docker image to the main project's sources
+#
+# Prerequisities
+# --------------
+#
+#   1. Have Git 2.7+ installed
+#   2. Have Maven 3.3+ installed
+#   3. Be able to push, by using SSH, to [Cerberus Testing's repositories](https://github.com/cerberustesting)
+#   4. Be able to push to [Cerberus Testing's Sourceforge space](https://sourceforge.net/projects/cerberus-source)
+#      To do that, fill your Maven's settings file with the following information:
+#       <profiles>
+#           <profile>
+#               <id>default</id>
+#               <properties>
+#                   <sourceforge.username>USERNAME,cerberus-source</sourceforge.username>
+#                   <sourceforge.password>PASSWORD</sourceforge.password>
+#                   <sourceforge.url>frs.sourceforge.net:/home/frs/project/cerberus-source/</sourceforge.url>
+#               </properties>
+#           </profile>
+#       </profiles>
+#
+#       <activeProfiles>
+#           <activeProfile>default</activeProfile>
+#       </activeProfiles>
+#
+#       Where:
+#           - USERNAME is your Cerberus' Sourceforge username
+#           - PASSWORD is your Cerberus' Sourceforge password
+#   5. Have Docker 1.12+ installed
+#   6. Be able to push to the [Cerberus Testing's Docker hub space](https://hub.docker.com/r/cerberustesting)
+#   7. Be logged to the public Docker hub registry
+#   8. Have the [runcmds](https://github.com/abourdon/runcmds) command execution tool installed
+#   9. If you have not read it yet, read the runcmds's README file :-)
+#
+# How to run it
+# -------------
+#
+#   In order to run this command execution flow, use the runcmds tool by executing:
+#
+#   runcmds.sh
+#       -e RELEASE_VERSION <release version> \
+#       -e NEXT_DEVELOPMENT_VERSION <next development version> \
+#       -e RUNCMDS_PATH <runcmds command path> \
+#       -s ./common.cmds
+#
+#   Where:
+#       - <release version> is the needed release version
+#       - <next development version> is the next needed development version
+#       - <runcmds command path> is the path to the runcmds command line (usually <runcmds root>/runcmds.sh)
+
+# Create temporary directory
+mkdir -p tmp
+cd tmp
+
+# Release of the cerberus-source project
+rm -rf cerberus-source
+git clone git@github.com:cerberustesting/cerberus-source.git
+cd cerberus-source
+${RUNCMDS_PATH} -e RELEASE_VERSION ${RELEASE_VERSION} -e NEXT_DEVELOPMENT_VERSION ${NEXT_DEVELOPMENT_VERSION} -s release.cmds
+cd ..
+rm -rf cerberus-source
+
+# Waiting for cerberus-source's artifact availability from Sourceforge
+while [[ `curl -s -o /dev/null -w "%{http_code}" https://sourceforge.net/projects/cerberus-source/files/Cerberus-${RELEASE_VERSION}.zip/download` != '302' ]]; do echo 'Artifact Cerberus-${RELEASE_VERSION}.zip is not yet ready to be downloaded from Sourceforge. Sleeping 10s and retry.' && sleep 10; done
+
+# Release of the cerberus-as-glassfish project
+rm -rf cerberus-docker
+git clone git@github.com:cerberustesting/cerberus-docker.git
+cd cerberus-docker/images/cerberus-as-glassfish
+${RUNCMDS_PATH} -e RELEASE_VERSION ${RELEASE_VERSION} -s release.cmds
+cd ../../..
+rm -rf cerberus-docker
+
+# Restore current directory to the initial one
+cd ..

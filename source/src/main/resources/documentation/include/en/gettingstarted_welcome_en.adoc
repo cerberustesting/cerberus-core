@@ -44,6 +44,19 @@ You will find below definitions of Cerberus common terms.
 * *System* : Business Application ou CI
 * *Test* : Group of TestCases, Test is also considered as an application function. Executions can be sorted by Test.
 
+==== Représentation
+
+You will find in this section a grphical representation of the main Cerberus elements.
+
+Below the system :
+
+image:systemillustration.png[SystemIllustration]
+
+Below the test case :
+
+image:testcaseillustration.png[TestCaseIllustration]
+
+
 ==== Tutorials
 
 *First steps as an administrator*

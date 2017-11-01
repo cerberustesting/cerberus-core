@@ -1,0 +1,16 @@
+*Bug fixes*
+[square]
+
+*Improvements / New features*
+[square]
+
+*Warning to be considered before applying the version (deprecated features)*
+[square]
+* Upgrade Java to v1.8
+* Upgrade Spring framework to 5.0.0.RELEASE
+* Upgrade Guava to 23.0
+* Upgrade Appium java-client to 5.0.4
+* Upgrade Selenium to 3.6.0
+
+
+

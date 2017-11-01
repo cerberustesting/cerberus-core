@@ -400,7 +400,6 @@ public class SeleniumServerService implements ISeleniumServerService {
                 capabilities = DesiredCapabilities.firefox();
                 FirefoxProfile profile = new FirefoxProfile();
                 profile.setPreference("app.update.enabled", false);
-                profile.setEnableNativeEvents(true);
                 try {
                     Invariant invariant = invariantService.convert(invariantService.readByKey("COUNTRY", tCExecution.getCountry()));
                     if (invariant.getGp2() == null) {

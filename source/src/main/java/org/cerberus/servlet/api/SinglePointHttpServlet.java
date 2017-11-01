@@ -271,7 +271,7 @@ public abstract class SinglePointHttpServlet<REQUEST extends Validable, RESPONSE
     protected void writeHelperMessage(final HttpServletResponse resp) throws IOException {
         resp.setContentType(JSON_HTTP_MAPPER.getResponseContentType());
         resp.setCharacterEncoding(JSON_HTTP_MAPPER.getResponseCharacterEncoding());
-        resp.getWriter().print(JSON_HTTP_MAPPER.serialize(getInfo()));
+        resp.getWriter().print(JSON_HTTP_MAPPER.serialize(getInfo()).toString());
         resp.getWriter().flush();
     }
 
@@ -280,7 +280,7 @@ public abstract class SinglePointHttpServlet<REQUEST extends Validable, RESPONSE
         resp.setContentType(JSON_HTTP_MAPPER.getResponseContentType());
         resp.setCharacterEncoding(JSON_HTTP_MAPPER.getResponseCharacterEncoding());
         if (errorMessage != null) {
-            resp.getWriter().print(JSON_HTTP_MAPPER.serialize(errorMessage));
+            resp.getWriter().print(JSON_HTTP_MAPPER.serialize(errorMessage).toString());
         }
         resp.getWriter().flush();
     }
@@ -288,7 +288,7 @@ public abstract class SinglePointHttpServlet<REQUEST extends Validable, RESPONSE
     protected void writeResponse(final Object response, final HttpServletResponse resp) throws IOException {
         resp.setContentType(getHttpMapper().getResponseContentType());
         resp.setCharacterEncoding(getHttpMapper().getResponseCharacterEncoding());
-        resp.getWriter().print(getHttpMapper().serialize(response));
+        resp.getWriter().print(getHttpMapper().serialize(response).toString());
         resp.getWriter().flush();
     }
 

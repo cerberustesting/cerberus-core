@@ -43,6 +43,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.geom.Line2D;
+import java.time.Duration;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -156,9 +157,12 @@ public abstract class AppiumService implements IAppiumService {
     /**
      * Get the {@link Coordinates} represented by the given {@link Identifier}
      *
-     * @param identifier the {@link Identifier} to parse to get the {@link Coordinates}
-     * @return the {@link Coordinates} represented by the given {@link Identifier}
-     * @throws NoSuchElementException if no {@link Coordinates} can be found inside the given {@link Identifier}
+     * @param identifier the {@link Identifier} to parse to get the
+     * {@link Coordinates}
+     * @return the {@link Coordinates} represented by the given
+     * {@link Identifier}
+     * @throws NoSuchElementException if no {@link Coordinates} can be found
+     * inside the given {@link Identifier}
      */
     private Coordinates getCoordinates(final Identifier identifier) {
         if (identifier == null || !identifier.isSameIdentifier(Identifier.Identifiers.COORDINATE)) {
@@ -177,7 +181,7 @@ public abstract class AppiumService implements IAppiumService {
             throw new NoSuchElementException("Bad coordinates format", e);
         }
     }
-    
+
     private By getBy(Identifier identifier) {
 
         LOG.debug("Finding selenium Element : " + identifier.getLocator() + " by : " + identifier.getIdentifier());
@@ -292,13 +296,11 @@ public abstract class AppiumService implements IAppiumService {
             Parameter duration = parameters.findParameterByKey(APPIUM_SWIPE_DURATION_PARAMETER, "");
 
             // Do the swipe thanks to the Appium driver
-            session.getAppiumDriver().swipe(
-                    direction.getX1(),
-                    direction.getY1(),
-                    direction.getX2(),
-                    direction.getY2(),
-                    duration == null ? DEFAULT_APPIUM_SWIPE_DURATION : Integer.parseInt(duration.getValue())
-            );
+            TouchAction dragNDrop
+                    = new TouchAction(session.getAppiumDriver()).longPress(direction.getX1(), direction.getY1(), Duration.ofMillis(duration == null ? DEFAULT_APPIUM_SWIPE_DURATION : Integer.parseInt(duration.getValue())))
+                            .moveTo(direction.getX2(), direction.getY2()).release();
+            dragNDrop.perform();
+
             return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SWIPE).resolveDescription("DIRECTION", action.getActionType().name());
         } catch (Exception e) {
             LOG.warn("Unable to swipe screen due to " + e.getMessage(), e);

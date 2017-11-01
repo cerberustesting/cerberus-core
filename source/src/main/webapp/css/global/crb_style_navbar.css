@@ -247,14 +247,38 @@
     height: 100%;
     border-top: 1px solid #e7e7e7;
 }
+
+#burger{
+	display: none;	
+}
+
 @media (min-width: 768px){
     #page-layout.extended{
         margin: 0 0 0 60px;
     }
 }
+
+@media (max-width: 768px){
+    .navbar-static-top{
+    	margin-left:0px;
+    	z-index:-99;
+    }
+    
+    #side-menu li:not(.MainItem){
+    	display:none;
+    }
+    
+    #burger{
+    	display:block;
+    }
+}
+
 .sidebar ul li {
     border-bottom: 0px;
 }
+
+
+
 /* overide sb-admin.css for the style of the toggle button for the subnavlist */
 .sidebar .fa.arrow:before {
     content: "\f107";/*angle down*/

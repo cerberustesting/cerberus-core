@@ -179,7 +179,7 @@ function deleteEntryClick(test, testCase) {
 function deleteEntryHandlerClick() {
     var test = $('#confirmationModal').find('#hiddenField1').prop("value");
     var testCase = $('#confirmationModal').find('#hiddenField2').prop("value");
-    var jqxhr = $.post("DeleteTestCase2", {test: test, testCase: testCase}, "json");
+    var jqxhr = $.post("DeleteTestCase", {test: test, testCase: testCase}, "json");
     $.when(jqxhr).then(function (data) {
         var messageType = getAlertType(data.messageType);
         if (messageType === "success") {

@@ -46,6 +46,18 @@ Ci-dessous vous trouverez la définition des termes couramment utilisés dans Ce
 * *Système* : Application métier ou CI
 * *Test* : Ensemble de cas de tests regroupés découpés par fonction d'application. Les exécutions de cas de tests peuvent être triées par Test.
 
+==== Représentation
+
+Vous trouverez dans cette section la représentation graphique des éléments principaux de Cerberus.
+
+Ci-dessous une représentation du système :
+
+image:systemillustration.png[SystemIllustration]
+
+Ci-dessous une représentation d'un cas de test :
+
+image:testcaseillustration.png[TestCaseIllustration]
+
 ==== Tutoriels
 
 *Mes premiers pas en tant qu’administrateur*
