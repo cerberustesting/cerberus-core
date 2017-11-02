@@ -95,6 +95,7 @@
                                             <li><a href="#" class="btn btn-default" id="lastExecutionwithEnvCountry"><span class="glyphicon glyphicon-fast-backward"></span> Last Executions With Country Env</a></li>
                                             <li><a href="#" class="btn btn-default" id="ExecutionByTag" style="margin-left: 1px; margin-right: 1px;"><span class="glyphicon glyphicon-tasks"></span> See Execution By Tag</a></li>
                                             <li><a href="#" class="btn btn-default" id="ExecutionQueue"><span class="glyphicon glyphicon-tasks"></span> See Queue Parameters</a></li>
+                                            <li><a href="#" class="btn btn-default" id="ExecutionQueueByTag"><span class="glyphicon glyphicon-tasks"></span> See Queue By Tag</a></li>
                                         </ul>
                                     </div>
                                     <div class="btn-group pull-right">

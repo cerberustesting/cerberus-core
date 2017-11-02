@@ -216,7 +216,7 @@ function updatePage(data, stepList) {
     $("#lastExecution").attr("disabled", false);
     $("#lastExecution").attr("href", "TestCaseExecutionList.jsp?test=" + data.test + "&testcase=" + data.testcase);
 
-
+    $("#ExecutionQueueByTag").attr("href", "TestCaseExecutionQueueList.jsp?tag="+data.tag);
 
     $("#ExecutionByTag").attr("href", "ReportingExecutionByTag.jsp?Tag=" + data.tag);
     $("#lastExecutionwithEnvCountry").attr("href", "TestCaseExecutionList.jsp?test=" + data.test + "&testcase=" + data.testcase + "&country=" + data.country + "&environment=" + data.environment + "&application=" + data.application);

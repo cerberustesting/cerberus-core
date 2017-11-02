@@ -30,6 +30,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
 
 function initPage() {
     var searchS = GetURLParameter("search");
+    var myTag = GetURLParameter("tag");
 
     displayPageLabel();
 
@@ -42,6 +43,10 @@ function initPage() {
 
     if (searchS !== null) {
         table.search(searchS).draw();
+    }
+    
+    if(myTag !== null){
+    	filterTag(myTag);
     }
 
     // React on table redraw
@@ -164,6 +169,10 @@ function filterPending() {
 
 function filterERunning() {
     filterOnColumn("executionsTable", "state", "EXECUTING,STARTING,WAITING");
+}
+
+function filterTag(myTag){
+	filterOnColumn("executionsTable", "tag", myTag)
 }
 
 function displayPageLabel() {
