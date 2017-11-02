@@ -879,10 +879,11 @@ function renderOptionsForExeList(selectTag) {
 
 function massAction_copyQueue() {
 
+    clearResponseMessageMainPage();
+
     var doc = new Doc();
     var formList = $('#massActionForm');
     var paramSerialized = formList.serialize();
-    console.info(paramSerialized);
 
     if (paramSerialized.indexOf("id") === -1) {
         var localMessage = new Message("danger", doc.getDocLabel("page_global", "message_massActionError"));

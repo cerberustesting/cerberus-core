@@ -135,7 +135,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
             Tag mytag = tagService.convert(tagService.readByKey(Tag));
             JSONObject tagJSON = convertTagToJSONObject(mytag);
             jsonResponse.put("tagObject", tagJSON);
-            jsonResponse.put("tagDuration", (mytag.getDateEndQueue().getTime()-mytag.getDateCreated().getTime())/60000);
+            jsonResponse.put("tagDuration", (mytag.getDateEndQueue().getTime() - mytag.getDateCreated().getTime()) / 60000);
 
             answer.setItem(jsonResponse);
             answer.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
@@ -171,10 +171,15 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         result.put("ControlStatus", JavaScriptUtils.javaScriptEscape(testCaseExecution.getControlStatus()));
         result.put("ControlMessage", JavaScriptUtils.javaScriptEscape(testCaseExecution.getControlMessage()));
         result.put("Status", JavaScriptUtils.javaScriptEscape(testCaseExecution.getStatus()));
-        result.put("QueueState", JavaScriptUtils.javaScriptEscape(testCaseExecution.getQueueState()));
+        if (testCaseExecution.getQueueState() != null) {
+            result.put("QueueState", JavaScriptUtils.javaScriptEscape(testCaseExecution.getQueueState()));
+        }
 
         String bugId;
-        if (testCaseExecution.getTestCaseObj() != null) {
+        String comment;
+        String function;
+        String shortDesc;
+        if ((testCaseExecution.getTestCaseObj() != null) && (testCaseExecution.getTestCaseObj().getTest() != null)) {
             if (testCaseExecution.getApplicationObj() != null && testCaseExecution.getApplicationObj().getBugTrackerUrl() != null
                     && !"".equals(testCaseExecution.getApplicationObj().getBugTrackerUrl()) && testCaseExecution.getTestCaseObj().getBugID() != null) {
                 bugId = testCaseExecution.getApplicationObj().getBugTrackerUrl().replace("%BUGID%", testCaseExecution.getTestCaseObj().getBugID());
@@ -187,16 +192,23 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
             } else {
                 bugId = testCaseExecution.getTestCaseObj().getBugID();
             }
+            comment = JavaScriptUtils.javaScriptEscape(testCaseExecution.getTestCaseObj().getComment());
+            function = JavaScriptUtils.javaScriptEscape(testCaseExecution.getTestCaseObj().getFunction());
+            shortDesc = testCaseExecution.getTestCaseObj().getDescription();
         } else {
             bugId = "";
+            comment = "";
+            function = "";
+            shortDesc = "";
         }
         result.put("BugID", bugId);
 
-        result.put("Comment", JavaScriptUtils.javaScriptEscape(testCaseExecution.getTestCaseObj().getComment()));
         result.put("Priority", JavaScriptUtils.javaScriptEscape(String.valueOf(testCaseExecution.getTestCaseObj().getPriority())));
-        result.put("Function", JavaScriptUtils.javaScriptEscape(testCaseExecution.getTestCaseObj().getFunction()));
+        result.put("Comment", comment);
+        result.put("Function", function);
+        result.put("ShortDescription", shortDesc);
+
         result.put("Application", JavaScriptUtils.javaScriptEscape(testCaseExecution.getApplication()));
-        result.put("ShortDescription", testCaseExecution.getTestCaseObj().getDescription());
 
         return result;
     }
