@@ -354,6 +354,7 @@ function loadReportList(data2, selectTag) {
         var table = createDataTableWithPermissions(config, undefined, "#tableArea", undefined, undefined, undefined, createShortDescRow);
         $('#listTable_wrapper').not('.initialized').addClass('initialized');
         hideLoader($("#listReport"));
+        renderOptionsForExeList(selectTag);
     }
 }
 
@@ -842,6 +843,67 @@ function openModalTestCase_FromRepTag(element, test, testcase, mode) {
     });
 }
 
+function selectAllQueue(status) {
+    if ($('#selectAllQueue' + status).prop("checked")) {
+        $("[data-line='select" + status + "']").prop("checked", true);
+    } else {
+        $("[data-line='select" + status + "']").prop("checked", false);
+    }
+}
+
+function renderOptionsForExeList(selectTag) {
+    if ($("#blankSpace").length === 0) {
+        var doc = new Doc();
+        var contentToAdd = "<div class='marginBottom10' style='height:34px;' id='blankSpace'>";
+        contentToAdd += "<label>Select all/none</label>";
+        contentToAdd += "<input id='selectAllQueueFA' type='checkbox'>FA</input>";
+        contentToAdd += "<input id='selectAllQueueKO' type='checkbox'>KO</input>";
+        contentToAdd += "<input id='selectAllQueueQU' type='checkbox'>QU</input>";
+        contentToAdd += "<button id='submitExe' type='button' class='btn btn-default'><span class='glyphicon glyphicon-play'></span> Submit Again</button>";
+        contentToAdd += "<a href='TestCaseExecutionQueueList.jsp?search=" + selectTag + "'><button id='openqueue' type='button' class='btn btn-default'><span class='glyphicon glyphicon-list'></span> Open Queue</button></a>";
+        contentToAdd += "</div>";
+
+        $("#listTable_wrapper div#listTable_filter").before(contentToAdd);
+        $('#selectAllQueueFA').click(function () {
+            selectAllQueue("FA");
+        });
+        $('#selectAllQueueKO').click(function () {
+            selectAllQueue("KO");
+        });
+        $('#selectAllQueueQU').click(function () {
+            selectAllQueue("QU");
+        });
+        $('#submitExe').click(massAction_copyQueue);
+    }
+}
+
+function massAction_copyQueue() {
+
+    clearResponseMessageMainPage();
+
+    var doc = new Doc();
+    var formList = $('#massActionForm');
+    var paramSerialized = formList.serialize();
+
+    if (paramSerialized.indexOf("id") === -1) {
+        var localMessage = new Message("danger", doc.getDocLabel("page_global", "message_massActionError"));
+        showMessage(localMessage, null);
+    } else {
+
+        var jqxhr = $.post("CreateTestCaseExecutionQueue", paramSerialized + "&actionState=toQUEUED&actionSave=save", "json");
+        $.when(jqxhr).then(function (data) {
+            // unblock when remote call returns 
+            if ((getAlertType(data.messageType) === "success") || (getAlertType(data.messageType) === "warning")) {
+                showMessage(data);
+            } else {
+                showMessage(data);
+            }
+        }).fail(handleErrorAjaxAfterTimeout);
+    }
+
+}
+
+
 function aoColumnsFunc(Columns) {
     var doc = new Doc();
     var colLen = Columns.length;
@@ -907,16 +969,30 @@ function aoColumnsFunc(Columns) {
                     var executionLink = generateExecutionLink(data.ControlStatus, data.ID, tag);
                     var glyphClass = getRowClass(data.ControlStatus);
                     var tooltip = generateTooltip(data);
-                    var cell = '<div class="progress-bar status' + data.ControlStatus + '"';
+                    var cell = "";
+                    cell += '<table class="table"><tr>';
+                    if ((data.QueueID !== undefined) && (data.QueueID !== "0")) {
+                        cell += '<td><input id="selectLine" name="id" value=' + data.QueueID + ' data-line="select' + data.ControlStatus + '" data-id="' + data.QueueID + '" title="Select for Action" type="checkbox"></input></td>';
+                    }
+                    if (data.ControlStatus === "QU") {
+                        cell += '<td><div class="progress-bar progress-bar-queue status' + data.ControlStatus + '" ';
+                    } else {
+                        cell += '<td><div class="progress-bar status' + data.ControlStatus + '" ';
+                    }
                     cell += 'role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;cursor: pointer; height: 40px;"';
                     cell += 'data-toggle="tooltip" data-html="true" title="' + tooltip + '"';
                     if (data.ControlStatus === "QU") {
-                        cell = cell + ' onclick="openModalTestCaseExecutionQueue(' + data.QueueID + ', \'EDIT\');">\n\' ';
+                        cell += ' onclick="openModalTestCaseExecutionQueue(' + data.QueueID + ', \'EDIT\');">\n\' ';
                     } else {
-                        cell = cell + ' onclick="window.open(\'' + executionLink + '\')">';
+                        cell += ' onclick="window.open(\'' + executionLink + '\')">';
                     }
-                    cell = cell + '<span class="' + glyphClass.glyph + ' marginRight5"></span>';
-                    cell += '<span>' + data.ControlStatus + '<span></div>';
+                    cell += '<span class="' + glyphClass.glyph + ' marginRight5"></span>';
+                    cell += '<span>' + data.ControlStatus + '<span>';
+                    if (data.QueueState !== undefined) {
+                        cell += '<br><span style="font-size: xx-small">' + data.QueueState + '<span>';
+                    }
+                    cell += '</div>';
+                    cell += "</td></tr></table>";
                     return cell;
                 } else {
                     return data;
