@@ -83,12 +83,14 @@ import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.WebDriverException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 
 /**
  *
  * @author bcivel
  */
+@EnableAsync
 @Service
 public class ExecutionRunService implements IExecutionRunService {
 

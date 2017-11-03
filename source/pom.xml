@@ -51,18 +51,17 @@
         <log4j.version>2.9.1</log4j.version>
         <jackson-core-asl.version>1.7.1</jackson-core-asl.version>
         <jcommon.version>1.0.16</jcommon.version>
-        <commons-fileupload.version>1.3.1</commons-fileupload.version>
-        <commons-io.version>2.2</commons-io.version>
+        <commons-fileupload.version>1.3.3</commons-fileupload.version>
+        <commons-io.version>2.5</commons-io.version>
         <mockito-all.version>1.9.5</mockito-all.version>
-        <commons-net.version>2.0</commons-net.version>
+        <commons-net.version>3.6</commons-net.version>
         <jackson-mapper-asl.version>1.7.1</jackson-mapper-asl.version>
         <java-image-scaling.version>0.8.5</java-image-scaling.version>
-        <mime-util.version>2.1.3</mime-util.version>
         <guava.version>23.0</guava.version>
         <xmlunit.version>1.5</xmlunit.version>
         <elfinder-servlet.version>1.2.0</elfinder-servlet.version>
         <websocket.version>1.1</websocket.version>
-        <gson.version>2.8.2</gson.version>
+        <gson.version>2.8.0</gson.version>
         <jsonxpath.version>2.4.0</jsonxpath.version>
         <poi.version>3.13</poi.version>
         <appium.version>5.0.4</appium.version>
@@ -204,11 +203,6 @@
             <version>${java-image-scaling.version}</version>
         </dependency>
         <dependency>
-            <groupId>eu.medsea.mimeutil</groupId>
-            <artifactId>mime-util</artifactId>
-            <version>${mime-util.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-email</artifactId>
             <version>${commons-email.version}</version>
@@ -216,6 +210,16 @@
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
+            <version>${log4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-web</artifactId>
+            <version>${log4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
             <version>${log4j.version}</version>
         </dependency>
         <dependency>
@@ -310,6 +314,7 @@
                 <includes>
                     <include>lang/**/*.properties</include>
                     <include>xsd/**/*.xsd</include>
+                    <include>*.properties</include>
                 </includes>
                 <filtering>true</filtering>
             </resource>
