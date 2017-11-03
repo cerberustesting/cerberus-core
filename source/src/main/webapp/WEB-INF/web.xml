@@ -2170,7 +2170,7 @@
     </context-param>
     <context-param>
         <param-name>log4jConfigLocation</param-name>
-        <param-value>../../resources/log4j.properties</param-value>
+        <param-value>/WEB-INF/log4j.properties</param-value>
     </context-param>
     <listener>
         <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
