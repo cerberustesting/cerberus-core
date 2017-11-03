@@ -81,6 +81,7 @@ public class TestCaseExecution {
      * From here are data outside database model.
      */
     // Execution Parameters
+    private String queueState;
     private int verbose;
     private int screenshot;
     private String outputFormat;
@@ -137,6 +138,14 @@ public class TestCaseExecution {
     public static final String CONTROLSTATUS_CA = "CA";
     public static final String CONTROLSTATUS_FA = "FA";
     public static final String CONTROLSTATUS_QU = "QU";
+
+    public String getQueueState() {
+        return queueState;
+    }
+
+    public void setQueueState(String queueState) {
+        this.queueState = queueState;
+    }
 
     public TestCaseExecutionQueue getTestCaseExecutionQueue() {
         return testCaseExecutionQueue;

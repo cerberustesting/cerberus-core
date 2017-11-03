@@ -144,6 +144,12 @@
     margin-top: 10px;
 }
 
+.progress-bar-queue span {
+    font-weight: bold;
+    color: white;
+    margin-top: 0px;
+}
+
 .test-link {
     font-weight: normal;
     margin-left: 10px;

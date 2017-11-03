@@ -247,7 +247,9 @@
                         </div>
                         <div class="panel-body collapse in" id="listReport">
                             <div id="tableArea">
-                                <table id="listTable" class="table display" name="listTable"></table>
+                                <form id="massActionForm" name="massActionForm"  title="" role="form">
+                                    <table id="listTable" class="table display" name="listTable"></table>
+                                </form>
                                 <div class="marginBottom20"></div>
                             </div>
                         </div>

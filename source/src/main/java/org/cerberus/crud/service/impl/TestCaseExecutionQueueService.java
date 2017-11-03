@@ -268,6 +268,7 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
                 seleniumLog, synchroneous, timeout, outputFormat, "", "", tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL,
                 myEnvData, seleniumIP, seleniumPort, null, null, null, retry, "", null, "", "", "", "", "", manualExecution, "");
         result.setQueueID(testCaseExecutionInQueue.getId());
+        result.setQueueState(testCaseExecutionInQueue.getState().name());
         result.setId(testCaseExecutionInQueue.getExeId());
         return result;
     }

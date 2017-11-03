@@ -346,7 +346,6 @@ public class ServiceService implements IServiceService {
                         break;
 
                     case AppService.TYPE_REST:
-                    	System.out.println(appService.getMethod());
 
                         /**
                          * REST.

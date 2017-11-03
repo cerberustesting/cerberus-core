@@ -95,7 +95,7 @@ public class RestService implements IRestService {
      * into database)
      */
     private static final boolean DEFAULT_PROXY_ACTIVATE = false;
-    private static final String DEFAULT_PROXY_HOST = "proxy.siege.red";
+    private static final String DEFAULT_PROXY_HOST = "proxy";
     private static final int DEFAULT_PROXY_PORT = 80;
     private static final boolean DEFAULT_PROXYAUTHENT_ACTIVATE = false;
     private static final String DEFAULT_PROXYAUTHENT_USER = "squid";
