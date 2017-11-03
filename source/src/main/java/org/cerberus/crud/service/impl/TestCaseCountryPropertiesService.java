@@ -22,7 +22,8 @@ package org.cerberus.crud.service.impl;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import org.apache.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.dao.ITestCaseCountryPropertiesDAO;
 import org.cerberus.crud.dao.ITestCaseStepActionDAO;
 import org.cerberus.engine.entity.MessageEvent;
@@ -32,7 +33,6 @@ import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.ITestCaseCountryPropertiesService;
 import org.cerberus.crud.service.ITestCaseService;
 import org.cerberus.util.answer.Answer;
@@ -62,7 +62,7 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
 
     private final String OBJECT_NAME = "TestCaseCountryProperties";
 
-    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(CountryEnvironmentDatabaseService.class);
+    private static final Logger LOG = LogManager.getLogger(CountryEnvironmentDatabaseService.class);
 
     @Override
     public List<TestCaseCountryProperties> findListOfPropertyPerTestTestCaseCountry(String test, String testCase, String country) {
@@ -105,7 +105,7 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
             try {
                 insertTestCaseCountryProperties(tccp);
             } catch (CerberusException ex) {
-                MyLogger.log(TestCaseStepService.class.getName(), Level.FATAL, ex.toString());
+                LOG.warn(ex.toString());
                 return false;
             }
         }

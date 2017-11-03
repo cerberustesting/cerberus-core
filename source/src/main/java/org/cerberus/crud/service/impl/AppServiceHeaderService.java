@@ -22,7 +22,8 @@ package org.cerberus.crud.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.IAppServiceHeaderDAO;
 import org.cerberus.crud.entity.AppServiceHeader;
 import org.cerberus.crud.service.IAppServiceHeaderService;
@@ -48,7 +49,7 @@ public class AppServiceHeaderService implements IAppServiceHeaderService {
     @Autowired
     private IAppServiceHeaderDAO AppServiceHeaderDAO;
 
-    private static final Logger LOG = Logger.getLogger(AppServiceHeaderService.class);
+    private static final Logger LOG = LogManager.getLogger(AppServiceHeaderService.class);
 
     private final String OBJECT_NAME = "Service Header";
 

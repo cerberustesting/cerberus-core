@@ -48,7 +48,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  */
 public class ForgotPassword extends HttpServlet {
 
-    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(ForgotPassword.class);
+    private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(ForgotPassword.class);
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>

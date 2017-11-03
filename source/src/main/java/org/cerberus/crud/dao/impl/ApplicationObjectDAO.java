@@ -31,7 +31,8 @@ import java.util.List;
 import java.util.Map;
 import javax.imageio.ImageIO;
 import org.apache.commons.fileupload.FileItem;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.IApplicationObjectDAO;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.ApplicationObject;
@@ -67,7 +68,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
     @Autowired
     private IParameterService parameterService;
 
-    private static final Logger LOG = Logger.getLogger(ApplicationObjectDAO.class);
+    private static final Logger LOG = LogManager.getLogger(ApplicationObjectDAO.class);
 
     private final String OBJECT_NAME = "ApplicationObject";
     private final String SQL_DUPLICATED_CODE = "23000";

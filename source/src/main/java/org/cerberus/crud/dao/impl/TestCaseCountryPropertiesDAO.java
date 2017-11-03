@@ -29,7 +29,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.ITestCaseCountryPropertiesDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.dto.PropertyListDTO;
@@ -66,7 +67,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
     @Autowired
     private IFactoryTestCaseCountryProperties factoryTestCaseCountryProperties;
 
-    private static final Logger LOG = Logger.getLogger(TestCaseCountryPropertiesDAO.class);
+    private static final Logger LOG = LogManager.getLogger(TestCaseCountryPropertiesDAO.class);
 
     private final String OBJECT_NAME = "TestCaseCountryProperties";
     private final String SQL_DUPLICATED_CODE = "23000";

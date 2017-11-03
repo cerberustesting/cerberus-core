@@ -25,12 +25,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.dao.ITestCaseExecutionwwwSumDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.crud.entity.StatisticSummary;
 import org.cerberus.crud.entity.TestCaseExecutionwwwSum;
-import org.cerberus.log.MyLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -44,6 +44,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class TestCaseExecutionwwwSumDAO implements ITestCaseExecutionwwwSumDAO {
 
+    private static final Logger LOG = LogManager.getLogger(TestCaseExecutionwwwSumDAO.class);
+    
     /**
      * Description of the variable here.
      */
@@ -99,19 +101,19 @@ public class TestCaseExecutionwwwSumDAO implements ITestCaseExecutionwwwSumDAO {
                 preStat.executeUpdate();
 
             } catch (SQLException exception) {
-                MyLogger.log(TestCaseExecutionwwwSumDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                LOG.warn("Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestCaseExecutionwwwSumDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            LOG.warn("Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(TestCaseExecutionwwwSumDAO.class.getName(), Level.WARN, e.toString());
+                LOG.warn(e.toString());
             }
         }
     }
@@ -156,24 +158,24 @@ public class TestCaseExecutionwwwSumDAO implements ITestCaseExecutionwwwSumDAO {
                         executionwwwSums.add(tcewwwsumToAdd);
                     }
                 } catch (SQLException ex) {
-                    MyLogger.log(TestCaseExecutionwwwSumDAO.class.getName(), Level.FATAL, ex.toString());
+                    LOG.warn(ex.toString());
                 } finally {
                     rs.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(TestCaseExecutionwwwSumDAO.class.getName(), Level.ERROR, exception.toString());
+                LOG.warn(exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestCaseExecutionwwwSumDAO.class.getName(), Level.ERROR, exception.toString());
+            LOG.warn(exception.toString());
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(TestCaseExecutionwwwSumDAO.class.getName(), Level.WARN, e.toString());
+                LOG.warn(e.toString());
             }
         }
         return executionwwwSums;

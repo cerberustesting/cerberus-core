@@ -26,9 +26,9 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import org.apache.log4j.Level;
-import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.IDocumentationService;
 import org.cerberus.util.ParameterParserUtil;
 import org.owasp.html.PolicyFactory;
@@ -45,6 +45,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  */
 @WebServlet(name = "DocumentationField", urlPatterns = {"/DocumentationField"})
 public class DocumentationField extends HttpServlet {
+    
+    private static final Logger LOG = LogManager.getLogger(DocumentationField.class);
 
     @Override
     protected void doGet(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws ServletException, IOException {
@@ -65,7 +67,7 @@ public class DocumentationField extends HttpServlet {
             httpServletResponse.setContentType("text/html");
             httpServletResponse.getWriter().print(result);
         } catch (Exception exception) {
-            MyLogger.log(DocumentationField.class.getName(), Level.WARN, exception.toString());
+            LOG.warn(exception.toString());
         }
     }
 }

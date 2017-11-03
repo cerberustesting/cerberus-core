@@ -28,7 +28,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.IApplicationDAO;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.factory.IFactoryApplication;
@@ -60,7 +61,7 @@ public class ApplicationDAO implements IApplicationDAO {
     @Autowired
     private IFactoryApplication factoryApplication;
 
-    private static final Logger LOG = Logger.getLogger(ApplicationDAO.class);
+    private static final Logger LOG = LogManager.getLogger(ApplicationDAO.class);
 
     private final String OBJECT_NAME = "Application";
     private final String SQL_DUPLICATED_CODE = "23000";

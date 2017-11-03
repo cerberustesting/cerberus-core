@@ -51,7 +51,7 @@ public class NewChain extends HttpServlet {
     private final String ITEM = "Environment";
     private final String OPERATION = "NewChain";
 
-    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger("NewChain");
+    private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger("NewChain");
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>

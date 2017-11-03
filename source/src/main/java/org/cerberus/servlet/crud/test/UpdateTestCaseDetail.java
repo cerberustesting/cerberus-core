@@ -36,8 +36,9 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import org.apache.log4j.Level;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.crud.entity.TestCaseStepAction;
@@ -46,7 +47,6 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.factory.IFactoryTestCaseCountryProperties;
 import org.cerberus.crud.factory.IFactoryTestCaseStepAction;
 import org.cerberus.crud.factory.IFactoryTestCaseStepActionControl;
-import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.ITestCaseCountryPropertiesService;
 import org.cerberus.crud.service.ITestCaseStepActionControlService;
@@ -62,6 +62,8 @@ import org.springframework.web.util.HtmlUtils;
 @WebServlet(name = "UpdateTestCaseDetail", urlPatterns = {"/UpdateTestCaseDetail"})
 public class UpdateTestCaseDetail extends HttpServlet {
 
+    private static final Logger LOG = LogManager.getLogger(UpdateTestCaseDetail.class);
+    
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -83,7 +85,7 @@ public class UpdateTestCaseDetail extends HttpServlet {
             // response.setContentType("text/html;charset=UTF-8");
             this.processRequest(request, response);
         } catch (CerberusException ex) {
-            java.util.logging.Logger.getLogger(UpdateTestCaseDetail.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
     }
 
@@ -94,7 +96,7 @@ public class UpdateTestCaseDetail extends HttpServlet {
             // response.setContentType("text/html;charset=UTF-8");
             this.processRequest(request, response);
         } catch (CerberusException ex) {
-            java.util.logging.Logger.getLogger(UpdateTestCaseDetail.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
     }
 
@@ -683,7 +685,7 @@ public class UpdateTestCaseDetail extends HttpServlet {
                                             + step_batch[j] + "' )");
 
                                 } catch (Exception e) {
-                                    MyLogger.log(UpdateTestCaseDetail.class.getName(), Level.FATAL, "Error on insert into TestCaseStepBatch: " + e.toString());
+                                    LOG.warn("Error on insert into TestCaseStepBatch: " + e.toString());
                                 }
                             }
                         }
@@ -738,7 +740,7 @@ public class UpdateTestCaseDetail extends HttpServlet {
                                 stmt4.executeUpdate(sql);
 
                             } catch (Exception e) {
-                                MyLogger.log(UpdateTestCaseDetail.class.getName(), Level.FATAL, "Error on insert into TestCaseStepBatch: " + e.toString());
+                                LOG.warn("Error on insert into TestCaseStepBatch: " + e.toString());
                             }
 
                         }
@@ -904,22 +906,19 @@ public class UpdateTestCaseDetail extends HttpServlet {
                 stmt4.close();
             }
         } catch (SQLException ex) {
-            MyLogger.log(UpdateTestCaseDetail.class.getName(), Level.FATAL,
-                    "" + ex);
+            LOG.warn(ex);
             // out.println ( UpdateTestCase.class.getName ( ) + ex ) ;
         } catch (NullPointerException ex) {
-            MyLogger.log(UpdateTestCaseDetail.class.getName(), Level.FATAL,
-                    "" + ex);
+            LOG.warn(ex);
         } catch (ArrayIndexOutOfBoundsException ex) {
-            MyLogger.log(UpdateTestCaseDetail.class.getName(), Level.FATAL,
-                    "" + ex);
+            LOG.warn(ex);
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(UpdateTestCaseDetail.class.getName(), Level.WARN, e.toString());
+                LOG.warn(e.toString());
             }
         }
 

@@ -20,7 +20,8 @@
 package org.cerberus.engine.execution.impl;
 
 import java.util.Objects;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.entity.AppService;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
@@ -61,9 +62,9 @@ public class ConditionService implements IConditionService {
     private IWebDriverService webdriverService;
 
     /**
-     * The associated {@link org.apache.log4j.Logger} to this class
+     * The associated {@link org.apache.logging.log4j.Logger} to this class
      */
-    private static final Logger LOG = Logger.getLogger(ConditionService.class);
+    private static final Logger LOG = LogManager.getLogger(ConditionService.class);
 
     @Override
     public AnswerItem<Boolean> evaluateCondition(String conditionOper, String conditionValue1, String conditionValue2, TestCaseExecution tCExecution) {

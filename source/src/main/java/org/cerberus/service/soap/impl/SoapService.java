@@ -47,7 +47,8 @@ import javax.xml.soap.SOAPConstants;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
 import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.AppService;
 import org.cerberus.crud.entity.AppServiceHeader;
 import org.cerberus.crud.factory.IFactoryAppService;
@@ -59,7 +60,6 @@ import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.log.MyLogger;
 import org.cerberus.service.proxy.IProxyService;
 import org.cerberus.service.soap.ISoapService;
 import org.cerberus.util.SoapUtil;
@@ -91,7 +91,7 @@ public class SoapService implements ISoapService {
     private static final String DEFAULT_PROXYAUTHENT_USER = "squid";
     private static final String DEFAULT_PROXYAUTHENT_PASSWORD = "squid";
 
-    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(SoapService.class);
+    private static final Logger LOG = LogManager.getLogger(SoapService.class);
 
     @Autowired
     private IFactoryAppService factoryAppService;
@@ -246,10 +246,10 @@ public class SoapService implements ISoapService {
             soapConnectionFactory = SOAPConnectionFactory.newInstance();
             soapConnection = soapConnectionFactory.createConnection();
 
-            MyLogger.log(SoapService.class.getName(), Level.DEBUG, "Connection opened");
+            LOG.debug("Connection opened");
 
             // Create SOAP Request
-            MyLogger.log(SoapService.class.getName(), Level.DEBUG, "Create request");
+            LOG.debug("Create request");
             SOAPMessage input = createSoapRequest(envelope, soapOperation, header, token);
 
             //Add attachment File if specified

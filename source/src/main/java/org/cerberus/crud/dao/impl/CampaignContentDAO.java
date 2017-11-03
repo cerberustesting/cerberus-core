@@ -25,8 +25,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.ICampaignContentDAO;
 import org.cerberus.crud.entity.Campaign;
 import org.cerberus.crud.entity.CampaignContent;
@@ -37,7 +37,6 @@ import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.log.MyLogger;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
@@ -57,7 +56,7 @@ public class CampaignContentDAO implements ICampaignContentDAO {
     @Autowired
     private IFactoryCampaignContent factoryCampaignContent;
 
-    private static final Logger LOG = Logger.getLogger(CampaignContentDAO.class);
+    private static final Logger LOG = LogManager.getLogger(CampaignContentDAO.class);
 
     private final String OBJECT_NAME = "CampaignContent";
     private final String SQL_DUPLICATED_CODE = "23000";
@@ -108,19 +107,19 @@ public class CampaignContentDAO implements ICampaignContentDAO {
                         campaignContentList.add(this.loadFromResultSet(resultSet));
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(CampaignContentDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    LOG.warn("Unable to execute query : " + exception.toString());
                     campaignContentList = null;
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(CampaignContentDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                LOG.warn("Unable to execute query : " + exception.toString());
                 campaignContentList = null;
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(CampaignContentDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            LOG.warn("Unable to execute query : " + exception.toString());
             campaignContentList = null;
         } finally {
             try {
@@ -128,7 +127,7 @@ public class CampaignContentDAO implements ICampaignContentDAO {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(CampaignContentDAO.class.getName(), Level.WARN, e.toString());
+                LOG.warn("Exception closing connection : " + e.toString());
             }
         }
         if (throwEx) {
@@ -154,24 +153,24 @@ public class CampaignContentDAO implements ICampaignContentDAO {
                         campaignContent = this.loadFromResultSet(resultSet);
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(CampaignContentDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    LOG.warn("Unable to execute query : " + exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(CampaignContentDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                LOG.warn("Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(CampaignContentDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            LOG.warn("Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(CampaignContentDAO.class.getName(), Level.WARN, e.toString());
+                LOG.warn(e.toString());
             }
         }
         if (throwEx) {
@@ -197,19 +196,19 @@ public class CampaignContentDAO implements ICampaignContentDAO {
                         campaignContentList.add(this.loadFromResultSet(resultSet));
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(CampaignContentDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    LOG.warn("Unable to execute query : " + exception.toString());
                     campaignContentList = null;
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(CampaignContentDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                LOG.warn("Unable to execute query : " + exception.toString());
                 campaignContentList = null;
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(CampaignContentDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            LOG.warn("Unable to execute query : " + exception.toString());
             campaignContentList = null;
         } finally {
             try {
@@ -217,7 +216,7 @@ public class CampaignContentDAO implements ICampaignContentDAO {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(CampaignContentDAO.class.getName(), Level.WARN, e.toString());
+                LOG.warn(e.toString());
             }
         }
         if (throwEx) {
@@ -243,19 +242,19 @@ public class CampaignContentDAO implements ICampaignContentDAO {
                         campaignContentList.add(this.loadFromResultSet(resultSet));
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(CampaignContentDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    LOG.warn("Unable to execute query : " + exception.toString());
                     campaignContentList = null;
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(CampaignContentDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                LOG.warn("Unable to execute query : " + exception.toString());
                 campaignContentList = null;
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(CampaignContentDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            LOG.warn("Unable to execute query : " + exception.toString());
             campaignContentList = null;
         } finally {
             try {
@@ -263,7 +262,7 @@ public class CampaignContentDAO implements ICampaignContentDAO {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(CampaignContentDAO.class.getName(), Level.WARN, e.toString());
+                LOG.warn(e.toString());
             }
         }
         if (throwEx) {
@@ -313,19 +312,19 @@ public class CampaignContentDAO implements ICampaignContentDAO {
                         campaignContentsList.add(this.loadFromResultSet(resultSet));
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(CampaignContentDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    LOG.warn("Unable to execute query : " + exception.toString());
                     campaignContentsList = null;
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(CampaignContentDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                LOG.warn("Unable to execute query : " + exception.toString());
                 campaignContentsList = null;
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(CampaignContentDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            LOG.warn("Unable to execute query : " + exception.toString());
             campaignContentsList = null;
         } finally {
             try {
@@ -333,7 +332,7 @@ public class CampaignContentDAO implements ICampaignContentDAO {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(CampaignContentDAO.class.getName(), Level.WARN, e.toString());
+                LOG.warn(e.toString());
             }
         }
         if (throwEx) {
@@ -356,19 +355,19 @@ public class CampaignContentDAO implements ICampaignContentDAO {
             try {
                 return (preStat.executeUpdate() == 1);
             } catch (SQLException exception) {
-                MyLogger.log(CampaignContentDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                LOG.warn("Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(CampaignContentDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            LOG.warn("Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(CampaignContentDAO.class.getName(), Level.WARN, e.toString());
+                LOG.warn(e.toString());
             }
         }
         return false;
@@ -387,19 +386,19 @@ public class CampaignContentDAO implements ICampaignContentDAO {
             try {
                 return (preStat.executeUpdate() == 1);
             } catch (SQLException exception) {
-                MyLogger.log(CampaignContentDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                LOG.warn("Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(CampaignContentDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            LOG.warn("Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(CampaignContentDAO.class.getName(), Level.WARN, e.toString());
+                LOG.warn(e.toString());
             }
         }
         return false;
@@ -417,19 +416,19 @@ public class CampaignContentDAO implements ICampaignContentDAO {
             try {
                 return (preStat.executeUpdate() == 1);
             } catch (SQLException exception) {
-                MyLogger.log(CampaignContentDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                LOG.warn("Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(CampaignContentDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            LOG.warn("Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(CampaignContentDAO.class.getName(), Level.WARN, e.toString());
+                LOG.warn(e.toString());
             }
         }
         return false;
@@ -600,7 +599,7 @@ public class CampaignContentDAO implements ICampaignContentDAO {
                     }
 
                 } catch (SQLException exception) {
-                    MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    LOG.warn("Unable to execute query : " + exception.toString());
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
                     result.clear();
@@ -610,7 +609,7 @@ public class CampaignContentDAO implements ICampaignContentDAO {
                     }
                 }
             } catch (SQLException exception) {
-                MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                LOG.warn("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
             } finally {
@@ -619,7 +618,7 @@ public class CampaignContentDAO implements ICampaignContentDAO {
                 }
             }
         } catch (SQLException exception) {
-            MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            LOG.warn("Unable to execute query : " + exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
         } finally {
@@ -628,7 +627,7 @@ public class CampaignContentDAO implements ICampaignContentDAO {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(InvariantDAO.class.getName(), Level.WARN, e.toString());
+                LOG.warn(e.toString());
             }
         }
 

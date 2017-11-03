@@ -28,7 +28,7 @@ import org.json.JSONObject;
  */
 public class TestCaseExecutionFile {
 
-    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(TestCaseExecutionFile.class);
+    private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(TestCaseExecutionFile.class);
 
     private long id;
     private long exeId;

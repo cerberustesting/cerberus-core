@@ -27,7 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.IDeployTypeDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.crud.entity.DeployType;
@@ -52,7 +53,7 @@ public class DeployTypeDAO implements IDeployTypeDAO {
     @Autowired
     private IFactoryDeployType factoryDeployType;
 
-    private static final Logger LOG = Logger.getLogger(DeployTypeDAO.class);
+    private static final Logger LOG = LogManager.getLogger(DeployTypeDAO.class);
 
     private final String OBJECT_NAME = "Deploy Type";
     private final String SQL_DUPLICATED_CODE = "23000";

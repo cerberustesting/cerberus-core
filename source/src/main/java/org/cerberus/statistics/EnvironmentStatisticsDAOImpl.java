@@ -25,7 +25,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.entity.Invariant;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.database.DatabaseSpring;
@@ -44,7 +45,7 @@ public class EnvironmentStatisticsDAOImpl implements IEnvironmentStatisticsDAO {
     @Autowired
     private DatabaseSpring databaseSpring;
 
-    private static final Logger LOG = Logger.getLogger(EnvironmentStatisticsDAOImpl.class);
+    private static final Logger LOG = LogManager.getLogger(EnvironmentStatisticsDAOImpl.class);
 
     private final String OBJECT_NAME = "Environment Statistics";
     private final int MAX_ROW_SELECTED = 1000;

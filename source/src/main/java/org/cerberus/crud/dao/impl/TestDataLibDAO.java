@@ -28,7 +28,8 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.ITestDataLibDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.engine.entity.MessageEvent;
@@ -57,7 +58,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
     @Autowired
     private IFactoryTestDataLib factoryTestDataLib;
 
-    private static final Logger LOG = Logger.getLogger(TestDataLibDAO.class);
+    private static final Logger LOG = LogManager.getLogger(TestDataLibDAO.class);
 
     private final String OBJECT_NAME = "Test Data Library";
     private final String SQL_DUPLICATED_CODE = "23000";

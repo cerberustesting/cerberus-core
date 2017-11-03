@@ -26,12 +26,10 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.entity.Parameter;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.impl.ParameterService;
 import org.json.JSONArray;
@@ -46,6 +44,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @WebServlet(name = "GetParameter", urlPatterns = {"/GetParameter"})
 public class GetParameter extends HttpServlet {
 
+    private static final Logger LOG = LogManager.getLogger(GetParameter.class);
+    
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doPost(request, response);
@@ -56,7 +56,7 @@ public class GetParameter extends HttpServlet {
         String echo = request.getParameter("sEcho");
 
         String mySystem = request.getParameter("system");
-        Logger.getLogger(GetParameter.class.getName()).log(Level.DEBUG, "System : '" + mySystem + "'.");
+        LOG.debug("System : '" + mySystem + "'.");
 
         JSONArray data = new JSONArray(); //data that will be shown in the table
 
@@ -81,7 +81,7 @@ public class GetParameter extends HttpServlet {
             response.setContentType("application/json");
             response.getWriter().print(jsonResponse.toString());
         } catch (JSONException e) {
-            MyLogger.log(GetParameter.class.getName(), Level.FATAL, "" + e);
+            LOG.warn(e);
             response.setContentType("text/html");
             response.getWriter().print(e.getMessage());
         }

@@ -32,7 +32,8 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ITestCaseStepService;
@@ -60,7 +61,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @WebServlet(name = "DeleteTest1", urlPatterns = {"/DeleteTest1"})
 public class DeleteTest extends HttpServlet {
 
-    private static Logger LOGGER = Logger.getLogger(DeleteTest.class);
+    private static Logger LOGGER = LogManager.getLogger(DeleteTest.class);
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>

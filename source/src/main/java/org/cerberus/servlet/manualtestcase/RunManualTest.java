@@ -19,7 +19,6 @@
  */
 package org.cerberus.servlet.manualtestcase;
 
-import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -29,17 +28,15 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.*;
 import org.cerberus.crud.factory.IFactoryTestCaseStepActionControlExecution;
 import org.cerberus.crud.factory.IFactoryTestCaseStepActionExecution;
 import org.cerberus.crud.factory.IFactoryTestCaseStepExecution;
 import org.cerberus.crud.service.*;
 import org.cerberus.engine.execution.IRecorderService;
-import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.log.MyLogger;
-import org.cerberus.util.answer.AnswerItem;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -49,6 +46,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  */
 public class RunManualTest extends HttpServlet {
 
+    private static final Logger LOG = LogManager.getLogger(RunManualTest.class);
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -156,7 +154,7 @@ public class RunManualTest extends HttpServlet {
             resp.sendRedirect("TestCaseExecution.jsp?executionId=" + executionId);
 
         } catch (CerberusException e) {
-            MyLogger.log(RunManualTest.class.getName(), Level.FATAL, "" + e.getMessageError().getDescription());
+            LOG.warn(e.getMessageError().getDescription());
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             resp.setContentType("text/html");
             resp.getWriter().print(e.getMessageError().getDescription());

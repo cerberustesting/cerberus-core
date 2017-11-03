@@ -31,10 +31,10 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import org.apache.log4j.Level;
 import org.cerberus.database.DatabaseSpring;
-import org.cerberus.log.MyLogger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -43,6 +43,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  */
 @WebServlet(name = "TestcaseListGrid", urlPatterns = {"/TestcaseListGrid"})
 public class TestcaseListGrid extends HttpServlet {
+    
+    private static final Logger LOG = LogManager.getLogger(TestcaseListGrid.class);
 
     /**
      * Processes requests for both HTTP
@@ -195,7 +197,7 @@ public class TestcaseListGrid extends HttpServlet {
             sb2.append(number);
             sb2.append(",");
             sb2.append(count);
-            MyLogger.log(TestcaseListGrid.class.getName(), Level.INFO, "SQL query: " + sb2.toString());
+            LOG.info("SQL query: " + sb2.toString());
                 PreparedStatement stmt_testlist = conn.prepareStatement(sb2.toString());
                 try {
 //                    stmt_testlist.setString(1, url);
@@ -230,7 +232,7 @@ public class TestcaseListGrid extends HttpServlet {
             try {
                 conn.close();
             } catch (Exception ex) {
-                MyLogger.log(TestcaseListGrid.class.getName(), Level.INFO, "Exception closing Connection: " + ex.toString());
+                LOG.warn("Exception closing Connection: " + ex.toString());
             }
         }
 

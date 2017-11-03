@@ -19,15 +19,15 @@
     along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="org.apache.logging.log4j.LogManager"%>
+<%@page import="org.apache.logging.log4j.Logger"%>
 <%@page import="org.springframework.context.ApplicationContext"%>
 <%@page import="java.util.Date"%>
 <%@page import="java.util.ArrayList"%>
-<%@page import="org.apache.log4j.Level"%>
 <%@page import="org.springframework.web.context.support.WebApplicationContextUtils" %>
 <%@page import="org.cerberus.crud.factory.IFactoryMyversion"%>
 <%@page import="org.cerberus.crud.factory.impl.FactoryMyversion"%>
 <%@page import="org.cerberus.database.IDatabaseVersioningService"%>
-<%@page import="org.cerberus.log.MyLogger"%>
 <%@page import="org.cerberus.crud.entity.MyVersion"%>
 <%@page import="org.cerberus.crud.service.IMyVersionService"%>
 <% Date DatePageStart = new Date();%>
@@ -48,6 +48,8 @@
             <%@ include file="include/utils/modal-confirmation.html"%>
             <h1 class="page-title-line" id="title">Database Maintenance</h1>
             <%
+                Logger LOG = LogManager.getLogger("DatabaseMaintenance.jsp");
+
                 Integer NewVersion;
                 // Full script that create the cerberus database.
                 ArrayList<String> SQLInstruction;
@@ -125,7 +127,7 @@
                                 if ((i > DtbVersion.getValue()) && ((request.getParameter("GO") != null))) { // Only if the SQL has not been executed already. and button pressed.
                                     if ((i < SQLLimit) || (SQLExecuted == false)) { // After version SQLLimit, only 1 execution at a time.
                                         // Execute the SQL Here
-                                        MyLogger.log("DatabaseMaintenance.jsp", Level.INFO, "Execute SQL to version : " + i + " / " + SQLInstruction.size());
+                                        LOG.info("Execute SQL to version : " + i + " / " + SQLInstruction.size());
                                         MySQLRC = databaseVersionService.exeSQL(MySQL);
                                         SQLExecuted = true;
                                         SQLRC.add(MySQLRC);
@@ -233,7 +235,7 @@
                     }
 
                 } catch (Exception exception1) {
-                    MyLogger.log("DatabaseMaintenance.jsp", Level.ERROR, exception1.toString());
+                    LOG.warn(exception1.toString());
                     out.print(exception1.toString());
                 } finally {
                 }

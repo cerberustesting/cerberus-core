@@ -26,12 +26,11 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.Invariant;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.impl.InvariantService;
-import org.cerberus.exception.CerberusException;
-import org.cerberus.log.MyLogger;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.AnswerList;
 import org.json.JSONArray;
@@ -43,6 +42,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @WebServlet(name = "GetInvariantList", urlPatterns = {"/GetInvariantList"})
 public class GetInvariantList extends HttpServlet {
 
+    private static final Logger LOG = LogManager.getLogger(GetInvariantList.class);
+    
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doPost(request, response);
@@ -88,7 +89,7 @@ public class GetInvariantList extends HttpServlet {
             response.setContentType("application/json");
             response.getWriter().print(jsonResponse.toString());
         } catch (JSONException e) {
-            MyLogger.log(GetInvariantList.class.getName(), Level.FATAL, "" + e);
+            LOG.warn(e);
             response.setContentType("text/html");
             response.getWriter().print(e.getMessage());
         }

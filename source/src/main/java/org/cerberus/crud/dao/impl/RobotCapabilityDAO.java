@@ -26,7 +26,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.IRobotCapabilityDAO;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.Robot;
@@ -79,7 +80,7 @@ public class RobotCapabilityDAO implements IRobotCapabilityDAO {
     /**
      * The associated {@link Logger} to this class
      */
-    private static final Logger LOG = Logger.getLogger(RobotCapabilityDAO.class);
+    private static final Logger LOG = LogManager.getLogger(RobotCapabilityDAO.class);
 
     /**
      * The associated entity name to this DAO

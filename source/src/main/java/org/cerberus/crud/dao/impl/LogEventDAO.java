@@ -29,7 +29,8 @@ import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.ILogEventDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.crud.entity.LogEvent;
@@ -55,7 +56,7 @@ public class LogEventDAO implements ILogEventDAO {
     @Autowired
     private IFactoryLogEvent factoryLogEvent;
 
-    private static final Logger LOG = Logger.getLogger(LogEventDAO.class);
+    private static final Logger LOG = LogManager.getLogger(LogEventDAO.class);
 
     private final String OBJECT_NAME = "LogEvent";
     private final String SQL_DUPLICATED_CODE = "23000";

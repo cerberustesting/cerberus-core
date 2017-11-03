@@ -20,13 +20,13 @@
 package org.cerberus.servlet.crud.buildrevisionchange;
 
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.BuildRevisionParameters;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.factory.IFactoryBuildRevisionParameters;
@@ -52,6 +52,7 @@ import org.owasp.html.Sanitizers;
 @WebServlet(name = "CreateBuildRevisionParameters", urlPatterns = {"/CreateBuildRevisionParameters"})
 public class CreateBuildRevisionParameters extends HttpServlet {
 
+    private static final Logger LOG = LogManager.getLogger(CreateBuildRevisionParameters.class);
     private final String OBJECT_NAME = "BuildRevisionParameters";
 
     /**
@@ -153,9 +154,9 @@ public class CreateBuildRevisionParameters extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(CreateBuildRevisionParameters.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         } catch (JSONException ex) {
-            Logger.getLogger(CreateBuildRevisionParameters.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
     }
 
@@ -173,9 +174,9 @@ public class CreateBuildRevisionParameters extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(CreateBuildRevisionParameters.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         } catch (JSONException ex) {
-            Logger.getLogger(CreateBuildRevisionParameters.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
     }
 

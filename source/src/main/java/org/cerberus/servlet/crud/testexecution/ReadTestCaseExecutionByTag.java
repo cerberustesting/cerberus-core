@@ -30,7 +30,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -73,7 +74,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
     private ITestCaseExecutionQueueService testCaseExecutionInQueueService;
     private ITestCaseLabelService testCaseLabelService;
 
-    private static final Logger LOG = Logger.getLogger("ReadTestCaseExecutionByTag");
+    private static final Logger LOG = LogManager.getLogger("ReadTestCaseExecutionByTag");
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>

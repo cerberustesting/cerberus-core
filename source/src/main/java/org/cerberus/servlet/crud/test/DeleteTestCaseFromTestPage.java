@@ -20,14 +20,13 @@
 package org.cerberus.servlet.crud.test;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.crud.entity.TestCase;
@@ -47,6 +46,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  */
 public class DeleteTestCaseFromTestPage extends HttpServlet {
 
+    private static final Logger LOG = LogManager.getLogger(DeleteTestCaseFromTestPage.class);
+    
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -82,7 +83,7 @@ public class DeleteTestCaseFromTestPage extends HttpServlet {
                 }
             }
         } catch (CerberusException ex) {
-            Logger.getLogger(UserService.class.getName()).log(Level.ERROR, null, ex);
+            LOG.warn(ex);
         }
 
         response.sendRedirect("Test.jsp?stestbox="+testToDelete);

@@ -40,6 +40,8 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicHttpEntityEnclosingRequest;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.Invariant;
 import org.cerberus.engine.entity.MessageGeneral;
@@ -92,7 +94,7 @@ public class SeleniumServerService implements ISeleniumServerService {
     @Autowired
     IProxyService proxyService;
 
-    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(SeleniumServerService.class);
+    private static final Logger LOG = LogManager.getLogger(SeleniumServerService.class);
     /**
      * Proxy default config. (Should never be used as default config is inserted
      * into database)

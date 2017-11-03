@@ -26,14 +26,14 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.dao.ITestCaseExecutionwwwDetDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.crud.entity.StatisticDetail;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseExecutionwwwDet;
 import org.cerberus.crud.entity.TestCaseExecutionwwwSumHistoric;
-import org.cerberus.log.MyLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -47,6 +47,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class TestCaseExecutionwwwDetDAO implements ITestCaseExecutionwwwDetDAO {
 
+    private static final Logger LOG = LogManager.getLogger(TestCaseExecutionwwwDetDAO.class);
+    
     /**
      * Description of the variable here.
      */
@@ -87,22 +89,22 @@ public class TestCaseExecutionwwwDetDAO implements ITestCaseExecutionwwwDetDAO {
                 preStat.setString(12, detail.getPageRes());
 
                 preStat.executeUpdate();
-                MyLogger.log(TestCaseExecutionwwwDetDAO.class.getName(), Level.DEBUG, "Inserting detail. " + detail.getUrl());
+                LOG.debug("Inserting detail. " + detail.getUrl());
 
             } catch (SQLException exception) {
-                MyLogger.log(TestCaseExecutionwwwDetDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                LOG.warn("Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestCaseExecutionwwwDetDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            LOG.warn("Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(TestCaseExecutionwwwDetDAO.class.getName(), Level.WARN, e.toString());
+                LOG.warn(e.toString());
             }
         }
     }
@@ -125,24 +127,24 @@ public class TestCaseExecutionwwwDetDAO implements ITestCaseExecutionwwwDetDAO {
                         list.add(loadStatistic(resultSet));
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(TestCaseExecutionwwwDetDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    LOG.warn("Unable to execute query : " + exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(TestCaseExecutionwwwDetDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                LOG.warn("Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestCaseExecutionwwwDetDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            LOG.warn("Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(TestCaseExecutionwwwDetDAO.class.getName(), Level.WARN, e.toString());
+                LOG.warn(e.toString());
             }
         }
         return list;
@@ -195,24 +197,24 @@ public class TestCaseExecutionwwwDetDAO implements ITestCaseExecutionwwwDetDAO {
                         list.add(detail);
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(TestCaseExecutionwwwDetDAO.class.getName(), Level.FATAL, exception.toString());
+                    LOG.warn(exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(TestCaseExecutionwwwDetDAO.class.getName(), Level.ERROR, exception.toString());
+                LOG.warn(exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestCaseExecutionwwwDetDAO.class.getName(), Level.ERROR, exception.toString());
+            LOG.warn(exception.toString());
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(TestCaseExecutionwwwDetDAO.class.getName(), Level.WARN, e.toString());
+                LOG.warn(e.toString());
             }
         }
         return list;
@@ -240,24 +242,24 @@ public class TestCaseExecutionwwwDetDAO implements ITestCaseExecutionwwwDetDAO {
                         historic.add(histoToAdd);
                     }
                 } catch (SQLException ex) {
-                    MyLogger.log(TestCaseExecutionwwwDetDAO.class.getName(), Level.FATAL, ex.toString());
+                    LOG.warn(ex.toString());
                 } finally {
                     rs.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(TestCaseExecutionwwwDetDAO.class.getName(), Level.ERROR, exception.toString());
+                LOG.warn(exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestCaseExecutionwwwDetDAO.class.getName(), Level.ERROR, exception.toString());
+            LOG.warn(exception.toString());
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(TestCaseExecutionwwwDetDAO.class.getName(), Level.WARN, e.toString());
+                LOG.warn(e.toString());
             }
         }
         return historic;

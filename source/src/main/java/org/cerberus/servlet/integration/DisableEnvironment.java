@@ -20,14 +20,13 @@
 package org.cerberus.servlet.integration;
 
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.CountryEnvParam;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.service.ICountryEnvParamService;
@@ -57,7 +56,7 @@ public class DisableEnvironment extends HttpServlet {
     private final String ITEM = "Environment";
     private final String OPERATION = "Disable";
 
-    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger("DisableEnvironment");
+    private static final Logger LOG = LogManager.getLogger("DisableEnvironment");
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -211,8 +210,7 @@ public class DisableEnvironment extends HttpServlet {
             processRequest(request, response);
 
         } catch (JSONException ex) {
-            Logger.getLogger(DisableEnvironment.class
-                    .getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
     }
 
@@ -231,8 +229,7 @@ public class DisableEnvironment extends HttpServlet {
             processRequest(request, response);
 
         } catch (JSONException ex) {
-            Logger.getLogger(DisableEnvironment.class
-                    .getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
     }
 

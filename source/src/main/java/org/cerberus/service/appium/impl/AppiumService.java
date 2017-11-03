@@ -21,7 +21,8 @@ package org.cerberus.service.appium.impl;
 
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.TouchAction;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.engine.entity.Identifier;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.Parameter;
@@ -53,7 +54,7 @@ import java.util.regex.Matcher;
  */
 public abstract class AppiumService implements IAppiumService {
 
-    private static final Logger LOG = Logger.getLogger(AppiumService.class);
+    private static final Logger LOG = LogManager.getLogger(AppiumService.class);
 
     /**
      * The Appium swipe duration parameter which is got thanks to the

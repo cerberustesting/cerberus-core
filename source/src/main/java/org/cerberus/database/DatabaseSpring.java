@@ -21,14 +21,13 @@ package org.cerberus.database;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.logging.Logger;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import org.apache.log4j.Level;
-import org.cerberus.log.MyLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -42,6 +41,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class DatabaseSpring {
 
+    private static final Logger LOG = LogManager.getLogger(DatabaseSpring.class);
     /**
      * Object autowired by Spring, linked to glassfish for getting connection.
      */
@@ -67,7 +67,7 @@ public class DatabaseSpring {
             }
             return this.dataSource.getConnection();
         } catch (SQLException exception) {
-            MyLogger.log(DatabaseSpring.class.getName(), Level.ERROR, "Cannot connect to datasource jdbc/cerberus" + System.getProperty("org.cerberus.environment") + " : " + exception.toString());
+            LOG.warn("Cannot connect to datasource jdbc/cerberus" + System.getProperty("org.cerberus.environment") + " : " + exception.toString());
         }
 
         return null;
@@ -81,14 +81,14 @@ public class DatabaseSpring {
                 //automatically commits the changes
                 this.conn.commit();
             } catch (SQLException ex) {
-                Logger.getLogger(DatabaseSpring.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+                LOG.warn("Exception closing connection :" + ex);
             }
         }
         if (this.conn != null) {
             try {
                 this.conn.close();
             } catch (SQLException ex) {
-                MyLogger.log(DatabaseSpring.class.getName(), Level.ERROR, "Can't end/close the connection to datasource jdbc/cerberus" + System.getProperty("org.cerberus.environment") + " : " + ex.toString());
+                LOG.warn("Can't end/close the connection to datasource jdbc/cerberus" + System.getProperty("org.cerberus.environment") + " : " + ex.toString());
             }
         }
 
@@ -100,7 +100,7 @@ public class DatabaseSpring {
             this.conn = this.dataSource.getConnection();
             this.conn.setAutoCommit(false);
         } catch (SQLException exception) {
-            MyLogger.log(DatabaseSpring.class.getName(), Level.ERROR, "Cannot connect to datasource jdbc/cerberus" + System.getProperty("org.cerberus.environment") + " : " + exception.toString());
+            LOG.warn("Cannot connect to datasource jdbc/cerberus" + System.getProperty("org.cerberus.environment") + " : " + exception.toString());
         }
     }
 
@@ -116,7 +116,7 @@ public class DatabaseSpring {
                 this.conn.close();
             }
         } catch (SQLException ex) {
-            MyLogger.log(DatabaseSpring.class.getName(), Level.ERROR, "Can't end/close the connection to datasource jdbc/cerberus" + System.getProperty("org.cerberus.environment") + " : " + ex.toString());
+            LOG.warn("Can't end/close the connection to datasource jdbc/cerberus" + System.getProperty("org.cerberus.environment") + " : " + ex.toString());
         }
     }
 
@@ -132,12 +132,12 @@ public class DatabaseSpring {
     public Connection connect(final String connection) {
         try {
             InitialContext ic = new InitialContext();
-            MyLogger.log(DatabaseSpring.class.getName(), Level.INFO, "connecting to jdbc/" + connection);
+            LOG.info("connecting to jdbc/" + connection);
             return ((DataSource) ic.lookup("jdbc/" + connection)).getConnection();
         } catch (SQLException ex) {
-            MyLogger.log(DatabaseSpring.class.getName(), Level.ERROR, ex.toString());
+            LOG.warn(ex.toString());
         } catch (NamingException ex) {
-            MyLogger.log(DatabaseSpring.class.getName(), Level.FATAL, ex.toString());
+            LOG.warn(ex.toString());
         }
         return null;
     }

@@ -27,13 +27,14 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.Label;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
@@ -61,6 +62,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class ReadLabel extends HttpServlet {
 
     private ILabelService labelService;
+    private static final Logger LOG = LogManager.getLogger(ReadLabel.class);
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -129,7 +131,7 @@ public class ReadLabel extends HttpServlet {
             response.getWriter().print(jsonResponse.toString());
 
         } catch (JSONException e) {
-            org.apache.log4j.Logger.getLogger(ReadLabel.class.getName()).log(org.apache.log4j.Level.ERROR, null, e);
+            LOG.warn(e);
             //returns a default error message with the json format that is able to be parsed by the client-side
             response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
         }
@@ -144,14 +146,14 @@ public class ReadLabel extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    @Override
+        @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(ReadLabel.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
+            LOG.warn(ex);
+        } 
     }
 
     /**
@@ -168,8 +170,8 @@ public class ReadLabel extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(ReadLabel.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
+            LOG.warn(ex);
+        } 
     }
 
     /**

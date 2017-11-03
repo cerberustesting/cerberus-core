@@ -40,7 +40,7 @@ public class ProxyService implements IProxyService {
     @Autowired
     private IParameterService parameterService;
 
-    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(ProxyService.class);
+    private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(ProxyService.class);
     /**
      * Proxy default config. (Should never be used as default config is inserted
      * into database)

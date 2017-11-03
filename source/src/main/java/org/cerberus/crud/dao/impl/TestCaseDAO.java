@@ -29,7 +29,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.ITestCaseDAO;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseCountry;
@@ -73,7 +74,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         private static final String FIND_BY_APPLICATION = "SELECT * FROM `testcase` tec WHERE `application` = ?";
     }
 
-    private static final Logger LOG = Logger.getLogger(TestCaseDAO.class);
+    private static final Logger LOG = LogManager.getLogger(TestCaseDAO.class);
 
     private final String OBJECT_NAME = "TestCase";
     private final String SQL_DUPLICATED_CODE = "23000";

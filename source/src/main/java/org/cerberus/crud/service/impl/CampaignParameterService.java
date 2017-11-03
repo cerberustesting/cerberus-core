@@ -48,7 +48,7 @@ public class CampaignParameterService implements ICampaignParameterService {
     @Autowired
     ICampaignParameterDAO campaignParameterDAO;
 
-    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(CampaignParameterService.class);
+    private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(CampaignParameterService.class);
 
     @Override
     public AnswerList readByCampaignByCriteria(String campaign, int startPosition, int length, String columnName, String sort, String searchParameter, String string) {

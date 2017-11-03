@@ -27,7 +27,8 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.IAppServiceHeaderDAO;
 import org.cerberus.crud.entity.AppServiceHeader;
 import org.cerberus.crud.factory.IFactoryAppServiceHeader;
@@ -59,7 +60,7 @@ public class AppServiceHeaderDAO implements IAppServiceHeaderDAO {
     @Autowired
     private IFactoryAppServiceHeader factoryAppServiceHeader;
 
-    private static final Logger LOG = Logger.getLogger(AppServiceHeaderDAO.class);
+    private static final Logger LOG = LogManager.getLogger(AppServiceHeaderDAO.class);
 
     private final String OBJECT_NAME = "Service Http Header";
     private final String SQL_DUPLICATED_CODE = "23000";

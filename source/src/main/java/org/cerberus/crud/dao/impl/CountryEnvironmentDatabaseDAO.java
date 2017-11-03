@@ -25,7 +25,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.ICountryEnvironmentDatabaseDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.crud.entity.CountryEnvironmentDatabase;
@@ -57,7 +58,7 @@ public class CountryEnvironmentDatabaseDAO implements ICountryEnvironmentDatabas
     @Autowired
     private IFactoryCountryEnvironmentDatabase factoryCountryEnvironmentDatabase;
 
-    private static final Logger LOG = Logger.getLogger(CountryEnvironmentDatabaseDAO.class);
+    private static final Logger LOG = LogManager.getLogger(CountryEnvironmentDatabaseDAO.class);
 
     private final String OBJECT_NAME = "CountryEnvironmentDatabase";
     private final String SQL_DUPLICATED_CODE = "23000";

@@ -24,8 +24,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * @author bcivel
@@ -359,14 +359,15 @@ public class TestCaseStepAction {
             result.put("description", this.getDescription());
             result.put("screenshotFilename", this.getScreenshotFilename());
             JSONArray array = new JSONArray();
-            if(this.getTestCaseStepActionControl() != null) {
+            if (this.getTestCaseStepActionControl() != null) {
                 for (Object testCaseStepActionControlExecution : this.getTestCaseStepActionControl()) {
                     array.put(((TestCaseStepActionControl) testCaseStepActionControlExecution).toJson());
                 }
             }
             result.put("testCaseStepActionControlList", array);
         } catch (JSONException ex) {
-            Logger.getLogger(TestCaseStepActionExecution.class.getName()).log(Level.SEVERE, null, ex);
+            Logger LOG = LogManager.getLogger(TestCaseStepAction.class);
+            LOG.warn(ex);
         }
         return result;
     }

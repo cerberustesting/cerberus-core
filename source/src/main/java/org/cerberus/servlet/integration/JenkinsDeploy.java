@@ -21,14 +21,14 @@ package org.cerberus.servlet.integration;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.service.ILogEventService;
 
 import org.cerberus.crud.service.IParameterService;
@@ -47,6 +47,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @WebServlet(name = "JenkinsDeploy", urlPatterns = {"/JenkinsDeploy"})
 public class JenkinsDeploy extends HttpServlet {
 
+    private static final Logger LOG = LogManager.getLogger(JenkinsDeploy.class);
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -110,8 +111,7 @@ public class JenkinsDeploy extends HttpServlet {
             }
 
         } catch (Exception ex) {
-            Logger.getLogger(JenkinsDeploy.class.getName()).log(Level.SEVERE,
-                    Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", ex);
+            LOG.warn(Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", ex);
         }
 
     }

@@ -25,6 +25,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.ApplicationObject;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.service.IApplicationObjectService;
@@ -45,7 +47,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class ApplicationObjectVariableService implements IApplicationObjectVariableService {
 
-    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(ApplicationObjectVariableService.class);
+    private static final Logger LOG = LogManager.getLogger(ApplicationObjectVariableService.class);
 
     @Autowired
     private IApplicationObjectService applicationObjectService;

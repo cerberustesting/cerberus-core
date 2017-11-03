@@ -27,8 +27,8 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.IAppServiceDAO;
 import org.cerberus.crud.entity.AppService;
 import org.cerberus.crud.factory.IFactoryAppService;
@@ -39,7 +39,6 @@ import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.log.MyLogger;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.SqlUtil;
 import org.cerberus.util.StringUtil;
@@ -65,7 +64,7 @@ public class AppServiceDAO implements IAppServiceDAO {
     @Autowired
     private IFactoryAppService factoryAppService;
 
-    private static final Logger LOG = Logger.getLogger(AppServiceDAO.class);
+    private static final Logger LOG = LogManager.getLogger(AppServiceDAO.class);
 
     private final String OBJECT_NAME = "AppService";
     private final int MAX_ROW_SELECTED = 100000;
@@ -106,24 +105,24 @@ public class AppServiceDAO implements IAppServiceDAO {
                         throwEx = true;
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(AppServiceDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    LOG.warn("Unable to execute query : " + exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(AppServiceDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                LOG.warn("Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(AppServiceDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            LOG.warn("Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(AppServiceDAO.class.getName(), Level.WARN, e.toString());
+                LOG.warn("Exception closing connection : " + e.toString());
             }
         }
         if (throwEx) {
@@ -167,24 +166,24 @@ public class AppServiceDAO implements IAppServiceDAO {
                     }
                     response = new AnswerList(objectList, nrTotalRows);
                 } catch (SQLException exception) {
-                    MyLogger.log(AppServiceDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                     LOG.warn("Unable to execute query : " + exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(AppServiceDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                LOG.warn("Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(AppServiceDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            LOG.warn("Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(AppServiceDAO.class.getName(), Level.WARN, e.toString());
+                LOG.warn("Exception closing connection : " + e.toString());
             }
         }
 

@@ -26,17 +26,15 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import org.apache.log4j.Level;
 import org.cerberus.crud.entity.Invariant;
-import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.impl.InvariantService;
-import org.cerberus.servlet.crud.transversaltables.GetInvariantList;
 import org.cerberus.util.SqlUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -54,6 +52,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 //@WebServlet(value = "/GetInvariantsForTest")
 public class GetInvariantsForTest extends HttpServlet {
 
+    private static final Logger LOG = LogManager.getLogger(GetInvariantsForTest.class);
+    
     @Override
     protected void doGet(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws ServletException, IOException {
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
@@ -105,7 +105,7 @@ public class GetInvariantsForTest extends HttpServlet {
             httpServletResponse.setContentType("application/json");
             httpServletResponse.getWriter().print(jsonResponse.toString());
         } catch (JSONException e) {
-            MyLogger.log(GetInvariantList.class.getName(), Level.FATAL, "" + e);
+            LOG.warn(e);
             httpServletResponse.setContentType("text/html");
             httpServletResponse.getWriter().print(e.getMessage());
         }

@@ -21,8 +21,8 @@ package org.cerberus.crud.entity;
 
 import java.sql.Timestamp;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.engine.execution.impl.RecorderService;
 import org.cerberus.util.StringUtil;
 import org.json.JSONException;
@@ -361,7 +361,8 @@ public class AppService {
             jsonMain.put("Response", jsonMyResponse);
 
         } catch (JSONException ex) {
-            Logger.getLogger(RecorderService.class.getName()).log(Level.SEVERE, null, ex);
+            Logger LOG = LogManager.getLogger(RecorderService.class);
+            LOG.warn(ex);
         }
         return jsonMain;
     }

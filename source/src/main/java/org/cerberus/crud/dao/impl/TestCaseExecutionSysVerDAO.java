@@ -26,8 +26,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.ITestCaseExecutionSysVerDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.engine.entity.MessageGeneral;
@@ -35,7 +35,6 @@ import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.crud.entity.TestCaseExecutionSysVer;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.factory.IFactoryTestCaseExecutionSysVer;
-import org.cerberus.log.MyLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -57,7 +56,7 @@ public class TestCaseExecutionSysVerDAO implements ITestCaseExecutionSysVerDAO {
     @Autowired
     private IFactoryTestCaseExecutionSysVer factoryTestCaseExecutionSysVer;
 
-    private static final Logger LOG = Logger.getLogger(TestCaseExecutionSysVerDAO.class);
+    private static final Logger LOG = LogManager.getLogger(TestCaseExecutionSysVerDAO.class);
 
     private final String OBJECT_NAME = "TestCaseExecution System Version";
     private final String SQL_DUPLICATED_CODE = "23000";
@@ -88,13 +87,13 @@ public class TestCaseExecutionSysVerDAO implements ITestCaseExecutionSysVerDAO {
                 preStat.executeUpdate();
 
             } catch (SQLException exception) {
-                MyLogger.log(TestCaseExecutionSysVerDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                LOG.warn("Unable to execute query : "+exception.toString());
                 throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestCaseExecutionSysVerDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            LOG.warn("Unable to execute query : "+exception.toString());
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
         } finally {
             try {
@@ -102,7 +101,7 @@ public class TestCaseExecutionSysVerDAO implements ITestCaseExecutionSysVerDAO {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(TestCaseExecutionSysVerDAO.class.getName(), Level.WARN, e.toString());
+                LOG.warn(e.toString());
             }
         }
     }
@@ -131,24 +130,24 @@ public class TestCaseExecutionSysVerDAO implements ITestCaseExecutionSysVerDAO {
                         result.add(resultData);
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(TestCaseExecutionSysVerDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                    LOG.warn("Unable to execute query : "+exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(TestCaseExecutionSysVerDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                LOG.warn("Unable to execute query : "+exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestCaseExecutionSysVerDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            LOG.warn("Unable to execute query : "+exception.toString());
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(TestCaseExecutionSysVerDAO.class.getName(), Level.WARN, e.toString());
+                LOG.warn(e.toString());
             }
         }
         return result;

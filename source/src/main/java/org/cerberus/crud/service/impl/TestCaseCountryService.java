@@ -21,15 +21,14 @@ package org.cerberus.crud.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.dao.ITestCaseCountryDAO;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.MessageGeneral;
 
 import org.cerberus.crud.entity.TestCaseCountry;
-import org.cerberus.crud.entity.TestDataLibData;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.ITestCaseCountryService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
@@ -51,7 +50,7 @@ public class TestCaseCountryService implements ITestCaseCountryService {
 
     private final String OBJECT_NAME = "TestCaseCountry";
 
-    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(TestCaseCountryService.class);
+    private static final Logger LOG = LogManager.getLogger(TestCaseCountryService.class);
 
     @Override
     public List<TestCaseCountry> findTestCaseCountryByTestTestCase(String test, String testCase) {
@@ -83,7 +82,7 @@ public class TestCaseCountryService implements ITestCaseCountryService {
             try {
                 insertTestCaseCountry(tcc);
             } catch (CerberusException ex) {
-                MyLogger.log(TestCaseStepService.class.getName(), Level.FATAL, ex.toString());
+                LOG.warn(ex.toString());
                 return false;
             }
         }

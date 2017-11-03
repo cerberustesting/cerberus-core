@@ -21,7 +21,8 @@ package org.cerberus.crud.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseCountry;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
@@ -31,7 +32,6 @@ import org.cerberus.crud.entity.TestCaseStepAction;
 import org.cerberus.crud.entity.TestCaseStepActionControl;
 import org.cerberus.crud.factory.IFactoryTestCaseCountry;
 import org.cerberus.crud.factory.IFactoryTestCaseStep;
-import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.ILoadTestCaseService;
 import org.cerberus.crud.service.ITestCaseCountryPropertiesService;
 import org.cerberus.crud.service.ITestCaseStepActionControlService;
@@ -48,6 +48,8 @@ import org.cerberus.crud.factory.IFactoryTestCase;
 @Service
 public class LoadTestCaseService implements ILoadTestCaseService {
 
+    private static final Logger LOG = LogManager.getLogger(TestCaseStepActionService.class);
+    
     @Autowired
     private ITestCaseCountryPropertiesService testCaseCountryPropertiesService;
     @Autowired
@@ -79,7 +81,7 @@ public class LoadTestCaseService implements ILoadTestCaseService {
         /**
          * Get List of PreTest for selected TestCase
          */
-        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Loading pretests for " + tCExecution.getCountry() + tCExecution.getTestCaseObj().getApplication());
+        LOG.debug("Loading pretests for " + tCExecution.getCountry() + tCExecution.getTestCaseObj().getApplication());
         List<String> login = this.testCaseStepService.getLoginStepFromTestCase(tCExecution.getCountry(), tCExecution.getTestCaseObj().getApplication());
 
         /**
@@ -93,7 +95,7 @@ public class LoadTestCaseService implements ILoadTestCaseService {
                 testCaseCountry.add(preTestCaseCountry);
 
                 TestCase preTestCase = factoryTCase.create("Pre Tests", tsCase);
-                MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "add all pretest");
+                LOG.debug("add all pretest");
                 PretestCaseStep.addAll(loadTestCaseStep(preTestCase));
 
             }
@@ -103,11 +105,11 @@ public class LoadTestCaseService implements ILoadTestCaseService {
          * Load Information of TestCase
          */
         TestCase testCaseToAdd = factoryTCase.create(test, testcase);
-        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "add all step");
+        LOG.debug("add all step");
         testCaseStep.addAll(loadTestCaseStep(testCaseToAdd));
-        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "search all countryprop");
+        LOG.debug("search all countryprop");
         List<TestCaseCountryProperties> testCaseCountryPropertyToAdd = this.testCaseCountryPropertiesService.findListOfPropertyPerTestTestCaseCountry(test, testcase, tCExecution.getCountry());
-        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "add all countryprop");
+        LOG.debug("add all countryprop");
         if (testCaseCountryPropertyToAdd != null) {
             testCaseCountryProperty.addAll(testCaseCountryPropertyToAdd);
         }
@@ -115,11 +117,11 @@ public class LoadTestCaseService implements ILoadTestCaseService {
          * Set Execution Object
          */
         testCase.setTestCaseCountry(testCaseCountry);
-        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "set testcasestep");
+        LOG.debug("set testcasestep");
         testCase.setTestCaseStep(testCaseStep);
-        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "setTestCaseCountryProperties");
+        LOG.debug("setTestCaseCountryProperties");
         testCase.setTestCaseCountryProperties(testCaseCountryProperty);
-        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "settCase");
+        LOG.debug("settCase");
         tCExecution.setTestCaseObj(testCase);
     }
 
@@ -135,7 +137,7 @@ public class LoadTestCaseService implements ILoadTestCaseService {
     public List<TestCaseStep> loadTestCaseStep(TestCase testCase) {
         List<TestCaseStep> result = new ArrayList<TestCaseStep>();
         for (TestCaseStep testCaseStep : this.testCaseStepService.getListOfSteps(testCase.getTest(), testCase.getTestCase())) {
-            MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "set list of step :" + testCaseStep.getStep());
+            LOG.debug("set list of step :" + testCaseStep.getStep());
 
             /**
              * If use Step, load action and control of used step
@@ -155,11 +157,11 @@ public class LoadTestCaseService implements ILoadTestCaseService {
                 // Copy the usedStep property to main step. Loop and conditionoper are taken from used step.
                 testCaseStep = testCaseStepService.modifyTestCaseStepDataFromUsedStep(testCaseStep);
             }
-            MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "adding testCaseStep");
+            LOG.debug("adding testCaseStep");
             result.add(testCaseStep);
         }
 
-        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "return List<TestCaseStep>");
+        LOG.debug("return List<TestCaseStep>");
         return result;
     }
 
@@ -183,7 +185,7 @@ public class LoadTestCaseService implements ILoadTestCaseService {
          * In case of useStep, print the test,testcase,step of the executed test instead of the used step
          */
         for (TestCaseStepAction testCaseStepAction : tcsaToAdd) {
-            MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "set list of action :" + testCaseStepAction.getAction());
+            LOG.debug("set list of action :" + testCaseStepAction.getAction());
 
             /**
              * 
@@ -198,29 +200,29 @@ public class LoadTestCaseService implements ILoadTestCaseService {
             testCaseStepAction.setTest(testCaseStep.getTest());
             testCaseStepAction.setTestCase(testCaseStep.getTestCase());
             testCaseStepAction.setStep(testCaseStep.getStep());
-            MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "adding testCaseStepAction" + testCaseStepAction.getAction());
+            LOG.debug("adding testCaseStepAction" + testCaseStepAction.getAction());
             result.add(testCaseStepAction);
-            MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "added testCaseStepAction" + testCaseStepAction.getAction());
+            LOG.debug("added testCaseStepAction" + testCaseStepAction.getAction());
 
         }
-        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "return List<TestCaseStepAction>");
+        LOG.debug("return List<TestCaseStepAction>");
         return result;
     }
 
     public List<TestCaseStepActionControl> loadTestCaseStepActionControl(TestCaseStep testCaseStep, TestCaseStepAction testCaseAction) {
         List<TestCaseStepActionControl> result = new ArrayList<TestCaseStepActionControl>();
-        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "get list of control");
+        LOG.debug("get list of control");
         List<TestCaseStepActionControl> controlList = testCaseStepActionControlService.findControlByTestTestCaseStepSequence(testCaseAction.getTest(), testCaseAction.getTestCase(), testCaseAction.getStep(), testCaseAction.getSequence());
         if (controlList != null) {
             for (TestCaseStepActionControl testCaseStepActionControl : controlList) {
-                MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "set control :" + testCaseStepActionControl.getControl());
+                LOG.debug("set control :" + testCaseStepActionControl.getControl());
                 testCaseStepActionControl.setTest(testCaseStep.getTest());
                 testCaseStepActionControl.setTestCase(testCaseStep.getTestCase());
                 testCaseStepActionControl.setStep(testCaseStep.getStep());
                 result.add(testCaseStepActionControl);
             }
         }
-        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "return List<TestCaseStepActionControl>");
+        LOG.debug("return List<TestCaseStepActionControl>");
         return result;
     }
 //    @Override

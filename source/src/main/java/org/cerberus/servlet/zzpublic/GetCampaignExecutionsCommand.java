@@ -27,13 +27,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.Campaign;
 import org.cerberus.crud.entity.CampaignContent;
 import org.cerberus.crud.entity.CampaignParameter;
@@ -60,6 +60,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  */
 @WebServlet(name = "GetCampaignExecutionsCommand", urlPatterns = {"/GetCampaignExecutionsCommand"})
 public class GetCampaignExecutionsCommand extends HttpServlet {
+    
+    private static final Logger LOG = LogManager.getLogger(GetCampaignExecutionsCommand.class);
 
     private final PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
     private ICampaignService campaignService;
@@ -100,7 +102,7 @@ public class GetCampaignExecutionsCommand extends HttpServlet {
             url = cerberusURL.getValue();
         } catch (CerberusException ex) {
             url = request.getParameter("url");
-            Logger.getLogger(GetCampaignExecutionsCommand.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
 
         url += "/RunTestCase?"
@@ -126,7 +128,7 @@ public class GetCampaignExecutionsCommand extends HttpServlet {
             } catch (CerberusException ex) {
                 host = "";
                 port = "";
-                Logger.getLogger(GetCampaignExecutionsCommand.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+                LOG.warn(ex);
             }
         } else {
             host = policy.sanitize(request.getParameter("host"));
@@ -256,9 +258,9 @@ public class GetCampaignExecutionsCommand extends HttpServlet {
                     }
                 }
             } catch (CerberusException ex) {
-                Logger.getLogger(GetCampaignExecutionsCommand.class.getName()).log(Level.SEVERE, null, ex);
+                LOG.warn(ex);
             } catch (UnsupportedEncodingException ex) {
-                Logger.getLogger(GetCampaignExecutionsCommand.class.getName()).log(Level.SEVERE, null, ex);
+                LOG.warn(ex);
             }
 
         }
@@ -279,7 +281,7 @@ public class GetCampaignExecutionsCommand extends HttpServlet {
                             .append("=")
                             .append(URLEncoder.encode(value, "UTF-8"));
                 } catch (UnsupportedEncodingException ex) {
-                    Logger.getLogger(GetCampaignExecutionsCommand.class.getName()).log(Level.SEVERE, null, ex);
+                    LOG.warn(ex);
                 }
                 queriesTmp.add(sb.toString());
             }

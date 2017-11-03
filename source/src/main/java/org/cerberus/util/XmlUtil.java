@@ -49,7 +49,8 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jfree.util.Log;
 import org.w3c.dom.Attr;
 import org.w3c.dom.DOMException;
@@ -136,7 +137,7 @@ public final class XmlUtil {
         /**
          * The associated {@link Logger} to this class
          */
-        private static final Logger LOG = Logger.getLogger(UniversalNamespaceCache.class);
+        private static final Logger LOG = LogManager.getLogger(UniversalNamespaceCache.class);
 
         public static final boolean DEFAULT_TOP_LEVEL_ONLY = false;
 

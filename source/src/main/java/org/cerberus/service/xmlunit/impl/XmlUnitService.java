@@ -26,7 +26,8 @@ import java.util.regex.Pattern;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.service.xmlunit.IXmlUnitService;
 import org.cerberus.service.xmlunit.AInputTranslator;
 import org.cerberus.service.xmlunit.Differences;
@@ -56,7 +57,7 @@ public class XmlUnitService implements IXmlUnitService {
     /**
      * The associated {@link Logger} to this class
      */
-    private static final Logger LOG = Logger.getLogger(XmlUnitService.class);
+    private static final Logger LOG = LogManager.getLogger(XmlUnitService.class);
 
     /**
      * Difference value for null XPath
@@ -298,7 +299,7 @@ public class XmlUnitService implements IXmlUnitService {
             document = XmlUtil.fromString(lastSOAPResponse);
             return document;
         } catch (XmlUtilException ex) {
-            java.util.logging.Logger.getLogger(XmlUnitService.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
         return document;
     }

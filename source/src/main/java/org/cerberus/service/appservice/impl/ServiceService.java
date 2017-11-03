@@ -53,7 +53,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class ServiceService implements IServiceService {
 
-    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(ServiceService.class);
+    private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(ServiceService.class);
 
     @Autowired
     IFileService fileService;

@@ -23,7 +23,8 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.IBuildRevisionParametersDAO;
 import org.cerberus.crud.entity.BuildRevisionParameters;
 import org.cerberus.crud.factory.IFactoryBuildRevisionParameters;
@@ -46,7 +47,7 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
     @Autowired
     private IFactoryBuildRevisionParameters factoryBuildRevisionParameters;
 
-    private static final Logger LOG = Logger.getLogger(BuildRevisionParametersDAO.class);
+    private static final Logger LOG = LogManager.getLogger(BuildRevisionParametersDAO.class);
 
     private final String OBJECT_NAME = "BuildRevisionParameters";
     private final String SQL_DUPLICATED_CODE = "23000";

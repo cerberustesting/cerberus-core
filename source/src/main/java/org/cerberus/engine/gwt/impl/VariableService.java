@@ -25,6 +25,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
 import org.cerberus.crud.entity.TestCaseStepExecution;
@@ -45,7 +47,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class VariableService implements IVariableService {
 
-    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(VariableService.class);
+    private static final Logger LOG = LogManager.getLogger(VariableService.class);
 
     private static final String VALUE_WHEN_NULL = "<null>";
 

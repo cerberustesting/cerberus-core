@@ -20,8 +20,8 @@
 package org.cerberus.crud.service.impl;
 
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.cerberus.crud.dao.IApplicationDAO;
 import org.cerberus.crud.dao.ICountryEnvParamDAO;
@@ -44,6 +44,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class CountryEnvironmentService implements ICountryEnvironmentService {
 
+    private static final Logger LOG = LogManager.getLogger(CountryEnvironmentService.class);
+    
     @Autowired
     private IApplicationDAO applicationDAO;
     @Autowired
@@ -68,7 +70,7 @@ public class CountryEnvironmentService implements ICountryEnvironmentService {
 
             return list;
         } catch (CerberusException ex) {
-            Logger.getLogger(CountryEnvironmentService.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
         return null;
     }

@@ -26,7 +26,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.crud.service.IApplicationService;
@@ -43,7 +44,7 @@ public class BuildRevisionParametersService implements IBuildRevisionParametersS
 
     private final String OBJECT_NAME = "BuildRevisionParameters";
 
-    private static final Logger LOG = Logger.getLogger("BuildRevisionParametersService");
+    private static final Logger LOG = LogManager.getLogger("BuildRevisionParametersService");
 
     @Autowired
     IBuildRevisionParametersDAO buildRevisionParametersDAO;

@@ -22,9 +22,8 @@ package org.cerberus.crud.entity;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.engine.entity.MessageEvent;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.cerberus.util.answer.AnswerList;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -441,7 +440,8 @@ public class TestCaseStepActionExecution {
             }
 
         } catch (JSONException ex) {
-            Logger.getLogger(TestCaseStepActionExecution.class.getName()).log(Level.SEVERE, null, ex);
+            Logger LOG = LogManager.getLogger(TestCaseStepActionExecution.class);
+            LOG.warn(ex);
         }
         return result;
     }

@@ -32,12 +32,12 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.Invariant;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.impl.InvariantService;
 import org.cerberus.database.DatabaseSpring;
-import org.cerberus.log.MyLogger;
 import org.cerberus.util.answer.AnswerList;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -53,6 +53,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @WebServlet(name = "FindTestImplementationStatusPerApplication", urlPatterns = {"/FindTestImplementationStatusPerApplication"})
 public class FindTestImplementationStatusPerApplication extends HttpServlet {
 
+    private static final Logger LOG = LogManager.getLogger(FindTestImplementationStatusPerApplication.class);
+    
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -129,7 +131,7 @@ public class FindTestImplementationStatusPerApplication extends HttpServlet {
             SQLb.append(" group by t.test");
             SQL.append(SQLa);
             SQL.append(SQLb);
-            MyLogger.log(Homepage.class.getName(), Level.DEBUG, " SQL1 : " + SQL.toString());
+            LOG.debug(" SQL1 : " + SQL.toString());
 
             PreparedStatement stmt_teststatus = connection.prepareStatement(SQL.toString());
             try {
@@ -171,24 +173,24 @@ public class FindTestImplementationStatusPerApplication extends HttpServlet {
                     response.setContentType("application/json");
                     response.getWriter().print(jsonResponse.toString());
                 } catch (JSONException ex) {
-                    MyLogger.log(Homepage.class.getName(), Level.FATAL, ex.toString());
+                    LOG.warn(ex.toString());
                 } finally {
                     out.close();
                 }
             } catch (SQLException ex) {
-                MyLogger.log(Homepage.class.getName(), Level.FATAL, " Exception trying to query '"+SQL.toString()+"' : " + ex);
+                LOG.warn(" Exception trying to query '"+SQL.toString()+"' : " + ex);
             } finally {
                 stmt_teststatus.close();
             }
         } catch (Exception ex) {
-            MyLogger.log(Homepage.class.getName(), Level.FATAL, " Exception catched : " + ex);
+            LOG.warn(" Exception catched : " + ex);
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(Homepage.class.getName(), org.apache.log4j.Level.WARN, e.toString());
+                LOG.warn(e.toString());
             }
         }
     }

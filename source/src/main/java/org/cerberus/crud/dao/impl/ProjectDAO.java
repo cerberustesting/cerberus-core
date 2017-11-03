@@ -28,7 +28,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.IProjectDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.engine.entity.MessageEvent;
@@ -54,7 +55,7 @@ public class ProjectDAO implements IProjectDAO {
     @Autowired
     private IFactoryProject factoryProject;
 
-    private static final Logger LOG = Logger.getLogger(ProjectDAO.class);
+    private static final Logger LOG = LogManager.getLogger(ProjectDAO.class);
 
     private final String OBJECT_NAME = "Project";
     private final String SQL_DUPLICATED_CODE = "23000";

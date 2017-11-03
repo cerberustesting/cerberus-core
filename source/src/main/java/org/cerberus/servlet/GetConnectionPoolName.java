@@ -21,14 +21,14 @@ package org.cerberus.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.ICountryEnvironmentDatabaseService;
@@ -43,6 +43,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @WebServlet(name = "GetConnectionPoolName", urlPatterns = {"/GetConnectionPoolName"})
 public class GetConnectionPoolName extends HttpServlet {
 
+    private static Logger LOG = LogManager.getLogger(GetConnectionPoolName.class);
+    
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -69,7 +71,7 @@ public class GetConnectionPoolName extends HttpServlet {
             try {
                 result = cedService.convert(cedService.readByKey(system, country, environment, database)).getConnectionPoolName();
             } catch (CerberusException ex) {
-                Logger.getLogger(GetConnectionPoolName.class.getName()).log(Level.SEVERE, null, ex);
+                LOG.warn(ex);
             }
 
             out.print(result);

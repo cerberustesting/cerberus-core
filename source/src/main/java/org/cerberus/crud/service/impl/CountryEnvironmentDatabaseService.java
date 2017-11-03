@@ -48,7 +48,7 @@ public class CountryEnvironmentDatabaseService implements ICountryEnvironmentDat
 
     private final String OBJECT_NAME = "CountryEnvironmentDatabase";
 
-    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(CountryEnvironmentDatabaseService.class);
+    private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(CountryEnvironmentDatabaseService.class);
 
     @Override
     public AnswerItem readByKey(String system, String country, String environment, String database) {

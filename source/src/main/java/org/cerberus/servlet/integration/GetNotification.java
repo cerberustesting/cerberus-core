@@ -49,7 +49,7 @@ public class GetNotification extends HttpServlet {
 
     private final String OBJECT_NAME = "GetNotification";
 
-    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger("GetNotification");
+    private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger("GetNotification");
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>

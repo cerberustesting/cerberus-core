@@ -28,6 +28,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * @author vertigo
@@ -35,7 +37,7 @@ import java.util.ArrayList;
 @Service
 public class DatabaseVersioningService implements IDatabaseVersioningService {
 
-    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(DatabaseVersioningService.class);
+    private static final Logger LOG = LogManager.getLogger(DatabaseVersioningService.class);
 
     @Autowired
     private IMyVersionService MyversionService;

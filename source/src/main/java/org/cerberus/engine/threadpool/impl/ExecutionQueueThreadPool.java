@@ -36,7 +36,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ExecutionQueueThreadPool {
 
-    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(ExecutionQueueThreadPool.class);
+    private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(ExecutionQueueThreadPool.class);
 
     private ExecutorService executor;
     private Integer totalNumberOfThread;

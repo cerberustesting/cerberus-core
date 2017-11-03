@@ -19,7 +19,8 @@
  */
 package org.cerberus.crud.entity;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -80,7 +81,7 @@ public class TestCase {
     private List<TestCaseStepBatch> testCaseStepBatch;
     private List<TestCaseLabel> testCaseLabel;
 
-    private static final Logger LOG = Logger.getLogger(TestCase.class);
+    private static final Logger LOG = LogManager.getLogger(TestCase.class);
 
     public String getScreenSize() {
         return screenSize;

@@ -19,7 +19,8 @@
  */
 package org.cerberus.crud.service.impl;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.IMyVersionDAO;
 import org.cerberus.crud.entity.MyVersion;
 import org.cerberus.crud.entity.Parameter;
@@ -37,7 +38,7 @@ public class MyVersionService implements IMyVersionService {
     @Autowired
     private IMyVersionDAO myVersionDAO;
 
-    private static final Logger LOG = Logger.getLogger(ParameterService.class);
+    private static final Logger LOG = LogManager.getLogger(ParameterService.class);
 
     @Override
     public MyVersion findMyVersionByKey(String key) {

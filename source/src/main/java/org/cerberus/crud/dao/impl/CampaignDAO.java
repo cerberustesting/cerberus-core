@@ -26,7 +26,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.ICampaignDAO;
 import org.cerberus.crud.entity.Campaign;
 import org.cerberus.crud.factory.IFactoryCampaign;
@@ -48,7 +49,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class CampaignDAO implements ICampaignDAO {
 
-    private static final Logger LOG = Logger.getLogger(CampaignDAO.class);
+    private static final Logger LOG = LogManager.getLogger(CampaignDAO.class);
 
     @Autowired
     private DatabaseSpring databaseSpring;

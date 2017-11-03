@@ -24,8 +24,8 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.ITestCaseExecutionDAO;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseExecution;
@@ -45,7 +45,6 @@ import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.log.MyLogger;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -79,7 +78,7 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     ITestCaseExecutionQueueService testCaseExecutionInQueueService;
 
 
-    private static final Logger LOG = Logger.getLogger(TestCaseExecutionService.class);
+    private static final Logger LOG = LogManager.getLogger(TestCaseExecutionService.class);
 
     @Override
     public long insertTCExecution(TestCaseExecution tCExecution) throws CerberusException {
@@ -132,7 +131,7 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
         try {
             runID = this.insertTCExecution(tCExecution);
         } catch (CerberusException ex) {
-            MyLogger.log(TestCaseExecutionService.class.getName(), Level.FATAL, ex.toString());
+            LOG.warn(ex.toString());
             throw new CerberusException(ex.getMessageError());
         }
         return runID;

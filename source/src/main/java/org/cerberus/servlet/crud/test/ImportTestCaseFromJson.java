@@ -25,8 +25,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -36,6 +34,8 @@ import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.service.ITestCaseService;
 import org.json.JSONException;
@@ -49,6 +49,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  */
 public class ImportTestCaseFromJson extends HttpServlet {
 
+    private static final Logger LOG = LogManager.getLogger(ImportTestCaseFromJson.class);
+    
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -119,7 +121,7 @@ public class ImportTestCaseFromJson extends HttpServlet {
             } catch (FileUploadException e) {
                 e.printStackTrace();
             } catch (JSONException ex) {
-                Logger.getLogger(ImportTestCaseFromJson.class.getName()).log(Level.SEVERE, null, ex);
+                LOG.warn(ex);
             } catch (Exception e) {
                 e.printStackTrace();
             }

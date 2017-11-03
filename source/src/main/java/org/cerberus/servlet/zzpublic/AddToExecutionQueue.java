@@ -32,7 +32,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.entity.CampaignParameter;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseExecutionQueue;
@@ -81,7 +82,7 @@ public class AddToExecutionQueue extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Logger LOG = Logger.getLogger(AddToExecutionQueue.class);
+    private static final Logger LOG = LogManager.getLogger(AddToExecutionQueue.class);
 
     private static final String PARAMETER_SELECTED_TEST = "SelectedTest";
     private static final String PARAMETER_SELECTED_TEST_TEST = "Test";
@@ -216,7 +217,7 @@ public class AddToExecutionQueue extends HttpServlet {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, pe.getMessage());
                 return;
             } catch (CerberusException ex) {
-                java.util.logging.Logger.getLogger(AddToExecutionQueue.class.getName()).log(Level.SEVERE, null, ex);
+                LOG.warn(ex);
             }
 
             // Part 2: Try to insert all these test cases to the execution queue.

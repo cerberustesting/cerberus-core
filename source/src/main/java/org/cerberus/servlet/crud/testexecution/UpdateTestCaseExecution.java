@@ -22,13 +22,13 @@ package org.cerberus.servlet.crud.testexecution;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseStepAction;
 import org.cerberus.crud.entity.TestCaseStepActionControlExecution;
@@ -57,6 +57,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @WebServlet(name = "UpdateTestCaseExecution", urlPatterns = {"/UpdateTestCaseExecution"})
 public class UpdateTestCaseExecution extends HttpServlet {
 
+    private static final Logger LOG = LogManager.getLogger(UpdateTestCaseExecution.class);
+    
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -405,9 +407,9 @@ public class UpdateTestCaseExecution extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (JSONException ex) {
-            Logger.getLogger(UpdateTestCaseExecution.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         } catch (CerberusException ex) {
-            Logger.getLogger(UpdateTestCaseExecution.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
     }
 
@@ -425,9 +427,9 @@ public class UpdateTestCaseExecution extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (JSONException ex) {
-            Logger.getLogger(UpdateTestCaseExecution.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         } catch (CerberusException ex) {
-            Logger.getLogger(UpdateTestCaseExecution.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
     }
 

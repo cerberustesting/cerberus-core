@@ -25,14 +25,14 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.User;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.IUserService;
 import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.crud.service.impl.UserService;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.log.MyLogger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -43,6 +43,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @WebServlet(name = "UpdateMyUserSystem", urlPatterns = {"/UpdateMyUserSystem"})
 public class UpdateMyUserSystem extends HttpServlet {
 
+    private static final Logger LOG = LogManager.getLogger(UpdateMyUserSystem.class);
+    
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -57,7 +59,7 @@ public class UpdateMyUserSystem extends HttpServlet {
         String login = request.getUserPrincipal().getName();
         String value = request.getParameter("value").replace("'", "");
 
-        MyLogger.log(UpdateMyUserSystem.class.getName(), Level.INFO, "value : " + value + " login : " + login);
+        LOG.info("value : " + value + " login : " + login);
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         IUserService userService = appContext.getBean(UserService.class);

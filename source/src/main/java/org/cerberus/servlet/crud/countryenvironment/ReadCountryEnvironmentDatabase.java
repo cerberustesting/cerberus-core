@@ -22,13 +22,13 @@ package org.cerberus.servlet.crud.countryenvironment;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.CountryEnvironmentDatabase;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.service.ICountryEnvironmentDatabaseService;
@@ -54,6 +54,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @WebServlet(name = "ReadCountryEnvironmentDatabase", urlPatterns = {"/ReadCountryEnvironmentDatabase"})
 public class ReadCountryEnvironmentDatabase extends HttpServlet {
 
+    private static final Logger LOG = LogManager.getLogger(ReadCountryEnvironmentDatabase.class);
     private ICountryEnvironmentDatabaseService cedService;
     private final String OBJECT_NAME = "ReadCountryEnvironmentDatabase";
 
@@ -109,7 +110,7 @@ public class ReadCountryEnvironmentDatabase extends HttpServlet {
             response.getWriter().print(jsonResponse.toString());
 
         } catch (JSONException e) {
-            org.apache.log4j.Logger.getLogger(ReadCountryEnvironmentDatabase.class.getName()).log(org.apache.log4j.Level.ERROR, null, e);
+            LOG.warn(e);
             //returns a default error message with the json format that is able to be parsed by the client-side
             response.setContentType("application/json");
             response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
@@ -131,7 +132,7 @@ public class ReadCountryEnvironmentDatabase extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(ReadCountryEnvironmentDatabase.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
     }
 
@@ -149,7 +150,7 @@ public class ReadCountryEnvironmentDatabase extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(ReadCountryEnvironmentDatabase.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
     }
 

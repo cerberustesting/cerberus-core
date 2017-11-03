@@ -34,7 +34,8 @@ import java.net.URLConnection;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.tika.mime.MimeType;
 import org.apache.tika.mime.MimeTypeException;
 import org.apache.tika.mime.MimeTypes;
@@ -54,7 +55,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class SikuliService implements ISikuliService {
 
-    private static final Logger LOG = Logger.getLogger(SikuliService.class);
+    private static final Logger LOG = LogManager.getLogger(SikuliService.class);
 
     /**
      * Invariant SIKULI ACTION String.
@@ -545,9 +546,9 @@ public class SikuliService implements ISikuliService {
             }
 
         } catch (JSONException ex) {
-            java.util.logging.Logger.getLogger(SikuliService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            LOG.warn(ex);
         } catch (IOException ex) {
-            java.util.logging.Logger.getLogger(SikuliService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
         return image;
     }

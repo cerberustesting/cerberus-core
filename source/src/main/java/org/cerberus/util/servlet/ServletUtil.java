@@ -20,7 +20,8 @@
 package org.cerberus.util.servlet;
 
 import javax.servlet.http.HttpServletRequest;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  *
@@ -28,7 +29,7 @@ import org.apache.log4j.Logger;
  */
 public final class ServletUtil {
 
-    private static final Logger LOG = Logger.getLogger(ServletUtil.class);
+    private static final Logger LOG = LogManager.getLogger(ServletUtil.class);
 
     private static final long DEFAULT_WAIT_MS = 20;
 

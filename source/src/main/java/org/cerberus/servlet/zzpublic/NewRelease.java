@@ -23,13 +23,13 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.BuildRevisionParameters;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.factory.IFactoryBuildRevisionParameters;
@@ -44,7 +44,6 @@ import org.cerberus.crud.service.impl.ProjectService;
 import org.cerberus.crud.service.impl.UserService;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.log.MyLogger;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
@@ -58,7 +57,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @WebServlet(name = "NewRelease", urlPatterns = {"/NewRelease"})
 public class NewRelease extends HttpServlet {
 
-    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger("NewRelease");
+    private static final Logger LOG = LogManager.getLogger("NewRelease");
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -232,7 +231,7 @@ public class NewRelease extends HttpServlet {
             }
 
         } catch (Exception e) {
-            Logger.getLogger(NewRelease.class.getName()).log(Level.SEVERE, Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", e);
+            LOG.warn(Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", e);
             out.print("Error while inserting the release : ");
             out.println(e.toString());
         } finally {
@@ -242,7 +241,7 @@ public class NewRelease extends HttpServlet {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(NewRelease.class.getName(), org.apache.log4j.Level.WARN, e.toString());
+                LOG.warn(e.toString());
             }
         }
     }

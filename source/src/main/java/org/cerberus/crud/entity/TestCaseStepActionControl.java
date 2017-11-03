@@ -19,11 +19,10 @@
  */
 package org.cerberus.crud.entity;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * @author bcivel
@@ -335,7 +334,9 @@ public class TestCaseStepActionControl {
             result.put("description", this.getDescription());
             result.put("screenshotFilename", this.getScreenshotFilename());
         } catch (JSONException ex) {
-            Logger.getLogger(TestCaseStepExecution.class.getName()).log(Level.SEVERE, null, ex);
+            Logger LOG = LogManager.getLogger(TestCaseStepActionControl.class);
+            LOG.warn(ex);
+
         }
         return result;
     }

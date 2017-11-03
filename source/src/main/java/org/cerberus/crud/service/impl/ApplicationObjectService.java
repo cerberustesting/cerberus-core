@@ -20,7 +20,8 @@
 package org.cerberus.crud.service.impl;
 
 import org.apache.commons.fileupload.FileItem;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.IApplicationObjectDAO;
 import org.cerberus.crud.entity.ApplicationObject;
 import org.cerberus.crud.service.IApplicationObjectService;
@@ -44,7 +45,7 @@ public class ApplicationObjectService implements IApplicationObjectService {
     @Autowired
     private IApplicationObjectDAO ApplicationObjectDAO;
 
-    private static final Logger LOG = Logger.getLogger("ApplicationObjectService");
+    private static final Logger LOG = LogManager.getLogger("ApplicationObjectService");
 
     private final String OBJECT_NAME = "ApplicationObject";
 

@@ -27,13 +27,13 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.TestCaseExecutionQueue;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.IParameterService;
@@ -67,7 +67,7 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
     private IParameterService parameterService;
     private IInvariantService invariantService;
 
-    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(ReadTestCaseExecutionQueue.class);
+    private static final Logger LOG = LogManager.getLogger(ReadTestCaseExecutionQueue.class);
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -142,7 +142,7 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
             response.getWriter().print(jsonResponse.toString());
 
         } catch (JSONException e) {
-            org.apache.log4j.Logger.getLogger(ReadTestCaseExecutionQueue.class.getName()).log(org.apache.log4j.Level.ERROR, null, e);
+            LOG.warn(e);
             //returns a default error message with the json format that is able to be parsed by the client-side
             response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
         }
@@ -162,7 +162,7 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(ReadTestCaseExecutionQueue.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
     }
 
@@ -180,7 +180,7 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(ReadTestCaseExecutionQueue.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
     }
 
@@ -323,7 +323,7 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
             object.put("contentTable", jsonArray);
 
         } catch (CerberusException ex) {
-            Logger.getLogger(ReadTestCaseExecutionQueue.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
 
         object.put("messageType", "");

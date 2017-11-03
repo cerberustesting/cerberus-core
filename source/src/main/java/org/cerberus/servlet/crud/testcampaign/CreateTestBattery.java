@@ -19,14 +19,11 @@
  */
 package org.cerberus.servlet.crud.testcampaign;
 
-import org.cerberus.crud.entity.CampaignContent;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.TestBattery;
 import org.cerberus.crud.entity.TestBatteryContent;
-import org.cerberus.crud.factory.IFactoryCampaignContent;
 import org.cerberus.crud.factory.IFactoryTestBattery;
 import org.cerberus.crud.factory.IFactoryTestBatteryContent;
-import org.cerberus.crud.service.ICampaignContentService;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.ITestBatteryContentService;
 import org.cerberus.crud.service.ITestBatteryService;
@@ -49,13 +46,16 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * @author cte
  */
 public class CreateTestBattery extends HttpServlet {
 
+    private static final Logger LOG = LogManager.getLogger(CreateTestBattery.class);
+    
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -154,9 +154,9 @@ public class CreateTestBattery extends HttpServlet {
         try {
             this.processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(CreateTestBattery.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            LOG.warn(ex);
         } catch (JSONException ex) {
-            Logger.getLogger(CreateTestBattery.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
     }
 
@@ -174,9 +174,9 @@ public class CreateTestBattery extends HttpServlet {
         try {
             this.processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(CreateTestBattery.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            LOG.warn(ex);
         } catch (JSONException ex) {
-            Logger.getLogger(CreateTestBattery.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
     }
 

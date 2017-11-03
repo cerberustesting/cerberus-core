@@ -28,6 +28,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.service.ICountryEnvParamService;
@@ -54,6 +56,8 @@ public class GetEnvironmentsPerBuildRevision extends HttpServlet {
 
     private IEnvironmentStatisticsService envService;
     private ICountryEnvParamService cepService;
+    
+    private static final Logger LOG = LogManager.getLogger(GetEnvironmentsPerBuildRevision.class);
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -100,7 +104,7 @@ public class GetEnvironmentsPerBuildRevision extends HttpServlet {
             response.getWriter().print(jsonResponse.toString());
 
         } catch (JSONException e) {
-            org.apache.log4j.Logger.getLogger(GetEnvironmentsPerBuildRevision.class.getName()).log(org.apache.log4j.Level.ERROR, null, e);
+            LOG.warn(e);
             //returns a default error message with the json format that is able to be parsed by the client-side
             response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
         }

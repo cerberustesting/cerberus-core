@@ -28,14 +28,14 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.UserGroup;
 import org.cerberus.crud.entity.User;
 import org.cerberus.crud.entity.UserSystem;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.factory.IFactoryUserSystem;
 import org.cerberus.crud.factory.impl.FactoryUserGroup;
-import org.cerberus.log.MyLogger;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerUtil;
@@ -61,6 +61,8 @@ import org.cerberus.crud.factory.IFactoryUserGroup;
 @WebServlet(name = "UpdateUser", urlPatterns = {"/UpdateUser"})
 public class UpdateUser extends HttpServlet {
 
+    private static final Logger LOG = LogManager.getLogger(UpdateUser.class);
+    
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doPost(request, response);
@@ -96,7 +98,7 @@ public class UpdateUser extends HttpServlet {
              ans.setResultMessage(msg);
              
          }else {
- 	        MyLogger.log(UpdateUser.class.getName(), Level.INFO, null);
+ 	        LOG.info("Updating user "+login);
 	
 	        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
 	        IUserService userService = appContext.getBean(UserService.class);

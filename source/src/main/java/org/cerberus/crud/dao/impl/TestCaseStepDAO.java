@@ -25,7 +25,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.ITestCaseStepDAO;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.database.DatabaseSpring;
@@ -63,7 +64,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
     @Autowired
     private IFactoryTestCase factoryTestCase;
 
-    private static final Logger LOG = Logger.getLogger(TestCaseStepDAO.class);
+    private static final Logger LOG = LogManager.getLogger(TestCaseStepDAO.class);
 
     private final String OBJECT_NAME = "TestCaseStep";
     private final String SQL_DUPLICATED_CODE = "23000";

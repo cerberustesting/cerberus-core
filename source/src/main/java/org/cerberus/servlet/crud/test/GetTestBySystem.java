@@ -20,16 +20,13 @@
 package org.cerberus.servlet.crud.test;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.Level;
-import org.cerberus.log.MyLogger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.service.ITestCaseService;
-import org.cerberus.crud.service.ITestService;
-import org.cerberus.crud.service.impl.TestService;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -44,6 +41,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  */
 public class GetTestBySystem extends HttpServlet {
 
+    private static final Logger LOG = LogManager.getLogger(GetTestBySystem.class);
+    
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -72,7 +71,7 @@ public class GetTestBySystem extends HttpServlet {
             response.setContentType("application/json");
             response.getWriter().print(jsonObject.toString());
         } catch (JSONException exception) {
-            MyLogger.log(GetShortTests.class.getName(), Level.WARN, exception.toString());
+            LOG.warn(exception.toString());
         }
     }
 

@@ -28,7 +28,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.ITestCaseExecutionFileDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.engine.entity.MessageEvent;
@@ -60,7 +61,7 @@ public class TestCaseExecutionFileDAO implements ITestCaseExecutionFileDAO {
     @Autowired
     private IFactoryTestCaseExecutionFile factoryTestCaseExecutionFile;
 
-    private static final Logger LOG = Logger.getLogger(TestCaseExecutionFileDAO.class);
+    private static final Logger LOG = LogManager.getLogger(TestCaseExecutionFileDAO.class);
 
     private final String OBJECT_NAME = "Testase Execution File";
     private final String SQL_DUPLICATED_CODE = "23000";

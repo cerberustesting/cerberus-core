@@ -19,6 +19,8 @@
  */
 package org.cerberus.service.email.impl;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.service.email.entity.Email;
 import org.cerberus.crud.entity.BatchInvariant;
 import org.cerberus.crud.entity.CountryEnvParam;
@@ -40,7 +42,7 @@ import org.cerberus.service.email.IEmailGenerationService;
 @Service
 public class EmailGenerationService implements IEmailGenerationService {
 
-    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(EmailGenerationService.class);
+    private static final Logger LOG = LogManager.getLogger(EmailGenerationService.class);
 
     @Autowired
     private IParameterService parameterService;

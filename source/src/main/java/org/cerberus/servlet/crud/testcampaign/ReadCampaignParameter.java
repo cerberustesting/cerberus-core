@@ -28,6 +28,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.cerberus.crud.entity.CampaignParameter;
 import org.cerberus.engine.entity.MessageEvent;
@@ -50,6 +52,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @WebServlet(name = "ReadCampaignParameter", urlPatterns = {"/ReadCampaignParameter"})
 public class ReadCampaignParameter extends HttpServlet {
 
+    private static final Logger LOG = LogManager.getLogger(ReadCampaignParameter.class);
     ICampaignParameterService campaignParameterService;
 
     /**
@@ -91,7 +94,7 @@ public class ReadCampaignParameter extends HttpServlet {
 
             response.getWriter().print(jsonResponse.toString());
         } catch (JSONException e) {
-            org.apache.log4j.Logger.getLogger(ReadCampaignParameter.class.getName()).log(org.apache.log4j.Level.ERROR, null, e);
+            LOG.warn(e);
             //returns a default error message with the json format that is able to be parsed by the client-side
             response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
         }

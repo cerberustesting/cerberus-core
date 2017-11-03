@@ -74,7 +74,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @WebServlet(name = "CreateTestCase", urlPatterns = {"/CreateTestCase"})
 public class CreateTestCase extends HttpServlet {
 
-    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(UpdateTestCase.class);
+    private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(UpdateTestCase.class);
 
     private ITestCaseLabelService testCaseLabelService;
     private IFactoryTestCaseLabel testCaseLabelFactory;
@@ -250,9 +250,9 @@ public class CreateTestCase extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(CreateTestCase.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         } catch (JSONException ex) {
-            Logger.getLogger(CreateTestCase.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
     }
 
@@ -270,9 +270,9 @@ public class CreateTestCase extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(CreateTestCase.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         } catch (JSONException ex) {
-            Logger.getLogger(CreateTestCase.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
     }
 

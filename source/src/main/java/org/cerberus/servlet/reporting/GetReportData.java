@@ -30,13 +30,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionQueue;
 import org.cerberus.exception.CerberusException;
@@ -57,6 +57,8 @@ import org.cerberus.crud.service.ITestCaseExecutionQueueService;
  */
 @WebServlet(name = "GetReportData", urlPatterns = {"/GetReportData"})
 public class GetReportData extends HttpServlet {
+    
+    private static final Logger LOG = LogManager.getLogger(GetReportData.class);
 
     ITestCaseExecutionService testCaseExecutionService;
     ITestCaseExecutionQueueService testCaseExecutionInQueueService;
@@ -222,11 +224,11 @@ public class GetReportData extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(GetReportData.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         } catch (ParseException ex) {
-            Logger.getLogger(GetReportData.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         } catch (JSONException ex) {
-            Logger.getLogger(GetReportData.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
     }
 
@@ -244,11 +246,11 @@ public class GetReportData extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(GetReportData.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         } catch (ParseException ex) {
-            Logger.getLogger(GetReportData.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         } catch (JSONException ex) {
-            Logger.getLogger(GetReportData.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
     }
 

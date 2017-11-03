@@ -24,8 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.AppService;
 import org.cerberus.crud.entity.CountryEnvironmentDatabase;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
@@ -75,7 +75,7 @@ import org.w3c.dom.NodeList;
 @Service
 public class DataLibService implements IDataLibService {
 
-    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(DataLibService.class);
+    private static final Logger LOG = LogManager.getLogger(DataLibService.class);
 
     @Autowired
     private IFileService fileService;
@@ -218,7 +218,7 @@ public class DataLibService implements IDataLibService {
                 resultString = jsonResult.toString();
             } catch (JSONException ex) {
                 resultString = result.getDataList().toString();
-                Logger.getLogger(DataLibService.class.getName()).log(Level.SEVERE, null, ex);
+                LOG.warn(ex);
             }
             msg.setDescription(msg.getDescription().replace("%DATAMESSAGE%", resultData.getMessageDescription())
                     .replace("%FILTERNATUREMESSAGE%", result.getMessageDescription())
@@ -460,7 +460,7 @@ public class DataLibService implements IDataLibService {
                         .resolveDescription("TOTNB", Integer.toString(initNB)));
             }
         } catch (CerberusException ex) {
-            Logger.getLogger(DataLibService.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
         return result;
     }

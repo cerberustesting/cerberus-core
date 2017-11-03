@@ -26,7 +26,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.service.file.IFileService;
@@ -40,7 +41,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class FileService implements IFileService {
 
-    private static final Logger LOG = Logger.getLogger(FileService.class);
+    private static final Logger LOG = LogManager.getLogger(FileService.class);
 
     @Override
     public AnswerList<List<HashMap<String, String>>> parseCSVFile(String urlToCSVFile, String separator, HashMap<String, String> columnsToGet) {

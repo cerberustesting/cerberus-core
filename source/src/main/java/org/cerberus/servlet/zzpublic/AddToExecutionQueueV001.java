@@ -32,7 +32,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.CampaignParameter;
 import org.cerberus.crud.entity.TestCase;
@@ -66,7 +67,7 @@ import org.cerberus.util.StringUtil;
 @WebServlet(name = "AddToExecutionQueueV001", urlPatterns = {"/AddToExecutionQueueV001"})
 public class AddToExecutionQueueV001 extends HttpServlet {
 
-    private static final Logger LOG = Logger.getLogger(AddToExecutionQueueV001.class);
+    private static final Logger LOG = LogManager.getLogger(AddToExecutionQueueV001.class);
 
     private static final String PARAMETER_CAMPAIGN = "campaign";
     private static final String PARAMETER_SELECTED_TEST = "testlist";
@@ -352,7 +353,7 @@ public class AddToExecutionQueueV001 extends HttpServlet {
                     }
                 }
             } catch (CerberusException ex) {
-                java.util.logging.Logger.getLogger(AddToExecutionQueueV001.class.getName()).log(Level.SEVERE, null, ex);
+                LOG.warn(ex);
             }
 
             // Part 2: Try to insert all these test cases to the execution queue.

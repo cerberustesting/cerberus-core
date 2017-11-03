@@ -24,8 +24,8 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.List;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.service.IApplicationService;
 import org.cerberus.crud.service.IParameterService;
@@ -44,6 +44,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class EmailBodyGeneration implements IEmailBodyGeneration {
 
+    private static final Logger LOG = LogManager.getLogger(EmailBodyGeneration.class);
+    
     @Autowired
     private IParameterService parameterService;
     @Autowired
@@ -87,7 +89,7 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
 
             String contentSQL = contentSQLSB.toString();
 
-            Logger.getLogger(EmailBodyGeneration.class.getName()).log(Level.DEBUG, Infos.getInstance().getProjectNameAndVersion() + " - SQL : " + contentSQL);
+            LOG.debug(Infos.getInstance().getProjectNameAndVersion() + " - SQL : " + contentSQL);
 
             ResultSet rsBC = stmtBuildContent.executeQuery(contentSQL);
 
@@ -185,7 +187,7 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
             buildContentTemplate = buildContentTable;
 
         } catch (Exception e) {
-            Logger.getLogger(EmailBodyGeneration.class.getName()).log(Level.FATAL, Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", e);
+            LOG.warn(Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", e);
         }
 
         return buildContentTemplate;
@@ -264,7 +266,7 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
                     + " and (status='WORKING' or status is null) "
                     + " group by i.gp1 order by i.sort;";
 
-            Logger.getLogger(EmailBodyGeneration.class.getName()).log(Level.DEBUG, Infos.getInstance().getProjectNameAndVersion() + " - SQL : " + contentSQL);
+            LOG.debug(Infos.getInstance().getProjectNameAndVersion() + " - SQL : " + contentSQL);
 
             ResultSet rsBC = stmtBuildContent.executeQuery(contentSQL);
 
@@ -345,7 +347,7 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
             stmtCountryList.close();
 
         } catch (Exception e) {
-            Logger.getLogger(EmailBodyGeneration.class.getName()).log(Level.FATAL, Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", e);
+            LOG.warn(Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", e);
             TestRecapTable = e.getMessage();
         }
 

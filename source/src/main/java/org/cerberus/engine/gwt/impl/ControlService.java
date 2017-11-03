@@ -26,7 +26,8 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.entity.AppService;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.TestCaseExecution;
@@ -64,7 +65,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class ControlService implements IControlService {
 
-    private static final Logger LOG = Logger.getLogger(ControlService.class);
+    private static final Logger LOG = LogManager.getLogger(ControlService.class);
 
     @Autowired
     private IWebDriverService webdriverService;

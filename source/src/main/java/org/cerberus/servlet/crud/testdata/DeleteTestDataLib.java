@@ -25,6 +25,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.TestDataLib;
 import org.cerberus.crud.service.ILogEventService;
@@ -47,6 +49,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @WebServlet(name = "DeleteTestDataLib", urlPatterns = {"/DeleteTestDataLib"})
 public class DeleteTestDataLib extends HttpServlet {
 
+    private static final Logger LOG = LogManager.getLogger(DeleteTestDataLib.class);
+    
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -79,7 +83,7 @@ public class DeleteTestDataLib extends HttpServlet {
             }
         } catch (NumberFormatException ex) {
             testdatalibid_error = true;
-            org.apache.log4j.Logger.getLogger(DeleteTestDataLib.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
+            LOG.warn(ex);
         }
 
         /**
@@ -141,7 +145,7 @@ public class DeleteTestDataLib extends HttpServlet {
             response.getWriter().flush();
 
         } catch (JSONException ex) {
-            org.apache.log4j.Logger.getLogger(DeleteTestDataLib.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
+            LOG.warn(ex);
             response.setContentType("application/json");
             response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
             response.getWriter().flush();

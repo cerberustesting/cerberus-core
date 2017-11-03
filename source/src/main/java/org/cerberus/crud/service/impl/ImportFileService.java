@@ -31,10 +31,10 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.IImportFileService;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.xml.XMLTestDataLibHandler;
@@ -48,6 +48,8 @@ import org.xml.sax.SAXException;
 @Service
 public class ImportFileService implements IImportFileService{
 
+    private static final Logger LOG = LogManager.getLogger(ImportFileService.class);
+    
     @Override
     public AnswerItem importAndValidateXMLFromInputStream(InputStream filecontent, InputStream schemaContent, XMLHandlerEnumType handlerType) {
         AnswerItem answer = new AnswerItem();
@@ -76,16 +78,16 @@ public class ImportFileService implements IImportFileService{
                 answer.setItem(parseXMLFile(IOUtils.toInputStream(textContent), handlerType));                           
                             
             } catch (SAXException ex) {
-                MyLogger.log(ImportFileService.class.getName(), Level.ERROR, "Unable to parse XML: " + ex.toString());
+                LOG.warn("Unable to parse XML: " + ex.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_IMPORT_ERROR_FORMAT);
                 msg.setDescription(msg.getDescription().replace("%ITEM%", "Test Data Library").replace("%FORMAT%", "XML"));
                 
             }catch (ParserConfigurationException ex) {
-                MyLogger.log(ImportFileService.class.getName(), Level.ERROR, "Unable to parse XML: " + ex.toString());
+                LOG.warn("Unable to parse XML: " + ex.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to parse the XML document. Please try again later."));                                               
             } catch (IOException ex) {
-                MyLogger.log(ImportFileService.class.getName(), Level.ERROR, "Unable to parse XML: " + ex.toString());
+                LOG.warn("Unable to parse XML: " + ex.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to verify if the XML document is valid. Please try again later."));                               
             }

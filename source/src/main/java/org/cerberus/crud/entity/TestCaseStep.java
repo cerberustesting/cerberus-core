@@ -24,8 +24,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * @author bcivel
@@ -329,7 +329,8 @@ public class TestCaseStep {
             }
             result.put("testCaseStepActionList", array);
         } catch (JSONException ex) {
-            Logger.getLogger(TestCaseStepExecution.class.getName()).log(Level.SEVERE, null, ex);
+            Logger LOG = LogManager.getLogger(TestCaseStep.class);
+            LOG.warn(ex);
         }
         return result;
     }

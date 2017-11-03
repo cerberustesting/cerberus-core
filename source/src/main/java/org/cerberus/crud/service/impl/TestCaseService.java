@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.cerberus.crud.dao.ITestCaseDAO;
 import org.cerberus.crud.entity.TestCase;
@@ -59,6 +61,8 @@ import org.cerberus.enums.MessageGeneralEnum;
 @Service
 public class TestCaseService implements ITestCaseService {
 
+    private static final Logger LOG = LogManager.getLogger(TestCaseService.class);
+    
     @Autowired
     private ITestCaseDAO testCaseDao;
     @Autowired
@@ -85,7 +89,7 @@ public class TestCaseService implements ITestCaseService {
         newTcase = findTestCaseByKey(test, testCase);
         if (newTcase == null) {
             //TODO:FN temporary debug messages
-            org.apache.log4j.Logger.getLogger(TestCaseService.class.getName()).log(org.apache.log4j.Level.ERROR, "test case is null - test: " + test + " testcase: " + testCase);
+            LOG.warn("test case is null - test: " + test + " testcase: " + testCase);
         } else {
             List<TestCaseCountry> testCaseCountry = testCaseCountryService.findTestCaseCountryByTestTestCase(test, testCase);
             List<TestCaseCountry> testCaseCountryToAdd = new ArrayList();

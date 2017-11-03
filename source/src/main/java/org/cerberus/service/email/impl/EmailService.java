@@ -40,7 +40,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class EmailService implements IEmailService {
 
-    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(EmailService.class);
+    private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(EmailService.class);
 
     @Autowired
     private IEmailGenerationService emailGenerationService;

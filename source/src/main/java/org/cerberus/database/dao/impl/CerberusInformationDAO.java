@@ -24,7 +24,8 @@ import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.HashMap;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.database.dao.ICerberusInformationDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.engine.entity.MessageEvent;
@@ -46,7 +47,7 @@ public class CerberusInformationDAO implements ICerberusInformationDAO {
     @Autowired
     private DatabaseSpring databaseSpring;
 
-    private static final Logger LOG = Logger.getLogger(CerberusInformationDAO.class);
+    private static final Logger LOG = LogManager.getLogger(CerberusInformationDAO.class);
 
     @Override
     public AnswerItem getDatabaseInformation() {

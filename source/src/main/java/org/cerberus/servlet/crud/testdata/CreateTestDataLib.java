@@ -27,6 +27,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.crud.entity.TestDataLib;
@@ -58,6 +60,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @WebServlet(name = "CreateTestDataLib", urlPatterns = {"/CreateTestDataLib"})
 public class CreateTestDataLib extends HttpServlet {
 
+    private static final Logger LOG = LogManager.getLogger(CreateTestDataLib.class);
+    
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -167,7 +171,7 @@ public class CreateTestDataLib extends HttpServlet {
             response.getWriter().print(jsonResponse);
             response.getWriter().flush();
         } catch (JSONException ex) {
-            org.apache.log4j.Logger.getLogger(CreateTestDataLib.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
+            LOG.warn(ex);
             response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
             response.getWriter().flush();
         }

@@ -21,7 +21,8 @@ package org.cerberus.crud.factory.impl;
 
 import java.sql.Timestamp;
 import java.util.List;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseCountry;
@@ -37,7 +38,7 @@ import org.cerberus.crud.factory.IFactoryTestCase;
 @Service
 public class FactoryTestCase implements IFactoryTestCase {
 
-    private static final Logger LOG = Logger.getLogger(FactoryTestCase.class);
+    private static final Logger LOG = LogManager.getLogger(FactoryTestCase.class);
     
 //    private TestCase newTestCase;
 

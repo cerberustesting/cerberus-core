@@ -26,6 +26,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.crud.entity.TestCaseStepAction;
@@ -53,6 +55,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  */
 public class ReadTestCaseStep extends HttpServlet {
 
+    private static final Logger LOG = LogManager.getLogger(ReadTestCaseStep.class);
+    
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -91,7 +95,7 @@ public class ReadTestCaseStep extends HttpServlet {
             response.getWriter().print(jsonResponse.toString());
 
         } catch (JSONException e) {
-            org.apache.log4j.Logger.getLogger(ReadTestCaseStep.class.getName()).log(org.apache.log4j.Level.ERROR, e.getMessage(), e);
+            LOG.warn(e.getMessage(), e);
             //returns a default error message with the json format that is able to be parsed by the client-side
             response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
         }

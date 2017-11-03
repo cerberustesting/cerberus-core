@@ -22,14 +22,14 @@ package org.cerberus.servlet.dummy;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Enumeration;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.cerberus.version.Infos;
 import org.json.JSONArray;
@@ -45,6 +45,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @WebServlet(name = "GetDummyRESTCall", urlPatterns = {"/GetDummyRESTCall"})
 public class DummyRESTCall extends HttpServlet {
 
+    private static final Logger LOG = LogManager.getLogger(DummyRESTCall.class);
+    
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -128,7 +130,7 @@ public class DummyRESTCall extends HttpServlet {
             response.getWriter().print(jsonResponse.toString());
 
         } catch (Exception e) {
-            Logger.getLogger(DummyRESTCall.class.getName()).log(Level.SEVERE, Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", e);
+            LOG.warn(Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", e);
             out.print("Error while Getting number of executions : ");
             out.println(e.getMessage());
         } finally {

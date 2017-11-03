@@ -20,13 +20,13 @@
 package org.cerberus.servlet.crud.test;
 
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.Label;
 import org.cerberus.crud.entity.TestCase;
@@ -60,7 +60,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class CreateTestCaseLabel extends HttpServlet {
 
     private final String OBJECT_NAME = "Test Case Label";
-    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger("CreateTestCaseLabel");
+    private static final Logger LOG = LogManager.getLogger("CreateTestCaseLabel");
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -273,10 +273,9 @@ public class CreateTestCaseLabel extends HttpServlet {
             processRequest(request, response);
 
         } catch (CerberusException ex) {
-            Logger.getLogger(CreateTestCaseLabel.class
-                    .getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         } catch (JSONException ex) {
-            Logger.getLogger(CreateTestCaseLabel.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
     }
 
@@ -295,10 +294,9 @@ public class CreateTestCaseLabel extends HttpServlet {
             processRequest(request, response);
 
         } catch (CerberusException ex) {
-            Logger.getLogger(CreateTestCaseLabel.class
-                    .getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         } catch (JSONException ex) {
-            Logger.getLogger(CreateTestCaseLabel.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
     }
 

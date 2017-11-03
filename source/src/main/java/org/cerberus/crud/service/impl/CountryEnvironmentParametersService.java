@@ -43,7 +43,7 @@ import org.cerberus.util.answer.AnswerUtil;
 @Service
 public class CountryEnvironmentParametersService implements ICountryEnvironmentParametersService {
 
-    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(CountryEnvironmentParametersService.class);
+    private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(CountryEnvironmentParametersService.class);
 
     @Autowired
     private ICountryEnvironmentParametersDAO countryEnvironmentParametersDao;

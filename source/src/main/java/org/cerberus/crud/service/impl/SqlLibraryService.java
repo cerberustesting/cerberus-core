@@ -21,14 +21,14 @@ package org.cerberus.crud.service.impl;
 
 import java.util.List;
 import java.util.Map;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import org.apache.log4j.Level;
 import org.cerberus.crud.dao.ISqlLibraryDAO;
 import org.cerberus.crud.dao.impl.SqlLibraryDAO;
 import org.cerberus.crud.entity.SqlLibrary;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.ISqlLibraryService;
-import org.cerberus.log.MyLogger;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
@@ -42,6 +42,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class SqlLibraryService implements ISqlLibraryService {
 
+    private static final Logger LOG = LogManager.getLogger(SqlLibraryService.class);
+    
     @Autowired
     ISqlLibraryDAO sqlLibraryDao;
 
@@ -91,7 +93,7 @@ public class SqlLibraryService implements ISqlLibraryService {
             s.setScript(script);
             sqlLibraryDao.updateSqlLibrary(s);
         }catch(CerberusException e){
-            MyLogger.log(SqlLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : " + e.toString());
+            LOG.warn("Unable to execute query : " + e.toString());
         }
     }
 

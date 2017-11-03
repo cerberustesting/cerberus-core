@@ -24,8 +24,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.ITestCaseExecutionDAO;
 import org.cerberus.crud.dao.ITestCaseStepActionExecutionDAO;
 import org.cerberus.crud.entity.TestCaseExecutionFile;
@@ -33,7 +33,6 @@ import org.cerberus.crud.entity.TestCaseStepActionControlExecution;
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
 import org.cerberus.crud.service.ITestCaseExecutionFileService;
 import org.cerberus.crud.service.ITestCaseStepActionControlExecutionService;
-import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.ITestCaseStepActionExecutionService;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
@@ -57,7 +56,7 @@ public class TestCaseStepActionExecutionService implements ITestCaseStepActionEx
     @Autowired
     ITestCaseExecutionFileService testCaseExecutionFileService;
 
-    private static final Logger LOG = Logger.getLogger(TestCaseStepActionExecutionService.class);
+    private static final Logger LOG = LogManager.getLogger(TestCaseStepActionExecutionService.class);
     
     @Override
     public void insertTestCaseStepActionExecution(TestCaseStepActionExecution testCaseStepActionExecution) {
@@ -120,7 +119,7 @@ public class TestCaseStepActionExecutionService implements ITestCaseStepActionEx
             }
             result.put(line);
         } catch (Exception ex) {
-            MyLogger.log(TestCaseStepActionExecutionService.class.getName(), Level.FATAL, ex.toString());
+            LOG.warn(ex.toString());
         }
         return result;
     }

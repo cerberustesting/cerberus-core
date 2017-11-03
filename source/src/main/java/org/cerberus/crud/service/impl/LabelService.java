@@ -21,7 +21,8 @@ package org.cerberus.crud.service.impl;
 
 import java.util.List;
 import java.util.Map;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.cerberus.crud.dao.ILabelDAO;
 import org.cerberus.crud.entity.Label;
@@ -46,7 +47,7 @@ public class LabelService implements ILabelService {
     @Autowired
     private ILabelDAO labelDAO;
 
-    private static final Logger LOG = Logger.getLogger("LabelService");
+    private static final Logger LOG = LogManager.getLogger("LabelService");
 
     private final String OBJECT_NAME = "Label";
 

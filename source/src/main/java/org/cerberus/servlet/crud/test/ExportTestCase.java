@@ -20,15 +20,13 @@
 package org.cerberus.servlet.crud.test;
 
 import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
 import java.util.List;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.dao.ITestCaseCountryPropertiesDAO;
 import org.cerberus.crud.dao.impl.TestCaseCountryPropertiesDAO;
 import org.cerberus.crud.entity.TestCase;
@@ -38,7 +36,6 @@ import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.crud.entity.TestCaseStepAction;
 import org.cerberus.crud.entity.TestCaseStepActionControl;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.ILoadTestCaseService;
 import org.cerberus.crud.service.ITestCaseService;
 import org.json.JSONArray;
@@ -55,6 +52,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  */
 public class ExportTestCase extends HttpServlet {
 
+    private static final Logger LOG = LogManager.getLogger(ExportTestCase.class);
+    
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -203,10 +202,10 @@ public class ExportTestCase extends HttpServlet {
         httpServletResponse.getOutputStream().print(jsonObject.toString());
         
         } catch (JSONException exception) {
-                MyLogger.log(GetTestCase.class.getName(), Level.WARN, exception.toString());
+                LOG.warn(exception.toString());
             }
         } catch (CerberusException ex) {
-            Logger.getLogger(GetTestCase.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
     }
 

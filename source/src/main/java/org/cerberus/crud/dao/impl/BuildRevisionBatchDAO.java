@@ -28,7 +28,8 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.IBuildRevisionBatchDAO;
 import org.cerberus.crud.entity.BuildRevisionBatch;
 import org.cerberus.crud.factory.IFactoryBuildRevisionBatch;
@@ -55,7 +56,7 @@ public class BuildRevisionBatchDAO implements IBuildRevisionBatchDAO {
     @Autowired
     private IFactoryBuildRevisionBatch factoryBuildRevisionBatch;
 
-    private static final Logger LOG = Logger.getLogger(BuildRevisionBatchDAO.class);
+    private static final Logger LOG = LogManager.getLogger(BuildRevisionBatchDAO.class);
 
     private final String OBJECT_NAME = "BuildRevisionBatchDAO";
     private final String SQL_DUPLICATED_CODE = "23000";

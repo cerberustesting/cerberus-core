@@ -22,7 +22,8 @@ package org.cerberus.crud.service.impl;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.ITagDAO;
 import org.cerberus.crud.entity.Tag;
 import org.cerberus.crud.factory.IFactoryTag;
@@ -53,7 +54,7 @@ public class TagService implements ITagService {
     @Autowired
     private IEmailService emailService;
 
-    private static final Logger LOG = Logger.getLogger("TagService");
+    private static final Logger LOG = LogManager.getLogger("TagService");
 
     private final String OBJECT_NAME = "Tag";
 

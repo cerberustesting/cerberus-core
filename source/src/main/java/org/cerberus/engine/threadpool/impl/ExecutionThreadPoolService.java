@@ -23,7 +23,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Future;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.engine.threadpool.entity.TestCaseExecutionQueueToTreat;
 import org.cerberus.crud.service.IMyVersionService;
@@ -46,7 +47,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
 
-    private static final Logger LOG = Logger.getLogger(ExecutionThreadPoolService.class);
+    private static final Logger LOG = LogManager.getLogger(ExecutionThreadPoolService.class);
 
     private static final String CONST_SEPARATOR = "//";
 

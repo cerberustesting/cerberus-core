@@ -19,7 +19,8 @@
  */
 package org.cerberus.service.appium.impl;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.Session;
 import org.cerberus.enums.MessageEventEnum;
@@ -37,7 +38,7 @@ public class IOSAppiumService extends AppiumService {
     /**
      * Associated {@link Logger} to this class
      */
-    private static final Logger LOGGER = Logger.getLogger(IOSAppiumService.class);
+    private static final Logger LOGGER = LogManager.getLogger(IOSAppiumService.class);
 
     /**
      * Because of https://github.com/appium/java-client/issues/402

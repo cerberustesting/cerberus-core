@@ -21,13 +21,13 @@ package org.cerberus.servlet.crud.test;
 
 import java.io.IOException;
 import java.util.UUID;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.CountryEnvironmentDatabase;
 import org.cerberus.engine.entity.ExecutionUUID;
 import org.cerberus.engine.entity.MessageGeneral;
@@ -37,7 +37,6 @@ import org.cerberus.crud.entity.SqlLibrary;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.IApplicationService;
 import org.cerberus.crud.service.ICountryEnvironmentDatabaseService;
 import org.cerberus.crud.service.IParameterService;
@@ -70,6 +69,8 @@ import org.cerberus.crud.service.IAppServiceService;
 @WebServlet(name = "CalculatePropertyForTestCase", value = "/CalculatePropertyForTestCase")
 public class CalculatePropertyForTestCase extends HttpServlet {
 
+    private static final Logger LOG = LogManager.getLogger(CalculatePropertyForTestCase.class);
+    
     @Override
     protected void doGet(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws ServletException, IOException {
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.BLOCKS);
@@ -99,7 +100,7 @@ public class CalculatePropertyForTestCase extends HttpServlet {
                     result = xmlUnitService.getFromXml(executionUUID.toString(), appService.getAttachementURL());
                     description = appService.getDescription();
                     executionUUIDObject.removeExecutionUUID(executionUUID.toString());
-                    MyLogger.log(CalculatePropertyForTestCase.class.getName(), Level.DEBUG, "Clean ExecutionUUID");
+                    LOG.debug("Clean ExecutionUUID");
                 }
             } else {
                 try {
@@ -114,7 +115,7 @@ public class CalculatePropertyForTestCase extends HttpServlet {
                     }
 
                 } catch (CerberusException ex) {
-                    Logger.getLogger(CalculatePropertyForTestCase.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+                    LOG.warn(ex);
                 }
                 if (system != null) {
                     String database = policy.sanitize(httpServletRequest.getParameter("database"));
@@ -142,11 +143,11 @@ public class CalculatePropertyForTestCase extends HttpServlet {
             }
 
         } catch (CerberusException ex) {
-            Logger.getLogger(CalculatePropertyForTestCase.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            LOG.warn(ex);
             result = ex.getMessageError().getDescription();
             description = ex.getMessageError().getDescription();
         } catch (CerberusEventException ex) {
-            Logger.getLogger(CalculatePropertyForTestCase.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            LOG.warn(ex);
             result = ex.getMessageError().getDescription();
             description = ex.getMessageError().getDescription();
         }
@@ -161,7 +162,7 @@ public class CalculatePropertyForTestCase extends HttpServlet {
                 httpServletResponse.setContentType("application/json");
                 httpServletResponse.getWriter().print(jsonObject.toString());
             } catch (JSONException exception) {
-                MyLogger.log(CalculatePropertyForTestCase.class.getName(), Level.WARN, exception.toString());
+                LOG.warn(exception.toString());
             }
         }
     }

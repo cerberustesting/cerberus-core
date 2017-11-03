@@ -23,13 +23,14 @@ import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.cerberus.crud.entity.Documentation;
 import org.cerberus.crud.service.IDocumentationService;
@@ -44,6 +45,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @WebServlet(name = "ReadDocumentation", urlPatterns = {"/ReadDocumentation"})
 public class ReadDocumentation extends HttpServlet {
 
+    private static final Logger LOG = LogManager.getLogger(ReadDocumentation.class);
+    
     @Override
     protected void doGet(HttpServletRequest httpServletRequest, HttpServletResponse response) throws ServletException, IOException {
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
@@ -63,7 +66,7 @@ public class ReadDocumentation extends HttpServlet {
         try {
             jsonResponse.put("labelTable", format);
         } catch (JSONException ex) {
-            Logger.getLogger(ReadDocumentation.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
         response.getWriter().print(jsonResponse.toString());
     }

@@ -19,7 +19,8 @@
  */
 package org.cerberus.util.threadpool.jobdiscoverer.impl;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.util.threadpool.jobdiscoverer.JobDiscoverer;
 
 import java.lang.reflect.Field;
@@ -40,7 +41,7 @@ public class StateFieldFutureTaskImplementationJobDiscoverer implements JobDisco
     private static final Class<? extends Callable> adapterClass;
     private static final Field runnableInAdapter;
 
-    private static final Logger LOGGER = Logger.getLogger(StateFieldFutureTaskImplementationJobDiscoverer.class);
+    private static final Logger LOGGER = LogManager.getLogger(StateFieldFutureTaskImplementationJobDiscoverer.class);
 
     static {
         try {

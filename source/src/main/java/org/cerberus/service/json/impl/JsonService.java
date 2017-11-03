@@ -41,7 +41,7 @@ public class JsonService implements IJsonService {
 
     public static final String DEFAULT_GET_FROM_JSON_VALUE = null;
 
-    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(JsonService.class);
+    private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(JsonService.class);
 
     /**
      * Get Json from URL and convert it into JSONObject format

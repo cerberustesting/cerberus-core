@@ -50,7 +50,7 @@ import org.cerberus.service.email.IEmailService;
 @WebServlet(name = "NewEnvironmentEventV000", urlPatterns = {"/NewEnvironmentEventV000"})
 public class NewEnvironmentEventV000 extends HttpServlet {
 
-    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger("NewEnvironmentEventV000");
+    private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger("NewEnvironmentEventV000");
 
     private final String OPERATION = "New Environment Event";
     private final String PARAMETERALL = "ALL";

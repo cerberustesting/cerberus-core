@@ -45,7 +45,7 @@ public class CampaignContentService implements ICampaignContentService {
     @Autowired
     ICampaignContentDAO campaignContentDAO;
 
-    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(CampaignContentService.class);
+    private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(CampaignContentService.class);
 
     @Override
     public AnswerList readByCampaignByCriteria(String campaign, int startPosition, int length, String columnName, String sort, String searchParameter, String string) {

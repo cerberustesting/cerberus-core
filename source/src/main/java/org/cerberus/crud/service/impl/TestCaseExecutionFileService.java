@@ -21,7 +21,8 @@ package org.cerberus.crud.service.impl;
 
 import java.util.List;
 import java.util.Map;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.cerberus.crud.dao.ITestCaseExecutionFileDAO;
 import org.cerberus.engine.entity.MessageGeneral;
@@ -49,7 +50,7 @@ public class TestCaseExecutionFileService implements ITestCaseExecutionFileServi
     @Autowired
     private IFactoryTestCaseExecutionFile testCaseExecutionFileFactory;
 
-    private static final Logger LOG = Logger.getLogger("TestCaseExecutionFileService");
+    private static final Logger LOG = LogManager.getLogger("TestCaseExecutionFileService");
 
     private final String OBJECT_NAME = "TestCaseExecutionFile";
 

@@ -22,7 +22,8 @@ package org.cerberus.crud.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.ITestCaseLabelDAO;
 import org.cerberus.engine.entity.MessageEvent;
 
@@ -49,7 +50,7 @@ public class TestCaseLabelService implements ITestCaseLabelService {
     @Autowired
     private ITestCaseLabelDAO testCaseLabelDAO;
 
-    private static final Logger LOG = Logger.getLogger("TestCaseLabelService");
+    private static final Logger LOG = LogManager.getLogger("TestCaseLabelService");
 
     private final String OBJECT_NAME = "TestCaseLabel";
 

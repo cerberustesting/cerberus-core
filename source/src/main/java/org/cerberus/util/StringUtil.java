@@ -20,13 +20,13 @@
 package org.cerberus.util;
 
 import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.web.util.HtmlUtils;
@@ -47,7 +47,7 @@ public final class StringUtil {
 
     private static final Pattern urlMatch = Pattern.compile("(.*[<>' \"^]+)([a-zA-Z]+://[^<>[:space:]]+[[:alnum:]/]*)([$<> ' \"].*)");
 
-    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(StringUtil.class);
+    private static final Logger LOG = LogManager.getLogger(StringUtil.class);
 
     /**
      * To avoid instanciation of utility class
@@ -281,7 +281,7 @@ public final class StringUtil {
             stringToEncode = stringToEncode.replace("%2523", "%23");
             stringToEncode = stringToEncode.replace("%252B", "%2B");
         } catch (ScriptException ex) {
-            Logger.getLogger(StringUtil.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
         return stringToEncode;
     }

@@ -46,7 +46,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class AppServiceService implements IAppServiceService {
 
-    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(AppServiceService.class);
+    private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(AppServiceService.class);
 
     @Autowired
     IAppServiceDAO appServiceDao;

@@ -27,8 +27,9 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
-import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.ITestCaseCountryPropertiesService;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -43,6 +44,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @WebServlet(value = "/GetOnePropertyForTestCase", name = "GetOnePropertyForTestCase")
 public class GetOnePropertyForTestCase extends HttpServlet {
 
+    private static final Logger LOG = LogManager.getLogger(GetOnePropertyForTestCase.class);
+    
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -97,7 +100,7 @@ public class GetOnePropertyForTestCase extends HttpServlet {
             response.getWriter().print(propertyList.toString());
 
         } catch (JSONException ex) {
-            MyLogger.log(GetOnePropertyForTestCase.class.getName(), org.apache.log4j.Level.WARN, ex.toString());
+            LOG.warn(ex.toString());
         } finally {
             out.close();
         }

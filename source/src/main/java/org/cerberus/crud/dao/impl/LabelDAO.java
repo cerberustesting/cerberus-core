@@ -28,7 +28,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.ILabelDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.crud.entity.Label;
@@ -56,7 +57,7 @@ public class LabelDAO implements ILabelDAO {
     @Autowired
     private IFactoryLabel factoryLabel;
 
-    private static final Logger LOG = Logger.getLogger(LabelDAO.class);
+    private static final Logger LOG = LogManager.getLogger(LabelDAO.class);
 
     private final String OBJECT_NAME = "Label";
     private final String SQL_DUPLICATED_CODE = "23000";

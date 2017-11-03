@@ -22,29 +22,23 @@ package org.cerberus.servlet.crud.test;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.TestCaseLabel;
 import org.cerberus.crud.factory.IFactoryTestCaseLabel;
-import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.ITestCaseLabelService;
-import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.Answer;
-import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.servlet.ServletUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -60,6 +54,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @WebServlet(name = "SaveTestCaseLabel", urlPatterns = {"/SaveTestCaseLabel"})
 public class SaveTestCaseLabel extends HttpServlet {
     
+    private static final Logger LOG = LogManager.getLogger(SaveTestCaseLabel.class);
     private ITestCaseLabelService testCaseLabelService;
     private IFactoryTestCaseLabel testCaseLabelFactory;
 
@@ -158,10 +153,9 @@ public class SaveTestCaseLabel extends HttpServlet {
             processRequest(request, response);
 
         } catch (CerberusException ex) {
-            Logger.getLogger(SaveTestCaseLabel.class
-                    .getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         } catch (JSONException ex) {
-            Logger.getLogger(SaveTestCaseLabel.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
     }
 
@@ -180,10 +174,9 @@ public class SaveTestCaseLabel extends HttpServlet {
             processRequest(request, response);
 
         } catch (CerberusException ex) {
-            Logger.getLogger(SaveTestCaseLabel.class
-                    .getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         } catch (JSONException ex) {
-            Logger.getLogger(SaveTestCaseLabel.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
     }
 

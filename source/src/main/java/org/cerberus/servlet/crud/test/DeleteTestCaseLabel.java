@@ -25,8 +25,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.entity.TestCaseLabel;
 import org.cerberus.crud.factory.IFactoryTestCaseLabel;
 import org.cerberus.crud.service.ILabelService;
@@ -54,7 +54,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class DeleteTestCaseLabel extends HttpServlet {
 
     private final String OBJECT_NAME = "Test Case Label";
-    private static final Logger LOG = Logger.getLogger("DeleteTestCaseLabel");
+    private static final Logger LOG = LogManager.getLogger("DeleteTestCaseLabel");
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -233,10 +233,9 @@ public class DeleteTestCaseLabel extends HttpServlet {
             processRequest(request, response);
 
         } catch (CerberusException ex) {
-            Logger.getLogger(DeleteTestCaseLabel.class
-                    .getName()).log(Level.ERROR, null, ex);
+            LOG.warn(ex);
         } catch (JSONException ex) {
-            Logger.getLogger(DeleteTestCaseLabel.class.getName()).log(Level.ERROR, null, ex);
+            LOG.warn(ex);
         }
     }
 
@@ -255,10 +254,9 @@ public class DeleteTestCaseLabel extends HttpServlet {
             processRequest(request, response);
 
         } catch (CerberusException ex) {
-            Logger.getLogger(DeleteTestCaseLabel.class
-                    .getName()).log(Level.ERROR, null, ex);
+            LOG.warn(ex);
         } catch (JSONException ex) {
-            Logger.getLogger(DeleteTestCaseLabel.class.getName()).log(Level.ERROR, null, ex);
+            LOG.warn(ex);
         }
     }
 

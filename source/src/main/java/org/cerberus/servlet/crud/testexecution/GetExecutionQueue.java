@@ -23,13 +23,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.MessageGeneral;
@@ -103,7 +103,7 @@ public class GetExecutionQueue extends HttpServlet {
 
     private ITestCaseExecutionService testCaseExecutionService;
 
-    private static final Logger LOG = Logger.getLogger(GetExecutionQueue.class);
+    private static final Logger LOG = LogManager.getLogger(GetExecutionQueue.class);
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -417,9 +417,9 @@ public class GetExecutionQueue extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (JSONException ex) {
-            java.util.logging.Logger.getLogger(GetExecutionQueue.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         } catch (CerberusException ex) {
-            java.util.logging.Logger.getLogger(GetExecutionQueue.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
     }
 
@@ -437,9 +437,9 @@ public class GetExecutionQueue extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (JSONException ex) {
-            java.util.logging.Logger.getLogger(GetExecutionQueue.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         } catch (CerberusException ex) {
-            java.util.logging.Logger.getLogger(GetExecutionQueue.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
     }
 

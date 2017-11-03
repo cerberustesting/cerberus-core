@@ -24,15 +24,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFPalette;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
@@ -59,6 +58,8 @@ import org.cerberus.util.answer.Answer;
  */
 public class ExportServiceFactory {
 
+    private static final Logger LOG = LogManager.getLogger(ExportServiceFactory.class);
+    
     private final List<?> list;
     private final String fileName; //name of the file that is going to be generated
     private final ExportServiceEnum type;
@@ -93,10 +94,10 @@ public class ExportServiceFactory {
                 outputStream.close();
                 workbook.close();
             } catch (IOException ex) {
-                Logger.getLogger(ExportServiceFactory.class.getName()).log(Level.SEVERE, null, ex);
+                LOG.warn(ex);
             }
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(ExportServiceFactory.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
 
         //each country will be a page in the xls file

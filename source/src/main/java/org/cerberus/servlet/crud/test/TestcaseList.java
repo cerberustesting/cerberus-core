@@ -34,9 +34,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.database.DatabaseSpring;
-import org.cerberus.log.MyLogger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -46,6 +46,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @WebServlet(name = "TestcaseList", urlPatterns = {"/TestcaseList"})
 public class TestcaseList extends HttpServlet {
 
+    private static final Logger LOG = LogManager.getLogger(TestcaseList.class);
+    
     /**
      * Processes requests for both HTTP
      * <code>GET</code> and
@@ -111,14 +113,14 @@ public class TestcaseList extends HttpServlet {
             try {
                 conn.close();
             } catch (Exception ex) {
-                MyLogger.log(TestcaseList.class.getName(), Level.INFO, "Exception closing ResultSet: " + ex.toString());
+                LOG.warn("Exception closing ResultSet: " + ex.toString());
             }
             try {
                 if (stmt_testlist != null) {
                     stmt_testlist.close();
                 }
             } catch (SQLException ex) {
-                MyLogger.log(TestcaseList.class.getName(), Level.INFO, "Exception closing PreparedStatement: " + ex.toString());
+                LOG.warn("Exception closing PreparedStatement: " + ex.toString());
             }
         }
 

@@ -19,7 +19,8 @@
  */
 package org.cerberus.crud.entity;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.engine.entity.MessageEvent;
 import org.json.JSONException;
@@ -68,7 +69,7 @@ public class TestCaseExecutionData {
     private TestCaseCountryProperties testCaseCountryProperties;
     private List<HashMap<String, String>> dataLibRawData; // Have the raw data of all subdata when comming from testDataLibrary
 
-    private static final Logger LOG = Logger.getLogger(TestCaseExecutionData.class);
+    private static final Logger LOG = LogManager.getLogger(TestCaseExecutionData.class);
     
     public List<TestCaseExecutionFile> getFileList() {
         return fileList;

@@ -45,7 +45,7 @@ import org.cerberus.util.ParameterParserUtil;
  */
 public class ExecutionQueueWorkerThread implements Runnable {
 
-    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(ExecutionQueueWorkerThread.class);
+    private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(ExecutionQueueWorkerThread.class);
 
     private ITestCaseExecutionQueueService queueService;
     private ExecutionQueueThreadPool execThreadPool;

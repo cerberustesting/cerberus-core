@@ -33,11 +33,12 @@ import org.apache.commons.fileupload.FileUploadBase.FileSizeLimitExceededExcepti
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.engine.execution.IRecorderService;
-import org.cerberus.log.MyLogger;
+import org.cerberus.servlet.zzpublic.ResultCI;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -49,6 +50,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class SaveManualExecutionPicture extends HttpServlet {
 
     private final static Integer UPLOAD_PICTURE_MAXSIZE = 1048576;//1 MB
+    private static final Logger LOG = LogManager.getLogger(SaveManualExecutionPicture.class);
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -91,9 +93,9 @@ public class SaveManualExecutionPicture extends HttpServlet {
 
             //this handles an action each time
         } catch (FileSizeLimitExceededException ex) {
-            MyLogger.log(SaveManualExecutionPicture.class.getName(), Level.ERROR, "File size exceed the limit: " + ex.toString());
+            LOG.warn("File size exceed the limit: " + ex.toString());
         } catch (FileUploadException ex) {
-            MyLogger.log(SaveManualExecutionPicture.class.getName(), Level.ERROR, "Exception occurred while uploading file: " + ex.toString());
+            LOG.warn("Exception occurred while uploading file: " + ex.toString());
         }
         if (uploadedFile != null) {
 
@@ -103,7 +105,7 @@ public class SaveManualExecutionPicture extends HttpServlet {
                 //getServletContext().getMimeType(fileName);
                 recorderService.recordUploadedFile(tcsae.getId(), tcsae, uploadedFile);
             } else {
-                MyLogger.log(SaveManualExecutionPicture.class.getName(), Level.ERROR, "Problem with the file you're trying to upload. It is not an image."
+                LOG.warn("Problem with the file you're trying to upload. It is not an image."
                         + "Name: " + uploadedFile.getName() + "; Content-type: " + uploadedFile.getContentType());
             }
         }

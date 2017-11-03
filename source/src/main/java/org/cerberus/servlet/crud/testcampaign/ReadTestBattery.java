@@ -28,6 +28,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.TestBattery;
@@ -52,6 +54,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @WebServlet(name = "ReadTestBattery", urlPatterns = {"/ReadTestBattery"})
 public class ReadTestBattery extends HttpServlet {
 
+    private static final Logger LOG = LogManager.getLogger(ReadTestBattery.class);
     ITestBatteryService testBatteryService;
 
     /**
@@ -93,7 +96,7 @@ public class ReadTestBattery extends HttpServlet {
 
             response.getWriter().print(jsonResponse.toString());
         } catch (JSONException ex) {
-            org.apache.log4j.Logger.getLogger(ReadTestBattery.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
+            LOG.warn(ex);
             //returns a default error message with the json format that is able to be parsed by the client-side
             response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
         }

@@ -20,11 +20,12 @@
 package org.cerberus.servlet.crud.countryenvironment;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.ICountryEnvParamService;
 import org.json.JSONArray;
@@ -41,6 +42,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  */
 public class findEnvironmentByCriteria extends HttpServlet {
 
+    private static final Logger LOG = LogManager.getLogger(findEnvironmentByCriteria.class);
+    
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -85,9 +88,9 @@ public class findEnvironmentByCriteria extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(findEnvironmentByCriteria.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            LOG.warn(ex);
         } catch (JSONException ex) {
-            Logger.getLogger(findEnvironmentByCriteria.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
     }
 
@@ -105,9 +108,9 @@ public class findEnvironmentByCriteria extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(findEnvironmentByCriteria.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            LOG.warn(ex);
         } catch (JSONException ex) {
-            Logger.getLogger(findEnvironmentByCriteria.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
     }
 

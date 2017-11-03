@@ -27,13 +27,13 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.CountryEnvParam_log;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.service.ICountryEnvParam_logService;
@@ -59,6 +59,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @WebServlet(name = "ReadCountryEnvParam_log", urlPatterns = {"/ReadCountryEnvParam_log"})
 public class ReadCountryEnvParam_log extends HttpServlet {
 
+    private static final Logger LOG = LogManager.getLogger(ReadCountryEnvParam_log.class);
     private ICountryEnvParam_logService ceplService;
     private final String OBJECT_NAME = "ReadCountryEnvParam_log";
 
@@ -118,7 +119,7 @@ public class ReadCountryEnvParam_log extends HttpServlet {
             response.getWriter().print(jsonResponse.toString());
 
         } catch (JSONException e) {
-            org.apache.log4j.Logger.getLogger(ReadCountryEnvParam_log.class.getName()).log(org.apache.log4j.Level.ERROR, null, e);
+            LOG.warn(e);
             //returns a default error message with the json format that is able to be parsed by the client-side
             response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
         }
@@ -139,7 +140,7 @@ public class ReadCountryEnvParam_log extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(ReadCountryEnvParam_log.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
     }
 
@@ -157,7 +158,7 @@ public class ReadCountryEnvParam_log extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(ReadCountryEnvParam_log.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
     }
 

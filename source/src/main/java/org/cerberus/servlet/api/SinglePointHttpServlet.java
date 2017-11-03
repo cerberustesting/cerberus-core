@@ -19,7 +19,8 @@
  */
 package org.cerberus.servlet.api;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.servlet.api.info.SinglePointHttpServletInfo;
 import org.cerberus.servlet.api.mapper.DefaultJsonHttpMapper;
 import org.cerberus.servlet.api.mapper.HttpMapper;
@@ -124,7 +125,7 @@ public abstract class SinglePointHttpServlet<REQUEST extends Validable, RESPONSE
 
     protected static final HttpMapper JSON_HTTP_MAPPER = new DefaultJsonHttpMapper();
 
-    private static final Logger LOG = Logger.getLogger(SinglePointHttpServlet.class);
+    private static final Logger LOG = LogManager.getLogger(SinglePointHttpServlet.class);
 
     @Override
     public final void init() throws ServletException {

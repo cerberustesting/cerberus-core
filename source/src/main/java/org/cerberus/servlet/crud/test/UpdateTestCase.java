@@ -26,13 +26,13 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseCountry;
@@ -67,7 +67,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @WebServlet(name = "UpdateTestCase2", urlPatterns = {"/UpdateTestCase2"})
 public class UpdateTestCase extends HttpServlet {
 
-    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(UpdateTestCase.class);
+    private static final Logger LOG = LogManager.getLogger(UpdateTestCase.class);
 
     private ITestCaseLabelService testCaseLabelService;
     private IFactoryTestCaseLabel testCaseLabelFactory;
@@ -221,10 +221,10 @@ public class UpdateTestCase extends HttpServlet {
             try {
                 processRequest(request, response);
             } catch (CerberusException ex) {
-                Logger.getLogger(UpdateTestCase.class.getName()).log(Level.SEVERE, null, ex);
+                LOG.warn(ex);
             }
         } catch (JSONException ex) {
-            Logger.getLogger(UpdateTestCase.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
     }
 
@@ -243,10 +243,10 @@ public class UpdateTestCase extends HttpServlet {
             try {
                 processRequest(request, response);
             } catch (CerberusException ex) {
-                Logger.getLogger(UpdateTestCase.class.getName()).log(Level.SEVERE, null, ex);
+                LOG.warn(ex);
             }
         } catch (JSONException ex) {
-            Logger.getLogger(UpdateTestCase.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
     }
 

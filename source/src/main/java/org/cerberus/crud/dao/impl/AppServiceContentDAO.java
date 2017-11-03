@@ -27,7 +27,8 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.IAppServiceContentDAO;
 import org.cerberus.crud.entity.AppServiceContent;
 import org.cerberus.crud.factory.IFactoryAppServiceContent;
@@ -59,7 +60,7 @@ public class AppServiceContentDAO implements IAppServiceContentDAO {
     @Autowired
     private IFactoryAppServiceContent factoryAppServiceContent;
 
-    private static final Logger LOG = Logger.getLogger(AppServiceContentDAO.class);
+    private static final Logger LOG = LogManager.getLogger(AppServiceContentDAO.class);
 
     private final String OBJECT_NAME = "Service Content";
     private final String SQL_DUPLICATED_CODE = "23000";

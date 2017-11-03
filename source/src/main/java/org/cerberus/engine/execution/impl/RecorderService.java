@@ -28,13 +28,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
 import org.cerberus.crud.entity.AppService;
-import org.cerberus.crud.entity.AppServiceContent;
-import org.cerberus.crud.entity.AppServiceHeader;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionFile;
@@ -53,7 +49,6 @@ import org.cerberus.util.StringUtil;
 import org.cerberus.version.Infos;
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -77,7 +72,7 @@ public class RecorderService implements IRecorderService {
     @Autowired
     private IFactoryTestCaseExecutionFile testCaseExecutionFileFactory;
 
-    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(RecorderService.class);
+    private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(RecorderService.class);
 
     @Override
     public List<TestCaseExecutionFile> recordExecutionInformationAfterStepActionandControl(TestCaseStepActionExecution testCaseStepActionExecution, TestCaseStepActionControlExecution testCaseStepActionControlExecution) {

@@ -24,7 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.IInvariantDAO;
 import org.cerberus.crud.entity.Invariant;
 import org.cerberus.crud.service.IInvariantService;
@@ -49,7 +50,7 @@ public class InvariantService implements IInvariantService {
     @Autowired
     IInvariantDAO invariantDao;
 
-    private static final Logger LOG = Logger.getLogger(InvariantService.class);
+    private static final Logger LOG = LogManager.getLogger(InvariantService.class);
 
     @Override
     public AnswerItem readByKey(String id, String value) {

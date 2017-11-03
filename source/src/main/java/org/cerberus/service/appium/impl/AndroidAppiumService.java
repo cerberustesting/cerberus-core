@@ -21,15 +21,13 @@ package org.cerberus.service.appium.impl;
 
 import io.appium.java_client.android.AndroidKeyCode;
 import io.appium.java_client.android.AndroidDriver;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.Session;
 import org.cerberus.enums.MessageEventEnum;
-import org.openqa.selenium.WebDriverException;
 import org.springframework.stereotype.Service;
 
-import java.util.Scanner;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -43,7 +41,7 @@ public class AndroidAppiumService extends AppiumService {
     /**
      * The associated {@link Logger} to this class
      */
-    private static final Logger LOGGER = Logger.getLogger(AndroidAppiumService.class);
+    private static final Logger LOGGER = LogManager.getLogger(AndroidAppiumService.class);
 
     /**
      * The {@link Pattern} related error when keyboard is absent

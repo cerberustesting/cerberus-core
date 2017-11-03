@@ -22,7 +22,8 @@ package org.cerberus.crud.entity;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.engine.entity.Selenium;
 import org.cerberus.engine.entity.Session;
@@ -35,7 +36,7 @@ import org.json.JSONObject;
  */
 public class TestCaseExecution {
 
-    private static final Logger LOG = Logger.getLogger(TestCaseExecution.class);
+    private static final Logger LOG = LogManager.getLogger(TestCaseExecution.class);
 
     private long id;
     private String test;

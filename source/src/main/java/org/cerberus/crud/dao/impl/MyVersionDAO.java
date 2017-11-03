@@ -23,15 +23,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.logging.Logger;
-
-import org.apache.log4j.Level;
 import org.cerberus.crud.dao.IMyVersionDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.crud.entity.MyVersion;
 import org.cerberus.crud.factory.IFactoryMyversion;
 import org.cerberus.crud.factory.impl.FactoryMyversion;
-import org.cerberus.log.MyLogger;
 import org.cerberus.util.ParameterParserUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -51,7 +47,7 @@ public class MyVersionDAO implements IMyVersionDAO {
     @Autowired
     private IFactoryMyversion factoryMyversion;
 
-    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(AppServiceDAO.class);
+    private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(AppServiceDAO.class);
 
     @Override
     public MyVersion findMyVersionByKey(String key) {
@@ -78,25 +74,25 @@ public class MyVersionDAO implements IMyVersionDAO {
                     }
                 } catch (SQLException exception) {
                     result = null;
-                    MyLogger.log(MyVersionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    LOG.warn("Unable to execute query : " + exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
                 result = null;
-                MyLogger.log(MyVersionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                LOG.warn("Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(MyVersionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            LOG.warn("Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(MyVersionDAO.class.getName(), Level.WARN, e.toString());
+                LOG.warn(e.toString());
             }
         }
         return result;
@@ -116,19 +112,19 @@ public class MyVersionDAO implements IMyVersionDAO {
 
                 result = preStat.execute();
             } catch (SQLException exception) {
-                MyLogger.log(MyVersionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                LOG.warn("Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(MyVersionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            LOG.warn("Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(MyVersionDAO.class.getName(), Level.WARN, e.toString());
+                LOG.warn(e.toString());
             }
         }
         return result;
@@ -155,19 +151,19 @@ public class MyVersionDAO implements IMyVersionDAO {
 
                 result = preStat.execute();
             } catch (SQLException exception) {
-                MyLogger.log(MyVersionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                LOG.warn("Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(MyVersionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            LOG.warn("Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(MyVersionDAO.class.getName(), Level.WARN, e.toString());
+                LOG.warn(e.toString());
             }
         }
         return result;
@@ -180,13 +176,13 @@ public class MyVersionDAO implements IMyVersionDAO {
             key = ParameterParserUtil.parseStringParam(resultSet.getString("Key"), "");
             value = ParameterParserUtil.parseIntegerParam(resultSet.getString("Value"), 0);
         } catch (SQLException ex) {
-            Logger.getLogger(MyVersionDAO.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
         String valueString = "";
         try {
             valueString = ParameterParserUtil.parseStringParam(resultSet.getString("ValueString"), "");
         } catch (SQLException ex) {
-            Logger.getLogger(MyVersionDAO.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
 
         return factoryMyversion.create(key, value, valueString);

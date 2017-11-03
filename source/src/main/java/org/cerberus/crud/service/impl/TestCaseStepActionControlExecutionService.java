@@ -21,7 +21,8 @@ package org.cerberus.crud.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.cerberus.crud.dao.ITestCaseStepActionControlExecutionDAO;
 import org.cerberus.crud.entity.TestCaseExecutionFile;
@@ -45,7 +46,7 @@ public class TestCaseStepActionControlExecutionService implements ITestCaseStepA
     @Autowired
     ITestCaseExecutionFileService testCaseExecutionFileService;
 
-    private static final Logger LOG = Logger.getLogger(TestCaseStepActionControlExecutionService.class);
+    private static final Logger LOG = LogManager.getLogger(TestCaseStepActionControlExecutionService.class);
 
     @Override
     public void insertTestCaseStepActionControlExecution(TestCaseStepActionControlExecution testCaseStepActionControlExecution) {

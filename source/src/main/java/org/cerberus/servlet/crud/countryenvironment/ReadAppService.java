@@ -21,14 +21,10 @@ package org.cerberus.servlet.crud.countryenvironment;
 
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
-import org.apache.log4j.Level;
-import org.cerberus.crud.entity.Application;
-import org.cerberus.crud.service.impl.ApplicationService;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.AppService;
 import org.cerberus.crud.service.impl.AppServiceService;
 import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
@@ -48,6 +44,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.service.IAppServiceService;
 
 /**
@@ -55,6 +53,7 @@ import org.cerberus.crud.service.IAppServiceService;
  */
 public class ReadAppService extends HttpServlet {
 
+    private static final Logger LOG = LogManager.getLogger(ReadAppService.class);
     private IAppServiceService appServiceService;
 
     /**
@@ -123,7 +122,7 @@ public class ReadAppService extends HttpServlet {
             response.getWriter().print(jsonResponse.toString());
 
         } catch (JSONException e) {
-            org.apache.log4j.Logger.getLogger(ReadAppService.class.getName()).log(Level.ERROR, null, e);
+            LOG.warn(e);
             //returns a default error message with the json format that is able to be parsed by the client-side
             response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
         }

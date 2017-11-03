@@ -25,9 +25,7 @@
 <%@page import="org.cerberus.crud.service.impl.LogEventService"%>
 <%@page import="org.cerberus.crud.service.ILogEventService"%>
 <%@page import="org.cerberus.version.Infos"%>
-<%@page import="org.cerberus.log.MyLogger"%>
 <%@page import="org.cerberus.crud.service.IParameterService"%>
-<%@page import="org.apache.log4j.Level"%>
 <%@page import="org.springframework.web.context.support.WebApplicationContextUtils"%>
 <%@page import="org.springframework.context.ApplicationContext"%>
 

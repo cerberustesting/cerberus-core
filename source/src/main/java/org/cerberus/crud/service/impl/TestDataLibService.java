@@ -56,7 +56,7 @@ public class TestDataLibService implements ITestDataLibService {
     @Autowired
     private IParameterService parameterService;
 
-    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(TestDataLibService.class);
+    private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(TestDataLibService.class);
 
     @Override
     public AnswerItem readByNameBySystemByEnvironmentByCountry(String name, String system, String environment, String country) {

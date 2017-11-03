@@ -20,7 +20,8 @@
 package org.cerberus.engine.execution.impl;
 
 import java.util.Date;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.CountryEnvParam;
 import org.cerberus.crud.entity.CountryEnvironmentParameters;
@@ -85,7 +86,7 @@ public class ExecutionStartService implements IExecutionStartService {
     @Autowired
     private ITestCaseExecutionQueueService inQueueService;
 
-    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(ExecutionStartService.class);
+    private static final Logger LOG = LogManager.getLogger(ExecutionStartService.class);
 
     @Override
     public TestCaseExecution startExecution(TestCaseExecution tCExecution) throws CerberusException {
@@ -454,7 +455,7 @@ public class ExecutionStartService implements IExecutionStartService {
 
         } catch (CerberusException ex) {
             tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_COULDNOTCREATE_RUNID));
-            Logger.getLogger(ExecutionStartService.class.getName()).log(java.util.logging.Level.WARNING, ex.getMessageError().getDescription());
+            LOG.warn(ex.getMessageError().getDescription());
             throw new CerberusException(ex.getMessageError());
         }
 

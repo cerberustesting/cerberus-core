@@ -30,7 +30,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import org.apache.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.CountryEnvironmentDatabase;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
@@ -45,7 +46,6 @@ import org.cerberus.database.DatabaseSpring;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.log.MyLogger;
 import org.cerberus.service.sql.ISQLService;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerList;
@@ -72,7 +72,7 @@ public class SQLService implements ISQLService {
     @Autowired
     private IParameterService parameterService;
 
-    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(SQLService.class);
+    private static final Logger LOG = LogManager.getLogger(SQLService.class);
 
     @Override
     public TestCaseExecutionData calculateOnDatabase(TestCaseExecutionData testCaseExecutionData, TestCaseCountryProperties testCaseProperties,
@@ -215,7 +215,7 @@ public class SQLService implements ISQLService {
                         nbFetch++;
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(SQLService.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    LOG.warn("Unable to execute query : " + exception.toString());
 
                 } finally {
                     resultSet.close();
@@ -227,7 +227,7 @@ public class SQLService implements ISQLService {
                 msg.setDescription(msg.getDescription().replace("%EX%", exception.toString()));
 
             } catch (SQLException exception) {
-                MyLogger.log(SQLService.class.getName(), Level.WARN, exception.toString());
+                LOG.warn(exception.toString());
                 msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_ERROR);
                 msg.setDescription(msg.getDescription().replace("%SQL%", sql));
                 msg.setDescription(msg.getDescription().replace("%EX%", exception.toString()));
@@ -236,14 +236,14 @@ public class SQLService implements ISQLService {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(SQLService.class.getName(), Level.FATAL, exception.toString());
+            LOG.warn(exception.toString());
             msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_CANNOTACCESSJDBC);
             msg.setDescription(msg.getDescription().replace("%JDBC%", "jdbc/" + connectionName));
             msg.setDescription(msg.getDescription().replace("%EX%", exception.toString()));
             throwEx = true;
         } catch (NullPointerException exception) {
             //TODO check where exception occur
-            MyLogger.log(SQLService.class.getName(), Level.FATAL, exception.toString());
+            LOG.warn(exception.toString());
             msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_CANNOTACCESSJDBC);
             msg.setDescription(msg.getDescription().replace("%JDBC%", "jdbc/" + connectionName));
             msg.setDescription(msg.getDescription().replace("%EX%", exception.toString()));
@@ -254,7 +254,7 @@ public class SQLService implements ISQLService {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(SQLService.class.getName(), Level.WARN, e.toString());
+                LOG.warn(e.toString());
             }
         }
         if (throwEx) {
@@ -296,13 +296,13 @@ public class SQLService implements ISQLService {
                                         .resolveDescription("NBROWS", String.valueOf(nbUpdate))
                                         .resolveDescription("JDBC", connectionName).resolveDescription("SQL", sql);
                             } catch (SQLTimeoutException exception) {
-                                MyLogger.log(SQLService.class.getName(), Level.WARN, exception.toString());
+                                LOG.warn(exception.toString());
                                 msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_TIMEOUT);
                                 msg.setDescription(msg.getDescription().replace("%SQL%", sql));
                                 msg.setDescription(msg.getDescription().replace("%TIMEOUT%", String.valueOf(sqlTimeout)));
                                 msg.setDescription(msg.getDescription().replace("%EX%", exception.toString()));
                             } catch (SQLException exception) {
-                                MyLogger.log(SQLService.class.getName(), Level.WARN, exception.toString());
+                                LOG.warn(exception.toString());
                                 msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_ERROR);
                                 msg.setDescription(msg.getDescription().replace("%SQL%", sql));
                                 msg.setDescription(msg.getDescription().replace("%EX%", exception.toString()));
@@ -310,12 +310,12 @@ public class SQLService implements ISQLService {
                                 preStat.close();
                             }
                         } catch (SQLException exception) {
-                            MyLogger.log(SQLService.class.getName(), Level.FATAL, exception.toString());
+                            LOG.warn(exception.toString());
                             msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_CANNOTACCESSJDBC);
                             msg.setDescription(msg.getDescription().replace("%JDBC%", "jdbc/" + connectionName));
                             msg.setDescription(msg.getDescription().replace("%EX%", exception.toString()));
                         } catch (NullPointerException exception) {
-                            MyLogger.log(SQLService.class.getName(), Level.FATAL, exception.toString());
+                            LOG.warn(exception.toString());
                             msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_CANNOTACCESSJDBC);
                             msg.setDescription(msg.getDescription().replace("%JDBC%", "jdbc/" + connectionName));
                             msg.setDescription(msg.getDescription().replace("%EX%", exception.toString()));
@@ -325,7 +325,7 @@ public class SQLService implements ISQLService {
                                     connection.close();
                                 }
                             } catch (SQLException e) {
-                                MyLogger.log(SQLService.class.getName(), Level.WARN, e.toString());
+                                LOG.warn(e.toString());
                             }
                         }
                     }
@@ -380,13 +380,13 @@ public class SQLService implements ISQLService {
                                         .resolveDescription("NBROWS", String.valueOf(nbUpdate))
                                         .resolveDescription("JDBC", connectionName).resolveDescription("SQL", sql);
                             } catch (SQLTimeoutException exception) {
-                                MyLogger.log(SQLService.class.getName(), Level.WARN, exception.toString());
+                                LOG.warn(exception.toString());
                                 msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_TIMEOUT);
                                 msg.setDescription(msg.getDescription().replace("%SQL%", sql));
                                 msg.setDescription(msg.getDescription().replace("%TIMEOUT%", String.valueOf(sqlTimeout)));
                                 msg.setDescription(msg.getDescription().replace("%EX%", exception.toString()));
                             } catch (SQLException exception) {
-                                MyLogger.log(SQLService.class.getName(), Level.WARN, exception.toString());
+                                LOG.warn(exception.toString());
                                 msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_ERROR);
                                 msg.setDescription(msg.getDescription().replace("%SQL%", sql));
                                 msg.setDescription(msg.getDescription().replace("%EX%", exception.toString()));
@@ -394,12 +394,12 @@ public class SQLService implements ISQLService {
                                 cs.close();
                             }
                         } catch (SQLException exception) {
-                            MyLogger.log(SQLService.class.getName(), Level.FATAL, exception.toString());
+                            LOG.warn(exception.toString());
                             msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_CANNOTACCESSJDBC);
                             msg.setDescription(msg.getDescription().replace("%JDBC%", "jdbc/" + connectionName));
                             msg.setDescription(msg.getDescription().replace("%EX%", exception.toString()));
                         } catch (NullPointerException exception) {
-                            MyLogger.log(SQLService.class.getName(), Level.FATAL, exception.toString());
+                            LOG.warn(exception.toString());
                             msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_CANNOTACCESSJDBC);
                             msg.setDescription(msg.getDescription().replace("%JDBC%", "jdbc/" + connectionName));
                             msg.setDescription(msg.getDescription().replace("%EX%", exception.toString()));
@@ -409,7 +409,7 @@ public class SQLService implements ISQLService {
                                     connection.close();
                                 }
                             } catch (SQLException e) {
-                                MyLogger.log(SQLService.class.getName(), Level.WARN, e.toString());
+                                LOG.warn(e.toString());
                             }
                         }
                     }
@@ -512,7 +512,7 @@ public class SQLService implements ISQLService {
                     msg.setDescription(msg.getDescription().replace("%EX%", exception.toString()));
 
                 } catch (SQLException exception) {
-                    MyLogger.log(SQLService.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    LOG.warn("Unable to execute query : " + exception.toString());
 
                 } finally {
                     if (resultSet != null) {
@@ -536,13 +536,13 @@ public class SQLService implements ISQLService {
                 }
             }
         } catch (SQLException exception) {
-            MyLogger.log(SQLService.class.getName(), Level.FATAL, exception.toString());
+            LOG.warn(exception.toString());
             msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_CANNOTACCESSJDBC);
             msg.setDescription(msg.getDescription().replace("%JDBC%", "jdbc/" + connectionName));
             msg.setDescription(msg.getDescription().replace("%EX%", exception.toString()));
         } catch (NullPointerException exception) {
             //TODO check where exception occur
-            MyLogger.log(SQLService.class.getName(), Level.FATAL, exception.toString());
+            LOG.warn(exception.toString());
             msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_CANNOTACCESSJDBC);
             msg.setDescription(msg.getDescription().replace("%JDBC%", "jdbc/" + connectionName));
             msg.setDescription(msg.getDescription().replace("%EX%", exception.toString()));
@@ -552,7 +552,7 @@ public class SQLService implements ISQLService {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(SQLService.class.getName(), Level.WARN, e.toString());
+                LOG.warn(e.toString());
             }
         }
         listResult.setResultMessage(msg);

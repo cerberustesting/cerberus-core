@@ -27,11 +27,11 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.TestBatteryContent;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.factory.IFactoryTestBatteryContent;
-import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.ITestBatteryService;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
@@ -45,6 +45,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @WebServlet(name = "AddTestBatteryContent", urlPatterns = {"/AddTestBatteryContent"})
 public class AddTestBatteryContent extends HttpServlet {
 
+    private static final Logger LOG = LogManager.getLogger(AddTestBatteryContent.class);
     private ITestBatteryService testBatteryService;
     private IFactoryTestBatteryContent factoryTestBatteryContent;
 
@@ -69,7 +70,7 @@ public class AddTestBatteryContent extends HttpServlet {
             try {
                 testBatteryName = testBatteryService.findTestBatteryByKey(Integer.parseInt(testbattery)).getTestbattery();
             } catch (CerberusException ex) {
-                MyLogger.log(AddTestBatteryContent.class.getName(), Level.DEBUG, ex.getMessage());
+                LOG.warn(ex.getMessage());
                 testBatteryName = null;
             }
 
@@ -95,7 +96,7 @@ public class AddTestBatteryContent extends HttpServlet {
                             jsonResponse = newTestBatteryContentId;
                         }
                     } catch (CerberusException ex) {
-                        MyLogger.log(AddTestBatteryContent.class.getName(), Level.DEBUG, ex.getMessage());
+                        LOG.warn(ex.getMessage());
                         jsonResponse = "-1";
                     }
                 }

@@ -42,7 +42,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.*;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.TestCaseExecutionFile;
 import org.cerberus.crud.factory.IFactoryTestCaseExecutionFile;
 import org.cerberus.crud.service.IParameterService;
@@ -56,7 +57,7 @@ import org.cerberus.util.servlet.ServletUtil;
 @WebServlet(name = "ReadTestCaseExecutionMedia", urlPatterns = {"/ReadTestCaseExecutionMedia"})
 public class ReadTestCaseExecutionMedia extends HttpServlet {
 
-    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(ReadTestCaseExecutionMedia.class);
+    private static final Logger LOG = LogManager.getLogger(ReadTestCaseExecutionMedia.class);
 
     private IFactoryTestCaseExecutionFile factoryTestCaseExecutionFile;
 
@@ -305,7 +306,7 @@ public class ReadTestCaseExecutionMedia extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(ReadTestCaseExecutionMedia.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
     }
 
@@ -323,7 +324,7 @@ public class ReadTestCaseExecutionMedia extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(ReadTestCaseExecutionMedia.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
     }
 

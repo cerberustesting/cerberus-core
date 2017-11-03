@@ -21,12 +21,12 @@ package org.cerberus.crud.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import org.apache.log4j.Level;
 import org.cerberus.crud.dao.ITestCaseStepActionControlDAO;
 import org.cerberus.crud.entity.TestCaseStepActionControl;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.ITestCaseStepActionControlService;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
@@ -40,6 +40,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class TestCaseStepActionControlService implements ITestCaseStepActionControlService {
 
+    private static final Logger LOG = LogManager.getLogger(TestCaseStepActionControlService.class);
+    
     @Autowired
     private ITestCaseStepActionControlDAO testCaseStepActionControlDao;
 
@@ -64,7 +66,7 @@ public class TestCaseStepActionControlService implements ITestCaseStepActionCont
             try {
                 insertTestCaseStepActionControl(tcs);
             } catch (CerberusException ex) {
-                MyLogger.log(TestCaseStepActionControlService.class.getName(), Level.FATAL, ex.toString());
+                LOG.warn(ex.toString());
                 return false;
             }
         }
@@ -81,7 +83,7 @@ public class TestCaseStepActionControlService implements ITestCaseStepActionCont
         try {
             testCaseStepActionControlDao.updateTestCaseStepActionControl(control);
         } catch (CerberusException ex) {
-            MyLogger.log(TestCaseStepActionControlService.class.getName(), Level.FATAL, ex.toString());
+            LOG.warn(ex.toString());
             return false;
         }
         return true;

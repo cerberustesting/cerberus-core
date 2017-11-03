@@ -27,7 +27,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.entity.Invariant;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.service.IInvariantService;
@@ -56,7 +57,7 @@ public class ReadInvariant extends HttpServlet {
 
     private IInvariantService invariantService;
 
-    private static final Logger LOG = Logger.getLogger("ReadInvariant");
+    private static final Logger LOG = LogManager.getLogger("ReadInvariant");
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -125,7 +126,7 @@ public class ReadInvariant extends HttpServlet {
             response.getWriter().print(jsonResponse.toString());
 
         } catch (JSONException e) {
-            org.apache.log4j.Logger.getLogger(ReadInvariant.class.getName()).log(org.apache.log4j.Level.ERROR, null, e);
+            LOG.warn(e);
             //returns a default error message with the json format that is able to be parsed by the client-side
             response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
         }

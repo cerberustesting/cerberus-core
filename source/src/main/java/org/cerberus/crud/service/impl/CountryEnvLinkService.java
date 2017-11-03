@@ -49,7 +49,7 @@ public class CountryEnvLinkService implements ICountryEnvLinkService {
 
     private final String OBJECT_NAME = "CountryEnvLink";
 
-    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(CountryEnvLinkService.class);
+    private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(CountryEnvLinkService.class);
 
     @Override
     public AnswerList readByVarious(String system, String country, String environment) {

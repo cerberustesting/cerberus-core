@@ -21,7 +21,8 @@ package org.cerberus.websocket;
 
 import com.google.common.base.Predicates;
 import com.google.common.collect.Maps;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.websocket.decoders.TestCaseExecutionDecoder;
 import org.cerberus.websocket.encoders.TestCaseExecutionEncoder;
@@ -77,7 +78,7 @@ public class TestCaseExecutionEndPoint {
     /**
      * The associated {@link Logger} to this class
      */
-    private static final Logger LOG = Logger.getLogger(TestCaseExecutionEndPoint.class);
+    private static final Logger LOG = LogManager.getLogger(TestCaseExecutionEndPoint.class);
 
     /**
      * The unique instance of this {@link TestCaseExecutionEndPoint} class

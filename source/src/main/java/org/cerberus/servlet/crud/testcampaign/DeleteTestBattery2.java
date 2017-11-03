@@ -19,7 +19,6 @@
  */
 package org.cerberus.servlet.crud.testcampaign;
 
-import org.cerberus.crud.entity.Campaign;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.TestBattery;
 import org.cerberus.crud.service.*;
@@ -40,13 +39,16 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * @author cte
  */
 public class DeleteTestBattery2 extends HttpServlet {
 
+    private static final Logger LOG = LogManager.getLogger(DeleteTestBattery2.class);
+    
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -141,9 +143,9 @@ public class DeleteTestBattery2 extends HttpServlet {
         try {
             this.processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(DeleteTestBattery2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            LOG.warn(ex);
         } catch (JSONException ex) {
-            Logger.getLogger(DeleteTestBattery2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
     }
 
@@ -161,9 +163,9 @@ public class DeleteTestBattery2 extends HttpServlet {
         try {
             this.processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(DeleteTestBattery2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            LOG.warn(ex);
         } catch (JSONException ex) {
-            Logger.getLogger(DeleteTestBattery2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
     }
 

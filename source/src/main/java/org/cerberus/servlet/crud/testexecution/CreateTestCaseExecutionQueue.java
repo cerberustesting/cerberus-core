@@ -20,13 +20,13 @@
 package org.cerberus.servlet.crud.testexecution;
 
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.TestCaseExecutionQueue;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
@@ -57,7 +57,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @WebServlet(name = "CreateTestCaseExecutionQueue", urlPatterns = {"/CreateTestCaseExecutionQueue"})
 public class CreateTestCaseExecutionQueue extends HttpServlet {
 
-    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(CreateTestCaseExecutionQueue.class);
+    private static final Logger LOG = LogManager.getLogger(CreateTestCaseExecutionQueue.class);
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -220,7 +220,7 @@ public class CreateTestCaseExecutionQueue extends HttpServlet {
                     }
 
                 } catch (FactoryCreationException ex) {
-                    Logger.getLogger(CreateTestCaseExecutionQueue.class.getName()).log(Level.SEVERE, null, ex);
+                    LOG.warn(ex);
                 }
 
             }
@@ -257,10 +257,9 @@ public class CreateTestCaseExecutionQueue extends HttpServlet {
             processRequest(request, response);
 
         } catch (CerberusException ex) {
-            Logger.getLogger(CreateTestCaseExecutionQueue.class
-                    .getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         } catch (JSONException ex) {
-            Logger.getLogger(CreateTestCaseExecutionQueue.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
     }
 
@@ -279,10 +278,9 @@ public class CreateTestCaseExecutionQueue extends HttpServlet {
             processRequest(request, response);
 
         } catch (CerberusException ex) {
-            Logger.getLogger(CreateTestCaseExecutionQueue.class
-                    .getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         } catch (JSONException ex) {
-            Logger.getLogger(CreateTestCaseExecutionQueue.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
     }
 

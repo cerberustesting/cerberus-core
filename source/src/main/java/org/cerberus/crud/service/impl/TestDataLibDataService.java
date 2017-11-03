@@ -45,7 +45,7 @@ public class TestDataLibDataService implements ITestDataLibDataService {
 
     private final String OBJECT_NAME = "TestDataLibData";
 
-    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(TestDataLibDataService.class);
+    private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(TestDataLibDataService.class);
 
     @Override
     public AnswerItem readByKey(Integer testDataLibID, String subData) {

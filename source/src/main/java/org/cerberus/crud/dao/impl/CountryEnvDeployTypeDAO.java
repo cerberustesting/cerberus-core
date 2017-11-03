@@ -19,7 +19,8 @@
  */
 package org.cerberus.crud.dao.impl;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.ICountryEnvDeployTypeDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +50,7 @@ public class CountryEnvDeployTypeDAO implements ICountryEnvDeployTypeDAO {
     @Autowired
     private IFactoryCountryEnvDeployType factoryCountryEnvDeployType;
 
-    private static final Logger LOG = Logger.getLogger(CountryEnvDeployTypeDAO.class);
+    private static final Logger LOG = LogManager.getLogger(CountryEnvDeployTypeDAO.class);
 
     private final String OBJECT_NAME = "CountryEnvDeployType";
     private final String SQL_DUPLICATED_CODE = "23000";

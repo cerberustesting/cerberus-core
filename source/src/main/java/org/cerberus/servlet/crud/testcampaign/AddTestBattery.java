@@ -20,13 +20,13 @@
 package org.cerberus.servlet.crud.testcampaign;
 
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.factory.IFactoryTestBattery;
 import org.cerberus.crud.service.ITestBatteryService;
@@ -42,6 +42,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @WebServlet(name = "AddTestBattery", urlPatterns = {"/AddTestBattery"})
 public class AddTestBattery extends HttpServlet {
 
+    private static final Logger LOG = LogManager.getLogger(AddTestBattery.class);
     private ITestBatteryService testBatteryService;
     private IFactoryTestBattery factoryTestBattery;
 
@@ -62,7 +63,7 @@ public class AddTestBattery extends HttpServlet {
             String newTestBatteryId = String.valueOf(testBatteryService.findTestBatteryByTestBatteryName(testbattery).getTestbatteryID());
             response.getWriter().append(newTestBatteryId).close();
         } catch (CerberusException ex) {
-            Logger.getLogger(AddTestBattery.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
             response.getWriter().append("-1").close();
         }
 

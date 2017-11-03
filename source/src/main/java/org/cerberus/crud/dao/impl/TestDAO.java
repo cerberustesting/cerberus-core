@@ -27,8 +27,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.ITestDAO;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.database.DatabaseSpring;
@@ -38,7 +38,6 @@ import org.cerberus.crud.entity.Test;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.factory.IFactoryTest;
 import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.log.MyLogger;
 import org.cerberus.util.DateUtil;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.SqlUtil;
@@ -67,7 +66,7 @@ public class TestDAO implements ITestDAO {
     @Autowired
     private IFactoryTest factoryTest;
 
-    private static final Logger LOG = Logger.getLogger(TestDAO.class);
+    private static final Logger LOG = LogManager.getLogger(TestDAO.class);
 
     private final String OBJECT_NAME = "Test";
     private final String SQL_DUPLICATED_CODE = "23000";
@@ -185,7 +184,7 @@ public class TestDAO implements ITestDAO {
                 query.append(whereClause);
             }
 
-            MyLogger.log(TestDAO.class.getName(), Level.DEBUG, "Query : Test.findTestByCriteria : " + query.toString());
+            LOG.debug("Query : Test.findTestByCriteria : " + query.toString());
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             if (parameters.size() > 0) {
                 int index = 0;
@@ -205,24 +204,24 @@ public class TestDAO implements ITestDAO {
                         }
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(TestDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    LOG.warn("Unable to execute query : " + exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(TestDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                LOG.warn("Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            LOG.warn("Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(TestDAO.class.getName(), Level.WARN, e.toString());
+                LOG.warn(e.toString());
             }
         }
         return result;
@@ -245,7 +244,7 @@ public class TestDAO implements ITestDAO {
 
                 res = preStat.executeUpdate() > 0;
             } catch (SQLException exception) {
-                MyLogger.log(TestDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                LOG.warn("Unable to execute query : " + exception.toString());
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.GUI_ERROR_INSERTING_DATA);
                 mes.setDescription(mes.getDescription().replace("%DETAILS%", exception.toString()));
                 throw new CerberusException(mes);
@@ -253,7 +252,7 @@ public class TestDAO implements ITestDAO {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            LOG.warn("Unable to execute query : " + exception.toString());
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.GUI_ERROR_INSERTING_DATA);
             mes.setDescription(mes.getDescription().replace("%DETAILS%", exception.toString()));
             throw new CerberusException(mes);
@@ -263,7 +262,7 @@ public class TestDAO implements ITestDAO {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(TestDAO.class.getName(), Level.WARN, e.toString());
+                LOG.warn(e.toString());
             }
         }
 
@@ -419,7 +418,7 @@ public class TestDAO implements ITestDAO {
         try {
             tcactive = resultSet.getString("tdatecrea") == null ? "" : resultSet.getString("tdatecrea");
         } catch (java.sql.SQLException e) {
-            MyLogger.log(TestDAO.class.getName(), Level.WARN, e.toString());
+            LOG.warn(e.toString());
             tcactive = DateUtil.getMySQLTimestampTodayDeltaMinutes(0);
         }
 
@@ -445,24 +444,24 @@ public class TestDAO implements ITestDAO {
                     }
 
                 } catch (SQLException exception) {
-                    MyLogger.log(TestDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    LOG.warn("Unable to execute query : " + exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(TestDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                LOG.warn("Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            LOG.warn("Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(TestDAO.class.getName(), Level.WARN, e.toString());
+                LOG.warn(e.toString());
             }
         }
         return result;
@@ -496,24 +495,24 @@ public class TestDAO implements ITestDAO {
                         result.add(this.loadFromResultSet(resultSet));
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(TestDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    LOG.warn("Unable to execute query : " + exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(TestDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                LOG.warn("Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(TestDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            LOG.warn("Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(TestDAO.class.getName(), Level.WARN, e.toString());
+                LOG.warn(e.toString());
             }
         }
         return result;

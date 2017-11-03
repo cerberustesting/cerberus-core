@@ -24,8 +24,8 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Logger;
-import org.apache.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.CountryEnvLink;
 import org.cerberus.crud.entity.CountryEnvParam;
@@ -74,7 +74,6 @@ import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.log.MyLogger;
 import org.cerberus.service.email.IEmailService;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
@@ -93,7 +92,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class ExecutionRunService implements IExecutionRunService {
 
-    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(ExecutionRunService.class);
+    private static final Logger LOG = LogManager.getLogger(ExecutionRunService.class);
 
     @Autowired
     private ISeleniumServerService serverService;
@@ -296,7 +295,7 @@ public class ExecutionRunService implements IExecutionRunService {
             try {
                 testCaseExecutionService.updateTCExecution(tCExecution);
             } catch (CerberusException ex) {
-                Logger.getLogger(ExecutionRunService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+                LOG.warn(ex);
             }
 
             // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
@@ -811,7 +810,7 @@ public class ExecutionRunService implements IExecutionRunService {
          * Iterate Actions
          */
         List<TestCaseStepAction> testCaseStepActionList = testCaseStepExecution.getTestCaseStep().getTestCaseStepAction();
-        MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Getting list of actions of the step. " + testCaseStepActionList.size() + " action(s) to perform.");
+        LOG.debug("Getting list of actions of the step. " + testCaseStepActionList.size() + " action(s) to perform.");
 
         for (TestCaseStepAction testCaseStepAction : testCaseStepActionList) {
 
@@ -921,7 +920,7 @@ public class ExecutionRunService implements IExecutionRunService {
                          */
                         testCaseStepActionExecution.addFileList(recorderService.recordExecutionInformationAfterStepActionandControl(testCaseStepActionExecution, null));
 
-                        MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Registering Action : " + testCaseStepActionExecution.getAction());
+                        LOG.debug("Registering Action : " + testCaseStepActionExecution.getAction());
 
                         // We change the Action message only if the action is not executed due to condition.
                         MessageEvent actionMes = new MessageEvent(MessageEventEnum.CONDITION_TESTCASEACTION_NOTEXECUTED);
@@ -933,7 +932,7 @@ public class ExecutionRunService implements IExecutionRunService {
 
                         testCaseStepActionExecution.setEnd(new Date().getTime());
                         this.testCaseStepActionExecutionService.updateTestCaseStepActionExecution(testCaseStepActionExecution);
-                        MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Registered Action");
+                        LOG.debug("Registered Action");
 
                     }
                 } else {
@@ -969,7 +968,7 @@ public class ExecutionRunService implements IExecutionRunService {
                 testCaseStepExecution.setExecutionResultMessage(testCaseStepActionExecution.getExecutionResultMessage());
                 testCaseStepExecution.setStepResultMessage(testCaseStepActionExecution.getActionResultMessage());
                 this.testCaseStepActionExecutionService.updateTestCaseStepActionExecution(testCaseStepActionExecution);
-                MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Registered Action");
+                LOG.debug("Registered Action");
 
             }
 
@@ -1009,7 +1008,7 @@ public class ExecutionRunService implements IExecutionRunService {
             try {
                 testCaseStepActionExecution.addFileList(recorderService.recordExecutionInformationAfterStepActionandControl(testCaseStepActionExecution, null));
             } catch (Exception ex) {
-                MyLogger.log(ExecutionRunService.class.getName(), Level.ERROR, "Unable to record Screenshot/PageSource : " + ex.toString());
+                LOG.warn("Unable to record Screenshot/PageSource : " + ex.toString());
             }
 
         } else {
@@ -1024,9 +1023,9 @@ public class ExecutionRunService implements IExecutionRunService {
         /**
          * Register Action in database
          */
-        MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Registering Action : " + testCaseStepActionExecution.getAction());
+        LOG.debug("Registering Action : " + testCaseStepActionExecution.getAction());
         this.testCaseStepActionExecutionService.updateTestCaseStepActionExecution(testCaseStepActionExecution);
-        MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Registered Action");
+        LOG.debug("Registered Action");
 
         if (testCaseStepActionExecution.isStopExecution()) {
             return testCaseStepActionExecution;
@@ -1049,7 +1048,7 @@ public class ExecutionRunService implements IExecutionRunService {
             /**
              * Create and Register TestCaseStepActionControlExecution
              */
-            MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Creating TestCaseStepActionControlExecution");
+            LOG.debug("Creating TestCaseStepActionControlExecution");
             TestCaseStepActionControlExecution testCaseStepActionControlExecution
                     = factoryTestCaseStepActionControlExecution.create(testCaseStepActionExecution.getId(), testCaseStepActionControl.getTest(), testCaseStepActionControl.getTestCase(),
                             testCaseStepActionControl.getStep(), testCaseStepActionExecution.getIndex(), testCaseStepActionControl.getSequence(), testCaseStepActionControl.getControlSequence(), testCaseStepActionControl.getSort(),
@@ -1060,7 +1059,7 @@ public class ExecutionRunService implements IExecutionRunService {
                             testCaseStepActionControl.getDescription(), testCaseStepActionExecution, new MessageEvent(MessageEventEnum.CONTROL_PENDING));
             this.testCaseStepActionControlExecutionService.insertTestCaseStepActionControlExecution(testCaseStepActionControlExecution);
 
-            MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Executing control : " + testCaseStepActionControlExecution.getControlSequence() + " type : " + testCaseStepActionControlExecution.getControl());
+            LOG.debug("Executing control : " + testCaseStepActionControlExecution.getControlSequence() + " type : " + testCaseStepActionControlExecution.getControl());
 
             /**
              * We populate the TestCase Control List
@@ -1158,7 +1157,7 @@ public class ExecutionRunService implements IExecutionRunService {
                         /**
                          * Register Control in database
                          */
-                        MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Registering Control : " + testCaseStepActionControlExecution.getControlSequence());
+                        LOG.debug("Registering Control : " + testCaseStepActionControlExecution.getControlSequence());
 
                         // We change the Action message only if the action is not executed due to condition.
                         MessageEvent controlMes = new MessageEvent(MessageEventEnum.CONDITION_TESTCASECONTROL_NOTEXECUTED);
@@ -1170,7 +1169,7 @@ public class ExecutionRunService implements IExecutionRunService {
 
                         testCaseStepActionControlExecution.setEnd(new Date().getTime());
                         this.testCaseStepActionControlExecutionService.updateTestCaseStepActionControlExecution(testCaseStepActionControlExecution);
-                        MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Registered Control");
+                        LOG.debug("Registered Control");
 
                         // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
                         if (tcExecution.isCerberus_featureflipping_activatewebsocketpush()) {
@@ -1211,7 +1210,7 @@ public class ExecutionRunService implements IExecutionRunService {
                 testCaseStepActionExecution.setExecutionResultMessage(testCaseStepActionControlExecution.getExecutionResultMessage());
                 testCaseStepActionExecution.setActionResultMessage(testCaseStepActionControlExecution.getControlResultMessage());
                 this.testCaseStepActionControlExecutionService.updateTestCaseStepActionControlExecution(testCaseStepActionControlExecution);
-                MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Registered Control");
+                LOG.debug("Registered Control");
 
                 // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
                 if (tcExecution.isCerberus_featureflipping_activatewebsocketpush()) {
@@ -1262,9 +1261,9 @@ public class ExecutionRunService implements IExecutionRunService {
         /**
          * Register Control in database
          */
-        MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Registering Control : " + testCaseStepActionControlExecution.getControlSequence());
+        LOG.debug("Registering Control : " + testCaseStepActionControlExecution.getControlSequence());
         this.testCaseStepActionControlExecutionService.updateTestCaseStepActionControlExecution(testCaseStepActionControlExecution);
-        MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Registered Control");
+        LOG.debug("Registered Control");
 
         // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
         if (tcExecution.isCerberus_featureflipping_activatewebsocketpush()) {

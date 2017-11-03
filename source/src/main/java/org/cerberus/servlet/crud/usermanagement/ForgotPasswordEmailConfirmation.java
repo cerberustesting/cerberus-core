@@ -22,12 +22,12 @@ package org.cerberus.servlet.crud.usermanagement;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.User;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.IUserService;
@@ -45,6 +45,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  */
 public class ForgotPasswordEmailConfirmation extends HttpServlet {
 
+    private static final Logger LOG = LogManager.getLogger(ForgotPasswordEmailConfirmation.class);
+    
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -115,7 +117,7 @@ public class ForgotPasswordEmailConfirmation extends HttpServlet {
             response.getWriter().print(jsonResponse);
             response.getWriter().flush();
         } catch (JSONException ex) {
-            Logger.getLogger(ForgotPasswordEmailConfirmation.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
     }
 

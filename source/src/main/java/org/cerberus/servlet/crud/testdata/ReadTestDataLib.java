@@ -33,6 +33,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.TestDataLib;
 import org.cerberus.crud.service.ITestCaseService;
@@ -64,6 +66,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class ReadTestDataLib extends HttpServlet {
 
     private ITestDataLibService testDataLibService;
+    private static final Logger LOG = LogManager.getLogger(ReadTestDataLib.class);
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -108,7 +111,7 @@ public class ReadTestDataLib extends HttpServlet {
                 hasError = false;
             }
         } catch (NumberFormatException ex) {
-            org.apache.log4j.Logger.getLogger(ReadTestDataLib.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
+            LOG.warn(ex);
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Test Data Library"));
             msg.setDescription(msg.getDescription().replace("%OPERATION%", "Read"));
@@ -122,7 +125,7 @@ public class ReadTestDataLib extends HttpServlet {
                 limit = Integer.parseInt(request.getParameter("limit"));
             }
         } catch (NumberFormatException ex) {
-            org.apache.log4j.Logger.getLogger(ReadTestDataLib.class.getName()).log(org.apache.log4j.Level.WARN, null, ex);
+            LOG.warn(ex);
         }
 
         // Global boolean on the servlet that define if the user has permition to edit and delete object.
@@ -160,7 +163,7 @@ public class ReadTestDataLib extends HttpServlet {
             response.getWriter().print(jsonResponse.toString());
 
         } catch (JSONException e) {
-            org.apache.log4j.Logger.getLogger(ReadTestDataLib.class.getName()).log(org.apache.log4j.Level.ERROR, null, e);
+            LOG.warn(e);
             //returns a default error message with the json format that is able to be parsed by the client-side
             response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
         }

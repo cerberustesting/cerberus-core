@@ -24,14 +24,14 @@ import java.io.PrintWriter;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.IParameterService;
@@ -53,6 +53,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  */
 @WebServlet(name = "ResultCIV002", urlPatterns = {"/ResultCIV002"})
 public class ResultCIV002 extends HttpServlet {
+    
+    private static Logger LOG = LogManager.getLogger(ResultCIV002.class);
 
     protected void processRequest(HttpServletRequest request,
             HttpServletResponse response) throws ServletException, IOException {
@@ -196,9 +198,9 @@ public class ResultCIV002 extends HttpServlet {
                     }
 
                 } catch (CerberusException ex) {
-                    Logger.getLogger(ResultCIV001.class.getName()).log(Level.SEVERE, null, ex);
+                    LOG.warn(ex);
                 } catch (ParseException ex) {
-                    Logger.getLogger(ResultCIV002.class.getName()).log(Level.SEVERE, null, ex);
+                    LOG.warn(ex);
                 }
 
                 IParameterService parameterService = appContext.getBean(IParameterService.class);
@@ -256,7 +258,7 @@ public class ResultCIV002 extends HttpServlet {
             }
 
         } catch (JSONException e) {
-            org.apache.log4j.Logger.getLogger(ReadLogEvent.class.getName()).log(org.apache.log4j.Level.ERROR, null, e);
+            LOG.warn(e);
             //returns a default error message with the json format that is able to be parsed by the client-side
             response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
         }
@@ -333,7 +335,7 @@ public class ResultCIV002 extends HttpServlet {
             
             out.print(responseSvg);
             } catch (JSONException ex) {
-                Logger.getLogger(ResultCIV002.class.getName()).log(Level.SEVERE, null, ex);
+                LOG.warn(ex);
             }
 
         }

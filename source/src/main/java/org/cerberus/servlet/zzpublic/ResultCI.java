@@ -31,10 +31,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.database.DatabaseSpring;
-import org.cerberus.log.MyLogger;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
@@ -45,6 +46,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  */
 @WebServlet(name = "ResultCI", urlPatterns = {"/ResultCI"})
 public class ResultCI extends HttpServlet {
+    
+    private static final Logger LOG = LogManager.getLogger(ResultCI.class);
 
     protected void processRequest(HttpServletRequest request,
             HttpServletResponse response) throws ServletException, IOException {
@@ -212,7 +215,7 @@ public class ResultCI extends HttpServlet {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(ResultCI.class.getName(), org.apache.log4j.Level.WARN, e.toString());
+                LOG.warn(e.toString());
             }
         }
 

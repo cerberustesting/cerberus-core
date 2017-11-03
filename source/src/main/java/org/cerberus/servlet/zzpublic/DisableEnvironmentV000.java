@@ -52,7 +52,7 @@ import org.cerberus.service.email.IEmailService;
 @WebServlet(name = "DisableEnvironmentV000", urlPatterns = {"/DisableEnvironmentV000"})
 public class DisableEnvironmentV000 extends HttpServlet {
 
-    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger("DisableEnvironmentV000");
+    private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger("DisableEnvironmentV000");
 
     private final String OPERATION = "Disable Environment";
     private final String PARAMETERALL = "ALL";

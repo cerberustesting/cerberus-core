@@ -30,8 +30,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.IApplicationDAO;
 import org.cerberus.crud.dao.ITestCaseDAO;
 import org.cerberus.crud.dao.ITestCaseExecutionQueueDAO;
@@ -47,7 +47,6 @@ import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.exception.FactoryCreationException;
-import org.cerberus.log.MyLogger;
 import org.cerberus.util.SqlUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
@@ -59,7 +58,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
 
-    private static final Logger LOG = Logger.getLogger(TestCaseExecutionQueueDAO.class);
+    private static final Logger LOG = LogManager.getLogger(TestCaseExecutionQueueDAO.class);
 
     private static final String TABLE = "testcaseexecutionqueue";
     private static final String TABLE_TEST_CASE = "testcase";
@@ -691,12 +690,12 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                     msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCaseExecutionInQueue").replace("%OPERATION%", "SELECT"));
                     answer = new AnswerList(EnvCountryBrowserList, EnvCountryBrowserList.size());
                 } catch (SQLException exception) {
-                    MyLogger.log(TestCaseExecutionQueueDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    LOG.warn("Unable to execute query : " + exception.toString());
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
                     EnvCountryBrowserList = null;
                 } catch (FactoryCreationException ex) {
-                    MyLogger.log(TestCaseExecutionQueueDAO.class.getName(), Level.ERROR, "Unable to execute query : " + ex.toString());
+                    LOG.warn("Unable to execute query : " + ex.toString());
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
                     EnvCountryBrowserList = null;
@@ -706,7 +705,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                     }
                 }
             } catch (SQLException ex) {
-                MyLogger.log(TestCaseExecutionQueueDAO.class.getName(), Level.ERROR, "Unable to execute query : " + ex.toString());
+                LOG.warn("Unable to execute query : " + ex.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
                 EnvCountryBrowserList = null;
@@ -716,7 +715,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                 }
             }
         } catch (SQLException ex) {
-            MyLogger.log(TestCaseExecutionQueueDAO.class.getName(), Level.WARN, ex.toString());
+            LOG.warn(ex.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
         } finally {
@@ -725,7 +724,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                     connection.close();
                 }
             } catch (SQLException ex) {
-                MyLogger.log(TestCaseExecutionQueueDAO.class.getName(), Level.ERROR, "Unable to execute query : " + ex.toString());
+                LOG.warn("Unable to execute query : " + ex.toString());
             }
         }
 
@@ -819,7 +818,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                     msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCaseExecution").replace("%OPERATION%", "SELECT"));
                     answer = new AnswerList(column, column.size());
                 } catch (SQLException exception) {
-                    MyLogger.log(TestCaseExecutionQueueDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    LOG.warn("Unable to execute query : " + exception.toString());
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
                     column = null;
@@ -829,7 +828,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                     }
                 }
             } catch (SQLException ex) {
-                MyLogger.log(TestCaseExecutionQueueDAO.class.getName(), Level.ERROR, "Unable to execute query : " + ex.toString());
+                LOG.warn("Unable to execute query : " + ex.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
                 column = null;
@@ -839,7 +838,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                 }
             }
         } catch (SQLException ex) {
-            MyLogger.log(TestCaseExecutionQueueDAO.class.getName(), Level.WARN, ex.toString());
+            LOG.warn(ex.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
         } finally {
@@ -848,7 +847,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                     connection.close();
                 }
             } catch (SQLException ex) {
-                MyLogger.log(TestCaseExecutionQueueDAO.class.getName(), Level.ERROR, "Unable to execute query : " + ex.toString());
+                LOG.warn("Unable to execute query : " + ex.toString());
             }
         }
 
@@ -1295,12 +1294,12 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                     }
 
                 } catch (SQLException exception) {
-                    MyLogger.log(TestCaseExecutionQueueDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    LOG.warn("Unable to execute query : " + exception.toString());
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
                     tceList.clear();
                 } catch (FactoryCreationException ex) {
-                    MyLogger.log(TestCaseExecutionQueueDAO.class.getName(), Level.ERROR, "Unable to execute query : " + ex.toString());
+                    LOG.warn("Unable to execute query : " + ex.toString());
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
                     tceList.clear();
@@ -1310,7 +1309,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                     }
                 }
             } catch (SQLException ex) {
-                MyLogger.log(TestCaseExecutionQueueDAO.class.getName(), Level.ERROR, "Unable to execute query : " + ex.toString());
+                LOG.warn("Unable to execute query : " + ex.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
             } finally {
@@ -1319,7 +1318,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                 }
             }
         } catch (SQLException ex) {
-            MyLogger.log(TestCaseExecutionQueueDAO.class.getName(), Level.WARN, ex.toString());
+            LOG.warn(ex.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
         } finally {
@@ -1328,7 +1327,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                     connection.close();
                 }
             } catch (SQLException ex) {
-                MyLogger.log(TestCaseExecutionQueueDAO.class.getName(), Level.ERROR, "Unable to execute query : " + ex.toString());
+                LOG.warn("Unable to execute query : " + ex.toString());
             }
         }
         answer.setTotalRows(tceList.size());

@@ -20,13 +20,13 @@
 package org.cerberus.servlet.crud.countryenvironment;
 
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.CountryEnvParam;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
@@ -53,6 +53,7 @@ import org.owasp.html.Sanitizers;
 @WebServlet(name = "CreateCountryEnvParam", urlPatterns = {"/CreateCountryEnvParam"})
 public class CreateCountryEnvParam extends HttpServlet {
 
+    private static final Logger LOG = LogManager.getLogger(CreateCountryEnvParam.class);
     private final String OBJECT_NAME = "CountryEnvParam";
 
     /**
@@ -175,9 +176,9 @@ public class CreateCountryEnvParam extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(CreateCountryEnvParam.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         } catch (JSONException ex) {
-            Logger.getLogger(CreateCountryEnvParam.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
     }
 
@@ -195,9 +196,9 @@ public class CreateCountryEnvParam extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(CreateCountryEnvParam.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         } catch (JSONException ex) {
-            Logger.getLogger(CreateCountryEnvParam.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
     }
 

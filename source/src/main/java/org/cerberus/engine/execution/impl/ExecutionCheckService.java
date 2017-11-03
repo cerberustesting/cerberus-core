@@ -24,7 +24,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.entity.BuildRevisionInvariant;
 import org.cerberus.crud.entity.CountryEnvParam;
 import org.cerberus.engine.entity.MessageGeneral;
@@ -50,9 +51,9 @@ import org.springframework.stereotype.Service;
 public class ExecutionCheckService implements IExecutionCheckService {
 
     /**
-     * The associated {@link org.apache.log4j.Logger} to this class
+     * The associated {@link org.apache.logging.log4j.Logger} to this class
      */
-    private static final Logger LOG = Logger.getLogger(ExecutionCheckService.class);
+    private static final Logger LOG = LogManager.getLogger(ExecutionCheckService.class);
 
     @Autowired
     private ITestCaseCountryService testCaseCountryService;

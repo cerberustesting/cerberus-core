@@ -26,9 +26,9 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import org.apache.log4j.Level;
-import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.ITestCaseCountryService;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -48,6 +48,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @WebServlet(name= "GetCountryForTestCase" , value = "/GetCountryForTestCase")
 public class GetCountryForTestCase extends HttpServlet {
 
+    private static final Logger LOG = LogManager.getLogger(GetCountryForTestCase.class);
+    
     @Override
     protected void doGet(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws ServletException, IOException {
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
@@ -68,7 +70,7 @@ public class GetCountryForTestCase extends HttpServlet {
             httpServletResponse.setContentType("application/json");
             httpServletResponse.getWriter().print(jsonObject.toString());
         } catch (JSONException exception) {
-            MyLogger.log(GetCountryForTestCase.class.getName(), Level.WARN, exception.toString());
+            LOG.warn(exception.toString());
         }
     }
 }

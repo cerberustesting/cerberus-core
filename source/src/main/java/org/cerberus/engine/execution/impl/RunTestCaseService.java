@@ -19,6 +19,8 @@
  */
 package org.cerberus.engine.execution.impl;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.exception.CerberusException;
@@ -44,7 +46,7 @@ public class RunTestCaseService implements IRunTestCaseService {
     @Autowired
     private IExecutionRunService executionRunService;
 
-    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(RunTestCaseService.class);
+    private static final Logger LOG = LogManager.getLogger(RunTestCaseService.class);
 
     @Override
     public TestCaseExecution runTestCase(TestCaseExecution tCExecution) {

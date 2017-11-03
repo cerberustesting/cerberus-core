@@ -27,7 +27,8 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.ICampaignLabelDAO;
 import org.cerberus.crud.entity.CampaignLabel;
 import org.cerberus.crud.entity.Label;
@@ -64,7 +65,7 @@ public class CampaignLabelDAO implements ICampaignLabelDAO {
     @Autowired
     private IFactoryLabel factoryLabel;
 
-    private static final Logger LOG = Logger.getLogger(CampaignLabelDAO.class);
+    private static final Logger LOG = LogManager.getLogger(CampaignLabelDAO.class);
 
     private final String OBJECT_NAME = "Campaign Label";
     private final String SQL_DUPLICATED_CODE = "23000";

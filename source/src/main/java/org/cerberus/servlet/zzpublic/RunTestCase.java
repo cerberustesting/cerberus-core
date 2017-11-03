@@ -62,7 +62,7 @@ import org.cerberus.exception.FactoryCreationException;
 @WebServlet(name = "RunTestCase", urlPatterns = {"/RunTestCase"})
 public class RunTestCase extends HttpServlet {
 
-    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(RunTestCase.class);
+    private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(RunTestCase.class);
 
     public static final String SERVLET_URL = "/RunTestCase";
 

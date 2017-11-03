@@ -26,7 +26,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.IBatchInvariantDAO;
 import org.cerberus.crud.entity.BatchInvariant;
 import org.cerberus.crud.factory.IFactoryBatchInvariant;
@@ -51,7 +52,7 @@ public class BatchInvariantDAO implements IBatchInvariantDAO {
     @Autowired
     private IFactoryBatchInvariant factoryBatchInvariant;
 
-    private static final Logger LOG = Logger.getLogger(BatchInvariantDAO.class);
+    private static final Logger LOG = LogManager.getLogger(BatchInvariantDAO.class);
 
     private final String OBJECT_NAME = "BatchInvariant";
     private final String SQL_DUPLICATED_CODE = "23000";

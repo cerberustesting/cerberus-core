@@ -22,7 +22,8 @@ package org.cerberus.crud.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.cerberus.crud.dao.ITestCaseExecutionDataDAO;
 import org.cerberus.engine.entity.MessageGeneral;
@@ -51,7 +52,7 @@ public class TestCaseExecutionDataService implements ITestCaseExecutionDataServi
     @Autowired
     ITestCaseExecutionFileService testCaseExecutionFileService;
 
-    private static final Logger LOG = Logger.getLogger(TestCaseStepActionControlExecutionService.class);
+    private static final Logger LOG = LogManager.getLogger(TestCaseStepActionControlExecutionService.class);
     
     @Override
     public AnswerItem readByKey(long id, String property, int index) {

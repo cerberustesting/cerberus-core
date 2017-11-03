@@ -20,16 +20,15 @@
 package org.cerberus.servlet.crud.usermanagement;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.User;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.IUserService;
 import org.cerberus.crud.service.impl.LogEventService;
@@ -50,6 +49,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @WebServlet(name = "UpdateMyUser", urlPatterns = {"/UpdateMyUser"})
 public class UpdateMyUser extends HttpServlet {
 
+    private static final Logger LOG = LogManager.getLogger(UpdateMyUser.class);
+    
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doPost(request, response);
@@ -66,7 +67,7 @@ public class UpdateMyUser extends HttpServlet {
         response.setContentType("application/json");
         JSONObject jsonResponse = new JSONObject();
 
-        MyLogger.log(UpdateMyUser.class.getName(), Level.DEBUG, "value : " + value + " column : " + column + " login : " + login);
+        LOG.debug("value : " + value + " column : " + column + " login : " + login);
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         IUserService userService = appContext.getBean(UserService.class);
@@ -115,7 +116,7 @@ public class UpdateMyUser extends HttpServlet {
             }
 
         } catch (JSONException e) {
-            org.apache.log4j.Logger.getLogger(ChangeUserPassword.class.getName()).log(org.apache.log4j.Level.ERROR, e.getMessage(), e);
+            LOG.warn(e);
             //returns a default error message with the json format that is able to be parsed by the client-side
             response.setContentType("application/json");
             response.getWriter().print(AnswerUtil.createGenericErrorAnswer());

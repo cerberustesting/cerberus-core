@@ -22,13 +22,13 @@ package org.cerberus.servlet.information;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.database.dao.ICerberusInformationDAO;
 import org.cerberus.engine.entity.ExecutionUUID;
 import org.cerberus.crud.entity.SessionCounter;
@@ -50,6 +50,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @WebServlet(name = "ReadCerberusDetailInformation", urlPatterns = {"/ReadCerberusDetailInformation"})
 public class ReadCerberusDetailInformation extends HttpServlet {
 
+    private static final Logger LOG = LogManager.getLogger(ReadCerberusDetailInformation.class);
+    
     private ICerberusInformationDAO cerberusDatabaseInformation;
     private IDatabaseVersioningService databaseVersionService;
     private IMyVersionService myVersionService;
@@ -140,7 +142,7 @@ public class ReadCerberusDetailInformation extends HttpServlet {
             jsonResponse.put("applicationServerInfo", str1);
 
         } catch (JSONException ex) {
-            Logger.getLogger(ReadCerberusDetailInformation.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
 
         response.setContentType("application/json");

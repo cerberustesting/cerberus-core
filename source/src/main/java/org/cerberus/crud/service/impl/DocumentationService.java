@@ -21,8 +21,8 @@ package org.cerberus.crud.service.impl;
 
 import com.google.gson.Gson;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.dao.IDocumentationDAO;
 import org.cerberus.crud.entity.Documentation;
 import org.cerberus.crud.service.IDocumentationService;
@@ -38,6 +38,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class DocumentationService implements IDocumentationService {
 
+    private static final Logger LOG = LogManager.getLogger(DocumentationService.class);
+    
     @Autowired
     private IDocumentationDAO documentationDAO;
 
@@ -134,14 +136,14 @@ public class DocumentationService implements IDocumentationService {
                 try {
                     result.getJSONObject(docTable).put(doc.getDocField(), convertDocToJSONObject(doc));
                 } catch (JSONException ex) {
-                    Logger.getLogger(DocumentationService.class.getName()).log(Level.SEVERE, null, ex);
+                    LOG.warn(ex);
                 }
             } else {
                 try {
                     result.put(docTable, new JSONObject());
                     result.getJSONObject(docTable).put(doc.getDocField(), convertDocToJSONObject(doc));
                 } catch (JSONException ex) {
-                    Logger.getLogger(DocumentationService.class.getName()).log(Level.SEVERE, null, ex);
+                    LOG.warn(ex);
                 }
             }
         }

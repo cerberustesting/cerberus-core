@@ -20,11 +20,12 @@
 package org.cerberus.servlet.crud.countryenvironment;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.SqlLibrary;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.ISqlLibraryService;
@@ -46,6 +47,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  */
 public class DeleteSqlLibrary extends HttpServlet {
 
+    private static final Logger LOG = LogManager.getLogger(DeleteSqlLibrary.class);
+    
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -140,9 +143,9 @@ public class DeleteSqlLibrary extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(DeleteSqlLibrary.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            LOG.warn(ex);
         } catch (JSONException ex) {
-            Logger.getLogger(DeleteSqlLibrary.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
     }
 
@@ -160,9 +163,9 @@ public class DeleteSqlLibrary extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(DeleteSqlLibrary.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            LOG.warn(ex);
         } catch (JSONException ex) {
-            Logger.getLogger(DeleteSqlLibrary.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
     }
 

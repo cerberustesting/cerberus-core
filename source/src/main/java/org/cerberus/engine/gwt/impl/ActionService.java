@@ -21,8 +21,8 @@ package org.cerberus.engine.gwt.impl;
 
 import java.util.ArrayList;
 import java.util.Date;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.entity.AppService;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
@@ -41,7 +41,6 @@ import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.engine.entity.SwipeAction;
 import org.cerberus.engine.execution.IIdentifierService;
 import org.cerberus.engine.execution.IRecorderService;
-import org.cerberus.engine.execution.impl.RunTestCaseService;
 import org.cerberus.engine.gwt.IActionService;
 import org.cerberus.engine.gwt.IPropertyService;
 import org.cerberus.engine.gwt.IVariableService;
@@ -49,7 +48,6 @@ import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.log.MyLogger;
 import org.cerberus.service.appium.IAppiumService;
 import org.cerberus.service.appservice.IServiceService;
 import org.cerberus.service.rest.IRestService;
@@ -111,7 +109,7 @@ public class ActionService implements IActionService {
     @Autowired
     private ITestCaseExecutionDataService testCaseExecutionDataService;
 
-    private static final Logger LOG = Logger.getLogger(ActionService.class);
+    private static final Logger LOG = LogManager.getLogger(ActionService.class);
     private static final String MESSAGE_DEPRECATED = "[DEPRECATED]";
 
     @Override
@@ -180,7 +178,7 @@ public class ActionService implements IActionService {
         String value1 = testCaseStepActionExecution.getValue1();
         String value2 = testCaseStepActionExecution.getValue2();
         String propertyName = testCaseStepActionExecution.getPropertyName();
-        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Doing Action : " + testCaseStepActionExecution.getAction() + " with value1 : " + value1 + " and value2 : " + value2);
+        LOG.debug("Doing Action : " + testCaseStepActionExecution.getAction() + " with value1 : " + value1 + " and value2 : " + value2);
 
         // When starting a new action, we reset the property list that was already calculated.
         tCExecution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList());
@@ -316,7 +314,7 @@ public class ActionService implements IActionService {
             res = new MessageEvent(MessageEventEnum.ACTION_FAILED_GENERIC).resolveDescription("DETAIL", unexpected.getMessage());
         }
 
-        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Result of the action : " + res.getCodeString() + " " + res.getDescription());
+        LOG.debug("Result of the action : " + res.getCodeString() + " " + res.getDescription());
 
         /**
          * In case 1/ the action is flaged as being Forced with a specific
@@ -1290,13 +1288,13 @@ public class ActionService implements IActionService {
             return message;
         }
         try {
-            org.apache.log4j.Logger.getLogger(ActionService.class.getName()).log(org.apache.log4j.Level.DEBUG, "TIME TO WAIT = " + timeToWaitMs);
+            LOG.debug("TIME TO WAIT = " + timeToWaitMs);
             Thread.sleep(timeToWaitMs);
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAIT_TIME);
             message.setDescription(message.getDescription().replace("%TIME%", String.valueOf(timeToWaitMs)));
             return message;
         } catch (InterruptedException exception) {
-            MyLogger.log(ActionService.class.getName(), Level.INFO, exception.toString());
+            LOG.info(exception.toString());
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_WAIT);
             message.setDescription(message.getDescription()
                     .replace("%TIME%", String.valueOf(timeToWaitMs))

@@ -22,7 +22,8 @@ package org.cerberus.crud.service.impl;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.IRobotDAO;
 import org.cerberus.crud.entity.Robot;
 import org.cerberus.crud.entity.RobotCapability;
@@ -49,7 +50,7 @@ public class RobotService implements IRobotService {
     /**
      * The associated {@link Logger} to this class
      */
-    private static final Logger LOGGER = Logger.getLogger(RobotService.class);
+    private static final Logger LOGGER = LogManager.getLogger(RobotService.class);
 
     @Autowired
     private IRobotDAO robotDao;

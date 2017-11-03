@@ -23,9 +23,8 @@ import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.engine.entity.MessageEvent;
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.cerberus.util.answer.AnswerList;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -35,7 +34,7 @@ import org.json.JSONObject;
  */
 public class TestCaseStepExecution {
 
-    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(TestCaseStepExecution.class);
+    private static final Logger LOG = LogManager.getLogger(TestCaseStepExecution.class);
 
     private long id;
     private String test;
@@ -434,7 +433,7 @@ public class TestCaseStepExecution {
             }
 
         } catch (JSONException ex) {
-            Logger.getLogger(TestCaseStepExecution.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
         return result;
     }

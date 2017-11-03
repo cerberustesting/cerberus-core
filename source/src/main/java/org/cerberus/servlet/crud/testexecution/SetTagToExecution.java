@@ -21,12 +21,12 @@ package org.cerberus.servlet.crud.testexecution;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.service.ITagService;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.ITestCaseExecutionService;
@@ -42,6 +42,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  */
 public class SetTagToExecution extends HttpServlet {
 
+    private static final Logger LOG = LogManager.getLogger(SetTagToExecution.class);
+    
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -82,7 +84,7 @@ public class SetTagToExecution extends HttpServlet {
             out.println("</body>");
             out.println("</html>");
         } catch (CerberusException ex) {
-            Logger.getLogger(SetTagToExecution.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
         } finally {
             out.close();
         }

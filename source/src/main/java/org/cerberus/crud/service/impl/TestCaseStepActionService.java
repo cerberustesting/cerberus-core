@@ -21,8 +21,8 @@ package org.cerberus.crud.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.cerberus.crud.dao.ITestCaseStepActionDAO;
 import org.cerberus.crud.entity.TestCaseStepAction;
@@ -43,6 +43,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class TestCaseStepActionService implements ITestCaseStepActionService {
 
+    private static final Logger LOG = LogManager.getLogger(TestCaseStepActionService.class);
+    
     @Autowired
     private ITestCaseStepActionDAO testCaseStepActionDAO;
     @Autowired
@@ -69,7 +71,7 @@ public class TestCaseStepActionService implements ITestCaseStepActionService {
             try {
                 insertTestCaseStepAction(tcsa);
             } catch (CerberusException ex) {
-                Logger.getLogger(TestCaseStepActionService.class.getName()).log(Level.SEVERE, null, ex);
+                LOG.warn(ex);
                 return false;
             }
         }
@@ -86,7 +88,7 @@ public class TestCaseStepActionService implements ITestCaseStepActionService {
         try {
             testCaseStepActionDAO.update(tcsa);
         } catch (CerberusException ex) {
-            Logger.getLogger(TestCaseStepActionService.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.warn(ex);
             return false;
         }
         return true;

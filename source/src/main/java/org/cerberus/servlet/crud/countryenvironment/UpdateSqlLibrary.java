@@ -42,13 +42,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * @author bcivel
  */
 public class UpdateSqlLibrary extends HttpServlet {
 
+    private static final Logger LOG = LogManager.getLogger(UpdateSqlLibrary.class);
+    
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -157,9 +160,9 @@ public class UpdateSqlLibrary extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(UpdateSqlLibrary.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            LOG.warn(ex);
         } catch (JSONException ex) {
-            Logger.getLogger(UpdateSqlLibrary.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
     }
 
@@ -178,9 +181,9 @@ public class UpdateSqlLibrary extends HttpServlet {
             String t = request.getParameter("value");
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(UpdateSqlLibrary.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            LOG.warn(ex);
         } catch (JSONException ex) {
-            Logger.getLogger(UpdateSqlLibrary.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            LOG.warn(ex);
         }
     }
 

@@ -22,13 +22,12 @@ package org.cerberus.servlet.crud.test;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import org.apache.log4j.Level;
-import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.ITestService;
 import org.cerberus.crud.service.impl.TestService;
 import org.json.JSONArray;
@@ -47,6 +46,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 //@WebServlet(value = "/GetShortTests")
 public class GetShortTests extends HttpServlet {
 
+    private static final Logger LOG = LogManager.getLogger(GetShortTests.class);
+    
     @Override
     protected void doGet(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws ServletException, IOException {
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
@@ -63,7 +64,7 @@ public class GetShortTests extends HttpServlet {
             httpServletResponse.setContentType("application/json");
             httpServletResponse.getWriter().print(jsonObject.toString());
         } catch (JSONException exception) {
-            MyLogger.log(GetShortTests.class.getName(), Level.WARN, exception.toString());
+            LOG.warn(exception.toString());
         }
     }
 }

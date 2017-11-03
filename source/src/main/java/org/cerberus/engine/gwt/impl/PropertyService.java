@@ -23,7 +23,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.AppService;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
@@ -71,7 +72,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class PropertyService implements IPropertyService {
 
-    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(PropertyService.class);
+    private static final Logger LOG = LogManager.getLogger(PropertyService.class);
     private static final String MESSAGE_DEPRECATED = "[DEPRECATED]";
     private static final String VALUE_NULL = "<NULL>";
 
@@ -742,8 +743,7 @@ public class PropertyService implements IPropertyService {
             testCaseExecutionData.setValue1(script); //TODO use the new library 
 
         } catch (CerberusException ex) {
-            Logger.getLogger(PropertyService.class
-                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            LOG.warn(ex);
             MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_SQLLIB_NOTEXIT);
 
             res.setDescription(res.getDescription().replace("%SQLLIB%", testCaseExecutionData.getValue1()));
