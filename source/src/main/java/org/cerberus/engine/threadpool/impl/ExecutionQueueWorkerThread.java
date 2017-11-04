@@ -169,12 +169,18 @@ public class ExecutionQueueWorkerThread implements Runnable {
             // Getting the queue full object.
             setToExecute(queueService.convert(queueService.readByKey(queueId)));
 
+            StringBuilder url = new StringBuilder();
+            url.append(cerberusExecutionUrl);
+            url.append(RunTestCase.SERVLET_URL);
+            url.append("?");
+            url.append(makeParamRequest().mkString().replace(" ", "+"));
+
             LOG.debug("Make http call : " + queueId);
             // Make the http call and parse the output.
-            runParseAnswer(runExecution());
+            runParseAnswer(runExecution(url), cerberusExecutionUrl + RunTestCase.SERVLET_URL, url.toString());
 
         } catch (RunQueueProcessException e) {
-            LOG.warn("Execution in queue " + queueId + " has finished with error", e);
+            LOG.warn("Execution in queue " + queueId + " has finished with error");
             try {
                 queueService.updateToError(queueId, e.getMessage());
 
@@ -195,13 +201,8 @@ public class ExecutionQueueWorkerThread implements Runnable {
      * @throws RunProcessException if an error occurred during request execution
      * @see #run()
      */
-    private String runExecution() {
+    private String runExecution(StringBuilder url) {
         try {
-            StringBuilder url = new StringBuilder();
-            url.append(cerberusExecutionUrl);
-            url.append(RunTestCase.SERVLET_URL);
-            url.append("?");
-            url.append(makeParamRequest().mkString().replace(" ", "+"));
 
             LOG.debug("Trigger Execution to URL : " + url.toString());
             LOG.debug("Trigger Execution with TimeOut : " + toExecuteTimeout);
@@ -241,14 +242,13 @@ public class ExecutionQueueWorkerThread implements Runnable {
      * failure or if answer cannot be parsed
      * @see #run()
      */
-    private void runParseAnswer(String answer) {
+    private void runParseAnswer(String answer, String cerberusUrl, String cerberusFullUrl) {
         // Check answer format
-//        LOG.debug("Parsing Execution result : " + answer);
-
         Matcher matcher = EXECUTION_ID_FROM_ANSWER_PATTERN.matcher(answer);
         if (!matcher.find()) {
-            LOG.warn("Bad answer format: " + answer);
-            throw new RunQueueProcessException("Bad answer format. Expected 'RunID = ' in the output result. Probably due to bad cerberus_url value. Check server logs");
+            LOG.error("Bad answer format (could not find 'RunID = '). URL Called: " + cerberusFullUrl);
+            LOG.error("Bad answer format (could not find 'RunID = '). Answer: " + answer);
+            throw new RunQueueProcessException("Error occured when calling the service to run the testcase. Service answer did not have the expected format (missing 'RunID = '). Probably due to bad cerberus_url value. URL Called: '" + cerberusUrl + "'.");
         }
 
         // Extract the return code
@@ -256,6 +256,7 @@ public class ExecutionQueueWorkerThread implements Runnable {
         try {
             executionID = Long.parseLong(matcher.group(1));
         } catch (NumberFormatException e) {
+            LOG.error("Bad answer format (executionId is not numeric). Answer: " + answer);
             throw new RunQueueProcessException("Bad return code format: " + matcher.group(1));
         }
 
@@ -263,8 +264,9 @@ public class ExecutionQueueWorkerThread implements Runnable {
         if (executionID == 0) {
             Matcher descriptionMatcher = RETURN_CODE_DESCRIPTION_FROM_ANSWER_PATTERN.matcher(answer);
             if (!descriptionMatcher.find()) {
-                LOG.warn("Bad return code description format: " + answer);
-                throw new RunQueueProcessException("Bad answer format. Expected 'RunID = ' in the output result. Check server logs");
+                LOG.error("Bad answer format (could not find 'ReturnCodeDescription = '). URL Called: " + cerberusFullUrl);
+                LOG.error("Bad answer format (could not find 'ReturnCodeDescription = '). Answer: " + answer);
+                throw new RunQueueProcessException("Error occured when calling the service to run the testcase. Service answer did not have the expected format (missing 'ReturnCodeDescription = '). Probably due to bad cerberus_url value. URL Called: '" + cerberusUrl + "'.");
             }
             throw new RunQueueProcessException(descriptionMatcher.group(1));
         }
