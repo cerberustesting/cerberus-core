@@ -108,8 +108,9 @@ class CerberusTuto {
         let message = {
             element : jqueryId,
             intro : messageStr,
-            step : this.cpt
+            step : this.cpt,
         };
+
 
         this.listMessage.push(message);
         this.cpt++;
@@ -129,19 +130,45 @@ class CerberusTuto {
     start(startStep=1) {
         if(startStep<=0)startStep=0;
 
-        var intro = introJs();
+        this.intro = introJs();
+        this.listMessageToUse = this.listMessage.slice(startStep-1);
+        this.intro.setOptions({steps:this.listMessageToUse});
 
-        intro.setOptions({steps:this.listMessage.slice(startStep-1)});
+        this.intro.onchange(this.goToNextStepAfterClick);
 
+        var _this=this;
         // wait for the first element
         if(this.listMessage[startStep-1] != undefined && this.listMessage[startStep-1].element != undefined) {
             waitForElementToDisplay(this.listMessage[startStep - 1].element, 100, function() {
-                intro.start();
+                _this.intro.start();
             });
         } else {
-            intro.start();
+            this.intro.start();
         }
     }
+
+
+    goToNextStepAfterClick(targetElement) {
+        let intro=this;
+
+        var clickOnNextStep = function() {
+            if(intro != undefined) {
+                waitForElementToDisplay(intro._options.steps[intro._currentStep+1].element, 100, function () {
+                    intro.nextStep();
+                });
+            }
+        }
+
+        if($(targetElement).is("button")) { // if current element is a button
+            $(targetElement).click(clickOnNextStep);
+        } else { // else, for each button into the element
+            $(targetElement).find("button").each(function (index, value) {
+                $(value).click(clickOnNextStep);
+            });
+        }
+    }
+
+
 }
 
 
@@ -164,7 +191,7 @@ function getUrlParameter(sParam) {
 
 
 function waitForElementToDisplay(selector, time, callback) {
-    if(document.querySelector(selector)) {
+    if($(selector).is(":visible")) {
         callback();
         return;
     }
