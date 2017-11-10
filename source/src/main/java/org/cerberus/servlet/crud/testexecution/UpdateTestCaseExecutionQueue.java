@@ -260,6 +260,12 @@ public class UpdateTestCaseExecutionQueue extends HttpServlet {
                         finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
                     }
 
+                    // Update is done, we now check what action needs to be performed.
+                    if (actionState.equals("toERRORForce")) {
+                        LOG.debug("toERRORForce");
+                        ans = executionQueueService.updateToErrorForce(id, "Forced Eroor by user " + request.getRemoteUser() + ".");
+                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                    }
                 }
             }
         }

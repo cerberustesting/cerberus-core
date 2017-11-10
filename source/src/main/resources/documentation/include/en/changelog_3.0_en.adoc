@@ -1,16 +1,24 @@
 *Bug fixes*
 [square]
+* Some Step was badly referenced in case the corresponding testcase was renamed. Now when testcase is renamed, the usesteps are also renamed.
 
 *Improvements / New features*
 [square]
+* [GUI] Added parameter cerberus_loginpage_welcomemessagehtml in order to be able to define a message in login page. This parameter replace parameter cerberus_support_email that should now contain only the support email.
+* [GUI] Property Quick delete picto in testcase script page.
+* [GUI] Inline Add/Modify of TestDataLib from testcase script page.
+* [GUI] Display property detail in modal from testcase script page without changing tab.
+* [GUI] Display the Queue State when execution is still in queue in report by tag screen.
+* [GUI] Allow to resubmit execution per status in report by tag screen. That allow quick restart of executions in 2 clicks.
+* [GUI] 1st step documentation.
+* [ENGINE] REST Service now allow DELETE and PUT http method.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
-* Upgrade Java to v1.8
-* Upgrade Spring framework to 5.0.0.RELEASE
-* Upgrade Guava to 23.0
-* Upgrade Appium java-client to 5.0.4
-* Upgrade Selenium to 3.6.0
+* A Bug has been fixed on useStep that are not correctly referenced. SQL #1247 will clean badly reference Steps. You can get that list before beeing automaticly cleaned with SQL : SELECT a.* from testcasestep a LEFT OUTER JOIN testcasestep b on a.usesteptest=b.test and a.usesteptestcase=b.testcase and a.usestepstep=b.step WHERE b.test is null and a.usesteptest is not null and a.usesteptest != ''
+* Upgrade Java to v1.8 --> Please check your Cerberus infra has JAVA 8.
+* Upgrade Appium java-client to 5.0.4 --> Please check that your Robot infra support the change before moving to that new client version.
+* Upgrade Selenium to 3.6.0 --> Please check that your Robot infra support the change before moving to that new client version.
 
 
 
