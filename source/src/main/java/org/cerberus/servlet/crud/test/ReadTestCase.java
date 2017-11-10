@@ -287,6 +287,7 @@ public class ReadTestCase extends HttpServlet {
                 JSONObject value = convertToJSONObject(testCase);
                 value.put("hasPermissionsDelete", testCaseService.hasPermissionsDelete(testCase, request));
                 value.put("hasPermissionsUpdate", testCaseService.hasPermissionsUpdate(testCase, request));
+                value.put("hasPermissionsCreate", testCaseService.hasPermissionsCreate(testCase, request));
                 value.put("countryList", testCaseWithCountry.get(key));
                 value.put("labels", testCaseWithLabel.get(key));
 

@@ -510,7 +510,9 @@ function aoColumnsFunc(countries, tableId) {
                 } else {
                     buttons += viewEntry;
                     buttons += editScript;
-                    buttons += duplicateEntry;
+                    if (data.hasPermissionsCreate) {
+                        buttons += duplicateEntry;
+                    }
                 }
                 if (data.hasPermissionsDelete) {
                     buttons += deleteEntry;
