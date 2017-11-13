@@ -348,8 +348,7 @@ function loadReportList(data2, selectTag) {
                                             </table><div class="marginBottom20"></div>');
         }
 
-        var config = new TableConfigurationsClientSide("listTable", data2.tableContent, aoColumnsFunc(data2.tableColumns));
-        customConfig(config);
+        var config = new TableConfigurationsClientSide("listTable", data2.tableContent, aoColumnsFunc(data2.tableColumns),  [2, 'asc']);
 
         var table = createDataTableWithPermissions(config, undefined, "#tableArea", undefined, undefined, undefined, createShortDescRow);
         $('#listTable_wrapper').not('.initialized').addClass('initialized');
@@ -1040,26 +1039,7 @@ function aoColumnsFunc(Columns) {
     return aoColumns;
 }
 
-function customConfig(config) {
-    var doc = new Doc();
-    var customColvisConfig = {"buttonText": doc.getDocLabel("dataTable", "colVis"),
-        "exclude": [0, 1, 2],
-        "stateChange": function (iColumn, bVisible) {
-            $('.shortDesc').each(function () {
-                $(this).attr('colspan', '3');
-            });
-            $('.label').each(function () {
-                $(this).attr('colspan', '3');
-            });
-        }
-    };
 
-    config.bPaginate = false;
-    config.lang.colVis = customColvisConfig;
-    config.orderClasses = false;
-    config.bDeferRender = true;
-    config.displayLength = 10000;
-}
 
 function getRowClass(status) {
     var rowClass = [];
