@@ -762,6 +762,9 @@ a.list-group-item.selected, button.list-group-item.selected {
 .bold-option{font-weight: bolder;}
 
 /* begin interactive tutoriel with introjs adjustement*/
+
+
+/*
 .modal-open {
     overflow:auto !important;
 }
@@ -769,4 +772,5 @@ a.list-group-item.selected, button.list-group-item.selected {
 .modal {
     position : relative !important;
 }
+*/
 /* end interactive tutoriel with introjs adjustement*/
