@@ -20,6 +20,7 @@
 
 var canUpdate = false;
 var allDelete = false;
+var Tags = [];
 $.when($.getScript("js/global/global.js")).then(function () {
 	$(document).ready(function () {
 
@@ -175,7 +176,6 @@ $.when($.getScript("js/global/global.js")).then(function () {
 
 			var json;
 			var testcaseinfo;
-			var Tags;
 			$.ajax({
 				url: "ReadTestCase",
 				data: {test: test, testCase: testcase, withStep: true},
@@ -281,6 +281,8 @@ $.when($.getScript("js/global/global.js")).then(function () {
 							}
 
 							];
+						
+						console.log("ouiiii")
 
 						autocompleteAllFields(Tags, data.info, test, testcase);
 
@@ -563,7 +565,6 @@ function addActionAndFocus(action) {
 	$.when(addAction(action)).then(function (action) {
 		listenEnterKeypressWhenFocusingOnDescription();
 		$($(action.html[0]).find(".description")[0]).focus();
-		autocompleteAllFields();
 	});
 }
 
@@ -2223,6 +2224,8 @@ Action.prototype.generateContent = function () {
 	actionList = getSelectInvariant("ACTION", false, true).css("width", "100%").attr("id", "actionSelect");
 	actionList.val(this.action);
 	actionList.unbind("change").on("change", function () {
+
+		console.log(Tags)
 		obj.action = actionList.val();
 		if(obj.action === "callService" || obj.action === "calculateProperty"){
 			$(actionList).parent().parent().find("input").autocomplete({
@@ -2246,7 +2249,10 @@ Action.prototype.generateContent = function () {
 				.append("<a>" + item.label + "</a>")
 				.appendTo(ul);
 			};
+		}else{
+			autocompleteVariable($(actionList).parent().parent().find("input"), Tags);
 		}
+		
 		setPlaceholderAction($(this).parents(".action"));
 		$(actionList).parent().parent().find(".input-group-btn").remove();
 
@@ -2681,7 +2687,6 @@ function addControl(action, control) {
 function addControlAndFocus(oldAction, control) {
 	$.when(addControl(oldAction, control)).then(function (action) {
 		$($(action.html[0]).find(".description")[0]).focus();
-		autocompleteAllFields();
 	});
 }
 
@@ -2766,17 +2771,18 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 		}
 		
 
-		$("div.step-action .content div.fieldRow:nth-child(2) input").off("input").on('input', function(e){
-
+		$(document).on('input', "div.step-action .content div.fieldRow:nth-child(2) input", function(e){
+			
+			e = e.currentTarget
+	
 			function trigger(){
 				$(e).trigger("input");
 			}
+
+
+			$(e).parent().parent().find("select").off("change",trigger).on("change",trigger)
+
 			
-
-			$(e).parent().parent().find("select").off("change").on("change",trigger)
-
-			e = e.currentTarget
-
 			var doc = new Doc()
 
 			if ($(e).parent().parent().find("select").val() === "callService") {					
@@ -2791,7 +2797,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 								return {
 									label: item.service,
 									value: item.service
-								};
+								};	
 							});
 
 							response($.ui.autocomplete.filter(MyArray, request.term));
@@ -2864,9 +2870,6 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 				}
 
 			}else{
-				autocompleteVariable($(e), TagsToUse);
-				
-
 
 				var name = undefined;
 				var nameNotExist = undefined;
@@ -2938,7 +2941,13 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 
 			}
 
-		}).trigger("input")
+		})
+		
+
+		$("div.step-action .content div.fieldRow:nth-child(2) input").trigger('input');
+		setTimeout(function(){$("div.step-action .content div.fieldRow:nth-child(2) input").autocomplete("close")}, 500)
+		
+
 
 	}
 
