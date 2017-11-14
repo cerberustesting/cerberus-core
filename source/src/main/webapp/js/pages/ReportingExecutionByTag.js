@@ -1053,6 +1053,13 @@ function customConfig(config) {
             });
         }
     };
+    
+    config.bPaginate = true;
+    config.lengthMenu = [10, 25, 50, 100,500,1000,1500,2000];
+    config.lang.colVis = customColvisConfig;
+    config.orderClasses = false;
+    config.bDeferRender = true;
+    config.displayLength = 500;
 
 }
 
