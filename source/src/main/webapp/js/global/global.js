@@ -1134,10 +1134,10 @@ function TableConfigurationsClientSide(divId, data, aoColumnsFunction, defineLen
     this.aaData = data;
 
     if (defineLenghtMenu) {
-        this.lengthMenu = [10, 25, 50, 100];
+        this.lengthMenu = [10, 25, 50, 100,500,1000,1500,2000];
         this.lengthChange = true;
         this.bPaginate = true;
-        this.displayLength = 10;
+        this.displayLength = 500;
         this.sPaginationType = "full_numbers";
     } else {
         this.bPaginate = false;
