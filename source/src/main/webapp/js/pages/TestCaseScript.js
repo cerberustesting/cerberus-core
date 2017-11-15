@@ -2774,16 +2774,26 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 			testcase = thistestcase;
 		}
 		
-		$(document).on('input', "div.step-action .content div.fieldRow:nth-child(2) input", function(e){
+		$(document).on('input', "div.step-action .content div.fieldRow:nth-child(2) input", function(e , state){
 			
 			e = e.currentTarget
 			
+			function trigger(){
+				$(e).trigger("input");
+			}
+			
+			$(e).parent().parent().find("select").off("change",trigger).on("change",trigger)
+			
 			var doc = new Doc()
 
-			if ($(e).parent().parent().find("select").val() === "callService") {					
+			if ($(e).parent().parent().find("select").val() === "callService") {
 
 				// prevent multiple autocomplete handler on $(e)
-				$( e ).autocomplete('option', 'source', function(request,response){							
+				$( e ).autocomplete('option', 'source', function(request,response){
+					if(state === "first"){
+						$(e).autocomplete("close");				
+					}
+					
 					$.ajax({
 						url: "ReadAppService?service=" +$(e).val() + "&limit=15",
 						dataType: "json",
@@ -2824,10 +2834,13 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 
 
 			} else if($(e).parent().parent().find("select").val() === "calculateProperty"){
-							
+								
 				var data = loadGuiProperties()
 	
 				$( e ).autocomplete('option', 'source', function(request,response){
+					if(state === "first"){
+						$(e).autocomplete("close");				
+					}
 					var MyArray = $.map(data, function (item) {
 						return {
 							label: item.name,
@@ -2932,15 +2945,10 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 					$(e).parent().find(".input-group-btn").remove();
 				} 
 			}
+
 		})
 		
-		$("div.step-action .content div.fieldRow:nth-child(2) input").trigger('input')
-		/*
-		 * we need to wait 1 ms to close autocomplete when the input is triggered manually
-		 * if we don't do that, autcomplete will not be closed
-		 * maybe we need find out a new method without setTimeout
-		 */
-		setTimeout(function(){$("div.step-action .content div.fieldRow:nth-child(2) input").autocomplete("close")},1)
+		$("div.step-action .content div.fieldRow:nth-child(2) input").trigger('input',['first'])
 	}
 	
 })();
