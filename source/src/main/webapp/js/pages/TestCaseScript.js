@@ -281,8 +281,6 @@ $.when($.getScript("js/global/global.js")).then(function () {
 							}
 
 							];
-						
-						console.log("ouiiii")
 
 						autocompleteAllFields(Tags, data.info, test, testcase);
 
@@ -2223,11 +2221,10 @@ Action.prototype.generateContent = function () {
 
 	actionList = getSelectInvariant("ACTION", false, true).css("width", "100%").attr("id", "actionSelect");
 	actionList.val(this.action);
-	actionList.unbind("change").on("change", function () {
-
-		console.log(Tags)
+	actionList.off("change").on("change", function () {
 		obj.action = actionList.val();
 		if(obj.action === "callService" || obj.action === "calculateProperty"){
+
 			$(actionList).parent().parent().find("input").autocomplete({
 				minLength: 1,
 				messages: {
@@ -2239,9 +2236,14 @@ Action.prototype.generateContent = function () {
 				select: function(event,ui){
 					var selectedObj = ui.item;
 					$(event.target).val(selectedObj.value.replace("%", ''));
-					$(event.target).autocomplete("close")
 					$(event.target).trigger('input');
-				}
+					$(event.target).autocomplete("close")
+				},
+				
+				close: function (event, ui) {
+                    val = $(this).val();
+                    return false;
+                }
 
 			}).data("ui-autocomplete")._renderItem = function (ul, item) {
 				return $("<li>")
@@ -2724,6 +2726,8 @@ function objectIntoTagToUseExist(tagToUse, label) {
 function loadGuiProperties(){
 	
 	let propArr = new Object();
+	let info = new Object();
+	
 	$("div.list-group-item").each(function(){
 		var editor = ace.edit($(this).find("pre").attr("id"));
 		let info = new Object();
@@ -2770,18 +2774,9 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 			testcase = thistestcase;
 		}
 		
-
 		$(document).on('input', "div.step-action .content div.fieldRow:nth-child(2) input", function(e){
 			
 			e = e.currentTarget
-	
-			function trigger(){
-				$(e).trigger("input");
-			}
-
-
-			$(e).parent().parent().find("select").off("change",trigger).on("change",trigger)
-
 			
 			var doc = new Doc()
 
@@ -2829,9 +2824,11 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 
 
 			} else if($(e).parent().parent().find("select").val() === "calculateProperty"){
-
+							
+				var data = loadGuiProperties()
+	
 				$( e ).autocomplete('option', 'source', function(request,response){
-					var MyArray = $.map(loadGuiProperties(), function (item) {
+					var MyArray = $.map(data, function (item) {
 						return {
 							label: item.name,
 							value: item.name
@@ -2845,7 +2842,6 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 						title="' + doc.getDocLabel("page_applicationObject", "button_edit") + '" type="button">\n\
 				<span class="glyphicon glyphicon-eye-open"></span></button></span>');
 
-				let propArr = loadGuiProperties()
 
 				try {
 					$(e).parent().find("." + $(e).parent().data("LastName")).remove();
@@ -2853,12 +2849,11 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 					$(e).parent().find(".input-group-btn").remove();
 				}
 
-				if(propArr[$(e).val()]){
-					viewEntry.find("button").unbind("click")
-					viewEntry.find("button").click(function(){
-						let propArr = loadGuiProperties()
-						let firstRow = $('<p style="text-align:center" > Type : '+ propArr[$(e).val()].type +'</p>');
-						let secondRow = $('<p style="text-align:center"> Value : '+ propArr[$(e).val()].value +'</p>');
+				if(data[$(e).val()]){
+
+					viewEntry.find("button").on("click", function(){
+						let firstRow = $('<p style="text-align:center" > Type : '+ data[$(e).val()].type +'</p>');
+						let secondRow = $('<p style="text-align:center"> Value : '+ data[$(e).val()].value +'</p>');
 						$("#modalProperty").find("#firstRowProperty").find("p").remove();
 						$("#modalProperty").find("#secondRowProperty").find("p").remove();
 						$("#modalProperty").find("#firstRowProperty").append(firstRow);
@@ -2878,7 +2873,6 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 				var doc = new Doc();
 				var checkObject = [];
 				var betweenPercent = $(e).val().match(new RegExp(/%[^%]*%/g));
-
 
 				if (betweenPercent != null && betweenPercent.length > 0) {
 					var i = betweenPercent.length - 1;
@@ -2932,26 +2926,26 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 
 						}
 
-
 						i--;
 					}
 				}else{
 					$(e).parent().find(".input-group-btn").remove();
 				} 
-
 			}
-
 		})
 		
-
-		$("div.step-action .content div.fieldRow:nth-child(2) input").trigger('input');
-		setTimeout(function(){$("div.step-action .content div.fieldRow:nth-child(2) input").autocomplete("close")}, 500)
-		
-
-
+		$("div.step-action .content div.fieldRow:nth-child(2) input").trigger('input')
+		/*
+		 * we need to wait 1 ms to close autocomplete when the input is triggered manually
+		 * if we don't do that, autcomplete will not be closed
+		 * maybe we need find out a new method without setTimeout
+		 */
+		setTimeout(function(){$("div.step-action .content div.fieldRow:nth-child(2) input").autocomplete("close")},1)
 	}
-
+	
 })();
+
+
 
 function removeTestCaseClick(test, testCase) {
 	clearResponseMessageMainPage();
