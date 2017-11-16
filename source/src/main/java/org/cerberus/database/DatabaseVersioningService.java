@@ -9567,13 +9567,21 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("  ON DELETE SET NULL  ON UPDATE CASCADE;");
         SQLInstruction.add(SQLS.toString());
         
-     // ADD Put and Delete Http Method in invariants
+        // ADD Put and Delete Http Method in invariants
         //-- ------------------------ 1249
         
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ");
         SQLS.append("  ('SRVMETHOD', 'DELETE', 300 , 'DELETE http method')");
         SQLS.append(" ,('SRVMETHOD', 'PUT', 400, 'PUT http method');");
+        SQLInstruction.add(SQLS.toString());
+        
+        // ADD Patch Http Method in invariants
+        //-- ------------------------ 1250
+        
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ");
+        SQLS.append("  ('SRVMETHOD', 'PATCH', 500 , 'PATCH http method')");
         SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;
