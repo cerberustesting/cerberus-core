@@ -423,14 +423,17 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
         // FIX #1508, auto datatable to show/hide column display documation (<a href= ....)
         // To fix it, i replace correct name of column on firest click on show/hide button
         if(firstclickOnShowHide) {
-            $(".dt-button.buttons-columnVisibility.active").each(function (index, value) {
-                $(value).find("a").text($($("#" + tableId + "_wrapper th.ui-state-default")[index]).text());
+  
+            $(".dt-button.buttons-columnVisibility").each(function (index, value) {
+                $(value).find("a").text( oSettings.aoColumns[index].nTh.innerText);
             });
+            
+           
             firstclickOnShowHide=false;
 
             // Important! Recharge screen with a double click on button to recalculate position of the box
             $("#" + tableId + "_wrapper #showHideColumnsButton").click();
-            $("#" + tableId + "_wrapper #showHideColumnsButton").click();
+
         }
         // end FIX #1508
         $('ul[class="dt-button-collection dropdown-menu"] li').click(function () {
