@@ -248,9 +248,19 @@ public interface ITestCaseExecutionQueueDAO {
 
     /**
      *
+     * @param id
+     * @param comment
      * @return
      */
     Answer updateToCancelledForce(long id, String comment);
+
+    /**
+     *
+     * @param id
+     * @param comment
+     * @return
+     */
+    Answer updateToErrorForce(long id, String comment);
 
     /**
      * @param object the {@link AppService} to Delete

@@ -348,7 +348,7 @@ function loadReportList(data2, selectTag) {
                                             </table><div class="marginBottom20"></div>');
         }
 
-        var config = new TableConfigurationsClientSide("listTable", data2.tableContent, aoColumnsFunc(data2.tableColumns));
+        var config = new TableConfigurationsClientSide("listTable", data2.tableContent, aoColumnsFunc(data2.tableColumns),  [2, 'asc']);
         customConfig(config);
 
         var table = createDataTableWithPermissions(config, undefined, "#tableArea", undefined, undefined, undefined, createShortDescRow);
@@ -1053,12 +1053,14 @@ function customConfig(config) {
             });
         }
     };
-
-    config.bPaginate = false;
+    
+    config.bPaginate = true;
+    config.lengthMenu = [10, 25, 50, 100,500,1000,1500,2000];
     config.lang.colVis = customColvisConfig;
     config.orderClasses = false;
     config.bDeferRender = true;
-    config.displayLength = 10000;
+    config.displayLength = 500;
+
 }
 
 function getRowClass(status) {

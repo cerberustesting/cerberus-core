@@ -373,7 +373,11 @@ public class ServiceService implements IServiceService {
                                          appService.getHeaderList(), appService.getContentList(), token, timeOutMs, system);
                                  message = result.getResultMessage();
                                  break;
-                            	
+                            case AppService.METHOD_HTTPPATCH:
+                            	 result = restService.callREST(decodedServicePath, decodedRequest, appService.getMethod(),
+                                         appService.getHeaderList(), appService.getContentList(), token, timeOutMs, system);
+                                 message = result.getResultMessage();
+                                 break;
                        
                             default:
                                 message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);

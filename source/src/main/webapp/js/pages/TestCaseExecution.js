@@ -96,8 +96,11 @@ function initPage(id) {
 
     var doc = new Doc();
     var height = $("nav.navbar.navbar-inverse.navbar-static-top").outerHeight(true) + $("div.alert.alert-warning").outerHeight(true) + $(".page-title-line").outerHeight(true) - 10;
-    $('#divPanelDefault').affix({offset: {top: height}});
-
+    
+    if(window.matchMedia("(max-width: 768px)").matches){
+    	$('#divPanelDefault').affix({offset: {top: height}});
+    }
+    
     var wrap = $(window);
 
     wrap.on("scroll", function (e) {

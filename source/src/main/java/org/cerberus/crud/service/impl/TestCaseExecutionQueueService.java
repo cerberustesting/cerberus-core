@@ -188,6 +188,11 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
     }
 
     @Override
+    public Answer updateToErrorForce(long id, String comment) {
+        return testCaseExecutionInQueueDAO.updateToErrorForce(id, comment);
+    }
+
+    @Override
     public Answer delete(TestCaseExecutionQueue object) {
         return testCaseExecutionInQueueDAO.delete(object);
     }

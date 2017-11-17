@@ -66,6 +66,7 @@ function initPage() {
     $("#massActionExeQButtonCopy").click(massActionModalSaveHandler_copy);
     $("#massActionExeQButtonCancel").click(massActionModalSaveHandler_cancel);
     $("#massActionExeQButtonCancelForce").click(massActionModalSaveHandler_cancelForce);
+    $("#massActionExeQButtonErrorForce").click(massActionModalSaveHandler_errorForce);
     $("#massActionExeQButtonPrio").click(massActionModalSaveHandler_changePrio);
     $('#massActionExeQModal').on('hidden.bs.modal', massActionModalCloseHandler);
 
@@ -289,6 +290,30 @@ function massActionModalSaveHandler_cancelForce() {
     showLoaderInModal('#massActionExeQModal');
 
     var jqxhr = $.post("UpdateTestCaseExecutionQueue", paramSerialized + "&actionState=toCANCELLEDForce", "json");
+    $.when(jqxhr).then(function (data) {
+        // unblock when remote call returns 
+        hideLoaderInModal('#massActionExeQModal');
+        if ((getAlertType(data.messageType) === "success") || (getAlertType(data.messageType) === "warning")) {
+            $('#executionsTable').DataTable().draw();
+            $("#selectAll").prop("checked", false);
+            $('#massActionExeQModal').modal('hide');
+            showMessage(data);
+        } else {
+            showMessage(data, $('#massActionExeQModal'));
+        }
+    }).fail(handleErrorAjaxAfterTimeout);
+}
+
+function massActionModalSaveHandler_errorForce() {
+    clearResponseMessage($('#massActionExeQModal'));
+
+    var formNewValues = $('#massActionExeQModal #massActionExeQModalForm');
+    var formList = $('#massActionForm');
+    var paramSerialized = formList.serialize();
+
+    showLoaderInModal('#massActionExeQModal');
+
+    var jqxhr = $.post("UpdateTestCaseExecutionQueue", paramSerialized + "&actionState=toERRORForce", "json");
     $.when(jqxhr).then(function (data) {
         // unblock when remote call returns 
         hideLoaderInModal('#massActionExeQModal');
