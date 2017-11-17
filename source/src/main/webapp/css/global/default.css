@@ -762,11 +762,9 @@ a.list-group-item.selected, button.list-group-item.selected {
 .bold-option{font-weight: bolder;}
 
 /* begin interactive tutoriel with introjs adjustement*/
-.modal-open {
-    overflow:auto !important;
-}
 
-.modal {
-    position : relative !important;
-}
+.modal { z-index:999999997 !important; }
+.modal .introjs-fixedTooltip { z-index: 999999998 !important; }
+.modal .introjs-showElement { z-index: 999999999 !important; }
+
 /* end interactive tutoriel with introjs adjustement*/
