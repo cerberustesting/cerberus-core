@@ -314,7 +314,7 @@ public final class ParameterParserUtil {
      * @return
      */
     public static int parseIntegerParamAndDecode(String inParam, int defaultVal, String charset) {
-        if (inParam == null) {
+        if ((inParam == null) || (inParam.equals(""))) {
             return defaultVal;
         }
 

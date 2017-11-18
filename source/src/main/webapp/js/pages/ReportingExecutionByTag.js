@@ -849,17 +849,31 @@ function selectAllQueue(status) {
     } else {
         $("[data-line='select" + status + "']").prop("checked", false);
     }
+    refreshNbChecked();
+}
+
+function refreshNbChecked() {
+    // Count total nb of result in order to display it and activate or not the button.
+    var nbchecked = $("[data-select='id']:checked").size();
+    console.info(nbchecked);
+    if (nbchecked > 0) {
+        $('#submitExe').prop("disabled", false);
+        $('#submitExe').html("<span class='glyphicon glyphicon-play'></span> Submit Again (" + nbchecked + ")");
+    } else {
+        $('#submitExe').prop("disabled", true);
+        $('#submitExe').html("<span class='glyphicon glyphicon-play'></span> Submit Again");
+    }
 }
 
 function renderOptionsForExeList(selectTag) {
     if ($("#blankSpace").length === 0) {
         var doc = new Doc();
-        var contentToAdd = "<div class='marginBottom10' style='height:34px;' id='blankSpace'>";
-        contentToAdd += "<label>Select all/none</label>";
-        contentToAdd += "<input id='selectAllQueueFA' type='checkbox'>FA</input>";
-        contentToAdd += "<input id='selectAllQueueKO' type='checkbox'>KO</input>";
-        contentToAdd += "<input id='selectAllQueueQU' type='checkbox'>QU</input>";
-        contentToAdd += "<button id='submitExe' type='button' class='btn btn-default'><span class='glyphicon glyphicon-play'></span> Submit Again</button>";
+        var contentToAdd = "<div class='marginBottom10'>";
+        contentToAdd += "<label>Select all/none :</label>";
+        contentToAdd += "<label class='checkbox-inline'><input id='selectAllQueueFA' type='checkbox'></input>FA</label>";
+        contentToAdd += "<label class='checkbox-inline'><input id='selectAllQueueKO' type='checkbox'></input>KO</label>";
+        contentToAdd += "<label class='checkbox-inline'><input id='selectAllQueueQU' type='checkbox'></input>QU</label>";
+        contentToAdd += "<button id='submitExe' type='button' disabled='disabled' title='Submit again the selected executions.' class='btn btn-default'><span class='glyphicon glyphicon-play'></span> Submit Again</button>";
         contentToAdd += "<a href='TestCaseExecutionQueueList.jsp?search=" + selectTag + "'><button id='openqueue' type='button' class='btn btn-default'><span class='glyphicon glyphicon-list'></span> Open Queue</button></a>";
         contentToAdd += "</div>";
 
@@ -972,7 +986,7 @@ function aoColumnsFunc(Columns) {
                     var cell = "";
                     cell += '<table class="table"><tr>';
                     if ((data.QueueID !== undefined) && (data.QueueID !== "0")) {
-                        cell += '<td><input id="selectLine" name="id" value=' + data.QueueID + ' data-line="select' + data.ControlStatus + '" data-id="' + data.QueueID + '" title="Select for Action" type="checkbox"></input></td>';
+                        cell += '<td><input id="selectLine" name="id" value=' + data.QueueID + ' onclick="refreshNbChecked()" data-select="id" data-line="select' + data.ControlStatus + '" data-id="' + data.QueueID + '" title="Select for Action" type="checkbox"></input></td>';
                     }
                     if (data.ControlStatus === "QU") {
                         cell += '<td><div class="progress-bar progress-bar-queue status' + data.ControlStatus + '" ';

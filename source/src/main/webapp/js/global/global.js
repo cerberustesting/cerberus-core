@@ -25,17 +25,17 @@
 
 var show = false;
 
-(function(){
-	$("#burger").unbind("click").click(function(){
-		if(show === false){
-			$("#side-menu li").show();
-			show = true;
-		}else{
-			$("#side-menu li:not(.MainItem)").hide();
-			show = false;
-		}
-		
-	})
+(function () {
+    $("#burger").unbind("click").click(function () {
+        if (show === false) {
+            $("#side-menu li").show();
+            show = true;
+        } else {
+            $("#side-menu li:not(.MainItem)").hide();
+            show = false;
+        }
+
+    })
 })()
 
 function handleErrorAjaxAfterTimeout(result) {
@@ -249,51 +249,51 @@ function displayAppServiceList(selectName, defaultValue) {
 }
 
 function displayDataLibList(selectName, defaultValue, name) {
-	
-	return new Promise((resolve,reject)=>{
-			$("#"+selectName).parent().find("select").find('option').remove();
-		  $.when($.getJSON("ReadTestDataLib?name="+name+"&limit=15&like=N")).then(function (data) {
-		
-		        for (var option in data.contentTable) {
-		        	let system = "";
-		        	let environment = "";
-		        	let country = "";
-		        	let value = "";
-		        	let context = "";
-		        	if(!isEmpty(data.contentTable[option].system)){
-		        		system = data.contentTable[option].system + " - "
-		        	}
-		        	if(!isEmpty(data.contentTable[option].environment)){
-		        		environment = data.contentTable[option].environment + " - "
-		        	}
-		        	if(!isEmpty(data.contentTable[option].country)){
-		        		country = data.contentTable[option].country + " - "
-		        	}
 
-		        	if(data.contentTable[option].type === "INTERNAL"){
-			  			if(!isEmpty(data.contentTable[option].subDataValue)){
-			  				value = data.contentTable[option].subDataValue + " - "
-			  			}
-		        	}
-		        	
-		        	if(!isEmpty(system) || !isEmpty(environment) || !isEmpty(country) || !isEmpty(value)){
-		        		context = system + environment + country + value
-		        		context = context.substr(0, context.length - 3)
-		        		context =  " [" + context + "]"
-		        	}
-		        	
-		        	$("#"+selectName).parent().find("select").append($('<option></option>').text(data.contentTable[option].name +context).val(data.contentTable[option].testDataLibID));
-		        }
-		        
-		        if(defaultValue != undefined){
-		        	$("#"+selectName).parent().find("select").val(defaultValue);
-		        }
-		        resolve(data);
+    return new Promise((resolve, reject) => {
+        $("#" + selectName).parent().find("select").find('option').remove();
+        $.when($.getJSON("ReadTestDataLib?name=" + name + "&limit=15&like=N")).then(function (data) {
 
-		  })
-	})
-	
-	
+            for (var option in data.contentTable) {
+                let system = "";
+                let environment = "";
+                let country = "";
+                let value = "";
+                let context = "";
+                if (!isEmpty(data.contentTable[option].system)) {
+                    system = data.contentTable[option].system + " - "
+                }
+                if (!isEmpty(data.contentTable[option].environment)) {
+                    environment = data.contentTable[option].environment + " - "
+                }
+                if (!isEmpty(data.contentTable[option].country)) {
+                    country = data.contentTable[option].country + " - "
+                }
+
+                if (data.contentTable[option].type === "INTERNAL") {
+                    if (!isEmpty(data.contentTable[option].subDataValue)) {
+                        value = data.contentTable[option].subDataValue + " - "
+                    }
+                }
+
+                if (!isEmpty(system) || !isEmpty(environment) || !isEmpty(country) || !isEmpty(value)) {
+                    context = system + environment + country + value
+                    context = context.substr(0, context.length - 3)
+                    context = " [" + context + "]"
+                }
+
+                $("#" + selectName).parent().find("select").append($('<option></option>').text(data.contentTable[option].name + context).val(data.contentTable[option].testDataLibID));
+            }
+
+            if (defaultValue != undefined) {
+                $("#" + selectName).parent().find("select").val(defaultValue);
+            }
+            resolve(data);
+
+        })
+    })
+
+
 }
 
 
@@ -863,16 +863,19 @@ function appendMessage(obj, dialog) {
  * @param {type} message - message to show
  * @param {boolean} silentMode - if true, message is not displayed if OK.
  */
-function showMessageMainPage(type, message, silentMode) {
+function showMessageMainPage(type, message, silentMode, waitinMs) {
     if (isEmpty(silentMode)) {
         silentMode = false;
     }
-    // Automatically fadeout after n second.
-    var waitinMs = 10000; // Default wait to 10 seconds.
-    if (type === "success") {
-        waitinMs = 2000;
-    } else if (type === "error") {
-        waitinMs = 5000;
+
+    if (isEmpty(waitinMs)) {
+        // Automatically fadeout after n second.
+        waitinMs = 10000; // Default wait to 10 seconds.
+        if (type === "success") {
+            waitinMs = 2000;
+        } else if (type === "error") {
+            waitinMs = 5000;
+        }
     }
     if (!((type === "success") && (silentMode))) {
         $("#mainAlert").addClass("alert-" + type);
@@ -2038,8 +2041,8 @@ function autocompleteVariable(identifier, Tags) {
                                     Tags[tag].array.forEach(function (data) {
                                         arrayLabels.push(data.object);
                                     });
-                                
-                                }else {
+
+                                } else {
                                     arrayLabels = Tags[tag].array;
                                 }
                                 this.currentIndexTag = tag;

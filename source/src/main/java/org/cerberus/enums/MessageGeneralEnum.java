@@ -41,7 +41,7 @@ public enum MessageGeneralEnum {
     VALIDATION_FAILED_RUNPROD_NOTDEFINED(59, "", "The test case isn't defined to run in Production environment. You try to run it on '%ENV%' that belong to the PROD environment group."),
     VALIDATION_FAILED_COUNTRY_NOTDEFINED(60, "", "The test case isn't defined to run in selected country."),
     VALIDATION_FAILED_ENVIRONMENT_NOTDEFINED(61, "", "The environment selected '%ENV%' belong to a group of environment '%ENVGP%' that is neither DEV, QA, UAT and PROD."),
-    VALIDATION_FAILED_ENVIRONMENT_UNDER_MAINTENANCE(62, "", "The environment is under maintenance. You try to run a test aginst an environment that is currently under maintenance."),
+    VALIDATION_FAILED_ENVIRONMENT_UNDER_MAINTENANCE(62, "", "The environment is under maintenance. You try to run a test against an environment that is currently under maintenance."),
     VALIDATION_FAILED_SELENIUM_COULDNOTCONNECT(63, "", "Could not contact Selenium server on %SSIP% using port %SSPORT%. Possible causes are invalid address of the remote server or browser start-up failure. %ERROR%"),
     VALIDATION_FAILED_SIKULI_COULDNOTCONNECT(63, "", "Could not contact Sikuli server on %SSIP% using port %SSPORT%. Possible causes are invalid address of the remote server or cerberus-extension-sikuli not started properly."),
     VALIDATION_FAILED_APPLICATION_NOT_FOUND(64, "", "Application '%APPLI%' does not exist."),

@@ -45,31 +45,32 @@
             <div class="row">
                 <div class="col-lg-9">
 
-                    <div class="panel panel-default" id="environmentPanel">
+                    <div class="panel panel-default" id="selectionPanel">
                         <div class="panel-heading">
                             Selection Type
                         </div>
                         <div class="panel-body">
                             <div class="row">
-                                <div class="col-xs-5">
+                                <div class="col-sm-5">
                                     <div class="btn-group">
                                         <button type="button" id="SelectionManual" class="btn btn-success">Manual Selection</button>
                                         <button type="button" id="SelectionCampaign" class="btn btn-default">Campaign Selection</button>
                                     </div>
                                 </div>
                                 <form id="campaignSelection"  style="display: none;">
-                                    <div class="form-group col-xs-5">
+                                    <div class="form-group col-sm-5">
                                         <div class="input-group">
                                             <select class="form-control" id="campaignSelect" style="width: 300px"></select>
+                                            <button type="button" class="btn btn-primary" id="loadCampaignBtn">Load</button>
                                         </div>
                                     </div>
-                                    <div class="form-group col-xs-2">
+<!--                                    <div class="form-group col-sm-2">
                                         <div class="input-group">
                                             <div class="input-group-btn">
                                                 <button type="button" class="btn btn-primary" id="loadCampaignBtn">Load</button>
                                             </div>
                                         </div>
-                                    </div>
+                                    </div>-->
                                 </form>
                             </div>
                         </div>
@@ -227,11 +228,11 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="row" id="potencialBlock">
                             <li class="list-group-item list-group-item-info col-lg-offset-3 col-lg-6" id="potential" style="margin-top: 25px;">
                                 <span class="badge" id="potentialNumber">0</span>
                                 <span>Potential additions to the queue</span>
                             </li>
-                            <div class="row">
                                 <div class="col-lg-offset-3 col-lg-6 text-center" style="margin-top: 25px;">
                                     <button type="button" class="btn btn-primary" id="addQueue"> Add selection to queue </button>
                                     <button type="button" class="btn btn-primary" id="addQueueAndRun"> Add selection to queue and Run</button>
@@ -242,7 +243,7 @@
 
                 </div>
 
-                <div class="col-lg-3">
+                <div class="col-lg-3" id="exeList">
                     <li class="list-group-item list-group-item-danger" style="display: none;" id="notValid">
                         <span class="badge" id="notValidNumber" style="cursor: pointer;"></span>
                         <span>Some executions couldn't be added to the queue</span>
@@ -274,10 +275,11 @@
                     <div class="row">
                         <div class="col-lg-6">
                             <div class="panel panel-default" id="RobotPanel">
-                                <div class="panel-heading">
-                                    Robot settings
+                                <div class="panel-heading card" data-toggle="collapse" data-target="#robotSettings">
+                                    <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                                    <span>Robot settings</span>
                                 </div>
-                                <div class="panel-body" id="robotSettings">
+                                <div class="panel-body collapse in" id="robotSettings">
                                     <form class="form-horizontal" id="robotSettingsForm">
                                         <div class="form-group">
                                             <label for="robot" class="col-sm-3 control-label bold">Select Robot Config</label>
@@ -309,7 +311,7 @@
                                                 <select class="form-control input-sm" id="browser" name="browser" multiple></select>
                                             </div>
                                         </div>
-                                        <div class="form-group">
+<!--                                        <div class="form-group">
                                             <label for="version" class="col-sm-3 control-label">Version (Optional)</label>
                                             <div class="col-sm-9">
                                                 <input type="text" class="form-control input-sm" id="version" name="BrowserVersion"/>
@@ -326,7 +328,7 @@
                                             <div class="col-sm-9">
                                                 <input type="text" class="form-control" name="screenSize" id="screenSize" aria-describedby="basic-addon1" maxlength="250"/>
                                             </div>
-                                        </div>
+                                        </div>-->
                                     </form>
                                     <div class="col-sm-offset-3 col-sm-9">
                                         <button class="btn btn-default btn-sm pull-right" id="saveRobotPreferences">Record my Robot Preferences</button>
@@ -336,10 +338,11 @@
                         </div>
                         <div class="col-lg-6">
                             <div class="panel panel-default" id="executionPanel">
-                                <div class="panel-heading">
-                                    Execution settings
+                                <div class="panel-heading card" data-toggle="collapse" data-target="#executionSettings">
+                                    <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                                    <span>Execution settings</span>
                                 </div>
-                                <div class="panel-body" id="executionSettings">
+                                <div class="panel-body collapse in" id="executionSettings">
                                     <form class="form-horizontal"id="executionSettingsForm">
                                         <div class="form-group">
                                             <label for="tag" class="col-sm-3 control-label bold">Tag</label>
@@ -438,6 +441,7 @@
             <div style="padding-bottom: 15px;padding-top: 15px;">
                 <button type="button" class="btn btn-primary btn-lg btn-block" id="run">Run</button>
                 <button type="button" class="btn btn-primary btn-lg btn-block" id="addQueueAndRunBis"> Add selection to queue and Run</button>
+                <button type="button" class="btn btn-primary btn-lg btn-block" id="runCampaign">Run Campaign</button>
             </div>
 
             <footer class="footer">

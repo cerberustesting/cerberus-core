@@ -21,6 +21,8 @@ package org.cerberus.servlet.zzpublic;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -57,7 +59,12 @@ import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.ITagService;
 import org.cerberus.crud.service.ITestCaseCountryService;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.util.StringUtil;
+import org.cerberus.util.answer.AnswerUtil;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Add a test case to the execution queue (so to be executed later).
@@ -96,6 +103,7 @@ public class AddToExecutionQueueV001 extends HttpServlet {
     private static final String PARAMETER_RETRIES = "retries";
     private static final String PARAMETER_MANUAL_EXECUTION = "manualexecution";
     private static final String PARAMETER_EXEPRIORITY = "priority";
+    private static final String PARAMETER_OUTPUTFORMAT = "outputformat";
 
     private static final int DEFAULT_VALUE_SCREENSHOT = 0;
     private static final int DEFAULT_VALUE_MANUAL_URL = 0;
@@ -106,8 +114,11 @@ public class AddToExecutionQueueV001 extends HttpServlet {
     private static final int DEFAULT_VALUE_RETRIES = 0;
     private static final String DEFAULT_VALUE_MANUAL_EXECUTION = "N";
     private static final int DEFAULT_VALUE_PRIORITY = 1000;
+    private static final String DEFAULT_VALUE_OUTPUTFORMAT = "compact";
 
     private static final String LINE_SEPARATOR = "\n";
+
+    private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd-HHmmss");
 
     private ITestCaseExecutionQueueService inQueueService;
     private IFactoryTestCaseExecutionQueue inQueueFactoryService;
@@ -153,6 +164,10 @@ public class AddToExecutionQueueV001 extends HttpServlet {
         // Calling Servlet Transversal Util.
         ServletUtil.servletStart(request);
 
+        // Default message to unexpected error.
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+
         /**
          * Adding Log entry.
          */
@@ -191,9 +206,13 @@ public class AddToExecutionQueueV001 extends HttpServlet {
         int retries = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_RETRIES), DEFAULT_VALUE_RETRIES, charset);
         String manualExecution = ParameterParserUtil.parseStringParamAndDecode(request.getParameter(PARAMETER_MANUAL_EXECUTION), DEFAULT_VALUE_MANUAL_EXECUTION, charset);
         int priority = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_EXEPRIORITY), DEFAULT_VALUE_PRIORITY, charset);
+        if (manualExecution.equals("")) {
+            manualExecution = DEFAULT_VALUE_MANUAL_EXECUTION;
+        }
+        String outputFormat = ParameterParserUtil.parseStringParamAndDecode(request.getParameter(PARAMETER_OUTPUTFORMAT), DEFAULT_VALUE_OUTPUTFORMAT, charset);
 
         // Defining help message.
-        String helpMessage = "\nThis servlet is used to add to Cerberus execution queue a list of execution. Execution list will be calculated from cartesian product of "
+        String helpMessage = "This servlet is used to add to Cerberus execution queue a list of execution. Execution list will be calculated from cartesian product of "
                 + "testcase, country, environment and browser list. Those list can be defined from the associated servlet parameter but can also be defined from campaign directy inside Cerberus.\n"
                 + "List defined from servlet overwrite the list defined from the campaign. All other execution parameters will be taken to each execution.\n"
                 + "Available parameters:\n"
@@ -213,7 +232,7 @@ public class AddToExecutionQueueV001 extends HttpServlet {
                 + "- " + PARAMETER_MANUAL_CONTEXT_ROOT + " : Context root of the application to test (only used when " + PARAMETER_MANUAL_URL + " is activated). [" + manualContextRoot + "]\n"
                 + "- " + PARAMETER_MANUAL_LOGIN_RELATIVE_URL + " : Relative login URL of the application (only used when " + PARAMETER_MANUAL_URL + " is activated). [" + manualLoginRelativeURL + "]\n"
                 + "- " + PARAMETER_MANUAL_ENV_DATA + " : Environment where to get the test data when a " + PARAMETER_MANUAL_URL + " is defined. (only used when manualURL is active). [" + manualEnvData + "]\n"
-                + "- " + PARAMETER_TAG + " [mandatory] : Tag that will be used for every execution triggered. [" + tag + "]\n"
+                + "- " + PARAMETER_TAG + " : Tag that will be used for every execution triggered. [" + tag + "]\n"
                 + "- " + PARAMETER_SCREENSHOT + " : Activate or not the screenshots for every execution triggered. [" + screenshot + "]\n"
                 + "- " + PARAMETER_VERBOSE + " : Verbose level for every execution triggered. [" + verbose + "]\n"
                 + "- " + PARAMETER_TIMEOUT + " : Timeout used for the action that will be used for every execution triggered. [" + timeout + "]\n"
@@ -225,14 +244,31 @@ public class AddToExecutionQueueV001 extends HttpServlet {
 
 //        try {
         // Checking the parameter validity.
+        StringBuilder errorMessage = new StringBuilder();
         boolean error = false;
         if (tag == null || tag.isEmpty()) {
-            out.println("Error - Parameter " + PARAMETER_TAG + " is mandatory.");
-            error = true;
+            if (request.getRemoteUser() != null) {
+                tag = request.getRemoteUser();
+            }
+            if (tag.length() > 0) {
+                tag += ".";
+            }
+            if (campaign != null) {
+                tag += campaign;
+            }
+            if (tag.length() > 0) {
+                tag += ".";
+            }
+            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+            String mytimestamp = sdf.format(timestamp);
+            tag += mytimestamp;
+            
         } else if (tag.length() > 255) {
-            out.println("Error - Parameter " + PARAMETER_TAG + " is too big. Maximum size if 255. Current size is : " + tag.length());
+
+            errorMessage.append("Error - Parameter " + PARAMETER_TAG + " is too big. Maximum size if 255. Current size is : " + tag.length());
             error = true;
         }
+
         if (campaign != null && !campaign.isEmpty()) {
             final AnswerItem<Map<String, List<String>>> parsedCampaignParameters = campaignParameterService.parseParametersByCampaign(campaign);
             if (parsedCampaignParameters.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
@@ -262,27 +298,29 @@ public class AddToExecutionQueueV001 extends HttpServlet {
             }
         }
         if (countries == null || countries.isEmpty()) {
-            out.println("Error - No Country defined. You can either feed it with parameter '" + PARAMETER_COUNTRY + "' or add it into the campaign definition.");
+            errorMessage.append("Error - No Country defined. You can either feed it with parameter '" + PARAMETER_COUNTRY + "' or add it into the campaign definition.");
             error = true;
         }
         if (browsers == null || browsers.isEmpty()) {
-            out.println("Error - No Browser defined. You can either feed it with parameter '" + PARAMETER_BROWSER + "' or add it into the campaign definition.");
+            errorMessage.append("Error - No Browser defined. You can either feed it with parameter '" + PARAMETER_BROWSER + "' or add it into the campaign definition.");
             error = true;
         }
         if (selectedTests == null || selectedTests.isEmpty()) {
-            out.println("Error - No TestCases defined. You can either feed it with parameter '" + PARAMETER_SELECTED_TEST + "' or add it into the campaign definition.");
+            errorMessage.append("Error - No TestCases defined. You can either feed it with parameter '" + PARAMETER_SELECTED_TEST + "' or add it into the campaign definition.");
             error = true;
         }
         if (manualURL >= 1) {
             if (manualHost == null || manualEnvData == null) {
-                out.println("Error - ManualURL has been activated but no ManualHost or Manual Environment defined.");
+                errorMessage.append("Error - ManualURL has been activated but no ManualHost or Manual Environment defined.");
                 error = true;
             }
         } else if (environments == null || environments.isEmpty()) {
-            out.println("Error - No Environment defined (and " + PARAMETER_MANUAL_URL + " not activated). You can either feed it with parameter '" + PARAMETER_ENVIRONMENT + "' or add it into the campaign definition.");
+            errorMessage.append("Error - No Environment defined (and " + PARAMETER_MANUAL_URL + " not activated). You can either feed it with parameter '" + PARAMETER_ENVIRONMENT + "' or add it into the campaign definition.");
             error = true;
         }
 
+        int nbExe = 0;
+        JSONArray jsonArray = new JSONArray();
         String user = request.getRemoteUser() == null ? "" : request.getRemoteUser();
         // Starting the request only if previous parameters exist.
         if (!error) {
@@ -357,43 +395,92 @@ public class AddToExecutionQueueV001 extends HttpServlet {
             }
 
             // Part 2: Try to insert all these test cases to the execution queue.
-            int nbExe = 0;
             List<String> errorMessages = new ArrayList<String>();
             for (TestCaseExecutionQueue toInsert : toInserts) {
                 try {
                     inQueueService.convert(inQueueService.create(toInsert));
                     nbExe++;
+                    JSONObject value = new JSONObject();
+                    value.put("queueId", toInsert.getId());
+                    value.put("test", toInsert.getTest());
+                    value.put("testcase", toInsert.getTestCase());
+                    value.put("country", toInsert.getCountry());
+                    value.put("environment", toInsert.getEnvironment());
+
+                    jsonArray.put(value);
                 } catch (CerberusException e) {
-                    String errorMessage = "Unable to insert " + toInsert.toString() + " due to " + e.getMessage();
-                    LOG.warn(errorMessage);
-                    errorMessages.add(errorMessage);
+                    String errorMessageTmp = "Unable to insert " + toInsert.toString() + " due to " + e.getMessage();
+                    LOG.warn(errorMessageTmp);
+                    errorMessages.add(errorMessageTmp);
                     continue;
+                } catch (JSONException ex) {
+                    java.util.logging.Logger.getLogger(AddToExecutionQueueV001.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
 
-            // Part 3 : Put these tests in the queue in memory
+            // Part 3 : Trigger JobQueue
             try {
                 executionThreadService.executeNextInQueueAsynchroneously(false);
             } catch (CerberusException ex) {
-                String errorMessage = "Unable to feed the execution queue due to " + ex.getMessage();
-                LOG.warn(errorMessage);
-                errorMessages.add(errorMessage);
+                String errorMessageTmp = "Unable to feed the execution queue due to " + ex.getMessage();
+                LOG.warn(errorMessageTmp);
+                errorMessages.add(errorMessageTmp);
             }
 
             if (!errorMessages.isEmpty()) {
-                StringBuilder errorMessage = new StringBuilder();
+                StringBuilder errorMessageTmp = new StringBuilder();
                 for (String item : errorMessages) {
-                    errorMessage.append(item);
-                    errorMessage.append(LINE_SEPARATOR);
+                    errorMessageTmp.append(item);
+                    errorMessageTmp.append(LINE_SEPARATOR);
                 }
-                out.println(errorMessage.toString());
+                errorMessage.append(errorMessageTmp.toString());
             }
 
-            out.println(nbExe + " execution(s) succesfully inserted to queue.");
+            errorMessage.append(nbExe);
+            errorMessage.append(" execution(s) succesfully inserted to queue.");
+
+            // Message that everything went fine.
+            msg = new MessageEvent(MessageEventEnum.GENERIC_OK);
 
         } else {
             // In case of errors, we display the help message.
-            out.println(helpMessage);
+//            errorMessage.append(helpMessage);
+        }
+
+        // Init Answer with potencial error from Parsing parameter.
+        AnswerItem answer = new AnswerItem(msg);
+
+        switch (outputFormat) {
+            case "json":
+                try {
+                    JSONObject jsonResponse = new JSONObject();
+                    jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
+                    jsonResponse.put("message", errorMessage.toString());
+                    jsonResponse.put("helpMessage", helpMessage);
+                    jsonResponse.put("tag", tag);
+                    jsonResponse.put("nbExe", nbExe);
+                    jsonResponse.put("queueList", jsonArray);
+
+                    response.setContentType("application/json");
+                    response.setCharacterEncoding("utf8");
+                    response.getWriter().print(jsonResponse.toString());
+                } catch (JSONException e) {
+                    LOG.warn(e);
+                    //returns a default error message with the json format that is able to be parsed by the client-side
+                    response.setContentType("application/json");
+                    response.setCharacterEncoding("utf8");
+                    response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
+                }
+                break;
+            default:
+                response.setContentType("text");
+                response.setCharacterEncoding("utf8");
+                if (error) {
+                    errorMessage.append("\n");
+                    errorMessage.append(helpMessage);
+                }
+                response.getWriter().print(errorMessage.toString());
+
         }
 
 //        } catch (Exception e) {
