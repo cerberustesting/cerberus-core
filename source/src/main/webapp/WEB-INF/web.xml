@@ -1611,6 +1611,7 @@
     <servlet-mapping>
         <servlet-name>DummyRESTCall</servlet-name>
         <url-pattern>/DummyRESTCall</url-pattern>
+        <url-pattern>/DummyRESTCall/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>UpdateTestCaseExecutionQueue</servlet-name>

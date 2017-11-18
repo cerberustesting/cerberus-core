@@ -13,3 +13,4 @@
 *.iml
 /.idea/
 *.mwb.beforefix
+*.DS_Store

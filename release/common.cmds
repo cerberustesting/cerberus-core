@@ -68,12 +68,10 @@ rm -rf cerberus-source
 while [[ `curl -s -o /dev/null -w "%{http_code}" https://sourceforge.net/projects/cerberus-source/files/Cerberus-${RELEASE_VERSION}.zip/download` != '302' ]]; do echo 'Artifact Cerberus-${RELEASE_VERSION}.zip is not yet ready to be downloaded from Sourceforge. Sleeping 10s and retry.' && sleep 10; done
 
 # Release of the cerberus-as-glassfish project
-rm -rf cerberus-docker
-git clone git@github.com:cerberustesting/cerberus-docker.git
-cd cerberus-docker/images/cerberus-as-glassfish
+cd docker/images/cerberus-as-glassfish
 ${RUNCMDS_PATH} -e RELEASE_VERSION ${RELEASE_VERSION} -s release.cmds
-cd ../../..
-rm -rf cerberus-docker
+cd ../../../..
+rm -rf cerberus-source
 
 # Restore current directory to the initial one
 cd ..

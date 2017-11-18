@@ -136,7 +136,22 @@ class CerberusTuto {
 
         this.intro.onchange(this.goToNextStepAfterClick);
 
-        var _this=this;
+        this.intro.onafterchange(function(targetElement) {
+            var intro=this;
+
+            // Bug introjs with modal bootstrat, we move introjs directly into the modal to cerrect it (bug with fix position)
+            // by default introjs element on body
+            $('.introjs-overlay, .introjs-helperLayer, .introjs-tooltipReferenceLayer').appendTo("body");
+            waitForElementToDisplay(intro._options.steps[intro._currentStep + 1].element, 100, function () {
+                if($("div.modal.introjs-fixParent").length==1) {
+                    $('.introjs-overlay, .introjs-helperLayer, .introjs-tooltipReferenceLayer').appendTo("div.modal.introjs-fixParent");
+                    $('.introjs-overlay').css("position","absolute");
+                    $('.introjs-overlay').css("height", $(document).height() + "px");
+                }
+                $('.introjs-helperLayer, .introjs-tooltipReferenceLayer').removeClass("introjs-fixedTooltip");
+            });
+        });
+        var _this = this;
         // wait for the first element
         if(this.listMessage[startStep-1] != undefined && this.listMessage[startStep-1].element != undefined) {
             waitForElementToDisplay(this.listMessage[startStep - 1].element, 100, function() {
@@ -149,17 +164,17 @@ class CerberusTuto {
 
 
     goToNextStepAfterClick(targetElement) {
-        let intro=this;
+        let intro = this;
 
-        var clickOnNextStep = function() {
-            if(intro != undefined) {
-                waitForElementToDisplay(intro._options.steps[intro._currentStep+1].element, 100, function () {
+        var clickOnNextStep = function () {
+            if (intro != undefined) {
+                waitForElementToDisplay(intro._options.steps[intro._currentStep + 1].element, 100, function () {
                     intro.nextStep();
                 });
             }
         }
 
-        if($(targetElement).is("button")) { // if current element is a button
+        if ($(targetElement).is("button")) { // if current element is a button
             $(targetElement).click(clickOnNextStep);
         } else { // else, for each button into the element
             $(targetElement).find("button").each(function (index, value) {
@@ -167,8 +182,6 @@ class CerberusTuto {
             });
         }
     }
-
-
 }
 
 

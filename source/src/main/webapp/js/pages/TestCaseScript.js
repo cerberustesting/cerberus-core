@@ -20,6 +20,7 @@
 
 var canUpdate = false;
 var allDelete = false;
+var Tags = [];
 $.when($.getScript("js/global/global.js")).then(function () {
 	$(document).ready(function () {
 
@@ -175,7 +176,6 @@ $.when($.getScript("js/global/global.js")).then(function () {
 
 			var json;
 			var testcaseinfo;
-			var Tags;
 			$.ajax({
 				url: "ReadTestCase",
 				data: {test: test, testCase: testcase, withStep: true},
@@ -563,7 +563,6 @@ function addActionAndFocus(action) {
 	$.when(addAction(action)).then(function (action) {
 		listenEnterKeypressWhenFocusingOnDescription();
 		$($(action.html[0]).find(".description")[0]).focus();
-		autocompleteAllFields();
 	});
 }
 
@@ -2222,9 +2221,10 @@ Action.prototype.generateContent = function () {
 
 	actionList = getSelectInvariant("ACTION", false, true).css("width", "100%").attr("id", "actionSelect");
 	actionList.val(this.action);
-	actionList.unbind("change").on("change", function () {
+	actionList.off("change").on("change", function () {
 		obj.action = actionList.val();
 		if(obj.action === "callService" || obj.action === "calculateProperty"){
+
 			$(actionList).parent().parent().find("input").autocomplete({
 				minLength: 1,
 				messages: {
@@ -2236,9 +2236,14 @@ Action.prototype.generateContent = function () {
 				select: function(event,ui){
 					var selectedObj = ui.item;
 					$(event.target).val(selectedObj.value.replace("%", ''));
-					$(event.target).autocomplete("close")
 					$(event.target).trigger('input');
-				}
+					$(event.target).autocomplete("close")
+				},
+				
+				close: function (event, ui) {
+                    val = $(this).val();
+                    return false;
+                }
 
 			}).data("ui-autocomplete")._renderItem = function (ul, item) {
 				return $("<li>")
@@ -2246,7 +2251,10 @@ Action.prototype.generateContent = function () {
 				.append("<a>" + item.label + "</a>")
 				.appendTo(ul);
 			};
+		}else{
+			autocompleteVariable($(actionList).parent().parent().find("input"), Tags);
 		}
+		
 		setPlaceholderAction($(this).parents(".action"));
 		$(actionList).parent().parent().find(".input-group-btn").remove();
 
@@ -2681,7 +2689,6 @@ function addControl(action, control) {
 function addControlAndFocus(oldAction, control) {
 	$.when(addControl(oldAction, control)).then(function (action) {
 		$($(action.html[0]).find(".description")[0]).focus();
-		autocompleteAllFields();
 	});
 }
 
@@ -2719,6 +2726,8 @@ function objectIntoTagToUseExist(tagToUse, label) {
 function loadGuiProperties(){
 	
 	let propArr = new Object();
+	let info = new Object();
+	
 	$("div.list-group-item").each(function(){
 		var editor = ace.edit($(this).find("pre").attr("id"));
 		let info = new Object();
@@ -2731,7 +2740,8 @@ function loadGuiProperties(){
 	return propArr;
 }
 
-var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
+var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = []; 
+
 (function () {
 	// var accessible only in closure
 	var TagsToUse = [];
@@ -2764,227 +2774,186 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 			testcase = thistestcase;
 		}
 		
+		$(document).on('input', "div.step-action .content div.fieldRow:nth-child(2) input", function(e , state){
+			
+			e = e.currentTarget
+			
+			function trigger(){
+				$(e).trigger("input");
+			}
+			
+			$(e).parent().parent().find("select").off("change",trigger).on("change",trigger)
+			
+			var doc = new Doc()
 
-			$("div.step-action .content div.fieldRow:nth-child(2) input").each(function (i, e) {
+			if ($(e).parent().parent().find("select").val() === "callService") {
 
-				function trigger(){
-					$(e).trigger("input");
-				}
-				
-				$(e).parent().parent().find("select").unbind("change",trigger).on("change",trigger)
-
-				$(e).unbind("input").on("input", function (ev) {
-
-					var doc = new Doc()
-
-					if ($(e).parent().parent().find("select").val() === "callService") {					
-
-						// prevent multiple autocomplete handler on $(e)
-						$( e ).autocomplete('option', 'source', function(request,response){							
-							$.ajax({
-								url: "ReadAppService?service=" +$(e).val() + "&limit=15",
-								dataType: "json",
-								success: function (data) {
-									var MyArray = $.map(data.contentTable, function (item) {
-										return {
-											label: item.service,
-											value: item.service
-										};
-									});
-
-									response($.ui.autocomplete.filter(MyArray, request.term));
-								}
-							})
-						})			
-				
-						$.ajax({
-							url: "ReadAppService?service=" + $(e).val(),
-							dataType: "json",
-							success: function (data) {
-								var dataContent = data.contentTable
-								$(e).parent().find(".input-group-btn").remove();
-								if (dataContent != undefined) {
-									var editEntry = $('<span class="input-group-btn ' + $(e).val() + '"><button id="editEntry" onclick="openModalAppService(\'' + $(e).val() + '\',\'EDIT\'  ,\'TestCase\' );"\n\
-											class="buttonObject btn btn-default input-sm " \n\
-											title="' + doc.getDocLabel("page_applicationObject", "button_edit") + '" type="button">\n\
-									<span class="glyphicon glyphicon-pencil"></span></button></span>');                                   	 
-									$(e).parent().append(editEntry);
-								} else { 
-									var addEntry = '<span class="input-group-btn ' + $(e).val().replace(/[^\w\s]/gi, '') + '"><button id="editEntry" onclick="openModalAppService(\'' + $(e).val() + '\',\'ADD\'  ,\'TestCase\' );"\n\
-									class="buttonObject btn btn-default input-sm " \n\
-									title="' + doc.getDocLabel("page_applicationObject", "button_create") + '" type="button">\n\
-									<span class="glyphicon glyphicon-plus"></span></button></span>';
-									$(e).parent().append(addEntry);
-								}
-							}
-						});
-
-
-					} else if($(e).parent().parent().find("select").val() === "calculateProperty"){
-						
-						$( e ).autocomplete('option', 'source', function(request,response){
-							var MyArray = $.map(loadGuiProperties(), function (item) {
-								return {
-									label: item.name,
-									value: item.name
-								};
-							});
-							response($.ui.autocomplete.filter(MyArray, request.term));
-						})
-						
-						var viewEntry = $('<span class="input-group-btn ' + $(e).val() + '"><button id="editEntry" data-toggle="modal" data-target="#modalProperty" "\n\
-								class="buttonObject btn btn-default input-sm " \n\
-								title="' + doc.getDocLabel("page_applicationObject", "button_edit") + '" type="button">\n\
-						<span class="glyphicon glyphicon-eye-open"></span></button></span>');
-						
-						let propArr = loadGuiProperties()
-						
-						try {
-							$(e).parent().find("." + $(e).parent().data("LastName")).remove();
-						} catch (e) {
-							$(e).parent().find(".input-group-btn").remove();
-						}
-						
-						if(propArr[$(e).val()]){
-							viewEntry.find("button").unbind("click")
-							viewEntry.find("button").click(function(){
-								let propArr = loadGuiProperties()
-								let firstRow = $('<p style="text-align:center" > Type : '+ propArr[$(e).val()].type +'</p>');
-								let secondRow = $('<p style="text-align:center"> Value : '+ propArr[$(e).val()].value +'</p>');
-								$("#modalProperty").find("#firstRowProperty").find("p").remove();
-								$("#modalProperty").find("#secondRowProperty").find("p").remove();
-								$("#modalProperty").find("#firstRowProperty").append(firstRow);
-								$("#modalProperty").find("#secondRowProperty").append(secondRow);
-							});
-							
-							$(e).parent().append(viewEntry);
-							$(e).parent().data("LastName", $(e).val());
-						}
-
-					}else{
-						autocompleteVariable($(e), TagsToUse);
-						$(e).autocomplete({}).data('ui-autocomplete')._renderItem = function (ul, item) {
-							$(ul).css("min-height", "0px");
-							var icon = "";
-							var tag = TagsToUse[this.currentIndexTag];
-							if (tag.addAfter != "%") {
-								icon = "<span class='ui-corner-all glyphicon glyphicon-chevron-right' tabindex='-1' style='margin-top:3px; float:right;'></span>";
-							}
-							// find corresponding data to use more information
-							// than
-							// item (application / filename etc)
-							var object = tag.array.find(function (data) {
-								if (item != undefined)
-									return data.object === item.label;
-								return false;
-							});
-
-							var hover = "";
-							if (object != null && object.screenshotfilename != undefined && object.screenshotfilename != null) {
-								hover = 'data-toggle="tooltip" title="<img src=\'http://localhost:8080/Cerberus/ReadApplicationObjectImage?application=' + object.application + '&object=' + object.object + '&time=' + $.now() + '\' />"';
-							}
-							return $("<li class='ui-menu-item'>")
-							.append("<a class='ui-corner-all' tabindex='-1' style='height:100%' " + hover + " ><span style='float:left;'>" + item.label + "</span>" + icon + "<span style='clear: both; display: block;'></span></a>")
-							.appendTo(ul);
-						}
-						
-
-					
-					var name = undefined;
-					var nameNotExist = undefined;
-					var objectNotExist = false;
-					var typeNotExist = undefined;
-					var doc = new Doc();
-					var checkObject = [];
-					var betweenPercent = $(e).val().match(new RegExp(/%[^%]*%/g));
-
-
-					if (betweenPercent != null && betweenPercent.length > 0) {
-						var i = betweenPercent.length - 1;
-						while (i >= 0) {
-							var findname = betweenPercent[i].match(/\.[^\.]*(\.|.$)/g);
-
-							if (betweenPercent[i].startsWith("%object.") && findname != null && findname.length > 0) {
-								name = findname[0];
-								name = name.slice(1, name.length - 1);
-
-								$(e).parent().parent().parent().parent().find("#ApplicationObjectImg").attr("src", "ReadApplicationObjectImage?application=" + tcInfo.application + "&object=" + name + "&time=" + new Date().getTime());
-
-								if (!objectIntoTagToUseExist(TagsToUse[1], name)) {
-
-									var addEntry = $('<span class="input-group-btn ' + name + '"><button id="editEntry" onclick="openModalApplicationObject(\'' + tcInfo.application + '\', \'' + name + '\',\'ADD\'  ,\'testCaseScript\' );"\n\
-											class="buttonObject btn btn-default input-sm " \n\
-											title="' + doc.getDocLabel("page_applicationObject", "button_create") + '" type="button">\n\
-									<span class="glyphicon glyphicon-plus"></span></button></span>');
-
-									objectNotExist = true;
-									nameNotExist = name;
-									typeNotExist = "applicationObject";
-
-									try {
-										$(e).parent().find("." + $(e).parent().data("LastName")).remove();
-									} catch (f) {
-										$(e).parent().find(".input-group-btn").remove();
-									}
-
-									$(e).parent().append(addEntry);
-									$(e).parent().data("LastName", name);
-
-								} else if (objectIntoTagToUseExist(TagsToUse[1], name)) {
-
-									var editEntry = '<span class="input-group-btn ' + name + '"><button id="editEntry" onclick="openModalApplicationObject(\'' + tcInfo.application + '\', \'' + name + '\',\'EDIT\'  ,\'testCaseScript\' );"\n\
-									class="buttonObject btn btn-default input-sm " \n\
-									title="' + doc.getDocLabel("page_applicationObject", "button_edit") + '" type="button">\n\
-									<span class="glyphicon glyphicon-pencil"></span></button></span>';
-
-									try {
-										$(e).parent().find("." + $(e).parent().data("LastName")).remove();
-									} catch (e) {
-										$(e).parent().find(".input-group-btn").remove();
-									}
-
-									$(e).parent().append(editEntry);
-									$(e).parent().data("LastName", name);
-
-								} 
-							} else if (betweenPercent[i].startsWith("%property.") && findname != null && findname.length > 0) {
-
-							}
-						
-
-							i--;
-						}
-					}else{
-						$(e).parent().find(".input-group-btn").remove();
-					} 
-					if (objectNotExist) {
-						if (typeNotExist == "applicationobject") {
-							var newTitle = "<a style='color: #fff;' href='#' onclick='addApplicationObjectModalClick(undefined, \"" + nameNotExist + "\",\"" + tcInfo.application + "\")'><span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span>" + doc.getDocLabel("page_global", "warning") + ": " + nameNotExist + " " + doc.getDocLabel("page_testcasescript", "not_application_object") + "</a>";
-							if (newTitle != $(e).attr('data-original-title')) {
-								$(e).attr('data-original-title', newTitle).tooltip('fixTitle').tooltip('show');
-							} else {
-								$(e).tooltip('show');
-							}
-						} else if (typeNotExist == "property") {
-							// TODO better way to add property
-							var newTitle = "<a style='color: #fff;' href='#' onclick=\"$('#manageProp').click();$('#addProperty').click();$('#propTable input#propName').last().val('" + nameNotExist + "').trigger('change');$('#editTabProperties').click();$(this).hide()\"><span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span> " + doc.getDocLabel("page_global", "warning") + " : " + nameNotExist + " " + doc.getDocLabel("page_testcasescript", "not_property") + "</a>";
-							if (newTitle != $(e).attr('data-original-title')) {
-								$(e).attr('data-original-title', newTitle).tooltip('fixTitle').tooltip('show');
-							} else {
-								$(e).tooltip('show');
-							}
-						}
-					} else {
-						$(e).attr('data-original-title', "").attr('title', "").tooltip('destroy');
-					  }
+				// prevent multiple autocomplete handler on $(e)
+				$( e ).autocomplete('option', 'source', function(request,response){
+					if(state === "first"){
+						$(e).autocomplete("close");				
 					}
 					
-				}).trigger("input");;
-			})
-			
+					$.ajax({
+						url: "ReadAppService?service=" +$(e).val() + "&limit=15",
+						dataType: "json",
+						success: function (data) {
+							var MyArray = $.map(data.contentTable, function (item) {
+								return {
+									label: item.service,
+									value: item.service
+								};	
+							});
+
+							response($.ui.autocomplete.filter(MyArray, request.term));
+						}
+					})
+				})			
+
+				$.ajax({
+					url: "ReadAppService?service=" + $(e).val(),
+					dataType: "json",
+					success: function (data) {
+						var dataContent = data.contentTable
+						$(e).parent().find(".input-group-btn").remove();
+						if (dataContent != undefined) {
+							var editEntry = $('<span class="input-group-btn ' + $(e).val() + '"><button id="editEntry" onclick="openModalAppService(\'' + $(e).val() + '\',\'EDIT\'  ,\'TestCase\' );"\n\
+									class="buttonObject btn btn-default input-sm " \n\
+									title="' + doc.getDocLabel("page_applicationObject", "button_edit") + '" type="button">\n\
+							<span class="glyphicon glyphicon-pencil"></span></button></span>');                                   	 
+							$(e).parent().append(editEntry);
+						} else { 
+							var addEntry = '<span class="input-group-btn ' + $(e).val().replace(/[^\w\s]/gi, '') + '"><button id="editEntry" onclick="openModalAppService(\'' + $(e).val() + '\',\'ADD\'  ,\'TestCase\' );"\n\
+							class="buttonObject btn btn-default input-sm " \n\
+							title="' + doc.getDocLabel("page_applicationObject", "button_create") + '" type="button">\n\
+							<span class="glyphicon glyphicon-plus"></span></button></span>';
+							$(e).parent().append(addEntry);
+						}
+					}
+				});
+
+
+			} else if($(e).parent().parent().find("select").val() === "calculateProperty"){
+								
+				var data = loadGuiProperties()
+	
+				$( e ).autocomplete('option', 'source', function(request,response){
+					if(state === "first"){
+						$(e).autocomplete("close");				
+					}
+					var MyArray = $.map(data, function (item) {
+						return {
+							label: item.name,
+							value: item.name
+						};
+					});
+					response($.ui.autocomplete.filter(MyArray, request.term));
+				})
+
+				var viewEntry = $('<span class="input-group-btn ' + $(e).val() + '"><button id="editEntry" data-toggle="modal" data-target="#modalProperty" "\n\
+						class="buttonObject btn btn-default input-sm " \n\
+						title="' + doc.getDocLabel("page_applicationObject", "button_edit") + '" type="button">\n\
+				<span class="glyphicon glyphicon-eye-open"></span></button></span>');
+
+
+				try {
+					$(e).parent().find("." + $(e).parent().data("LastName")).remove();
+				} catch (e) {
+					$(e).parent().find(".input-group-btn").remove();
+				}
+
+				if(data[$(e).val()]){
+
+					viewEntry.find("button").on("click", function(){
+						let firstRow = $('<p style="text-align:center" > Type : '+ data[$(e).val()].type +'</p>');
+						let secondRow = $('<p style="text-align:center"> Value : '+ data[$(e).val()].value +'</p>');
+						$("#modalProperty").find("#firstRowProperty").find("p").remove();
+						$("#modalProperty").find("#secondRowProperty").find("p").remove();
+						$("#modalProperty").find("#firstRowProperty").append(firstRow);
+						$("#modalProperty").find("#secondRowProperty").append(secondRow);
+					});
+
+					$(e).parent().append(viewEntry);
+					$(e).parent().data("LastName", $(e).val());
+				}
+
+			}else{
+
+				var name = undefined;
+				var nameNotExist = undefined;
+				var objectNotExist = false;
+				var typeNotExist = undefined;
+				var doc = new Doc();
+				var checkObject = [];
+				var betweenPercent = $(e).val().match(new RegExp(/%[^%]*%/g));
+
+				if (betweenPercent != null && betweenPercent.length > 0) {
+					var i = betweenPercent.length - 1;
+					while (i >= 0) {
+						var findname = betweenPercent[i].match(/\.[^\.]*(\.|.$)/g);
+
+						if (betweenPercent[i].startsWith("%object.") && findname != null && findname.length > 0) {
+							name = findname[0];
+							name = name.slice(1, name.length - 1);
+
+							$(e).parent().parent().parent().parent().find("#ApplicationObjectImg").attr("src", "ReadApplicationObjectImage?application=" + tcInfo.application + "&object=" + name + "&time=" + new Date().getTime());
+
+							if (!objectIntoTagToUseExist(TagsToUse[1], name)) {
+
+								var addEntry = $('<span class="input-group-btn ' + name + '"><button id="editEntry" onclick="openModalApplicationObject(\'' + tcInfo.application + '\', \'' + name + '\',\'ADD\'  ,\'testCaseScript\' );"\n\
+										class="buttonObject btn btn-default input-sm " \n\
+										title="' + doc.getDocLabel("page_applicationObject", "button_create") + '" type="button">\n\
+								<span class="glyphicon glyphicon-plus"></span></button></span>');
+
+								objectNotExist = true;
+								nameNotExist = name;
+								typeNotExist = "applicationObject";
+
+								try {
+									$(e).parent().find("." + $(e).parent().data("LastName")).remove();
+								} catch (f) {
+									$(e).parent().find(".input-group-btn").remove();
+								}
+
+								$(e).parent().append(addEntry);
+								$(e).parent().data("LastName", name);
+
+							} else if (objectIntoTagToUseExist(TagsToUse[1], name)) {
+
+								var editEntry = '<span class="input-group-btn ' + name + '"><button id="editEntry" onclick="openModalApplicationObject(\'' + tcInfo.application + '\', \'' + name + '\',\'EDIT\'  ,\'testCaseScript\' );"\n\
+								class="buttonObject btn btn-default input-sm " \n\
+								title="' + doc.getDocLabel("page_applicationObject", "button_edit") + '" type="button">\n\
+								<span class="glyphicon glyphicon-pencil"></span></button></span>';
+
+								try {
+									$(e).parent().find("." + $(e).parent().data("LastName")).remove();
+								} catch (e) {
+									$(e).parent().find(".input-group-btn").remove();
+								}
+
+								$(e).parent().append(editEntry);
+								$(e).parent().data("LastName", name);
+
+							} 
+						} else if (betweenPercent[i].startsWith("%property.") && findname != null && findname.length > 0) {
+
+						}
+
+						i--;
+					}
+				}else{
+					$(e).parent().find(".input-group-btn").remove();
+				} 
+			}
+
+		})
 		
-	};
+		$("div.step-action .content div.fieldRow:nth-child(2) input").trigger('input',['first'])
+	}
+	
 })();
+
+
 
 function removeTestCaseClick(test, testCase) {
 	clearResponseMessageMainPage();
