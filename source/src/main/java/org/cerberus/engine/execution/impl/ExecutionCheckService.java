@@ -386,6 +386,12 @@ public class ExecutionCheckService implements IExecutionCheckService {
                         + tCExecution.getCountryEnvParam().getEnvironment() + " " + tCExecution.getCountryEnvParam().getMaintenanceStr() + tCExecution.getCountryEnvParam().getMaintenanceEnd() + exception.toString());
             }
             message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_ENVIRONMENT_UNDER_MAINTENANCE);
+            message.resolveDescription("START", tCExecution.getCountryEnvParam().getMaintenanceStr())
+                    .resolveDescription("END", tCExecution.getCountryEnvParam().getMaintenanceEnd())
+                    .resolveDescription("SYSTEM", tCExecution.getCountryEnvParam().getSystem())
+                    .resolveDescription("COUNTRY", tCExecution.getCountryEnvParam().getCountry())
+                    .resolveDescription("ENV", tCExecution.getCountryEnvParam().getEnvironment());
+
             return false;
         }
         return true;
