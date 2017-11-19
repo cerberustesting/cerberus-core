@@ -754,7 +754,7 @@ function appendBuildRevListOnTestCase(system, editData) {
 function appendTestCaseCountryList(testCase, isReadOnly) {
     $("#testCaseCountryTableBody tr").empty();
 
-    var selectCountry = getParameter("cerberus_testcase_defaultselectedcountry", getUser().defaultSystem, false);
+    var selectCountry = getParameter("cerberus_testcase_defaultselectedcountry", "", false);
     var selectCountryVal = "," + selectCountry.value + ",";
 
     var jqxhr = $.getJSON("FindInvariantByID", "idName=COUNTRY");

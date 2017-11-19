@@ -200,6 +200,7 @@ public class ReadParameter extends HttpServlet {
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
             for (Parameter param : (List<Parameter>) resp.getDataList()) {
+                param = parameterService.secureParameter(param);
                 jsonArray.put(convertParameterToJSONObject(param));
             }
         }
@@ -224,10 +225,12 @@ public class ReadParameter extends HttpServlet {
         Parameter p = null;
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
             p = (Parameter) answer.getItem();
-            JSONObject response = convertParameterToJSONObject(p);
+            JSONObject response = convertParameterToJSONObject(parameterService.secureParameter(p));
             object.put("contentTable", response);
         }
         object.put("hasPermissions", userHasPermissions);
+        object.put("isSecured", parameterService.isToSecureParameter(p));
+        object.put("isSystemManaged", parameterService.isSystemManaged(p));
         item.setItem(object);
         item.setResultMessage(answer.getResultMessage());
 

@@ -230,4 +230,24 @@ public interface IParameterService extends Observable<String, Parameter> {
      */
     boolean hasPermissionsDelete(Parameter parameter, HttpServletRequest request);
 
+    /**
+     *
+     * @param parameter
+     * @return
+     */
+    Parameter secureParameter(Parameter parameter);
+    
+    /**
+     *
+     * @param parameter
+     * @return
+     */
+    boolean isToSecureParameter(Parameter parameter);
+
+    /**
+     *
+     * @param parameter
+     * @return
+     */
+    boolean isSystemManaged(Parameter parameter);
 }

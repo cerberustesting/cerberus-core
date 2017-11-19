@@ -153,12 +153,32 @@ function feedParameterModal(param, system, modalId) {
 
         $("[name='systemField']").html(doc.getDocLabel("page_parameter", "system_field") + " (" + system + ")");
 
+        if (data.isSecured) {
+            var localMessage = new Message("WARNING", "This parameter contain secure data. Original data is hidden and its modification is mandatory before saving it.");
+            showMessage(localMessage, $('#editParameterModal'));
+        }
+
+        $("#cerberusValue").off("change");
         if (!(data["hasPermissions"])) { // If readonly, we only readonly all fields
             formEdit.find("#description").prop("readonly", "readonly");
             formEdit.find("#sort").prop("readonly", "readonly");
 
             $('#editParameterButton').attr('class', '');
             $('#editParameterButton').attr('hidden', 'hidden');
+        } else {
+            if (data.isSecured) {
+                $('#editParameterButton').attr('disabled', true);
+                $("#cerberusValue").change(function () {
+                    $('#editParameterButton').attr('disabled', false);
+                });
+            } else {
+                $('#editParameterButton').attr('disabled', false);
+            }
+        }
+        if (data.isSystemManaged) {
+            $("#systemValuePanel").show();
+        } else {
+            $("#systemValuePanel").hide();
         }
 
         formEdit.modal('show');

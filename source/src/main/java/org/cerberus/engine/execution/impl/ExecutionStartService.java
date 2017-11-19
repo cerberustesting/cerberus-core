@@ -343,17 +343,7 @@ public class ExecutionStartService implements IExecutionStartService {
             if (!tCExecution.getTimeout().isEmpty()) {
                 tCExecution.setCerberus_action_wait_default(Integer.valueOf(tCExecution.getTimeout()));
             } else {
-                AnswerItem timeoutParameter = parameterService.readWithSystem1ByKey("", "cerberus_action_wait_default", tCExecution.getApplicationObj().getSystem());
-                if (timeoutParameter != null && timeoutParameter.isCodeStringEquals(MessageEventEnum.DATA_OPERATION_OK.getCodeString())) {
-                    if (((Parameter) timeoutParameter.getItem()).getSystem1value().isEmpty()) {
-                        tCExecution.setCerberus_action_wait_default(Integer.valueOf(((Parameter) timeoutParameter.getItem()).getValue()));
-                    } else {
-                        tCExecution.setCerberus_action_wait_default(Integer.valueOf(((Parameter) timeoutParameter.getItem()).getSystem1value()));
-                    }
-                } else {
-                    LOG.warn("Parameter cerberus_action_wait_default not set in Parameter table, default value set to 90000 milliseconds. ");
-                    tCExecution.setCerberus_action_wait_default(90000);
-                }
+                tCExecution.setCerberus_action_wait_default(parameterService.getParameterIntegerByKey("cerberus_action_wait_default", tCExecution.getApplicationObj().getSystem(), 90000));
             }
         } catch (NumberFormatException ex) {
             LOG.warn("Parameter cerberus_action_wait_default must be an integer, default value set to 90000 milliseconds. " + ex.toString());
@@ -425,10 +415,10 @@ public class ExecutionStartService implements IExecutionStartService {
                     throw new CerberusException(ex.getMessageError());
                 }
                 LOG.debug("Server Started.");
-                
+
             }
         }
-        
+
         /**
          * Register RunID inside database.
          */
