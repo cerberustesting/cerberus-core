@@ -209,8 +209,8 @@ function generateTagReport(data, tag, rowId) {
     var tooltip = generateTooltip(data, statusOrder, tag);
     var len = statusOrder.length;
 
-    buildBar = '<div>' + generateTagLink(tag) + '<div class="pull-right" style="display: inline;">Total executions : ' + data.total + '</div>\n\
-                                                        </div><div class="progress" data-toggle="tooltip" data-html="true" title="' + tooltip + '">';
+    buildBar = '<div>' + generateTagLink(tag) + '</div><div class="xs-only" style="display: inline;">Total executions : ' + data.total + '</div>\n\
+                                                        <div class="progress" data-toggle="tooltip" data-html="true" title="' + tooltip + '">';
     for (var index = 0; index < len; index++) {
         var status = statusOrder[index];
 

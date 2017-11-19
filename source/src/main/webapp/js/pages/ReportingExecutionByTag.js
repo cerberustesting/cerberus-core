@@ -348,7 +348,7 @@ function loadReportList(data2, selectTag) {
                                             </table><div class="marginBottom20"></div>');
         }
 
-        var config = new TableConfigurationsClientSide("listTable", data2.tableContent, aoColumnsFunc(data2.tableColumns),  [2, 'asc']);
+        var config = new TableConfigurationsClientSide("listTable", data2.tableContent, aoColumnsFunc(data2.tableColumns), [2, 'asc']);
         customConfig(config);
 
         var table = createDataTableWithPermissions(config, undefined, "#tableArea", undefined, undefined, undefined, createShortDescRow);
@@ -872,7 +872,7 @@ function renderOptionsForExeList(selectTag) {
         contentToAdd += "<label>Select all/none :</label>";
         contentToAdd += "<label class='checkbox-inline'><input id='selectAllQueueFA' type='checkbox'></input>FA</label>";
         contentToAdd += "<label class='checkbox-inline'><input id='selectAllQueueKO' type='checkbox'></input>KO</label>";
-        contentToAdd += "<label class='checkbox-inline'><input id='selectAllQueueQU' type='checkbox'></input>QU</label>";
+        contentToAdd += "<label class='checkbox-inline'><input id='selectAllQueueQUERROR' type='checkbox'></input>QU (ERROR)</label>";
         contentToAdd += "<button id='submitExe' type='button' disabled='disabled' title='Submit again the selected executions.' class='btn btn-default'><span class='glyphicon glyphicon-play'></span> Submit Again</button>";
         contentToAdd += "<a href='TestCaseExecutionQueueList.jsp?search=" + selectTag + "'><button id='openqueue' type='button' class='btn btn-default'><span class='glyphicon glyphicon-list'></span> Open Queue</button></a>";
         contentToAdd += "</div>";
@@ -884,8 +884,8 @@ function renderOptionsForExeList(selectTag) {
         $('#selectAllQueueKO').click(function () {
             selectAllQueue("KO");
         });
-        $('#selectAllQueueQU').click(function () {
-            selectAllQueue("QU");
+        $('#selectAllQueueQUERROR').click(function () {
+            selectAllQueue("QUERROR");
         });
         $('#submitExe').click(massAction_copyQueue);
     }
@@ -985,8 +985,12 @@ function aoColumnsFunc(Columns) {
                     var tooltip = generateTooltip(data);
                     var cell = "";
                     cell += '<table class="table"><tr>';
+                    var state = data.ControlStatus;
+                    if (!isEmpty(data.QueueState)) {
+                        state += data.QueueState;
+                    }
                     if ((data.QueueID !== undefined) && (data.QueueID !== "0")) {
-                        cell += '<td><input id="selectLine" name="id" value=' + data.QueueID + ' onclick="refreshNbChecked()" data-select="id" data-line="select' + data.ControlStatus + '" data-id="' + data.QueueID + '" title="Select for Action" type="checkbox"></input></td>';
+                        cell += '<td><input id="selectLine" name="id" value=' + data.QueueID + ' onclick="refreshNbChecked()" data-select="id" data-line="select' + state + '" data-id="' + data.QueueID + '" title="Select for Action" type="checkbox"></input></td>';
                     }
                     if (data.ControlStatus === "QU") {
                         cell += '<td><div class="progress-bar progress-bar-queue status' + data.ControlStatus + '" ';
@@ -1067,9 +1071,9 @@ function customConfig(config) {
             });
         }
     };
-    
+
     config.bPaginate = true;
-    config.lengthMenu = [10, 25, 50, 100,500,1000,1500,2000];
+    config.lengthMenu = [10, 25, 50, 100, 500, 1000, 1500, 2000];
     config.lang.colVis = customColvisConfig;
     config.orderClasses = false;
     config.bDeferRender = true;

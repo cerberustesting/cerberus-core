@@ -538,12 +538,12 @@ function runCampaign() {
         paramSerialized += "&" + browserSettings;
     }
 
-    showLoader('#selectionPanel');
+    showLoader('#page-layout');
 
     var jqxhr = $.post("AddToExecutionQueueV001", paramSerialized, "json");
     $.when(jqxhr).then(function (data) {
         // unblock when remote call returns 
-        hideLoader('#selectionPanel');
+        hideLoader('#page-layout');
         if (getAlertType(data.messageType) === "success") {
             data.message = data.message + "<a href='ReportingExecutionByTag.jsp?Tag=" + data.tag + "'><button class='btn btn-default' id='goToTagReport'>Report by Tag</button></a>"
             showMessageMainPage(getAlertType(data.messageType), data.message, false, 60000)

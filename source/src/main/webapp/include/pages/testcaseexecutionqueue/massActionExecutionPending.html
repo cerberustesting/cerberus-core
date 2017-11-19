@@ -22,6 +22,8 @@
                         </div>
                         <ul id="tabsMassActions" class="nav nav-tabs" data-tabs="tabs">
                             <li class="active"><a data-toggle="tab" href="#tabsMass-1" id="massTab1Text" name="tabState">Set state</a></li>
+                            <li><a data-toggle="tab" href="#tabsMass-4" id="massTab4Text" name="tabStateDup">Duplicate Execution</a></li>
+                            <li><a data-toggle="tab" href="#tabsMass-3" id="massTab3Text" name="tabStateForce">Force State</a></li>
                             <li><a data-toggle="tab" href="#tabsMass-2" id="massTab2Text" name="tabChange">Modify</a></li>
                         </ul>
                         <div class="tab-content">
@@ -33,14 +35,22 @@
                                     <div class="form-group col-sm-4">
                                         <button type="button" id="massActionExeQButtonCancel" class="btn btn-primary" name="buttonStateCancel">move to CANCELLED</button>
                                     </div>
+                                </div>
+                            </div>
+                            <div class="center marginTop25 tab-pane fade in" id="tabsMass-4">
+                                <div class="row">
+                                    <div class="form-group col-sm-4">
+                                        <button type="button" id="massActionExeQButtonCopy" class="btn btn-primary" name="buttonStateCopy">Copy to QUEUED</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="center marginTop25 tab-pane fade in" id="tabsMass-3">
+                                <div class="row">
                                     <div class="form-group col-sm-4">
                                         <button type="button" id="massActionExeQButtonErrorForce" class="btn btn-primary" name="buttonStateErrorForce">Force to ERROR</button>
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="form-group col-sm-4">
-                                        <button type="button" id="massActionExeQButtonCopy" class="btn btn-primary" name="buttonStateCopy">Copy to QUEUED</button>
-                                    </div>
                                     <div class="form-group col-sm-4">
                                         <button type="button" id="massActionExeQButtonCancelForce" class="btn btn-primary" name="buttonStateCancelForce">Force to CANCELLED</button>
                                     </div>
