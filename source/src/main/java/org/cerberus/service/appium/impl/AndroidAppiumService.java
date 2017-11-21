@@ -19,8 +19,10 @@
  */
 package org.cerberus.service.appium.impl;
 
+import io.appium.java_client.TouchAction;
 import io.appium.java_client.android.AndroidKeyCode;
 import io.appium.java_client.android.AndroidDriver;
+import java.time.Duration;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.cerberus.engine.entity.MessageEvent;
@@ -29,6 +31,10 @@ import org.cerberus.enums.MessageEventEnum;
 import org.springframework.stereotype.Service;
 
 import java.util.regex.Pattern;
+import org.cerberus.crud.entity.Parameter;
+import org.cerberus.crud.service.impl.ParameterService;
+import org.cerberus.engine.entity.SwipeAction;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Specific Android implementation of the {@link AppiumService}
@@ -39,9 +45,27 @@ import java.util.regex.Pattern;
 public class AndroidAppiumService extends AppiumService {
 
     /**
-     * The associated {@link Logger} to this class
+     * Associated {@link Logger} to this class
      */
-    private static final Logger LOGGER = LogManager.getLogger(AndroidAppiumService.class);
+    private static final Logger LOG = LogManager.getLogger(IOSAppiumService.class);
+    
+    @Autowired
+    private ParameterService parameters;
+    
+    @Autowired
+    private SwipeAction swipeAction;
+    
+    /**
+     * The Appium swipe duration parameter which is got thanks to the
+     * {@link ParameterService}
+     */
+    private static final String APPIUM_SWIPE_DURATION_PARAMETER = "appium_swipeDuration";
+    
+    /**
+     * The default Appium swipe duration if no
+     * {@link AppiumService#APPIUM_SWIPE_DURATION_PARAMETER} has been defined
+     */
+    private static final int DEFAULT_APPIUM_SWIPE_DURATION = 2000;
 
     /**
      * The {@link Pattern} related error when keyboard is absent
@@ -63,7 +87,7 @@ public class AndroidAppiumService extends AppiumService {
             ((AndroidDriver) session.getAppiumDriver()).pressKeyCode(keyToPress.getCode());
             return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_KEYPRESS_NO_ELEMENT).resolveDescription("KEY", keyName);
         } catch (Exception e) {
-            LOGGER.warn("Unable to key press due to " + e.getMessage(), e);
+            LOG.warn("Unable to key press due to " + e.getMessage(), e);
             return new MessageEvent(MessageEventEnum.ACTION_FAILED_KEYPRESS_OTHER)
                     .resolveDescription("KEY", keyName)
                     .resolveDescription("REASON", e.getMessage());
@@ -83,7 +107,7 @@ public class AndroidAppiumService extends AppiumService {
             if (IS_KEYBOARD_ABSENT_ERROR_PATTERN.matcher(e.getMessage()).find()) {
                 return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_HIDEKEYBOARD_ALREADYHIDDEN);
             }
-            LOGGER.warn("Unable to hide keyboard due to " + e.getMessage(), e);
+            LOG.warn("Unable to hide keyboard due to " + e.getMessage(), e);
             return new MessageEvent(MessageEventEnum.ACTION_FAILED_HIDEKEYBOARD);
         }
     }
@@ -109,6 +133,33 @@ public class AndroidAppiumService extends AppiumService {
             return code;
         }
 
+    }
+    
+    @Override
+    public MessageEvent swipe(Session session, SwipeAction action) {
+        try {
+            SwipeAction.Direction direction = swipeAction.getDirectionForSwipe(session, action);
+
+            // Get the parametrized swipe duration
+            Parameter duration = parameters.findParameterByKey(APPIUM_SWIPE_DURATION_PARAMETER, "");
+
+            // Do the swipe thanks to the Appium driver
+            TouchAction dragNDrop
+                    = new TouchAction(session.getAppiumDriver()).longPress(direction.getX1(), direction.getY1(), Duration.ofMillis(duration == null ? DEFAULT_APPIUM_SWIPE_DURATION : Integer.parseInt(duration.getValue())))
+                            .moveTo(direction.getX2(), direction.getY2()).release();
+            dragNDrop.perform();
+                       
+            return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SWIPE).resolveDescription("DIRECTION", action.getActionType().name());
+        } catch (IllegalArgumentException e) {
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED_SWIPE)
+                            .resolveDescription("DIRECTION", action.getActionType().name())
+                            .resolveDescription("REASON", "Unknown direction");
+        } catch (Exception e) {
+            LOG.warn("Unable to swipe screen due to " + e.getMessage(), e);
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED_SWIPE)
+                    .resolveDescription("DIRECTION", action.getActionType().name())
+                    .resolveDescription("REASON", e.getMessage());
+        }
     }
 
 }

@@ -48,6 +48,10 @@ import java.time.Duration;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
+import org.cerberus.engine.entity.MessageGeneral;
+import org.cerberus.engine.entity.SwipeAction.Direction;
+import org.cerberus.enums.MessageGeneralEnum;
+import org.cerberus.exception.CerberusException;
 
 /**
  * @author bcivel
@@ -235,79 +239,5 @@ public abstract class AppiumService implements IAppiumService {
         }
         LOG.debug("Finding Element : " + identifier.getIdentifier() + "=" + identifier.getLocator());
         return driver.findElement(locator);
-    }
-
-    @Override
-    public MessageEvent swipe(Session session, SwipeAction action) {
-        try {
-            // Compute the swipe direction according to the given swipe action
-            Dimension window = session.getAppiumDriver().manage().window().getSize();
-            SwipeAction.Direction direction;
-            switch (action.getActionType()) {
-                case UP:
-                    direction = SwipeAction.Direction.fromLine(
-                            new Line2D.Double(
-                                    window.getWidth() / 2,
-                                    2 * window.getHeight() / 3,
-                                    window.getWidth() / 2,
-                                    window.getHeight() / 3
-                            )
-                    );
-                    break;
-                case DOWN:
-                    direction = SwipeAction.Direction.fromLine(
-                            new Line2D.Double(
-                                    window.getWidth() / 2,
-                                    window.getHeight() / 3,
-                                    window.getWidth() / 2,
-                                    2 * window.getHeight() / 3
-                            )
-                    );
-                    break;
-                case LEFT:
-                    direction = SwipeAction.Direction.fromLine(
-                            new Line2D.Double(
-                                    2 * window.getWidth() / 3,
-                                    window.getHeight() / 2,
-                                    window.getWidth() / 3,
-                                    window.getHeight() / 2
-                            )
-                    );
-                    break;
-                case RIGHT:
-                    direction = SwipeAction.Direction.fromLine(
-                            new Line2D.Double(
-                                    window.getWidth() / 3,
-                                    window.getHeight() / 2,
-                                    2 * window.getWidth() / 3,
-                                    window.getHeight() / 2
-                            )
-                    );
-                    break;
-                case CUSTOM:
-                    direction = action.getCustomDirection();
-                    break;
-                default:
-                    return new MessageEvent(MessageEventEnum.ACTION_FAILED_SWIPE)
-                            .resolveDescription("DIRECTION", action.getActionType().name())
-                            .resolveDescription("REASON", "Unknown direction");
-            }
-
-            // Get the parametrized swipe duration
-            Parameter duration = parameters.findParameterByKey(APPIUM_SWIPE_DURATION_PARAMETER, "");
-
-            // Do the swipe thanks to the Appium driver
-            TouchAction dragNDrop
-                    = new TouchAction(session.getAppiumDriver()).longPress(direction.getX1(), direction.getY1(), Duration.ofMillis(duration == null ? DEFAULT_APPIUM_SWIPE_DURATION : Integer.parseInt(duration.getValue())))
-                            .moveTo(direction.getX2(), direction.getY2()).release();
-            dragNDrop.perform();
-
-            return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SWIPE).resolveDescription("DIRECTION", action.getActionType().name());
-        } catch (Exception e) {
-            LOG.warn("Unable to swipe screen due to " + e.getMessage(), e);
-            return new MessageEvent(MessageEventEnum.ACTION_FAILED_SWIPE)
-                    .resolveDescription("DIRECTION", action.getActionType().name())
-                    .resolveDescription("REASON", e.getMessage());
-        }
     }
 }
