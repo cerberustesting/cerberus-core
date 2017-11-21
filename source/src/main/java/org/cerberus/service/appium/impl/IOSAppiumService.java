@@ -19,12 +19,20 @@
  */
 package org.cerberus.service.appium.impl;
 
+import io.appium.java_client.TouchAction;
+import io.appium.java_client.ios.IOSTouchAction;
+import java.time.Duration;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.cerberus.crud.entity.Parameter;
+import org.cerberus.crud.service.impl.ParameterService;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.Session;
+import org.cerberus.engine.entity.SwipeAction;
+import org.cerberus.engine.entity.SwipeAction.Direction;
 import org.cerberus.enums.MessageEventEnum;
 import org.openqa.selenium.Keys;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -38,7 +46,25 @@ public class IOSAppiumService extends AppiumService {
     /**
      * Associated {@link Logger} to this class
      */
-    private static final Logger LOGGER = LogManager.getLogger(IOSAppiumService.class);
+    private static final Logger LOG = LogManager.getLogger(IOSAppiumService.class);
+    
+    @Autowired
+    private ParameterService parameters;
+    
+    @Autowired
+    private SwipeAction swipeAction;
+    
+    /**
+     * The Appium swipe duration parameter which is got thanks to the
+     * {@link ParameterService}
+     */
+    private static final String APPIUM_SWIPE_DURATION_PARAMETER = "appium_swipeDuration";
+    
+    /**
+     * The default Appium swipe duration if no
+     * {@link AppiumService#APPIUM_SWIPE_DURATION_PARAMETER} has been defined
+     */
+    private static final int DEFAULT_APPIUM_SWIPE_DURATION = 2000;
 
     /**
      * Because of https://github.com/appium/java-client/issues/402
@@ -66,7 +92,7 @@ public class IOSAppiumService extends AppiumService {
             session.getAppiumDriver().getKeyboard().pressKey(keyToPress.getCode());
             return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_KEYPRESS_NO_ELEMENT).resolveDescription("KEY", keyName);
         } catch (Exception e) {
-            LOGGER.warn("Unable to key press due to " + e.getMessage());
+            LOG.warn("Unable to key press due to " + e.getMessage());
             return new MessageEvent(MessageEventEnum.ACTION_FAILED_KEYPRESS_OTHER)
                     .resolveDescription("KEY", keyName)
                     .resolveDescription("REASON", e.getMessage());
@@ -113,4 +139,33 @@ public class IOSAppiumService extends AppiumService {
 
     }
 
-}
+    @Override
+    public MessageEvent swipe(Session session, SwipeAction action) {
+        try {
+            Direction direction = swipeAction.getDirectionForSwipe(session, action);
+            
+            // Get the parametrized swipe duration
+            Parameter duration = parameters.findParameterByKey(APPIUM_SWIPE_DURATION_PARAMETER, "");
+
+            // Do the swipe thanks to the Appium driver
+            TouchAction dragNDrop
+                    = new IOSTouchAction(session.getAppiumDriver()).longPress(direction.getX1(), direction.getY1(), Duration.ofMillis(duration == null ? DEFAULT_APPIUM_SWIPE_DURATION : Integer.parseInt(duration.getValue())))
+                            .moveTo(direction.getX2(), direction.getY2()).release();
+            dragNDrop.perform();
+                       
+            return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SWIPE).resolveDescription("DIRECTION", action.getActionType().name());
+        } catch (IllegalArgumentException e) {
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED_SWIPE)
+                            .resolveDescription("DIRECTION", action.getActionType().name())
+                            .resolveDescription("REASON", "Unknown direction");
+        } catch (Exception e) {
+            LOG.warn("Unable to swipe screen due to " + e.getMessage(), e);
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED_SWIPE)
+                    .resolveDescription("DIRECTION", action.getActionType().name())
+                    .resolveDescription("REASON", e.getMessage());
+        }
+    }
+        
+    }
+    
+

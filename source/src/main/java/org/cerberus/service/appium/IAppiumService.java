@@ -41,5 +41,5 @@ public interface IAppiumService {
     MessageEvent hideKeyboard(Session session);
 
     MessageEvent swipe(Session session, SwipeAction swipeAction);
-
+    
 }

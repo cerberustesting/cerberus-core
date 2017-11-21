@@ -768,3 +768,8 @@ a.list-group-item.selected, button.list-group-item.selected {
 .modal .introjs-showElement { z-index: 999999999 !important; }
 
 /* end interactive tutoriel with introjs adjustement*/
+
+.popover-content .editable-checklist {
+    width: 100%;
+    padding-right: 20%;
+}
