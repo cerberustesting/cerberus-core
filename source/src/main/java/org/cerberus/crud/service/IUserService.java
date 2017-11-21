@@ -78,6 +78,13 @@ public interface IUserService {
 
     /**
      * @param user
+     * @param newPassword
+     * @return
+     */
+    AnswerItem<User> updateUserPasswordAdmin(User user, String newPassword);
+
+    /**
+     * @param user
      * @param password
      * @return
      */

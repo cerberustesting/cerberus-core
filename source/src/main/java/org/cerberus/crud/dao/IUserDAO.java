@@ -55,7 +55,6 @@ public interface IUserDAO {
      *
      * @param user
      * @return the inserted user
-     * @throws CerberusException if we did not manage to insert the user.
      */
     public boolean insertUser(User user);
 
@@ -63,7 +62,6 @@ public interface IUserDAO {
      * delete user from the database.
      *
      * @param user
-     * @throws CerberusException if user could not be removed.
      */
     public boolean deleteUser(User user);
 
@@ -72,7 +70,6 @@ public interface IUserDAO {
      *
      * @param user
      * @return the updated user
-     * @throws CerberusException if the user could not be updated.
      */
     public boolean updateUser(User user);
 
@@ -81,7 +78,6 @@ public interface IUserDAO {
      * @param password as the new value of the password.
      * @param requestNewPassword boolean (Y/N) . Y when Cerberus will request to change password
      * @return the user updated with the new password.
-     * @throws CerberusException if the password cannot be updated.
      */
     public AnswerItem<User> updateUserPassword(User user, String password, String requestNewPassword);
     

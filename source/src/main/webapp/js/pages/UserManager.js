@@ -20,7 +20,7 @@
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
         initPage();
-        
+
         $('[data-toggle="popover"]').popover({
             'placement': 'auto',
             'container': 'body'}
@@ -33,10 +33,12 @@ function initPage() {
 
     // handle the click for specific action buttons
     $("#editUserButton").click(editEntryModalSaveHandler);
+    $("#editUserPasswordButton").click(editEntryPassModalSaveHandler);
     $("#addUserButton").click(addEntryModalSaveHandler);
 
     //clear the modals fields when closed
     $('#editUserModal').on('hidden.bs.modal', editEntryModalCloseHandler);
+    $('#editUserPasswordModal').on('hidden.bs.modal', editEntryPassModalCloseHandler);
     $('#addUserModal').on('hidden.bs.modal', addEntryModalCloseHandler);
 
     $('#addcheckall').click(function (e) {
@@ -118,10 +120,9 @@ function editEntryClick(param) {
         displayInvariantList("team", "TEAM", false, "", "", false);
         displayInvariantList("groups", "USERGROUP", false, undefined, undefined, false);
 
-        formEdit.find("#defaultSystem option[value='" + obj["defaultSystem"] + "']").attr('selected', true);
-        formEdit.find("#request option").attr('selected', false);
-        formEdit.find("#request option[value='" + obj["request"] + "']").attr('selected', true);
         formEdit.find("#team option[value='" + obj["team"] + "']").attr('selected', true);
+        formEdit.find("#defaultSystem option[value='" + obj["defaultSystem"] + "']").attr('selected', true);
+        formEdit.find("#request").val(obj["request"]);
 
         if (!(data["hasPermissions"])) { // If readonly, we only readonly all fields
             formEdit.find("#login").prop("readonly", "readonly");
@@ -177,14 +178,6 @@ function editEntryClick(param) {
             clickGroup($(this).val(), $(this).prop('selected'), formEdit);
         });
 
-        formEdit.find("#defaultSystem").select2();
-        formEdit.find("#team").select2({
-            allowClear: true,
-            placeholder: "Select a Team (Optionnal)"
-        });
-        formEdit.find("#request").select2({
-            minimumResultsForSearch: -1
-        });
     });
 
     formEdit.modal('show');
@@ -288,7 +281,7 @@ function editEntryModalSaveHandler() {
     var formEdit = $('#editUserModal #editUserModalForm');
 
     var sa = formEdit.serializeArray();
-    var data = {}
+    var data = {};
     for (var i in sa) {
         data[sa[i].name] = sa[i].value;
     }
@@ -320,8 +313,8 @@ function editEntryModalSaveHandler() {
         method: "POST",
         data: data,
         success: function (data) {
-        	
-            data = JSON.parse(data);   
+
+            data = JSON.parse(data);
             console.log(data.messageType);
             if (getAlertType(data.messageType) === 'success') {
                 $('#editUserModal').modal('hide');
@@ -331,7 +324,7 @@ function editEntryModalSaveHandler() {
             } else {
                 showMessage(data, $('#editUserModal'));
             }
-            
+
             hideLoaderInModal('#editUserModal');
         },
         error: showUnexpectedError
@@ -346,6 +339,63 @@ function editEntryModalCloseHandler() {
     $(this).find('div.has-error').removeClass("has-error");
     // clear the response messages of the modal
     clearResponseMessage($('#editUserModal'));
+}
+
+function editEntryPassModalSaveHandler() {
+    clearResponseMessage($('#editUserPasswordModal'));
+    var formEdit = $('#editUserPasswordModal #editUserPasswordModalForm');
+
+    var sa = formEdit.serializeArray();
+    var data = {};
+    for (var i in sa) {
+        data[sa[i].name] = sa[i].value;
+    }
+    // Get the header data from the form.
+    //var data = convertSerialToJSONObject(formEdit.serialize());
+
+    showLoaderInModal('#editUserPasswordModal');
+    $.ajax({
+        url: "ChangeUserPasswordAdmin",
+        async: true,
+        method: "POST",
+        data: data,
+        success: function (data) {
+
+//            data = JSON.parse(data);
+            console.log(data.messageType);
+            if (getAlertType(data.messageType) === 'success') {
+                $('#editUserPasswordModal').modal('hide');
+                showMessage(data);
+            } else {
+                showMessage(data, $('#editUserPasswordModal'));
+            }
+
+            hideLoaderInModal('#editUserPasswordModal');
+        },
+        error: showUnexpectedError
+    });
+
+}
+
+
+function editEntryPassClick(param) {
+    clearResponseMessageMainPage();
+
+    $("#editUserPasswordModal #id").val(param);
+
+    var formEdit = $('#editUserPasswordModal');
+    formEdit.find("#login").prop("value", param);
+
+    formEdit.modal('show');
+}
+
+function editEntryPassModalCloseHandler() {
+    // reset form values
+    $('#editUserPasswordModal #editUserPasswordModalForm')[0].reset();
+    // remove all errors on the form fields
+    $(this).find('div.has-error').removeClass("has-error");
+    // clear the response messages of the modal
+    clearResponseMessage($('#editUserPasswordModal'));
 }
 
 function addEntryClick() {
@@ -383,15 +433,6 @@ function addEntryClick() {
         $(this).prop('selected', !$(this).prop('selected'));
         clickGroup($(this).val(), $(this).prop('selected'), $("#addUserModal"));
         return false;
-    });
-
-    $("#addUserModal").find("#defaultSystem").select2();
-    $("#addUserModal").find("#team").select2({
-        allowClear: true,
-        placeholder: "Select a Team (Optionnal)"
-    });
-    $("#addUserModal").find("#request").select2({
-        minimumResultsForSearch: -1
     });
 
     $('#addUserModal').modal('show');
@@ -498,8 +539,12 @@ function aoColumnsFunc(tableId) {
                                         class="removeUser btn btn-default btn-xs margin-right5" \n\
                                         name="removeUser" title="' + doc.getDocLabel("page_user", "button_remove") + '" type="button">\n\
                                         <span class="glyphicon glyphicon-trash"></span></button>';
+                var passwordUser = '<button id="editPassUser" onclick="editEntryPassClick(\'' + obj["login"] + '\');"\n\
+                                        class="editUserPass btn btn-default btn-xs margin-right5" \n\
+                                        name="editUserPass" title="' + doc.getDocLabel("page_user", "button_edit") + '" type="button">\n\
+                                        <span class="glyphicon glyphicon-lock"></span></button>';
 
-                return '<div class="center btn-group width150">' + editUser + removeUser + '</div>';
+                return '<div class="center btn-group width150">' + editUser + removeUser + passwordUser + '</div>';
 
             },
             "width": "100px"

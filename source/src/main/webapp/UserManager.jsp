@@ -35,6 +35,7 @@
     <%@ include file="include/utils/modal-confirmation.html"%>
     <%@ include file="include/pages/usermanager/editUser.html"%>
     <%@ include file="include/pages/usermanager/addUser.html"%>
+    <%@ include file="include/pages/usermanager/changePassword.html"%>
 
     <h1 class="page-title-line" id="title">User Manager</h1>
     <div class="panel panel-default">
