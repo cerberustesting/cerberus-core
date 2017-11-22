@@ -51,8 +51,6 @@ public class IOSAppiumService extends AppiumService {
     @Autowired
     private ParameterService parameters;
     
-    @Autowired
-    private SwipeAction swipeAction;
     
     /**
      * The Appium swipe duration parameter which is got thanks to the
@@ -142,7 +140,7 @@ public class IOSAppiumService extends AppiumService {
     @Override
     public MessageEvent swipe(Session session, SwipeAction action) {
         try {
-            Direction direction = swipeAction.getDirectionForSwipe(session, action);
+            Direction direction = this.getDirectionForSwipe(session, action);
             
             // Get the parametrized swipe duration
             Parameter duration = parameters.findParameterByKey(APPIUM_SWIPE_DURATION_PARAMETER, "");

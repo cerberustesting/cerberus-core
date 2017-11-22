@@ -25,7 +25,6 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.cerberus.engine.entity.Identifier;
 import org.cerberus.engine.entity.MessageEvent;
-import org.cerberus.crud.entity.Parameter;
 import org.cerberus.engine.entity.Session;
 import org.cerberus.engine.entity.SwipeAction;
 import org.cerberus.crud.service.impl.ParameterService;
@@ -44,14 +43,10 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.geom.Line2D;
-import java.time.Duration;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
-import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.engine.entity.SwipeAction.Direction;
-import org.cerberus.enums.MessageGeneralEnum;
-import org.cerberus.exception.CerberusException;
 
 /**
  * @author bcivel
@@ -239,5 +234,66 @@ public abstract class AppiumService implements IAppiumService {
         }
         LOG.debug("Finding Element : " + identifier.getIdentifier() + "=" + identifier.getLocator());
         return driver.findElement(locator);
+    }
+    
+    /**
+     * 
+     * @param session
+     * @param action
+     * @return
+     * @throws IllegalArgumentException 
+     */
+    @Override
+    public Direction getDirectionForSwipe(Session session, SwipeAction action) throws IllegalArgumentException {
+        Dimension window = session.getAppiumDriver().manage().window().getSize();
+        SwipeAction.Direction direction;
+        switch (action.getActionType()) {
+            case UP:
+                direction = SwipeAction.Direction.fromLine(
+                        new Line2D.Double(
+                                window.getWidth() / 2,
+                                2 * window.getHeight() / 3,
+                                window.getWidth() / 2,
+                                window.getHeight() / 3
+                        )
+                );
+                break;
+            case DOWN:
+                direction = SwipeAction.Direction.fromLine(
+                        new Line2D.Double(
+                                window.getWidth() / 2,
+                                window.getHeight() / 3,
+                                window.getWidth() / 2,
+                                2 * window.getHeight() / 3
+                        )
+                );
+                break;
+            case LEFT:
+                direction = SwipeAction.Direction.fromLine(
+                        new Line2D.Double(
+                                2 * window.getWidth() / 3,
+                                window.getHeight() / 2,
+                                window.getWidth() / 3,
+                                window.getHeight() / 2
+                        )
+                );
+                break;
+            case RIGHT:
+                direction = SwipeAction.Direction.fromLine(
+                        new Line2D.Double(
+                                window.getWidth() / 3,
+                                window.getHeight() / 2,
+                                2 * window.getWidth() / 3,
+                                window.getHeight() / 2
+                        )
+                );
+                break;
+            case CUSTOM:
+                direction = action.getCustomDirection();
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown direction");
+        }
+        return direction;
     }
 }
