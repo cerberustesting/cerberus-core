@@ -141,6 +141,10 @@
         <servlet-class>org.cerberus.servlet.crud.usermanagement.ChangeUserPassword</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>ChangeUserPasswordAdmin</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.usermanagement.ChangeUserPasswordAdmin</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>UpdateTestCaseDetail</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.test.UpdateTestCaseDetail</servlet-class>
     </servlet>
@@ -903,6 +907,10 @@
     <servlet-mapping>
         <servlet-name>ChangeUserPassword</servlet-name>
         <url-pattern>/ChangeUserPassword</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ChangeUserPasswordAdmin</servlet-name>
+        <url-pattern>/ChangeUserPasswordAdmin</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>CreateTest</servlet-name>
@@ -2018,6 +2026,7 @@
             <url-pattern>/DeleteInvariant</url-pattern>
             <url-pattern>/DeleteApplication</url-pattern>
             <url-pattern>/ReadCerberusDetailInformation</url-pattern>
+            <url-pattern>/ChangeUserPasswordAdmin</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>Administrator</description>

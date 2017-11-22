@@ -143,6 +143,15 @@ public class UserService implements IUserService {
     }
 
     @Override
+    public AnswerItem<User> updateUserPasswordAdmin(User user, String newPassword) {
+        AnswerItem answUpdate = new AnswerItem();
+        MessageEvent msg;
+        //verifications succeed, update password
+        answUpdate = userDAO.updateUserPassword(user, newPassword, user.getRequest());
+        return answUpdate;
+    }
+
+    @Override
     public boolean verifyPassword(User user, String password) {
         return userDAO.verifyPassword(user, password);
     }
