@@ -855,7 +855,6 @@ function selectAllQueue(status) {
 function refreshNbChecked() {
     // Count total nb of result in order to display it and activate or not the button.
     var nbchecked = $("[data-select='id']:checked").size();
-    console.info(nbchecked);
     if (nbchecked > 0) {
         $('#submitExe').prop("disabled", false);
         $('#submitExe').html("<span class='glyphicon glyphicon-play'></span> Submit Again (" + nbchecked + ")");
@@ -870,22 +869,26 @@ function renderOptionsForExeList(selectTag) {
         var doc = new Doc();
         var contentToAdd = "<div class='marginBottom10'>";
         contentToAdd += "<label>Select all/none :</label>";
+        contentToAdd += "<label class='checkbox-inline'><input id='selectAllQueueQUERROR' type='checkbox'></input>QU (ERROR)</label>";
         contentToAdd += "<label class='checkbox-inline'><input id='selectAllQueueFA' type='checkbox'></input>FA</label>";
         contentToAdd += "<label class='checkbox-inline'><input id='selectAllQueueKO' type='checkbox'></input>KO</label>";
-        contentToAdd += "<label class='checkbox-inline'><input id='selectAllQueueQUERROR' type='checkbox'></input>QU (ERROR)</label>";
+        contentToAdd += "<label class='checkbox-inline'><input id='selectAllQueueNA' type='checkbox'></input>NA</label>";
         contentToAdd += "<button id='submitExe' type='button' disabled='disabled' title='Submit again the selected executions.' class='btn btn-default'><span class='glyphicon glyphicon-play'></span> Submit Again</button>";
         contentToAdd += "<a href='TestCaseExecutionQueueList.jsp?search=" + selectTag + "'><button id='openqueue' type='button' class='btn btn-default'><span class='glyphicon glyphicon-list'></span> Open Queue</button></a>";
         contentToAdd += "</div>";
 
         $("#listTable_wrapper div#listTable_filter").before(contentToAdd);
+        $('#selectAllQueueQUERROR').click(function () {
+            selectAllQueue("QUERROR");
+        });
         $('#selectAllQueueFA').click(function () {
             selectAllQueue("FA");
         });
         $('#selectAllQueueKO').click(function () {
             selectAllQueue("KO");
         });
-        $('#selectAllQueueQUERROR').click(function () {
-            selectAllQueue("QUERROR");
+        $('#selectAllQueueNA').click(function () {
+            selectAllQueue("NA");
         });
         $('#submitExe').click(massAction_copyQueue);
     }
