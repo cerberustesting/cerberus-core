@@ -105,14 +105,22 @@ public interface ITestCaseExecutionQueueService {
      * @param individualSearch
      * @return
      */
-    public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
+    AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
+
+    /**
+     *
+     * @param id
+     * @param prio
+     * @return
+     */
+    int getNbEntryToGo(long id, int prio);
 
     /**
      *
      * @param tag
      * @return
      */
-    public AnswerList readDistinctEnvCountryBrowserByTag(String tag);
+    AnswerList readDistinctEnvCountryBrowserByTag(String tag);
 
     /**
      *
@@ -181,7 +189,7 @@ public interface ITestCaseExecutionQueueService {
      * @param object the {@link AppService} to Create
      * @return {@link AnswerItem}
      */
-    Answer create(TestCaseExecutionQueue object);
+    AnswerItem<TestCaseExecutionQueue> create(TestCaseExecutionQueue object);
 
     /**
      * @param object the {@link AppService} to Update

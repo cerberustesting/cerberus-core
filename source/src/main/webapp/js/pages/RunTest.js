@@ -545,10 +545,10 @@ function runCampaign() {
         // unblock when remote call returns 
         hideLoader('#page-layout');
         if (getAlertType(data.messageType) === "success") {
-            data.message = data.message + "<a href='ReportingExecutionByTag.jsp?Tag=" + data.tag + "'><button class='btn btn-default' id='goToTagReport'>Report by Tag</button></a>"
-            showMessageMainPage(getAlertType(data.messageType), data.message, false, 60000)
+            data.message = data.message + "<a href='ReportingExecutionByTag.jsp?Tag=" + data.tag + "'><button class='btn btn-primary' id='goToTagReport'>Report by Tag</button></a>"
+            showMessageMainPage(getAlertType(data.messageType), data.message, false, 60000);
         } else {
-            showMessageMainPage(getAlertType(data.messageType), data.message, false)
+            showMessageMainPage(getAlertType(data.messageType), data.message, false);
         }
     }).fail(handleErrorAjaxAfterTimeout);
 

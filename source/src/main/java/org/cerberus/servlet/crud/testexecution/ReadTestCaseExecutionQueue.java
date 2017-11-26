@@ -197,6 +197,9 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
             //if the service returns an OK message then we can get the item and convert it to JSONformat
             TestCaseExecutionQueue lib = (TestCaseExecutionQueue) answer.getItem();
             JSONObject response = convertTestCaseExecutionInQueueToJSONObject(lib);
+            int nb = 0;
+            nb = queueService.getNbEntryToGo(lib.getId(), lib.getPriority());
+            response.put("nbEntryInQueueToGo", nb);
             object.put("contentTable", response);
         }
 

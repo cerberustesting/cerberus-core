@@ -41,6 +41,7 @@ import org.cerberus.exception.FactoryCreationException;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerUtil;
 import org.cerberus.util.servlet.ServletUtil;
 import org.json.JSONException;
@@ -71,8 +72,10 @@ public class CreateTestCaseExecutionQueue extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, CerberusException, JSONException {
         JSONObject jsonResponse = new JSONObject();
+        JSONObject executionQueue = new JSONObject();
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         Answer ans = new Answer();
+        AnswerItem ansItem = new AnswerItem();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         ans.setResultMessage(msg);
@@ -203,12 +206,12 @@ public class CreateTestCaseExecutionQueue extends HttpServlet {
                             executionQueueData.setDebugFlag("N");
                             executionQueueData.setPriority(TestCaseExecutionQueue.PRIORITY_DEFAULT);
                         }
-                        ans = executionQueueService.create(executionQueueData);
+                        ansItem = executionQueueService.create(executionQueueData);
 
-                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ansItem);
 
                         if (myIds.length <= 1) {
-                            if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                            if (ansItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                                 /**
                                  * Update was successfull. Adding Log entry.
                                  */
@@ -236,6 +239,11 @@ public class CreateTestCaseExecutionQueue extends HttpServlet {
          */
         jsonResponse.put("messageType", finalAnswer.getResultMessage().getMessage().getCodeString());
         jsonResponse.put("message", finalAnswer.getResultMessage().getDescription());
+        if (ansItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            TestCaseExecutionQueue addedExecution = (TestCaseExecutionQueue) ansItem.getItem();
+            executionQueue.put("id", addedExecution.getId());
+            jsonResponse.put("testCaseExecutionQueue", executionQueue);
+        }
 
         response.getWriter().print(jsonResponse);
         response.getWriter().flush();

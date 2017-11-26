@@ -201,7 +201,9 @@ function confirmExecutionQueueModalHandler(mode, queueAction, saveAction) {
                 oTable.fnDraw(true);
                 $('#editExecutionQueueModal').data("Saved", true);
                 $('#editExecutionQueueModal').modal('hide');
-                showMessage(data);
+                data.message += "<a href='TestCaseExecution.jsp?executionQueueId=" + data.testCaseExecutionQueue.id + "'><button class='btn btn-primary' id='goToExecution'>Get to Execution</button></a>"
+//            showMessage(data);
+                showMessageMainPage(getAlertType(data.messageType), data.message, false, 30000);
             } else {
                 showMessage(data, $('#editExecutionQueueModal'));
             }

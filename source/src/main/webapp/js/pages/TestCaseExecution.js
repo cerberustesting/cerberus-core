@@ -20,17 +20,73 @@
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
         var stepList = [];
-        var executionId = GetURLParameter("executionId");
-        /* global */ sockets = [];
-        initPage(executionId);
-        loadExecutionInformation(executionId, stepList, sockets);
+        var doc = new Doc();
+        displayHeaderLabel(doc);
+        displayFooter(doc);
+        displayPageLabel(doc);
 
-        $('[data-toggle="popover"]').popover({
-            'placement': 'auto',
-            'container': 'body'}
-        );
+        var executionId = GetURLParameter("executionId");
+        var executionQueueId = GetURLParameter("executionQueueId");
+        if (isEmpty(executionId)) {
+            // executionId parameter is not feed so we probably want to see the queue status.
+            $("#TestCaseButton").hide();
+            $("#RefreshQueueButton").show();
+            $("#RefreshQueueButton").click(function () {
+                loadExecutionQueue(executionQueueId);
+            });
+
+            "<button id='refreshQueue' class='btn btn-default'>Refresh</button>"
+            loadExecutionQueue(executionQueueId);
+            // Read TestCaseExecutionQueue
+
+        } else {
+            $("#TestCaseButton").show();
+            $("#RefreshQueueButton").hide();
+            /* global */ sockets = [];
+            initPage(executionId);
+            loadExecutionInformation(executionId, stepList, sockets);
+
+            $('[data-toggle="popover"]').popover({
+                'placement': 'auto',
+                'container': 'body'}
+            );
+        }
     });
 });
+
+
+function loadExecutionQueue(executionQueueId) {
+
+    $.ajax({
+        url: "ReadTestCaseExecutionQueue",
+        method: "GET",
+        data: "queueid=" + executionQueueId,
+        datatype: "json",
+        async: true,
+        success: function (data) {
+            if (data.messageType === "OK") {
+                var tceq = data.contentTable;
+                var configPanel = $("#testCaseConfig");
+                configPanel.find("#idlabel").text("0");
+                configPanel.find("#country").text(tceq.country);
+                configPanel.find("#environment").text(tceq.environment);
+                configPanel.find("#test").text(tceq.test);
+                configPanel.find("#testcase").text(tceq.testCase);
+                configPanel.find("#exReturnMessage").text(tceq.comment);
+                configPanel.find("#controlstatus").text("QU (" + tceq.state + ")");
+                if (tceq.state === "QUEUED") {
+                    configPanel.find("#tcDescription").html("Still <span style='color:red;'>" + tceq.nbEntryInQueueToGo + "</span> execution(s) in the Queue before execution start.");
+                }
+                if (tceq.exeId > 0) {
+                    var url = "./TestCaseExecution.jsp?executionId=" + tceq.exeId;
+                    console.info("redir : " + url);
+                    window.location = url;
+                }
+            }
+        }
+    });
+}
+
 
 //global bool that say if the execution is manual
 var isTheExecutionManual = false;
@@ -44,7 +100,7 @@ function loadExecutionInformation(executionId, stepList, sockets) {
         async: true,
         success: function (data) {
             var tce = data.testCaseExecution;
-           
+
             //store in a global var if the manualExecution is set to yes to double check with the control status
             if (tce.manualExecution === "Y")
                 isTheExecutionManual = true;
@@ -56,7 +112,7 @@ function loadExecutionInformation(executionId, stepList, sockets) {
                 parser.href = window.location.href;
 
                 var protocol = "ws:";
-                if (parser.protocol == "https:") {
+                if (parser.protocol === "https:") {
                     protocol = "wss:";
                 }
                 var path = parser.pathname.split("ExecutionDetail2")[0];
@@ -94,13 +150,12 @@ function loadExecutionInformation(executionId, stepList, sockets) {
 
 function initPage(id) {
 
-    var doc = new Doc();
     var height = $("nav.navbar.navbar-inverse.navbar-static-top").outerHeight(true) + $("div.alert.alert-warning").outerHeight(true) + $(".page-title-line").outerHeight(true) - 10;
-    
-    if(window.matchMedia("(max-width: 768px)").matches){
-    	$('#divPanelDefault').affix({offset: {top: height}});
+
+    if (window.matchMedia("(max-width: 768px)").matches) {
+        $('#divPanelDefault').affix({offset: {top: height}});
     }
-    
+
     var wrap = $(window);
 
     wrap.on("scroll", function (e) {
@@ -134,10 +189,6 @@ function initPage(id) {
             }
         })
     });
-
-    displayHeaderLabel(doc);
-    displayFooter(doc);
-    displayPageLabel(doc);
 
     $("#inheritedPropPanelWrapper").hide();
     $("[name='buttonSave']").hide();
@@ -219,7 +270,7 @@ function updatePage(data, stepList) {
     $("#lastExecution").attr("disabled", false);
     $("#lastExecution").attr("href", "TestCaseExecutionList.jsp?test=" + data.test + "&testcase=" + data.testcase);
 
-    $("#ExecutionQueueByTag").attr("href", "TestCaseExecutionQueueList.jsp?tag="+data.tag);
+    $("#ExecutionQueueByTag").attr("href", "TestCaseExecutionQueueList.jsp?tag=" + data.tag);
 
     $("#ExecutionByTag").attr("href", "ReportingExecutionByTag.jsp?Tag=" + data.tag);
     $("#lastExecutionwithEnvCountry").attr("href", "TestCaseExecutionList.jsp?test=" + data.test + "&testcase=" + data.testcase + "&country=" + data.country + "&environment=" + data.environment + "&application=" + data.application);
@@ -301,9 +352,9 @@ function setConfigPanel(data) {
     configPanel.find("#testcase").text(data.testcase);
     configPanel.find("#exReturnMessage").text(data.controlMessage);
     configPanel.find("#controlstatus").text(data.controlStatus);
-    
-    $("#editTcHeader").unbind("click").click(function(){
-    	openModalTestCase(data.test,data.testcase,"EDIT")
+
+    $("#editTcHeader").unbind("click").click(function () {
+        openModalTestCase(data.test, data.testcase, "EDIT")
     })
 
     configPanel.find("#environment").text(data.environment);
@@ -385,28 +436,28 @@ function setLinkOnEditTCStepInfoButton() {
 function setLoadBar(data) {
     var total = 0;
     var ended = 0;
-    if (data.testCaseObj != undefined && data.testCaseObj.testCaseStepList != undefined) {
+    if (data.testCaseObj !== undefined && data.testCaseObj.testCaseStepList !== undefined) {
         for (var i = 0; i < data.testCaseObj.testCaseStepList.length; i++) {
             var step = data.testCaseObj.testCaseStepList[i];
             var stepExec = data.testCaseStepExecutionList[i];
-            if (stepExec != undefined && stepExec.returnCode != "PE") {
+            if (stepExec !== undefined && stepExec.returnCode !== "PE") {
                 ended += 1;
             }
             total += 1;
             for (var j = 0; j < step.testCaseStepActionList.length; j++) {
                 var action = step.testCaseStepActionList[j];
-                if (stepExec != undefined) {
+                if (stepExec !== undefined) {
                     var actionExec = stepExec.testCaseStepActionExecutionList[j];
-                    if (actionExec != undefined && actionExec.returnCode != "PE") {
+                    if (actionExec !== undefined && actionExec.returnCode !== "PE") {
                         ended += 1;
                     }
                 }
                 total += 1;
                 for (var k = 0; k < action.testCaseStepActionControlList.length; k++) {
                     var control = action.testCaseStepActionControlList[k];
-                    if (stepExec != undefined && actionExec != undefined) {
+                    if (stepExec !== undefined && actionExec !== undefined) {
                         var controlExec = actionExec.testCaseStepActionControlExecutionList[k];
-                        if (controlExec != undefined && controlExec.returnCode != "PE") {
+                        if (controlExec !== undefined && controlExec.returnCode !== "PE") {
                             ended += 1;
                         }
                     }
@@ -428,7 +479,7 @@ function updateDataBarVisual(controlStatus, progress = 100) {
         return (className.match(/(^|\s)progress-bar-\S+/g) || []).join(' ');
     });
 
-    if (controlStatus != "PE") {
+    if (controlStatus !== "PE") {
         if (controlStatus === "OK") {
             $("#progress-bar").addClass("progress-bar-success");
         } else if (controlStatus === "KO") {
@@ -1372,7 +1423,7 @@ Action.prototype.generateHeader = function (id) {
             triggerActionExecution(this, id, "FA");
 
         });
-        contentField.append($("<div class='col-sm-2'>").addClass("btn-group btn-group-xs").attr("role", "group").append(buttonOK).append(buttonFA));
+        contentField.append($("<div class='col-xs-2'>").addClass("btn-group btn-group-xs").attr("role", "group").append(buttonOK).append(buttonFA));
         //hide save button
         showSaveTestCaseExecutionButton();
     } else {
@@ -1738,24 +1789,24 @@ Action.prototype.generateContent = function () {
     conditionVal1Field.val(this.conditionVal1);
     conditionVal2Field.val(this.conditionVal2);
 
-    row1.append($("<div></div>").addClass("col-xs-2").append(returncodeGroup));
-    row1.append($("<div></div>").addClass("col-xs-10").append(descGroup));
-    row2.append($("<div></div>").addClass("col-xs-2"));
-    row2.append($("<div></div>").addClass("col-xs-5").append(objectGroupInit));
-    row2.append($("<div></div>").addClass("col-xs-5").append(propertyGroupInit));
-    row3.append($("<div></div>").addClass("col-xs-2").append(actionGroup));
-    row3.append($("<div></div>").addClass("col-xs-5").append(objectGroup));
-    row3.append($("<div></div>").addClass("col-xs-5").append(propertyGroup));
-    row4.append($("<div></div>").addClass("col-xs-2").append(sortGroup));
-    row4.append($("<div></div>").addClass("col-xs-5").append(forceexecGroup));
-    row4.append($("<div></div>").addClass("col-xs-5").append(timeGroup));
-    row5.append($("<div></div>").addClass("col-xs-12").append(returnmessageGroup));
-    row6.append($("<div></div>").addClass("col-xs-2"));
-    row6.append($("<div></div>").addClass("col-xs-5").append(conditionVal1InitGroup));
-    row6.append($("<div></div>").addClass("col-xs-5").append(conditionVal2InitGroup));
-    row7.append($("<div></div>").addClass("col-xs-2").append(conditionOperGroup));
-    row7.append($("<div></div>").addClass("col-xs-5").append(conditionVal1Group));
-    row7.append($("<div></div>").addClass("col-xs-5").append(conditionVal2Group));
+    row1.append($("<div></div>").addClass("col-sm-2").append(returncodeGroup));
+    row1.append($("<div></div>").addClass("col-sm-10").append(descGroup));
+    row2.append($("<div></div>").addClass("col-sm-2"));
+    row2.append($("<div></div>").addClass("col-sm-5").append(objectGroupInit));
+    row2.append($("<div></div>").addClass("col-sm-5").append(propertyGroupInit));
+    row3.append($("<div></div>").addClass("col-sm-2").append(actionGroup));
+    row3.append($("<div></div>").addClass("col-sm-5").append(objectGroup));
+    row3.append($("<div></div>").addClass("col-sm-5").append(propertyGroup));
+    row4.append($("<div></div>").addClass("col-sm-2").append(sortGroup));
+    row4.append($("<div></div>").addClass("col-sm-5").append(forceexecGroup));
+    row4.append($("<div></div>").addClass("col-sm-5").append(timeGroup));
+    row5.append($("<div></div>").addClass("col-sm-12").append(returnmessageGroup));
+    row6.append($("<div></div>").addClass("col-sm-2"));
+    row6.append($("<div></div>").addClass("col-sm-5").append(conditionVal1InitGroup));
+    row6.append($("<div></div>").addClass("col-sm-5").append(conditionVal2InitGroup));
+    row7.append($("<div></div>").addClass("col-sm-2").append(conditionOperGroup));
+    row7.append($("<div></div>").addClass("col-sm-5").append(conditionVal1Group));
+    row7.append($("<div></div>").addClass("col-sm-5").append(conditionVal2Group));
 
     container.append(row1);
     container.append(row2);
@@ -2143,24 +2194,24 @@ Control.prototype.generateContent = function () {
     conditionVal1Field.val(this.conditionVal1);
     conditionVal2Field.val(this.conditionVal2);
 
-    row1.append($("<div></div>").addClass("col-xs-2").append(returncodeGroup));
-    row1.append($("<div></div>").addClass("col-xs-10").append(descGroup));
-    row2.append($("<div></div>").addClass("col-xs-2"));
-    row2.append($("<div></div>").addClass("col-xs-5").append(controlValue1InitGroup));
-    row2.append($("<div></div>").addClass("col-xs-5").append(controlValue2InitGroup));
-    row3.append($("<div></div>").addClass("col-xs-2").append(controlTypeGroup));
-    row3.append($("<div></div>").addClass("col-xs-5").append(controlValue1Group));
-    row3.append($("<div></div>").addClass("col-xs-5").append(controlValue2Group));
-    row4.append($("<div></div>").addClass("col-xs-2").append(sortGroup));
-    row4.append($("<div></div>").addClass("col-xs-5").append(fatalGroup));
-    row4.append($("<div></div>").addClass("col-xs-5").append(timeGroup));
-    row5.append($("<div></div>").addClass("col-xs-12").append(returnmessageGroup));
-    row6.append($("<div></div>").addClass("col-xs-2"));
-    row6.append($("<div></div>").addClass("col-xs-5").append(conditionVal1InitGroup));
-    row6.append($("<div></div>").addClass("col-xs-5").append(conditionVal2InitGroup));
-    row7.append($("<div></div>").addClass("col-xs-2").append(conditionOperGroup));
-    row7.append($("<div></div>").addClass("col-xs-5").append(conditionVal1Group));
-    row7.append($("<div></div>").addClass("col-xs-5").append(conditionVal2Group));
+    row1.append($("<div></div>").addClass("col-sm-2").append(returncodeGroup));
+    row1.append($("<div></div>").addClass("col-sm-10").append(descGroup));
+    row2.append($("<div></div>").addClass("col-sm-2"));
+    row2.append($("<div></div>").addClass("col-sm-5").append(controlValue1InitGroup));
+    row2.append($("<div></div>").addClass("col-sm-5").append(controlValue2InitGroup));
+    row3.append($("<div></div>").addClass("col-sm-2").append(controlTypeGroup));
+    row3.append($("<div></div>").addClass("col-sm-5").append(controlValue1Group));
+    row3.append($("<div></div>").addClass("col-sm-5").append(controlValue2Group));
+    row4.append($("<div></div>").addClass("col-sm-2").append(sortGroup));
+    row4.append($("<div></div>").addClass("col-sm-5").append(fatalGroup));
+    row4.append($("<div></div>").addClass("col-sm-5").append(timeGroup));
+    row5.append($("<div></div>").addClass("col-sm-12").append(returnmessageGroup));
+    row6.append($("<div></div>").addClass("col-sm-2"));
+    row6.append($("<div></div>").addClass("col-sm-5").append(conditionVal1InitGroup));
+    row6.append($("<div></div>").addClass("col-sm-5").append(conditionVal2InitGroup));
+    row7.append($("<div></div>").addClass("col-sm-2").append(conditionOperGroup));
+    row7.append($("<div></div>").addClass("col-sm-5").append(conditionVal1Group));
+    row7.append($("<div></div>").addClass("col-sm-5").append(conditionVal2Group));
 
     container.append(row1);
     container.append(row2);

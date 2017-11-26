@@ -105,6 +105,11 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
     }
 
     @Override
+    public int getNbEntryToGo(long id, int prio) {
+        return testCaseExecutionInQueueDAO.getNbEntryToGo(id, prio);
+    }
+
+    @Override
     public AnswerList readDistinctEnvCountryBrowserByTag(String tag) {
         return testCaseExecutionInQueueDAO.readDistinctEnvCountryBrowserByTag(tag);
     }
@@ -133,7 +138,7 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
     }
 
     @Override
-    public Answer create(TestCaseExecutionQueue object) {
+    public AnswerItem<TestCaseExecutionQueue> create(TestCaseExecutionQueue object) {
         return testCaseExecutionInQueueDAO.create(object);
     }
 

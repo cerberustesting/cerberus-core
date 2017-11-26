@@ -102,6 +102,14 @@ public interface ITestCaseExecutionQueueDAO {
 
     /**
      *
+     * @param id
+     * @param prio
+     * @return
+     */
+    int getNbEntryToGo(long id, int prio);
+
+    /**
+     *
      * @param tag
      * @return
      */
@@ -173,7 +181,7 @@ public interface ITestCaseExecutionQueueDAO {
      * @param object the {@link AppService} to Create
      * @return {@link AnswerItem}
      */
-    Answer create(TestCaseExecutionQueue object);
+    AnswerItem<TestCaseExecutionQueue> create(TestCaseExecutionQueue object);
 
     /**
      * @param object the {@link AppService} to Update

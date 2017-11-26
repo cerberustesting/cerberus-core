@@ -73,18 +73,21 @@
                                 </div>
                             </div>
                             <div class="col-lg-6" style="padding: 0px;">
+                                <div id="RefreshQueueButton">
+                                    <button id="editTag" class="btn btn-default">Refresh</button>
+                                </div>
                                 <div id="TestCaseButton">
                                     <a href="#" class="btn btn-default pull-right" id="saveTestCaseExecution" data-toggle="tooltip" style="margin-left: 1px; display: none;"><span class="glyphicon glyphicon-save"></span> Save</a>
-                                     <div class="btn-group pull-right">
-	                                    <a href="#" class="btn btn-default" id="runTestCase" data-toggle="tooltip" style="margin-left: 1px;"><span class="glyphicon glyphicon-fast-backward"></span> Run</a>
-	                                    <a type="button" class="btn btn-default dropdown-toggle"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <div class="btn-group pull-right">
+                                        <a href="#" class="btn btn-default" id="runTestCase" data-toggle="tooltip" style="margin-left: 1px;"><span class="glyphicon glyphicon-fast-backward"></span> Run</a>
+                                        <a type="button" class="btn btn-default dropdown-toggle"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             <span class="caret"></span>
                                             <span class="sr-only">Toggle Dropdown</span>
                                         </a>
-	                                    <ul class="dropdown-menu">
-	                                    	<li><a href="#" class="btn btn-default" id="ExecutionQueueDup"><span class="glyphicon glyphicon-tasks"></span> Duplicate new Execution</a></li>
-	                                    </ul>
-	                                </div>
+                                        <ul class="dropdown-menu">
+                                            <li><a href="#" class="btn btn-default" id="ExecutionQueueDup"><span class="glyphicon glyphicon-tasks"></span> Duplicate new Execution</a></li>
+                                        </ul>
+                                    </div>
                                     <div class="btn-group pull-right">
                                         <a href="#" class="btn btn-default pull-left" id="lastExecution" style="margin-left: 1px"><span class="glyphicon glyphicon-fast-backward"></span> Last Executions</a>
                                         <a type="button" class="btn btn-default dropdown-toggle"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -109,7 +112,7 @@
                                             <li><a href="#" class="btn btn-default" id="editTcHeader"><span class="glyphicon glyphicon-pencil"></span> Edit Test Case Header</a></li>
                                         </ul>
                                     </div>
-                                    
+
                                     <div class="side-item pull-right"></div>
 
                                 </div>
@@ -117,7 +120,7 @@
                             <div class="clearfix"></div>
                         </div>
                         <div id="NavtabsScriptEdit" background-color: white">
-                            <ul id="tabsScriptEdit" class="nav nav-tabs" data-tabs="tabs">
+                             <ul id="tabsScriptEdit" class="nav nav-tabs" data-tabs="tabs">
                                 <li class="active"><a data-toggle="tab" href="#tabSteps" id="editTabStep" name="tabSteps">Steps</a></li>
                                 <li><a data-toggle="tab" href="#tabProperties" id="editTabProperties" name="tabProperties">Properties</a></li>
                                 <li><a data-toggle="tab" href="#tabDetail" id="editTabDetail" name="tabDetail">Execution Details</a></li>

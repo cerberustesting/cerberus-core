@@ -24,6 +24,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
@@ -663,6 +664,68 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
         response.setResultMessage(msg);
         response.setDataList(objectList);
         return response;
+    }
+
+    @Override
+    public int getNbEntryToGo(long id, int prio) {
+        AnswerItem<TestCaseExecutionQueue> ans = new AnswerItem<>();
+        TestCaseExecutionQueue result = null;
+        final String query = "SELECT count(*)  FROM testcaseexecutionqueue WHERE State = 'QUEUED' and (ID < ? or Priority < ?);";
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                int i = 1;
+                preStat.setLong(i++, id);
+                preStat.setInt(i++, prio);
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    if (resultSet.first()) {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+                        return resultSet.getInt(1);
+                    } else {
+                        LOG.error("No record found : " + query);
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                    }
+                } catch (SQLException exception) {
+                    LOG.error("Unable to execute query : " + exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
+            }
+        }
+
+        //sets the message
+        ans.setResultMessage(msg);
+        return 999999;
     }
 
     @Override
@@ -1359,7 +1422,8 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
     }
 
     @Override
-    public Answer create(TestCaseExecutionQueue object) {
+    public AnswerItem<TestCaseExecutionQueue> create(TestCaseExecutionQueue object) {
+        TestCaseExecutionQueue newObject = object;
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
         query.append("INSERT INTO `" + TABLE + "` (`" + COLUMN_TEST + "`, `" + COLUMN_TEST_CASE + "`, `" + COLUMN_COUNTRY + "`, `" + COLUMN_ENVIRONMENT + "`, `" + COLUMN_ROBOT
@@ -1381,7 +1445,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
         }
         Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            PreparedStatement preStat = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
             try {
                 int i = 1;
                 preStat.setString(i++, object.getTest());
@@ -1420,6 +1484,19 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                 preStat.setInt(i++, object.getPriority());
 
                 preStat.executeUpdate();
+
+                try (ResultSet resultSet = preStat.getGeneratedKeys()) {
+                    if (resultSet.first()) {
+                        newObject.setId(resultSet.getInt(1));
+                    }
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT"));
+                } catch (SQLException exception) {
+                    LOG.error("Unable to execute query : " + exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+                }
+
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                 msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT"));
 
@@ -1449,7 +1526,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                 LOG.error("Unable to close connection : " + exception.toString());
             }
         }
-        return new Answer(msg);
+        return new AnswerItem(newObject, msg);
     }
 
     @Override
