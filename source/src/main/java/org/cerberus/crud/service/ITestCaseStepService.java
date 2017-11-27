@@ -41,9 +41,13 @@ public interface ITestCaseStepService {
      */
     List<TestCaseStep> getListOfSteps(String test, String testcase);
 
+    /**
+     *
+     * @param countryCode
+     * @param application
+     * @return
+     */
     List<String> getLoginStepFromTestCase(String countryCode, String application);
-
-
 
     /**
      * FindTestCaseStep
@@ -56,8 +60,8 @@ public interface ITestCaseStepService {
     TestCaseStep findTestCaseStep(String test, String testcase, Integer step);
 
     /**
-     * This method is changing the data that belong to masterStep by the data that
-     * is inherited from the usedStep.
+     * This method is changing the data that belong to masterStep by the data
+     * that is inherited from the usedStep.
      *
      * @param masterStep
      * @return masterStep but with data replaced from used step in case the step
@@ -93,9 +97,26 @@ public interface ITestCaseStepService {
 
     AnswerList readByTestTestCaseWithDependency(String test, String testcase);
 
+    /**
+     *
+     * @param object
+     * @return
+     */
     Answer create(TestCaseStep object);
 
+    /**
+     *
+     * @param objectList
+     * @return
+     */
     Answer createList(List<TestCaseStep> objectList);
 
+    /**
+     *
+     * @param objectList
+     * @param test
+     * @param testCase
+     * @return
+     */
     Answer duplicateList(List<TestCaseStep> objectList, String test, String testCase);
 }
