@@ -9602,6 +9602,14 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("  ,('CAMPAIGN_TCCRITERIA', 'SYSTEM', 30 , '')");
         SQLS.append("  ,('CAMPAIGN_TCCRITERIA', 'APPLICATION', 40 , '')");
         SQLInstruction.add(SQLS.toString());
+        
+     // ADD a parameter for maximum testcase to be returned
+        //-- ------------------------ 1251
+        
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` (`param`, `value`, `description`) VALUES ");
+        SQLS.append("  ('cerberus_testcase_maxreturn', '1000', 'Integer that correspond to the maximum of testcase that cerberus can return')");
+        SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;
     }

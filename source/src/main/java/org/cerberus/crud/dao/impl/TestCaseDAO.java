@@ -52,6 +52,7 @@ import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.cerberus.crud.service.IParameterService;
 
 /**
  * Used to manage TestCase table
@@ -72,6 +73,8 @@ public class TestCaseDAO implements ITestCaseDAO {
     private DatabaseSpring databaseSpring;
     @Autowired
     private IFactoryTestCase factoryTestCase;
+    @Autowired
+    private IParameterService parameterService;
 
     public static class Query {
         private static final String FIND_BY_APPLICATION = "SELECT * FROM `testcase` tec WHERE `application` = ?";
@@ -1116,7 +1119,8 @@ public class TestCaseDAO implements ITestCaseDAO {
 
     @Override
     public List<TestCase> findTestCaseByCampaignNameAndCountriesWithLabelOrBattery(String campaign, String[] countries, String status, String system, String application, String priority) {
-        List<TestCase> list = null;
+        int maxReturn = parameterService.getParameterIntegerByKey("cerberus_testcase_maxreturn", "", null);
+    	List<TestCase> list = null;
         HashMap<String, String> tcParameters =  new HashMap<String, String>();
         tcParameters.put("status", status);
         tcParameters.put("system", system);
@@ -1210,7 +1214,8 @@ public class TestCaseDAO implements ITestCaseDAO {
     
     @Override
     public List<TestCase> findTestCaseByCampaignNameAndCountriesWithoutLabelOrBattery(String campaign, String[] countries, String status, String system, String application, String priority) {
-        List<TestCase> list = null;
+        
+    	List<TestCase> list = null;
         HashMap<String, String> tcParameters =  new HashMap<String, String>();
         tcParameters.put("status", status);
         tcParameters.put("system", system);

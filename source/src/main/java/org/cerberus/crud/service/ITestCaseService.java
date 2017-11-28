@@ -105,7 +105,7 @@ public interface ITestCaseService {
      * countries
      * @since 1.0.2
      */
-    List<TestCase> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries, String status, String system, String application, String priority);
+    List<TestCase> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries);
 
     public void updateTestCase(TestCase tc) throws CerberusException;
 

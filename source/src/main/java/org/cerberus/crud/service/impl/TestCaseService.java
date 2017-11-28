@@ -256,19 +256,21 @@ public class TestCaseService implements ITestCaseService {
     }
 
     @Override
-    public List<TestCase> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries, String status, String system, String application, String priority) {
+    public List<TestCase> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries) {
+    	String status = null;
+    	String system = null;
+    	String application = null;
+    	String priority = null;
     	AnswerList label = campaignLabelService.readByVarious(campaign);
     	AnswerList battery = campaignContentService.readByCampaign(campaign);
     	boolean ifLabel = (label.getTotalRows() > 0) ? true : false;
     	boolean ifBattery = (battery.getTotalRows() > 0) ? true : false;
-    	/*
+    	
     	if(ifLabel || ifBattery) {
     		return this.testCaseDao.findTestCaseByCampaignNameAndCountriesWithLabelOrBattery(campaign, countries, status, system, application, priority);
     	}else {
     		return this.testCaseDao.findTestCaseByCampaignNameAndCountriesWithoutLabelOrBattery(campaign, countries, status, system, application, priority);
     	}
-    	*/
-    	return this.testCaseDao.findTestCaseByCampaignNameAndCountriesWithoutLabelOrBattery(campaign, countries, status, system, application, priority);
     }
 
     @Override

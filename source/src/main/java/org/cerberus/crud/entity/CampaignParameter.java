@@ -40,6 +40,11 @@ public class CampaignParameter implements Serializable {
     public static final String BROWSER_PARAMETER = "BROWSER";
     public static final String COUNTRY_PARAMETER = "COUNTRY";
     public static final String ENVIRONMENT_PARAMETER = "ENVIRONMENT";
+    public static final String STATUS_PARAMETER = "STATUS";
+    public static final String APPLICATION_PARAMETER = "APPLICATION";
+    public static final String SYSTEM_PARAMETER = "SYSTEM";
+    public static final String PRIORITY_PARAMETER = "PRIORITY";
+    
 
     private Integer campaignparameterID;
     private String parameter;
