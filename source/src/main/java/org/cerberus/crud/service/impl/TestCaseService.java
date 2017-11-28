@@ -22,14 +22,17 @@ package org.cerberus.crud.service.impl;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import org.cerberus.crud.dao.ITestCaseDAO;
+import org.cerberus.crud.entity.CampaignParameter;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseCountry;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
@@ -41,6 +44,7 @@ import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.ICampaignContentService;
 import org.cerberus.crud.service.ICampaignLabelService;
+import org.cerberus.crud.service.ICampaignParameterService;
 import org.cerberus.crud.service.ITestCaseCountryPropertiesService;
 import org.cerberus.crud.service.ITestCaseCountryService;
 import org.cerberus.crud.service.ITestCaseService;
@@ -83,6 +87,8 @@ public class TestCaseService implements ITestCaseService {
     private ICampaignLabelService campaignLabelService;
     @Autowired
     private ICampaignContentService campaignContentService;
+    @Autowired
+    private ICampaignParameterService campaignParameterService;
 
     @Override
     public TestCase findTestCaseByKey(String test, String testCase) throws CerberusException {
@@ -261,6 +267,33 @@ public class TestCaseService implements ITestCaseService {
     	String system = null;
     	String application = null;
     	String priority = null;
+    	
+    	AnswerItem<Map<String, List<String>>> parameters = campaignParameterService.parseParametersByCampaign(campaign);
+    	
+    	Set cles = parameters.getItem().keySet();
+    	Iterator it = cles.iterator();
+    	while (it.hasNext()){
+    	   Object cle = it.next();
+    	   Object valeur = parameters.getItem().get(cle); 
+    	   
+    	   if(cle.equals(CampaignParameter.PRIORITY_PARAMETER)) 
+    	   {
+    		   priority = parameters.getItem().get(CampaignParameter.PRIORITY_PARAMETER).get(0);  
+    	   }
+    	   if(cle.equals(CampaignParameter.STATUS_PARAMETER)) 
+    	   {
+    		   status = parameters.getItem().get(CampaignParameter.STATUS_PARAMETER).get(0);  
+    	   }
+    	   if(cle.equals(CampaignParameter.SYSTEM_PARAMETER)) 
+    	   {
+    		   system = parameters.getItem().get(CampaignParameter.SYSTEM_PARAMETER).get(0); 
+    	   }
+    	   if(cle.equals(CampaignParameter.APPLICATION_PARAMETER)) 
+    	   {
+    		   application = parameters.getItem().get(CampaignParameter.APPLICATION_PARAMETER).get(0);  
+    	   }
+    	}	
+
     	AnswerList label = campaignLabelService.readByVarious(campaign);
     	AnswerList battery = campaignContentService.readByCampaign(campaign);
     	boolean ifLabel = (label.getTotalRows() > 0) ? true : false;

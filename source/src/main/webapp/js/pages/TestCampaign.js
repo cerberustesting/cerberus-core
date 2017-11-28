@@ -322,9 +322,7 @@ function editEntryClick(param) {
         
         for(var i= 0; i < obj.parameter.length; i++)
 		{
-        	console.log(obj.parameter[i])
 		     if((obj.parameter[i].parameter == "BROWSER") || (obj.parameter[i].parameter == "COUNTRY") || (obj.parameter[i].parameter == "ENVIRONMENT")){
-		    	 console.log("oui")
 		    	 parameters.push(obj.parameter[i])
 		     }else{
 		    	criterias.push(obj.parameter[i]) 
@@ -395,8 +393,6 @@ function editEntryClick(param) {
             array.push([parameters[e].campaign, parameters[e].campaignparameterID, parameters[e].parameter, parameters[e].value])
         });
         
-        console.log(array)
-
         if ($("#editTestcampaignModal #parameterTestcampaignsTable_wrapper").length > 0) {
             $("#editTestcampaignModal #parameterTestcampaignsTable").DataTable().clear();
             $("#editTestcampaignModal #parameterTestcampaignsTable").DataTable().rows.add(array).draw();
@@ -415,8 +411,6 @@ function editEntryClick(param) {
 
         var array = [];
         
-        console.log(obj)
-
         $.each(criterias, function (e) {
             array.push([criterias[e].campaign, criterias[e].campaignparameterID, criterias[e].parameter, criterias[e].value])
         });
@@ -828,10 +822,7 @@ function updateSelectCriteria(id) {
     
     $("#" + id + "_wrapper #criteriaTestSelect2").empty();
     var optionList = "";
-    console.log(data)
-    console.log(data.find("option"))
     for (var i = 0; i < data.find("option").length; i++) {
-    	console.log("1")
         if (!(findValueTableDataByCol(id, 2, val) && findValueTableDataByCol(id, 3, data.find("option")[i].value)))
             optionList +=
                     "<option value='" + data.find("option")[i].value + "'>" + data.find("option")[i].value + "</option>";
