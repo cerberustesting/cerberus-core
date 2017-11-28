@@ -9583,6 +9583,25 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ");
         SQLS.append("  ('SRVMETHOD', 'PATCH', 500 , 'PATCH http method')");
         SQLInstruction.add(SQLS.toString());
+        
+     // ADD private invariant CAMPAIGN_TCCRITERIA
+        //-- ------------------------ 1251
+        
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ");
+        SQLS.append("  ('INVARIANTPRIVATE', 'CAMPAIGN_TCCRITERIA', 450 , '')");
+        SQLInstruction.add(SQLS.toString());
+        
+     // ADD private four invariants for all criterias
+        //-- ------------------------ 1251
+        
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ");
+        SQLS.append("  ('CAMPAIGN_TCCRITERIA', 'PRIORITY', 10 , '')");
+        SQLS.append("  ,('CAMPAIGN_TCCRITERIA', 'STATUS', 20 , '')");
+        SQLS.append("  ,('CAMPAIGN_TCCRITERIA', 'SYSTEM', 30 , '')");
+        SQLS.append("  ,('CAMPAIGN_TCCRITERIA', 'APPLICATION', 40 , '')");
+        SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;
     }

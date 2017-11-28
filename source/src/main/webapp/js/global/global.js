@@ -657,6 +657,7 @@ function getSelectLabel(system, forceReload, notAsync) {
 }
 
 function getSelectApplication(system, forceReload) {
+	system = ""
     var cacheEntryName = system + "INVARIANT";
     if (forceReload) {
         sessionStorage.removeItem(cacheEntryName);
@@ -688,6 +689,27 @@ function getSelectApplication(system, forceReload) {
     }
 
     return select;
+}
+
+function getSelectApplicationWithoutSystem() {
+	
+	var list = []
+
+	var select = $("<select></select>").addClass("form-control input-sm");
+
+	$.ajax({
+		url: "ReadApplication",
+		async:false,
+		success: function (data) {
+			list = data.contentTable;
+			for (var index = 0; index < list.length; index++) {
+				var item = list[index].application;
+				select.append($("<option></option>").text(item).val(item));
+			}
+		}
+	});
+
+	return select;
 }
 
 function getSelectDeployType(forceReload) {

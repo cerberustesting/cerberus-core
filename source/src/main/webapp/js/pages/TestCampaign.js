@@ -54,6 +54,8 @@ function initPage() {
             $("#parameterTestcampaignsTable").DataTable().draw();
         } else if (target == "#tabsCreate-4") {
             $("#labelTestcampaignsTable").DataTable().draw();
+        }else if (target == "#tabsCreate-5") {
+            $("#parameterTestcaseTable").DataTable().draw();
         }
     });
 
@@ -67,6 +69,8 @@ function initPage() {
             $("#addModalParameterTestcampaignsTable").DataTable().draw();
         } else if (target == "#tabsCreate-14") {
             $("#addModalLabelTestcampaignsTable").DataTable().draw();
+        }else if (target == "#tabsCreate-5") {
+            $("#parameterTestcaseTable").DataTable().draw();
         }
     });
 
@@ -206,6 +210,36 @@ function renderOptionsForCampaign_Parameter(id) {
 
 }
 
+function renderOptionsForCampaign_TestcaseCriterias(id) {
+    var doc = new Doc();
+    var data = getSelectInvariant("CAMPAIGN_TCCRITERIA", false, true);
+    $("#" + id + "_wrapper #addParameterTestcase").remove();
+    var contentToAdd =
+            "<div class='marginBottom10 form-inline' id='addParameterTestcase'>" +
+            "<div class='form-group marginRight10 col-sm-3' style='padding-right: 0px; padding-left: 0px;'>" +
+            "<select id='criteriaTestSelect' class='form-control' style='width:100%;' onchange='updateSelectCriteria(\"" + id + "\")'>";
+    for (var i = 0; i < data.find("option").length; i++) {
+        contentToAdd +=
+                "<option value='" + data.find("option")[i].value + "'>" + data.find("option")[i].value + "</option>";
+    }
+    contentToAdd +=
+            "</select>" +
+            "</div>" +
+            "<div class='form-group marginRight10 col-sm-3' style='padding-right: 0px; padding-left: 0px;'>" +
+            "<select id='criteriaTestSelect2' class='form-control' style='width:100%;'>" +
+            "</select>" +
+            "</div>" +
+            "<div class='form-group'>" +
+            "<button type='button' id='addCriteriaTestcampaignButton' class='btn btn-primary' name='ButtonEdit' onclick='addCriteriaEntryClick(\"" + id + "\")'>" + doc.getDocLabel("page_testcampaign", "add_btn") + "</button>" +
+            "</div>" +
+            "</div>";
+    $("#" + id + "_wrapper div#" + id + "_length").before(contentToAdd);
+    $("#" + id + "_wrapper #criteriaTestSelect").select2();
+    $("#" + id + "_wrapper #criteriaTestSelect2").select2();
+    updateSelectCriteria(id);
+
+}
+
 function renderOptionsForCampaign_TestCase(data) {
     if ($("#blankSpaceBattery").length === 0) {
         var contentToAdd = "<div class='marginBottom10' style='height:34px;' id='blankSpaceBattery'></div>";
@@ -283,7 +317,20 @@ function editEntryClick(param) {
     var jqxhr = $.getJSON("ReadCampaign?battery=true&parameter=true&label=true", "campaign=" + param);
     $.when(jqxhr).then(function (data) {
         var obj = data["contentTable"];
-
+        var parameters = []
+        var criterias = []
+        
+        for(var i= 0; i < obj.parameter.length; i++)
+		{
+        	console.log(obj.parameter[i])
+		     if((obj.parameter[i].parameter == "BROWSER") || (obj.parameter[i].parameter == "COUNTRY") || (obj.parameter[i].parameter == "ENVIRONMENT")){
+		    	 console.log("oui")
+		    	 parameters.push(obj.parameter[i])
+		     }else{
+		    	criterias.push(obj.parameter[i]) 
+		     }
+		}
+        
         formEdit.find("#campaign").prop("value", obj["campaign"]);
         formEdit.find("#notifystart").val(obj["notifyStartTagExecution"]);
         formEdit.find("#notifyend").val(obj["notifyEndTagExecution"]);
@@ -344,9 +391,11 @@ function editEntryClick(param) {
 
         var array = [];
 
-        $.each(obj.parameter, function (e) {
-            array.push([obj.parameter[e].campaign, obj.parameter[e].campaignparameterID, obj.parameter[e].parameter, obj.parameter[e].value])
+        $.each(parameters, function (e) {
+            array.push([parameters[e].campaign, parameters[e].campaignparameterID, parameters[e].parameter, parameters[e].value])
         });
+        
+        console.log(array)
 
         if ($("#editTestcampaignModal #parameterTestcampaignsTable_wrapper").length > 0) {
             $("#editTestcampaignModal #parameterTestcampaignsTable").DataTable().clear();
@@ -357,11 +406,37 @@ function editEntryClick(param) {
             createDataTableWithPermissions(configurations, null, "#parameterTestcampaignList", undefined, true);
         }
         renderOptionsForCampaign_Parameter("parameterTestcampaignsTable");
-
         hideLoader("#testcampaignList");
 
         $('#editTestcampaignModal .nav-tabs a[href="#tabsCreate-1"]').tab('show');
         formEdit.modal('show');
+        
+        /* CRITERIAS */
+
+        var array = [];
+        
+        console.log(obj)
+
+        $.each(criterias, function (e) {
+            array.push([criterias[e].campaign, criterias[e].campaignparameterID, criterias[e].parameter, criterias[e].value])
+        });
+
+        if ($("#editTestcampaignModal #parameterTestcaseTable_wrapper").length > 0) {
+            $("#editTestcampaignModal #parameterTestcaseTable").DataTable().clear();
+            $("#editTestcampaignModal #parameterTestcaseTable").DataTable().rows.add(array).draw();
+        } else {
+            //configure and create the dataTable
+            var configurations = new TableConfigurationsClientSide("parameterTestcaseTable", array, aoColumnsFunc_Parameter("parameterTestcaseTable"), true);
+            createDataTableWithPermissions(configurations, null, "#parameterTestcaseTable", undefined, true);
+        }
+        
+        renderOptionsForCampaign_TestcaseCriterias("parameterTestcaseTable")
+        
+        hideLoader("#testcampaignList");
+
+        $('#editTestcampaignModal .nav-tabs a[href="#tabsCreate-1"]').tab('show');
+        formEdit.modal('show');
+
 
     });
 
@@ -390,6 +465,14 @@ function editEntryModalSaveHandler() {
     var parameters = null;
     if ($("#parameterTestcampaignsTable_wrapper").length > 0) {
         parameters = $("#parameterTestcampaignsTable").DataTable().data().toArray();
+    }
+    
+    var criterias = null
+    if ($("#parameterTestcaseTable_wrapper").length > 0) {
+        criterias = $("#parameterTestcaseTable").DataTable().data()
+        for(let i=0; i<criterias.length;i++){
+        	parameters.push(criterias[i])
+        }
     }
 
     // Get the header data from the form.
@@ -470,10 +553,21 @@ function addEntryClick() {
         createDataTableWithPermissions(configurations, null, "#addModalParameterTestcampaignList", undefined, true);
     }
     renderOptionsForCampaign_Parameter("addModalParameterTestcampaignsTable");
-
+    
+    // CRITERIA
+    
+    if ($("#addModalParameterTestcaseTable_wrapper").length > 0) {
+        $("#addModalParameterTestcaseTable").DataTable().clear().draw();
+    } else {
+        //configure and create the dataTable
+        var configurations = new TableConfigurationsClientSide("addModalParameterTestcaseTable", null, aoColumnsFunc_Parameter("addModalParameterTestcaseTable"), true);
+        createDataTableWithPermissions(configurations, null, "#addModalParameterTestcaseList", undefined, true);
+    }
+    renderOptionsForCampaign_TestcaseCriterias("addModalParameterTestcaseTable");
+    
     $('#addTestcampaignModal .nav-tabs a[href="#tabsCreate-11"]').tab('show');
-
     $('#addTestcampaignModal').modal('show');
+      
 }
 
 function addEntryModalSaveHandler() {
@@ -505,6 +599,14 @@ function addEntryModalSaveHandler() {
     var parameters = null;
     if ($("#addModalParameterTestcampaignsTable_wrapper").length > 0) {
         parameters = $("#addModalParameterTestcampaignsTable").DataTable().data().toArray();
+    }
+    
+    var criterias = null
+    if ($("#addModalParameterTestcaseTable").length > 0) {
+        criterias = $("#addModalParameterTestcaseTable").DataTable().data()
+        for(let i=0; i<criterias.length;i++){
+        	parameters.push(criterias[i])
+        }
     }
     for (var i = 0; i < parameters.length; i++) {
         parameters[i][0] = data.campaign;
@@ -667,6 +769,14 @@ function addParameterEntryClick(tableId) {
     updateSelectParameter(tableId);
 }
 
+function addCriteriaEntryClick(tableId) {
+    $("#" + tableId + '_wrapper #addCriteriaTestcampaignButton').off().prop("disabled", true);
+    $("#" + tableId).DataTable().row.add([$("#campaignKey").val()
+                , 0
+                , $("#" + tableId + '_wrapper #criteriaTestSelect').find(":selected").val()
+                , $("#" + tableId + '_wrapper #criteriaTestSelect2').find(":selected").val()]).draw();
+    updateSelectCriteria(tableId);
+}
 function removeParameterEntryClick(tableId, key, key1) {
     $('#' + tableId + '_wrapper #removeTestbattery').filter(function (i, e) {
         return $(e).attr("key") == key && $(e).attr("key1") == key1;
@@ -701,6 +811,39 @@ function updateSelectParameter(id) {
         $("#" + id + '_wrapper #parameterTestSelect2').parent().show();
         $("#" + id + '_wrapper #addParameterTestcampaignButton').bind("click", function () {
             addParameterEntryClick(id);
+        }).prop("disabled", false);
+    }
+}
+
+function updateSelectCriteria(id) {
+    var val = $("#" + id + '_wrapper #criteriaTestSelect').find(":selected").val();
+    var data = []
+    if(val === "STATUS"){
+    	data = getSelectInvariant("TCSTATUS", false, true);
+    }else if(val === "APPLICATION"){
+    	data = getSelectApplicationWithoutSystem();
+    }else{
+    	data = getSelectInvariant(val, false, true);
+    }
+    
+    $("#" + id + "_wrapper #criteriaTestSelect2").empty();
+    var optionList = "";
+    console.log(data)
+    console.log(data.find("option"))
+    for (var i = 0; i < data.find("option").length; i++) {
+    	console.log("1")
+        if (!(findValueTableDataByCol(id, 2, val) && findValueTableDataByCol(id, 3, data.find("option")[i].value)))
+            optionList +=
+                    "<option value='" + data.find("option")[i].value + "'>" + data.find("option")[i].value + "</option>";
+    }
+    $("#" + id + "_wrapper #criteriaTestSelect2").append(optionList);
+    if ($("#" + id + '_wrapper #criteriaTestSelect2 option').size() <= 0) {
+        $("#" + id + '_wrapper #criteriaTestSelect2').parent().hide();
+        $("#" + id + '_wrapper #addCriteriaTestcampaignButton').prop("disabled", true);
+    } else {
+        $("#" + id + '_wrapper #criteriaTestSelect2').parent().show();
+        $("#" + id + '_wrapper #addCriteraTestcampaignButton').bind("click", function () {
+            addCriteriaEntryClick(id);
         }).prop("disabled", false);
     }
 }

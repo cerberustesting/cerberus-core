@@ -424,6 +424,10 @@ input#submitButtonDuplicate {
     background-color: #333333;
 }
 
+.dataTables_scrollHeadInner{
+	width:100%!important;
+}
+
 ul.nav li.dropdown:hover > ul.dropdown-menu {
     display: block;    
 }
@@ -500,6 +504,10 @@ ul.nav li.dropdown:hover > ul.dropdown-menu {
     text-align: right;
     padding: 14px 10px 0 0;
     margin:0 0 7px 0;
+}
+
+.table{
+	width:100%!important;
 }
 
 .login-box-error {

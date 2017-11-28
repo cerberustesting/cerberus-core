@@ -39,6 +39,8 @@ import org.cerberus.crud.entity.TestCaseStepActionControl;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.crud.service.ICampaignContentService;
+import org.cerberus.crud.service.ICampaignLabelService;
 import org.cerberus.crud.service.ITestCaseCountryPropertiesService;
 import org.cerberus.crud.service.ITestCaseCountryService;
 import org.cerberus.crud.service.ITestCaseService;
@@ -77,6 +79,10 @@ public class TestCaseService implements ITestCaseService {
     private ITestCaseStepActionControlService testCaseStepActionControlService;
     @Autowired
     private IFactoryTestCase factoryTCase;
+    @Autowired
+    private ICampaignLabelService campaignLabelService;
+    @Autowired
+    private ICampaignContentService campaignContentService;
 
     @Override
     public TestCase findTestCaseByKey(String test, String testCase) throws CerberusException {
@@ -250,8 +256,19 @@ public class TestCaseService implements ITestCaseService {
     }
 
     @Override
-    public List<TestCase> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries) {
-        return this.testCaseDao.findTestCaseByCampaignNameAndCountries(campaign, countries);
+    public List<TestCase> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries, String status, String system, String application, String priority) {
+    	AnswerList label = campaignLabelService.readByVarious(campaign);
+    	AnswerList battery = campaignContentService.readByCampaign(campaign);
+    	boolean ifLabel = (label.getTotalRows() > 0) ? true : false;
+    	boolean ifBattery = (battery.getTotalRows() > 0) ? true : false;
+    	/*
+    	if(ifLabel || ifBattery) {
+    		return this.testCaseDao.findTestCaseByCampaignNameAndCountriesWithLabelOrBattery(campaign, countries, status, system, application, priority);
+    	}else {
+    		return this.testCaseDao.findTestCaseByCampaignNameAndCountriesWithoutLabelOrBattery(campaign, countries, status, system, application, priority);
+    	}
+    	*/
+    	return this.testCaseDao.findTestCaseByCampaignNameAndCountriesWithoutLabelOrBattery(campaign, countries, status, system, application, priority);
     }
 
     @Override

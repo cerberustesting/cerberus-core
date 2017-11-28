@@ -97,11 +97,15 @@ public interface ITestCaseService {
     /**
      * @param campaign the campaign name
      * @param countries arrays of country
+     * @param status of test case
+     * @param system of test case
+     * @param application of test case
+     * @param priority of test case
      * @return the list of TCase used in the campaign and activated for the
      * countries
      * @since 1.0.2
      */
-    List<TestCase> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries);
+    List<TestCase> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries, String status, String system, String application, String priority);
 
     public void updateTestCase(TestCase tc) throws CerberusException;
 

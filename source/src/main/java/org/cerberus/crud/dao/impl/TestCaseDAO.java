@@ -27,8 +27,11 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.ITestCaseDAO;
@@ -1112,8 +1115,13 @@ public class TestCaseDAO implements ITestCaseDAO {
     }
 
     @Override
-    public List<TestCase> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries) {
+    public List<TestCase> findTestCaseByCampaignNameAndCountriesWithLabelOrBattery(String campaign, String[] countries, String status, String system, String application, String priority) {
         List<TestCase> list = null;
+        HashMap<String, String> tcParameters =  new HashMap<String, String>();
+        tcParameters.put("status", status);
+        tcParameters.put("system", system);
+        tcParameters.put("application", application);
+        tcParameters.put("priority", priority);
         final StringBuilder query = new StringBuilder("SELECT tec.*, app.system ")
                 .append("FROM testcase tec ")
                 .append("LEFT OUTER JOIN application app ON app.application = tec.application ")
@@ -1122,7 +1130,17 @@ public class TestCaseDAO implements ITestCaseDAO {
                 .append("LEFT JOIN campaigncontent cpc ON cpc.testbattery = tbc.testbattery ")
                 .append("LEFT JOIN testcaselabel tel ON tec.test = tel.test AND tec.testcase = tel.testcase ")
                 .append("LEFT JOIN campaignlabel cpl ON cpl.labelId = tel.labelId ")
-                .append("WHERE ((cpc.campaign = ?) OR (cpl.campaign = ?))");
+                .append("WHERE ((cpc.campaign = ?) OR (cpl.campaign = ?) )");
+        
+        for(Entry<String, String> entry : tcParameters.entrySet()) {
+            String cle = entry.getKey();
+            String valeur = entry.getValue();
+            if(valeur != null && cle != "system") {
+            	query.append(" AND tec."+cle+" = ?");
+            }else if(valeur != null) {
+            	query.append(" AND app.system = ?");
+            }
+        }
 
         query.append(" AND tcc.Country in (");
         for (int i = 0; i < countries.length; i++) {
@@ -1139,7 +1157,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
         }
-
+        
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -1147,11 +1165,106 @@ public class TestCaseDAO implements ITestCaseDAO {
                 int i = 1;
                 preStat.setString(i++, campaign);
                 preStat.setString(i++, campaign);
+                
+                for(Entry<String, String> entry : tcParameters.entrySet()) {
+                    String valeur = entry.getValue();
+                    if(valeur != null) {
+                    	preStat.setString(i++, valeur);
+                    }
+                }
 
                 for (String c : countries) {
                     preStat.setString(i++, c);
                 }
+                
+                ResultSet resultSet = preStat.executeQuery();
+                list = new ArrayList<TestCase>();
+                try {
+                    while (resultSet.next()) {
+                        list.add(this.loadFromResultSet(resultSet));
+                    }
+                } catch (SQLException exception) {
+                    LOG.error("Unable to execute query : " + exception.toString());
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                LOG.warn(e.toString());
+            }
+        }
 
+        return list;
+    }
+    
+    @Override
+    public List<TestCase> findTestCaseByCampaignNameAndCountriesWithoutLabelOrBattery(String campaign, String[] countries, String status, String system, String application, String priority) {
+        List<TestCase> list = null;
+        HashMap<String, String> tcParameters =  new HashMap<String, String>();
+        tcParameters.put("status", status);
+        tcParameters.put("system", system);
+        tcParameters.put("application", application);
+        tcParameters.put("priority", priority);
+        final StringBuilder query = new StringBuilder("SELECT tec.*, app.system ")
+                .append("FROM testcase tec ")
+                .append("LEFT OUTER JOIN application app ON app.application = tec.application ")
+                .append("INNER JOIN testcasecountry tcc ON tcc.Test = tec.Test and tcc.TestCase = tec.TestCase ")
+                .append("WHERE 1=1");
+        
+        for(Entry<String, String> entry : tcParameters.entrySet()) {
+            String cle = entry.getKey();
+            String valeur = entry.getValue();
+            if(valeur != null && cle != "system") {
+            	query.append(" AND tec."+cle+" = ?");
+            }else if(valeur != null) {
+            	query.append(" AND app.system = ?");
+            }
+        }
+
+        query.append(" AND tcc.Country in (");
+        for (int i = 0; i < countries.length; i++) {
+            query.append("?");
+            if (i < countries.length - 1) {
+                query.append(", ");
+            }
+        }
+        query.append(")");
+        query.append(" GROUP BY tec.test, tec.testcase");
+        query.append(" LIMIT 1");
+        
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query.toString());
+        }
+        
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            try {
+                int i = 1;
+           
+                for(Entry<String, String> entry : tcParameters.entrySet()) {
+                    String valeur = entry.getValue();
+                    if(valeur != null) {
+                    	preStat.setString(i++, valeur);
+                    }
+                }
+
+                for (String c : countries) {
+                    preStat.setString(i++, c);
+                }
+                
                 ResultSet resultSet = preStat.executeQuery();
                 list = new ArrayList<TestCase>();
                 try {

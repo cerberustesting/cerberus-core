@@ -1144,7 +1144,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             query.append(" or exe.`url` like ? ");
             query.append(" or exe.`port` like ? ");
             query.append(" or exe.`tag` like ? ");
-            query.append(" or exe.`finished` like ? ");
+            query.append(" or exe.`end` like ? ");
             query.append(" or exe.`status` like ? ");
             query.append(" or exe.`crbversion` like ? ");
             query.append(" or exe.`executor` like ? ");
@@ -1177,6 +1177,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         }
         List<TestCaseExecution> testCaseExecutionList = new ArrayList<TestCaseExecution>();
         Connection connection = this.databaseSpring.connect();
+        System.out.println(query);
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             int i = 1;
@@ -1207,11 +1208,12 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
             }
             for (String individualColumnSearchValue : individalColumnSearchValues) {
                 preStat.setString(i++, individualColumnSearchValue);
             }
+            
+            
 
             try {
                 ResultSet resultSet = preStat.executeQuery();
