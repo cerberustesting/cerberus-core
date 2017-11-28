@@ -75,6 +75,10 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         List<TestCaseStep> list = null;
         final String query = "SELECT * FROM testcasestep WHERE test = ? AND testcase = ? ORDER BY sort";
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
@@ -118,6 +122,10 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         final String query = "SELECT tc.testcase FROM testcasecountry t, testcase tc WHERE t.country = ? AND t.test = 'Pre Testing' "
                 + "AND tc.application = ? AND tc.tcActive = 'Y' AND t.test = tc.test AND t.testcase = tc.testcase ORDER BY testcase ASC";
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
@@ -163,6 +171,10 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         TestCaseStep result = null;
         final String query = "SELECT * FROM testcasestep WHERE test = ? AND testcase = ? AND step = ?";
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
@@ -318,6 +330,10 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         List<TestCaseStep> list = new ArrayList<TestCaseStep>();
         final String query = "SELECT * FROM testcasestep WHERE usestep='Y' AND usesteptest = ? AND usesteptestcase = ? AND usestepstep = ?";
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
@@ -360,6 +376,10 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         List<TestCaseStep> list = null;
         final String query = "SELECT * FROM testcasestep WHERE usestep='Y' AND usesteptest = ? AND usesteptestcase = ?";
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
@@ -426,6 +446,10 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         query.append("where tcs.usestep = 'Y' and tc.application = ?  ");
         query.append("group by tcs.usesteptest, tcs.usesteptestcase, tcs.usestepstep ");
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -478,6 +502,10 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         query.append("where tcs.inlibrary = 'Y' and app.system = ?  ");
         query.append("order by tcs.test, tcs.testcase, tcs.sort");
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -942,7 +970,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         String useStep = resultSet.getString("useStep") == null ? "" : resultSet.getString("useStep");
         String useStepTest = resultSet.getString("useStepTest") == null ? "" : resultSet.getString("useStepTest");
         String useStepTestCase = resultSet.getString("useStepTestCase") == null ? "" : resultSet.getString("useStepTestCase");
-        int useStepStep = resultSet.getInt("useStepStep") == 0 ? -1 : resultSet.getInt("useStepStep");
+        int useStepStep = resultSet.getInt("useStepStep") == 0 ? 0 : resultSet.getInt("useStepStep");
         String inLibrary = resultSet.getString("inLibrary") == null ? "" : resultSet.getString("inLibrary");
 
         TestCaseStep tcs = factoryTestCaseStep.create(test, testcase, step, sort, loop, conditionOper, conditionVal1, conditionVal2, description, useStep, useStepTest, useStepTestCase, useStepStep, inLibrary);

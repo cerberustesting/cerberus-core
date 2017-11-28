@@ -39,6 +39,13 @@ public interface ITestCaseStepDAO {
 
     List<TestCaseStep> findTestCaseStepByTestCase(String test, String testcase);
 
+    /**
+     *
+     * @param test
+     * @param testcase
+     * @param Step
+     * @return
+     */
     TestCaseStep findTestCaseStep(String test, String testcase, Integer Step);
 
     public void deleteTestCaseStep(TestCaseStep tcs) throws CerberusException;
