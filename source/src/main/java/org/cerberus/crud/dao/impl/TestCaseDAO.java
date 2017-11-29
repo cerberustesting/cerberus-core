@@ -1118,9 +1118,12 @@ public class TestCaseDAO implements ITestCaseDAO {
     }
 
     @Override
-    public List<TestCase> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries, boolean withLabelOrBattery, String[] status, String[] system, String[] application, String[] priority) {
+    public AnswerItem<List<TestCase>> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries, boolean withLabelOrBattery, String[] status, String[] system, String[] application, String[] priority) {
         Integer maxReturn = parameterService.getParameterIntegerByKey("cerberus_testcase_maxreturn", "", null);
     	List<TestCase> list = null;
+    	AnswerItem answer = new AnswerItem();
+    	MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         HashMap<String, String[]> tcParameters =  new HashMap<String, String[]>();
         tcParameters.put("status", status);
         tcParameters.put("system", system);
@@ -1221,9 +1224,23 @@ public class TestCaseDAO implements ITestCaseDAO {
                     while (resultSet.next()) {
                         list.add(this.loadFromResultSet(resultSet));
                     }
+                    if (list.size() >= maxReturn) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
+                        LOG.error("Partial Result in the query.");
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
+                        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + maxReturn));
+                        answer = new AnswerItem(list);
+                    } else if (list.size() <= 0) {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                        answer = new AnswerItem(list);
+                    } else {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+                        answer = new AnswerItem(list);
+                    }
                 } catch (SQLException exception) {
                     LOG.error("Unable to execute query : " + exception.toString());
                 } finally {
+                	answer.setResultMessage(msg);
                     resultSet.close();
                 }
             } catch (SQLException exception) {
@@ -1243,7 +1260,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             }
         }
 
-        return list;
+        return answer;
     }
 
     @Override
@@ -1293,6 +1310,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             }
         }
 
+        	
         return list;
     }
 

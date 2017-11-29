@@ -262,7 +262,7 @@ public class TestCaseService implements ITestCaseService {
     }
 
     @Override
-    public List<TestCase> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries) {
+    public AnswerItem<List<TestCase>> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries) {
     	String[] status = null;
     	String[] system = null;
     	String[] application = null;
