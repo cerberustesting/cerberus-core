@@ -189,6 +189,7 @@ function aoColumnsFunc() {
         {
             "data": "description",
             "sName": "exe.description",
+            "bSearchable": false,
             "title": doc.getDocOnline("testcase", "Description"),
             "sWidth": "150px",
             "sDefaultContent": ""

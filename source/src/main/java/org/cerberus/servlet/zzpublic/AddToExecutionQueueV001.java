@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.logging.Level;
 import javax.servlet.ServletException;
@@ -290,13 +291,18 @@ public class AddToExecutionQueueV001 extends HttpServlet {
                 // If no countries are found, there is no need to get the testcase list. None will be returned.
                 selectedTests = new ArrayList<>();
                 testcases = testCaseService.findTestCaseByCampaignNameAndCountries(campaign, countries.toArray(new String[countries.size()]));
-                for (final TestCase testCase : testcases.getItem()) {
-                    selectedTests.add(new HashMap<String, String>() {
-                        {
-                            put(PARAMETER_SELECTED_TEST_KEY_TEST, testCase.getTest());
-                            put(PARAMETER_SELECTED_TEST_KEY_TESTCASE, testCase.getTestCase());
-                        }
-                    });
+                System.out.print(testcases.getItem().toString());
+                
+                ListIterator<TestCase> it = testcases.getItem().listIterator();
+                while(it.hasNext()){
+                   TestCase str = it.next();
+                   selectedTests.add(new HashMap<String, String>() {
+                       {
+                           put(PARAMETER_SELECTED_TEST_KEY_TEST, str.getTest());
+                           put(PARAMETER_SELECTED_TEST_KEY_TESTCASE, str.getTestCase());
+                       }
+                   });
+                  
                 }
             }
         }
