@@ -263,36 +263,32 @@ public class TestCaseService implements ITestCaseService {
 
     @Override
     public List<TestCase> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries) {
-    	String status = null;
-    	String system = null;
-    	String application = null;
-    	String priority = null;
+    	String[] status = null;
+    	String[] system = null;
+    	String[] application = null;
+    	String[] priority = null;
     	
     	AnswerItem<Map<String, List<String>>> parameters = campaignParameterService.parseParametersByCampaign(campaign);
     	
-    	Set cles = parameters.getItem().keySet();
-    	Iterator it = cles.iterator();
-    	while (it.hasNext()){
-    	   Object cle = it.next();
-    	   Object valeur = parameters.getItem().get(cle); 
+    	for (Map.Entry<String, List<String>> entry : parameters.getItem().entrySet()){
+    	   String cle = entry.getKey();
+    	   List<String> valeur = entry.getValue();
     	   
-    	   if(cle.equals(CampaignParameter.PRIORITY_PARAMETER)) 
-    	   {
-    		   priority = parameters.getItem().get(CampaignParameter.PRIORITY_PARAMETER).get(0);  
+    	   switch(cle) {
+    	       case CampaignParameter.PRIORITY_PARAMETER:
+    	    	   priority = valeur.toArray(new String[valeur.size()]); 
+    	    	   break;
+    	       case CampaignParameter.STATUS_PARAMETER:
+    	    	   status = valeur.toArray(new String[valeur.size()]);
+    	    	   break;
+    	       case CampaignParameter.SYSTEM_PARAMETER:
+    	    	   system = valeur.toArray(new String[valeur.size()]);
+    	    	   break;
+    	       case CampaignParameter.APPLICATION_PARAMETER:
+    	    	   application = valeur.toArray(new String[valeur.size()]);
+    	    	   break;
     	   }
-    	   if(cle.equals(CampaignParameter.STATUS_PARAMETER)) 
-    	   {
-    		   status = parameters.getItem().get(CampaignParameter.STATUS_PARAMETER).get(0);  
-    	   }
-    	   if(cle.equals(CampaignParameter.SYSTEM_PARAMETER)) 
-    	   {
-    		   system = parameters.getItem().get(CampaignParameter.SYSTEM_PARAMETER).get(0); 
-    	   }
-    	   if(cle.equals(CampaignParameter.APPLICATION_PARAMETER)) 
-    	   {
-    		   application = parameters.getItem().get(CampaignParameter.APPLICATION_PARAMETER).get(0);  
-    	   }
-    	}	
+    	}
 
     	AnswerList label = campaignLabelService.readByVarious(campaign);
     	AnswerList battery = campaignContentService.readByCampaign(campaign);
@@ -300,9 +296,9 @@ public class TestCaseService implements ITestCaseService {
     	boolean ifBattery = (battery.getTotalRows() > 0) ? true : false;
     	
     	if(ifLabel || ifBattery) {
-    		return this.testCaseDao.findTestCaseByCampaignNameAndCountriesWithLabelOrBattery(campaign, countries, status, system, application, priority);
+    		return this.testCaseDao.findTestCaseByCampaignNameAndCountries(campaign, countries, true ,status, system, application, priority);
     	}else {
-    		return this.testCaseDao.findTestCaseByCampaignNameAndCountriesWithoutLabelOrBattery(campaign, countries, status, system, application, priority);
+    		return this.testCaseDao.findTestCaseByCampaignNameAndCountries(campaign, countries, false ,status, system, application, priority);
     	}
     }
 
