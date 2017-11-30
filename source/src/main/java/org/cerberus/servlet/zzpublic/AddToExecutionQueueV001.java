@@ -291,7 +291,6 @@ public class AddToExecutionQueueV001 extends HttpServlet {
                 // If no countries are found, there is no need to get the testcase list. None will be returned.
                 selectedTests = new ArrayList<>();
                 testcases = testCaseService.findTestCaseByCampaignNameAndCountries(campaign, countries.toArray(new String[countries.size()]));
-                System.out.print(testcases.getItem().toString());
                 
                 ListIterator<TestCase> it = testcases.getItem().listIterator();
                 while(it.hasNext()){

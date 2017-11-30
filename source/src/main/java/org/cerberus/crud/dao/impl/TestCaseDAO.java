@@ -1129,14 +1129,13 @@ public class TestCaseDAO implements ITestCaseDAO {
         tcParameters.put("system", system);
         tcParameters.put("application", application);
         tcParameters.put("priority", priority);
+        tcParameters.put("countries", countries);
         
-        StringBuilder query = null;
+        StringBuilder query = new StringBuilder("SELECT tec.*, app.system FROM testcase tec ");
         
         if(withLabelOrBattery) {
         
-	        query = new StringBuilder("SELECT tec.*, app.system ")
-	                .append("FROM testcase tec ")
-	                .append("LEFT OUTER JOIN application app ON app.application = tec.application ")
+	        query.append("LEFT OUTER JOIN application app ON app.application = tec.application ")
 	                .append("INNER JOIN testcasecountry tcc ON tcc.Test = tec.Test and tcc.TestCase = tec.TestCase ")
 	                .append("LEFT JOIN testbatterycontent tbc ON tbc.Test = tec.Test and tbc.TestCase = tec.TestCase ")
 	                .append("LEFT JOIN campaigncontent cpc ON cpc.testbattery = tbc.testbattery ")
@@ -1144,9 +1143,7 @@ public class TestCaseDAO implements ITestCaseDAO {
 	                .append("LEFT JOIN campaignlabel cpl ON cpl.labelId = tel.labelId ")
 	                .append("WHERE ((cpc.campaign = ?) OR (cpl.campaign = ?) )");
         }else {
-        	query = new StringBuilder("SELECT tec.*, app.system ")
-                    .append("FROM testcase tec ")
-                    .append("LEFT OUTER JOIN application app ON app.application = tec.application ")
+        	query.append("LEFT OUTER JOIN application app ON app.application = tec.application ")
                     .append("INNER JOIN testcasecountry tcc ON tcc.Test = tec.Test and tcc.TestCase = tec.TestCase ")
                     .append("WHERE 1=1");
         }
@@ -1154,40 +1151,25 @@ public class TestCaseDAO implements ITestCaseDAO {
         for(Entry<String, String[]> entry : tcParameters.entrySet()) {
             String cle = entry.getKey();
             String[] valeur = entry.getValue();
-            if(valeur != null && cle != "system") {
-            	query.append(" AND tec."+cle+" in (");
-            	for (int i = 0; i < valeur.length; i++) {
-                    query.append("?");
-                    if (i < valeur.length - 1) {
-                        query.append(", ");
-                    }else {
-                    	query.append(")");
-                    }
-                }
-	
-            }else if(valeur != null) {
-            	query.append(" AND app.system = ?");
-            	for (int i = 0; i < valeur.length; i++) {
-                    query.append("?");
-                    if (i < valeur.length - 1) {
-                        query.append(", ");
-                    }else {
-                    	query.append(")");
-                    }
+            if(valeur != null && valeur.length > 0) {
+            	if(!cle.equals("system") && !cle.equals("countries")) {
+            		query.append(" AND tec."+cle+" in (?");
+            	}else if(cle.equals("system")) {
+            		query.append(" AND app.system in (?"); 
+            	}else {
+            		query.append(" AND tcc.Country in (?");
+            	}
+            if(valeur.length > 1) {
+            	for (int i = 0; i < valeur.length - 1; i++) {
+                    query.append(",?");
                 }
             }
-        }
-
-        query.append(" AND tcc.Country in (");
-        for (int i = 0; i < countries.length; i++) {
-            query.append("?");
-            if (i < countries.length - 1) {
-                query.append(", ");
+        	query.append(")");
             }
         }
-        query.append(")");
+        
         query.append(" GROUP BY tec.test, tec.testcase LIMIT ?");
-
+        
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
@@ -1205,15 +1187,11 @@ public class TestCaseDAO implements ITestCaseDAO {
                 
                 for(Entry<String, String[]> entry : tcParameters.entrySet()) {
                     String[] valeur = entry.getValue();
-                    if(valeur != null) {
+                    if(valeur != null && valeur.length > 0) {
                     	for (String c : valeur) {
                             preStat.setString(i++, c);
                         }
                     }
-                }
-
-                for (String c : countries) {
-                    preStat.setString(i++, c);
                 }
                 
                 preStat.setInt(i++, maxReturn);
@@ -1259,7 +1237,6 @@ public class TestCaseDAO implements ITestCaseDAO {
                 LOG.warn(e.toString());
             }
         }
-
         return answer;
     }
 
