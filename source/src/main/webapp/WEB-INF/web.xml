@@ -167,6 +167,7 @@
     <servlet>
         <servlet-name>ReadTestCaseExecutionMedia</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.testexecution.ReadTestCaseExecutionMedia</servlet-class>
+        <description>This Servlet is used to Record a new Release inside the pending sprint.</description>
     </servlet>
     <servlet>
         <description>This Servlet is used to Record a new Release inside the pending sprint.</description>
@@ -344,10 +345,10 @@
         <servlet-name>ReadCountryEnvLink</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.countryenvironment.ReadCountryEnvLink</servlet-class>
     </servlet>
-    <servlet>
-        <servlet-name>UpdateBatchInvariant</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.batch.UpdateBatchInvariant</servlet-class>
-    </servlet>
+    
+    
+    
+    
     <servlet>
         <servlet-name>CreateBatchInvariant</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.batch.CreateBatchInvariant</servlet-class>
@@ -989,10 +990,6 @@
         <url-pattern>/CalculatePropertyForTestCase</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>UpdateTestCaseDetail</servlet-name>
-        <url-pattern>/UpdateTestCaseDetail</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>GetTestCaseList</servlet-name>
         <url-pattern>/GetTestCaseList</url-pattern>
     </servlet-mapping>
@@ -1603,8 +1600,10 @@
     <servlet-mapping>
         <servlet-name>ResultCIV002</servlet-name>
         <url-pattern>/ResultCIV002</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
+    </servlet-mapping><servlet-mapping>
+        <servlet-name>UpdateTestCaseExecution</servlet-name>
+        <url-pattern>/UpdateTestCaseExecution</url-pattern>
+    </servlet-mapping><servlet-mapping>
         <servlet-name>UpdateTestCaseExecution</servlet-name>
         <url-pattern>/UpdateTestCaseExecution</url-pattern>
     </servlet-mapping>
@@ -2187,7 +2186,4 @@
     <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
-    <listener>
-        <listener-class>org.cerberus.crud.entity.SessionCounterListener</listener-class>
-    </listener>
-</web-app>
+    </web-app>

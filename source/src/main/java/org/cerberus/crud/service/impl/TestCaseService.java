@@ -68,7 +68,7 @@ import org.cerberus.enums.MessageGeneralEnum;
 public class TestCaseService implements ITestCaseService {
 
     private static final Logger LOG = LogManager.getLogger(TestCaseService.class);
-    
+
     @Autowired
     private ITestCaseDAO testCaseDao;
     @Autowired
@@ -247,11 +247,6 @@ public class TestCaseService implements ITestCaseService {
     }
 
     @Override
-    public void updateTestCaseField(TestCase tc, String columnName, String value) {
-        testCaseDao.updateTestCaseField(tc, columnName, value);
-    }
-
-    @Override
     public void updateTestCase(TestCase tc) throws CerberusException {
         testCaseDao.updateTestCase(tc);
     }
@@ -263,43 +258,43 @@ public class TestCaseService implements ITestCaseService {
 
     @Override
     public AnswerItem<List<TestCase>> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries) {
-    	String[] status = null;
-    	String[] system = null;
-    	String[] application = null;
-    	String[] priority = null;
-    	
-    	AnswerItem<Map<String, List<String>>> parameters = campaignParameterService.parseParametersByCampaign(campaign);
-    	
-    	for (Map.Entry<String, List<String>> entry : parameters.getItem().entrySet()){
-    	   String cle = entry.getKey();
-    	   List<String> valeur = entry.getValue();
-    	   
-    	   switch(cle) {
-    	       case CampaignParameter.PRIORITY_PARAMETER:
-    	    	   priority = valeur.toArray(new String[valeur.size()]); 
-    	    	   break;
-    	       case CampaignParameter.STATUS_PARAMETER:
-    	    	   status = valeur.toArray(new String[valeur.size()]);
-    	    	   break;
-    	       case CampaignParameter.SYSTEM_PARAMETER:
-    	    	   system = valeur.toArray(new String[valeur.size()]);
-    	    	   break;
-    	       case CampaignParameter.APPLICATION_PARAMETER:
-    	    	   application = valeur.toArray(new String[valeur.size()]);
-    	    	   break;
-    	   }
-    	}
+        String[] status = null;
+        String[] system = null;
+        String[] application = null;
+        String[] priority = null;
 
-    	AnswerList label = campaignLabelService.readByVarious(campaign);
-    	AnswerList battery = campaignContentService.readByCampaign(campaign);
-    	boolean ifLabel = (label.getTotalRows() > 0) ? true : false;
-    	boolean ifBattery = (battery.getTotalRows() > 0) ? true : false;
-    	
-    	if(ifLabel || ifBattery) {
-    		return this.testCaseDao.findTestCaseByCampaignNameAndCountries(campaign, countries, true ,status, system, application, priority);
-    	}else {
-    		return this.testCaseDao.findTestCaseByCampaignNameAndCountries(campaign, countries, false ,status, system, application, priority);
-    	}
+        AnswerItem<Map<String, List<String>>> parameters = campaignParameterService.parseParametersByCampaign(campaign);
+
+        for (Map.Entry<String, List<String>> entry : parameters.getItem().entrySet()) {
+            String cle = entry.getKey();
+            List<String> valeur = entry.getValue();
+
+            switch (cle) {
+                case CampaignParameter.PRIORITY_PARAMETER:
+                    priority = valeur.toArray(new String[valeur.size()]);
+                    break;
+                case CampaignParameter.STATUS_PARAMETER:
+                    status = valeur.toArray(new String[valeur.size()]);
+                    break;
+                case CampaignParameter.SYSTEM_PARAMETER:
+                    system = valeur.toArray(new String[valeur.size()]);
+                    break;
+                case CampaignParameter.APPLICATION_PARAMETER:
+                    application = valeur.toArray(new String[valeur.size()]);
+                    break;
+            }
+        }
+
+        AnswerList label = campaignLabelService.readByVarious(campaign);
+        AnswerList battery = campaignContentService.readByCampaign(campaign);
+        boolean ifLabel = (label.getTotalRows() > 0) ? true : false;
+        boolean ifBattery = (battery.getTotalRows() > 0) ? true : false;
+
+        if (ifLabel || ifBattery) {
+            return this.testCaseDao.findTestCaseByCampaignNameAndCountries(campaign, countries, true, status, system, application, priority);
+        } else {
+            return this.testCaseDao.findTestCaseByCampaignNameAndCountries(campaign, countries, false, status, system, application, priority);
+        }
     }
 
     @Override

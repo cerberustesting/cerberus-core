@@ -77,6 +77,7 @@ public class TestCaseDAO implements ITestCaseDAO {
     private IParameterService parameterService;
 
     public static class Query {
+
         private static final String FIND_BY_APPLICATION = "SELECT * FROM `testcase` tec WHERE `application` = ?";
     }
 
@@ -595,11 +596,10 @@ public class TestCaseDAO implements ITestCaseDAO {
         List<TestCase> testCases = null;
         try (
                 final Connection connection = databaseSpring.connect();
-                final PreparedStatement statement = connection.prepareStatement(Query.FIND_BY_APPLICATION)
-        ) {
+                final PreparedStatement statement = connection.prepareStatement(Query.FIND_BY_APPLICATION)) {
             statement.setString(1, application);
             testCases = new ArrayList<>();
-            for (final ResultSet resultSet = statement.executeQuery(); resultSet.next(); ) {
+            for (final ResultSet resultSet = statement.executeQuery(); resultSet.next();) {
                 testCases.add(loadFromResultSet(resultSet));
             }
         } catch (SQLException e) {
@@ -964,50 +964,6 @@ public class TestCaseDAO implements ITestCaseDAO {
     }
 
     @Override
-    public void updateTestCaseField(TestCase tc, String columnName, String value) {
-        boolean throwExcep = false;
-        StringBuilder query = new StringBuilder();
-        query.append("update testcase set `");
-        query.append(columnName);
-        query.append("`=? where `test`=? and `testcase`=? ");
-
-        // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query.toString());
-        }
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
-            try {
-                preStat.setString(1, value);
-                preStat.setString(2, tc.getTest());
-                preStat.setString(3, tc.getTestCase());
-
-                preStat.executeUpdate();
-                throwExcep = false;
-
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-
-            }
-        } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-            }
-        }
-
-    }
-
-    @Override
     public void updateTestCase(TestCase testCase) throws CerberusException {
         final String sql = "UPDATE testcase tc SET tc.Application = ?, tc.Project = ?, tc.BehaviorOrValueExpected = ?, tc.activeQA = ?, tc.activeUAT = ?, tc.activePROD = ?, "
                 + "tc.Priority = ?, tc.Status = ?, tc.TcActive = ?, tc.Description = ?, tc.Group = ?, tc.HowTo = ?, tc.Comment = ?, tc.Ticket = ?, tc.FromBuild = ?, "
@@ -1022,7 +978,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(sql);
             try {
-                int i=1;
+                int i = 1;
                 preStat.setString(i++, testCase.getApplication());
                 preStat.setString(i++, testCase.getProject());
                 preStat.setString(i++, testCase.getBehaviorOrValueExpected());
@@ -1120,59 +1076,59 @@ public class TestCaseDAO implements ITestCaseDAO {
     @Override
     public AnswerItem<List<TestCase>> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries, boolean withLabelOrBattery, String[] status, String[] system, String[] application, String[] priority) {
         Integer maxReturn = parameterService.getParameterIntegerByKey("cerberus_testcase_maxreturn", "", null);
-    	List<TestCase> list = null;
-    	AnswerItem answer = new AnswerItem();
-    	MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        List<TestCase> list = null;
+        AnswerItem answer = new AnswerItem();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        HashMap<String, String[]> tcParameters =  new HashMap<String, String[]>();
+        HashMap<String, String[]> tcParameters = new HashMap<String, String[]>();
         tcParameters.put("status", status);
         tcParameters.put("system", system);
         tcParameters.put("application", application);
         tcParameters.put("priority", priority);
-        
+
         StringBuilder query = null;
-        
-        if(withLabelOrBattery) {
-        
-	        query = new StringBuilder("SELECT tec.*, app.system ")
-	                .append("FROM testcase tec ")
-	                .append("LEFT OUTER JOIN application app ON app.application = tec.application ")
-	                .append("INNER JOIN testcasecountry tcc ON tcc.Test = tec.Test and tcc.TestCase = tec.TestCase ")
-	                .append("LEFT JOIN testbatterycontent tbc ON tbc.Test = tec.Test and tbc.TestCase = tec.TestCase ")
-	                .append("LEFT JOIN campaigncontent cpc ON cpc.testbattery = tbc.testbattery ")
-	                .append("LEFT JOIN testcaselabel tel ON tec.test = tel.test AND tec.testcase = tel.testcase ")
-	                .append("LEFT JOIN campaignlabel cpl ON cpl.labelId = tel.labelId ")
-	                .append("WHERE ((cpc.campaign = ?) OR (cpl.campaign = ?) )");
-        }else {
-        	query = new StringBuilder("SELECT tec.*, app.system ")
+
+        if (withLabelOrBattery) {
+
+            query = new StringBuilder("SELECT tec.*, app.system ")
+                    .append("FROM testcase tec ")
+                    .append("LEFT OUTER JOIN application app ON app.application = tec.application ")
+                    .append("INNER JOIN testcasecountry tcc ON tcc.Test = tec.Test and tcc.TestCase = tec.TestCase ")
+                    .append("LEFT JOIN testbatterycontent tbc ON tbc.Test = tec.Test and tbc.TestCase = tec.TestCase ")
+                    .append("LEFT JOIN campaigncontent cpc ON cpc.testbattery = tbc.testbattery ")
+                    .append("LEFT JOIN testcaselabel tel ON tec.test = tel.test AND tec.testcase = tel.testcase ")
+                    .append("LEFT JOIN campaignlabel cpl ON cpl.labelId = tel.labelId ")
+                    .append("WHERE ((cpc.campaign = ?) OR (cpl.campaign = ?) )");
+        } else {
+            query = new StringBuilder("SELECT tec.*, app.system ")
                     .append("FROM testcase tec ")
                     .append("LEFT OUTER JOIN application app ON app.application = tec.application ")
                     .append("INNER JOIN testcasecountry tcc ON tcc.Test = tec.Test and tcc.TestCase = tec.TestCase ")
                     .append("WHERE 1=1");
         }
 
-        for(Entry<String, String[]> entry : tcParameters.entrySet()) {
+        for (Entry<String, String[]> entry : tcParameters.entrySet()) {
             String cle = entry.getKey();
             String[] valeur = entry.getValue();
-            if(valeur != null && cle != "system") {
-            	query.append(" AND tec."+cle+" in (");
-            	for (int i = 0; i < valeur.length; i++) {
+            if (valeur != null && cle != "system") {
+                query.append(" AND tec." + cle + " in (");
+                for (int i = 0; i < valeur.length; i++) {
                     query.append("?");
                     if (i < valeur.length - 1) {
                         query.append(", ");
-                    }else {
-                    	query.append(")");
+                    } else {
+                        query.append(")");
                     }
                 }
-	
-            }else if(valeur != null) {
-            	query.append(" AND app.system = ?");
-            	for (int i = 0; i < valeur.length; i++) {
+
+            } else if (valeur != null) {
+                query.append(" AND app.system = ?");
+                for (int i = 0; i < valeur.length; i++) {
                     query.append("?");
                     if (i < valeur.length - 1) {
                         query.append(", ");
-                    }else {
-                    	query.append(")");
+                    } else {
+                        query.append(")");
                     }
                 }
             }
@@ -1197,16 +1153,16 @@ public class TestCaseDAO implements ITestCaseDAO {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
                 int i = 1;
-                
-                if(withLabelOrBattery) {
-                	preStat.setString(i++, campaign);
+
+                if (withLabelOrBattery) {
+                    preStat.setString(i++, campaign);
                     preStat.setString(i++, campaign);
                 }
-                
-                for(Entry<String, String[]> entry : tcParameters.entrySet()) {
+
+                for (Entry<String, String[]> entry : tcParameters.entrySet()) {
                     String[] valeur = entry.getValue();
-                    if(valeur != null) {
-                    	for (String c : valeur) {
+                    if (valeur != null) {
+                        for (String c : valeur) {
                             preStat.setString(i++, c);
                         }
                     }
@@ -1215,9 +1171,9 @@ public class TestCaseDAO implements ITestCaseDAO {
                 for (String c : countries) {
                     preStat.setString(i++, c);
                 }
-                
+
                 preStat.setInt(i++, maxReturn);
-                
+
                 ResultSet resultSet = preStat.executeQuery();
                 list = new ArrayList<TestCase>();
                 try {
@@ -1240,7 +1196,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                 } catch (SQLException exception) {
                     LOG.error("Unable to execute query : " + exception.toString());
                 } finally {
-                	answer.setResultMessage(msg);
+                    answer.setResultMessage(msg);
                     resultSet.close();
                 }
             } catch (SQLException exception) {
@@ -1310,7 +1266,6 @@ public class TestCaseDAO implements ITestCaseDAO {
             }
         }
 
-        	
         return list;
     }
 
