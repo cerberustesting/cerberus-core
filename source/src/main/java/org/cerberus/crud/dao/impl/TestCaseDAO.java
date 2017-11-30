@@ -77,6 +77,7 @@ public class TestCaseDAO implements ITestCaseDAO {
     private IParameterService parameterService;
 
     public static class Query {
+
         private static final String FIND_BY_APPLICATION = "SELECT * FROM `testcase` tec WHERE `application` = ?";
     }
 
@@ -595,11 +596,10 @@ public class TestCaseDAO implements ITestCaseDAO {
         List<TestCase> testCases = null;
         try (
                 final Connection connection = databaseSpring.connect();
-                final PreparedStatement statement = connection.prepareStatement(Query.FIND_BY_APPLICATION)
-        ) {
+                final PreparedStatement statement = connection.prepareStatement(Query.FIND_BY_APPLICATION)) {
             statement.setString(1, application);
             testCases = new ArrayList<>();
-            for (final ResultSet resultSet = statement.executeQuery(); resultSet.next(); ) {
+            for (final ResultSet resultSet = statement.executeQuery(); resultSet.next();) {
                 testCases.add(loadFromResultSet(resultSet));
             }
         } catch (SQLException e) {
@@ -964,50 +964,6 @@ public class TestCaseDAO implements ITestCaseDAO {
     }
 
     @Override
-    public void updateTestCaseField(TestCase tc, String columnName, String value) {
-        boolean throwExcep = false;
-        StringBuilder query = new StringBuilder();
-        query.append("update testcase set `");
-        query.append(columnName);
-        query.append("`=? where `test`=? and `testcase`=? ");
-
-        // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query.toString());
-        }
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
-            try {
-                preStat.setString(1, value);
-                preStat.setString(2, tc.getTest());
-                preStat.setString(3, tc.getTestCase());
-
-                preStat.executeUpdate();
-                throwExcep = false;
-
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-
-            }
-        } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-            }
-        }
-
-    }
-
-    @Override
     public void updateTestCase(TestCase testCase) throws CerberusException {
         final String sql = "UPDATE testcase tc SET tc.Application = ?, tc.Project = ?, tc.BehaviorOrValueExpected = ?, tc.activeQA = ?, tc.activeUAT = ?, tc.activePROD = ?, "
                 + "tc.Priority = ?, tc.Status = ?, tc.TcActive = ?, tc.Description = ?, tc.Group = ?, tc.HowTo = ?, tc.Comment = ?, tc.Ticket = ?, tc.FromBuild = ?, "
@@ -1022,7 +978,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(sql);
             try {
-                int i=1;
+                int i = 1;
                 preStat.setString(i++, testCase.getApplication());
                 preStat.setString(i++, testCase.getProject());
                 preStat.setString(i++, testCase.getBehaviorOrValueExpected());
@@ -1237,9 +1193,10 @@ public class TestCaseDAO implements ITestCaseDAO {
                 LOG.warn(e.toString());
             }
         }
+
         return answer;
     }
-
+    
     @Override
     public List<TestCase> findTestCaseByTestSystem(String test, String system) {
         List<TestCase> list = null;
@@ -1287,7 +1244,6 @@ public class TestCaseDAO implements ITestCaseDAO {
             }
         }
 
-        	
         return list;
     }
 

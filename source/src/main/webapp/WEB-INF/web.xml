@@ -145,10 +145,6 @@
         <servlet-class>org.cerberus.servlet.crud.usermanagement.ChangeUserPasswordAdmin</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>UpdateTestCaseDetail</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.test.UpdateTestCaseDetail</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>TCEwwwDetail</servlet-name>
         <servlet-class>org.cerberus.servlet.reporting.TCEwwwDetail</servlet-class>
     </servlet>
@@ -174,9 +170,7 @@
         <servlet-class>org.cerberus.servlet.zzpublic.NewRelease</servlet-class>
     </servlet>
     <servlet>
-        <description>This Servlet is used to monitor from Nagios the number of execution performed for Performance
-            monitoring.
-        </description>
+        <description>This Servlet is used to monitor from Nagios the number of execution performed for Performance monitoring.</description>
         <servlet-name>GetNumberOfExecutions</servlet-name>
         <servlet-class>org.cerberus.servlet.zzpublic.GetNumberOfExecutions</servlet-class>
     </servlet>
@@ -989,10 +983,6 @@
         <url-pattern>/CalculatePropertyForTestCase</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>UpdateTestCaseDetail</servlet-name>
-        <url-pattern>/UpdateTestCaseDetail</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>GetTestCaseList</servlet-name>
         <url-pattern>/GetTestCaseList</url-pattern>
     </servlet-mapping>
@@ -1767,7 +1757,6 @@
             <url-pattern>/CreateTestCase</url-pattern>
             <url-pattern>/CreateTestCaseLabel</url-pattern>
             <url-pattern>/DeleteTestCaseLabel</url-pattern>
-            <url-pattern>/UpdateTestCaseDetail</url-pattern>
             <url-pattern>/ImportSeleniumIDE</url-pattern>
             <url-pattern>/ImportTestCaseStep</url-pattern>
             <url-pattern>/ImportPropertyOfATestCaseToAnOtherTestCase</url-pattern>
@@ -2186,8 +2175,5 @@
     </listener>
     <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-    </listener>
-    <listener>
-        <listener-class>org.cerberus.crud.entity.SessionCounterListener</listener-class>
     </listener>
 </web-app>

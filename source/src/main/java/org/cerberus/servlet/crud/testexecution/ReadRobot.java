@@ -226,6 +226,10 @@ public class ReadRobot extends HttpServlet {
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
             for (Robot robot : (List<Robot>) resp.getDataList()) {
+                if (robot != null) {
+                    robot.setHostPassword(null); // hide the password to the view
+                }
+
                 jsonArray.put(convertRobotToJSONObject(robot));
             }
         }
@@ -252,6 +256,9 @@ public class ReadRobot extends HttpServlet {
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item and convert it to JSONformat
             Robot lib = (Robot) answer.getItem();
+            if (lib != null) {
+                lib.setHostPassword(null); // hide the password to the view
+            }
             JSONObject response = convertRobotToJSONObject(lib);
             object.put("contentTable", response);
         }
@@ -273,11 +280,11 @@ public class ReadRobot extends HttpServlet {
         try {
             Robot robotObj = libService.readByKey(robot);
 
-            if(robotObj!=null) {
+            if (robotObj != null) {
                 robotObj.setHostPassword(null); // hide the password to the view
             }
 
-            if(robot==null) {
+            if (robot == null) {
                 item.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND));
             } else {
                 //if the service returns an OK message then we can get the item and convert it to JSONformat
@@ -291,7 +298,7 @@ public class ReadRobot extends HttpServlet {
             }
         } catch (CerberusException e) {
             item.setItem(robot);
-            item.setResultMessage(new MessageEvent(e.getMessageError().getCodeString(),e.getMessageError().getDescription()));
+            item.setResultMessage(new MessageEvent(e.getMessageError().getCodeString(), e.getMessageError().getDescription()));
         }
 
         object.put("hasPermissionsCreate", libService.hasPermissionsCreate(null, request));

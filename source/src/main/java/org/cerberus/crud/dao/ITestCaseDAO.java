@@ -71,16 +71,7 @@ public interface ITestCaseDAO {
     boolean deleteTestCase(TestCase testCase);
 
     /**
-     * @param tc
-     * @param columnName Name of the column to update
-     * @param value      New value of the field columnName for the key name
-     */
-    void updateTestCaseField(TestCase tc, String columnName, String value);
-
-
-
-    /**
-     * @param campaign  the campaign name
+     * @param campaign the campaign name
      * @param countries arrays of country
      * @param status status of test case
      * @param system of test case
@@ -89,10 +80,9 @@ public interface ITestCaseDAO {
      * @return the list of TCase used in the campaign
      * @since 1.0.2
      */
-    AnswerItem<List<TestCase>> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries, boolean withLabelOrBattery ,String[] status, String[] system, String[] application, String[] priority);
-    
-    public void updateTestCase(TestCase tc) throws CerberusException;
+    AnswerItem<List<TestCase>> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries, boolean withLabelOrBattery, String[] status, String[] system, String[] application, String[] priority);
 
+    public void updateTestCase(TestCase tc) throws CerberusException;
 
     String getMaxNumberTestCase(String test);
 
@@ -124,7 +114,7 @@ public interface ITestCaseDAO {
      * @return
      */
     public AnswerList readByVarious(String[] test, String[] idProject, String[] app, String[] creator, String[] implementer, String[] system,
-                                            String[] testBattery, String[] campaign, String[] labelid, String[] priority, String[] group, String[] status, int length);
+            String[] testBattery, String[] campaign, String[] labelid, String[] priority, String[] group, String[] status, int length);
 
     public AnswerItem readByKey(String test, String testCase);
 
@@ -159,7 +149,7 @@ public interface ITestCaseDAO {
      * @param resultSet ResultSet relative to select from table TestCase
      * @return object {@link TestCase}
      * @throws SQLException when trying to get value from
-     *                      {@link java.sql.ResultSet#getString(String)}
+     * {@link java.sql.ResultSet#getString(String)}
      * @see FactoryTestCase
      */
     public TestCase loadFromResultSet(ResultSet resultSet) throws SQLException;

@@ -476,13 +476,19 @@ public class WebDriverService implements IWebDriverService {
                         return result;
                     } catch (java.util.concurrent.TimeoutException ex) {
                         // handle the timeout
-                        LOG.warn("Exception clicking on element :" + ex);
+                        LOG.warn("Exception clicking on element :" + ex, ex);
                         message = new MessageEvent(MessageEventEnum.ACTION_FAILED_TIMEOUT);
                         message.setDescription(message.getDescription().replace("%TIMEOUT%", String.valueOf(session.getCerberus_selenium_wait_element())));
                     } catch (InterruptedException e) {
                         // handle the interrupts
+                        LOG.warn("Exception clicking on element :" + e, e);
+                        message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CLICK);
+                        message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()).replace("%MESS%", e.toString()));
                     } catch (ExecutionException e) {
                         // handle other exceptions
+                        LOG.warn("Exception clicking on element :" + e, e);
+                        message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CLICK_NO_SUCH_ELEMENT);
+                        message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()).replace("%MESS%", e.toString()));
                     } finally {
                         future.cancel(true);
                     }
