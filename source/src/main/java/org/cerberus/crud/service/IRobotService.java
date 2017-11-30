@@ -46,7 +46,7 @@ public interface IRobotService {
      * @param robot
      * @return
      */
-    AnswerItem<Robot> readByKey(String robot);
+    Robot readByKey(String robot) throws CerberusException;
 
     /**
      *

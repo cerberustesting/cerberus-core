@@ -79,6 +79,13 @@ public class MessageEvent {
         this.source = tempMessage;
     }
 
+    public MessageEvent(String codeString, String description) {
+        this.code=0;
+        this.codeString=codeString;
+        this.description=description;
+    }
+
+
     public int getCode() {
         return this.code;
     }

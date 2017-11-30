@@ -19,6 +19,8 @@
  */
 package org.cerberus.crud.entity;
 
+import org.cerberus.util.StringUtil;
+
 import java.util.List;
 
 /**
@@ -31,6 +33,8 @@ public class Robot {
     private String robot;
     private String host;
     private String port;
+    private String hostUser;
+    private String hostPassword;
     private String platform;
     private String browser;
     private String version;
@@ -88,6 +92,14 @@ public class Robot {
         return host;
     }
 
+    public String getHostWithCredential() {
+        String credential = "";
+        if(!StringUtil.isNullOrEmpty(this.getHostUser()))
+            credential = this.getHostUser() + ":" + this.getHostPassword() + "@";
+
+        return credential + this.getHost();
+    }
+
     public void setHost(String host) {
         this.host = host;
     }
@@ -140,4 +152,19 @@ public class Robot {
 		this.capabilities = capabilities;
 	}
 
+    public String getHostUser() {
+        return hostUser;
+    }
+
+    public void setHostUser(String hostUser) {
+        this.hostUser = hostUser;
+    }
+
+    public String getHostPassword() {
+        return hostPassword;
+    }
+
+    public void setHostPassword(String hostPassword) {
+        this.hostPassword = hostPassword;
+    }
 }

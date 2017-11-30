@@ -99,7 +99,11 @@ public class UpdateRobot extends HttpServlet {
         String screenSize = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("screensize"), "", charset);
         // Parameter that we cannot secure as we need the html --> We DECODE them
         String host = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("host"), null, charset);
-        
+
+        String hostUser = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("hostUsername"), null, charset);
+        String hostPassword = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("hostPassword"), null, charset);
+
+
         List<RobotCapability> capabilities = (List<RobotCapability>) (request.getParameter("capabilities") == null ? Collections.emptyList() : gson.fromJson(request.getParameter("capabilities"), new TypeToken<List<RobotCapability>>(){}.getType()));
         // Securing capabilities by setting them the associated robot name
         // Check also if there is no duplicated capability
@@ -193,6 +197,9 @@ public class UpdateRobot extends HttpServlet {
                 robotData.setUserAgent(userAgent);
                 robotData.setCapabilities(capabilities);
                 robotData.setScreenSize(screenSize);
+                robotData.setHostUser(hostUser);
+                robotData.setHostPassword(hostPassword);
+
                 ans = robotService.update(robotData);
 
                 if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {

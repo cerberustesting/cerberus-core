@@ -230,12 +230,12 @@ public class RunTestCase extends HttpServlet {
         }
 
         // If Robot is feeded, we check it exist. If it exist, we overwrite the associated parameters.
-        if (!"".equals(robot)) {
+        if (!StringUtil.isNullOrEmpty(robot)) {
             IRobotService robotService = appContext.getBean(IRobotService.class);
             try {
-                Robot robObj = robotService.convert(robotService.readByKey(robot));
+                Robot robObj = robotService.readByKey(robot);
                 // If Robot parameter is defined and we can find the robot, we overwrite the corresponding parameters.
-                ss_ip = ParameterParserUtil.parseStringParam(robObj.getHost(), ss_ip);
+                ss_ip = ParameterParserUtil.parseStringParam(robObj.getHostWithCredential(), ss_ip);
                 ss_p = ParameterParserUtil.parseStringParam(String.valueOf(robObj.getPort()), ss_p);
                 browser = ParameterParserUtil.parseStringParam(robObj.getBrowser(), browser);
                 version = ParameterParserUtil.parseStringParam(robObj.getVersion(), version);

@@ -49,6 +49,7 @@ import org.cerberus.crud.service.IRobotService;
 import org.cerberus.crud.service.ITestBatteryService;
 import org.cerberus.crud.service.ITestCaseExecutionService;
 import org.cerberus.crud.service.impl.LogEventService;
+import org.cerberus.util.StringUtil;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
@@ -121,10 +122,10 @@ public class GetCampaignExecutionsCommand extends HttpServlet {
         if (robotName != null && !"".equals(robotName.trim())) {
             try {
                 robotService = appContext.getBean(IRobotService.class);
-                Robot robot = robotService.convert(robotService.readByKey(robotName));
-                host = robot.getHost();
-                port = robot.getPort();
+                Robot robot = robotService.readByKey(robotName);
 
+                host = robot.getHostWithCredential();
+                port = robot.getPort();
             } catch (CerberusException ex) {
                 host = "";
                 port = "";

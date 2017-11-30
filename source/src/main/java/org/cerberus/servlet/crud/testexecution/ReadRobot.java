@@ -269,22 +269,34 @@ public class ReadRobot extends HttpServlet {
 
         IRobotService libService = appContext.getBean(IRobotService.class);
 
-        //finds the project     
-        AnswerItem answer = libService.readByKey(robot);
+        //finds the project
+        try {
+            Robot robotObj = libService.readByKey(robot);
 
-        if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-            //if the service returns an OK message then we can get the item and convert it to JSONformat
-            Robot robotObj = (Robot) answer.getItem();
-            JSONObject response = convertRobotToJSONObject(robotObj);
-            response.put("hasPermissionsUpdate", libService.hasPermissionsUpdate(robotObj, request));
-            response.put("hasPermissionsDelete", libService.hasPermissionsDelete(robotObj, request));
+            if(robotObj!=null) {
+                robotObj.setHostPassword(null); // hide the password to the view
+            }
 
-            object.put("contentTable", response);
+            if(robot==null) {
+                item.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND));
+            } else {
+                //if the service returns an OK message then we can get the item and convert it to JSONformat
+                JSONObject response = convertRobotToJSONObject(robotObj);
+                response.put("hasPermissionsUpdate", libService.hasPermissionsUpdate(robotObj, request));
+                response.put("hasPermissionsDelete", libService.hasPermissionsDelete(robotObj, request));
+
+                object.put("contentTable", response);
+
+                item.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+            }
+        } catch (CerberusException e) {
+            item.setItem(robot);
+            item.setResultMessage(new MessageEvent(e.getMessageError().getCodeString(),e.getMessageError().getDescription()));
         }
 
         object.put("hasPermissionsCreate", libService.hasPermissionsCreate(null, request));
+
         item.setItem(object);
-        item.setResultMessage(answer.getResultMessage());
 
         return item;
     }

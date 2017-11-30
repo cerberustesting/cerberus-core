@@ -9611,6 +9611,16 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("  ('','cerberus_testcase_maxreturn', '1000', 'Integer that correspond to the maximum of testcase that cerberus can return')");
         SQLInstruction.add(SQLS.toString());
 
+        // ADD user password for robot host
+        //-- ------------------------ 1251
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `robot` add column host_user varchar(255)");
+        SQLInstruction.add(SQLS.toString());
+
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `robot` add column host_password varchar(255)");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 

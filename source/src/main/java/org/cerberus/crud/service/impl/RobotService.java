@@ -64,7 +64,7 @@ public class RobotService implements IRobotService {
     }
 
     @Override
-    public AnswerItem<Robot> readByKey(String robot) {
+    public Robot readByKey(String robot) throws CerberusException {
         return fillCapabilities(robotDao.readByKey(robot));
     }
 
@@ -175,6 +175,11 @@ public class RobotService implements IRobotService {
             return;
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+    }
+
+    private Robot fillCapabilities(Robot robotItem) throws CerberusException {
+        robotItem.setCapabilities(robotCapabilityService.convert(robotCapabilityService.readByRobot(robotItem.getRobot())));
+        return robotItem;
     }
 
     private AnswerItem<Robot> fillCapabilities(AnswerItem<Robot> robotItem) {

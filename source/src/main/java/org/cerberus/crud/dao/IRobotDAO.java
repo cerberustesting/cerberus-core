@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.cerberus.crud.entity.Robot;
+import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
@@ -46,7 +47,7 @@ public interface IRobotDAO {
      * @param robot
      * @return
      */
-    AnswerItem<Robot> readByKey(String robot);
+    Robot readByKey(String robot) throws CerberusException;
 
     /**
      *

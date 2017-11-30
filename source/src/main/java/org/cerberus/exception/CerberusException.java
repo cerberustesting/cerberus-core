@@ -32,6 +32,11 @@ public class CerberusException extends Exception {
 
     private MessageGeneral MessageError;
 
+    public CerberusException(MessageGeneral message, Throwable throwble) {
+        super(throwble);
+        this.MessageError = message;
+    }
+
     public CerberusException(MessageGeneral message) {
         this.MessageError = message;
     }

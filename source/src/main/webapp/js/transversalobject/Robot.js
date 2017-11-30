@@ -18,6 +18,9 @@
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+var HOST_PASSWORD_DEFAULT = "********";
+var hostUserBeforeUpdate=null;
+
 /***
  * Open the modal with robot information.
  * @param {String} robot - name of the robot (ex : "MyRobot")
@@ -71,6 +74,9 @@ function initModalRobot() {
     $("#editRobotModal [name='addValueHeader']").html(doc.getDocOnline("robot", "capabilityValue"));
     $("#editRobotModal [name='editCapabilityHeader']").html(doc.getDocOnline("robot", "capabilityCapability"));
     $("#editRobotModal [name='editValueHeader']").html(doc.getDocOnline("robot", "capabilityValue"));
+    $("#editRobotModal [name='hostPassword']").html(doc.getDocOnline("robot", "hostPassword"));
+    $("#editRobotModal [name='hostUserName']").html(doc.getDocOnline("robot", "hostUserName"));
+
     displayInvariantList("robotActive", "ROBOTACTIVE", false);
     displayInvariantList("robotBrowser", "BROWSER", false, undefined, "");
     displayInvariantList("robotPlatform", "PLATFORM", false, undefined, "");
@@ -226,7 +232,24 @@ function confirmRobotModalHandler(mode) {
         tcElement.parents("div.form-group").removeClass("has-error");
     }
 
+
+    // we send to the server
+    if(data.hostUsername !== hostUserBeforeUpdate || data.hostPassword != HOST_PASSWORD_DEFAULT) {
+        data.hostUsernameToSend=data.hostUsername;
+
+        if(data.hostPassword == HOST_PASSWORD_DEFAULT) {
+            $("#hostPassword").parent().addClass("has-error");
+            var localMessage = new Message("danger", "Please specify the new host password !");
+            showMessage(localMessage, $('#editRobotModal'));
+            return;
+        } else {
+            $("#hostPassword").parent().removeClass("has-error");
+            data.hostPasswordToSend = data.hostPassword;
+        }
+    }
+
     showLoaderInModal('#editRobotModal');
+
 
     $.ajax({
         url: myServlet,
@@ -237,6 +260,8 @@ function confirmRobotModalHandler(mode) {
             active: data.robotActive,
             host: data.host,
             port: data.port,
+            hostUsername: data.hostUsernameToSend,
+            hostPassword: data.hostPasswordToSend,
             platform: data.robotPlatform,
             browser: data.robotBrowser,
             version: data.version,
@@ -356,6 +381,8 @@ function feedRobotModalData(robot, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#useragent").prop("value", "");
         formEdit.find("#screensize").prop("value", "");
         formEdit.find("#Description").prop("value", "");
+        formEdit.find("#hostUsername").prop("value", "");
+        formEdit.find("#hostPassword").prop("value", "");
         $('#addCapabilitiesTableBody tr').remove();
     } else {
         if (mode === "EDIT") {
@@ -373,6 +400,13 @@ function feedRobotModalData(robot, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#useragent").prop("value", robot.userAgent);
         formEdit.find("#screensize").prop("value", robot.screenSize);
         formEdit.find("#Description").prop("value", robot.description);
+        formEdit.find("#hostUsername").prop("value", (robot.hostUser == undefined) ? "" : robot.hostUser);
+        hostUserBeforeUpdate=robot.hostUser;
+        if(robot.hostUser != undefined && robot.hostUser != "") {
+            formEdit.find("#hostPassword").prop("value", HOST_PASSWORD_DEFAULT); // don't set the reel password
+        } else {
+            formEdit.find("#hostPassword").prop("value", "");
+        }
         $('#addCapabilitiesTableBody tr').remove();
         loadCapabilitiesTable("editCapabilitiesTableBody", robot.capabilities);
     }
@@ -395,6 +429,8 @@ function feedRobotModalData(robot, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#useragent").prop("readonly", false);
         formEdit.find("#screensize").prop("readonly", false);
         formEdit.find("#Description").prop("readonly", false);
+        formEdit.find("#hostPassword").prop("readonly", false);
+        formEdit.find("#hostUsername").prop("readonly", false);
     } else {
         formEdit.find("#robot").prop("readonly", "readonly");
         formEdit.find("#active").prop("disabled", "disabled");
@@ -406,6 +442,8 @@ function feedRobotModalData(robot, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#useragent").prop("readonly", "readonly");
         formEdit.find("#screensize").prop("readonly", "readonly");
         formEdit.find("#Description").prop("readonly", "readonly");
+        formEdit.find("#hostPassword").prop("readonly", "readonly");
+        formEdit.find("#hostUsername").prop("readonly", "readonly");
     }
 }
 
