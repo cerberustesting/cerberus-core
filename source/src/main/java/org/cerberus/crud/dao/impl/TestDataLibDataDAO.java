@@ -633,7 +633,6 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO {
     public Answer update(TestDataLibData object) {
         MessageEvent msg = null;
         final String query = "UPDATE testdatalibdata SET `value`= ? , `column`= ? , `parsinganswer`= ? , `columnPosition`= ? , `description`= ? WHERE `testdatalibdataid`= ? ";
-
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);

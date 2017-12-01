@@ -23,6 +23,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.fileupload.FileItem;
 import org.cerberus.crud.entity.TestDataLib;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -66,6 +68,14 @@ public interface ITestDataLibDAO {
      * @return All TestData
      */
     AnswerList readAll();
+    
+    /**
+    *
+    * @param id
+    * @param file
+    * @return
+    */
+   Answer uploadFile(int id, FileItem file);
 
     /**
      *

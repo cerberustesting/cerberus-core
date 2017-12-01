@@ -105,6 +105,8 @@ function initModalDataLib(id) {
 
     $("#editDataLibButton").off("click");
     $("#editDataLibButton").click(function () {
+    	$("#SubdataTable_edit").find("button").click
+    	
         confirmDataLibModalHandler("EDIT", id);
     });
 
@@ -287,8 +289,15 @@ function confirmDataLibModalHandler(mode, id) {
     // Getting Data from Database TAB
     var table1 = $("#subdataTableBody_edit tr");
     var table_subdata = [];
+    
     for (var i = 0; i < table1.length; i++) {
         table_subdata.push($(table1[i]).data("subdata"));
+    }
+    
+    if($("#tabsedit-1 #subdataCheck").is(":checked")){
+    	for(var i = 1; i < table_subdata.length; i++){
+    		table_subdata[i].toDelete = true;
+    	}
     }
 
     // Get the header data from the form.
@@ -301,30 +310,28 @@ function confirmDataLibModalHandler(mode, id) {
     dataForm.envelope = encodeURIComponent(editorEnv.getSession().getDocument().getValue());
     var editorScr = ace.edit($("#editTestLibData #script")[0]);
     dataForm.script = encodeURIComponent(editorScr.getSession().getDocument().getValue());
+    
+    var file = $("#editTestDataLibModal input[type=file]");
+    files = file.prop("files")[0]
+    
+    var sa = formEdit.serializeArray();	
+	var formData = new FormData();
+	
+    for (var i in dataForm) {
+        formData.append(i, dataForm[i]);
+    }
+    
+    formData.append("file",file.prop("files")[0]);
+  
+    formData.append("subDataList", JSON.stringify(table_subdata));
 
     $.ajax({
-        url: myServlet,
-        async: true,
-        method: "POST",
-        data: {system: dataForm.system,
-            country: dataForm.country,
-            environment: dataForm.environment,
-            libdescription: dataForm.libdescription,
-            csvUrl: dataForm.csvUrl,
-            database: dataForm.database,
-            databaseCsv: dataForm.databaseCsv,
-            databaseUrl: dataForm.databaseUrl,
-            envelope: dataForm.envelope,
-            group: dataForm.group,
-            method: dataForm.method,
-            name: dataForm.name,
-            script: dataForm.script,
-            separator: dataForm.separator,
-            servicepath: dataForm.servicepath,
-            service: dataForm.service,
-            testdatalibid: dataForm.testdatalibid,
-            type: dataForm.type,
-            subDataList: JSON.stringify(table_subdata)},
+    	async : true,
+    	url: myServlet,
+		method : "POST",
+		data : formData,
+		processData: false,
+        contentType: false,
         success: function (data) {
             hideLoaderInModal('#editTestDataLibModal');
             if (getAlertType(data.messageType) === "success") {

@@ -113,6 +113,9 @@ public class TestDataLibData {
         if ((this.subData == null) ? (other.subData != null) : !this.subData.equals(other.subData)) {
             return false;
         }
+        if((this.testDataLibDataID == null ) ? (other.testDataLibDataID != null) : !this.testDataLibDataID.equals(other.testDataLibDataID)) {
+        	return false;
+        }
         return true;
     }
 

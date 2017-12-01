@@ -22,6 +22,8 @@ package org.cerberus.crud.service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.fileupload.FileItem;
 import org.cerberus.crud.entity.TestDataLib;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
@@ -67,6 +69,14 @@ public interface ITestDataLibService {
      * @return All TestDataLib
      */
     AnswerList readAll();
+    
+    /**
+    *
+    * @param id
+    * @param files
+    * @return
+    */
+   Answer uploadFile(int id, FileItem file);
 
     /**
      *

@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.fileupload.FileItem;
 import org.cerberus.crud.dao.ITestDataLibDAO;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.MessageGeneral;
@@ -66,6 +68,11 @@ public class TestDataLibService implements ITestDataLibService {
     @Override
     public AnswerItem readByKey(int testDatalib) {
         return testDataLibDAO.readByKey(testDatalib);
+    }
+    
+    @Override
+    public Answer uploadFile(int id, FileItem file) {
+        return testDataLibDAO.uploadFile(id, file);
     }
 
     @Override

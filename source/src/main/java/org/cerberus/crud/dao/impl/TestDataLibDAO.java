@@ -20,6 +20,8 @@
 package org.cerberus.crud.dao.impl;
 
 import com.google.common.base.Strings;
+
+import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -29,11 +31,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.apache.logging.log4j.Logger;
+import org.apache.commons.fileupload.FileItem;
 import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.ITestDataLibDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.crud.entity.Parameter;
 import org.cerberus.crud.entity.TestDataLib;
 import org.cerberus.crud.factory.IFactoryTestDataLib;
 import org.cerberus.util.ParameterParserUtil;
@@ -44,6 +48,7 @@ import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.cerberus.crud.service.IParameterService;
 
 /**
  *
@@ -57,6 +62,8 @@ public class TestDataLibDAO implements ITestDataLibDAO {
     private DatabaseSpring databaseSpring;
     @Autowired
     private IFactoryTestDataLib factoryTestDataLib;
+    @Autowired
+    private IParameterService parameterService;
 
     private static final Logger LOG = LogManager.getLogger(TestDataLibDAO.class);
 
@@ -212,6 +219,62 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         answer.setItem(result);
         answer.setResultMessage(msg);
         return answer;
+    }
+    
+    private static void deleteFolder(File folder, boolean deleteit) {
+        File[] files = folder.listFiles();
+        if (files != null) { //some JVMs return null for empty dirs
+            for (File f : files) {
+                if (f.isDirectory()) {
+                    deleteFolder(f, true);
+                } else {
+                    f.delete();
+                }
+            }
+        }
+        if (deleteit) {
+            folder.delete();
+        }
+    }
+
+    @Override
+    public Answer uploadFile(int id, FileItem file) {
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                "cerberus_testdatalibCSV_path Parameter not found");
+        AnswerItem a = parameterService.readByKey("", "cerberus_testdatalibCSV_path");
+        if (a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            Parameter p = (Parameter) a.getItem();
+            String uploadPath = p.getValue();
+            File appDir = new File(uploadPath + "/" + id);
+            if (!appDir.exists()) {
+                try {
+                    appDir.mkdirs();
+                } catch (SecurityException se) {
+                    LOG.warn("Unable to create testdatalib csv dir: " + se.getMessage());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                            se.toString());
+                    a.setResultMessage(msg);
+                }
+            }
+            if (a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                deleteFolder(appDir, false);
+                File picture = new File(uploadPath + "/" + id + "/" + file.getName());
+                try {
+                    file.write(picture);
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("DESCRIPTION",
+                            "TestDataLib CSV file uploaded");
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", "testDatalib CSV").replace("%OPERATION%", "Upload"));
+                } catch (Exception e) {
+                    LOG.warn("Unable to upload testdatalib csv file: " + e.getMessage());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                            e.toString());
+                }
+            }
+        } else {
+            LOG.warn("cerberus_testdatalibCSV_path Parameter not found");
+        }
+        a.setResultMessage(msg);
+        return a;
     }
 
     @Override

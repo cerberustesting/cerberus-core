@@ -283,6 +283,8 @@ $.when($.getScript("js/global/global.js")).then(function () {
 							];
 
 						autocompleteAllFields(Tags, data.info, test, testcase);
+						$("select#actionSelect").trigger("change");
+						$("div.step-action .content div.fieldRow:nth-child(2) input").trigger('input',['first'])
 
 						// Manage authorities when data is fully loadable.
 						$("#deleteTestCase").attr("disabled", !data.hasPermissionsDelete);
@@ -2305,8 +2307,7 @@ Action.prototype.generateContent = function () {
 	thirdRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "force_execution_field"))).append(forceExeStatusList));
 
 	actionconditionoper.trigger("change");
-	actionList.trigger("change");
-		
+	
 	if ((this.parentStep.useStep === "Y") || (!obj.hasPermissionsUpdate)) {
 		descField.prop("readonly", true);
 		objectField.prop("readonly", true);
@@ -2778,8 +2779,8 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 			
 			e = e.currentTarget
 			
-			function trigger(){
-				$(e).trigger("input");
+			function trigger(element){
+					$(e).trigger("input");
 			}
 			
 			$(e).parent().parent().find("select").off("change",trigger).on("change",trigger)
@@ -2792,22 +2793,24 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 				$( e ).autocomplete('option', 'source', function(request,response){
 					if(state === "first"){
 						$(e).autocomplete("close");				
+					}else{
+						$.ajax({
+							url: "ReadAppService?service=" +$(e).val() + "&limit=15",
+							dataType: "json",
+							success: function (data) {
+								var MyArray = $.map(data.contentTable, function (item) {
+									return {
+										label: item.service,
+										value: item.service
+									};	
+								});
+
+								response($.ui.autocomplete.filter(MyArray, request.term));
+							}
+						})
 					}
 					
-					$.ajax({
-						url: "ReadAppService?service=" +$(e).val() + "&limit=15",
-						dataType: "json",
-						success: function (data) {
-							var MyArray = $.map(data.contentTable, function (item) {
-								return {
-									label: item.service,
-									value: item.service
-								};	
-							});
-
-							response($.ui.autocomplete.filter(MyArray, request.term));
-						}
-					})
+					
 				})			
 
 				$.ajax({
@@ -2947,8 +2950,6 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 			}
 
 		})
-		
-		$("div.step-action .content div.fieldRow:nth-child(2) input").trigger('input',['first'])
 	}
 	
 })();

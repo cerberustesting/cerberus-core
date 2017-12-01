@@ -284,7 +284,6 @@ function selectionCampaign() {
 
 function selectionManual(test, testcase, environment, country) {
     var alreadyLoaded = $('#selectionPanel').data("LoadedMode");
-    console.info(alreadyLoaded);
     if (alreadyLoaded !== "manual") {
 
         $("#SelectionManual").removeClass("btn-default");
