@@ -22,15 +22,12 @@ package org.cerberus.crud.service.impl;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import org.cerberus.crud.dao.ITestCaseDAO;
 import org.cerberus.crud.entity.CampaignParameter;
 import org.cerberus.crud.entity.TestCase;
@@ -39,26 +36,27 @@ import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.crud.entity.TestCaseStepAction;
 import org.cerberus.crud.entity.TestCaseStepActionControl;
-import org.cerberus.engine.entity.MessageEvent;
-import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.exception.CerberusException;
+import org.cerberus.crud.factory.IFactoryTestCase;
 import org.cerberus.crud.service.ICampaignContentService;
 import org.cerberus.crud.service.ICampaignLabelService;
 import org.cerberus.crud.service.ICampaignParameterService;
+import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ITestCaseCountryPropertiesService;
 import org.cerberus.crud.service.ITestCaseCountryService;
 import org.cerberus.crud.service.ITestCaseService;
 import org.cerberus.crud.service.ITestCaseStepActionControlService;
 import org.cerberus.crud.service.ITestCaseStepActionService;
 import org.cerberus.crud.service.ITestCaseStepService;
+import org.cerberus.engine.entity.MessageEvent;
+import org.cerberus.engine.entity.MessageGeneral;
+import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.enums.MessageGeneralEnum;
+import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.cerberus.crud.factory.IFactoryTestCase;
-import org.cerberus.engine.entity.MessageGeneral;
-import org.cerberus.enums.MessageGeneralEnum;
 
 /**
  * @author bcivel
@@ -89,6 +87,9 @@ public class TestCaseService implements ITestCaseService {
     private ICampaignContentService campaignContentService;
     @Autowired
     private ICampaignParameterService campaignParameterService;
+    @Autowired
+    private IParameterService parameterService;
+    
 
     @Override
     public TestCase findTestCaseByKey(String test, String testCase) throws CerberusException {
@@ -190,7 +191,7 @@ public class TestCaseService implements ITestCaseService {
     }
 
     @Override
-    public AnswerList readByVarious(String[] test, String[] idProject, String[] app, String[] creator, String[] implementer, String[] system,
+    public AnswerList<List<TestCase>> readByVarious(String[] test, String[] idProject, String[] app, String[] creator, String[] implementer, String[] system,
             String[] testBattery, String[] campaign, String[] labelid, String[] priority, String[] group, String[] status, int length) {
         return testCaseDao.readByVarious(test, idProject, app, creator, implementer, system, testBattery, campaign, labelid, priority, group, status, length);
     }
@@ -290,10 +291,12 @@ public class TestCaseService implements ITestCaseService {
         boolean ifLabel = (label.getTotalRows() > 0) ? true : false;
         boolean ifBattery = (battery.getTotalRows() > 0) ? true : false;
 
+        Integer maxReturn = parameterService.getParameterIntegerByKey("cerberus_campaign_maxtestcase", "", 1000);
+        
         if (ifLabel || ifBattery) {
-            return this.testCaseDao.findTestCaseByCampaignNameAndCountries(campaign, countries, true, status, system, application, priority);
+            return this.testCaseDao.findTestCaseByCampaignNameAndCountries(campaign, countries, true, status, system, application, priority, maxReturn);
         } else {
-            return this.testCaseDao.findTestCaseByCampaignNameAndCountries(campaign, countries, false, status, system, application, priority);
+            return this.testCaseDao.findTestCaseByCampaignNameAndCountries(campaign, countries, false, status, system, application, priority, maxReturn);
         }
     }
 

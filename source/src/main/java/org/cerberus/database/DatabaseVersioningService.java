@@ -19,17 +19,16 @@
  */
 package org.cerberus.database;
 
-import org.cerberus.crud.entity.MyVersion;
-import org.cerberus.crud.service.IMyVersionService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.crud.entity.MyVersion;
+import org.cerberus.crud.service.IMyVersionService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  * @author vertigo
@@ -9566,35 +9565,31 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("  REFERENCES `testcase` (`Test` , `TestCase` )");
         SQLS.append("  ON DELETE SET NULL  ON UPDATE CASCADE;");
         SQLInstruction.add(SQLS.toString());
-        
+
         // ADD Put and Delete Http Method in invariants
         //-- ------------------------ 1249
-        
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ");
         SQLS.append("  ('SRVMETHOD', 'DELETE', 300 , 'DELETE http method')");
         SQLS.append(" ,('SRVMETHOD', 'PUT', 400, 'PUT http method');");
         SQLInstruction.add(SQLS.toString());
-        
+
         // ADD Patch Http Method in invariants
         //-- ------------------------ 1250
-        
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ");
         SQLS.append("  ('SRVMETHOD', 'PATCH', 500 , 'PATCH http method')");
         SQLInstruction.add(SQLS.toString());
-        
-     // ADD private invariant CAMPAIGN_TCCRITERIA
+
+        // ADD private invariant CAMPAIGN_TCCRITERIA
         //-- ------------------------ 1251
-        
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ");
         SQLS.append("  ('INVARIANTPRIVATE', 'CAMPAIGN_TCCRITERIA', 450 , '')");
         SQLInstruction.add(SQLS.toString());
-        
-     // ADD private four invariants for all criterias
-        //-- ------------------------ 1251
-        
+
+        // ADD private four invariants for all criterias
+        //-- ------------------------ 1252
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ");
         SQLS.append("  ('CAMPAIGN_TCCRITERIA', 'PRIORITY', 10 , '')");
@@ -9602,23 +9597,27 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("  ,('CAMPAIGN_TCCRITERIA', 'SYSTEM', 30 , '')");
         SQLS.append("  ,('CAMPAIGN_TCCRITERIA', 'APPLICATION', 40 , '')");
         SQLInstruction.add(SQLS.toString());
-        
-     // ADD a parameter for maximum testcase to be returned
-        //-- ------------------------ 1251
-        
+
+        // ADD a parameter for maximum testcase to be returned
+        //-- ------------------------ 1253
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `parameter` (`system`,`param`, `value`, `description`) VALUES ");
         SQLS.append("  ('','cerberus_testcase_maxreturn', '1000', 'Integer that correspond to the maximum of testcase that cerberus can return')");
         SQLInstruction.add(SQLS.toString());
 
         // ADD user password for robot host
-        //-- ------------------------ 1251
+        //-- ------------------------ 1254-1255
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `robot` add column host_user varchar(255)");
         SQLInstruction.add(SQLS.toString());
-
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `robot` add column host_password varchar(255)");
+        SQLInstruction.add(SQLS.toString());
+
+        // Update cerberus_testcase_maxreturn parameter.
+        //-- ------------------------ 1256
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `parameter` SET `param`='cerberus_campaign_maxtestcase', `description`='Integer that correspond to the maximum number of testcase that a Cerberus campaign can contain.' WHERE `system`='' and `param`='cerberus_testcase_maxreturn';");
         SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;

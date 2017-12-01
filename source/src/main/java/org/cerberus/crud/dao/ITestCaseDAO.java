@@ -73,14 +73,16 @@ public interface ITestCaseDAO {
     /**
      * @param campaign the campaign name
      * @param countries arrays of country
+     * @param withLabelOrBattery
      * @param status status of test case
      * @param system of test case
      * @param application of test case
      * @param priority of test case
+     * @param maxReturn
      * @return the list of TCase used in the campaign
      * @since 1.0.2
      */
-    AnswerItem<List<TestCase>> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries, boolean withLabelOrBattery, String[] status, String[] system, String[] application, String[] priority);
+    AnswerItem<List<TestCase>> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries, boolean withLabelOrBattery, String[] status, String[] system, String[] application, String[] priority, Integer maxReturn);
 
     public void updateTestCase(TestCase tc) throws CerberusException;
 
@@ -113,7 +115,7 @@ public interface ITestCaseDAO {
      * @param length
      * @return
      */
-    public AnswerList readByVarious(String[] test, String[] idProject, String[] app, String[] creator, String[] implementer, String[] system,
+    public AnswerList<List<TestCase>> readByVarious(String[] test, String[] idProject, String[] app, String[] creator, String[] implementer, String[] system,
             String[] testBattery, String[] campaign, String[] labelid, String[] priority, String[] group, String[] status, int length);
 
     public AnswerItem readByKey(String test, String testCase);
