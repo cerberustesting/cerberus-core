@@ -111,6 +111,8 @@ public class RunTestCase extends HttpServlet {
 
         //Tool
         String ss_ip = ""; // Selenium IP
+        String ss_ip_user = ""; // Selenium Host (optional)
+        String ss_ip_pass = ""; // Selenium Password (optional)
         String ss_p = ""; // Selenium Port
         String browser = "";
         String version = "";
@@ -235,7 +237,9 @@ public class RunTestCase extends HttpServlet {
             try {
                 Robot robObj = robotService.readByKey(robot);
                 // If Robot parameter is defined and we can find the robot, we overwrite the corresponding parameters.
-                ss_ip = ParameterParserUtil.parseStringParam(robObj.getHostWithCredential(), ss_ip);
+                ss_ip = ParameterParserUtil.parseStringParam(robObj.getHost(), ss_ip);
+                ss_ip_user = robObj.getHostUser();
+                ss_ip_pass = robObj.getHostPassword();
                 ss_p = ParameterParserUtil.parseStringParam(String.valueOf(robObj.getPort()), ss_p);
                 browser = ParameterParserUtil.parseStringParam(robObj.getBrowser(), browser);
                 version = ParameterParserUtil.parseStringParam(robObj.getVersion(), version);
@@ -309,6 +313,8 @@ public class RunTestCase extends HttpServlet {
                     Infos.getInstance().getProjectNameAndVersion(), tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL, myEnvData, ss_ip, ss_p,
                     null, new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED), executor, numberOfRetries, screenSize, capabilities,
                     "", "", "", "", "", manualExecution, userAgent);
+            tCExecution.setSeleniumIPUser(ss_ip_user);
+            tCExecution.setSeleniumIPPassword(ss_ip_pass);
 
             /**
              * Set IdFromQueue

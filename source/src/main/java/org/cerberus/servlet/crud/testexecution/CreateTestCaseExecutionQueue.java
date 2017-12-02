@@ -205,6 +205,7 @@ public class CreateTestCaseExecutionQueue extends HttpServlet {
                             executionQueueData.setState(TestCaseExecutionQueue.State.QUEUED);
                             executionQueueData.setDebugFlag("N");
                             executionQueueData.setPriority(TestCaseExecutionQueue.PRIORITY_DEFAULT);
+                            executionQueueData.setUsrCreated(request.getRemoteUser());
                         }
                         ansItem = executionQueueService.create(executionQueueData);
 
@@ -213,7 +214,7 @@ public class CreateTestCaseExecutionQueue extends HttpServlet {
                         if (myIds.length <= 1) {
                             if (ansItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                                 /**
-                                 * Update was successfull. Adding Log entry.
+                                 * Update was successful. Adding Log entry.
                                  */
                                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
                                 logEventService.createForPrivateCalls("/CreateTestCaseExecutionQueue", "CREATE", "Created ExecutionQueue : ['" + id + "']", request);

@@ -90,6 +90,8 @@ public class TestCaseExecution {
     private String myContextRoot;
     private String myLoginRelativeURL;
     private String seleniumIP;
+    private String seleniumIPUser;
+    private String seleniumIPPassword;
     private String seleniumPort;
     private Integer pageSource;
     private Integer seleniumLog;
@@ -97,7 +99,7 @@ public class TestCaseExecution {
     private boolean synchroneous;
     private String timeout;
     // Objects.
-    private TestCaseExecutionQueue testCaseExecutionQueue; 
+    private TestCaseExecutionQueue testCaseExecutionQueue;
     private Application applicationObj;
     private Invariant CountryObj;
     private Test testObj;
@@ -542,6 +544,22 @@ public class TestCaseExecution {
                 this.testCaseStepExecutionList.add(testCaseStepExecution);
             }
         }
+    }
+
+    public String getSeleniumIPUser() {
+        return seleniumIPUser;
+    }
+
+    public void setSeleniumIPUser(String seleniumIPUser) {
+        this.seleniumIPUser = seleniumIPUser;
+    }
+
+    public String getSeleniumIPPassword() {
+        return seleniumIPPassword;
+    }
+
+    public void setSeleniumIPPassword(String seleniumIPPassword) {
+        this.seleniumIPPassword = seleniumIPPassword;
     }
 
     public String getSeleniumIP() {

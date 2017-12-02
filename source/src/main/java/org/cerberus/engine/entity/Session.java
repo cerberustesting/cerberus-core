@@ -30,6 +30,8 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 public class Session {
     
     private String host;
+    private String hostUser;
+    private String hostPassword;
     private String port;
     private WebDriver driver;
     private AppiumDriver appiumDriver;
@@ -96,6 +98,22 @@ public class Session {
 
     public void setDesiredCapabilities(DesiredCapabilities capabilities) {
         this.desiredCapabilities = capabilities;
+    }
+
+    public String getHostUser() {
+        return hostUser;
+    }
+
+    public void setHostUser(String hostUser) {
+        this.hostUser = hostUser;
+    }
+
+    public String getHostPassword() {
+        return hostPassword;
+    }
+
+    public void setHostPassword(String hostPassword) {
+        this.hostPassword = hostPassword;
     }
     
     public String getHost() {

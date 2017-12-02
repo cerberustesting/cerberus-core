@@ -152,6 +152,8 @@ public class SeleniumServerService implements ISeleniumServerService {
             session.setCerberus_appium_wait_element(cerberus_appium_wait_element);
             session.setCerberus_selenium_action_click_timeout(cerberus_selenium_action_click_timeout);
             session.setHost(tCExecution.getSeleniumIP());
+            session.setHostUser(tCExecution.getSeleniumIPUser());
+            session.setHostPassword(tCExecution.getSeleniumIPPassword());
             session.setPort(tCExecution.getPort());
             tCExecution.setSession(session);
             LOG.debug(logPrefix + "Session is set.");
@@ -167,7 +169,8 @@ public class SeleniumServerService implements ISeleniumServerService {
             /**
              * SetUp Proxy
              */
-            String hubUrl = StringUtil.cleanHostURL(tCExecution.getSession().getHost()) + ":" + tCExecution.getSession().getPort() + "/wd/hub";
+            String hubUrl = StringUtil.cleanHostURL(StringUtil.formatURLCredential(tCExecution.getSession().getHostUser(), tCExecution.getSession().getHostPassword()) + tCExecution.getSession().getHost()) + ":" + tCExecution.getSession().getPort() + "/wd/hub";
+            LOG.debug(logPrefix + "Hub URL :" + hubUrl);
             URL url = new URL(hubUrl);
             HttpCommandExecutor executor = null;
 

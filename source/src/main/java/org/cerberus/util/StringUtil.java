@@ -79,7 +79,7 @@ public final class StringUtil {
         }
         return true;
     }
-    
+
     /**
      * Check for boolean data type
      *
@@ -395,6 +395,18 @@ public final class StringUtil {
         return result;
     }
 
+    public static String formatURLCredential(String user, String pass) {
+        String credential = "";
+        if (!StringUtil.isNullOrEmpty(user)) {
+            if (!StringUtil.isNullOrEmpty(pass)) {
+                credential = user + ":" + pass + "@";
+            } else {
+                credential = user + "@";
+            }
+        }
+        return credential;
+    }
+
     /**
      *
      * @param text
@@ -422,5 +434,5 @@ public final class StringUtil {
             return prefix + text;
         }
     }
-    
-    }
+
+}

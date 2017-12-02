@@ -124,7 +124,7 @@ public class GetCampaignExecutionsCommand extends HttpServlet {
                 robotService = appContext.getBean(IRobotService.class);
                 Robot robot = robotService.readByKey(robotName);
 
-                host = robot.getHostWithCredential();
+                host = robot.getHost();
                 port = robot.getPort();
             } catch (CerberusException ex) {
                 host = "";
