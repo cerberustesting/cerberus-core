@@ -119,11 +119,12 @@ public class TestCaseExecution {
     private List<TestCaseCountryProperties> testCaseCountryPropertyList;
     // Others
     private MessageGeneral resultMessage;
-    private Selenium selenium;
     private String executionUUID;
+    private Selenium selenium;
     private Session session;
-    private AppService lastServiceCalled;
     private List<RobotCapability> capabilities;
+    private AppService lastServiceCalled;
+    private Integer nbExecutions; // Has the nb of execution that was necessary to execute the testcase.
     // Global parameters.
     private Integer cerberus_action_wait_default;
     private boolean cerberus_featureflipping_activatewebsocketpush;
@@ -140,6 +141,14 @@ public class TestCaseExecution {
     public static final String CONTROLSTATUS_CA = "CA";
     public static final String CONTROLSTATUS_FA = "FA";
     public static final String CONTROLSTATUS_QU = "QU";
+
+    public Integer getNbExecutions() {
+        return nbExecutions;
+    }
+
+    public void setNbExecutions(Integer nbExecutions) {
+        this.nbExecutions = nbExecutions;
+    }
 
     public String getQueueState() {
         return queueState;

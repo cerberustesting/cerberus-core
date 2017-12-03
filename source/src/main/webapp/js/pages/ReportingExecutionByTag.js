@@ -815,9 +815,12 @@ function createShortDescRow(row, data, index) {
 
 function generateTooltip(data) {
     var htmlRes;
-
-    htmlRes = '<div><span class=\'bold\'>Execution ID :</span> ' + data.ID + '</div>' +
-            '<div><span class=\'bold\'>Country : </span>' + data.Country + '</div>' +
+    if (!isEmpty(data.NbExecutions) && (data.NbExecutions >= 2)) {
+        htmlRes = '<div><span class=\'bold\'>Execution ID :</span> ' + data.ID + ' - (' + data.NbExecutions + ' Exe(s))</div>';
+    } else {
+        htmlRes = '<div><span class=\'bold\'>Execution ID :</span> ' + data.ID + '</div>';
+    }
+    htmlRes += '<div><span class=\'bold\'>Country : </span>' + data.Country + '</div>' +
             '<div><span class=\'bold\'>Environment : </span>' + data.Environment + '</div>' +
             '<div><span class=\'bold\'>Browser : </span>' + data.Browser + '</div>' +
             '<div><span class=\'bold\'>Start : </span>' + new Date(data.Start) + '</div>' +

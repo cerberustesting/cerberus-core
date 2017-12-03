@@ -9620,6 +9620,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("UPDATE `parameter` SET `param`='cerberus_campaign_maxtestcase', `description`='Integer that correspond to the maximum number of testcase that a Cerberus campaign can contain.' WHERE `system`='' and `param`='cerberus_testcase_maxreturn';");
         SQLInstruction.add(SQLS.toString());
 
+        //-- Enrich parameter cerberus_notification_tagexecutionend_body with extra variable.
+        //-- ------------------------ 1257
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE parameter SET description='Cerberus End of tag execution notification email body. %TAG%, %URLTAGREPORT%, %CAMPAIGN%, %TAGDURATION%, %TAGSTART%, %TAGEND%, %TAGGLOBALSTATUS% and %TAGTCDETAIL% can be used as variables.', value=REPLACE(value, 'You can analyse the result', '<table><thead><tr style=\"background-color:#cad3f1; font-style:bold\"><td>Start</td><td>End</td><td>Duration</td></tr></thead><tbody><tr><td>%TAGSTART%</td><td>%TAGEND%</td><td>%TAGDURATION% min</td></tr></tbody></table><br><br>Global Status : <br>%TAGGLOBALSTATUS%<br><br>Non OK TestCases : <br>%TAGTCDETAIL%<br><br>You can analyse the result') WHERE param='cerberus_notification_tagexecutionend_body';");
+        SQLInstruction.add(SQLS.toString());
+        
         return SQLInstruction;
     }
 

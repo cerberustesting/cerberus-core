@@ -19,15 +19,23 @@
  */
 package org.cerberus.service.email.impl;
 
+import java.text.DecimalFormat;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.service.email.entity.Email;
 import org.cerberus.crud.entity.BatchInvariant;
 import org.cerberus.crud.entity.CountryEnvParam;
+import org.cerberus.crud.entity.Tag;
+import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.User;
 import org.cerberus.crud.service.IBatchInvariantService;
 import org.cerberus.crud.service.ICountryEnvParamService;
 import org.cerberus.crud.service.IParameterService;
+import org.cerberus.crud.service.ITagService;
+import org.cerberus.crud.service.ITestCaseExecutionService;
 import org.cerberus.service.email.IEmailBodyGeneration;
 import org.cerberus.service.email.IEmailFactory;
 import org.cerberus.util.StringUtil;
@@ -52,6 +60,10 @@ public class EmailGenerationService implements IEmailGenerationService {
     private IEmailBodyGeneration emailBodyGeneration;
     @Autowired
     private IBatchInvariantService batchInvariantService;
+    @Autowired
+    private ITagService tagService;
+    @Autowired
+    private ITestCaseExecutionService testCaseExecutionService;
     @Autowired
     private IEmailFactory emailFactory;
 
@@ -277,7 +289,7 @@ public class EmailGenerationService implements IEmailGenerationService {
         Email email = new Email();
         String system = "";
 
-        String from = parameterService.getParameterStringByKey("cerberus_notification_tagexecutionstart_from", system,"Cerberus <no.reply@cerberus-testing.org>");
+        String from = parameterService.getParameterStringByKey("cerberus_notification_tagexecutionstart_from", system, "Cerberus <no.reply@cerberus-testing.org>");
         String host = parameterService.findParameterByKey("integration_smtp_host", system).getValue();
         int port = Integer.valueOf(parameterService.findParameterByKey("integration_smtp_port", system).getValue());
         String userName = parameterService.findParameterByKey("integration_smtp_username", system).getValue();
@@ -296,7 +308,7 @@ public class EmailGenerationService implements IEmailGenerationService {
 
         subject = subject.replace("%TAG%", tag);
         subject = subject.replace("%CAMPAIGN%", campaign);
-        
+
         email = emailFactory.create(host, port, userName, password, true, subject, body, from, to, null);
 
         return email;
@@ -308,7 +320,7 @@ public class EmailGenerationService implements IEmailGenerationService {
         Email email = new Email();
         String system = "";
 
-        String from = parameterService.getParameterStringByKey("cerberus_notification_tagexecutionend_from", system,"Cerberus <no.reply@cerberus-testing.org>");
+        String from = parameterService.getParameterStringByKey("cerberus_notification_tagexecutionend_from", system, "Cerberus <no.reply@cerberus-testing.org>");
         String host = parameterService.findParameterByKey("integration_smtp_host", system).getValue();
         int port = Integer.valueOf(parameterService.findParameterByKey("integration_smtp_port", system).getValue());
         String userName = parameterService.findParameterByKey("integration_smtp_username", system).getValue();
@@ -321,13 +333,73 @@ public class EmailGenerationService implements IEmailGenerationService {
         urlreporttag.append(cerberusUrl);
         urlreporttag.append("/ReportingExecutionByTag.jsp?Tag=");
         urlreporttag.append(tag);
+
+        // Body replace.
         body = body.replace("%TAG%", tag);
         body = body.replace("%URLTAGREPORT%", urlreporttag.toString());
         body = body.replace("%CAMPAIGN%", campaign);
 
+        Tag mytag = tagService.convert(tagService.readByKey(tag));
+        long tagDur = (mytag.getDateEndQueue().getTime() - mytag.getDateCreated().getTime()) / 60000;
+        body = body.replace("%TAGDURATION%", String.valueOf(tagDur));
+        body = body.replace("%TAGSTART%", String.valueOf(mytag.getDateCreated()));
+        body = body.replace("%TAGEND%", String.valueOf(mytag.getDateEndQueue()));
+
+        // Get TestcaseExecutionDetail in order to replace %TAGGLOBALSTATUS% or %TAGTCDETAIL%.
+        List<TestCaseExecution> testCaseExecutions = testCaseExecutionService.readLastExecutionAndExecutionInQueueByTag(tag);
+        StringBuilder globalStatus = new StringBuilder();
+        globalStatus.append("<table><thead><tr style=\"background-color:#cad3f1; font-style:bold\"><td>Status</td><td>Number</td><td>%</td></tr></thead><tbody>");
+        Map<String, Integer> axisMap = new HashMap<String, Integer>();
+        Integer total;
+        total = testCaseExecutions.size();
+        for (TestCaseExecution execution : testCaseExecutions) {
+            if (axisMap.containsKey(execution.getControlStatus())) {
+                axisMap.put(execution.getControlStatus(), axisMap.get(execution.getControlStatus()) + 1);
+            } else {
+                axisMap.put(execution.getControlStatus(), 1);
+            }
+        }
+        float per = 0;
+        DecimalFormat df = new DecimalFormat("#.##");
+        for (Map.Entry<String, Integer> entry : axisMap.entrySet()) {
+            globalStatus.append("<tr>");
+            globalStatus.append("<td>").append(entry.getKey()).append("</td>");
+            globalStatus.append("<td>").append(entry.getValue()).append("</td>");
+            per = (float) entry.getValue() / (float) total;
+            globalStatus.append("<td>").append(String.format("%.2f", per)).append("</td>");
+            globalStatus.append("</tr>");
+        }
+        globalStatus.append("<tr style=\"background-color:#cad3f1; font-style:bold\"><td>TOTAL</td>");
+        globalStatus.append("<td>").append(total).append("</td>");
+        globalStatus.append("<td></td></tr>");
+        globalStatus.append("</tbody></table>");
+        body = body.replace("%TAGGLOBALSTATUS%", globalStatus.toString());
+
+        Integer totalTC = 0;
+        StringBuilder detailStatus = new StringBuilder();
+        detailStatus.append("<table><thead><tr style=\"background-color:#cad3f1; font-style:bold\"><td>Test</td><td>Test Case</td><td>Description</td><td>Status</td></tr></thead><tbody>");
+        for (TestCaseExecution execution : testCaseExecutions) {
+            if (!TestCaseExecution.CONTROLSTATUS_OK.equals(execution.getControlStatus())) {
+                detailStatus.append("<tr>");
+                detailStatus.append("<td>").append(execution.getTest()).append("</td>");
+                detailStatus.append("<td>").append(execution.getTestCase()).append("</td>");
+                detailStatus.append("<td>").append(execution.getDescription()).append("</td>");
+                detailStatus.append("<td>").append(execution.getControlStatus()).append("</td>");
+                detailStatus.append("</tr>");
+                totalTC++;
+            }
+        }
+        detailStatus.append("<tr style=\"background-color:#cad3f1; font-style:bold\">");
+        detailStatus.append("<td>TOTAL</td>");
+        detailStatus.append("<td colspan=\"3\">").append(totalTC).append("</td>");
+        detailStatus.append("</tr>");
+        detailStatus.append("</tbody></table>");
+        body = body.replace("%TAGTCDETAIL%", detailStatus.toString());
+
+        // Subject replace.
         subject = subject.replace("%TAG%", tag);
         subject = subject.replace("%CAMPAIGN%", campaign);
-        
+
         email = emailFactory.create(host, port, userName, password, true, subject, body, from, to, null);
 
         return email;

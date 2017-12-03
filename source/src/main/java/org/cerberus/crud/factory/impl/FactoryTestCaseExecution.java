@@ -115,6 +115,7 @@ public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
         newTce.setFileList(objectFileList);
         HashMap<String, TestCaseExecutionData> hashTemp1 = new HashMap<>();
         newTce.setTestCaseExecutionDataMap(hashTemp1);
+        newTce.setNbExecutions(1);
         return newTce;
     }
 
