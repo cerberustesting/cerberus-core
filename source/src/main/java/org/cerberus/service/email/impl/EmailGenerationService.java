@@ -377,13 +377,15 @@ public class EmailGenerationService implements IEmailGenerationService {
 
         Integer totalTC = 0;
         StringBuilder detailStatus = new StringBuilder();
-        detailStatus.append("<table><thead><tr style=\"background-color:#cad3f1; font-style:bold\"><td>Test</td><td>Test Case</td><td>Description</td><td>Status</td></tr></thead><tbody>");
+        detailStatus.append("<table><thead><tr style=\"background-color:#cad3f1; font-style:bold\"><td>Test</td><td>Test Case</td><td>Description</td><td>Environment</td><td>Country</td><td>Status</td></tr></thead><tbody>");
         for (TestCaseExecution execution : testCaseExecutions) {
             if (!TestCaseExecution.CONTROLSTATUS_OK.equals(execution.getControlStatus())) {
                 detailStatus.append("<tr>");
                 detailStatus.append("<td>").append(execution.getTest()).append("</td>");
                 detailStatus.append("<td>").append(execution.getTestCase()).append("</td>");
                 detailStatus.append("<td>").append(execution.getDescription()).append("</td>");
+                detailStatus.append("<td>").append(execution.getEnvironment()).append("</td>");
+                detailStatus.append("<td>").append(execution.getCountry()).append("</td>");
                 detailStatus.append("<td>").append(execution.getControlStatus()).append("</td>");
                 detailStatus.append("</tr>");
                 totalTC++;
