@@ -38,7 +38,6 @@ import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ITestCaseExecutionService;
 import org.cerberus.crud.service.impl.TestCaseExecutionService;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.servlet.crud.usermanagement.ReadLogEvent;
 import org.cerberus.util.answer.AnswerUtil;
 import org.cerberus.util.servlet.ServletUtil;
 import org.json.JSONException;
@@ -78,10 +77,10 @@ public class ResultCIV002 extends HttpServlet {
             String outputFormat = policy.sanitize(request.getParameter("outputFormat"));
 
             String helpMessage = "This servlet is used to provide various execution counters as well as a global OK or KO status based on the number and status of the execution done on a specific tag. "
-                    + "The number of executions are ponderated by parameters by priority from CI_OK_prio1 to CI_OK_prio4. "
+                    + "The number of executions are ponderated by parameters by priority from cerberus_ci_okcoefprio1 to cerberus_ci_okcoefprio4. "
                     + "Formula used is the following : "
-                    + "Nb Exe Prio 1 testcases * CI_OK_prio1 + Nb Exe Prio 2 testcases * CI_OK_prio2 + "
-                    + "Nb Exe Prio 3 testcases * CI_OK_prio3 + Nb Exe Prio 4 testcases * CI_OK_prio4."
+                    + "Nb Exe Prio 1 testcases * cerberus_ci_okcoefprio1 + Nb Exe Prio 2 testcases * cerberus_ci_okcoefprio2 + "
+                    + "Nb Exe Prio 3 testcases * cerberus_ci_okcoefprio3 + Nb Exe Prio 4 testcases * cerberus_ci_okcoefprio4."
                     + "If no executions are found, the result is KO."
                     + "With at least 1 execution, if result is < 1 then global servlet result is OK. If not, it is KO."
                     + "All execution needs to have a status equal to KO, FA, NA, PE or NE."
@@ -205,10 +204,10 @@ public class ResultCIV002 extends HttpServlet {
 
                 IParameterService parameterService = appContext.getBean(IParameterService.class);
 
-                float pond1 = parameterService.getParameterFloatByKey("CI_OK_prio1", "", 0);
-                float pond2 = parameterService.getParameterFloatByKey("CI_OK_prio2", "", 0);
-                float pond3 = parameterService.getParameterFloatByKey("CI_OK_prio3", "", 0);
-                float pond4 = parameterService.getParameterFloatByKey("CI_OK_prio4", "", 0);
+                float pond1 = parameterService.getParameterFloatByKey("cerberus_ci_okcoefprio1", "", 0);
+                float pond2 = parameterService.getParameterFloatByKey("cerberus_ci_okcoefprio2", "", 0);
+                float pond3 = parameterService.getParameterFloatByKey("cerberus_ci_okcoefprio3", "", 0);
+                float pond4 = parameterService.getParameterFloatByKey("cerberus_ci_okcoefprio4", "", 0);
                 String result;
                 float resultCal = (nbkop1 * pond1) + (nbkop2 * pond2) + (nbkop3 * pond3) + (nbkop4 * pond4);
                 if ((nbtotal > 0) && nbqu + nbne + nbpe > 0) {

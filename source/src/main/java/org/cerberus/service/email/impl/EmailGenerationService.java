@@ -75,15 +75,15 @@ public class EmailGenerationService implements IEmailGenerationService {
         myCountryEnvParam = countryEnvParamService.convert(countryEnvParamService.readByKey(system, country, env));
 
         /* Pick the datas from the database */
-        String from = parameterService.findParameterByKey("integration_smtp_from", system).getValue();
-        String host = parameterService.findParameterByKey("integration_smtp_host", system).getValue();
-        int port = Integer.valueOf(parameterService.findParameterByKey("integration_smtp_port", system).getValue());
-        String userName = parameterService.findParameterByKey("integration_smtp_username", system).getValue();
-        String password = parameterService.findParameterByKey("integration_smtp_password", system).getValue();
-        String to = parameterService.findParameterByKey("integration_notification_newbuildrevision_to", system).getValue();
-        String cc = parameterService.findParameterByKey("integration_notification_newbuildrevision_cc", system).getValue();
-        String subject = parameterService.findParameterByKey("integration_notification_newbuildrevision_subject", system).getValue();
-        String body = parameterService.findParameterByKey("integration_notification_newbuildrevision_body", system).getValue();
+        String from = parameterService.findParameterByKey("cerberus_smtp_from", system).getValue();
+        String host = parameterService.findParameterByKey("cerberus_smtp_host", system).getValue();
+        int port = Integer.valueOf(parameterService.findParameterByKey("cerberus_smtp_port", system).getValue());
+        String userName = parameterService.findParameterByKey("cerberus_smtp_username", system).getValue();
+        String password = parameterService.findParameterByKey("cerberus_smtp_password", system).getValue();
+        String to = parameterService.findParameterByKey("cerberus_notification_newbuildrevision_to", system).getValue();
+        String cc = parameterService.findParameterByKey("cerberus_notification_newbuildrevision_cc", system).getValue();
+        String subject = parameterService.findParameterByKey("cerberus_notification_newbuildrevision_subject", system).getValue();
+        String body = parameterService.findParameterByKey("cerberus_notification_newbuildrevision_body", system).getValue();
 
         if (!StringUtil.isNullOrEmptyOrNull(myCountryEnvParam.geteMailBodyRevision())) {
             body = myCountryEnvParam.geteMailBodyRevision();
@@ -138,15 +138,15 @@ public class EmailGenerationService implements IEmailGenerationService {
         myCountryEnvParam = countryEnvParamService.convert(countryEnvParamService.readByKey(system, country, env));
 
         /* Pick the datas from the database */
-        String from = parameterService.findParameterByKey("integration_smtp_from", system).getValue();
-        String host = parameterService.findParameterByKey("integration_smtp_host", system).getValue();
-        int port = Integer.valueOf(parameterService.findParameterByKey("integration_smtp_port", system).getValue());
-        String userName = parameterService.findParameterByKey("integration_smtp_username", system).getValue();
-        String password = parameterService.findParameterByKey("integration_smtp_password", system).getValue();
-        String to = parameterService.findParameterByKey("integration_notification_disableenvironment_to", system).getValue();
-        String cc = parameterService.findParameterByKey("integration_notification_disableenvironment_cc", system).getValue();
-        String subject = parameterService.findParameterByKey("integration_notification_disableenvironment_subject", system).getValue();
-        String body = parameterService.findParameterByKey("integration_notification_disableenvironment_body", system).getValue();
+        String from = parameterService.findParameterByKey("cerberus_smtp_from", system).getValue();
+        String host = parameterService.findParameterByKey("cerberus_smtp_host", system).getValue();
+        int port = Integer.valueOf(parameterService.findParameterByKey("cerberus_smtp_port", system).getValue());
+        String userName = parameterService.findParameterByKey("cerberus_smtp_username", system).getValue();
+        String password = parameterService.findParameterByKey("cerberus_smtp_password", system).getValue();
+        String to = parameterService.findParameterByKey("cerberus_notification_disableenvironment_to", system).getValue();
+        String cc = parameterService.findParameterByKey("cerberus_notification_disableenvironment_cc", system).getValue();
+        String subject = parameterService.findParameterByKey("cerberus_notification_disableenvironment_subject", system).getValue();
+        String body = parameterService.findParameterByKey("cerberus_notification_disableenvironment_body", system).getValue();
 
         if (!StringUtil.isNullOrEmptyOrNull(myCountryEnvParam.geteMailBodyDisableEnvironment())) {
             body = myCountryEnvParam.geteMailBodyDisableEnvironment();
@@ -187,15 +187,15 @@ public class EmailGenerationService implements IEmailGenerationService {
         String lastchain = myBatchInvariant.getBatch() + " (" + myBatchInvariant.getDescription() + ")";
 
         /* Pick the datas from the database */
-        String from = parameterService.findParameterByKey("integration_smtp_from", system).getValue();
-        String host = parameterService.findParameterByKey("integration_smtp_host", system).getValue();
-        int port = Integer.valueOf(parameterService.findParameterByKey("integration_smtp_port", system).getValue());
-        String userName = parameterService.findParameterByKey("integration_smtp_username", system).getValue();
-        String password = parameterService.findParameterByKey("integration_smtp_password", system).getValue();
-        String to = parameterService.findParameterByKey("integration_notification_newchain_to", system).getValue();
-        String cc = parameterService.findParameterByKey("integration_notification_newchain_cc", system).getValue();
-        String subject = parameterService.findParameterByKey("integration_notification_newchain_subject", system).getValue();
-        String body = parameterService.findParameterByKey("integration_notification_newchain_body", system).getValue();
+        String from = parameterService.findParameterByKey("cerberus_smtp_from", system).getValue();
+        String host = parameterService.findParameterByKey("cerberus_smtp_host", system).getValue();
+        int port = Integer.valueOf(parameterService.findParameterByKey("cerberus_smtp_port", system).getValue());
+        String userName = parameterService.findParameterByKey("cerberus_smtp_username", system).getValue();
+        String password = parameterService.findParameterByKey("cerberus_smtp_password", system).getValue();
+        String to = parameterService.findParameterByKey("cerberus_notification_newchain_to", system).getValue();
+        String cc = parameterService.findParameterByKey("cerberus_notification_newchain_cc", system).getValue();
+        String subject = parameterService.findParameterByKey("cerberus_notification_newchain_subject", system).getValue();
+        String body = parameterService.findParameterByKey("cerberus_notification_newchain_body", system).getValue();
 
         if (!StringUtil.isNullOrEmptyOrNull(myCountryEnvParam.geteMailBodyChain())) {
             body = myCountryEnvParam.geteMailBodyChain();
@@ -231,10 +231,10 @@ public class EmailGenerationService implements IEmailGenerationService {
 
         /* Pick the datas from the database */
         String from = parameterService.findParameterByKey("cerberus_notification_accountcreation_from", system).getValue();
-        String host = parameterService.findParameterByKey("integration_smtp_host", system).getValue();
-        int port = Integer.valueOf(parameterService.findParameterByKey("integration_smtp_port", system).getValue());
-        String userName = parameterService.findParameterByKey("integration_smtp_username", system).getValue();
-        String password = parameterService.findParameterByKey("integration_smtp_password", system).getValue();
+        String host = parameterService.findParameterByKey("cerberus_smtp_host", system).getValue();
+        int port = Integer.valueOf(parameterService.findParameterByKey("cerberus_smtp_port", system).getValue());
+        String userName = parameterService.findParameterByKey("cerberus_smtp_username", system).getValue();
+        String password = parameterService.findParameterByKey("cerberus_smtp_password", system).getValue();
         String to = user.getEmail();
         String cc = cc = parameterService.findParameterByKey("cerberus_notification_accountcreation_cc", system).getValue();
         String subject = parameterService.findParameterByKey("cerberus_notification_accountcreation_subject", system).getValue();
@@ -256,10 +256,10 @@ public class EmailGenerationService implements IEmailGenerationService {
 
         String to = user.getEmail();
         String from = parameterService.findParameterByKey("cerberus_notification_accountcreation_from", system).getValue();
-        String host = parameterService.findParameterByKey("integration_smtp_host", system).getValue();
-        int port = Integer.valueOf(parameterService.findParameterByKey("integration_smtp_port", system).getValue());
-        String userName = parameterService.findParameterByKey("integration_smtp_username", system).getValue();
-        String password = parameterService.findParameterByKey("integration_smtp_password", system).getValue();
+        String host = parameterService.findParameterByKey("cerberus_smtp_host", system).getValue();
+        int port = Integer.valueOf(parameterService.findParameterByKey("cerberus_smtp_port", system).getValue());
+        String userName = parameterService.findParameterByKey("cerberus_smtp_username", system).getValue();
+        String password = parameterService.findParameterByKey("cerberus_smtp_password", system).getValue();
         String cc = parameterService.findParameterByKey("cerberus_notification_accountcreation_cc", system).getValue();
         String subject = parameterService.findParameterByKey("cerberus_notification_forgotpassword_subject", system).getValue();
         String body = parameterService.findParameterByKey("cerberus_notification_forgotpassword_body", system).getValue();
@@ -290,10 +290,10 @@ public class EmailGenerationService implements IEmailGenerationService {
         String system = "";
 
         String from = parameterService.getParameterStringByKey("cerberus_notification_tagexecutionstart_from", system, "Cerberus <no.reply@cerberus-testing.org>");
-        String host = parameterService.findParameterByKey("integration_smtp_host", system).getValue();
-        int port = Integer.valueOf(parameterService.findParameterByKey("integration_smtp_port", system).getValue());
-        String userName = parameterService.findParameterByKey("integration_smtp_username", system).getValue();
-        String password = parameterService.findParameterByKey("integration_smtp_password", system).getValue();
+        String host = parameterService.findParameterByKey("cerberus_smtp_host", system).getValue();
+        int port = Integer.valueOf(parameterService.findParameterByKey("cerberus_smtp_port", system).getValue());
+        String userName = parameterService.findParameterByKey("cerberus_smtp_username", system).getValue();
+        String password = parameterService.findParameterByKey("cerberus_smtp_password", system).getValue();
         String subject = parameterService.getParameterStringByKey("cerberus_notification_tagexecutionstart_subject", system, "Empty Subject. Please define parameter 'cerberus_notification_tagexecutionstart_subject'.");
         String body = parameterService.getParameterStringByKey("cerberus_notification_tagexecutionstart_body", system, "Empty Body. Please define parameter 'cerberus_notification_tagexecutionstart_body'.");
 
@@ -321,10 +321,10 @@ public class EmailGenerationService implements IEmailGenerationService {
         String system = "";
 
         String from = parameterService.getParameterStringByKey("cerberus_notification_tagexecutionend_from", system, "Cerberus <no.reply@cerberus-testing.org>");
-        String host = parameterService.findParameterByKey("integration_smtp_host", system).getValue();
-        int port = Integer.valueOf(parameterService.findParameterByKey("integration_smtp_port", system).getValue());
-        String userName = parameterService.findParameterByKey("integration_smtp_username", system).getValue();
-        String password = parameterService.findParameterByKey("integration_smtp_password", system).getValue();
+        String host = parameterService.findParameterByKey("cerberus_smtp_host", system).getValue();
+        int port = Integer.valueOf(parameterService.findParameterByKey("cerberus_smtp_port", system).getValue());
+        String userName = parameterService.findParameterByKey("cerberus_smtp_username", system).getValue();
+        String password = parameterService.findParameterByKey("cerberus_smtp_password", system).getValue();
         String subject = parameterService.getParameterStringByKey("cerberus_notification_tagexecutionend_subject", system, "Empty Subject. Please define parameter 'cerberus_notification_tagexecutionend_subject'.");
         String body = parameterService.getParameterStringByKey("cerberus_notification_tagexecutionend_body", system, "Empty Body. Please define parameter 'cerberus_notification_tagexecutionend_body'.");
 

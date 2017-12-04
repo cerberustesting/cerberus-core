@@ -29,7 +29,7 @@ tr#header {
     border-bottom: solid 1px;
 }
 
-/* Cerberus Parameter ex : jenkins_deploy_url  */
+/* Cerberus Parameter ex : cerberus_jenkinsdeploy_url  */
 .doc-parameter {
     color: blue;
 }

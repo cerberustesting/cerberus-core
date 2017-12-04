@@ -59,13 +59,13 @@ public abstract class AppiumService implements IAppiumService {
      * The Appium swipe duration parameter which is got thanks to the
      * {@link ParameterService}
      */
-    private static final String APPIUM_SWIPE_DURATION_PARAMETER = "appium_swipeDuration";
+    private static final String CERBERUS_APPIUM_SWIPE_DURATION_PARAMETER = "cerberus_appium_swipe_duration";
 
     /**
      * The default Appium swipe duration if no
-     * {@link AppiumService#APPIUM_SWIPE_DURATION_PARAMETER} has been defined
+     * {@link AppiumService#CERBERUS_APPIUM_SWIPE_DURATION_PARAMETER} has been defined
      */
-    private static final int DEFAULT_APPIUM_SWIPE_DURATION = 2000;
+    private static final int DEFAULT_CERBERUS_APPIUM_SWIPE_DURATION = 2000;
 
     @Autowired
     private ParameterService parameters;

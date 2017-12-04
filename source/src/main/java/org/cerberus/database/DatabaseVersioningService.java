@@ -7402,6 +7402,136 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // New updated Documentation.
         //-- ------------------------ 1236-1237
         SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+
+        // New Parameter for login message.
+        //-- ------------------------ 1238-1239
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) ");
+        SQLS.append(" SELECT '', 'cerberus_loginpage_welcomemessagehtml', concat('If you don\\'t have login, please contact ' , p.`value`) , 'Message that will appear in login page. %SUPPORTEMAIL% will be replaced by parameter cerberus_support_email.'");
+        SQLS.append(" FROM parameter p");
+        SQLS.append(" WHERE param = 'cerberus_support_email' and system=''; ");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `parameter` SET `value`='', `description`='Support Email for Cerberus.' WHERE `system`='' and`param`='cerberus_support_email';");
+        SQLInstruction.add(SQLS.toString());
+
+        // Clean old Parameter no longuer used.
+        //-- ------------------------ 1240
+        SQLS = new StringBuilder();
+        SQLS.append("DELETE FROM parameter where param in ('cerberus_mediastorage_url','cerberus_picture_testcase_path','cerberus_reporting_url','cerberus_selenium_firefoxextension_firebug','cerberus_selenium_firefoxextension_netexport','cerberus_testcase_function_booleanListOfFunction','cerberus_testcase_function_urlForListOfFunction','cerberus_testexecutiondetailpage_nbmaxexe','cerberus_testexecutiondetailpage_nbmaxexe_max','index_alert_subject','index_alert_from','index_alert_body','index_alert_to','index_notification_body_between','index_notification_body_end','index_notification_body_top','index_notification_subject','index_smtp_from','index_smtp_host','index_smtp_port','jenkins_application_pipeline_url','jenkins_deploy_pipeline_url','selenium_chromedriver_download_url','selenium_download_url','selenium_iedriver_download_url','solr_url','sonar_application_dashboard_url','ticketing tool_bugtracking_url','ticketing tool_newbugtracking_url','ticketing tool_ticketservice_url');");
+        SQLInstruction.add(SQLS.toString());
+
+        // Force data integrity on useStep.
+        //-- ------------------------ 1241-1248
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestep` ");
+        SQLS.append("CHANGE COLUMN `useStepStep` `useStepStep` INT(10) NULL DEFAULT NULL ;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testcasestep set usestepstep = null where usestepstep < 0;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestep` ");
+        SQLS.append("CHANGE COLUMN `useStepTest` `useStepTest` VARCHAR(45) NULL DEFAULT NULL ,");
+        SQLS.append("CHANGE COLUMN `useStepTestCase` `useStepTestCase` VARCHAR(45) NULL DEFAULT NULL ,");
+        SQLS.append("CHANGE COLUMN `useStepStep` `useStepStep` INT(10) UNSIGNED NULL DEFAULT NULL ,");
+        SQLS.append("ADD INDEX `IX_testcasestep_01` (`useStepTest` ASC, `useStepTestCase` ASC, `useStepStep` ASC);");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testcasestep set usesteptest = null where usesteptest='';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testcasestep set usesteptestcase = null where usesteptestcase='';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testcasestep set usestepstep = null where usesteptest is null;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testcasestep c");
+        SQLS.append(" SET UsrModif='DatabaseVersioningService', useStep='N', useStepTest=null, useStepTestCase=null, useStepStep=null, DateModif = now()");
+        SQLS.append("WHERE EXISTS ");
+        SQLS.append("( Select 1 from (");
+        SQLS.append("select a.test, a.testcase, a.step from testcasestep a");
+        SQLS.append(" left outer join testcasestep b on a.usesteptest=b.test and a.usesteptestcase=b.testcase and a.usestepstep=b.step");
+        SQLS.append(" where b.test is null and a.usesteptest is not null and a.usesteptest != ''");
+        SQLS.append(") as t where t.test=c.test and t.testcase=c.testcase and t.step=c.step and c.usesteptest is not null and c.usesteptest != '');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestep` ");
+        SQLS.append("ADD CONSTRAINT `FK_testcasestep_02`");
+        SQLS.append("  FOREIGN KEY (`useStepTest` , `useStepTestCase`)");
+        SQLS.append("  REFERENCES `testcase` (`Test` , `TestCase` )");
+        SQLS.append("  ON DELETE SET NULL  ON UPDATE CASCADE;");
+        SQLInstruction.add(SQLS.toString());
+
+        // ADD Put and Delete Http Method in invariants
+        //-- ------------------------ 1249
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ");
+        SQLS.append("  ('SRVMETHOD', 'DELETE', 300 , 'DELETE http method')");
+        SQLS.append(" ,('SRVMETHOD', 'PUT', 400, 'PUT http method');");
+        SQLInstruction.add(SQLS.toString());
+
+        // ADD Patch Http Method in invariants
+        //-- ------------------------ 1250
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ");
+        SQLS.append("  ('SRVMETHOD', 'PATCH', 500 , 'PATCH http method')");
+        SQLInstruction.add(SQLS.toString());
+
+        // ADD private invariant CAMPAIGN_TCCRITERIA
+        //-- ------------------------ 1251
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ");
+        SQLS.append("  ('INVARIANTPRIVATE', 'CAMPAIGN_TCCRITERIA', 450 , '')");
+        SQLInstruction.add(SQLS.toString());
+
+        // ADD private four invariants for all criterias
+        //-- ------------------------ 1252
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ");
+        SQLS.append("  ('CAMPAIGN_TCCRITERIA', 'PRIORITY', 10 , '')");
+        SQLS.append("  ,('CAMPAIGN_TCCRITERIA', 'STATUS', 20 , '')");
+        SQLS.append("  ,('CAMPAIGN_TCCRITERIA', 'SYSTEM', 30 , '')");
+        SQLS.append("  ,('CAMPAIGN_TCCRITERIA', 'APPLICATION', 40 , '')");
+        SQLInstruction.add(SQLS.toString());
+
+        // ADD a parameter for maximum testcase to be returned
+        //-- ------------------------ 1253
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` (`system`,`param`, `value`, `description`) VALUES ");
+        SQLS.append("  ('','cerberus_testcase_maxreturn', '1000', 'Integer that correspond to the maximum of testcase that cerberus can return')");
+        SQLInstruction.add(SQLS.toString());
+
+        // ADD user password for robot host
+        //-- ------------------------ 1254-1255
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `robot` add column host_user varchar(255)");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `robot` add column host_password varchar(255)");
+        SQLInstruction.add(SQLS.toString());
+
+        // Update cerberus_testcase_maxreturn parameter.
+        //-- ------------------------ 1256
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `parameter` SET `param`='cerberus_campaign_maxtestcase', `description`='Integer that correspond to the maximum number of testcase that a Cerberus campaign can contain.' WHERE `system`='' and `param`='cerberus_testcase_maxreturn';");
+        SQLInstruction.add(SQLS.toString());
+
+        //-- Enrich parameter cerberus_notification_tagexecutionend_body with extra variable.
+        //-- ------------------------ 1257
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE parameter SET description='Cerberus End of tag execution notification email body. %TAG%, %URLTAGREPORT%, %CAMPAIGN%, %TAGDURATION%, %TAGSTART%, %TAGEND%, %TAGGLOBALSTATUS% and %TAGTCDETAIL% can be used as variables.', value=REPLACE(value, 'You can analyse the result', '<table><thead><tr style=\"background-color:#cad3f1; font-style:bold\"><td>Start</td><td>End</td><td>Duration</td></tr></thead><tbody><tr><td>%TAGSTART%</td><td>%TAGEND%</td><td>%TAGDURATION% min</td></tr></tbody></table><br><br>Global Status : <br>%TAGGLOBALSTATUS%<br><br>Non OK TestCases : <br>%TAGTCDETAIL%<br><br>You can analyse the result') WHERE param='cerberus_notification_tagexecutionend_body';");
+        SQLInstruction.add(SQLS.toString());
+
+        // New updated Documentation.
+        //-- ------------------------ 1258-1259
+        SQLS = new StringBuilder();
         SQLS.append("DELETE FROM `documentation`;");
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
@@ -7411,8 +7541,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('application','bugtrackernewurl','','fr','URL pour nouveau Bug','Correspond à l\\'URL qui pointe vers la page de création de bug du Bug Tracker de l\\'<code class=\\'doc-crbvvoca\\'>application</code>.<br><br><table cellspacing=0 cellpadding=3><th class=\\'ex\\' colspan=\\'2\\'>Les variables suivantes peuvent être utilisées dans l\\'URL</th><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%TEST%</code></td><td class=\\'ex\\'>Test</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%TESTCASE%</code></td><td class=\\'ex\\'>Reference du cas de test</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%TESTCASEDESC%</code></td><td class=\\'ex\\'>Description du cas de test</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%EXEID%</code></td><td class=\\'ex\\'>ID de l\\'execution</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%EXEDATE%</code></td><td class=\\'ex\\'>Date et heure du debut de l\\'execution.</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%ENV%</code></td><td class=\\'ex\\'>Environnement</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%COUNTRY%</code></td><td class=\\'ex\\'>Pays</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%BUILD%</code></td><td class=\\'ex\\'>Build</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%REV%</code></td><td class=\\'ex\\'>Revision</td></tr></table>','_application_attributes')");
         SQLS.append(",('application','bugtrackerurl','','en','Bug Tracker URL','This correspond to the URL of the Bug reporting system of the <code class=\\'doc-crbvvoca\\'>application</code>.<br><br><table cellspacing=0 cellpadding=3><th class=\\'ex\\' colspan=\\'2\\'>The following variables can be used inside the URL</th><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%BUGID%</code></td><td class=\\'ex\\'>ID of the Bug</td></tr></table>','_application_attributes')");
         SQLS.append(",('application','bugtrackerurl','','fr','URL du Bug Tracker','Correspond à l\\'URL du Bug Tracker de l\\'<code class=\\'doc-crbvvoca\\'>application</code>.<br><br><table cellspacing=0 cellpadding=3><th class=\\'ex\\' colspan=\\'2\\'>Les variables suivantes peuvent être utilisées dans l\\'URL</th><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%BUGID%</code></td><td class=\\'ex\\'>ID du Bug</td></tr></table>','_application_attributes')");
-        SQLS.append(",('application','deploytype','','en','Deploy Type','This information groups the <code class=\\'doc-crbvvoca\\'>application</code> by typology of deployement process.<br>It can be used as a variable in the parameter <code class=\\'doc-parameter\\'>jenkins_deploy_url</code> that correspond to the URL that calls a continious integration system such as Jenkins.','_application_attributes')");
-        SQLS.append(",('application','deploytype','','fr','Type de deploiement','Cette information groupe les <code class=\\'doc-crbvvoca\\'>applications</code> par typologie de deploiement.<br>Peut être utilisé comme variable dans le parametre <code class=\\'doc-parameter\\'>jenkins_deploy_url</code> qui correspond à l\\'URL appelée vers un systeme d\\'intégration continue de type Jenkins.','_application_attributes')");
+        SQLS.append(",('application','deploytype','','en','Deploy Type','This information groups the <code class=\\'doc-crbvvoca\\'>application</code> by typology of deployement process.<br>It can be used as a variable in the parameter <code class=\\'doc-parameter\\'>cerberus_jenkinsdeploy_url</code> that correspond to the URL that calls a continious integration system such as Jenkins.','_application_attributes')");
+        SQLS.append(",('application','deploytype','','fr','Type de deploiement','Cette information groupe les <code class=\\'doc-crbvvoca\\'>applications</code> par typologie de deploiement.<br>Peut être utilisé comme variable dans le parametre <code class=\\'doc-parameter\\'>cerberus_jenkinsdeploy_url</code> qui correspond à l\\'URL appelée vers un systeme d\\'intégration continue de type Jenkins.','_application_attributes')");
         SQLS.append(",('application','Description','','en','Description','This is the short Description of the <code class=\\'doc-crbvvoca\\'>application</code>.','_application_attributes')");
         SQLS.append(",('application','Description','','fr','Description','Description courte de l\\'<code class=\\'doc-crbvvoca\\'>application</code>.','_application_attributes')");
         SQLS.append(",('application','mavengroupid','','en','Maven Group ID','','_application_attributes')");
@@ -9505,127 +9635,21 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('usergroup','GroupName','','fr','Nom du groupe',NULL,'_management_des_utilisateurs')");
         SQLInstruction.add(SQLS.toString());
 
-        // New Parameter for login message.
-        //-- ------------------------ 1238-1239
+        // rename parameters in order to fir standard
+        //-- ------------------------ 1259-1262
         SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) ");
-        SQLS.append(" SELECT '', 'cerberus_loginpage_welcomemessagehtml', concat('If you don\\'t have login, please contact ' , p.`value`) , 'Message that will appear in login page. %SUPPORTEMAIL% will be replaced by parameter cerberus_support_email.'");
-        SQLS.append(" FROM parameter p");
-        SQLS.append(" WHERE param = 'cerberus_support_email' and system=''; ");
+        SQLS.append("update parameter set param = replace(param, 'integration_', 'cerberus_') where param like 'integration_%';");
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
-        SQLS.append("UPDATE `parameter` SET `value`='', `description`='Support Email for Cerberus.' WHERE `system`='' and`param`='cerberus_support_email';");
+        SQLS.append("update parameter set param = replace(param, 'jenkins_', 'cerberus_jenkins') where param like 'jenkins_%';");
         SQLInstruction.add(SQLS.toString());
-
-        // Clean old Parameter no longuer used.
-        //-- ------------------------ 1240
         SQLS = new StringBuilder();
-        SQLS.append("DELETE FROM parameter where param in ('cerberus_mediastorage_url','cerberus_picture_testcase_path','cerberus_reporting_url','cerberus_selenium_firefoxextension_firebug','cerberus_selenium_firefoxextension_netexport','cerberus_testcase_function_booleanListOfFunction','cerberus_testcase_function_urlForListOfFunction','cerberus_testexecutiondetailpage_nbmaxexe','cerberus_testexecutiondetailpage_nbmaxexe_max','index_alert_subject','index_alert_from','index_alert_body','index_alert_to','index_notification_body_between','index_notification_body_end','index_notification_body_top','index_notification_subject','index_smtp_from','index_smtp_host','index_smtp_port','jenkins_application_pipeline_url','jenkins_deploy_pipeline_url','selenium_chromedriver_download_url','selenium_download_url','selenium_iedriver_download_url','solr_url','sonar_application_dashboard_url','ticketing tool_bugtracking_url','ticketing tool_newbugtracking_url','ticketing tool_ticketservice_url');");
+        SQLS.append("update parameter set param = 'cerberus_appium_swipe_duration' where param = 'appium_swipeDuration';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("update parameter set param = replace(param, 'CI_OK_', 'cerberus_ci_okcoef') where param like 'CI_OK%';");
         SQLInstruction.add(SQLS.toString());
 
-        // Force data integrity on useStep.
-        //-- ------------------------ 1241-1248
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcasestep` ");
-        SQLS.append("CHANGE COLUMN `useStepStep` `useStepStep` INT(10) NULL DEFAULT NULL ;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE testcasestep set usestepstep = null where usestepstep < 0;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcasestep` ");
-        SQLS.append("CHANGE COLUMN `useStepTest` `useStepTest` VARCHAR(45) NULL DEFAULT NULL ,");
-        SQLS.append("CHANGE COLUMN `useStepTestCase` `useStepTestCase` VARCHAR(45) NULL DEFAULT NULL ,");
-        SQLS.append("CHANGE COLUMN `useStepStep` `useStepStep` INT(10) UNSIGNED NULL DEFAULT NULL ,");
-        SQLS.append("ADD INDEX `IX_testcasestep_01` (`useStepTest` ASC, `useStepTestCase` ASC, `useStepStep` ASC);");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE testcasestep set usesteptest = null where usesteptest='';");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE testcasestep set usesteptestcase = null where usesteptestcase='';");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE testcasestep set usestepstep = null where usesteptest is null;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE testcasestep c");
-        SQLS.append(" SET UsrModif='DatabaseVersioningService', useStep='N', useStepTest=null, useStepTestCase=null, useStepStep=null, DateModif = now()");
-        SQLS.append("WHERE EXISTS ");
-        SQLS.append("( Select 1 from (");
-        SQLS.append("select a.test, a.testcase, a.step from testcasestep a");
-        SQLS.append(" left outer join testcasestep b on a.usesteptest=b.test and a.usesteptestcase=b.testcase and a.usestepstep=b.step");
-        SQLS.append(" where b.test is null and a.usesteptest is not null and a.usesteptest != ''");
-        SQLS.append(") as t where t.test=c.test and t.testcase=c.testcase and t.step=c.step and c.usesteptest is not null and c.usesteptest != '');");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcasestep` ");
-        SQLS.append("ADD CONSTRAINT `FK_testcasestep_02`");
-        SQLS.append("  FOREIGN KEY (`useStepTest` , `useStepTestCase`)");
-        SQLS.append("  REFERENCES `testcase` (`Test` , `TestCase` )");
-        SQLS.append("  ON DELETE SET NULL  ON UPDATE CASCADE;");
-        SQLInstruction.add(SQLS.toString());
-
-        // ADD Put and Delete Http Method in invariants
-        //-- ------------------------ 1249
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ");
-        SQLS.append("  ('SRVMETHOD', 'DELETE', 300 , 'DELETE http method')");
-        SQLS.append(" ,('SRVMETHOD', 'PUT', 400, 'PUT http method');");
-        SQLInstruction.add(SQLS.toString());
-
-        // ADD Patch Http Method in invariants
-        //-- ------------------------ 1250
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ");
-        SQLS.append("  ('SRVMETHOD', 'PATCH', 500 , 'PATCH http method')");
-        SQLInstruction.add(SQLS.toString());
-
-        // ADD private invariant CAMPAIGN_TCCRITERIA
-        //-- ------------------------ 1251
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ");
-        SQLS.append("  ('INVARIANTPRIVATE', 'CAMPAIGN_TCCRITERIA', 450 , '')");
-        SQLInstruction.add(SQLS.toString());
-
-        // ADD private four invariants for all criterias
-        //-- ------------------------ 1252
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ");
-        SQLS.append("  ('CAMPAIGN_TCCRITERIA', 'PRIORITY', 10 , '')");
-        SQLS.append("  ,('CAMPAIGN_TCCRITERIA', 'STATUS', 20 , '')");
-        SQLS.append("  ,('CAMPAIGN_TCCRITERIA', 'SYSTEM', 30 , '')");
-        SQLS.append("  ,('CAMPAIGN_TCCRITERIA', 'APPLICATION', 40 , '')");
-        SQLInstruction.add(SQLS.toString());
-
-        // ADD a parameter for maximum testcase to be returned
-        //-- ------------------------ 1253
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `parameter` (`system`,`param`, `value`, `description`) VALUES ");
-        SQLS.append("  ('','cerberus_testcase_maxreturn', '1000', 'Integer that correspond to the maximum of testcase that cerberus can return')");
-        SQLInstruction.add(SQLS.toString());
-
-        // ADD user password for robot host
-        //-- ------------------------ 1254-1255
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `robot` add column host_user varchar(255)");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `robot` add column host_password varchar(255)");
-        SQLInstruction.add(SQLS.toString());
-
-        // Update cerberus_testcase_maxreturn parameter.
-        //-- ------------------------ 1256
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `parameter` SET `param`='cerberus_campaign_maxtestcase', `description`='Integer that correspond to the maximum number of testcase that a Cerberus campaign can contain.' WHERE `system`='' and `param`='cerberus_testcase_maxreturn';");
-        SQLInstruction.add(SQLS.toString());
-
-        //-- Enrich parameter cerberus_notification_tagexecutionend_body with extra variable.
-        //-- ------------------------ 1257
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE parameter SET description='Cerberus End of tag execution notification email body. %TAG%, %URLTAGREPORT%, %CAMPAIGN%, %TAGDURATION%, %TAGSTART%, %TAGEND%, %TAGGLOBALSTATUS% and %TAGTCDETAIL% can be used as variables.', value=REPLACE(value, 'You can analyse the result', '<table><thead><tr style=\"background-color:#cad3f1; font-style:bold\"><td>Start</td><td>End</td><td>Duration</td></tr></thead><tbody><tr><td>%TAGSTART%</td><td>%TAGEND%</td><td>%TAGDURATION% min</td></tr></tbody></table><br><br>Global Status : <br>%TAGGLOBALSTATUS%<br><br>Non OK TestCases : <br>%TAGTCDETAIL%<br><br>You can analyse the result') WHERE param='cerberus_notification_tagexecutionend_body';");
-        SQLInstruction.add(SQLS.toString());
-        
         return SQLInstruction;
     }
 

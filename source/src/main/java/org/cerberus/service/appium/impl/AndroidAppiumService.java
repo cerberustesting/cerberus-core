@@ -56,13 +56,13 @@ public class AndroidAppiumService extends AppiumService {
      * The Appium swipe duration parameter which is got thanks to the
      * {@link ParameterService}
      */
-    private static final String APPIUM_SWIPE_DURATION_PARAMETER = "appium_swipeDuration";
+    private static final String CERBERUS_APPIUM_SWIPE_DURATION_PARAMETER = "cerberus_appium_swipe_duration";
     
     /**
      * The default Appium swipe duration if no
      * {@link AppiumService#APPIUM_SWIPE_DURATION_PARAMETER} has been defined
      */
-    private static final int DEFAULT_APPIUM_SWIPE_DURATION = 2000;
+    private static final int DEFAULT_CERBERUS_APPIUM_SWIPE_DURATION = 2000;
 
     /**
      * The {@link Pattern} related error when keyboard is absent
@@ -138,11 +138,11 @@ public class AndroidAppiumService extends AppiumService {
             SwipeAction.Direction direction = this.getDirectionForSwipe(session, action);
 
             // Get the parametrized swipe duration
-            Parameter duration = parameters.findParameterByKey(APPIUM_SWIPE_DURATION_PARAMETER, "");
+            Parameter duration = parameters.findParameterByKey(CERBERUS_APPIUM_SWIPE_DURATION_PARAMETER, "");
 
             // Do the swipe thanks to the Appium driver
             TouchAction dragNDrop
-                    = new TouchAction(session.getAppiumDriver()).longPress(direction.getX1(), direction.getY1(), Duration.ofMillis(duration == null ? DEFAULT_APPIUM_SWIPE_DURATION : Integer.parseInt(duration.getValue())))
+                    = new TouchAction(session.getAppiumDriver()).longPress(direction.getX1(), direction.getY1(), Duration.ofMillis(duration == null ? DEFAULT_CERBERUS_APPIUM_SWIPE_DURATION : Integer.parseInt(duration.getValue())))
                             .moveTo(direction.getX2(), direction.getY2()).release();
             dragNDrop.perform();
                        

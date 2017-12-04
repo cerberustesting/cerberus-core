@@ -298,8 +298,8 @@ public class ParameterService implements IParameterService {
     public boolean isToSecureParameter(Parameter parameter) {
         if (parameter.getParam().equals("cerberus_accountcreation_defaultpassword")
                 || parameter.getParam().equals("cerberus_proxyauthentification_password")
-                || parameter.getParam().equals("jenkins_admin_password")
-                || parameter.getParam().equals("integration_smtp_password")) {
+                || parameter.getParam().equals("cerberus_jenkinsadmin_password")
+                || parameter.getParam().equals("cerberus_smtp_password")) {
             return true;
         }
         return false;
@@ -330,18 +330,18 @@ public class ParameterService implements IParameterService {
             case "cerberus_proxy_port":
             case "cerberus_propertyexternalsql_timeout":
             case "cerberus_testdatalib_fetchmax":
-            case "integration_notification_disableenvironment_body":
-            case "integration_notification_disableenvironment_cc":
-            case "integration_notification_disableenvironment_subject":
-            case "integration_notification_disableenvironment_to":
-            case "integration_notification_newbuildrevision_body":
-            case "integration_notification_newbuildrevision_cc":
-            case "integration_notification_newbuildrevision_subject":
-            case "integration_notification_newbuildrevision_to":
-            case "integration_notification_newchain_body":
-            case "integration_notification_newchain_cc":
-            case "integration_notification_newchain_subject":
-            case "integration_notification_newchain_to":
+            case "cerberus_notification_disableenvironment_body":
+            case "cerberus_notification_disableenvironment_cc":
+            case "cerberus_notification_disableenvironment_subject":
+            case "cerberus_notification_disableenvironment_to":
+            case "cerberus_notification_newbuildrevision_body":
+            case "cerberus_notification_newbuildrevision_cc":
+            case "cerberus_notification_newbuildrevision_subject":
+            case "cerberus_notification_newbuildrevision_to":
+            case "cerberus_notification_newchain_body":
+            case "cerberus_notification_newchain_cc":
+            case "cerberus_notification_newchain_subject":
+            case "cerberus_notification_newchain_to":
                 return true;
             // any other parameters are not managed at system level.
             default:

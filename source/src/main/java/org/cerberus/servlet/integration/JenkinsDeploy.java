@@ -81,13 +81,13 @@ public class JenkinsDeploy extends HttpServlet {
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             IParameterService parameterService = appContext.getBean(ParameterService.class);
 
-            String user = parameterService.findParameterByKey("jenkins_admin_user", "").getValue();
-            String pass = parameterService.findParameterByKey("jenkins_admin_password", "").getValue();
+            String user = parameterService.findParameterByKey("cerberus_jenkinsadmin_user", "").getValue();
+            String pass = parameterService.findParameterByKey("cerberus_jenkinsadmin_password", "").getValue();
 
             HTTPSession session = new HTTPSession();
             session.startSession(user, pass);
 
-            String url = parameterService.findParameterByKey("jenkins_deploy_url", "").getValue();
+            String url = parameterService.findParameterByKey("cerberus_jenkinsdeploy_url", "").getValue();
             String final_url;
             final_url = url.replace("%APPLI%", request.getParameter("application"));
             final_url = final_url.replace("%JENKINSBUILDID%", request.getParameter("jenkinsbuildid"));

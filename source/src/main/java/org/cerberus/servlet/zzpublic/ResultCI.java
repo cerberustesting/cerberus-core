@@ -66,10 +66,10 @@ public class ResultCI extends HttpServlet {
         String tag = policy.sanitize(request.getParameter("tag"));
 
         String helpMessage = "\nThis servlet is used to profide a global OK or KO based on the number and status of the execution done on a specific tag.\n"
-                + "The number of executions are ponderated by parameters by priority from CI_OK_prio1 to CI_OK_prio4.\n"
+                + "The number of executions are ponderated by parameters by priority from cerberus_ci_okcoefprio1 to cerberus_ci_okcoefprio4.\n"
                 + "Formula used is the following :\n"
-                + "Nb Exe Prio 1 testcases * CI_OK_prio1 + Nb Exe Prio 2 testcases * CI_OK_prio2 +\n"
-                + "  Nb Exe Prio 3 testcases * CI_OK_prio3 + Nb Exe Prio 4 testcases * CI_OK_prio4\n\n"
+                + "Nb Exe Prio 1 testcases * cerberus_ci_okcoefprio1 + Nb Exe Prio 2 testcases * cerberus_ci_okcoefprio2 +\n"
+                + "  Nb Exe Prio 3 testcases * cerberus_ci_okcoefprio3 + Nb Exe Prio 4 testcases * cerberus_ci_okcoefprio4\n\n"
                 + "If not executions are found, the result is KO.\n"
                 + "With at least 1 execution, if result is < 1 then global servlet result is OK. If not, it is KO.\n"
                 + "All execution needs to have a status equal to KO, FA, NA or PE.\n\n"
@@ -184,10 +184,10 @@ public class ResultCI extends HttpServlet {
 
                 IParameterService parameterService = appContext.getBean(IParameterService.class);
 
-                float pond1 = Float.valueOf(parameterService.findParameterByKey("CI_OK_prio1", "").getValue());
-                float pond2 = Float.valueOf(parameterService.findParameterByKey("CI_OK_prio2", "").getValue());
-                float pond3 = Float.valueOf(parameterService.findParameterByKey("CI_OK_prio3", "").getValue());
-                float pond4 = Float.valueOf(parameterService.findParameterByKey("CI_OK_prio4", "").getValue());
+                float pond1 = Float.valueOf(parameterService.findParameterByKey("cerberus_ci_okcoefprio1", "").getValue());
+                float pond2 = Float.valueOf(parameterService.findParameterByKey("cerberus_ci_okcoefprio2", "").getValue());
+                float pond3 = Float.valueOf(parameterService.findParameterByKey("cerberus_ci_okcoefprio3", "").getValue());
+                float pond4 = Float.valueOf(parameterService.findParameterByKey("cerberus_ci_okcoefprio4", "").getValue());
 
                 String result;
                 float resultCal = (nbkop1 * pond1) + (nbkop2 * pond2) + (nbkop3 * pond3) + (nbkop4 * pond4);
