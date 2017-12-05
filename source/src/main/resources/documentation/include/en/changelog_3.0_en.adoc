@@ -11,7 +11,15 @@
 * [GUI] Display the Queue State when execution is still in queue in report by tag screen.
 * [GUI] Allow to resubmit execution per status in report by tag screen. That allow quick restart of executions in 2 clicks.
 * [GUI] 1st step documentation.
-* [ENGINE] REST Service now allow DELETE and PUT http method.
+* [ENGINE] REST Service now allow DELETE, PUT and PATCH http method.
+* [GUI] Various responsive improvements on very small screens.
+* [GUI] Report by Tag page now handle pagination (in order to optimise page loading on system where more than 500 testcase are triggered on a campaign).
+* [GUI] Allow to force an execution still in queue in ERROR State. This is to make that execution still visible in reportingByTag page allowing later submition
+* [GUI] renamed parameters to make them more consistent.
+* [GUI] new variable in campaign mail notification body in order to enrich email with campaign global result per status and detail list of testcases in non OK status.
+* [ENGINE] Campaign testcase list definition can now be defined with dynamic criteria : SYSTEM, APPLICATION, STATUS and PRIORITY.
+* [GUI] Protecting password display from the GUI. Robot password and parameter password are no longuer displayed in GUI.
+* [GUI] When resubmit an execution to the queue, the popup message allow now to get to the execution page to see the result directly. Execution page will report the nb of execution in the queue before the current entry (in order to feedback the user how long to wait).
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
