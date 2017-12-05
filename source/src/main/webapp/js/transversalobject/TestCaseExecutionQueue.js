@@ -256,7 +256,7 @@ function feedExecutionQueueModal(queueid, modalId, mode) {
                 var hasPermissions = data.hasPermissions;
 
                 if (mode === "EDIT") {
-                    // Cannot Cancel and execution that is already cancelled.
+                    // Cannot Cancel an execution that is already cancelled.
                     if (exeQ.state === "CANCELLED") {
                         $('#cancelExecutionQueueButton').attr('class', '');
                         $('#cancelExecutionQueueButton').prop('hidden', 'hidden');
@@ -267,6 +267,12 @@ function feedExecutionQueueModal(queueid, modalId, mode) {
                         $('#cancelExecutionQueueButton').prop('hidden', 'hidden');
                         $('#saveExecutionQueueButton').attr('class', '');
                         $('#saveExecutionQueueButton').prop('hidden', 'hidden');
+                        $('#submitExecutionQueueButton').attr('class', '');
+                        $('#submitExecutionQueueButton').prop('hidden', 'hidden');
+                        hasPermissions = false;
+                    }
+                    // Cannot resubmit an execution that is already in queue.
+                    if ((exeQ.state === "QUEUED")) {
                         $('#submitExecutionQueueButton').attr('class', '');
                         $('#submitExecutionQueueButton').prop('hidden', 'hidden');
                         hasPermissions = false;
