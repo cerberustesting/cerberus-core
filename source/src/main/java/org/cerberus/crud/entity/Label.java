@@ -29,6 +29,7 @@ public class Label {
     private Integer id;
     private String system;
     private String label;
+    private String type;
     private String color;
     private String parentLabel;
     private String description;
@@ -37,12 +38,27 @@ public class Label {
     private String usrModif;
     private Timestamp dateModif;
 
+    /**
+     * Invariant PROPERTY TYPE String.
+     */
+    public static final String TYPE_STICKER = "STICKER";
+    public static final String TYPE_BATTERY = "BATTERY";
+    public static final String TYPE_REQUIREMENT = "REQUIREMENT";
+
     public Integer getId() {
         return id;
     }
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public String getSystem() {
@@ -116,7 +132,5 @@ public class Label {
     public void setDescription(String description) {
         this.description = description;
     }
-    
-    
 
 }

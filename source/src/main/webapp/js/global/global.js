@@ -526,8 +526,9 @@ function getInvariantListN(list, handleData) {
  * @param {String} idName of the invariant to load (ex : COUNTRY)
  * @param {boolean} forceReload true if we want to force the reload on cache from the server
  * @param {boolean} notAsync true if we dont want to have Async ajax
+ * @param {boolean} addValue Value that can be added at the beginning of the combo.
  */
-function getSelectInvariant(idName, forceReload, notAsync) {
+function getSelectInvariant(idName, forceReload, notAsync, addValue) {
     var cacheEntryName = idName + "INVARIANT";
     if (forceReload) {
         sessionStorage.removeItem(cacheEntryName);
@@ -538,6 +539,9 @@ function getSelectInvariant(idName, forceReload, notAsync) {
     }
     var list = JSON.parse(sessionStorage.getItem(cacheEntryName));
     var select = $("<select></select>").addClass("form-control input-sm");
+    if (addValue !== undefined) {
+        select.append($("<option></option>").text(addValue).val(addValue));
+    }
 
     if (list === null) {
         $.ajax({
@@ -657,7 +661,7 @@ function getSelectLabel(system, forceReload, notAsync) {
 }
 
 function getSelectApplication(system, forceReload) {
-	system = ""
+    system = ""
     var cacheEntryName = system + "INVARIANT";
     if (forceReload) {
         sessionStorage.removeItem(cacheEntryName);
@@ -692,24 +696,24 @@ function getSelectApplication(system, forceReload) {
 }
 
 function getSelectApplicationWithoutSystem() {
-	
-	var list = []
 
-	var select = $("<select></select>").addClass("form-control input-sm");
+    var list = []
 
-	$.ajax({
-		url: "ReadApplication",
-		async:false,
-		success: function (data) {
-			list = data.contentTable;
-			for (var index = 0; index < list.length; index++) {
-				var item = list[index].application;
-				select.append($("<option></option>").text(item).val(item));
-			}
-		}
-	});
+    var select = $("<select></select>").addClass("form-control input-sm");
 
-	return select;
+    $.ajax({
+        url: "ReadApplication",
+        async: false,
+        success: function (data) {
+            list = data.contentTable;
+            for (var index = 0; index < list.length; index++) {
+                var item = list[index].application;
+                select.append($("<option></option>").text(item).val(item));
+            }
+        }
+    });
+
+    return select;
 }
 
 function getSelectDeployType(forceReload) {
@@ -1150,13 +1154,15 @@ $.fn.dataTableExt.oApi.fnNewAjax = function (oSettings, sNewSource) {
  * @param {type} divId - table unique identifier
  * @param {type} data - data that is presented in the table
  * @param {type} aoColumnsFunction - function to render the columns
+ * @param {type} aaSorting - Table to define the sorting column and order. Ex : [3, 'asc']
  * @param {type} defineLenghtMenu - allows the defintion of the select with the number or rows that should be displayed
  * @returns {TableConfigurationsClientSide}
  */
-function TableConfigurationsClientSide(divId, data, aoColumnsFunction, defineLenghtMenu) {
+function TableConfigurationsClientSide(divId, data, aoColumnsFunction, defineLenghtMenu, aaSorting) {
     this.divId = divId;
     this.aoColumnsFunction = aoColumnsFunction;
     this.aaData = data;
+    this.aaSorting = aaSorting;
 
     if (defineLenghtMenu) {
         this.lengthMenu = [10, 25, 50, 100];

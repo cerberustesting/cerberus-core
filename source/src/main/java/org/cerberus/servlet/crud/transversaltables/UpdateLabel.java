@@ -90,6 +90,7 @@ public class UpdateLabel extends HttpServlet {
          */
         // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
         String system = policy.sanitize(request.getParameter("system"));
+        String type = policy.sanitize(request.getParameter("type"));
         Integer id = Integer.valueOf(policy.sanitize(request.getParameter("id")));
         // Parameter that needs to be secured --> We SECURE+DECODE them
         String label = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("label"), "", charset);
@@ -128,7 +129,7 @@ public class UpdateLabel extends HttpServlet {
                  * object exist, then we can delete it.
                  */
                 Timestamp updateDate = new Timestamp(new Date().getTime());
-                Label l = labelFactory.create(id, system, label, color, parentLabel, description, null, null, usr, updateDate);
+                Label l = labelFactory.create(id, system, label, type, color, parentLabel, description, null, null, usr, updateDate);
                 ans = labelService.update(l);
 
                 if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {

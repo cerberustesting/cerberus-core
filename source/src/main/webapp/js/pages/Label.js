@@ -38,7 +38,7 @@ function initPage() {
     $('#editLabelModal').on('hidden.bs.modal', editEntryModalCloseHandler);
 
     //configure and create the dataTable
-    var configurations = new TableConfigurationsServerSide("labelsTable", "ReadLabel?system=" + getUser().defaultSystem, "contentTable", aoColumnsFunc("labelsTable"), [3, 'asc']);
+    var configurations = new TableConfigurationsServerSide("labelsTable", "ReadLabel?system1=" + getUser().defaultSystem, "contentTable", aoColumnsFunc("labelsTable"), [2, 'asc']);
     createDataTableWithPermissions(configurations, renderOptionsForLabel, "#labelList", undefined, true);
 }
 
@@ -58,13 +58,15 @@ function displayPageLabel() {
     $("[name='labelField']").html(doc.getDocOnline("label", "label"));
     $("[name='descriptionField']").html(doc.getDocOnline("label", "description"));
     $("[name='colorField']").html(doc.getDocOnline("label", "color"));
+    $("[name='typeField']").html(doc.getDocOnline("label", "type"));
     $("[name='parentLabelField']").html(doc.getDocOnline("label", "parentid"));
     $("[name='parentLabel']").attr("readonly", "readonly");
 
     $("[name='tabsEdit1']").html(doc.getDocOnline("page_label", "tabDef"));
     $("[name='tabsEdit2']").html(doc.getDocOnline("page_label", "tabEnv"));
 
-    displayInvariantList("system", "SYSTEM", false);
+    displayInvariantList("system", "SYSTEM", false, '', '');
+    displayInvariantList("type", "LABELTYPE", false);
     displayFooter(doc);
 }
 
@@ -191,6 +193,7 @@ function editEntryModalSaveHandler() {
             color: data.color,
             parentLabel: data.parentLabel,
             system: data.system,
+            type: data.type,
             description: data.description},
         success: function (data) {
             hideLoaderInModal('#editLabelModal');
@@ -228,6 +231,7 @@ function editEntryClick(id, system) {
         formEdit.find("#id").prop("value", id);
         formEdit.find("#label").prop("value", obj["label"]);
         formEdit.find("#color").prop("value", obj["color"]);
+        formEdit.find("#type").prop("value", obj["type"]);
         formEdit.find("#parentLabel").prop("value", obj["parentLabel"]);
         formEdit.find("#description").prop("value", obj["description"]);
         formEdit.find("#system").prop("value", obj["system"]);
@@ -286,6 +290,9 @@ function aoColumnsFunc(tableId) {
         {"data": "label",
             "sName": "label",
             "title": doc.getDocOnline("label", "label")},
+        {"data": "type",
+            "sName": "type",
+            "title": doc.getDocOnline("label", "type")},
         {"data": "color",
             "sName": "color",
             "title": doc.getDocOnline("label", "color")},

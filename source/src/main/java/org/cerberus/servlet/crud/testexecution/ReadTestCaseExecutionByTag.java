@@ -38,6 +38,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.Invariant;
+import org.cerberus.crud.entity.Label;
 import org.cerberus.crud.entity.Tag;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseLabel;
@@ -306,14 +307,15 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                          */
                         LinkedHashMap<String, JSONArray> testCaseWithLabel = new LinkedHashMap();
                         for (TestCaseLabel label : (List<TestCaseLabel>) testCaseLabelList.getDataList()) {
-                            String key = label.getTest() + "_" + label.getTestcase();
+                            if (Label.TYPE_STICKER.equals(label.getLabel().getType())) { // We only display STICKER Type Label in Reporting By Tag Page..
+                                String key = label.getTest() + "_" + label.getTestcase();
 
-                            if (testCaseWithLabel.containsKey(key)) {
                                 JSONObject jo = new JSONObject().put("name", label.getLabel().getLabel()).put("color", label.getLabel().getColor()).put("description", label.getLabel().getDescription());
-                                testCaseWithLabel.get(key).put(jo);
-                            } else {
-                                JSONObject jo = new JSONObject().put("name", label.getLabel().getLabel()).put("color", label.getLabel().getColor()).put("description", label.getLabel().getDescription());
-                                testCaseWithLabel.put(key, new JSONArray().put(jo));
+                                if (testCaseWithLabel.containsKey(key)) {
+                                    testCaseWithLabel.get(key).put(jo);
+                                } else {
+                                    testCaseWithLabel.put(key, new JSONArray().put(jo));
+                                }
                             }
                         }
                         ttcObject.put("labels", testCaseWithLabel.get(testCaseExecution.getTest() + "_" + testCaseExecution.getTestCase()));

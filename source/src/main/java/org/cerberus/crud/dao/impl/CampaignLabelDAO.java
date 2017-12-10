@@ -500,6 +500,7 @@ public class CampaignLabelDAO implements ICampaignLabelDAO {
         Integer id = ParameterParserUtil.parseIntegerParam(rs.getString("lab.id"), 0);
         String system = ParameterParserUtil.parseStringParam(rs.getString("lab.system"), "");
         String label = ParameterParserUtil.parseStringParam(rs.getString("lab.label"), "");
+        String type = ParameterParserUtil.parseStringParam(rs.getString("lab.type"), "");
         String color = ParameterParserUtil.parseStringParam(rs.getString("lab.color"), "");
         String parentLabel = ParameterParserUtil.parseStringParam(rs.getString("lab.parentLabel"), "");
         String description = ParameterParserUtil.parseStringParam(rs.getString("lab.description"), "");
@@ -509,7 +510,7 @@ public class CampaignLabelDAO implements ICampaignLabelDAO {
         Timestamp dateModif1 = rs.getTimestamp("lab.dateModif");
         
         factoryLabel = new FactoryLabel();
-        Label labelObj = factoryLabel.create(id, system, label, color, parentLabel, description, usrCreated1, dateCreated1, usrModif1, dateModif1);
+        Label labelObj = factoryLabel.create(id, system, label, type, color, parentLabel, description, usrCreated1, dateCreated1, usrModif1, dateModif1);
         
         factoryCampaignLabel = new FactoryCampaignLabel();
         CampaignLabel res = factoryCampaignLabel.create(campaignlabelid, campaign, labelid, usrCreated, dateCreated, usrModif, dateModif);

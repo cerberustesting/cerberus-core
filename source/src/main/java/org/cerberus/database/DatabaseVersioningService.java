@@ -9650,6 +9650,36 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("update parameter set param = replace(param, 'CI_OK_', 'cerberus_ci_okcoef') where param like 'CI_OK%';");
         SQLInstruction.add(SQLS.toString());
 
+        // moved Battery to Label
+        //-- ------------------------ 1263-1267
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `label` ADD COLUMN `Type` VARCHAR(45) NOT NULL DEFAULT 'STICKER' AFTER `Label`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO label (`system`,`Label`,`Type`,`Color`,`ParentLabel`, `Description`, `UsrCreated`)");
+        SQLS.append(" SELECT '', testbattery, 'BATTERY', '#CCCCCC', '', Description, 'DatabaseVersioningV1264' from testbattery");
+        SQLS.append(" ON DUPLICATE KEY UPDATE `UsrModif` = 'DatabaseVersioningV1264', DateModif = now();");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO testcaselabel (`Test`,`TestCase`,`LabelId`, `UsrCreated`)");
+        SQLS.append(" SELECT Test, TestCase, l.id, 'DatabaseVersioningV1264' from testbatterycontent b");
+        SQLS.append("  join label l where b.testbattery = l.Label");
+        SQLS.append("  ON DUPLICATE KEY UPDATE `UsrModif` = 'DatabaseVersioningV1264', DateModif = now();");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO campaignlabel (`campaign`,`LabelId`, `UsrCreated`)");
+        SQLS.append(" SELECT campaign, l.id, 'DatabaseVersioningV1264' from campaigncontent b");
+        SQLS.append("  join label l where b.testbattery = l.Label");
+        SQLS.append("  ON DUPLICATE KEY UPDATE `UsrModif` = 'DatabaseVersioningV1264', DateModif = now();");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ");
+        SQLS.append("('LABELTYPE', 'STICKER', 100, 'Sticker.')");
+        SQLS.append(",('LABELTYPE', 'BATTERY', 200, 'Battery.')");
+        SQLS.append(",('LABELTYPE', 'REQUIREMENT', 300, 'Requirement.')");
+        SQLS.append(",('INVARIANTPRIVATE', 'LABELTYPE', 700, '');");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 

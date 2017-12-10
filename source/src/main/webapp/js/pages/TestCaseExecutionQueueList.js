@@ -20,7 +20,7 @@
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
         initPage();
-        
+
         $('[data-toggle="popover"]').popover({
             'placement': 'auto',
             'container': 'body'}
@@ -38,15 +38,15 @@ function initPage() {
 
 
     // Display table
-    var configurations = new TableConfigurationsServerSide("executionsTable", "ReadTestCaseExecutionQueue", "contentTable", aoColumnsFunc("executionsTable"), [1, 'desc'], [10, 25, 50, 100, 200, 500, 1000]);
+    var configurations = new TableConfigurationsServerSide("executionsTable", "ReadTestCaseExecutionQueue", "contentTable", aoColumnsFunc("executionsTable"), [2, 'desc'], [10, 25, 50, 100, 200, 500, 1000]);
     var table = createDataTableWithPermissions(configurations, renderOptionsForExeQueue, "#executionList", undefined, true);
 
     if (searchS !== null) {
         table.search(searchS).draw();
     }
-    
-    if(myTag !== null){
-    	filterTag(myTag);
+
+    if (myTag !== null) {
+        filterTag(myTag);
     }
 
     // React on table redraw
@@ -108,7 +108,7 @@ function displayAndRefresh_followup() {
             $("#followUpTableList #followUpTable").DataTable().clear();
             $("#followUpTableList #followUpTable").DataTable().rows.add(array).draw();
         } else {
-            var configurations1 = new TableConfigurationsClientSide("followUpTable", array, aoColumnsFunc_followUp(), true);
+            var configurations1 = new TableConfigurationsClientSide("followUpTable", array, aoColumnsFunc_followUp(), true, [1, 'asc']);
             createDataTableWithPermissions(configurations1, undefined, "#followUpTableList", undefined, true);
         }
     });
@@ -172,8 +172,8 @@ function filterERunning() {
     filterOnColumn("executionsTable", "state", "EXECUTING,STARTING,WAITING");
 }
 
-function filterTag(myTag){
-	filterOnColumn("executionsTable", "tag", myTag)
+function filterTag(myTag) {
+    filterOnColumn("executionsTable", "tag", myTag)
 }
 
 function displayPageLabel() {

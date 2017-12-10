@@ -366,6 +366,7 @@ public class EmailGenerationService implements IEmailGenerationService {
             globalStatus.append("<td>").append(entry.getKey()).append("</td>");
             globalStatus.append("<td>").append(entry.getValue()).append("</td>");
             per = (float) entry.getValue() / (float) total;
+            per = per * 100;
             globalStatus.append("<td>").append(String.format("%.2f", per)).append("</td>");
             globalStatus.append("</tr>");
         }

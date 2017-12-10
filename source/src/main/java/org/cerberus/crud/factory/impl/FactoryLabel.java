@@ -31,13 +31,14 @@ import org.springframework.stereotype.Service;
 public class FactoryLabel implements IFactoryLabel {
 
     @Override
-    public Label create(Integer id, String system, String label, String color, String parentLabel, String description, String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif) {
+    public Label create(Integer id, String system, String label, String type, String color, String parentLabel, String description, String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif) {
         Label labelObject = new Label();
         labelObject.setColor(color);
         labelObject.setDateCreated(dateCreated);
         labelObject.setDateModif(dateModif);
         labelObject.setId(id);
         labelObject.setLabel(label);
+        labelObject.setType(type);
         labelObject.setParentLabel(parentLabel);
         labelObject.setSystem(system);
         labelObject.setUsrCreated(usrCreated);

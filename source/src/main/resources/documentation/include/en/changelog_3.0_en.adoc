@@ -20,6 +20,7 @@
 * [ENGINE] Campaign testcase list definition can now be defined with dynamic criteria : SYSTEM, APPLICATION, STATUS and PRIORITY.
 * [GUI] Protecting password display from the GUI. Robot password and parameter password are no longuer displayed in GUI.
 * [GUI] When resubmit an execution to the queue, the popup message allow now to get to the execution page to see the result directly. Execution page will report the nb of execution in the queue before the current entry (in order to feedback the user how long to wait).
+* [GUI] Battery has been moved to label that have now 3 types available : STICKER (same as before), BATTERY (correspond to former battery) and REQUIREMENT (will be used in order to sort and identify requirements).
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
@@ -27,6 +28,7 @@
 * Upgrade Java to v1.8 --> Please check your Cerberus infra has JAVA 8.
 * Upgrade Appium java-client to 5.0.4 --> Please check that your Robot infra support the change before moving to that new client version.
 * Upgrade Selenium to 3.6.0 --> Please check that your Robot infra support the change before moving to that new client version.
+* Battery has been moved to label (table not yet removed but will be soon).
 
 
 
