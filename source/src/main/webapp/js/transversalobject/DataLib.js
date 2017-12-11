@@ -418,6 +418,22 @@ function feedDataLibModal(serviceName, modalId, mode) {
 
 }
 
+function activateSOAPServiceFields(modal, serviceValue) {
+    if (serviceValue === "") {
+        $(modal + " #servicepath").prop("readonly", false);
+        $(modal + " #method").prop("readonly", false);
+        var editor = ace.edit($(modal + " #envelope")[0]);
+        editor.container.style.opacity = 1;
+        editor.renderer.setStyle("disabled", false);
+    } else {
+        $(modal + " #servicepath").prop("readonly", true);
+        $(modal + " #method").prop("readonly", true);
+        var editor = ace.edit($(modal + " #envelope")[0]);
+        editor.container.style.opacity = 0.5;
+        editor.renderer.setStyle("disabled", true);
+    }
+}
+
 /***
  * Feed the TestCase modal with all the data from the TestCase.
  * @param {String} testDataLib - service object to be loaded.
