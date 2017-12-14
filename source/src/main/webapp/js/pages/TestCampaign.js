@@ -835,7 +835,7 @@ function updateSelectCriteria(id) {
         $("#" + id + '_wrapper #addCriteriaTestcampaignButton').prop("disabled", true);
     } else {
         $("#" + id + '_wrapper #criteriaTestSelect2').parent().show();
-        $("#" + id + '_wrapper #addCriteraTestcampaignButton').bind("click", function () {
+        $("#" + id + '_wrapper #addCriteriaTestcampaignButton').bind("click", function () {
             addCriteriaEntryClick(id);
         }).prop("disabled", false);
     }

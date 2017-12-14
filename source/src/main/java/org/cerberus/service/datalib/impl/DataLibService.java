@@ -24,10 +24,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.AppService;
 import org.cerberus.crud.entity.CountryEnvironmentDatabase;
+import org.cerberus.crud.entity.Parameter;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionData;
@@ -485,11 +489,11 @@ public class DataLibService implements IDataLibService {
                 answerData = testDataLibDataService.readByVarious(lib.getTestDataLibID(), null, null, "N");
                 if ((answerData.getResultMessage().getCode() == MessageEventEnum.DATA_OPERATION_OK.getCode()) && !answerData.getDataList().isEmpty()) {
                     objectDataList = answerData.getDataList();
-                    boolean missingKey = true;
+                    boolean missingKey = false;
                     for (TestDataLibData tdld : objectDataList) {
                         row.put(tdld.getSubData(), tdld.getColumnPosition());
                         if (tdld.getSubData().equalsIgnoreCase("")) {
-                            missingKey = false;
+                            missingKey = true;
                         }
                     }
                     result.setItem(row);
@@ -607,6 +611,10 @@ public class DataLibService implements IDataLibService {
         String system = tCExecution.getApplicationObj().getSystem();
         String country = tCExecution.getCountry();
         String environment = tCExecution.getEnvironment();
+        Pattern pattern;
+        Matcher matcher;
+        Parameter p;
+        boolean matches = false;
 
         List<HashMap<String, String>> list;
 
@@ -620,6 +628,8 @@ public class DataLibService implements IDataLibService {
                  * get the data from the correct environment.
                  */
                 String servicePathCsv = lib.getCsvUrl();
+                matches = Pattern.matches("(^[/][\\d]+[/]).*", servicePathCsv);
+                
                 LOG.debug("Service Path (Csv) : " + lib.getCsvUrl());
                 if (!StringUtil.isURL(servicePathCsv)) {
                     // Url is not valid, we try to get the corresponding DatabaseURL CsvURL to prefix.
@@ -682,7 +692,19 @@ public class DataLibService implements IDataLibService {
                             return result;
                         }
 
-                    } else { // URL is not valid and DatabaseCsv is not defined.
+                    } else if(matches){                    	 
+                    	AnswerItem a = parameterService.readByKey("", "cerberus_testdatalibcsv_path");
+                    	if (a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                    		 p = (Parameter) a.getItem();
+                    		 servicePathCsv = lib.getCsvUrl();
+                    	}else {
+                    		msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                                    "cerberus_testdatalibcsv_path Parameter not found");
+                    		result.setResultMessage(msg);
+                    		return result;
+                    	}
+                    }                   
+                    else { // URL is not valid and DatabaseCsv is not defined.
                         msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_CSV_URLKOANDNODATABASE);
                         msg.setDescription(msg.getDescription()
                                 .replace("%SERVICEURL%", lib.getCsvUrl())

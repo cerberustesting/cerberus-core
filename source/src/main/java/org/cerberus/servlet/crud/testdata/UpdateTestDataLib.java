@@ -229,7 +229,7 @@ public class UpdateTestDataLib extends HttpServlet {
                     lib.setMethod(method);
                     lib.setEnvelope(envelope);
                     lib.setDatabaseCsv(databaseCsv);
-                    lib.setCsvUrl(fileName);
+                    lib.setCsvUrl("/"+lib.getTestDataLibID()+"/"+fileName);
                     lib.setSeparator(separator);
                     lib.setLastModifier(request.getRemoteUser());
 
@@ -257,7 +257,7 @@ public class UpdateTestDataLib extends HttpServlet {
                     if(file!= null && test.equals("1")) {
                 		String str = "";     
                         try {
-                        	BufferedReader reader = new BufferedReader(new FileReader(parameterService.getParameterStringByKey("cerberus_testdatalibCSV_path", "", null)+"/"+lib.getTestDataLibID()+"/"+lib.getCsvUrl()));
+                        	BufferedReader reader = new BufferedReader(new FileReader(parameterService.getParameterStringByKey("cerberus_testdatalibcsv_path", "", null)+lib.getCsvUrl()));
                             str = reader.readLine();
                             String[] subData = (!lib.getSeparator().isEmpty()) ? str.split(lib.getSeparator()) : str.split(",");                          
                             int i = 1;
@@ -277,16 +277,13 @@ public class UpdateTestDataLib extends HttpServlet {
                             try { file.getInputStream().close(); } catch (Throwable ignore) {}
                         }
                 	}
-                    
                     ans = tdldService.compareListAndUpdateInsertDeleteElements(testdatalibid, tdldList);
                     finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
-
                 }
 
             }
             jsonResponse.put("messageType", finalAnswer.getResultMessage().getMessage().getCodeString());
             jsonResponse.put("message", finalAnswer.getResultMessage().getDescription());
-
             response.getWriter().print(jsonResponse);
             response.getWriter().flush();
 

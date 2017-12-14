@@ -197,7 +197,7 @@ public class CreateTestDataLib extends HttpServlet {
                 if (file != null) {
                     ans = libService.uploadFile(toto.getTestDataLibID(), file);
                     if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                        toto.setCsvUrl(file.getName());
+                        toto.setCsvUrl("/"+toto.getTestDataLibID()+"/"+file.getName());
                         libService.update(toto);
                     }
                 }
@@ -205,14 +205,13 @@ public class CreateTestDataLib extends HttpServlet {
                 // Getting list of SubData from JSON Call
                 if (fileData.get("subDataList") != null) {
                     JSONArray objSubDataArray = new JSONArray(fileData.get("subDataList"));
-                    
                     tdldList = getSubDataFromParameter(request, appContext, toto.getTestDataLibID(), objSubDataArray);
                 }
 
                 if(file!= null && test.equals("1")) {
             		String str = "";     
                     try {
-                    	BufferedReader reader = new BufferedReader(new FileReader(parameterService.getParameterStringByKey("cerberus_testdatalibCSV_path", "", null)+"/"+lib.getTestDataLibID()+"/"+lib.getCsvUrl()));
+                    	BufferedReader reader = new BufferedReader(new FileReader(parameterService.getParameterStringByKey("cerberus_testdatalibCSV_path", "", null)+lib.getCsvUrl()));
                         str = reader.readLine();
                         String[] subData = (!toto.getSeparator().isEmpty()) ? str.split(toto.getSeparator()) : str.split(",");                        
                         int i = 1;

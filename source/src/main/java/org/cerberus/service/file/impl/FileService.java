@@ -20,6 +20,7 @@
 package org.cerberus.service.file.impl;
 
 import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
@@ -31,6 +32,7 @@ import org.apache.logging.log4j.LogManager;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.service.file.IFileService;
+import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.stereotype.Service;
 
@@ -58,8 +60,16 @@ public class FileService implements IFileService {
             /**
              * Get CSV File and parse it line by line
              */
-            URL urlToCall = new URL(urlToCSVFile);
-            BufferedReader br = new BufferedReader(new InputStreamReader(urlToCall.openStream()));
+        	
+        	BufferedReader br;
+        	
+        	if(StringUtil.isURL(urlToCSVFile)) {
+        		URL urlToCall = new URL(urlToCSVFile);
+        		br = new BufferedReader(new InputStreamReader(urlToCall.openStream()));
+        	}else {
+            	br = new BufferedReader(new FileReader(urlToCSVFile));
+            	br.readLine();
+        	}
 
             if ("".equals(separator)) {
                 separator = ",";
