@@ -224,13 +224,14 @@ public class ReadTestCaseExecutionMedia extends HttpServlet {
                 image = ImageIO.read(picture);
 
                 // We test if file is too thin or too long. That prevent 500 error in case files are not compatible with resize. In that case, we crop the file.
-                if ((image.getHeight() * width / image.getWidth() < 3) || (image.getWidth() * height / image.getHeight() < 3)) {
+                if ((image.getHeight() * width / image.getWidth() < 10) || (image.getWidth() * height / image.getHeight() < 15)) {
+                    LOG.debug("Image is too big of thin. Target Height : " + image.getHeight() * width / image.getWidth() + " Target Width : " + image.getWidth() * height / image.getHeight());
                     b = ImageIO.read(picture);
                     int minwidth = width;
                     if (width > image.getWidth()) {
                         minwidth = image.getWidth();
                     }
-                    int minheight = width;
+                    int minheight = height;
                     if (height > image.getHeight()) {
                         minheight = image.getHeight();
                     }
@@ -238,6 +239,7 @@ public class ReadTestCaseExecutionMedia extends HttpServlet {
 
                     b = crop;
                     response.setHeader("Format-Status", "ERROR");
+                    response.setHeader("Format-Status-Message", "Image Crop from : " + image.getWidth() + "X" + image.getHeight() + " to : " + minwidth + "X" + minheight);
                 } else {
                     ResampleOp rop = new ResampleOp(DimensionConstrain.createMaxDimension(width, height, true));
                     rop.setNumberOfThreads(4);
