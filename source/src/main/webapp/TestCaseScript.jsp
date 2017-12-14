@@ -33,7 +33,6 @@
         <script type="text/javascript" src="js/transversalobject/AppService.js"></script>
         <script type="text/javascript" src="js/pages/TestCaseScript.js"></script>
         <script type="text/javascript" src="js/transversalobject/DataLib.js"></script>
-        <script type="text/javascript" src="js/pages/TestDataLib.js"></script>
         <script type="text/javascript" src="js/transversalobject/AppService.js"></script>
         <link rel="stylesheet" type="text/css" href="css/pages/TestCaseScript.css">
     </head>
