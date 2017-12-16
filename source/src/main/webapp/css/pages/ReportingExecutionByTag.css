@@ -63,6 +63,16 @@
     background-color: #5CB85C;
 }
 
+.panelTOCLEAN {
+    border-color: #C5C200;
+}
+
+.panelTOCLEAN .panel-heading {
+    border-color: #C5C200;
+    color: #FFF;
+    background-color: #C5C200;
+}
+
 .panelKO {
     border-color: #D9534F;
 }

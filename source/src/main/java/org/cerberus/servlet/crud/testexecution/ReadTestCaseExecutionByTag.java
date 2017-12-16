@@ -48,6 +48,7 @@ import org.cerberus.crud.service.ITestCaseExecutionService;
 import org.cerberus.crud.service.ITestCaseLabelService;
 import org.cerberus.crud.service.impl.InvariantService;
 import org.cerberus.dto.SummaryStatisticsDTO;
+import org.cerberus.dto.SummaryStatisticsBugTrackerDTO;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
@@ -62,6 +63,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.util.JavaScriptUtils;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
+import org.cerberus.util.StringUtil;
 
 /**
  *
@@ -115,14 +117,21 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
             //Get Data from database
             List<TestCaseExecution> testCaseExecutions = testCaseExecutionService.readLastExecutionAndExecutionInQueueByTag(Tag);
 
+            // Table that contain the list of testcases and corresponding executions
             if (outputReport.isEmpty() || outputReport.contains("table")) {
                 jsonResponse.put("table", generateTestCaseExecutionTable(appContext, testCaseExecutions, statusFilter, countryFilter));
             }
+            // Executions per Function (or Test).
             if (outputReport.isEmpty() || outputReport.contains("functionChart")) {
                 jsonResponse.put("functionChart", generateFunctionChart(testCaseExecutions, Tag, statusFilter, countryFilter));
             }
+            // Global executions stats per Status
             if (outputReport.isEmpty() || outputReport.contains("statsChart")) {
                 jsonResponse.put("statsChart", generateStats(request, testCaseExecutions, statusFilter, countryFilter, true));
+            }
+            // BugTracker Recap
+            if (outputReport.isEmpty() || outputReport.contains("bugTrackerStat")) {
+                jsonResponse.put("bugTrackerStat", generateBugStats(request, testCaseExecutions, statusFilter, countryFilter));
             }
             if (!outputReport.isEmpty()) {
                 //currently used to optimize the homePage
@@ -140,7 +149,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
             jsonResponse.put("tagDuration", (mytag.getDateEndQueue().getTime() - mytag.getDateCreated().getTime()) / 60000);
 
             answer.setItem(jsonResponse);
-            answer.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+            answer.setResultMessage(answer.getResultMessage().resolveDescription("ITEM", "Tag Statistics").resolveDescription("OPERATION", "Read"));
 
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
             jsonResponse.put("message", answer.getResultMessage().getDescription());
@@ -443,6 +452,77 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         }
 
         jsonResult.put("contentTable", getStatByEnvCountryBrowser(testCaseExecutions, statMap, env, country, browser, app, statusFilter, countryFilter, splitStats));
+
+        return jsonResult;
+    }
+
+    private JSONObject generateBugStats(HttpServletRequest request, List<TestCaseExecution> testCaseExecutions, JSONObject statusFilter, JSONObject countryFilter) throws JSONException {
+
+        JSONObject jsonResult = new JSONObject();
+        SummaryStatisticsBugTrackerDTO stat = new SummaryStatisticsBugTrackerDTO();
+        String bugsToReport = "KO,FA";
+        stat.setNbExe(1);
+        int totalBugReported = 0;
+        int totalBugToReport = 0;
+        int totalBugToReportReported = 0;
+        int totalBugToClean = 0;
+        HashMap<String, SummaryStatisticsBugTrackerDTO> statMap = new HashMap<String, SummaryStatisticsBugTrackerDTO>();
+        for (TestCaseExecution testCaseExecution : testCaseExecutions) {
+            String controlStatus = testCaseExecution.getControlStatus();
+            if (statusFilter.get(controlStatus).equals("on") && countryFilter.get(testCaseExecution.getCountry()).equals("on")) {
+
+                String key = "";
+
+                if (bugsToReport.contains(testCaseExecution.getControlStatus())) {
+                    totalBugToReport++;
+                }
+                if ((testCaseExecution.getTestCaseObj() != null) && (!StringUtil.isNullOrEmpty(testCaseExecution.getTestCaseObj().getBugID()))) {
+                    key = testCaseExecution.getTestCaseObj().getBugID();
+                    stat = statMap.get(key);
+                    totalBugReported++;
+                    if (stat == null) {
+                        stat = new SummaryStatisticsBugTrackerDTO();
+                        stat.setNbExe(1);
+                        stat.setBugId(testCaseExecution.getTestCaseObj().getBugID());
+                        stat.setBugIdURL(testCaseExecution.getApplicationObj().getBugTrackerUrl().replace("%BUGID%", testCaseExecution.getTestCaseObj().getBugID()));
+                        stat.setExeIdLastStatus(testCaseExecution.getControlStatus());
+                        stat.setExeIdFirst(testCaseExecution.getId());
+                        stat.setExeIdLast(testCaseExecution.getId());
+                        stat.setTestFirst(testCaseExecution.getTest());
+                        stat.setTestLast(testCaseExecution.getTest());
+                        stat.setTestCaseFirst(testCaseExecution.getTestCase());
+                        stat.setTestCaseLast(testCaseExecution.getTestCase());
+                    } else {
+                        stat.setNbExe(stat.getNbExe() + 1);
+                        stat.setExeIdLastStatus(testCaseExecution.getControlStatus());
+                        stat.setExeIdLast(testCaseExecution.getId());
+                        stat.setTestLast(testCaseExecution.getTest());
+                        stat.setTestCaseLast(testCaseExecution.getTestCase());
+                    }
+                    if (!(bugsToReport.contains(testCaseExecution.getControlStatus()))) {
+                        totalBugToClean++;
+                        stat.setToClean(true);
+                    } else {
+                        totalBugToReportReported++;
+                    }
+                    statMap.put(key, stat);
+                }
+
+            }
+        }
+
+        Gson gson = new Gson();
+        JSONArray dataArray = new JSONArray();
+        for (String key : statMap.keySet()) {
+            SummaryStatisticsBugTrackerDTO sumStats = statMap.get(key);
+            dataArray.put(new JSONObject(gson.toJson(sumStats)));
+        }
+
+        jsonResult.put("BugTrackerStat", dataArray);
+        jsonResult.put("totalBugToReport", totalBugToReport);
+        jsonResult.put("totalBugToReportReported", totalBugToReportReported);
+        jsonResult.put("totalBugReported", totalBugReported);
+        jsonResult.put("totalBugToClean", totalBugToClean);
 
         return jsonResult;
     }

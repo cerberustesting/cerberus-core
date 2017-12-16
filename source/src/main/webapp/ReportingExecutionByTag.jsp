@@ -109,29 +109,32 @@
                                             CA
                                         </label>
                                     </div>
-                                    <div class="row">
-                                        <div class="col-lg-12">
-                                            <label for="startExe">Start :</label>
-                                            <input type="text" class="form-control" name="startExe" id="startExe" readonly aria-describedby="basic-addon1" >
-                                        </div>
-                                    </div>
-                                    <div class="row" id="panelDuration">
-                                        <div class="col-lg-6">
-                                            <label for="endExe">End : (When all execution queue has been closed)</label>
-                                            <input type="text" class="form-control" name="endExe" id="endExe" readonly aria-describedby="basic-addon1" >
-                                        </div>
-                                        <div class="col-lg-6">
-                                            <label for="durExe">Duration (Minutes) :</label>
-                                            <input type="text" class="form-control" name="durExe" id="durExe" readonly aria-describedby="basic-addon1" >
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-lg-12">
-                                            <label for="endLastExe">Last Execution :</label>
-                                            <input type="text" class="form-control" name="endLastExe" id="endLastExe" readonly aria-describedby="basic-addon1" >
-                                        </div>
-                                    </div>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading card" data-toggle="collapse" data-target="#BugReportByStatus">
+                            <span class="fa fa-pie-chart fa-fw"></span>
+                            <label id="bugStatus">Bug Status</label>
+                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                        </div>
+                        <div class="panel-body collapse in" id="BugReportByStatus">
+                            <div class="row">
+                                <div class="col-xs-8" id="BugReportDetailTable">
+                                    <table id="bugTable" name="bugTable" class="table table-hover display">
+                                        <thead id="bugTableHeader">
+                                            <tr>
+                                                <td style="text-align: center">Bug</td>
+                                                <td style="text-align: center">Last Exe</td>
+                                                <td style="text-align: center">Test Case</td>
+                                                <td style="text-align: center">#Exe</td>
+                                            </tr>                                    
+                                        </thead>
+                                        <tbody id="bugTableBody"></tbody>
+                                    </table>
+                                </div>
+                                <div class="col-xs-4" id="BugReportTable"></div>
                             </div>
                         </div>
                     </div>
@@ -147,6 +150,47 @@
                             <div class="row">
                                 <div class="col-xs-6" id="ReportByStatusTable"></div>
                                 <div class="col-xs-6" id="statusChart"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading card" data-toggle="collapse" data-target="#TagDetail">
+                            <span class="fa fa-pie-chart fa-fw"></span>
+                            <label id="TagDetailLab">Tag detail</label>
+                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                        </div>
+                        <div class="panel-body collapse in" id="TagDetail">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <label for="startExe">Start :</label>
+                                    <input type="text" class="form-control" name="startExe" id="startExe" readonly aria-describedby="basic-addon1" >
+                                </div>
+                            </div>
+                            <div class="row" id="panelDuration">
+                                <div class="col-lg-6">
+                                    <label for="endExe">End : (When all execution queue has been closed)</label>
+                                    <input type="text" class="form-control" name="endExe" id="endExe" readonly aria-describedby="basic-addon1" >
+                                </div>
+                                <div class="col-lg-6">
+                                    <label for="durExe">Duration (Minutes) :</label>
+                                    <input type="text" class="form-control" name="durExe" id="durExe" readonly aria-describedby="basic-addon1" >
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <label for="endLastExe">Last Execution :</label>
+                                    <input type="text" class="form-control" name="endLastExe" id="endLastExe" readonly aria-describedby="basic-addon1" >
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <label for="TagUsrCreated">Created by :</label>
+                                    <input type="text" class="form-control" name="TagUsrCreated" id="TagUsrCreated" readonly aria-describedby="basic-addon1" >
+                                </div>
+                                <div class="col-lg-6">
+                                    <label for="Tagcampaign">Campaign :</label>
+                                    <input type="text" class="form-control" name="Tagcampaign" id="Tagcampaign" readonly aria-describedby="basic-addon1" >
+                                </div>
                             </div>
                         </div>
                     </div>

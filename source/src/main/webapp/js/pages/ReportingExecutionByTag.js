@@ -210,19 +210,31 @@ function loadAllReports(urlTag) {
 
 function loadReportingData(selectTag) {
     //var selectTag = $("#selectTag option:selected").text();
+    showLoader($("#TagDetail"));
     showLoader($("#ReportByStatus"));
     showLoader($("#functionChart"));
+    showLoader($("#BugReportByStatus"));
+    showLoader($("#reportEnvCountryBrowser"));
+    showLoader($("#listReport"));
     var statusFilter = $("#statusFilter input");
     var countryFilter = $("#countryFilter input");
     var params = $("#splitFilter input");
     $("#startExe").val("");
     $("#endExe").val("");
     $("#endLastExe").val("");
+    $("#durExe").val("");
+    $("#TagUsrCreated").val("");
+    $("#Tagcampaign").val("");
     //Retrieve data for charts and draw them
     var jqxhr = $.get("ReadTestCaseExecutionByTag?Tag=" + selectTag + "&" + statusFilter.serialize() + "&" + countryFilter.serialize() + "&" + params.serialize(), null, "json");
     $.when(jqxhr).then(function (data) {
+
+        // Tag Detail feed.
         $("#startExe").val(data.tagObject.DateCreated);
         $("#endExe").val(data.tagObject.DateEndQueue);
+        $("#endLastExe").val(data.functionChart.globalEnd);
+        $("#TagUsrCreated").val(data.tagObject.UsrCreated);
+        $("#Tagcampaign").val(data.tagObject.campaign);
         $("#durExe").val(data.tagDuration);
         if (data.tagDuration >= 0) {
             $("#panelDuration").removeClass("hidden");
@@ -231,8 +243,25 @@ function loadReportingData(selectTag) {
             $("#panelDuration").addClass("hidden");
             $("#durExe").addClass("hidden");
         }
-        loadByStatusAndByfunctionReports(data.functionChart, selectTag);
+        hideLoader($("#TagDetail"));
+
+        // Report By Status
+        $("#ReportByStatusTable").empty();
+        $("#statusChart").empty();
+        loadReportByStatusTable(data.functionChart, selectTag);
+
+        // Report By Function
+        $("#ReportByfunctionChart").empty();
+        loadReportByFunctionChart(data.functionChart, selectTag);
+
+        // Bug Report
+        $("#BugReportTable").empty();
+        loadBugReportByStatusTable(data.bugTrackerStat, selectTag);
+
+        // Report By Application Environment Country Browser
         loadEnvCountryBrowserReport(data.statsChart);
+
+        // Detailed Test Case List Report
         loadReportList(data.table, selectTag);
     });
 
@@ -251,22 +280,6 @@ function  filterCountryBrowserReport(selectTag, splitFilterSettings) {
     });
 
 }
-
-function loadByStatusAndByfunctionReports(data, selectTag) {
-
-    //clear the old report content before redrawing it
-    $("#ReportByStatusTable").empty();
-    $("#statusChart").empty();
-    $("#ReportByfunctionChart").empty();
-    loadReportByStatusTable(data, selectTag);
-    loadReportByFunctionChart(data, selectTag);
-    $("#endLastExe").val(data.globalEnd);
-
-}
-
-
-
-
 
 function generateBarTooltip(data, statusOrder) {
     var htmlRes = "";
@@ -333,30 +346,115 @@ function loadEnvCountryBrowserReport(data) {
     for (var index = 0; index < len; index++) {
         //draw a progress bar for each combo retrieved
         buildBar(data.contentTable.split[index]);
-        hideLoader($("#reportEnvCountryBrowser"));
     }
+    hideLoader($("#reportEnvCountryBrowser"));
 
 }
 
 function loadReportList(data2, selectTag) {
-    showLoader($("#listReport"));
+    if (data2.tableColumns) {
+        showLoader($("#listReport"));
 
-    if (selectTag !== "") {
-        if ($("#listTable_wrapper").hasClass("initialized")) {
-            $("#tableArea").empty();
-            $("#tableArea").html('<table id="listTable" class="table display" name="listTable">\n\
+        if (selectTag !== "") {
+            if ($("#listTable_wrapper").hasClass("initialized")) {
+                $("#tableArea").empty();
+                $("#tableArea").html('<table id="listTable" class="table display" name="listTable">\n\
                                             </table><div class="marginBottom20"></div>');
+            }
+
+            var config = new TableConfigurationsClientSide("listTable", data2.tableContent, aoColumnsFunc(data2.tableColumns), [2, 'asc']);
+            customConfig(config);
+
+            var table = createDataTableWithPermissions(config, undefined, "#tableArea", undefined, undefined, undefined, createShortDescRow);
+            $('#listTable_wrapper').not('.initialized').addClass('initialized');
+            hideLoader($("#listReport"));
+            renderOptionsForExeList(selectTag);
         }
-
-        var config = new TableConfigurationsClientSide("listTable", data2.tableContent, aoColumnsFunc(data2.tableColumns), [2, 'asc']);
-        customConfig(config);
-
-        var table = createDataTableWithPermissions(config, undefined, "#tableArea", undefined, undefined, undefined, createShortDescRow);
-        $('#listTable_wrapper').not('.initialized').addClass('initialized');
-        hideLoader($("#listReport"));
-        renderOptionsForExeList(selectTag);
     }
 }
+
+
+/*
+ * Bugs panels
+ */
+
+function loadBugReportByStatusTable(data, selectTag) {
+    var len = data.BugTrackerStat.length;
+    var doc = new Doc();
+
+
+    $("#bugTableBody tr").remove();
+
+
+    //calculate totaltest nb
+    for (var index = 0; index < len; index++) {
+        // increase the total execution
+        var bugLink = '<a target="_blank" href="' + data.BugTrackerStat[index].bugIdURL + '">' + data.BugTrackerStat[index].bugId + "</a>";
+        var editEntry = '<button id="editEntry" onclick="openModalTestCase_FromRepTag(this,\'' + escapeHtml(data.BugTrackerStat[index].testFirst) + '\',\'' + escapeHtml(data.BugTrackerStat[index].testCaseFirst) + '\',\'EDIT\');"\n\
+                                class="editEntry btn btn-default btn-xs margin-right5" \n\
+                                name="editEntry" data-toggle="tooltip"  title="' + doc.getDocLabel("page_testcaselist", "btn_edit") + '" type="button">\n\
+                                <span class="glyphicon glyphicon-pencil"></span></button>' + data.BugTrackerStat[index].testCaseFirst;
+        var exeLink = '<a target="_blank" href="TestCaseExecution.jsp?executionId=' + data.BugTrackerStat[index].exeIdLast + '">' + data.BugTrackerStat[index].exeIdLast + "</a> (" + data.BugTrackerStat[index].exeIdLastStatus + ")";
+
+        var $tr = $('<tr>');
+        $tr.append($('<td>').html(bugLink).css("text-align", "center"));
+        if (data.BugTrackerStat[index].exeIdLast !== 0) {
+//            $tr.append($('<td>').text(data.BugTrackerStat[index].exeIdLast).css("text-align", "center"));
+            $tr.append($('<td>').html(exeLink).css("text-align", "center"));
+        } else {
+            $tr.append($('<td>'));
+        }
+        $tr.append($('<td>').html(editEntry).css("text-align", "center"));
+        $tr.append($('<td>').text(data.BugTrackerStat[index].nbExe).css("text-align", "center"));
+        $("#bugTableBody").append($tr);
+
+    }
+
+// add a panel for the total
+
+    if (data.totalBugToReport > 0) {
+        if (data.totalBugToReportReported !== data.totalBugToReport) {
+            $("#BugReportTable").append(
+                    $("<div class='panel panel-primary'></div>").append(
+                    $('<div class="panel-heading"></div>').append(
+                    $('<div class="row"></div>').append(
+                    $('<div class="col-xs-10 status"></div>').text("Bugs to Report").prepend(
+                    $('<span class="" style="margin-right: 5px;"></span>'))).append(
+                    $('<div class="col-xs-2 text-right"></div>').append(
+                    $('<div class="total"></div>').text(data.totalBugToReport))
+                    ))));
+        }
+        if (data.totalBugToReportReported !== 0) {
+            $("#BugReportTable").append(
+                    $("<div class='panel panel-primary'></div>").append(
+                    $('<div class="panel-heading"></div>').append(
+                    $('<div class="row"></div>').append(
+                    $('<div class="col-xs-10 status"></div>').text("Bugs Reported").prepend(
+                    $('<span class="" style="margin-right: 5px;"></span>'))).append(
+                    $('<div class="col-xs-2 text-right"></div>').append(
+                    $('<div class="total"></div>').text(data.totalBugToReportReported)).append(
+                    $('<div class="row"></div>').append(
+                    $('<div class="percentage pull-right"></div>').text(Math.round(((data.totalBugToReportReported / data.totalBugToReport) * 100) * 100) / 100 + '%'))
+                    )
+                    ))));
+        }
+    }
+
+    if (data.totalBugToClean !== 0) {
+        $("#BugReportTable").append(
+                $("<div class='panel panelTOCLEAN'></div>").append(
+                $('<div class="panel-heading"></div>').append(
+                $('<div class="row"></div>').append(
+                $('<div class="col-xs-10 status"></div>').text("Bugs to Clean").prepend(
+                $('<span class="" style="margin-right: 5px;"></span>'))).append(
+                $('<div class="col-xs-2 text-right"></div>').append(
+                $('<div class="total"></div>').text(data.totalBugToClean))
+                ))));
+    }
+    hideLoader($("#BugReportByStatus"));
+
+}
+
 
 /*
  * Status panels
@@ -878,9 +976,11 @@ function renderOptionsForExeList(selectTag) {
         contentToAdd += "<label class='checkbox-inline'><input id='selectAllQueueNA' type='checkbox'></input>NA</label>";
         contentToAdd += "<button id='submitExe' type='button' disabled='disabled' title='Submit again the selected executions.' class='btn btn-default'><span class='glyphicon glyphicon-play'></span> Submit Again</button>";
         contentToAdd += "<a href='TestCaseExecutionQueueList.jsp?search=" + selectTag + "'><button id='openqueue' type='button' class='btn btn-default'><span class='glyphicon glyphicon-list'></span> Open Queue</button></a>";
+        contentToAdd += "<button id='refresh' type='button' title='Refresh.' class='btn btn-default' onclick='loadAllReports()'><span class='glyphicon glyphicon-refresh'></span> Refresh</button>";
         contentToAdd += "</div>";
 
-        $("#listTable_wrapper div#listTable_filter").before(contentToAdd);
+        $("#listTable_length").before(contentToAdd);
+
         $('#selectAllQueueQUERROR').click(function () {
             selectAllQueue("QUERROR");
         });

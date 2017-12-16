@@ -1,6 +1,6 @@
 <!--Add an label -->
 <div data-backdrop="static" class="modal fade center" id="addLabelModal" tabindex="-1" role="dialog" aria-labelledby="addLabelModalLabel" aria-hidden="true">
-    <div class="modal-dialog nomargintop nomarginbottom modal-md">
+    <div class="modal-dialog nomargintop nomarginbottom modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -21,44 +21,46 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="form-group col-xs-12">
+                            <div class="form-group col-sm-6">
                                 <label for="System" name="systemField">System</label>
                                 <select class="form-control"  id="system" name="system">
                                 </select>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="form-group col-xs-12">
-                                <label for="label" name="labelField">Label</label>
-                                <input type="text" class="form-control" name="label" id="label" aria-describedby="basic-addon1" maxlength="100">
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="form-group col-xs-12">
+                            <div class="form-group col-sm-6">
                                 <label for="type" name="typeField">Type</label>
                                 <select class="form-control"  id="type" name="type">
                                 </select>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="form-group col-xs-12">
-                                <label for="color" name="colorField">Color</label>
-                                <div name="colorDiv" class="input-group colorpicker-component">
-                                    <input type="text" class="form-control" name="color" id="color" aria-describedby="basic-addon1" maxlength="45">
-                                    <span class="input-group-addon"><i></i></span>
+                            <div class="form-group col-sm-12">
+                                <label for="label" name="labelField">Label</label>
+                                <input type="text" class="form-control" name="label" id="label" aria-describedby="basic-addon1" maxlength="100">
+                            </div>
+                        </div>
+                        <div class="tab-content">
+                            <div class="center marginTop25 tab-pane fade in active">
+                                <div class="row">
+                                    <div class="form-group col-sm-12">
+                                        <label for="color" name="colorField">Color</label>
+                                        <div name="colorDiv" class="input-group colorpicker-component">
+                                            <input type="text" class="form-control" name="color" id="color" aria-describedby="basic-addon1" maxlength="45">
+                                            <span class="input-group-addon"><i></i></span>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="form-group col-xs-12">
-                                <label for="parentLabel" name="parentLabelField">Parent Label</label>
-                                <input type="text" class="form-control" name="parentLabel" id="parentLabel" aria-describedby="basic-addon1" maxlength="100">
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="form-group col-xs-12">
-                                <label for="description" name="descriptionField">Description</label>
-                                <textarea type="text" class="form-control" name="description" id="description" aria-describedby="basic-addon1" maxlength="250"></textarea>
+                                <div class="row">
+                                    <div class="form-group col-sm-12">
+                                        <label for="parentLabel" name="parentLabelField">Parent Label</label>
+                                        <input type="text" class="form-control" name="parentLabel" id="parentLabel" aria-describedby="basic-addon1" maxlength="100">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-sm-12">
+                                        <label for="description" name="descriptionField">Description</label>
+                                        <textarea type="text" class="form-control" name="description" id="description" aria-describedby="basic-addon1" maxlength="250"></textarea>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
