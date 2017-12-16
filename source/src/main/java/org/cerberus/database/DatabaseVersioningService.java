@@ -9679,6 +9679,13 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('LABELTYPE', 'REQUIREMENT', 300, 'Requirement.')");
         SQLS.append(",('INVARIANTPRIVATE', 'LABELTYPE', 700, '');");
         SQLInstruction.add(SQLS.toString());
+        
+        // ADD a parameter for the path to store csv file
+        //-- ------------------------ 1268
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` (`system`,`param`, `value`, `description`) VALUES ");
+        SQLS.append("  ('','cerberus_testdatalibcsv_path', '/path/to/csv', 'Default path for the csv file location')");
+        SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;
     }

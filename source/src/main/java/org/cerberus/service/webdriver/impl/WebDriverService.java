@@ -463,7 +463,9 @@ public class WebDriverService implements IWebDriverService {
                     Callable<MessageEvent> task = new Callable<MessageEvent>() {
                         public MessageEvent call() {
                             MessageEvent message;
-                            webElement.click();
+                            Actions actions = new Actions(session.getDriver());
+                            actions.click(webElement);
+                            actions.build().perform();
                             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLICK);
                             message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
                             return message;
