@@ -19,6 +19,8 @@
  */
 package org.cerberus.dto;
 
+import org.json.JSONObject;
+
 /**
  * Class that creates a row with statistics (total values and percentage values)
  */
@@ -28,6 +30,7 @@ public class SummaryStatisticsDTO {
     private String country;
     private String environment;
     private String browser;
+    private JSONObject label;
     private int OK;
     private int KO;
     private int FA;
@@ -284,4 +287,14 @@ public class SummaryStatisticsDTO {
     public void setCA(int ca) {
         this.CA = ca;
     }
+
+    public JSONObject getLabel() {
+        return label;
+    }
+
+    public void setLabel(JSONObject label) {
+        this.label = label;
+    }
+    
+    
 }

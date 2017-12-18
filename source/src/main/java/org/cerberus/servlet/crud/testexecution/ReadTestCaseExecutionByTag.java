@@ -133,6 +133,10 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
             if (outputReport.isEmpty() || outputReport.contains("bugTrackerStat")) {
                 jsonResponse.put("bugTrackerStat", generateBugStats(request, testCaseExecutions, statusFilter, countryFilter));
             }
+            // Labels Stats
+            if (outputReport.isEmpty() || outputReport.contains("labelStat")) {
+                jsonResponse.put("labelStat", generateLabelStats(appContext, request, testCaseExecutions, statusFilter, countryFilter));
+            }
             if (!outputReport.isEmpty()) {
                 //currently used to optimize the homePage
                 if (outputReport.contains("totalStatsCharts") && !outputReport.contains("statsChart")) {
@@ -182,7 +186,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         result.put("ControlStatus", JavaScriptUtils.javaScriptEscape(testCaseExecution.getControlStatus()));
         result.put("ControlMessage", JavaScriptUtils.javaScriptEscape(testCaseExecution.getControlMessage()));
         result.put("Status", JavaScriptUtils.javaScriptEscape(testCaseExecution.getStatus()));
-        result.put("NbExecutions", testCaseExecution.getNbExecutions());
+        result.put("NbExecutions", String.valueOf(testCaseExecution.getNbExecutions()));
         if (testCaseExecution.getQueueState() != null) {
             result.put("QueueState", JavaScriptUtils.javaScriptEscape(testCaseExecution.getQueueState()));
         }
@@ -602,6 +606,68 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         Gson gson = new Gson();
         JSONObject result = new JSONObject(gson.toJson(tag));
         return result;
+    }
+
+    private JSONObject generateLabelStats(ApplicationContext appContext, HttpServletRequest request, List<TestCaseExecution> testCaseExecutions, JSONObject statusFilter, JSONObject countryFilter) throws JSONException {
+
+        JSONObject jsonResult = new JSONObject();
+        boolean stickers = request.getParameter("stickers") != null;
+        boolean requirement = request.getParameter("requirement") != null;
+        
+        if (stickers || requirement) {
+
+            testCaseLabelService = appContext.getBean(ITestCaseLabelService.class);
+            AnswerList testCaseLabelList = testCaseLabelService.readByTestTestCase(null, null);
+            SummaryStatisticsDTO total = new SummaryStatisticsDTO();
+            total.setEnvironment("Total");
+
+            /**
+             * Iterate on the label retrieved and generate HashMap based on the
+             * key Test_TestCase
+             */
+            LinkedHashMap<String, JSONArray> testCaseWithLabel = new LinkedHashMap();
+            for (TestCaseLabel label : (List<TestCaseLabel>) testCaseLabelList.getDataList()) {
+                if ((Label.TYPE_STICKER.equals(label.getLabel().getType()) && stickers)
+                        || (Label.TYPE_REQUIREMENT.equals(label.getLabel().getType()) && requirement)) {
+                    String key = label.getTest() + "_" + label.getTestcase();
+                    JSONObject jo = new JSONObject().put("name", label.getLabel().getLabel()).put("color", label.getLabel().getColor()).put("description", label.getLabel().getDescription());
+                    if (testCaseWithLabel.containsKey(key)) {
+                        testCaseWithLabel.get(key).put(jo);
+                    } else {
+                        testCaseWithLabel.put(key, new JSONArray().put(jo));
+                    }
+                }
+            }
+            /**
+             * For All execution, get all label and generate statistics
+             */
+            LinkedHashMap<String, SummaryStatisticsDTO> labelPerTestcaseExecution = new LinkedHashMap();
+            for (TestCaseExecution testCaseExecution : testCaseExecutions) {
+                String controlStatus = testCaseExecution.getControlStatus();
+                if (statusFilter.get(controlStatus).equals("on") && countryFilter.get(testCaseExecution.getCountry()).equals("on")) {
+
+                    //Get label for current test_testcase
+                    JSONArray labelsForTestCase = testCaseWithLabel.get(testCaseExecution.getTest() + "_" + testCaseExecution.getTestCase());
+                    if (labelsForTestCase != null) {
+                        for (int index = 0; index < labelsForTestCase.length(); index++) {
+                            JSONObject j = labelsForTestCase.getJSONObject(index);
+                            if (labelPerTestcaseExecution.containsKey(j.get("name"))) {
+                                labelPerTestcaseExecution.get(j.get("name").toString()).updateStatisticByStatus(controlStatus);
+                            } else {
+                                SummaryStatisticsDTO stat = new SummaryStatisticsDTO();
+                                stat.setLabel(j);
+                                stat.updateStatisticByStatus(controlStatus);
+                                labelPerTestcaseExecution.put(j.get("name").toString(), stat);
+                            }
+                            total.updateStatisticByStatus(controlStatus);
+                        }
+                    }
+                }
+            }
+
+            jsonResult.put("labelStats", extractSummaryData(labelPerTestcaseExecution, total, true));
+        }
+        return jsonResult;
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

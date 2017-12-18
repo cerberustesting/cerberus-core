@@ -282,6 +282,31 @@
                 </div>
             </div>
             <div class="row">
+                <div class="col-lg-12" id="reportByLabel">
+                    <div class="panel panel-default">
+                        <div class="panel-heading card clearfix" data-toggle="collapse" data-target="#reportLabel">
+                            <label id="envCountryBrowser">Report by Label</label>
+                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                        </div>
+                        <div class="panel-body collapse in" id="reportLabel">
+                            <label id="splitLabel" class="bold">Show :</label>
+                            <div class="form-group marginBottom20" id="splitLabelFilter">
+                                <label class="checkbox-inline">
+                                    <input type="checkbox" name="stickers" checked/>
+                                    Stickers
+                                </label>
+                                <label class="checkbox-inline">
+                                    <input type="checkbox" name="requirement" checked/>
+                                    Requirement
+                                </label>
+                            </div>
+                            <div id="progressLabel">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
                 <div class="col-lg-12" id="ListPanel">
                     <div class="panel panel-default">
                         <div class="panel-heading card" data-toggle="collapse" data-target="#listReport">

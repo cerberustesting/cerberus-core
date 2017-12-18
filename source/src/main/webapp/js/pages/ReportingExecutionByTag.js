@@ -40,6 +40,17 @@ $.when($.getScript("js/global/global.js")).then(function () {
 
         splitFilterPreferences();
 
+        $("#splitLabelFilter input").click(function () {
+            //save the filter preferences in the session storage
+            var serial = $("#splitLabelFilter input").serialize();
+            var obj = convertSerialToJSONObject(serial);
+            sessionStorage.setItem("splitLabelFilter", JSON.stringify(obj));
+            //split when check or uncheck filter
+            if (urlTag !== null && urlTag !== "" && urlTag !== undefined) {
+                filterLabelReport(urlTag);
+            }
+        });
+
         $("#reportByEnvCountryBrowser .nav li").on("click", function (event) {
             stopPropagation(event);
             $(this).parent().find(".active").removeClass("active");
@@ -215,10 +226,12 @@ function loadReportingData(selectTag) {
     showLoader($("#functionChart"));
     showLoader($("#BugReportByStatus"));
     showLoader($("#reportEnvCountryBrowser"));
+    showLoader($("#reportLabel"));
     showLoader($("#listReport"));
     var statusFilter = $("#statusFilter input");
     var countryFilter = $("#countryFilter input");
     var params = $("#splitFilter input");
+    var paramsLabel = $("#splitLabelFilter input");
     $("#startExe").val("");
     $("#endExe").val("");
     $("#endLastExe").val("");
@@ -226,7 +239,7 @@ function loadReportingData(selectTag) {
     $("#TagUsrCreated").val("");
     $("#Tagcampaign").val("");
     //Retrieve data for charts and draw them
-    var jqxhr = $.get("ReadTestCaseExecutionByTag?Tag=" + selectTag + "&" + statusFilter.serialize() + "&" + countryFilter.serialize() + "&" + params.serialize(), null, "json");
+    var jqxhr = $.get("ReadTestCaseExecutionByTag?Tag=" + selectTag + "&" + statusFilter.serialize() + "&" + countryFilter.serialize() + "&" + params.serialize() + "&" + paramsLabel.serialize(), null, "json");
     $.when(jqxhr).then(function (data) {
 
         // Tag Detail feed.
@@ -261,6 +274,12 @@ function loadReportingData(selectTag) {
         // Report By Application Environment Country Browser
         loadEnvCountryBrowserReport(data.statsChart);
 
+        // Report By Label
+        $("#progressLabel").empty();
+        if (!$.isEmptyObject(data.labelStat)) {
+            loadLabelReport(data.labelStat);
+        }
+
         // Detailed Test Case List Report
         loadReportList(data.table, selectTag);
     });
@@ -277,6 +296,23 @@ function  filterCountryBrowserReport(selectTag, splitFilterSettings) {
 
     $.when(jqxhr).then(function (data) {
         loadEnvCountryBrowserReport(data.statsChart);
+    });
+
+}
+
+function  filterLabelReport(selectTag) {
+    //var selectTag = $("#selectTag option:selected").text();
+    var statusFilter = $("#statusFilter input");
+    var countryFilter = $("#countryFilter input");
+    var params = $("#splitLabelFilter input");
+    var requestToServlet = "ReadTestCaseExecutionByTag?Tag=" + selectTag + "&" + statusFilter.serialize() + "&" + countryFilter.serialize() + "&" + params.serialize() + "&" + "outputReport=labelStat";
+    var jqxhr = $.get(requestToServlet, null, "json");
+
+    $.when(jqxhr).then(function (data) {
+        $("#progressLabel").empty();
+        if (!$.isEmptyObject(data.labelStat)) {
+            loadLabelReport(data.labelStat);
+        }
     });
 
 }
@@ -336,6 +372,35 @@ function buildBar(obj) {
     $("#progressEnvCountryBrowser").append(buildBar);
 }
 
+function buildLabelBar(obj) {
+    var buildBar;
+    var statusOrder = ["OK", "KO", "FA", "NA", "NE", "PE", "QU", "CA"];
+    var len = statusOrder.length;
+    //Build the title to show at the top of the bar by checking the value of the checkbox
+    var params = $("#splitLabelFilter input");
+    var key = '<div class="pull-left"><span class="label label-primary" style="background-color:' + obj.label.map.color + '" data-toggle="tooltip" title="' + obj.label.map.description + '">' + obj.label.map.name + '</span></div>';
+
+    var tooltip = generateBarTooltip(obj, statusOrder);
+    buildBar = '<div>' + key + '<div class="pull-right" style="display: inline;margin-bottom:5px">Total executions : ' + obj.total + '</div>\n\
+                                                        </div><div class="progress" style="width:100%;" data-toggle="tooltip" data-html="true" title="' + tooltip + '">';
+
+    buildBar += '<div>'
+    for (var i = 0; i < len; i++) {
+        var status = statusOrder[i];
+
+        if (obj[status] !== 0) {
+            var percent = (obj[status] / obj.total) * 100;
+            var roundPercent = Math.round(percent * 10) / 10;
+
+            buildBar += '<div class="progress-bar status' + status + '" \n\
+                                    role="progressbar" \n\
+                                    style="width:' + percent + '%;">' + roundPercent + '%</div>';
+        }
+    }
+    buildBar += '</div>';
+    $("#progressLabel").append(buildBar);
+}
+
 function loadEnvCountryBrowserReport(data) {
     //adds a loader to a table 
     showLoader($("#reportEnvCountryBrowser"));
@@ -348,6 +413,21 @@ function loadEnvCountryBrowserReport(data) {
         buildBar(data.contentTable.split[index]);
     }
     hideLoader($("#reportEnvCountryBrowser"));
+
+}
+
+function loadLabelReport(data) {
+    //adds a loader to a table 
+    showLoader($("#reportLabel"));
+    $("#progressLabel").empty();
+
+    var len = data.labelStats.split.length;
+    //createSummaryTable(data.contentTable);
+    for (var index = 0; index < len; index++) {
+        //draw a progress bar for each combo retrieved
+        buildLabelBar(data.labelStats.split[index]);
+    }
+    hideLoader($("#reportLabel"));
 
 }
 
