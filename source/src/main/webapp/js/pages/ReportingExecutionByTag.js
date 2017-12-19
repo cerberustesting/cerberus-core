@@ -117,7 +117,7 @@ function loadCountryFilter() {
             for (var i = 0; i < len; i++) {
                 var filter = JSON.parse(sessionStorage.getItem("countryFilter"));
                 var cb;
-
+ 
                 //Load the filters depenbding on the preferences retrieved from session storage
                 if (filter !== null && !filter.hasOwnProperty(data[i].value)) {
                     cb = '<label class="checkbox-inline">\n\
@@ -1170,18 +1170,21 @@ function aoColumnsFunc(Columns) {
                     var glyphClass = getRowClass(data.ControlStatus);
                     var tooltip = generateTooltip(data);
                     var cell = "";
-                    cell += '<table class="table"><tr>';
+                    //cell += '<table class="table"><tr>';
+                    cell += '<div class="input-group"><span style="border:0px;border-radius:0px;box-shadow: inset 0 -1px 0 rgba(0,0,0,.15);" class="input-group-addon status' + data.ControlStatus + '">';
                     var state = data.ControlStatus;
                     if (!isEmpty(data.QueueState)) {
                         state += data.QueueState;
                     }
                     if ((data.QueueID !== undefined) && (data.QueueID !== "0")) {
-                        cell += '<td><input id="selectLine" name="id" value=' + data.QueueID + ' onclick="refreshNbChecked()" data-select="id" data-line="select' + state + '" data-id="' + data.QueueID + '" title="Select for Action" type="checkbox"></input></td>';
+                        //cell += '<td><input id="selectLine" name="id" value=' + data.QueueID + ' onclick="refreshNbChecked()" data-select="id" data-line="select' + state + '" data-id="' + data.QueueID + '" title="Select for Action" type="checkbox"></input></td>';
+                        cell += '<input id="selectLine" name="id" value=' + data.QueueID + ' onclick="refreshNbChecked()" data-select="id" data-line="select' + state + '" data-id="' + data.QueueID + '" title="Select for Action" type="checkbox"></input>';
                     }
+                    cell += '</span>';
                     if (data.ControlStatus === "QU") {
-                        cell += '<td><div class="progress-bar progress-bar-queue status' + data.ControlStatus + '" ';
+                        cell += '<div class="progress-bar progress-bar-queue status' + data.ControlStatus + '" ';
                     } else {
-                        cell += '<td><div class="progress-bar status' + data.ControlStatus + '" ';
+                        cell += '<div class="progress-bar status' + data.ControlStatus + '" ';
                     }
                     cell += 'role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;cursor: pointer; height: 40px;"';
                     cell += 'data-toggle="tooltip" data-html="true" title="' + tooltip + '"';
@@ -1196,7 +1199,8 @@ function aoColumnsFunc(Columns) {
                         cell += '<br><span style="font-size: xx-small">' + data.QueueState + '<span>';
                     }
                     cell += '</div>';
-                    cell += "</td></tr></table>";
+                    cell += '</div>';
+                    //cell += "</td></tr></table>";
                     return cell;
                 } else {
                     return data;
