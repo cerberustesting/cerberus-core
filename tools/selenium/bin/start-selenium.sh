@@ -6,7 +6,7 @@ JAVA_HOME=/home/user/local/jdk1.6.0_38/
 CD_PATH=/home/user/local/seleniumdriver/
 
 # Start Selenium.
-$JAVA_HOME/bin/java -jar `dirname $0`/selenium-server-standalone-2.35.0.jar -port 5555
+$JAVA_HOME/bin/java -jar selenium-server-standalone-2.35.0.jar -port 5555
 
 
 # Start Selenium with proxy config and trusting all SSLCertificates.

@@ -31,11 +31,13 @@ GRANT USAGE ON * . * TO 'cerberus'@'localhost' IDENTIFIED BY 'toto';
 CREATE DATABASE IF NOT EXISTS `cerberus` ;
 GRANT ALL PRIVILEGES ON `cerberus` . * TO 'cerberus'@'%';
 
-- modify 00Config.sh file with your local parameters.
+- modify 00Config.sh[.bat] file with your local parameters.
 
 2) Application Server Configuration. We made the choice to use glassfish 
 
-- run installation script --> 01AppServerConfig.sh[.bat]
+- run installation script 
+    For MySQL --> 01AppServerConfig.mysql.sh[.bat]
+    For MariaDb --> 01AppServerConfig.mariadb.sh[.bat]
 
 3) Deploy Cerberus Application
 
@@ -50,12 +52,7 @@ GRANT ALL PRIVILEGES ON `cerberus` . * TO 'cerberus'@'%';
  
 Before starting a test case, you need a selenium server running. 
 You can get the selenium jar file from http://docs.seleniumhq.org/download/
-You can use the start-selenium.sh script in tools/selenium/ folder. Update it in order to use the proper jvm and selenium jar.
-Here is the configuration we could see that provide the best stability :
-Firefox 45.4.0ESR and Selenium 2.45
-Other earlier configuration that should provide good result are :
-Firefox 52.0ESR and selenium 3.3.1 (with Gecko driver 0.15).
-
+You can use the start-selenium.sh script in tools/selenium/bin/ folder. Update it in order to use the proper jvm and selenium jar.
 
 Script execution automation can be done using the scripts located in tools/batchexecution/.
  
@@ -64,6 +61,7 @@ NB : don't forget to update the cerberus parameters according to your Environmen
   - cerberus_mediastorage_path : in order to store the various execution media files (ex : /home/pete/cerberus_media/) inside the correct local folder. This is where Cerberus will try to store the files xml, json or images taken during the execution.
   - cerberus_applicationobject_path : in order to store the various object files (ex : (ex : /home/pete/cerberus_objects/))
   - cerberus_url : in order to define the url to access Cerberus from Cerberus.
+
 
 Update
 ------
