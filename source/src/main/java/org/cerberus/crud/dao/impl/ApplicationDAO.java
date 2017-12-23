@@ -379,8 +379,15 @@ public class ApplicationDAO implements IApplicationDAO {
     public Answer create(Application object) {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO application (`application`, `description`, `sort`, `type`, `system`, `SubSystem`, `svnurl`, `BugTrackerUrl`, `BugTrackerNewUrl`, `deploytype`, `mavengroupid`, `usrcreated` ) ");
-        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?)");
+        query.append("INSERT INTO application (`application`, `description`, `sort`, `type`, `system`, `SubSystem`, `svnurl`, `BugTrackerUrl`, `BugTrackerNewUrl`, `deploytype`");
+        query.append(", `mavengroupid`, `usrcreated` ) ");
+        if (StringUtil.isNullOrEmpty(object.getDeploytype())) {
+            query.append("VALUES (?,?,?,?,?,?,?,?,?,null,?,?)");
+
+        } else {
+            query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?)");
+
+        }
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -390,7 +397,7 @@ public class ApplicationDAO implements IApplicationDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
-                int i=1;
+                int i = 1;
                 preStat.setString(i++, object.getApplication());
                 preStat.setString(i++, object.getDescription());
                 preStat.setInt(i++, object.getSort());
@@ -400,7 +407,9 @@ public class ApplicationDAO implements IApplicationDAO {
                 preStat.setString(i++, object.getSvnurl());
                 preStat.setString(i++, object.getBugTrackerUrl());
                 preStat.setString(i++, object.getBugTrackerNewUrl());
-                preStat.setString(i++, object.getDeploytype());
+                if (!StringUtil.isNullOrEmpty(object.getDeploytype())) {
+                    preStat.setString(i++, object.getDeploytype());
+                }
                 preStat.setString(i++, object.getMavengroupid());
                 preStat.setString(i++, object.getUsrCreated());
 
@@ -481,6 +490,9 @@ public class ApplicationDAO implements IApplicationDAO {
     @Override
     public Answer update(String application, Application object) {
         MessageEvent msg = null;
+        if (StringUtil.isNullOrEmpty(object.getDeploytype())) {
+            object.setDeploytype(null);
+        }
         final String query = "UPDATE application SET Application = ?, description = ?, sort = ?, `type` = ?, `system` = ?, SubSystem = ?, svnurl = ?, BugTrackerUrl = ?, BugTrackerNewUrl = ?, "
                 + "deploytype = ?, mavengroupid = ?, dateModif = NOW(), usrModif= ?  WHERE Application = ?";
 

@@ -74,7 +74,8 @@
                 //Integer SQLLimit = 1116; // 1.1.11 Version LEVEL.
                 //Integer SQLLimit = 1145; // 1.1.12 Version LEVEL.
                 //Integer SQLLimit = 1181; // 1.1.13 Version LEVEL.
-                Integer SQLLimit = 1222; // 1.1.14 Version LEVEL.
+                //Integer SQLLimit = 1222; // 1.1.14 Version LEVEL.
+                Integer SQLLimit = 1270; // 1.1.14 Version LEVEL.
                 IFactoryMyversion factoryMyversion;
 
                 try {
@@ -173,7 +174,8 @@
                             if (DtbVersion.getValue() < NewVersion) {
                                 out.print("<div class=\"panel panel-default marginTop20\"><div class=\"panel-heading\"><span class=\"glyphicon glyphicon-list\"></span><label>  Pending SQL To be performed :</label></div>");
                             }
-            %><form action="DatabaseMaintenance.jsp?GO=Y" method="post" name="ExecApply" id="ExecApply">
+            %>
+            <form action="DatabaseMaintenance.jsp?GO=Y" method="post" name="ExecApply" id="ExecApply">
             </form>
             <%
                         i = 0;
@@ -190,14 +192,22 @@
                                 out.println("</tr>");
                             }
                         }
-                        out.print("</table></div></div>");
+                        out.print("</table></div>");
+
+                        if (DtbVersion.getValue() < NewVersion) {
+                            out.print("</div>");
+                        }
+
                     }
                 }
 
                 if (DtbVersion.getValue() == (NewVersion)) { // Database is already (or just have been) updated
 
+                    out.print("<div class=\"panel-body\">");
                     out.print("<h3>Database is now uptodate. Enjoy the tool.</h3><br>");
+                    out.print("<h3>Get to the <a href='.'>homepage.</a></h3><br>");
                     out.print("<h4>Show all SQL <a href=\"DatabaseMaintenance.jsp?ShowAll\">here</a>.</h4>");
+                    out.print("</div>");
             %>
             <script>
                 // Database Script is now finished. 

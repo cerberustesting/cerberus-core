@@ -180,18 +180,8 @@ function addEntryModalSaveHandler() {
         nameElement.parents("div.form-group").removeClass("has-error");
     }
 
-    var deployTypeElement = formAdd.find("#deploytype");
-    var deployTypeElementEmpty = deployTypeElement.prop("value") === '';
-    if (deployTypeElementEmpty) {
-        var localMessage = new Message("danger", "Please specify the Deploy Type! If necessary create at least one Deploy Type in the corresponding screen under Application menu.");
-        deployTypeElement.parents("div.form-group").addClass("has-error");
-        showMessage(localMessage, $('#addApplicationModal'));
-    } else {
-        deployTypeElement.parents("div.form-group").removeClass("has-error");
-    }
-
     // verif if all mendatory fields are not empty
-    if ((nameElementEmpty) || (deployTypeElementEmpty))
+    if ((nameElementEmpty))
         return;
 
     // Get the header data from the form.

@@ -277,16 +277,9 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('GROUP','',6,2,'Group of tests which are not already defined',NULL,NULL,NULL)");
         SQLS.append(",('COUNTRY','BE',10,4,'Belgium','800',NULL,NULL)");
         SQLS.append(",('COUNTRY','CH',11,4,'Switzerland','500',NULL,NULL)");
-        SQLS.append(",('COUNTRY','ES',13,4,'Spain','900',NULL,NULL)");
-        SQLS.append(",('COUNTRY','IT',14,4,'Italy','205',NULL,NULL)");
         SQLS.append(",('COUNTRY','PT',15,4,'Portugal','200',NULL,NULL)");
-        SQLS.append(",('COUNTRY','RU',16,4,'Russia','240',NULL,NULL)");
         SQLS.append(",('COUNTRY','UK',17,4,'Great Britan','300',NULL,NULL)");
-        SQLS.append(",('COUNTRY','UA',25,4,'Ukrainia','290',NULL,NULL)");
         SQLS.append(",('COUNTRY','DE',40,4,'Germany','600',NULL,NULL)");
-        SQLS.append(",('COUNTRY','AT',41,4,'Austria','600',NULL,NULL)");
-        SQLS.append(",('COUNTRY','GR',42,4,'Greece','220',NULL,NULL)");
-        SQLS.append(",('COUNTRY','RX',50,4,'Transversal Country used for Transversal Applications.','RBX',NULL,NULL)");
         SQLS.append(",('COUNTRY','FR',60,4,'France',NULL,NULL,NULL)");
         SQLS.append(",('ENVIRONMENT','DEV',0,5,'Developpement','DEV',NULL,NULL)");
         SQLS.append(",('ENVIRONMENT','QA',5,5,'Quality Assurance','QA',NULL,NULL)");
@@ -1032,11 +1025,11 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
 
         SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `testcase` VALUES ('Examples','0001A','Google',' ','','Search for Cerberus Website','','Y',NULL,1,'WORKING','Y','INTERACTIVE','RX','','','','2012-06-19 09:56:40','','','','','','','','cerberus','cerberus','cerberus',NULL,'Y','Y','Y')");
+        SQLS.append("INSERT INTO `testcase` VALUES ('Examples','0001A','Google',' ','','Search for Cerberus Website','','Y',NULL,1,'WORKING','Y','INTERACTIVE','FR','','','','2012-06-19 09:56:40','','','','','','','','cerberus','cerberus','cerberus',NULL,'Y','Y','Y')");
         SQLInstruction.add(SQLS.toString());
 
         SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `testcasecountry` VALUES ('Examples','0001A','RX')");
+        SQLS.append("INSERT INTO `testcasecountry` VALUES ('Examples','0001A','FR')");
         SQLInstruction.add(SQLS.toString());
 
         SQLS = new StringBuilder();
@@ -1044,17 +1037,17 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
 
         SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `testcasecountryproperties` VALUES ('Examples','0001A','RX','MYTEXT','text','','cerberus automated testing',0,0,'STATIC'), ('Examples','0001A','RX','WAIT','text','','5000',0,0,'STATIC')");
+        SQLS.append("INSERT INTO `testcasecountryproperties` VALUES ('Examples','0001A','FR','MYTEXT','text','','cerberus automated testing',0,0,'STATIC'), ('Examples','0001A','FR','WAIT','text','','5000',0,0,'STATIC')");
         SQLInstruction.add(SQLS.toString());
 
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `testcasestepaction` VALUES ('Examples','0001A',1,10,'openUrlLogin','','')");
-        SQLS.append(",('Examples','0001A',1,20,'type','id=gbqfq','MYTEXT')");
-        SQLS.append(",('Examples','0001A',1,30,'clickAndWait','id=gbqfb','WAIT')");
+        SQLS.append(",('Examples','0001A',1,20,'type','lst-ib','MYTEXT')");
+        SQLS.append(",('Examples','0001A',1,30,'click','name=btnK','')");
         SQLInstruction.add(SQLS.toString());
 
         SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `testcasestepactioncontrol` VALUES ('Examples','0001A',1,30,1,'verifyRegexInElement','Welcome to Cerberus Website','xpath=//div[@id=\\'search\\']/div/ol/li/div/div/div/span','Y')");
+        SQLS.append("INSERT INTO `testcasestepactioncontrol` VALUES ('Examples','0001A',1,30,1,'verifyTextInPage','','Welcome to Cerberus Website','Y')");
         SQLInstruction.add(SQLS.toString());
 
         SQLS = new StringBuilder();
@@ -1712,7 +1705,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 //-- New parameter used by netexport. 
 //-- ------------------------
         SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `parameter` (`param`, `value`, `description`) VALUES ('cerberus_url', 'http://localhost:8080/GuiCerberusV2-2.0.0-SNAPSHOT', 'URL to Cerberus used in order to call back cerberus from NetExport plugin. This parameter is mandatory for saving the firebug detail information back to cerberus. ex : http://host:port/contextroot');");
+        SQLS.append("INSERT INTO `parameter` (`param`, `value`, `description`) VALUES ('cerberus_url', 'http://localhost:8080/Cerberus', 'URL to Cerberus used in order to call back cerberus from NetExport plugin. This parameter is mandatory for saving the firebug detail information back to cerberus. ex : http://host:port/contextroot');");
         SQLInstruction.add(SQLS.toString());
 
 //-- Making controls standard. 
@@ -2163,10 +2156,10 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 //-- Insert default environment in order to get examples running.
 //-- ------------------------
         SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `countryenvparam` (`system`, `Country`, `Environment`, `Build`, `Revision`, `Chain`, `DistribList`, `EMailBodyRevision`, `Type`, `EMailBodyChain`, `EMailBodyDisableEnvironment`, `active`, `maintenanceact`) VALUES ('DEFAULT', 'RX', 'PROD', '', '', '', '', '', 'STD', '', '', 'Y', 'N');");
+        SQLS.append("INSERT INTO `countryenvparam` (`system`, `Country`, `Environment`, `Build`, `Revision`, `Chain`, `DistribList`, `EMailBodyRevision`, `Type`, `EMailBodyChain`, `EMailBodyDisableEnvironment`, `active`, `maintenanceact`) VALUES ('DEFAULT', 'FR', 'PROD', '', '', '', '', '', 'STD', '', '', 'Y', 'N');");
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `countryenvironmentparameters` (`system`, `Country`, `Environment`, `Application`, `IP`, `URL`, `URLLOGIN`) VALUES ('DEFAULT', 'RX', 'PROD', 'Google', 'www.google.com', '/', '');");
+        SQLS.append("INSERT INTO `countryenvironmentparameters` (`system`, `Country`, `Environment`, `Application`, `IP`, `URL`, `URLLOGIN`) VALUES ('DEFAULT', 'FR', 'PROD', 'Google', 'www.google.fr', '/', '');");
         SQLInstruction.add(SQLS.toString());
 
 //-- Force default system to DEFAULT.
@@ -2976,7 +2969,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 //-- ------------------------ 461
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `robot` (`robot` ,`host` ,`port` ,`platform` ,`browser` ,`version` , `active` ,`description`)");
-        SQLS.append("VALUES ('MyRobot', '127.0.0.1', '5555', 'LINUX', 'firefox', '28', 'Y', 'My Robot');");
+        SQLS.append("VALUES ('MyRobot', '127.0.0.1', '4444', 'LINUX', 'firefox', '28', 'Y', 'My Robot');");
         SQLInstruction.add(SQLS.toString());
 
 //Insert parameter cerberus_picture_testcase_path.
