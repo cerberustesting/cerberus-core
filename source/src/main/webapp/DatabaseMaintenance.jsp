@@ -245,8 +245,9 @@
                     }
 
                 } catch (Exception exception1) {
-                    LOG.warn(exception1.toString());
-                    out.print(exception1.toString());
+                    LOG.error("Database Maintenance Page exception : " + exception1);
+                    out.print("<div class=\"alert alert-danger\"><strong><h3>Exception raized when connecting to the database...<br><br>There is probably a database connectivity issue.<br>Please check that the database server is correctly started and application server correctly configured to access it.<br>Check the server logs for more details.</h3></strong></div><br>");
+                    out.print(exception1);
                 } finally {
                 }
             %>         

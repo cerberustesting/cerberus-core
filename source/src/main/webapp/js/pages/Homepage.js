@@ -303,7 +303,7 @@ function aoColumnsFunc() {
     var status = readStatus();
     var statusLen = status.length;
     var aoColumns = [
-        {"data": "Application", "bSortable": true, "sName": "Application", "title": displayDocLink(doc.application.Application),
+        {"data": "Application", "bSortable": true, "sName": "Application", "title": displayDocLink(doc.application.Application), "sWidth": "45px",
             "mRender": function (data, type, oObj) {
                 var href = "TestCaseList.jsp?application=" + data;
 

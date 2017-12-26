@@ -283,14 +283,14 @@
                                     <form class="form-horizontal" id="robotSettingsForm">
                                         <div class="form-group">
                                             <label for="robot" class="col-sm-3 control-label bold">Select Robot Config</label>
-                                            <div class="col-xs-6">
+                                            <div class="col-sm-6">
                                                 <select class="form-control input-sm" id="robot" name="robot"></select>
-                                            </div>
-                                            <div class="col-xs-1" style="margin-top: 0px;">
                                                 <button type="button" id="robotEdit" class="glyphicon glyphicon-edit btn" title="Edit Robot"></button>
-                                            </div>
-                                            <div class="col-xs-1" style="margin-top: 0px;">
                                                 <button type="button" id="robotCreate" class="glyphicon glyphicon-plus-sign btn" title="Create a new Robot"></button>
+                                            </div>
+                                            <div class="col-sm-1" style="margin-top: 0px;">
+                                            </div>
+                                            <div class="col-sm-1" style="margin-top: 0px;">
                                             </div>
                                         </div>
                                         <div class="form-group">

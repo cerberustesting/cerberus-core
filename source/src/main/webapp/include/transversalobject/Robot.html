@@ -20,6 +20,21 @@
                                 </button>
                             </div>
                         </div>
+                                <div class="row">
+                                    <div class="form-group col-sm-3">
+                                        <label for="robotid" name="robotField">Robot</label>
+                                        <input type="text" class="form-control" name="robotid" id="robotid" aria-describedby="basic-addon1" readonly>
+                                    </div>
+                                    <div class="form-group col-sm-6">
+                                        <label for="robot" name="robotField">Robot</label>
+                                        <input type="text" class="form-control" name="robot" id="robot" aria-describedby="basic-addon1" maxlength="50">
+                                    </div>
+                                    <div class="form-group col-sm-3">
+                                        <label for="active" name="activeField">Active</label>
+                                        <select class="form-control"  id="active" name="robotActive">
+                                        </select>
+                                    </div>
+                                </div>
                         <!-- tabs definition-->
                         <ul id="tabsEdit" class="nav nav-tabs" data-tabs="tabs">
                             <li class="active"><a data-toggle="tab" href="#tabsEdit-1" id="editTab1Text" name="tabDefinition">Definition</a></li>
@@ -27,42 +42,27 @@
                         </ul>
                         <div class="tab-content">
                             <div class="center marginTop25 tab-pane fade in active" id="tabsEdit-1">
-                                <div class="row">
-                                    <div class="form-group col-xs-3">
-                                        <label for="robotid" name="robotField">Robot</label>
-                                        <input type="text" class="form-control" name="robotid" id="robotid" aria-describedby="basic-addon1" readonly>
-                                    </div>
-                                    <div class="form-group col-xs-6">
-                                        <label for="robot" name="robotField">Robot</label>
-                                        <input type="text" class="form-control" name="robot" id="robot" aria-describedby="basic-addon1" maxlength="50">
-                                    </div>
-                                    <div class="form-group col-xs-3">
-                                        <label for="active" name="activeField">Active</label>
-                                        <select class="form-control"  id="active" name="robotActive">
-                                        </select>
-                                    </div>
-                                </div>
                                 <div class="panel panel-default" style="padding:10px;background-color: #fafafa;">
                                     <div class="row">
-                                        <div class="form-group col-xs-7">
+                                        <div class="form-group col-sm-7">
                                             <label for="host" name="hostField">Host</label>
                                             <input type="text" class="form-control" name="host" id="host" aria-describedby="basic-addon1" maxlength="150">
                                         </div>
-                                        <div class="form-group col-xs-3">
+                                        <div class="form-group col-sm-3">
                                             <label for="port" name="portField">Port</label>
                                             <input type="text" class="form-control" name="port" id="port" aria-describedby="basic-addon1" maxlength="20">
                                         </div>
-                                        <div class="form-group col-xs-2">
+                                        <div class="form-group col-sm-2">
                                             <label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
                                             <button class="btn btn-primary" data-toggle="collapse" data-target="#hostAuthentification" onclick="return false;"> <span class="glyphicon glyphicon-lock"></span></button>
                                         </div>
                                     </div>
                                     <div class="row collapse" id="hostAuthentification">
-                                        <div class="form-group col-xs-6">
+                                        <div class="form-group col-sm-6">
                                             <label for="hostUsername" name="hostUserField">Host Username</label>
                                             <input type="text" class="form-control" name="hostUsername" id="hostUsername" aria-describedby="basic-addon1" maxlength="150">
                                         </div>
-                                        <div class="form-group col-xs-6">
+                                        <div class="form-group col-sm-6">
                                             <label for="hostPassword" name="hostPasswordField">Host Password</label>
                                             <input type="password" class="form-control" name="hostPassword" id="hostPassword" aria-describedby="basic-addon1" maxlength="20">
                                         </div>
@@ -70,35 +70,35 @@
                                 </div>
                                 <div class="panel panel-default" style="padding:10px;background-color: #fafafa;">
                                     <div class="row">
-                                        <div class="form-group col-xs-6">
+                                        <div class="form-group col-sm-6">
                                             <label for="platform" name="platformField">Platform</label>
                                             <select class="form-control"  id="platform" name="robotPlatform">
                                             </select>
                                         </div>
-                                        <div class="form-group col-xs-6">
+                                        <div class="form-group col-sm-6">
                                             <label for="browser" name="browserField">Browser</label>
                                             <select class="form-control"  id="browser" name="robotBrowser">
                                             </select>
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="form-group col-xs-6">
+                                        <div class="form-group col-sm-6">
                                             <label for="version" name="versionField">Version</label>
                                             <input type="text" class="form-control" name="version" id="version" aria-describedby="basic-addon1" maxlength="45">
                                         </div>
-                                        <div class="form-group col-xs-6">
+                                        <div class="form-group col-sm-6">
                                             <label for="useragent" name="useragentField">User Agent</label>
                                             <input type="text" class="form-control" name="useragent" id="useragent" aria-describedby="basic-addon1" maxlength="250">
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="form-group col-xs-12">
+                                        <div class="form-group col-sm-12">
                                             <label for="screensize" name="screensizeField">Screen Size</label>
                                             <input type="text" class="form-control" name="screensize" id="screensize" aria-describedby="basic-addon1" maxlength="250">
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="form-group col-xs-12">
+                                        <div class="form-group col-sm-12">
                                             <label for="Description" name="descriptionField">Description</label>
                                             <textarea id="Description" name="description"
                                                       class="form-control" maxlength="250"></textarea>
@@ -109,7 +109,7 @@
                             <div class="center tab-pane fade marginTop25" id="tabsEdit-2">
                                 <div id="listPanelEditCapabilities">
                                     <div class="row">
-                                        <div class="col-xs-12">
+                                        <div class="col-sm-12">
                                             <table class="table table-bordered table-hover nomarginbottom" id="editCapabilitiesTable">
                                                 <thead>
                                                     <tr>

@@ -394,7 +394,7 @@ public class EmailGenerationService implements IEmailGenerationService {
         }
         detailStatus.append("<tr style=\"background-color:#cad3f1; font-style:bold\">");
         detailStatus.append("<td>TOTAL</td>");
-        detailStatus.append("<td colspan=\"3\">").append(totalTC).append("</td>");
+        detailStatus.append("<td colspan=\"5\">").append(totalTC).append("</td>");
         detailStatus.append("</tr>");
         detailStatus.append("</tbody></table>");
         body = body.replace("%TAGTCDETAIL%", detailStatus.toString());

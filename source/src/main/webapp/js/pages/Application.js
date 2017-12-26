@@ -457,7 +457,6 @@ function displayWarningOnChangeApplicationKey() {
     // Compare with original value in order to display the warning message.
     let old1 = $("#originalApplication").val();
     let new1 = $('#editApplicationModal input[name="application"]').val();
-    console.info(old1 + " " + new1);
     if (old1 !== new1) {
         var localMessage = new Message("WARNING", "If you rename that application, All the corresponding execution historic will stay on old application name.");
         showMessage(localMessage, $('#editApplicationModal'));
