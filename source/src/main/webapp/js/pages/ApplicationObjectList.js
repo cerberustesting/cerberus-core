@@ -145,6 +145,7 @@ function aoColumnsFunc(tableId) {
             "title": doc.getDocLabel("page_global", "columnAction"),
             "bSortable": false,
             "bSearchable": false,
+            "sWidth": "60px",
             "mRender": function (data, type, obj) {
                 var hasPermissions = $("#" + tableId).attr("hasPermissions");
 
@@ -168,15 +169,19 @@ function aoColumnsFunc(tableId) {
         },
         {"data": "application",
             "sName": "application",
+            "sWidth": "60px",
             "title": doc.getDocOnline("page_applicationObject", "Application")},
         {"data": "object",
             "sName": "object",
+            "sWidth": "80px",
             "title": doc.getDocOnline("page_applicationObject", "Object")},
         {"data": "value",
             "sName": "value",
+            "sWidth": "60px",
             "title": doc.getDocOnline("page_applicationObject", "Value")},
         {"data": "screenshotfilename",
             "sName": "screenshotfilename",
+            "sWidth": "60px",
             "title": doc.getDocOnline("page_applicationObject", "ScreenshotFileName"),
             "mRender": function(data, type, obj) {
                 var currentCase = "<image "+ "onclick ='displayPictureOfMinitature(this)' " +"style ='height: 25px;cursor:  pointer;'" + "src='ReadApplicationObjectImage?application=" + obj["application"] + "&object=" + obj["object"] + "&time=" + new Date().getTime() + "'></image>"
@@ -185,16 +190,20 @@ function aoColumnsFunc(tableId) {
         },
         {"data": "usrcreated",
             "sName": "usrcreated",
+            "sWidth": "60px",
             "title": doc.getDocOnline("page_applicationObject", "UsrCreated")},
         {"data": "datecreated",
             "sName": "datecreated",
+            "sWidth": "80px",
             "title": doc.getDocOnline("page_applicationObject", "DateCreated")},
         {"data": "usrmodif",
             "sName": "usrmodif",
+            "sWidth": "60px",
             "title": doc.getDocOnline("page_applicationObject", "UsrModif")
         },
         {"data": "datemodif",
             "sName": "datemodif",
+            "sWidth": "80px",
             "title": doc.getDocOnline("page_applicationObject", "DateModif")
         }
     ];

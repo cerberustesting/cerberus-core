@@ -30,6 +30,7 @@
 <%@page import="org.cerberus.database.IDatabaseVersioningService"%>
 <%@page import="org.cerberus.crud.entity.MyVersion"%>
 <%@page import="org.cerberus.crud.service.IMyVersionService"%>
+<%@page import="org.cerberus.crud.service.ILogEventService"%>
 <% Date DatePageStart = new Date();%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -83,6 +84,8 @@
                     MyVersion DtbVersion = null;
                     ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
                     IMyVersionService myVersionService = appContext.getBean(IMyVersionService.class);
+                    ILogEventService logEventService = appContext.getBean(ILogEventService.class);
+
                     if (myVersionService.findMyVersionByKey("database") != null) {
                         DtbVersion = myVersionService.findMyVersionByKey("database");
                     } else {
@@ -133,15 +136,18 @@
                                         SQLExecuted = true;
                                         SQLRC.add(MySQLRC);
                                         String colorClass = "";
+                                        String rowLine = "";
                                         if (MySQLRC.equalsIgnoreCase("OK")) {
                                             colorClass = "success";
+                                            rowLine = "1";
                                         } else {
                                             colorClass = "danger";
+                                            rowLine = "5";
                                         }
 
                                         out.print("<tr class=\"" + colorClass + "\"><td>");
                                         out.print(i);
-                                        out.print("</td><td class=\"wob\"><textarea class=\"form-control\" name=\"SQL\" rows=\"5\" style=\"background-color:transparent;border:0px;font-size:x-small;width: 100%\" readonly>");
+                                        out.print("</td><td class=\"wob\"><textarea class=\"form-control\" name=\"SQL\" rows=\"" + rowLine + "\" style=\"background-color:transparent;border:0px;font-size:x-small;width: 100%\" readonly>");
                                         out.print(MySQL.replace("</textarea>", "</text4rea>"));
                                         out.print("</textarea></td>");
 
@@ -152,8 +158,9 @@
                                         }
                                         if (i >= 4) { // The log table is only available after the Version 4
                                             // Log the SQL execution here
+                                            logEventService.createForPrivateCalls("/DatabaseMaintenance.jsp", "SQL", "SQL " + MySQLRC + ": ['" + MySQL + "']", request);
                                         }
-                                        out.print("<td><textarea class=\"form-control\" name=\"SQL\" rows=\"5\" style=\"background-color:transparent;border:0px;font-size:x-small;width: 100%\" readonly>");
+                                        out.print("<td><textarea class=\"form-control\" name=\"SQL\" rows=\"" + rowLine + "\" style=\"background-color:transparent;border:0px;font-size:x-small;width: 100%\" readonly>");
                                         out.print(MySQLRC);
                                         out.print("</textarea></td>");
                                         out.println("</tr>");

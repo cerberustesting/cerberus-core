@@ -31,7 +31,7 @@ import org.springframework.stereotype.Service;
 public class FactoryLabel implements IFactoryLabel {
 
     @Override
-    public Label create(Integer id, String system, String label, String type, String color, String parentLabel, String description, String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif) {
+    public Label create(Integer id, String system, String label, String type, String color, String parentLabel, String reqType, String reqStatus, String reqCriticity, String description, String longDesc, String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif) {
         Label labelObject = new Label();
         labelObject.setColor(color);
         labelObject.setDateCreated(dateCreated);
@@ -44,6 +44,10 @@ public class FactoryLabel implements IFactoryLabel {
         labelObject.setUsrCreated(usrCreated);
         labelObject.setUsrModif(usrModif);
         labelObject.setDescription(description);
+        labelObject.setLongDesc(longDesc);
+        labelObject.setReqCriticity(reqCriticity);
+        labelObject.setReqStatus(reqStatus);
+        labelObject.setReqType(reqType);
         return labelObject;
     }
 

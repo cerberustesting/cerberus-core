@@ -455,13 +455,13 @@ function feedTestCaseModal(test, testCase, modalId, mode) {
     clearResponseMessageMainPage();
 
     var formEdit = $('#' + modalId);
-    
+
 
     var jqxhr = $.getJSON("ReadTestCase", "test=" + encodeURIComponent(test) + "&testCase=" + encodeURIComponent(testCase));
     $.when(jqxhr).then(function (data) {
 
         var testCase = data.contentTable;
-        
+
         var appInfo = $.getJSON("ReadApplication", "application=" + encodeURIComponent(testCase.application));
 
         $.when(appInfo).then(function (appData) {
@@ -553,7 +553,8 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         if (tinyMCE.get('behaviorOrValueExpected') != null)
             tinyMCE.get('behaviorOrValueExpected').setContent("");
         if (tinyMCE.get('howTo') != null)
-            formEdit.find("#active").prop("value", "Y");
+            tinyMCE.get('howTo').setContent("");
+        formEdit.find("#active").prop("value", "Y");
         formEdit.find("#bugId").prop("value", "");
         formEdit.find("#conditionOper").prop("value", "always");
         formEdit.find("#conditionVal1").prop("value", "");

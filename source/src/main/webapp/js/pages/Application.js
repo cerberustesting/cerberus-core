@@ -472,6 +472,7 @@ function aoColumnsFunc(tableId) {
             "title": doc.getDocLabel("page_global", "columnAction"),
             "bSortable": false,
             "bSearchable": false,
+            "sWidth": "50px",
             "mRender": function (data, type, obj) {
                 var hasPermissions = $("#" + tableId).attr("hasPermissions");
 
@@ -495,24 +496,31 @@ function aoColumnsFunc(tableId) {
         },
         {"data": "application",
             "sName": "application",
+            "sWidth": "60px",
             "title": doc.getDocOnline("application", "Application")},
         {"data": "description",
             "sName": "description",
+            "sWidth": "80px",
             "title": doc.getDocOnline("application", "Description")},
         {"data": "sort",
             "sName": "sort",
+            "sWidth": "60px",
             "title": doc.getDocOnline("application", "sort")},
         {"data": "type",
             "sName": "type",
+            "sWidth": "60px",
             "title": doc.getDocOnline("application", "type")},
         {"data": "system",
             "sName": "system",
+            "sWidth": "60px",
             "title": doc.getDocOnline("application", "system")},
         {"data": "subsystem",
             "sName": "subsystem",
+            "sWidth": "60px",
             "title": doc.getDocOnline("application", "subsystem")},
         {"data": "svnurl",
             "sName": "svnurl",
+            "sWidth": "80px",
             "title": doc.getDocOnline("application", "svnurl"),
             "mRender": function (data, type, oObj) {
                 return drawURL(data);
@@ -520,6 +528,7 @@ function aoColumnsFunc(tableId) {
         },
         {"data": "bugTrackerUrl",
             "sName": "bugTrackerUrl",
+            "sWidth": "80px",
             "title": doc.getDocOnline("application", "bugtrackerurl"),
             "mRender": function (data, type, oObj) {
                 return drawURL(data);
@@ -527,6 +536,7 @@ function aoColumnsFunc(tableId) {
         },
         {"data": "bugTrackerNewUrl",
             "sName": "bugTrackerNewUrl",
+            "sWidth": "80px",
             "title": doc.getDocOnline("application", "bugtrackernewurl"),
             "mRender": function (data, type, oObj) {
                 return drawURL(data);
@@ -534,9 +544,11 @@ function aoColumnsFunc(tableId) {
         },
         {"data": "deploytype",
             "sName": "deploytype",
+            "sWidth": "60px",
             "title": doc.getDocOnline("application", "deploytype")},
         {"data": "mavengroupid",
             "sName": "mavengroupid",
+            "sWidth": "60px",
             "title": doc.getDocOnline("application", "mavengroupid")}
     ];
     return aoColumns;

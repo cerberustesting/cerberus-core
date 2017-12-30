@@ -448,12 +448,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('FILTERNBDAYS','30',2,29,'30 Days (1 month)',NULL,NULL,NULL)");
         SQLS.append(",('FILTERNBDAYS','182',3,29,'182 Days (6 months)',NULL,NULL,NULL)");
         SQLS.append(",('FILTERNBDAYS','365',4,29,'365 Days (1 year)',NULL,NULL,NULL)");
-        SQLS.append(",('STATUS','OPEN',1,33,'Non conformities is still in investigation',NULL,NULL,NULL)");
-        SQLS.append(",('STATUS','CLOSED',2,33,'Non conformity is closed',NULL,NULL,NULL)");
-        SQLS.append(",('SEVERITY','1',10,34,'The Most critical : Unavailability',NULL,NULL,NULL)");
-        SQLS.append(",('SEVERITY','2',20,34,'Bad Customer experience : Slowness or error page',NULL,NULL,NULL)");
-        SQLS.append(",('SEVERITY','3',30,34,'No customer impact but impact for internal resources',NULL,NULL,NULL)");
-        SQLS.append(",('SEVERITY','4',40,34,'Low severity',NULL,NULL,NULL)");
         SQLS.append(",('TCESTATUS','OK',1,35,'Test was fully executed and no bug are to be reported.',NULL,NULL,NULL)");
         SQLS.append(",('TCESTATUS','KO',2,35,'Test was executed and bug have been detected.',NULL,NULL,NULL)");
         SQLS.append(",('TCESTATUS','PE',3,35,'Test execution is still running...',NULL,NULL,NULL)");
@@ -1488,10 +1482,10 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("UPDATE `invariant` SET `idname`='TCSTATUS' WHERE `id`='1' and`sort`='6';");
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
-        SQLS.append("UPDATE `invariant` SET `idname`='NCONFSTATUS' WHERE `id`='33' and`sort`='1';");
+        SQLS.append("SELECT 1 FROM dual;");
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
-        SQLS.append("UPDATE `invariant` SET `idname`='NCONFSTATUS' WHERE `id`='33' and`sort`='2';");
+        SQLS.append("SELECT 1 FROM dual;");
         SQLInstruction.add(SQLS.toString());
 
 //-- New invariant for execution detail list page.
@@ -4266,9 +4260,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // New invariant.
         //-- ------------------------ 667
         SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`)");
-        SQLS.append("VALUES ('MNTACTIVE', 'N', '20', 'Disable', ''),");
-        SQLS.append("       ('MNTACTIVE', 'Y', '10', 'Active', '');");
+        SQLS.append("SELECT 1 FROM dual;");
         SQLInstruction.add(SQLS.toString());
 
         // Tracability on Testdatalib object.
@@ -7454,6 +7446,104 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // New updated Documentation.
         //-- ------------------------ 1258-1259
         SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+
+        // rename parameters in order to fit standard
+        //-- ------------------------ 1260-1263
+        SQLS = new StringBuilder();
+        SQLS.append("update parameter set param = replace(param, 'integration_', 'cerberus_') where param like 'integration_%';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("update parameter set param = replace(param, 'jenkins_', 'cerberus_jenkins') where param like 'jenkins_%';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("update parameter set param = 'cerberus_appium_swipe_duration' where param = 'appium_swipeDuration';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("update parameter set param = replace(param, 'CI_OK_', 'cerberus_ci_okcoef') where param like 'CI_OK%';");
+        SQLInstruction.add(SQLS.toString());
+
+        // moved Battery to Label
+        //-- ------------------------ 1264-1268
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `label` ADD COLUMN `Type` VARCHAR(45) NOT NULL DEFAULT 'STICKER' AFTER `Label`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO label (`system`,`Label`,`Type`,`Color`,`ParentLabel`, `Description`, `UsrCreated`)");
+        SQLS.append(" SELECT '', testbattery, 'BATTERY', '#CCCCCC', '', Description, 'DatabaseVersioningV1264' from testbattery");
+        SQLS.append(" ON DUPLICATE KEY UPDATE `UsrModif` = 'DatabaseVersioningV1264', DateModif = now();");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO testcaselabel (`Test`,`TestCase`,`LabelId`, `UsrCreated`)");
+        SQLS.append(" SELECT Test, TestCase, l.id, 'DatabaseVersioningV1264' from testbatterycontent b");
+        SQLS.append("  join label l where b.testbattery = l.Label");
+        SQLS.append("  ON DUPLICATE KEY UPDATE `UsrModif` = 'DatabaseVersioningV1264', DateModif = now();");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO campaignlabel (`campaign`,`LabelId`, `UsrCreated`)");
+        SQLS.append(" SELECT campaign, l.id, 'DatabaseVersioningV1264' from campaigncontent b");
+        SQLS.append("  join label l where b.testbattery = l.Label");
+        SQLS.append("  ON DUPLICATE KEY UPDATE `UsrModif` = 'DatabaseVersioningV1264', DateModif = now();");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ");
+        SQLS.append("('LABELTYPE', 'STICKER', 100, 'Sticker.')");
+        SQLS.append(",('LABELTYPE', 'BATTERY', 200, 'Battery.')");
+        SQLS.append(",('LABELTYPE', 'REQUIREMENT', 300, 'Requirement.')");
+        SQLS.append(",('INVARIANTPRIVATE', 'LABELTYPE', 700, '');");
+        SQLInstruction.add(SQLS.toString());
+
+        // ADD a parameter for the path to store csv file
+        //-- ------------------------ 1269
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` (`system`,`param`, `value`, `description`) VALUES ");
+        SQLS.append("  ('','cerberus_testdatalibcsv_path', '/path/to/csv', 'Default path for the csv file location')");
+        SQLInstruction.add(SQLS.toString());
+
+        // ADD requirement additional data
+        //-- ------------------------ 1270-1271
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `label` ");
+        SQLS.append("ADD COLUMN `ReqType` VARCHAR(100) NOT NULL DEFAULT '' AFTER `ParentLabel`,");
+        SQLS.append("ADD COLUMN `ReqStatus` VARCHAR(100) NOT NULL DEFAULT '' AFTER `ReqType`,");
+        SQLS.append("ADD COLUMN `ReqCriticity` VARCHAR(100) NOT NULL DEFAULT '' AFTER `ReqStatus`,");
+        SQLS.append("ADD COLUMN `LongDesc` TEXT NOT NULL AFTER `Description`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES  ");
+        SQLS.append(" ('REQUIREMENTTYPE', 'Unknown', 100, '')");
+        SQLS.append(",('REQUIREMENTTYPE', 'Ergonomy', 110, '')");
+        SQLS.append(",('REQUIREMENTTYPE', 'Evolutivity', 120, '')");
+        SQLS.append(",('REQUIREMENTTYPE', 'Functional', 130, '')");
+        SQLS.append(",('REQUIREMENTTYPE', 'Internationalization', 140, '')");
+        SQLS.append(",('REQUIREMENTTYPE', 'Legal', 150, '')");
+        SQLS.append(",('REQUIREMENTTYPE', 'Maintenance', 160, '')");
+        SQLS.append(",('REQUIREMENTTYPE', 'Operation', 170, '')");
+        SQLS.append(",('REQUIREMENTTYPE', 'Portability', 180, '')");
+        SQLS.append(",('REQUIREMENTTYPE', 'Performance', 190, '')");
+        SQLS.append(",('REQUIREMENTTYPE', 'Scalability', 200, '')");
+        SQLS.append(",('REQUIREMENTTYPE', 'Security', 210, '')");
+        SQLS.append(",('REQUIREMENTSTATUS', 'Unknown', 100, '')");
+        SQLS.append(",('REQUIREMENTSTATUS', 'Approved', 200, '')");
+        SQLS.append(",('REQUIREMENTSTATUS', 'In Progress', 300, '')");
+        SQLS.append(",('REQUIREMENTSTATUS', 'Verified', 400, '')");
+        SQLS.append(",('REQUIREMENTSTATUS', 'Obsolete', 500, '')");
+        SQLS.append(",('REQUIREMENTCRITICITY', 'Unknown', 100, '')");
+        SQLS.append(",('REQUIREMENTCRITICITY', 'Low', 200, '')");
+        SQLS.append(",('REQUIREMENTCRITICITY', 'Medium', 300, '')");
+        SQLS.append(",('REQUIREMENTCRITICITY', 'High', 400, '')");
+        SQLS.append(",('INVARIANTPUBLIC', 'REQUIREMENTTYPE', '700', '')");
+        SQLS.append(",('INVARIANTPUBLIC', 'REQUIREMENTSTATUS', '750', '')");
+        SQLS.append(",('INVARIANTPUBLIC', 'REQUIREMENTCRITICITY', '800', '');");
+        SQLInstruction.add(SQLS.toString());
+
+        // New updated Documentation.
+        //-- ------------------------ 1272-1273
+        SQLS = new StringBuilder();
         SQLS.append("DELETE FROM `documentation`;");
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
@@ -9555,58 +9645,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('user','Team','','fr','Equipe','Correspond à l\\'équipe de l\\'utilisateur','_management_des_utilisateurs')");
         SQLS.append(",('usergroup','GroupName','','en','Group Name','Authorities are managed by group. In order to be granted to a set of feature, you must belong to the corresponding group.<br>Every user can of course belong to as many group as necessary in order to get access to as many feature as required.<br>In order to get the full access to the system you must belong to every group.<br>Some groups are linked together on the test perimeter and integration perimeter.<br><br><b>Test perimeter :</b><br><br><code class=\\'doc-fixed\\'>TestRO</code>: Has read only access to the information related to test cases and also has access to execution reporting options.<br><br><code class=\\'doc-fixed\\'>Test</code>: Can modify non WORKING test cases but cannot delete test cases.<br><br><code class=\\'doc-fixed\\'>TestAdmin</code>: Can modify or delete any test case (including Pre Testing test cases). Can also create or delete a test.<br><br>The minimum group you need to belong is <code class=\\'doc-fixed\\'>TestRO</code> that will give you access in read only to all test data (including its execution reporting page).<br>If you want to be able to modify the testcases (except the WORKING ones), you need <code class=\\'doc-fixed\\'>Test</code> group on top of <code class=\\'doc-fixed\\'>TestRO</code> group.<br>If you want the full access to all testcase (including beeing able to delete any testcase), you will need <code class=\\'doc-fixed\\'>TestAdmin</code> on top of <code class=\\'doc-fixed\\'>TestRO</code> and <code class=\\'doc-fixed\\'>Test</code> group.<br><br><b>Test Data perimeter :</b><br><br><code class=\\'doc-fixed\\'>TestDataManager</code>: Can modify the test data..<br><br><b>Test Execution perimeter :</b><br><br><code class=\\'doc-fixed\\'>RunTest</code>: Can run both Manual and Automated test cases from GUI.<br><br><b>Integration perimeter :</b><br><br><code class=\\'doc-fixed\\'>IntegratorRO</code>: Has access to the integration status.<br><br><code class=\\'doc-fixed\\'>Integrator</code>: Can add an application. Can change parameters of the environments.<br><br><code class=\\'doc-fixed\\'>IntegratorNewChain</code>: Can register the end of the chain execution. Has read only access to the other informations on the same page.<br><br><code class=\\'doc-fixed\\'>IntegratorDeploy</code>: Can disable or enable environments and register new build / revision.<br><br>The minimum group you need to belong is <code class=\\'doc-fixed\\'>IntegratorRO</code> that will give you access in read only to all environment data.<br>If you want to be able to modify the environment data, you need <code class=\\'doc-fixed\\'>Integrator</code> group on top of <code class=\\'doc-fixed\\'>IntegratorRO</code> group.<br><code class=\\'doc-fixed\\'>IntegratorNewChain</code> and <code class=\\'doc-fixed\\'>IntegratorDeploy</code> are used on top of <code class=\\'doc-fixed\\'>Integrator</code> Group to be able to create a new chain on an environment or perform a deploy operation.<br><br><b>Administration perimeter :</b><br><br><code class=\\'doc-fixed\\'>Administrator</code>: Can create, modify or delete users. Has access to log Event and Database Maintenance. Can change Parameter values.','_user_management')");
         SQLS.append(",('usergroup','GroupName','','fr','Nom du groupe',NULL,'_management_des_utilisateurs')");
-        SQLInstruction.add(SQLS.toString());
-
-        // rename parameters in order to fir standard
-        //-- ------------------------ 1259-1262
-        SQLS = new StringBuilder();
-        SQLS.append("update parameter set param = replace(param, 'integration_', 'cerberus_') where param like 'integration_%';");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("update parameter set param = replace(param, 'jenkins_', 'cerberus_jenkins') where param like 'jenkins_%';");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("update parameter set param = 'cerberus_appium_swipe_duration' where param = 'appium_swipeDuration';");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("update parameter set param = replace(param, 'CI_OK_', 'cerberus_ci_okcoef') where param like 'CI_OK%';");
-        SQLInstruction.add(SQLS.toString());
-
-        // moved Battery to Label
-        //-- ------------------------ 1263-1267
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `label` ADD COLUMN `Type` VARCHAR(45) NOT NULL DEFAULT 'STICKER' AFTER `Label`;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO label (`system`,`Label`,`Type`,`Color`,`ParentLabel`, `Description`, `UsrCreated`)");
-        SQLS.append(" SELECT '', testbattery, 'BATTERY', '#CCCCCC', '', Description, 'DatabaseVersioningV1264' from testbattery");
-        SQLS.append(" ON DUPLICATE KEY UPDATE `UsrModif` = 'DatabaseVersioningV1264', DateModif = now();");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO testcaselabel (`Test`,`TestCase`,`LabelId`, `UsrCreated`)");
-        SQLS.append(" SELECT Test, TestCase, l.id, 'DatabaseVersioningV1264' from testbatterycontent b");
-        SQLS.append("  join label l where b.testbattery = l.Label");
-        SQLS.append("  ON DUPLICATE KEY UPDATE `UsrModif` = 'DatabaseVersioningV1264', DateModif = now();");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO campaignlabel (`campaign`,`LabelId`, `UsrCreated`)");
-        SQLS.append(" SELECT campaign, l.id, 'DatabaseVersioningV1264' from campaigncontent b");
-        SQLS.append("  join label l where b.testbattery = l.Label");
-        SQLS.append("  ON DUPLICATE KEY UPDATE `UsrModif` = 'DatabaseVersioningV1264', DateModif = now();");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ");
-        SQLS.append("('LABELTYPE', 'STICKER', 100, 'Sticker.')");
-        SQLS.append(",('LABELTYPE', 'BATTERY', 200, 'Battery.')");
-        SQLS.append(",('LABELTYPE', 'REQUIREMENT', 300, 'Requirement.')");
-        SQLS.append(",('INVARIANTPRIVATE', 'LABELTYPE', 700, '');");
-        SQLInstruction.add(SQLS.toString());
-        
-        // ADD a parameter for the path to store csv file
-        //-- ------------------------ 1268
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `parameter` (`system`,`param`, `value`, `description`) VALUES ");
-        SQLS.append("  ('','cerberus_testdatalibcsv_path', '/path/to/csv', 'Default path for the csv file location')");
         SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;

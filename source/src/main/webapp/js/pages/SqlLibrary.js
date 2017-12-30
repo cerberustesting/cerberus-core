@@ -20,7 +20,7 @@
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
         initPage();
-        
+
         $('[data-toggle="popover"]').popover({
             'placement': 'auto',
             'container': 'body'}
@@ -38,10 +38,10 @@ function initPage() {
     //clear the modals fields when closed
     $('#editSqlLibraryModal').on('hidden.bs.modal', editEntryModalCloseHandler);
     $('#addSqlLibraryModal').on('hidden.bs.modal', addEntryModalCloseHandler);
-    
+
     // Invariant Combo loading.
     displayInvariantList("database", "PROPERTYDATABASE", false, "", "");
-    
+
     //configure and create the dataTable
     var configurations = new TableConfigurationsServerSide("sqlLibrarysTable", "ReadSqlLibrary", "contentTable", aoColumnsFunc("sqlLibrarysTable"), [1, 'asc']);
     createDataTableWithPermissions(configurations, renderOptionsForSqlLibrary, "#sqlLibraryList", undefined, true);
@@ -311,6 +311,7 @@ function aoColumnsFunc(tableId) {
             "data": null,
             "bSortable": false,
             "bSearchable": false,
+            "sWidth": "50px",
             "title": doc.getDocLabel("page_sqlLibrary", "button_col"),
             "mRender": function (data, type, obj) {
                 var hasPermissions = $("#" + tableId).attr("hasPermissions");
@@ -333,17 +334,39 @@ function aoColumnsFunc(tableId) {
                 }
                 return '<div class="center btn-group width150">' + viewSqlLibrary + '</div>';
 
-            },
-            "width": "50px"
+            }
         },
-        {"data": "name", "sName": "Name", "title": doc.getDocLabel("page_sqlLibrary", "sqlLibrary_col")},
-        {"data": "type", "sName": "Type", "title": doc.getDocLabel("page_sqlLibrary", "type_col")},
-        {"data": "database", "sName": "Database", "title": doc.getDocLabel("page_sqlLibrary", "database_col")},
-        {"data": "script", "sName": "Script", "sWidth": "450px", "title": doc.getDocLabel("page_sqlLibrary", "script_col"),
+        {
+            "data": "name",
+            "sName": "Name",
+            "sWidth": "50px",
+            "title": doc.getDocLabel("page_sqlLibrary", "sqlLibrary_col")
+        },
+        {
+            "data": "type",
+            "sName": "Type",
+            "sWidth": "50px",
+            "title": doc.getDocLabel("page_sqlLibrary", "type_col")},
+        {
+            "data": "database",
+            "sName": "Database",
+            "sWidth": "50px",
+            "title": doc.getDocLabel("page_sqlLibrary", "database_col")},
+        {
+            "data": "script",
+            "sName": "Script",
+            "sWidth": "150px",
+            "title": doc.getDocLabel("page_sqlLibrary", "script_col"),
             "mRender": function (data, type, obj) {
                 return $("<div></div>").append($("<pre name='scriptField' style='height:20px; overflow:hidden; text-overflow:clip; border: 0px; padding:0; margin:0'></pre>").text(obj['script'])).html();
-            }},
-        {"data": "description", "sName": "Description", "title": doc.getDocLabel("page_sqlLibrary", "description_col")}
+            }
+        },
+        {
+            "data": "description",
+            "sName": "Description",
+            "sWidth": "100px",
+            "title": doc.getDocLabel("page_sqlLibrary", "description_col")
+        }
     ];
     return aoColumns;
 }

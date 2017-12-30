@@ -20,7 +20,7 @@
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
         initPage();
-        
+
         $('[data-toggle="popover"]').popover({
             'placement': 'auto',
             'container': 'body'}
@@ -135,9 +135,11 @@ function deleteEntryHandlerClick() {
 function aoColumnsFuncPublic(tableId) {
     var doc = new Doc();
     var aoColumns = [
-        {"data": null,
+        {
+            "data": null,
             "bSortable": false,
             "bSearchable": false,
+            "sWidth": "80px",
             "title": doc.getDocLabel("page_invariant", "button_col"),
             "mRender": function (data, type, obj) {
                 var hasPermissions = $("#" + tableId).attr("hasPermissions");
@@ -158,23 +160,47 @@ function aoColumnsFuncPublic(tableId) {
 
                 return '<div class="center btn-group width150">' + editInvariant + duplicateInvariant + removeInvariant + '</div>';
 
-            },
-            "width": "80px"
+            }
         },
-        {"data": "idName", "sName": "idname", "title": doc.getDocLabel("page_invariant", "idname")},
-        {"data": "value", "sName": "value", "title": doc.getDocLabel("page_invariant", "value")},
-        {"data": "sort", "sName": "sort", "title": doc.getDocLabel("page_invariant", "sort")},
-        {"data": "description", "sName": "description", "title": doc.getDocLabel("page_invariant", "description")},
-        {"data": "veryShortDesc", "sName": "VeryShortDesc", "title": doc.getDocLabel("page_invariant", "veryShortDesc")},
-        {"data": "gp1", "sName": "gp1", "title": doc.getDocLabel("page_invariant", "gp1")},
-        {"data": "gp2", "sName": "gp2", "title": doc.getDocLabel("page_invariant", "gp2")},
-        {"data": "gp3", "sName": "gp3", "title": doc.getDocLabel("page_invariant", "gp3")},
-        {"data": "gp4", "sName": "gp4", "title": doc.getDocLabel("page_invariant", "gp4")},
-        {"data": "gp5", "sName": "gp5", "title": doc.getDocLabel("page_invariant", "gp5")},
-        {"data": "gp6", "sName": "gp6", "title": doc.getDocLabel("page_invariant", "gp6")},
-        {"data": "gp7", "sName": "gp7", "title": doc.getDocLabel("page_invariant", "gp7")},
-        {"data": "gp8", "sName": "gp8", "title": doc.getDocLabel("page_invariant", "gp8")},
-        {"data": "gp9", "sName": "gp9", "title": doc.getDocLabel("page_invariant", "gp9")}
+        {
+            "data": "idName",
+            "sName": "idname",
+            "sWidth": "60px",
+            "title": doc.getDocLabel("page_invariant", "idname")
+        },
+        {
+            "data": "value",
+            "sName": "value",
+            "sWidth": "60px",
+            "title": doc.getDocLabel("page_invariant", "value")
+        },
+        {
+            "data": "sort",
+            "sName": "sort",
+            "sWidth": "60px",
+            "title": doc.getDocLabel("page_invariant", "sort")
+        },
+        {
+            "data": "description",
+            "sName": "description",
+            "sWidth": "100px",
+            "title": doc.getDocLabel("page_invariant", "description")
+        },
+        {
+            "data": "veryShortDesc",
+            "sName": "VeryShortDesc",
+            "sWidth": "60px",
+            "title": doc.getDocLabel("page_invariant", "veryShortDesc")
+        },
+        {"data": "gp1", "sName": "gp1", "sWidth": "60px", "title": doc.getDocLabel("page_invariant", "gp1")},
+        {"data": "gp2", "sName": "gp2", "sWidth": "60px", "title": doc.getDocLabel("page_invariant", "gp2")},
+        {"data": "gp3", "sName": "gp3", "sWidth": "60px", "title": doc.getDocLabel("page_invariant", "gp3")},
+        {"data": "gp4", "sName": "gp4", "sWidth": "60px", "title": doc.getDocLabel("page_invariant", "gp4")},
+        {"data": "gp5", "sName": "gp5", "sWidth": "60px", "title": doc.getDocLabel("page_invariant", "gp5")},
+        {"data": "gp6", "sName": "gp6", "sWidth": "60px", "title": doc.getDocLabel("page_invariant", "gp6")},
+        {"data": "gp7", "sName": "gp7", "sWidth": "60px", "title": doc.getDocLabel("page_invariant", "gp7")},
+        {"data": "gp8", "sName": "gp8", "sWidth": "60px", "title": doc.getDocLabel("page_invariant", "gp8")},
+        {"data": "gp9", "sName": "gp9", "sWidth": "60px", "title": doc.getDocLabel("page_invariant", "gp9")}
     ];
     return aoColumns;
 }
@@ -182,9 +208,11 @@ function aoColumnsFuncPublic(tableId) {
 function aoColumnsFuncPrivate(tableId) {
     var doc = new Doc();
     var aoColumns = [
-        {"data": null,
+        {
+            "data": null,
             "bSortable": false,
             "bSearchable": false,
+            "sWidth": "50px",
             "title": doc.getDocLabel("page_invariant", "button_col"),
             "mRender": function (data, type, obj) {
                 var viewInvariant = '<button id="editInvariant" onclick="openModalInvariant(\'' + obj["idName"] + '\',\'' + obj["value"] + '\', \'EDIT\');"\n\
@@ -194,23 +222,47 @@ function aoColumnsFuncPrivate(tableId) {
 
                 return '<div class="center btn-group width150">' + viewInvariant + '</div>';
 
-            },
-            "width": "50px"
+            }
         },
-        {"data": "idName", "sName": "idname", "title": doc.getDocLabel("page_invariant", "idname")},
-        {"data": "value", "sName": "value", "title": doc.getDocLabel("page_invariant", "value")},
-        {"data": "sort", "sName": "sort", "title": doc.getDocLabel("page_invariant", "sort")},
-        {"data": "description", "sName": "description", "title": doc.getDocLabel("page_invariant", "description")},
-        {"data": "veryShortDesc", "sName": "VeryShortDesc", "title": doc.getDocLabel("page_invariant", "veryShortDesc")},
-        {"data": "gp1", "sName": "gp1", "title": doc.getDocLabel("page_invariant", "gp1")},
-        {"data": "gp2", "sName": "gp2", "title": doc.getDocLabel("page_invariant", "gp2")},
-        {"data": "gp3", "sName": "gp3", "title": doc.getDocLabel("page_invariant", "gp3")},
-        {"data": "gp4", "sName": "gp4", "title": doc.getDocLabel("page_invariant", "gp4")},
-        {"data": "gp5", "sName": "gp5", "title": doc.getDocLabel("page_invariant", "gp5")},
-        {"data": "gp6", "sName": "gp6", "title": doc.getDocLabel("page_invariant", "gp6")},
-        {"data": "gp7", "sName": "gp7", "title": doc.getDocLabel("page_invariant", "gp7")},
-        {"data": "gp8", "sName": "gp8", "title": doc.getDocLabel("page_invariant", "gp8")},
-        {"data": "gp9", "sName": "gp9", "title": doc.getDocLabel("page_invariant", "gp9")}
+        {
+            "data": "idName", 
+            "sName": "idname", 
+            "sWidth": "60px",
+            "title": doc.getDocLabel("page_invariant", "idname")
+        },
+        {
+            "data": "value", 
+            "sName": "value", 
+            "sWidth": "60px",
+            "title": doc.getDocLabel("page_invariant", "value")
+        },
+        {
+            "data": "sort", 
+            "sName": "sort", 
+            "sWidth": "60px",
+            "title": doc.getDocLabel("page_invariant", "sort")
+        },
+        {
+            "data": "description", 
+            "sName": "description", 
+            "sWidth": "100px",
+            "title": doc.getDocLabel("page_invariant", "description")
+        },
+        {
+            "data": "veryShortDesc", 
+            "sName": "VeryShortDesc", 
+            "sWidth": "60px",
+            "title": doc.getDocLabel("page_invariant", "veryShortDesc")
+        },
+        {"data": "gp1", "sName": "gp1", "sWidth": "60px", "title": doc.getDocLabel("page_invariant", "gp1")},
+        {"data": "gp2", "sName": "gp2", "sWidth": "60px", "title": doc.getDocLabel("page_invariant", "gp2")},
+        {"data": "gp3", "sName": "gp3", "sWidth": "60px", "title": doc.getDocLabel("page_invariant", "gp3")},
+        {"data": "gp4", "sName": "gp4", "sWidth": "60px", "title": doc.getDocLabel("page_invariant", "gp4")},
+        {"data": "gp5", "sName": "gp5", "sWidth": "60px", "title": doc.getDocLabel("page_invariant", "gp5")},
+        {"data": "gp6", "sName": "gp6", "sWidth": "60px", "title": doc.getDocLabel("page_invariant", "gp6")},
+        {"data": "gp7", "sName": "gp7", "sWidth": "60px", "title": doc.getDocLabel("page_invariant", "gp7")},
+        {"data": "gp8", "sName": "gp8", "sWidth": "60px", "title": doc.getDocLabel("page_invariant", "gp8")},
+        {"data": "gp9", "sName": "gp9", "sWidth": "60px", "title": doc.getDocLabel("page_invariant", "gp9")}
     ];
     return aoColumns;
 }

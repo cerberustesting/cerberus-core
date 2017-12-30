@@ -56,9 +56,11 @@ function renderOptionsForApplication(data) {
 function aoColumnsFunc(tableId) {
     var doc = new Doc();
     var aoColumns = [
-        {"data": null,
+        {
+            "data": null,
             "bSortable": false,
             "bSearchable": false,
+            "sWidth": "50px",
             "title": doc.getDocLabel("page_parameter", "button_col"),
             "mRender": function (data, type, obj) {
                 var hasPermissions = $("#" + tableId).attr("hasPermissions");
@@ -70,13 +72,32 @@ function aoColumnsFunc(tableId) {
 
                 return '<div class="center btn-group width150">' + editParameter + '</div>';
 
-            },
-            "width": "50px"
+            }
         },
-        {"data": "param", "sName": "par.param", "title": doc.getDocLabel("page_parameter", "parameter_col")},
-        {"data": "value", "sName": "par.value", "title": doc.getDocLabel("page_parameter", "cerberus_col")},
-        {"data": "system1value", "sName": "par1.value", "title": doc.getDocLabel("page_parameter", "system_col") + " (" + getSys() + ")"},
-        {"data": "description", "sName": "par.description", "title": doc.getDocLabel("page_parameter", "description_col")}
+        {
+            "data": "param", 
+            "sName": "par.param", 
+            "sWidth": "100px",
+            "title": doc.getDocLabel("page_parameter", "parameter_col")
+        },
+        {
+            "data": "value", 
+            "sName": "par.value", 
+            "sWidth": "80px",
+            "title": doc.getDocLabel("page_parameter", "cerberus_col")
+        },
+        {
+            "data": "system1value", 
+            "sName": "par1.value", 
+            "sWidth": "80px",
+            "title": doc.getDocLabel("page_parameter", "system_col") + " (" + getSys() + ")"
+        },
+        {
+            "data": "description", 
+            "sName": "par.description", 
+            "sWidth": "200px",
+            "title": doc.getDocLabel("page_parameter", "description_col")
+        }
     ];
     return aoColumns;
 }

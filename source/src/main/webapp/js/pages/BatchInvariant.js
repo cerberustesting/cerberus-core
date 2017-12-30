@@ -199,10 +199,12 @@ function aoColumnsFunc(tableId) {
     var doc = new Doc();
 
     var aoColumns = [
-        {"data": null,
+        {
+            "data": null,
             "title": doc.getDocLabel("page_global", "columnAction"),
             "bSortable": false,
             "bSearchable": false,
+            "sWidth": "50px",
             "mRender": function (data, type, obj) {
                 var hasPermissions = $("#" + tableId).attr("hasPermissions");
 
@@ -224,14 +226,20 @@ function aoColumnsFunc(tableId) {
                 return '<div class="center btn-group width150">' + viewEntry + '</div>';
             }
         },
-        {"data": "batch",
+        {
+            "data": "batch",
             "sName": "batch",
+            "sWidth": "50px",
             "title": doc.getDocOnline("batchinvariant", "Batch")},
-        {"data": "system",
+        {
+            "data": "system",
             "sName": "system",
+            "sWidth": "50px",
             "title": doc.getDocOnline("batchinvariant", "system")},
-        {"data": "description",
+        {
+            "data": "description",
             "sName": "description",
+            "sWidth": "100px",
             "title": doc.getDocOnline("batchinvariant", "Description")}
     ];
     return aoColumns;

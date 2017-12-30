@@ -37,6 +37,12 @@ function initPage() {
     $('#addLabelModal').on('hidden.bs.modal', addEntryModalCloseHandler);
     $('#editLabelModal').on('hidden.bs.modal', editEntryModalCloseHandler);
 
+    $('#editLabelModal #editLabelModalForm #type').on('change', showHideRequirementPanel);
+
+    tinymce.init({
+        selector: ".wysiwyg"
+    });
+
     //configure and create the dataTable
     var configurations = new TableConfigurationsServerSide("labelsTable", "ReadLabel?system1=" + getUser().defaultSystem, "contentTable", aoColumnsFunc("labelsTable"), [2, 'asc']);
     createDataTableWithPermissions(configurations, renderOptionsForLabel, "#labelList", undefined, true);
@@ -59,6 +65,10 @@ function displayPageLabel() {
     $("[name='descriptionField']").html(doc.getDocOnline("label", "description"));
     $("[name='colorField']").html(doc.getDocOnline("label", "color"));
     $("[name='typeField']").html(doc.getDocOnline("label", "type"));
+    $("[name='reqtypeField']").html(doc.getDocOnline("label", "reqtype"));
+    $("[name='reqstatusField']").html(doc.getDocOnline("label", "reqstatus"));
+    $("[name='reqcriticityField']").html(doc.getDocOnline("label", "reqcriticity"));
+    $("[name='longdescField']").html(doc.getDocOnline("label", "longdesc"));
     $("[name='parentLabelField']").html(doc.getDocOnline("label", "parentid"));
     $("[name='parentLabel']").attr("readonly", "readonly");
 
@@ -67,6 +77,9 @@ function displayPageLabel() {
 
     displayInvariantList("system", "SYSTEM", false, '', '');
     displayInvariantList("type", "LABELTYPE", false);
+    displayInvariantList("reqtype", "REQUIREMENTTYPE", false);
+    displayInvariantList("reqstatus", "REQUIREMENTSTATUS", false);
+    displayInvariantList("reqcriticity", "REQUIREMENTCRITICITY", false);
     displayFooter(doc);
 }
 
@@ -82,6 +95,16 @@ function renderOptionsForLabel(data) {
             $('#labelList #createLabelButton').click(addEntryClick);
         }
     }
+}
+
+function showHideRequirementPanel() {
+
+    if ($('#editLabelModal #editLabelModalForm #type').val() === "REQUIREMENT") {
+        $("#panelReq").show();
+    } else {
+        $("#panelReq").hide();
+    }
+
 }
 
 function deleteEntryHandlerClick() {
@@ -107,12 +130,13 @@ function deleteEntryHandlerClick() {
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
-function deleteEntryClick(id) {
+function deleteEntryClick(id, label) {
     clearResponseMessageMainPage();
     var doc = new Doc();
-    var messageComplete = doc.getDocLabel("page_label", "message_delete");
-    messageComplete = messageComplete.replace("%ENTRY%", id);
-    showModalConfirmation(deleteEntryHandlerClick, undefined, doc.getDocLabel("page_label", "button_delete"), messageComplete, id, "", "", "");
+    var messageComplete = doc.getDocLabel("page_global", "message_delete");
+    messageComplete = messageComplete.replace("%ENTRY%", id + " - " + label);
+    messageComplete = messageComplete.replace("%TABLE%", " label ");
+    showModalConfirmation(deleteEntryHandlerClick, undefined, doc.getDocLabel("page_label", "btn_delete"), messageComplete, id, "", "", "");
 }
 
 function addEntryModalSaveHandler() {
@@ -179,6 +203,7 @@ function addEntryClick() {
 function editEntryModalSaveHandler() {
     clearResponseMessage($('#editLabelModal'));
     var formEdit = $('#editLabelModal #editLabelModalForm');
+    tinyMCE.triggerSave();
 
     // Get the header data from the form.
     var data = convertSerialToJSONObject(formEdit.serialize());
@@ -194,6 +219,10 @@ function editEntryModalSaveHandler() {
             parentLabel: data.parentLabel,
             system: data.system,
             type: data.type,
+            longdesc: data.longdesc,
+            reqtype: data.reqtype,
+            reqstatus: data.reqstatus,
+            reqcriticity: data.reqcriticity,
             description: data.description},
         success: function (data) {
             hideLoaderInModal('#editLabelModal');
@@ -234,7 +263,13 @@ function editEntryClick(id, system) {
         formEdit.find("#type").prop("value", obj["type"]);
         formEdit.find("#parentLabel").prop("value", obj["parentLabel"]);
         formEdit.find("#description").prop("value", obj["description"]);
+        formEdit.find("#longdesc").prop("value", obj["longDesc"]);
+        formEdit.find("#reqtype").prop("value", obj["reqType"]);
+        formEdit.find("#reqstatus").prop("value", obj["reqStatus"]);
+        formEdit.find("#reqcriticity").prop("value", obj["reqCriticity"]);
         formEdit.find("#system").prop("value", obj["system"]);
+        if (tinyMCE.get('longdesc') != null)
+            tinyMCE.get('longdesc').setContent(obj["longDesc"]);
 
         if (!(data["hasPermissions"])) { // If readonly, we only readonly all fields
             formEdit.find("#label").prop("readonly", "readonly");
@@ -251,6 +286,8 @@ function editEntryClick(id, system) {
         $("[name='colorDiv']").colorpicker();
         $("[name='colorDiv']").colorpicker('setValue', obj["color"]);
 
+        showHideRequirementPanel();
+
         formEdit.modal('show');
     });
 
@@ -263,6 +300,7 @@ function aoColumnsFunc(tableId) {
             "title": doc.getDocLabel("page_global", "columnAction"),
             "bSortable": false,
             "bSearchable": false,
+            "sWidth": "50px",
             "mRender": function (data, type, obj) {
                 var hasPermissions = $("#" + tableId).attr("hasPermissions");
 
@@ -274,7 +312,7 @@ function aoColumnsFunc(tableId) {
                                     class="editLabel btn btn-default btn-xs margin-right5" \n\
                                     name="editLabel" title="' + doc.getDocLabel("page_label", "btn_view") + '" type="button">\n\
                                     <span class="glyphicon glyphicon-eye-open"></span></button>';
-                var deleteLabel = '<button id="deleteLabel" onclick="deleteEntryClick(\'' + obj["id"] + '\');" \n\
+                var deleteLabel = '<button id="deleteLabel" onclick="deleteEntryClick(\'' + obj["id"] + '\',\'' + obj["label"] + '\');" \n\
                                     class="deleteLabel btn btn-default btn-xs margin-right5" \n\
                                     name="deleteLabel" title="' + doc.getDocLabel("page_label", "btn_delete") + '" type="button">\n\
                                     <span class="glyphicon glyphicon-trash"></span></button>';
@@ -284,19 +322,28 @@ function aoColumnsFunc(tableId) {
                 return '<div class="center btn-group width150">' + viewLabel + '</div>';
             }
         },
+        {"data": "id",
+            "sWidth": "30px",
+            "sName": "id",
+            "title": doc.getDocOnline("label", "id")},
         {"data": "system",
+            "sWidth": "50px",
             "sName": "system",
             "title": doc.getDocOnline("label", "system")},
         {"data": "label",
+            "sWidth": "50px",
             "sName": "label",
             "title": doc.getDocOnline("label", "label")},
         {"data": "type",
+            "sWidth": "50px",
             "sName": "type",
             "title": doc.getDocOnline("label", "type")},
         {"data": "color",
+            "sWidth": "30px",
             "sName": "color",
             "title": doc.getDocOnline("label", "color")},
         {"data": "display",
+            "sWidth": "80px",
             "sName": "display",
             "title": doc.getDocOnline("page_label", "display"),
             "bSortable": false,
@@ -306,11 +353,47 @@ function aoColumnsFunc(tableId) {
             }
         },
         {"data": "parentLabel",
+            "sWidth": "50px",
             "sName": "parentLabel",
             "title": doc.getDocOnline("label", "parentid")},
+        {"data": "reqType",
+            "sWidth": "30px",
+            "sName": "reqType",
+            "title": doc.getDocOnline("label", "reqtype")},
+        {"data": "reqStatus",
+            "sWidth": "30px",
+            "sName": "reqStatus",
+            "title": doc.getDocOnline("label", "reqstatus")},
+        {"data": "reqCriticity",
+            "sWidth": "30px",
+            "sName": "reqCriticity",
+            "title": doc.getDocOnline("label", "reqcriticity")},
+        {"data": "longDesc",
+            "sWidth": "100px",
+            "sName": "longDesc",
+            "title": doc.getDocOnline("label", "longdesc")},
         {"data": "description",
+            "sWidth": "100px",
             "sName": "description",
-            "title": doc.getDocOnline("label", "description")}
+            "title": doc.getDocOnline("label", "description")},
+        {"data": "usrCreated",
+            "sWidth": "30px",
+            "sName": "usrCreated",
+            "title": doc.getDocOnline("transversal", "UsrCreated")},
+        {"data": "dateCreated",
+            "sWidth": "80px",
+            "sName": "dateCreated",
+            "title": doc.getDocOnline("transversal", "DateCreated")},
+        {"data": "usrModif",
+            "sWidth": "30px",
+            "sName": "usrModif",
+            "title": doc.getDocOnline("transversal", "UsrModif")
+        },
+        {"data": "dateModif",
+            "sWidth": "80px",
+            "sName": "dateModif",
+            "title": doc.getDocOnline("transversal", "DateModif")
+        }
 
     ];
     return aoColumns;

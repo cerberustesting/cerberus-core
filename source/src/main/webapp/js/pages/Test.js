@@ -199,6 +199,7 @@ function aoColumnsFunc() {
     var aoColumns = [
         {
             "data": null,
+            "sWidth": "50px",
             "bSortable": false,
             "bSearchable": false,
             "title": doc.getDocOnline("page_global", "columnAction"),
@@ -230,28 +231,33 @@ function aoColumnsFunc() {
         {
             "data": "test",
             "sName": "test",
+            "sWidth": "80px",
             "title": doc.getDocOnline("test", "Test")
         },
         {
             "data": "description",
             "sName": "description",
+            "sWidth": "100px",
             "title": doc.getDocOnline("test", "Description")
         },
         {
             "data": "active",
             "sName": "active",
+            "sWidth": "30px",
             "title": doc.getDocOnline("test", "Active"),
             "className": "center"
         },
         {
             "data": "automated",
             "sName": "automated",
+            "sWidth": "30px",
             "title": doc.getDocOnline("test", "Automated"),
             "className": "center"
         },
         {
             "data": "tDateCrea",
             "sName": "tdatecrea",
+            "sWidth": "80px",
             "title": doc.getDocOnline("test", "dateCreation")
         }
     ];

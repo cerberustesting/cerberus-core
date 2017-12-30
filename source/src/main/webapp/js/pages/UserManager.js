@@ -527,6 +527,7 @@ function aoColumnsFunc(tableId) {
             "data": null,
             "bSortable": false,
             "bSearchable": false,
+            "sWidth": "80px",
             "title": doc.getDocLabel("page_user", "button_col"),
             "mRender": function (data, type, obj) {
                 var hasPermissions = $("#" + tableId).attr("hasPermissions");
@@ -549,12 +550,23 @@ function aoColumnsFunc(tableId) {
             },
             "width": "100px"
         },
-        {"data": "login", "sName": "login", "title": doc.getDocLabel("page_user", "login_col")},
-        {"data": "name", "sName": "name", "title": doc.getDocLabel("page_user", "name_col")},
+        {
+            "data": "login", 
+            "sName": "login", 
+            "sWidth": "50px",
+            "title": doc.getDocLabel("page_user", "login_col")
+        },
+        {
+            "data": "name", 
+            "sName": "name", 
+            "sWidth": "80px",
+            "title": doc.getDocLabel("page_user", "name_col")
+        },
         {
             "data": null,
             "bSortable": false,
             "bSearchable": false,
+            "sWidth": "100px",
             "title": doc.getDocLabel("page_user", "groups_col"),
             "mRender": function (data, type, obj) {
                 var systems = "";
@@ -573,6 +585,7 @@ function aoColumnsFunc(tableId) {
             "data": null,
             "bSortable": false,
             "bSearchable": false,
+            "sWidth": "100px",
             "title": doc.getDocLabel("page_user", "systems_col"),
             "mRender": function (data, type, obj) {
                 var systems = "";
@@ -587,10 +600,30 @@ function aoColumnsFunc(tableId) {
 
             }
         },
-        {"data": "team", "sName": "team", "title": doc.getDocLabel("page_user", "team_col")},
-        {"data": "defaultSystem", "sName": "defaultSystem", "title": doc.getDocLabel("page_user", "defaultsystem_col")},
-        {"data": "request", "sName": "reqest", "title": doc.getDocLabel("page_user", "request_col")},
-        {"data": "email", "sName": "email", "title": doc.getDocLabel("page_user", "email_col")}
+        {
+            "data": "team", 
+            "sName": "team", 
+            "sWidth": "50px",
+            "title": doc.getDocLabel("page_user", "team_col")
+        },
+        {
+            "data": "defaultSystem", 
+            "sName": "defaultSystem", 
+            "sWidth": "50px",
+            "title": doc.getDocLabel("page_user", "defaultsystem_col")
+        },
+        {
+            "data": "request", 
+            "sName": "reqest", 
+            "sWidth": "50px",
+            "title": doc.getDocLabel("page_user", "request_col")
+        },
+        {
+            "data": "email", 
+            "sName": "email", 
+            "sWidth": "80px",
+            "title": doc.getDocLabel("page_user", "email_col")
+        }
     ];
     return aoColumns;
 }
