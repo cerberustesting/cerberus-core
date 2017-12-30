@@ -114,7 +114,9 @@ function displayInvariantList(selectName, idName, forceReload, defaultValue, add
                 sessionStorage.setItem(cacheEntryName, JSON.stringify(data));
                 for (var index = 0; index < list.length; index++) {
                     var item = list[index].value;
-                    var desc = list[index].value + " - " + list[index].description;
+                    var desc = list[index].value;
+                    if (!isEmpty(list[index].description))
+                        desc += " - " + list[index].description;
 
                     $("[name='" + selectName + "']").append($('<option></option>').text(desc).val(item));
                 }

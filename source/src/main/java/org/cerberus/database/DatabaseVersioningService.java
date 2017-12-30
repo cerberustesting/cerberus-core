@@ -7544,6 +7544,15 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // New updated Documentation.
         //-- ------------------------ 1272-1273
         SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+
+        // New updated Documentation.
+        //-- ------------------------ 1274-1275
+        SQLS = new StringBuilder();
         SQLS.append("DELETE FROM `documentation`;");
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
@@ -7798,10 +7807,20 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('label','id','','fr','ID','',NULL)");
         SQLS.append(",('label','label','','en','Label','<p>This value is the label attached to testcase for the purpose of identification or to give other information.</p>',NULL)");
         SQLS.append(",('label','label','','fr','Label','<p>Cette valeur représente le label qui sera attaché au testcase à des fins d\\'identification ou de regroupement.</p>',NULL)");
+        SQLS.append(",('label','longdesc','','en','Long Description','',NULL)");
+        SQLS.append(",('label','longdesc','','fr','Description Longue','',NULL)");
         SQLS.append(",('label','parentid','','en','Parent LabelID','<p>This value represent the labelID of the parent label. This allow to group or create hierachy in label</p>',NULL)");
         SQLS.append(",('label','parentid','','fr','ID du label parent','<p>Cette valeur est l\\'ID du label parent. Cela permet de grouper ou de créer une hiérarchie au sein des labels</p>',NULL)");
+        SQLS.append(",('label','reqcriticity','','en','Criticity','',NULL)");
+        SQLS.append(",('label','reqcriticity','','fr','Criticité','',NULL)");
+        SQLS.append(",('label','reqstatus','','en','Status','',NULL)");
+        SQLS.append(",('label','reqstatus','','fr','Status','',NULL)");
+        SQLS.append(",('label','reqtype','','en','Requirement Type','',NULL)");
+        SQLS.append(",('label','reqtype','','fr','Type d\\'Exigeance','',NULL)");
         SQLS.append(",('label','system','','en','System','',NULL)");
         SQLS.append(",('label','system','','fr','Système','',NULL)");
+        SQLS.append(",('label','type','','en','Type','<p>This field is the type of label. Labels can be STICKER, REQUIREMENT and BATTERY.</p><p>STICKER: Appears in testcase list page and also Reporting By Tag page.</p><p>BATTERY: Will only appear in testcase list page. You can use that type of label is you want to group your testcases in a hidden mode.',NULL)");
+        SQLS.append(",('label','type','','fr','Type','<p>Correspond au type de Label. Prend une des valeurs : STICKER, REQUIREMENT et BATTERY.</p><p>STICKER: Apparait dans la liste des cas de tests mais aussi dans la page de Reporting By Tag.</p><p>BATTERY: N\\'apparait que dans la liste des cas des tests. Ce type est à utiliser pour grouper des cas de t',NULL)");
         SQLS.append(",('logevent','action','','en','Action','Type of the action performed',NULL)");
         SQLS.append(",('logevent','action','','fr','Action','Type de l\\'action effetué',NULL)");
         SQLS.append(",('logevent','localip','','en','Local IP','IP of the Cerberus server that provided the service.',NULL)");
@@ -8420,11 +8439,11 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_invariant','message_remove','','fr','Etes vous sûrs?','',NULL)");
         SQLS.append(",('page_invariant','private','','en','Private','',NULL)");
         SQLS.append(",('page_invariant','private','','fr','Privés','',NULL)");
-        SQLS.append(",('page_invariant','private_invariant','','en','Private InvariantS','',NULL)");
+        SQLS.append(",('page_invariant','private_invariant','','en','Private Invariants','',NULL)");
         SQLS.append(",('page_invariant','private_invariant','','fr','Invariants privés','',NULL)");
         SQLS.append(",('page_invariant','public','','en','Public','',NULL)");
         SQLS.append(",('page_invariant','public','','fr','Publiques','',NULL)");
-        SQLS.append(",('page_invariant','public_invariant','','en','Public InvariantS','',NULL)");
+        SQLS.append(",('page_invariant','public_invariant','','en','Public Invariants','',NULL)");
         SQLS.append(",('page_invariant','public_invariant','','fr','Invariants publiques','',NULL)");
         SQLS.append(",('page_invariant','sort','','en','Sort','',NULL)");
         SQLS.append(",('page_invariant','sort','','fr','Tri','',NULL)");
@@ -8444,8 +8463,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_label','btn_view','','fr','Voir le Label','',NULL)");
         SQLS.append(",('page_label','display','','en','Display','Display the generated label from the label and the color defined',NULL)");
         SQLS.append(",('page_label','display','','fr','Affichage','Affiche le label généré à partir du label et de la couleur définis',NULL)");
-        SQLS.append(",('page_label','table_label','','en','Label List',NULL,NULL)");
-        SQLS.append(",('page_label','table_label','','fr','Liste de Labels',NULL,NULL)");
+        SQLS.append(",('page_label','table_label','','en','Label List','',NULL)");
+        SQLS.append(",('page_label','table_label','','fr','Liste de Labels','',NULL)");
         SQLS.append(",('page_label','title','','en','LABEL','This page can be used in order to manage the labels.','_label')");
         SQLS.append(",('page_label','title','','fr','LABEL','Cette page permet de gérer et créer des labels.','_label')");
         SQLS.append(",('page_logviewer','button_view','','en','Log entry detail','',NULL)");
