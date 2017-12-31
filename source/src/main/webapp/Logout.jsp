@@ -28,15 +28,18 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
-        <link rel="stylesheet" type="text/css" href="css/crb_style.css">
-        
+        <link rel="stylesheet" type="text/css" href="css/global/crb_style.css">
+
         <link rel="icon" type="image/png" href="images/favicon.ico.png"><!-- Major Browsers -->
         <!--[if IE]><link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico"/><![endif]--><!-- Internet Explorer-->
-        
+
         <script type='text/javascript' src='js/pages/Logout.js'></script>
         <META HTTP-EQUIV="refresh" CONTENT="1;URL=Login.jsp">
         <script type="text/javascript">
-            EnvTuning("<%=System.getProperty("org.cerberus.environment")%>");
+            var myenv = "<%=System.getProperty("org.cerberus.environment")%>";
+            if ((myenv !== "prd") && (myenv !== "prod") && (myenv !== "PROD")) {
+                document.body.style.background = "#FFFFCC";
+            }
         </script>
         <title>Logout</title>
     </head>
