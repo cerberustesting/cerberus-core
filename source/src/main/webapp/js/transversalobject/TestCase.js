@@ -367,7 +367,8 @@ function confirmTestCaseModalHandler(mode) {
         url: myServlet,
         async: true,
         method: "POST",
-        data: {test: data.test,
+        data: {
+            test: data.test,
             testCase: data.testCase,
             originalTest: data.originalTest,
             originalTestCase: data.originalTestCase,

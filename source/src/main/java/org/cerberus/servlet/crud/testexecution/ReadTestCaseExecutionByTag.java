@@ -273,20 +273,28 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         for (TestCaseExecution testCaseExecution : testCaseExecutions) {
             try {
                 String controlStatus = testCaseExecution.getControlStatus();
+
+                // We check is Country and status is inside the fitered values.
                 if (statusFilter.get(controlStatus).equals("on") && countryFilter.get(testCaseExecution.getCountry()).equals("on")) {
 
-                    JSONObject execution = testCaseExecutionToJSONObject(testCaseExecution);
+                    JSONObject executionJSON = testCaseExecutionToJSONObject(testCaseExecution);
                     String execKey = testCaseExecution.getEnvironment() + " " + testCaseExecution.getCountry() + " " + testCaseExecution.getBrowser();
                     String testCaseKey = testCaseExecution.getTest() + "_" + testCaseExecution.getTestCase();
                     JSONObject execTab = new JSONObject();
                     JSONObject ttcObject = new JSONObject();
 
                     if (ttc.containsKey(testCaseKey)) {
+                        // We add an execution entry into the testcase line.
                         ttcObject = ttc.get(testCaseKey);
                         execTab = ttcObject.getJSONObject("execTab");
-                        execTab.put(execKey, execution);
+                        execTab.put(execKey, executionJSON);
                         ttcObject.put("execTab", execTab);
+                        Integer toto = (Integer) ttcObject.get("NbExecutionsTotal");
+                        toto += testCaseExecution.getNbExecutions() - 1;
+                        ttcObject.put("NbExecutionsTotal", toto);
+
                     } else {
+                        // We add a new testcase entry (with The current execution).
                         ttcObject.put("test", testCaseExecution.getTest());
                         ttcObject.put("testCase", testCaseExecution.getTestCase());
                         ttcObject.put("shortDesc", testCaseExecution.getDescription());
@@ -311,7 +319,10 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                         // Flag that report if test case still exist.
                         ttcObject.put("testExist", testExist);
 
-                        execTab.put(execKey, execution);
+                        // Adding nb of execution on retry.
+                        ttcObject.put("NbExecutionsTotal", (testCaseExecution.getNbExecutions() - 1));
+
+                        execTab.put(execKey, executionJSON);
                         ttcObject.put("execTab", execTab);
 
                         /**
@@ -613,7 +624,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         JSONObject jsonResult = new JSONObject();
         boolean stickers = request.getParameter("stickers") != null;
         boolean requirement = request.getParameter("requirement") != null;
-        
+
         if (stickers || requirement) {
 
             testCaseLabelService = appContext.getBean(ITestCaseLabelService.class);

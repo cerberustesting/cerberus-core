@@ -872,7 +872,7 @@ function showMessage(obj, dialog) {
 
 /**
  * Method that allows us to append a message in an already existing alert.
- * @param {type} obj  - object containing the message and the message type
+ * @param {object} obj  - object containing the message and the message type
  * @param {type} dialog - dialog where the message should be displayed; if null then the message
  * is displayed in the main page.
  */
@@ -887,9 +887,10 @@ function appendMessage(obj, dialog) {
 
 /***
  * Shows a message in the main page. The area is defined in the header.jsp
- * @param {type} type - type of message: success, info, ...
- * @param {type} message - message to show
- * @param {boolean} silentMode - if true, message is not displayed if OK.
+ * @param {String} type - type of message: success, info, error, warning, ...
+ * @param {String} message - message to show
+ * @param {boolean} silentMode - if true, message is not displayed if OK (default is false).
+ * @param {integer} waitinMs - delay that the modal will stay visible in ms (default is automaticly calculated).
  */
 function showMessageMainPage(type, message, silentMode, waitinMs) {
     if (isEmpty(silentMode)) {
@@ -905,13 +906,26 @@ function showMessageMainPage(type, message, silentMode, waitinMs) {
             waitinMs = 5000;
         }
     }
+    // Only display if not success in silent mode.
     if (!((type === "success") && (silentMode))) {
+        // We stop the previous delayed slide up (if any) and hide the alert.
+        $("#mainAlert").stop();
+        $("#mainAlert").slideUp(10);
+
+        // We feed the new content and disply the alert.
+        $("#mainAlert").removeClass("alert-success");
+        $("#mainAlert").removeClass("alert-error");
+        $("#mainAlert").removeClass("alert-info");
+        $("#mainAlert").removeClass("alert-warning");
         $("#mainAlert").addClass("alert-" + type);
         $("#alertDescription").html(message);
-        $("#mainAlert").fadeIn();
-        $("#mainAlert").fadeTo(waitinMs, 500).slideUp(500, function () {
+        $("#mainAlert").slideDown(10);
+
+        // We slowly hide it after waitinMs ms delay.
+        $("#mainAlert").fadeTo(waitinMs, 1, function () {
             $("#mainAlert").slideUp(500);
         });
+
     }
 }
 

@@ -1106,8 +1106,8 @@ function massAction_copyQueue() {
 
 function aoColumnsFunc(Columns) {
     var doc = new Doc();
-    var colLen = Columns.length;
-    var nbColumn = colLen + 5;
+    var colNb = Columns.length;
+    var nbColumn = colNb + 5;
     var testCaseInfoWidth = (1 / 6) * 30;
     var testExecWidth = (1 / nbColumn) * 70;
     var tag = $('#selectTag').val();
@@ -1116,14 +1116,16 @@ function aoColumnsFunc(Columns) {
         {
             "data": "test",
             "sName": "tec.test",
-            "sWidth": testCaseInfoWidth + "%",
+//            "sWidth": testCaseInfoWidth + "%",
+            "sWidth": "80px",
             "title": doc.getDocOnline("test", "Test"),
             "sClass": "bold"
         },
         {
             "data": "testCase",
             "sName": "tec.testCase",
-            "sWidth": testCaseInfoWidth + "%",
+            "sWidth": "60px",
+//            "sWidth": testCaseInfoWidth + "%",
             "title": doc.getDocOnline("testcase", "TestCase"),
             "mRender": function (data, type, obj, meta) {
                 var result = "<a href='./TestCaseScript.jsp?test=" + encodeURIComponent(obj.test) + "&testcase=" + encodeURIComponent(obj.testCase) + "'>" + obj.testCase + "</a>";
@@ -1142,18 +1144,20 @@ function aoColumnsFunc(Columns) {
         {
             "data": "application",
             "sName": "app.application",
-            "sWidth": testCaseInfoWidth + "%",
+            "sWidth": "60px",
+//            "sWidth": testCaseInfoWidth + "%",
             "title": doc.getDocOnline("application", "Application")
         }
     ];
-    for (var i = 0; i < colLen; i++) {
+    for (var i = 0; i < colNb; i++) {
         var title = Columns[i].environment + " " + Columns[i].country + " " + Columns[i].browser;
 
         var col = {
             "title": title,
             "bSortable": true,
             "bSearchable": true,
-            "sWidth": testExecWidth + "%",
+//            "sWidth": testExecWidth + "%",
+            "sWidth": "40px",
             "data": function (row, type, val, meta) {
                 var dataTitle = meta.settings.aoColumns[meta.col].sTitle;
                 if (row.hasOwnProperty("execTab") && row["execTab"].hasOwnProperty(dataTitle)) {
@@ -1210,7 +1214,8 @@ function aoColumnsFunc(Columns) {
                 "data": "priority",
                 "sName": "tec.priority",
                 "sClass": "priority",
-                "sWidth": testCaseInfoWidth + "%",
+                "sWidth": "20px",
+//                "sWidth": testCaseInfoWidth + "%",
                 "title": doc.getDocOnline("invariant", "PRIORITY")
             };
     aoColumns.push(col);
@@ -1219,7 +1224,8 @@ function aoColumnsFunc(Columns) {
                 "data": "comment",
                 "sName": "tec.comment",
                 "sClass": "comment",
-                "sWidth": testCaseInfoWidth + "%",
+                "sWidth": "60px",
+//                "sWidth": testCaseInfoWidth + "%",
                 "title": doc.getDocOnline("testcase", "Comment")
             };
     aoColumns.push(col);
@@ -1236,8 +1242,19 @@ function aoColumnsFunc(Columns) {
                 },
                 "sName": "tec.bugId",
                 "sClass": "bugid",
-                "sWidth": testCaseInfoWidth + "%",
+                "sWidth": "40px",
+//                "sWidth": testCaseInfoWidth + "%",
                 "title": doc.getDocOnline("testcase", "BugID")
+            };
+    aoColumns.push(col);
+    
+    var col =
+            {
+                "data": "NbExecutionsTotal",
+                "sName": "NbExecutionsTotal",
+                "sClass": "NbExecutionsTotal",
+                "sWidth": "40px",
+                "title": "Total nb of Retries"
             };
     aoColumns.push(col);
 

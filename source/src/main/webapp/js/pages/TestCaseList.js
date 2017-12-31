@@ -384,7 +384,7 @@ function setActive(checkbox) {
     $.ajax({
         url: "UpdateTestCase",
         method: "POST",
-        data: {test: test, testCase: testCase, active: active},
+        data: {test: test, testCase: testCase, originalTest: test, originalTestCase: testCase, active: active},
         dataType: "json",
         success: function (data) {
             if (active === "Y") {
