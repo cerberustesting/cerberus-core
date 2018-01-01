@@ -36,15 +36,13 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
         <script type='text/javascript' src='js/pages/Login.js'></script>
-        <script type="text/javascript">
-            var myenv = "<%=System.getProperty("org.cerberus.environment")%>";
-            if ((myenv !== "prd") && (myenv !== "prod") && (myenv !== "PROD")) {
-                document.body.style.background = "#FFFFCC";
-            }
-        </script>
+        <script type='text/javascript' src='js/global/global.js'></script>
         <title>Login</title>
     </head>
     <body style="background-color: #fff">
+        <script type="text/javascript">
+            envTuning("<%=System.getProperty("org.cerberus.environment")%>");
+        </script>
 
         <%
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());

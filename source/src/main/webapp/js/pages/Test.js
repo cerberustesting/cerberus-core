@@ -199,7 +199,7 @@ function aoColumnsFunc() {
     var aoColumns = [
         {
             "data": null,
-            "sWidth": "50px",
+            "sWidth": "70px",
             "bSortable": false,
             "bSearchable": false,
             "title": doc.getDocOnline("page_global", "columnAction"),

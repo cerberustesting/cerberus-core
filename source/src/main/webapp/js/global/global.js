@@ -1763,11 +1763,21 @@ function displayFooter(doc) {
     footerBugString = footerBugString.replace("%LINK%", "https://github.com/vertigo17/Cerberus/issues/new?body=Cerberus%20Version%20:%20" + cerberusInformation.projectVersion + "-" + cerberusInformation.databaseCerberusTargetVersion);
     $("#footer").html(footerString + " - " + footerBugString);
 
+    // Tune the page layout to the environment where Cerberus is running.
+    envTuning(cerberusInformation.environment);
+
+}
+
+/**
+ * Change the page layout in order to show that we are in production or not.
+ * @param {String} myenv
+ * @returns {void}
+ */
+function envTuning(myenv) {
     // Background color is light yellow if the environment is not production.
-    if ((cerberusInformation.environment !== "prd") && (cerberusInformation.environment !== "prod") && (cerberusInformation.environment !== "PROD")) {
+    if ((myenv !== "prd") && (myenv !== "prod") && (myenv !== "PROD")) {
         document.body.style.background = "#FFFFCC";
     }
-
 }
 
 /**

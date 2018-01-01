@@ -74,27 +74,36 @@
                         <div class="center marginTop25 tab-pane fade" id="tabJobStatus">
                             <div class='marginBottom10'>
                                 <button type="button" class="btn btn-default" style="margin-left: 10px;" id="refreshJobStatusbutton" onclick="displayAndRefresh_jobStatus()"><span class="glyphicon glyphicon-refresh"></span> Refresh</button>
-                                <button type="button" class="btn btn-default" style="margin-left: 10px;" id="refreshForceExebutton" onclick="forceExecution()"><span class="glyphicon glyphicon-play"></span> Force Execution</button>
                             </div>
-                            <div class="row">
-                                <div class="form-group col-xs-6">
-                                    <label for="jobRunning" name="jobRunningField">Job Status</label>
-                                    <input type="text" class="form-control" name="jobRunning" id="jobRunning" aria-describedby="basic-addon1" readonly>
+                            <div class="panel panel-default" id="QueueJobStatus" style="padding:10px;background-color: #fafafa;">
+                                <div class="row">
+                                    <div class="form-group col-sm-6">
+                                        <label for="jobRunning" name="jobRunningField">Is Queue Job currently running ?</label>
+                                        <input type="text" class="form-control" name="jobRunning" id="jobRunning" aria-describedby="basic-addon1" readonly>
+                                    </div>
+                                    <div class="form-group col-sm-6">
+                                        <label for="jobStart" name="jobStartField">Last Queue Job start</label>
+                                        <input type="text" class="form-control" name="jobStart" id="jobStart" aria-describedby="basic-addon1" readonly>
+                                    </div>
                                 </div>
-                                <div class="form-group col-xs-6">
-                                    <label for="jobStart" name="jobStartField">Job Start</label>
-                                    <input type="text" class="form-control" name="jobStart" id="jobStart" aria-describedby="basic-addon1" readonly>
+                                <div class="row">
+                                    <div class="form-group col-sm-12">
+                                        <button type="button" class="btn btn-default" style="margin-left: 10px;" id="refreshForceExebutton" onclick="forceExecution()"><span class="glyphicon glyphicon-play"></span> Force Execution</button>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="form-group col-xs-6">
-                                    <label for="jobActive" name="jobActiveField">Job Activated</label>
-                                    <input type="text" class="form-control" name="jobActive" id="jobActive" aria-describedby="basic-addon1" readonly>
+
+                            <div class="panel panel-default"  id="QueueJobActive" style="padding:10px;background-color: #fafafa;">
+                                <div class="row">
+                                    <div class="form-group col-sm-6">
+                                        <label for="jobActive" name="jobActiveField">Job Activated</label>
+                                        <input type="text" class="form-control" name="jobActive" id="jobActive" aria-describedby="basic-addon1" readonly>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="form-group col-xs-6">
-                                    <button type="button" class="btn btn-default" style="margin-left: 10px;" id="modifyParambutton" onclick="enableDisableJob();"><span class="glyphicon glyphicon-play"></span> <span class="glyphicon glyphicon-pause"></span> Modify Parameter in order to Activate / Desactivate Queue Job</button>
+                                <div class="row">
+                                    <div class="form-group col-sm-6">
+                                        <button type="button" class="btn btn-default" style="margin-left: 10px;" id="modifyParambutton" onclick="enableDisableJob();"><span class="glyphicon glyphicon-play"></span> <span class="glyphicon glyphicon-pause"></span> Modify Parameter in order to Activate / Desactivate Queue Job</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>

@@ -474,7 +474,7 @@ function aoColumnsFunc(countries, tableId) {
             "bSearchable": false,
             "title": doc.getDocOnline("page_global", "columnAction"),
             "sDefaultContent": "",
-            "sWidth": "190px",
+            "sWidth": "160px",
             "mRender": function (data, type, obj) {
                 var buttons = "";
 
