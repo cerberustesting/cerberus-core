@@ -262,6 +262,8 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
     $.each(orderedColumns, function (index, value) {
     	
     	var columnSearchValues;
+    	
+    	
         
         var json_obj = JSON.stringify(table.ajax.params());
 
@@ -271,8 +273,16 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
             columnSearchValues = JSON.parse(json_obj)["sSearch_" + index].split(',');
         }
         
-        allcolumnSearchValues[value] = columnSearchValues
-               
+        if(columnSearchValues != undefined){
+        	if(columnSearchValues[0] === ""){
+        		allcolumnSearchValues[value] = undefined
+        	}else{
+        		allcolumnSearchValues[value] = columnSearchValues
+        	}
+        }else{
+        	allcolumnSearchValues[value] = columnSearchValues
+        }
+        
         //Get the column names (for title display)
         var title = value;
         //Build the specific tooltip for filtered columns and the tooltip for not filtered columns
@@ -319,8 +329,6 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
                 oSettings.aoColumns[index].bSearchable = false;
             }
             
-            
-
             //Get the header cell to display the filter
             var tableCell = $($("#" + tableId + '_wrapper [name="filterColumnHeader"]')[columnVisibleIndex])[0];
             
@@ -439,10 +447,8 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
             $(".dt-button.buttons-columnVisibility").each(function (index, value) {
                 $(value).find("a").text( oSettings.aoColumns[index].nTh.innerText);
             });
-            
            
             firstclickOnShowHide=false;
-
             // Important! Recharge screen with a double click on button to recalculate position of the box
             $("#" + tableId + "_wrapper #showHideColumnsButton").click();
 
@@ -456,12 +462,12 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
     //To put into a function
     //When clicking on the edit filter links
     $("#" + tableId + "_wrapper .editable").click(function () {
-    	var currentValue = $(this).next().find(".popover-title").text()
+    	var currentValue = $(this).next().find(".popover-title").text() != "" ? $(this).next().find(".popover-title").text() : "undefined"
         //Clear custom fields to avoid duplication
         $("#" + tableId + "_wrapper [data-type='custom']").remove();
     	
     	//Check the value already selected
-    	if(allcolumnSearchValues[currentValue][0] != ""){
+    	if(allcolumnSearchValues[currentValue] != undefined){
     		$.each(allcolumnSearchValues[currentValue], function (i, value) {
     			$("#" + tableId + '_wrapper .editable-checklist').find("input[value='" + value + "']").prop('checked', true);
     	    });
