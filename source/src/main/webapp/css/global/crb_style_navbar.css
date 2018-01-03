@@ -341,17 +341,21 @@
 @media (max-width: 768px){
     .navbar-static-top{
     	margin-left:0px;
-    	z-index:-99;
+    	z-index:99;
     }
     
     #side-menu li:not(.MainItem){
     	display:none;
     }
     
+    .navbar-header,.nav.navbar-top-links.navbar-right{
+    	display:none;
+    }
+    
     #tabsScriptEdit{
     	background-color:white;
     }
-    
+
     .pull-right{
     	min-width:269px;
     }
@@ -360,6 +364,16 @@
     	display:inline-block;
     	position:absolute;
     	right:20px;
+    	top:6px;
+    	background-color:white;
+    }
+    
+    #burger-setting{
+    	display:inline-block!important;
+    	position:absolute;
+    	right:100px;
+    	width:56px;
+    	height:44px;
     	top:6px;
     	background-color:white;
     }

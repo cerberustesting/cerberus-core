@@ -307,7 +307,6 @@ function ChangeSystem() {
     var selectValue = select.options[select.selectedIndex].value;
     var user = getUser();
 
-    console.log(selectValue);
     $.ajax({url: "UpdateMyUserSystem",
         data: {id: user.login, value: selectValue},
         async: false,

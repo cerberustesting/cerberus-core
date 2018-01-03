@@ -209,20 +209,24 @@ public class CreateTestDataLib extends HttpServlet {
                 }
 
                 if(file!= null && test.equals("1")) {
-            		String str = "";     
+            		String str = "";   
+            		String secondLine = ""; 
                     try {
                     	BufferedReader reader = new BufferedReader(new FileReader(parameterService.getParameterStringByKey("cerberus_testdatalibCSV_path", "", null)+lib.getCsvUrl()));
                         str = reader.readLine();
-                        String[] subData = (!toto.getSeparator().isEmpty()) ? str.split(toto.getSeparator()) : str.split(",");                        
-                        int i = 1;
+                        secondLine = reader.readLine();
+                        String[] subData = (!toto.getSeparator().isEmpty()) ? str.split(toto.getSeparator()) : str.split(",");
+                        String[] subDataValue = (!toto.getSeparator().isEmpty()) ? secondLine.split(toto.getSeparator()) : secondLine.split(",");  
+                        int i = 0;
+                        int y = 1;
                         TestDataLibData firstLine = tdldList.get(0);
                         tdldList = new ArrayList();
                         tdldList.add(firstLine);
                         for(String item: subData) {
-                        	String temp = "SUBDATA"+i;
-                        	TestDataLibData tdld = tdldFactory.create(null, toto.getTestDataLibID(), temp, item, null, null, Integer.toString(i), null);
+                        	TestDataLibData tdld = tdldFactory.create(null, toto.getTestDataLibID(), item+"_"+y, subDataValue[i], item, null, Integer.toString(y), null);
                             tdldList.add(tdld);
                             i++;
+                            y++;
                         }
                         
                         // Update the Database with the new list.

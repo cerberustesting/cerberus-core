@@ -148,6 +148,10 @@ function renderOptionsForTestDataLib(data) {
 
             $("#listOfTestDataLib_wrapper #listOfTestDataLib_length").before(contentToAdd);
             
+        	if (window.matchMedia("(max-width: 768px)").matches) {
+        		$("#createLibButton").addClass("pull-right")
+        	} 
+            
             $("#createLibButton").off("click");
             $('#createLibButton').click(function() {
                 openModalDataLib(undefined, "ADD");
