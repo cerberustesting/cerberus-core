@@ -79,6 +79,10 @@ $.when($.getScript("js/global/global.js")).then(function () {
             runCampaign();
         });
 
+        $("#runCampaignUp").click(function () {
+            runCampaign();
+        });
+
         $("#loadFiltersBtn").click(function () {
             loadTestCaseFromFilter(null, null);
         });
@@ -266,6 +270,7 @@ function selectionCampaign() {
         $("#run").hide();
         $("#addQueueAndRunBis").hide();
         $("#runCampaign").show();
+        $("#runCampaignUp").show();
 
         $("#filtersPanelContainer").hide();
         $("#campaignSelection").show();
@@ -324,6 +329,7 @@ function selectionManual(test, testcase, environment, country) {
         $("#run").show();
         $("#addQueueAndRunBis").show();
         $("#runCampaign").hide();
+        $("#runCampaignUp").hide();
         $("#filtersPanelContainer").show();
 
         loadTestCaseFromFilter(test, testcase);
