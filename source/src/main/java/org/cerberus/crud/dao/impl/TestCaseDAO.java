@@ -1088,18 +1088,24 @@ public class TestCaseDAO implements ITestCaseDAO {
         StringBuilder query = new StringBuilder("SELECT tec.*, app.system FROM testcase tec ");
         
         if(withLabelOrBattery) {
-        
 	        query.append("LEFT OUTER JOIN application app ON app.application = tec.application ")
 	                .append("INNER JOIN testcasecountry tcc ON tcc.Test = tec.Test and tcc.TestCase = tec.TestCase ")
 	                .append("LEFT JOIN testbatterycontent tbc ON tbc.Test = tec.Test and tbc.TestCase = tec.TestCase ")
-	                .append("LEFT JOIN campaigncontent cpc ON cpc.testbattery = tbc.testbattery ")
+	                /*.append("LEFT JOIN campaigncontent cpc ON cpc.testbattery = tbc.testbattery ")
+	                 * disabled to due modification on database scheme (battery no longer exist)
+	                 */
 	                .append("LEFT JOIN testcaselabel tel ON tec.test = tel.test AND tec.testcase = tel.testcase ")
 	                .append("LEFT JOIN campaignlabel cpl ON cpl.labelId = tel.labelId ")
-	                .append("WHERE ((cpc.campaign = ?) OR (cpl.campaign = ?) )");
-        }else {
+	                .append("WHERE (cpl.campaign = ? )");
+        }else if(!withLabelOrBattery && (status != null || system != null || application != null || priority != null)) {
         	query.append("LEFT OUTER JOIN application app ON app.application = tec.application ")
                     .append("INNER JOIN testcasecountry tcc ON tcc.Test = tec.Test and tcc.TestCase = tec.TestCase ")
                     .append("WHERE 1=1");
+        }else {
+        	msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_VALIDATIONS_ERROR);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "You have a problem in your campaign definition"));
+        	answer.setResultMessage(msg);
+        	return answer;
         }
 
         for(Entry<String, String[]> entry : tcParameters.entrySet()) {

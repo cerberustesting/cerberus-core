@@ -420,6 +420,7 @@ function appendCountryList(defCountry) {
 /** UTILITY FUNCTIONS FOR CAMPAIGN LAUNCHING **/
 
 function loadCampaignContent(campaign) {
+	clearResponseMessageMainPage();
     if (campaign !== "") {
         showLoader("#chooseTest");
         $.ajax({
@@ -429,22 +430,26 @@ function loadCampaignContent(campaign) {
             datatype: "json",
             async: true,
             success: function (data) {
-                var testCaseList = $("#testCaseList");
 
-                testCaseList.empty().prop("disabled", "disabled");
+        		 var testCaseList = $("#testCaseList");
 
-                for (var index = 0; index < data.contentTable.length; index++) {
-                    var text = data.contentTable[index].test + " - " + data.contentTable[index].testCase + " [" + data.contentTable[index].application + "]: " + data.contentTable[index].description;
+                 testCaseList.empty().prop("disabled", "disabled");
 
-                    testCaseList.append($("<option></option>")
-                            .text(text)
-                            .val(data.contentTable[index].testCase)
-                            .prop("selected", true)
-                            .data("item", data.contentTable[index]));
-                }
+                 for (var index = 0; index < data.contentTable.length; index++) {
+                     var text = data.contentTable[index].test + " - " + data.contentTable[index].testCase + " [" + data.contentTable[index].application + "]: " + data.contentTable[index].description;
+
+                     testCaseList.append($("<option></option>")
+                             .text(text)
+                             .val(data.contentTable[index].testCase)
+                             .prop("selected", true)
+                             .data("item", data.contentTable[index]));
+                 }
+
+                showMessage(data, $('#page-layout'));
                 updatePotentialNumber();
                 hideLoader("#chooseTest");
-            }
+            },
+            error: showUnexpectedError
         });
     }
 }

@@ -628,7 +628,7 @@ public class DataLibService implements IDataLibService {
                  * get the data from the correct environment.
                  */
                 String servicePathCsv = lib.getCsvUrl();
-                matches = Pattern.matches("(^[/|\\][\\d]+[/|\\]).*", servicePathCsv);
+                matches = Pattern.matches("(^[/|\\\\][\\d]+[/|\\\\]).*", servicePathCsv);
                 
                 LOG.debug("Service Path (Csv) : " + lib.getCsvUrl());
                 if (!StringUtil.isURL(servicePathCsv)) {

@@ -263,6 +263,7 @@ public class TestCaseService implements ITestCaseService {
         String[] system = null;
         String[] application = null;
         String[] priority = null;
+        
 
         AnswerItem<Map<String, List<String>>> parameters = campaignParameterService.parseParametersByCampaign(campaign);
 

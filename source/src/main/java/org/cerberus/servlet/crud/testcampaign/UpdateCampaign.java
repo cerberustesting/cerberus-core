@@ -108,7 +108,7 @@ public class UpdateCampaign extends HttpServlet {
             finalAnswer.setResultMessage(msg);
         } else {
             // Parameter that we cannot secure as we need the html --> We DECODE them
-            String battery = ParameterParserUtil.parseStringParam(request.getParameter("Batteries"), null);
+            //String battery = ParameterParserUtil.parseStringParam(request.getParameter("Batteries"), null);
             String parameter = ParameterParserUtil.parseStringParam(request.getParameter("Parameters"), null);
             String label = ParameterParserUtil.parseStringParam(request.getParameter("Labels"), null);
 
@@ -134,6 +134,8 @@ public class UpdateCampaign extends HttpServlet {
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
                     logEventService.createForPrivateCalls("/UpdateCampaign", "UPDATE", "Update Campaign : " + c, request);
                 }
+                
+                /**
 
                 if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && battery != null) {
                     JSONArray batteries = new JSONArray(battery);
@@ -145,16 +147,20 @@ public class UpdateCampaign extends HttpServlet {
                         CampaignContent co = factoryCampaignContent.create(0, bat.getString(2), bat.getString(0));
                         arr.add(co);
                     }
+                    
 
                     finalAnswer = campaignContentService.compareListAndUpdateInsertDeleteElements(c, arr);
                     if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                        /**
-                         * Adding Log entry.
-                         */
+                        // Adding Log entry.
+                         
                         ILogEventService logEventService = appContext.getBean(LogEventService.class);
                         logEventService.createForPrivateCalls("/UpdateCampaign", "UPDATE", "Update Campaign Content : " + camp.getCampaign(), request);
                     }
+            
+            		
                 }
+                
+                **/
 
                 if (parameter != null) {
                     JSONArray parameters = new JSONArray(parameter);
