@@ -10,7 +10,8 @@ This is the APi that can be used on the test perimeter :
 | /AddToExecutionQueue 
 | Allow to insert testcase execution into Cerberus Queue for execution 
 v| /AddToExecutionQueue 
-**/AddToExecutionQueueV001**
+/AddToExecutionQueueV001
+**/AddToExecutionQueueV002**
 
 | /GetCampaignExecutionsCommand | TBD. | **/GetCampaignExecutionsCommand**
 
