@@ -38,6 +38,14 @@
     <body>
         <%@ include file="include/global/header.html"%>
         <div class="container-fluid center" id="page-layout">
+        <div id="DialogMessagesArea">
+        	<div class="alert" id="DialogMessagesAlert"  style="display:none;">
+             	<strong><span class="alert-description" id="DialogAlertDescription"></span></strong>
+                <button type="button" class="close" data-hide="alert"  aria-hidden="true">
+                	<span class="glyphicon glyphicon-remove alert-right alert-close pull-right"></span>
+                </button>
+            </div>
+        </div>
             <%@ include file="include/global/messagesArea.html"%>
             <%@ include file="include/pages/runtests/TestCaseNotValid.html"%>
             <%@ include file="include/transversalobject/Robot.html"%>

@@ -112,6 +112,7 @@ function generateFiltersOnMultipleColumns(tableId, searchColumns) {
         }
 
     }
+    
     return (filterConfiguration);
 }
 
@@ -254,11 +255,16 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
     $("#" + tableId + '_wrapper .dataTables_scrollHeadInner table thead tr th').each(function () {
         $("#" + tableId + "_wrapper #filterHeader").append("<th name='filterColumnHeader'></th>");
     });
+    
+    var allcolumnSearchValues = new Object();
 
     //Iterate on all columns
     $.each(orderedColumns, function (index, value) {
-
-        var columnSearchValues;
+    	
+    	var columnSearchValues;
+    	
+    	
+        
         var json_obj = JSON.stringify(table.ajax.params());
 
         if(clientSide) { // TODO verify if it's normal it's different for clientSide
@@ -266,8 +272,17 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
         } else {
             columnSearchValues = JSON.parse(json_obj)["sSearch_" + index].split(',');
         }
-
-
+        
+        if(columnSearchValues != undefined){
+        	if(columnSearchValues[0] === ""){
+        		allcolumnSearchValues[value] = undefined
+        	}else{
+        		allcolumnSearchValues[value] = columnSearchValues
+        	}
+        }else{
+        	allcolumnSearchValues[value] = columnSearchValues
+        }
+        
         //Get the column names (for title display)
         var title = value;
         //Build the specific tooltip for filtered columns and the tooltip for not filtered columns
@@ -313,10 +328,10 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
             } else {//For the navigation filter list
                 oSettings.aoColumns[index].bSearchable = false;
             }
-
+            
             //Get the header cell to display the filter
             var tableCell = $($("#" + tableId + '_wrapper [name="filterColumnHeader"]')[columnVisibleIndex])[0];
-
+            
             $(tableCell).removeClass().addClass("filterHeader");
             if (clientSide && oSettings.aoColumns[index].bSearchable || !clientSide && table.ajax.params()["bSearchable_" + index]) { // TODO verify why it's different
                 //Then init the editable object
@@ -336,6 +351,7 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
                             var urlSeparator = contentUrl.indexOf("?") > -1 ? "&" : "?";
                             var url = './' + contentUrl + urlSeparator + 'columnName=' + title;
                             var result;
+                            
                             $.ajax({
                                 type: 'GET',
                                 async: false,
@@ -348,6 +364,7 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
                                         //if undefined, display the distinct value displayed in the table
                                         result = data;
                                     }
+                                    
                                 },
                                 error: function () {
                                     //TODO : To remove when all servlet have method to find distinct values
@@ -369,6 +386,7 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
                             }
                         },
                         display: function (value, sourceData) {
+                        	
                             var val;
                             $(value).each(function (i) {
                                 val = "<input placeholder='Search...' autocomplete='off' id='inputsearch_"+index+"' class='col-sm-8 form-control input-sm' name='searchField' />";
@@ -376,6 +394,7 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
                             $(this).html(val);
                         },
                         success: function (response, newValue) {
+
                             if(clientSide) {
                                 columnSearchValuesForClientSide[index] = newValue;
                                 var filterForFnFilter = "";//create the filter list that will be used by fnFilter
@@ -393,6 +412,7 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
             columnVisibleIndex++;
         }
     }); // end of loop on columns
+
 
     //Display the filtered alert message only if search is activated in at least 1 column
     //filteredInformation.pop();
@@ -427,10 +447,8 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
             $(".dt-button.buttons-columnVisibility").each(function (index, value) {
                 $(value).find("a").text( oSettings.aoColumns[index].nTh.innerText);
             });
-            
            
             firstclickOnShowHide=false;
-
             // Important! Recharge screen with a double click on button to recalculate position of the box
             $("#" + tableId + "_wrapper #showHideColumnsButton").click();
 
@@ -444,19 +462,27 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
     //To put into a function
     //When clicking on the edit filter links
     $("#" + tableId + "_wrapper .editable").click(function () {
+    	var currentValue = $(this).next().find(".popover-title").text() != "" ? $(this).next().find(".popover-title").text() : "undefined"
         //Clear custom fields to avoid duplication
         $("#" + tableId + "_wrapper [data-type='custom']").remove();
-
-        //Check the value already selected
-        //Check all if no specific value selected
-        if ($(this).find("span").size() < 2) {
-            $("#" + tableId + '_wrapper .editable-checklist').find("input").prop('checked', true);
-        } else {
-            $(this).find("span").each(function () {
-                $("#" + tableId + '_wrapper .editable-checklist').find("input[value='" + $(this).text() + "']").prop('checked', true);
-            });
-        }
-
+    	
+    	//Check the value already selected
+    	if(allcolumnSearchValues[currentValue] != undefined){
+    		$.each(allcolumnSearchValues[currentValue], function (i, value) {
+    			$("#" + tableId + '_wrapper .editable-checklist').find("input[value='" + value + "']").prop('checked', true);
+    	    });
+    		
+    	}else{
+    		//Check all if no specific value selected
+    		 if ($(this).find("span").size() < 2) {
+    			 $("#" + tableId + '_wrapper .editable-checklist').find("input").prop('checked', true);
+    		 } else {
+    			 $(this).find("span").each(function () {
+    				 $("#" + tableId + '_wrapper .editable-checklist').find("input[value='" + $(this).text() + "']").prop('checked', true);
+    	         });
+    		 }
+    	}
+    	
         //Add an input field to search specific checkbox (search ignore case)
 
         $.extend($.expr[":"], {
@@ -464,7 +490,7 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
                 return (elem.textContent || elem.innerText || "").toLowerCase().indexOf((match[3] || "").toLowerCase()) >= 0;
             }
         });
-
+        
         searchInput = $(this.parentNode).find("input[name='searchField']");
 
         searchInput.on('keyup', function () {

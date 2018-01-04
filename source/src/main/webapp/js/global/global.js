@@ -23,19 +23,34 @@
 //$.getScript("js/jquery.blockUI.js");
 
 
-var show = false;
+var showBurger = false;
+var showSettings = false;
 
 (function () {
     $("#burger").unbind("click").click(function () {
-        if (show === false) {
+        if (showBurger === false) {
             $("#side-menu li").show();
-            show = true;
+            showBurger = true;
         } else {
             $("#side-menu li:not(.MainItem)").hide();
-            show = false;
+            showBurger = false;
         }
 
     })
+    
+    $("#burger-setting").unbind("click").click(function () {
+        if (showSettings === false) {
+            $(".nav.navbar-top-links.navbar-right").show();
+            $(".navbar-header").show()
+            showSettings = true;
+        } else {
+            $(".nav.navbar-top-links.navbar-right").hide();
+            $(".navbar-header").hide()
+            showSettings = false;
+        }
+
+    })
+    
 })()
 
 function handleErrorAjaxAfterTimeout(result) {
@@ -1453,7 +1468,7 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
         $("#" + tableConfigurations.divId + "_wrapper #restoreFilterButton").remove();
         $("#" + tableConfigurations.divId + "_wrapper")
                 .find("[class='dt-buttons btn-group']").removeClass().addClass("pull-right").find("a").attr('id', 'showHideColumnsButton').removeClass()
-                .addClass("btn btn-default").attr("data-toggle", "tooltip").attr("title", showHideButtonTooltip).click(function () {
+                .addClass("btn btn-default pull-right").attr("data-toggle", "tooltip").attr("title", showHideButtonTooltip).click(function () {
             //$("#" + tableConfigurations.divId + " thead").empty();
         }).html("<span class='glyphicon glyphicon-cog'></span> " + showHideButtonLabel);
         $("#" + tableConfigurations.divId + "_wrapper #showHideColumnsButton").parent().before(

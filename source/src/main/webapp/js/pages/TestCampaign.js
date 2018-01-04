@@ -472,7 +472,7 @@ function editEntryModalSaveHandler() {
 
     // Get the header data from the form.
     //var data = convertSerialToJSONObject(formEdit.serialize());
-
+    
     showLoaderInModal('#editTestcampaignModal');
     $.ajax({
         url: "UpdateCampaign",

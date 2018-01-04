@@ -130,6 +130,9 @@ public class CampaignParameter implements Serializable {
             return false;
         }
         final CampaignParameter other = (CampaignParameter) obj;
+        if ((this.campaignparameterID == null) ? (other.campaignparameterID != null) : !this.campaignparameterID.equals(other.campaignparameterID)) {
+            return false;
+        }
         if ((this.parameter == null) ? (other.parameter != null) : !this.parameter.equals(other.parameter)) {
             return false;
         }

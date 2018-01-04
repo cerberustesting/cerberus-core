@@ -263,6 +263,7 @@ public class TestCaseService implements ITestCaseService {
         String[] system = null;
         String[] application = null;
         String[] priority = null;
+        
 
         AnswerItem<Map<String, List<String>>> parameters = campaignParameterService.parseParametersByCampaign(campaign);
 
@@ -287,13 +288,13 @@ public class TestCaseService implements ITestCaseService {
         }
 
         AnswerList label = campaignLabelService.readByVarious(campaign);
-        AnswerList battery = campaignContentService.readByCampaign(campaign);
+        //AnswerList battery = campaignContentService.readByCampaign(campaign);
         boolean ifLabel = (label.getTotalRows() > 0) ? true : false;
-        boolean ifBattery = (battery.getTotalRows() > 0) ? true : false;
+        //boolean ifBattery = (battery.getTotalRows() > 0) ? true : false;
 
         Integer maxReturn = parameterService.getParameterIntegerByKey("cerberus_campaign_maxtestcase", "", 1000);
         
-        if (ifLabel || ifBattery) {
+        if (ifLabel /**|| ifBattery**/) {
             return this.testCaseDao.findTestCaseByCampaignNameAndCountries(campaign, countries, true, status, system, application, priority, maxReturn);
         } else {
             return this.testCaseDao.findTestCaseByCampaignNameAndCountries(campaign, countries, false, status, system, application, priority, maxReturn);
