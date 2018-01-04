@@ -283,6 +283,14 @@ include::include/{lang}/{file-to-include}[]
 :file-to-include: installation_externaltools_sikuli_{lang}.adoc
 include::include/{lang}/{file-to-include}[]
 
+== Cloud
+:file-to-include: installation_externaltools_cloud_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+=== Browserstack
+:file-to-include: installation_externaltools_cloud_browserstack_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
 = Maintenance
 :file-to-include: maintenance_introduction_{lang}.adoc
 include::include/{lang}/{file-to-include}[]

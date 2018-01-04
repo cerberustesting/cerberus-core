@@ -545,7 +545,7 @@ function appendPanelStatus(status, total, selectTag) {
     if (rowClass.panel === "panelQU") {
         // When we display the QU status, we add a link to all executions in the queue on the queue page.
         $("#ReportByStatusTable").append(
-                $("<a href='./TestCaseExecutionQueueList.jsp?search=" + selectTag + "'></a>").append(
+                $("<a href='./TestCaseExecutionQueueList.jsp?tag=" + selectTag + "'></a>").append(
                 $("<div class='panel " + rowClass.panel + "'></div>").append(
                 $('<div class="panel-heading"></div>').append(
                 $('<div class="row"></div>').append(
@@ -1055,7 +1055,7 @@ function renderOptionsForExeList(selectTag) {
         contentToAdd += "<label class='checkbox-inline'><input id='selectAllQueueKO' type='checkbox'></input>KO</label>";
         contentToAdd += "<label class='checkbox-inline'><input id='selectAllQueueNA' type='checkbox'></input>NA</label>";
         contentToAdd += "<button id='submitExe' type='button' disabled='disabled' title='Submit again the selected executions.' class='btn btn-default'><span class='glyphicon glyphicon-play'></span> Submit Again</button>";
-        contentToAdd += "<a href='TestCaseExecutionQueueList.jsp?search=" + selectTag + "'><button id='openqueue' type='button' class='btn btn-default'><span class='glyphicon glyphicon-list'></span> Open Queue</button></a>";
+        contentToAdd += "<a href='TestCaseExecutionQueueList.jsp?tag=" + selectTag + "'><button id='openqueue' type='button' class='btn btn-default'><span class='glyphicon glyphicon-list'></span> Open Queue</button></a>";
         contentToAdd += "<button id='refresh' type='button' title='Refresh.' class='btn btn-default' onclick='loadAllReports()'><span class='glyphicon glyphicon-refresh'></span> Refresh</button>";
         contentToAdd += "</div>";
 
