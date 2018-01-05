@@ -52,8 +52,126 @@ function resetFilters(oTable, columnNumber, clearGlobalSearch) {
     oTable.fnDraw();
 }
 
+;(function($){
+    $.fn.extend({
+        donetyping: function(callback,timeout){
+            timeout = timeout || 900; // 1 second default timeout
+            var timeoutReference,
+                doneTyping = function(el){
+                    if (!timeoutReference) return;
+                    timeoutReference = null;
+                    callback.call(el);
+                };
+            return this.each(function(i,el){
+                var $el = $(el);
+                // Chrome Fix (Use keyup over keypress to detect backspace)
+                // thank you @palerdot
+                $el.is(':input') && $el.on('keyup keypress paste',function(e){
+                    // This catches the backspace button in chrome, but also prevents
+                    // the event from triggering too preemptively. Without this line,
+                    // using tab/shift+tab will make the focused element fire the callback.
+                    if (e.type=='keyup' && e.keyCode!=8) return;
+                    
+                    // Check if timeout has been set. If it has, "reset" the clock and
+                    // start over again.
+                    if (timeoutReference) clearTimeout(timeoutReference);
+                    timeoutReference = setTimeout(function(){
+                        // if we made it here, our timeout has elapsed. Fire the
+                        // callback
+                        doneTyping(el);
+                    }, timeout);
+                }).on('blur',function(){
+                    // If we can, fire the event since we're leaving the field
+                    doneTyping(el);
+                });
+            });
+        }
+    });
+})(jQuery);
+
 function resetTooltip() {
     $(".tooltip.fade").remove();
+}
+
+function createEditable(tableId, columnVisibleIndex, title, contentUrl, index, tableCell, display, clientSide, like, inputText, init){
+	var select =
+		$('<span></span>')
+        .appendTo($(tableCell).attr('data-id', 'filter_' + columnVisibleIndex)
+            .attr('data-order', index))
+        .editable({
+            type: 'checklist',
+            title: title,
+            source: function () {
+                if(clientSide) {
+                    return data;
+                }else if(init){
+                	return [{"value":0,"text":"please enter a value (need 2 letters)"}];
+                }
+
+                //Check if URL already contains parameters
+                var urlSeparator = contentUrl.indexOf("?") > -1 ? "&" : "?";
+                var url;
+                var result;
+                
+                if(!like){
+                	url = './' + contentUrl + urlSeparator + 'columnName=' + title;
+                }else{
+                	url = './' + contentUrl + urlSeparator + 'columnName=' + title + "&value=" +inputText;
+                }
+                
+                $.ajax({
+                    type: 'GET',
+                    async: false,
+                    url: url,
+                    success: function (responseObject) {
+                        if (responseObject.distinctValues !== undefined) {
+                            result = responseObject.distinctValues;
+                        } else {
+                            //TODO : To remove when all servlet have method to find distinct values
+                            //if undefined, display the distinct value displayed in the table
+                            result = data;
+                        }
+                    },
+                    error: function () {
+                        //TODO : To remove when all servlet have method to find distinct values
+                        //if error, display the distinct value displayed in the table
+                        result = data;
+                    }
+                });
+                return result;
+            }
+            ,
+            onblur: 'cancel',
+            mode: 'popup',
+            placement: 'bottom',
+            emptytext: display,
+            send: 'always',
+            validate: function (value) {
+                if (value === null || value === '' || value.length === 0) {
+                    $("#" + tableId).dataTable().fnFilter('', Math.max($("#" + tableId + " [name='filterColumnHeader']").index($(this).parent()), index));
+                }
+            },
+            display: function (value, sourceData) {
+                var val;
+                $(value).each(function (i) {
+                    val = "<input placeholder='Search...' autocomplete='off' id='inputsearch_"+index+"' class='col-sm-8 form-control input-sm' name='searchField' />";
+                });
+                $(this).html(val);
+            },
+            success: function (response, newValue) {
+                if(clientSide) {
+                    columnSearchValuesForClientSide[index] = newValue;
+                    var filterForFnFilter = "";//create the filter list that will be used by fnFilter
+                    for (var i in newValue) {
+                        filterForFnFilter += newValue[i] + "|";
+                    }
+                    filterForFnFilter = filterForFnFilter.slice(0, -1);
+                    $("#" + tableId).dataTable().fnFilter("^" + filterForFnFilter + "$", index, true);
+                } else {
+                    $("#" + tableId).dataTable().fnFilter(newValue, Math.max($("#" + tableId + " [name='filterColumnHeader']").index($(this).parent()), index));
+                }
+            }
+        });
 }
 
 /**
@@ -262,11 +380,7 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
     $.each(orderedColumns, function (index, value) {
     	
     	var columnSearchValues;
-    	
-    	
-        
         var json_obj = JSON.stringify(table.ajax.params());
-
         if(clientSide) { // TODO verify if it's normal it's different for clientSide
             columnSearchValues = columnSearchValuesForClientSide[index]; //Get the value from storage (To display specific string if already filtered)
         } else {
@@ -335,79 +449,11 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
             $(tableCell).removeClass().addClass("filterHeader");
             if (clientSide && oSettings.aoColumns[index].bSearchable || !clientSide && table.ajax.params()["bSearchable_" + index]) { // TODO verify why it's different
                 //Then init the editable object
-                var select =
-                    $('<span></span>')
-                    .appendTo($(tableCell).attr('data-id', 'filter_' + columnVisibleIndex)
-                        .attr('data-order', index))
-                    .editable({
-                        type: 'checklist',
-                        title: title,
-                        source: function () {
-                            if(clientSide) {
-                                return data;
-                            }
-
-                            //Check if URL already contains parameters
-                            var urlSeparator = contentUrl.indexOf("?") > -1 ? "&" : "?";
-                            var url = './' + contentUrl + urlSeparator + 'columnName=' + title;
-                            var result;
-                            
-                            $.ajax({
-                                type: 'GET',
-                                async: false,
-                                url: url,
-                                success: function (responseObject) {
-                                    if (responseObject.distinctValues !== undefined) {
-                                        result = responseObject.distinctValues;
-                                    } else {
-                                        //TODO : To remove when all servlet have method to find distinct values
-                                        //if undefined, display the distinct value displayed in the table
-                                        result = data;
-                                    }
-                                    
-                                },
-                                error: function () {
-                                    //TODO : To remove when all servlet have method to find distinct values
-                                    //if error, display the distinct value displayed in the table
-                                    result = data;
-                                }
-                            });
-                            return result;
-                        }
-                        ,
-                        onblur: 'cancel',
-                        mode: 'popup',
-                        placement: 'bottom',
-                        emptytext: display,
-                        send: 'always',
-                        validate: function (value) {
-                            if (value === null || value === '' || value.length === 0) {
-                                $("#" + tableId).dataTable().fnFilter('', Math.max($("#" + tableId + " [name='filterColumnHeader']").index($(this).parent()), index));
-                            }
-                        },
-                        display: function (value, sourceData) {
-                        	
-                            var val;
-                            $(value).each(function (i) {
-                                val = "<input placeholder='Search...' autocomplete='off' id='inputsearch_"+index+"' class='col-sm-8 form-control input-sm' name='searchField' />";
-                            });
-                            $(this).html(val);
-                        },
-                        success: function (response, newValue) {
-
-                            if(clientSide) {
-                                columnSearchValuesForClientSide[index] = newValue;
-                                var filterForFnFilter = "";//create the filter list that will be used by fnFilter
-                                for (var i in newValue) {
-                                    filterForFnFilter += newValue[i] + "|";
-                                }
-                                filterForFnFilter = filterForFnFilter.slice(0, -1);
-                                $("#" + tableId).dataTable().fnFilter("^" + filterForFnFilter + "$", index, true);
-                            } else {
-                                $("#" + tableId).dataTable().fnFilter(newValue, Math.max($("#" + tableId + " [name='filterColumnHeader']").index($(this).parent()), index));
-                            }
-                        }
-                    });
+            	if(!oSettings.aoColumns[index].like || oSettings.aoColumns[index].like === null){
+            		createEditable(tableId, columnVisibleIndex, title, contentUrl, index, tableCell, display, clientSide, false, null,false)
+            	}else{
+            		createEditable(tableId, columnVisibleIndex, title, contentUrl, index, tableCell, display, clientSide, false, null,true)
+            	}
             }
             columnVisibleIndex++;
         }
@@ -492,21 +538,25 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
         });
         
         searchInput = $(this.parentNode).find("input[name='searchField']");
-
+        
         searchInput.on('keyup', function () {
-             var allElement = $('#' + tableId + '_wrapper .editable-checklist > div')
-             var elementsTocheck = $('#' + tableId + '_wrapper .editable-checklist > div:containsIN(' + $(this).val() + ')')
-             //uncheck and hive all element
-             allElement.find("[type='checkbox']").prop('checked', false);
-             allElement.hide();
-             //check and show element that need to be check
-             elementsTocheck.find("[type='checkbox']").prop('checked', true);
-             elementsTocheck.show();
-         });
-
+        	var currentColumn = oSettings.aoColumns[$(this).attr('id').split('_')[1]] 
+        	if(currentColumn.like == null || !currentColumn.like){
+        		var allElement = $('#' + tableId + '_wrapper .editable-checklist > div')
+                var elementsTocheck = $('#' + tableId + '_wrapper .editable-checklist > div:containsIN(' + $(this).val() + ')')
+                //uncheck and hive all element
+                allElement.find("[type='checkbox']").prop('checked', false);
+                allElement.hide();
+                //check and show element that need to be check
+                elementsTocheck.find("[type='checkbox']").prop('checked', true);
+                elementsTocheck.show();
+        	}
+        	
+        });
+        
         searchInput.off('keydown'); // desactive old keydown handler
         searchInput.off('click');
-
+        
         searchInput.keydown(function (e) {
             var keyCode = e.keyCode || e.which;
 
@@ -522,8 +572,39 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
                 return false;
             }
         });
-
-        searchInput.click(function () {
+        
+        var event = function(that){
+         	var currentColumn = oSettings.aoColumns[$(that).attr('id').split('_')[1]] 
+         	if(!currentColumn.like != null && currentColumn.like){
+	         	var columnVisibleIndex = $(that).attr('id').split('_')[1]
+	         	console.log($(that).parent())
+	         	$(that).parent().remove();
+	         	$(that).parent().editable("destroy")
+	         	
+	         	var title = currentColumn["sName"]
+	         	var index = $(that).attr('id').split('_')[1]
+	            var tableCell = $($("#" + tableId + '_wrapper [name="filterColumnHeader"]')[columnVisibleIndex])[0];
+	         	var txt = $(that).val()
+	         	if(txt.length >= 2){
+	         		createEditable(tableId, columnVisibleIndex, title, contentUrl, index, tableCell, $(that), false, true, $(that).val(),false)
+	        	}else{
+	        		createEditable(tableId, columnVisibleIndex, title, contentUrl, index, tableCell, $(that), false, false, null,true)
+	        	}
+	         	$(that).parent().editable("show");
+	         	$(that).focus();
+	         	
+	         	 $(that).donetyping(function(e){
+	             	event($(this))
+	             });
+	         	
+         	}
+        }
+ 
+        searchInput.donetyping(function(e){
+        	event($(this))
+        });
+        
+        searchInput.click(function (e) {
             if($(this).parent().parent().find(".popover.editable-popup").length>0) {
                 return false;
             }
