@@ -79,6 +79,10 @@ $.when($.getScript("js/global/global.js")).then(function () {
             runCampaign();
         });
 
+        $("#runCampaignUp").click(function () {
+            runCampaign();
+        });
+
         $("#loadFiltersBtn").click(function () {
             loadTestCaseFromFilter(null, null);
         });
@@ -266,6 +270,7 @@ function selectionCampaign() {
         $("#run").hide();
         $("#addQueueAndRunBis").hide();
         $("#runCampaign").show();
+        $("#runCampaignUp").show();
 
         $("#filtersPanelContainer").hide();
         $("#campaignSelection").show();
@@ -324,6 +329,7 @@ function selectionManual(test, testcase, environment, country) {
         $("#run").show();
         $("#addQueueAndRunBis").show();
         $("#runCampaign").hide();
+        $("#runCampaignUp").hide();
         $("#filtersPanelContainer").show();
 
         loadTestCaseFromFilter(test, testcase);
@@ -544,15 +550,17 @@ function runCampaign() {
 
     showLoader('#page-layout');
 
-    var jqxhr = $.post("AddToExecutionQueueV001", paramSerialized, "json");
+    var jqxhr = $.post("AddToExecutionQueueV002", paramSerialized, "json");
     $.when(jqxhr).then(function (data) {
         // unblock when remote call returns 
         hideLoader('#page-layout');
+        var str = data.message.replace(/\n/g, '<br>');
+
         if (getAlertType(data.messageType) === "success") {
             data.message = data.message + "<a href='ReportingExecutionByTag.jsp?Tag=" + data.tag + "'><button class='btn btn-primary' id='goToTagReport'>Report by Tag</button></a>"
-            showMessageMainPage(getAlertType(data.messageType), data.message, false, 60000);
+            showMessageMainPage(getAlertType(data.messageType), str, false, 60000);
         } else {
-            showMessageMainPage(getAlertType(data.messageType), data.message, false);
+            showMessageMainPage(getAlertType(data.messageType), str, false);
         }
     }).fail(handleErrorAjaxAfterTimeout);
 
