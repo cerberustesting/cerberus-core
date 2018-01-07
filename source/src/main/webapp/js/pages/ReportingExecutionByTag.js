@@ -353,8 +353,8 @@ function buildBar(obj) {
         key = "Total";
 
     var tooltip = generateBarTooltip(obj, statusOrder);
-    buildBar = '<div>' + key + '<div class="pull-right" style="display: inline;">Total executions : ' + obj.total + '</div>\n\
-                                                        </div><div class="progress" data-toggle="tooltip" data-html="true" title="' + tooltip + '">';
+    buildBar = '<div class="row"><div class="col-sm-6">' + key + '</div><div class="col-sm-6 pull-right" style="display: inline;">Total executions : ' + obj.total + '</div>';
+    buildBar += '</div><div class="progress" data-toggle="tooltip" data-html="true" title="' + tooltip + '">';
 
     for (var i = 0; i < len; i++) {
         var status = statusOrder[i];
@@ -422,10 +422,14 @@ function loadLabelReport(data) {
     $("#progressLabel").empty();
 
     var len = data.labelStats.split.length;
-    //createSummaryTable(data.contentTable);
-    for (var index = 0; index < len; index++) {
-        //draw a progress bar for each combo retrieved
-        buildLabelBar(data.labelStats.split[index]);
+    if (len > 0) {
+        //createSummaryTable(data.contentTable);
+        for (var index = 0; index < len; index++) {
+            //draw a progress bar for each combo retrieved
+            buildLabelBar(data.labelStats.split[index]);
+        }
+    } else {
+        $("#reportByLabel").hide();
     }
     hideLoader($("#reportLabel"));
 
@@ -462,75 +466,78 @@ function loadBugReportByStatusTable(data, selectTag) {
     var len = data.BugTrackerStat.length;
     var doc = new Doc();
 
-
     $("#bugTableBody tr").remove();
 
-
-    //calculate totaltest nb
-    for (var index = 0; index < len; index++) {
-        // increase the total execution
-        var bugLink = '<a target="_blank" href="' + data.BugTrackerStat[index].bugIdURL + '">' + data.BugTrackerStat[index].bugId + "</a>";
-        var editEntry = '<button id="editEntry" onclick="openModalTestCase_FromRepTag(this,\'' + escapeHtml(data.BugTrackerStat[index].testFirst) + '\',\'' + escapeHtml(data.BugTrackerStat[index].testCaseFirst) + '\',\'EDIT\');"\n\
+    if (len > 0) {
+        //calculate totaltest nb
+        for (var index = 0; index < len; index++) {
+            // increase the total execution
+            var bugLink = '<a target="_blank" href="' + data.BugTrackerStat[index].bugIdURL + '">' + data.BugTrackerStat[index].bugId + "</a>";
+            var editEntry = '<button id="editEntry" onclick="openModalTestCase_FromRepTag(this,\'' + escapeHtml(data.BugTrackerStat[index].testFirst) + '\',\'' + escapeHtml(data.BugTrackerStat[index].testCaseFirst) + '\',\'EDIT\');"\n\
                                 class="editEntry btn btn-default btn-xs margin-right5" \n\
                                 name="editEntry" data-toggle="tooltip"  title="' + doc.getDocLabel("page_testcaselist", "btn_edit") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-pencil"></span></button>' + data.BugTrackerStat[index].testCaseFirst;
-        var exeLink = '<a target="_blank" href="TestCaseExecution.jsp?executionId=' + data.BugTrackerStat[index].exeIdLast + '">' + data.BugTrackerStat[index].exeIdLast + "</a> (" + data.BugTrackerStat[index].exeIdLastStatus + ")";
+            var exeLink = '<a target="_blank" href="TestCaseExecution.jsp?executionId=' + data.BugTrackerStat[index].exeIdLast + '">' + data.BugTrackerStat[index].exeIdLast + "</a> (" + data.BugTrackerStat[index].exeIdLastStatus + ")";
 
-        var $tr = $('<tr>');
-        $tr.append($('<td>').html(bugLink).css("text-align", "center"));
-        if (data.BugTrackerStat[index].exeIdLast !== 0) {
+            var $tr = $('<tr>');
+            $tr.append($('<td>').html(bugLink).css("text-align", "center"));
+            if (data.BugTrackerStat[index].exeIdLast !== 0) {
 //            $tr.append($('<td>').text(data.BugTrackerStat[index].exeIdLast).css("text-align", "center"));
-            $tr.append($('<td>').html(exeLink).css("text-align", "center"));
-        } else {
-            $tr.append($('<td>'));
-        }
-        $tr.append($('<td>').html(editEntry).css("text-align", "center"));
-        $tr.append($('<td>').text(data.BugTrackerStat[index].nbExe).css("text-align", "center"));
-        $("#bugTableBody").append($tr);
+                $tr.append($('<td>').html(exeLink).css("text-align", "center"));
+            } else {
+                $tr.append($('<td>'));
+            }
+            $tr.append($('<td>').html(editEntry).css("text-align", "center"));
+            $tr.append($('<td>').text(data.BugTrackerStat[index].nbExe).css("text-align", "center"));
+            $("#bugTableBody").append($tr);
 
-    }
+        }
 
 // add a panel for the total
 
-    if (data.totalBugToReport > 0) {
-        if (data.totalBugToReportReported !== data.totalBugToReport) {
+        if (data.totalBugToReport > 0) {
+            if (data.totalBugToReportReported !== data.totalBugToReport) {
+                $("#BugReportTable").append(
+                        $("<div class='panel panel-primary'></div>").append(
+                        $('<div class="panel-heading"></div>').append(
+                        $('<div class="row"></div>').append(
+                        $('<div class="col-xs-8 status"></div>').text("Bugs to Report").prepend(
+                        $('<span class="" style="margin-right: 5px;"></span>'))).append(
+                        $('<div class="col-xs-4 text-right"></div>').append(
+                        $('<div class="total"></div>').text(data.totalBugToReport))
+                        ))));
+            }
+            if (data.totalBugToReportReported !== 0) {
+                $("#BugReportTable").append(
+                        $("<div class='panel panel-primary'></div>").append(
+                        $('<div class="panel-heading"></div>').append(
+                        $('<div class="row"></div>').append(
+                        $('<div class="col-xs-8 status"></div>').text("Bugs Reported").prepend(
+                        $('<span class="" style="margin-right: 5px;"></span>'))).append(
+                        $('<div class="col-xs-4 text-right"></div>').append(
+                        $('<div class="total"></div>').text(data.totalBugToReportReported)).append(
+                        $('<div class="row"></div>').append(
+                        $('<div class="percentage pull-right"></div>').text(Math.round(((data.totalBugToReportReported / data.totalBugToReport) * 100) * 100) / 100 + '%'))
+                        )
+                        ))));
+            }
+        }
+
+        if (data.totalBugToClean !== 0) {
             $("#BugReportTable").append(
-                    $("<div class='panel panel-primary'></div>").append(
+                    $("<div class='panel panelTOCLEAN'></div>").append(
                     $('<div class="panel-heading"></div>').append(
                     $('<div class="row"></div>').append(
-                    $('<div class="col-xs-8 status"></div>').text("Bugs to Report").prepend(
+                    $('<div class="col-xs-8 status"></div>').text("Bugs to Clean").prepend(
                     $('<span class="" style="margin-right: 5px;"></span>'))).append(
                     $('<div class="col-xs-4 text-right"></div>').append(
-                    $('<div class="total"></div>').text(data.totalBugToReport))
+                    $('<div class="total"></div>').text(data.totalBugToClean))
                     ))));
         }
-        if (data.totalBugToReportReported !== 0) {
-            $("#BugReportTable").append(
-                    $("<div class='panel panel-primary'></div>").append(
-                    $('<div class="panel-heading"></div>').append(
-                    $('<div class="row"></div>').append(
-                    $('<div class="col-xs-8 status"></div>').text("Bugs Reported").prepend(
-                    $('<span class="" style="margin-right: 5px;"></span>'))).append(
-                    $('<div class="col-xs-4 text-right"></div>').append(
-                    $('<div class="total"></div>').text(data.totalBugToReportReported)).append(
-                    $('<div class="row"></div>').append(
-                    $('<div class="percentage pull-right"></div>').text(Math.round(((data.totalBugToReportReported / data.totalBugToReport) * 100) * 100) / 100 + '%'))
-                    )
-                    ))));
-        }
+    } else {
+        $("#BugReportByStatusPanel").hide();
     }
 
-    if (data.totalBugToClean !== 0) {
-        $("#BugReportTable").append(
-                $("<div class='panel panelTOCLEAN'></div>").append(
-                $('<div class="panel-heading"></div>').append(
-                $('<div class="row"></div>').append(
-                $('<div class="col-xs-8 status"></div>').text("Bugs to Clean").prepend(
-                $('<span class="" style="margin-right: 5px;"></span>'))).append(
-                $('<div class="col-xs-4 text-right"></div>').append(
-                $('<div class="total"></div>').text(data.totalBugToClean))
-                ))));
-    }
     hideLoader($("#BugReportByStatus"));
 
 }
@@ -1247,7 +1254,7 @@ function aoColumnsFunc(Columns) {
                 "title": doc.getDocOnline("testcase", "BugID")
             };
     aoColumns.push(col);
-    
+
     var col =
             {
                 "data": "NbExecutionsTotal",

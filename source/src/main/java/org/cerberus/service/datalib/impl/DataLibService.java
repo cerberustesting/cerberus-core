@@ -137,27 +137,27 @@ public class DataLibService implements IDataLibService {
             columnList = resultColumns.getItem();
             // Now that we have the list of column with subdata and value, we can try to decode it.
             if (columnList != null) {
-            for (Map.Entry<String, String> entry : columnList.entrySet()) { // Loop on all Column in order to decode all values.
-                String eKey = entry.getKey(); // SubData
-                String eValue = entry.getValue(); // Parsing Answer
-                try {
-                    answerDecode = variableService.decodeStringCompletly(eValue, tCExecution, null, false);
-                    columnList.put(eKey, (String) answerDecode.getItem());
+                for (Map.Entry<String, String> entry : columnList.entrySet()) { // Loop on all Column in order to decode all values.
+                    String eKey = entry.getKey(); // SubData
+                    String eValue = entry.getValue(); // Parsing Answer
+                    try {
+                        answerDecode = variableService.decodeStringCompletly(eValue, tCExecution, null, false);
+                        columnList.put(eKey, (String) answerDecode.getItem());
 
-                    if (!(answerDecode.isCodeStringEquals("OK"))) {
-                        // If anything wrong with the decode --> we stop here with decode message in the action result.
-                        result = new AnswerList();
-                        result.setDataList(null);
-                        msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_GLOBAL_SUBDATAISSUE);
-                        msg.setDescription(msg.getDescription().replace("%SUBDATAMESSAGE%", answerDecode.getMessageDescription().replace("%FIELD%","Column value '" + eValue +"'")));
-                        result.setResultMessage(msg);
-                        LOG.debug("Datalib interupted due to decode 'column value' Error.");
-                        return result;
+                        if (!(answerDecode.isCodeStringEquals("OK"))) {
+                            // If anything wrong with the decode --> we stop here with decode message in the action result.
+                            result = new AnswerList();
+                            result.setDataList(null);
+                            msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_GLOBAL_SUBDATAISSUE);
+                            msg.setDescription(msg.getDescription().replace("%SUBDATAMESSAGE%", answerDecode.getMessageDescription().replace("%FIELD%", "Column value '" + eValue + "'")));
+                            result.setResultMessage(msg);
+                            LOG.debug("Datalib interupted due to decode 'column value' Error.");
+                            return result;
+                        }
+                    } catch (CerberusEventException cex) {
+                        LOG.warn(cex);
                     }
-                } catch (CerberusEventException cex) {
-                    LOG.warn(cex);
                 }
-            }
             }
 
         } else if (resultColumns.getResultMessage().getCode() == MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SUBDATA.getCode()) {
@@ -614,7 +614,6 @@ public class DataLibService implements IDataLibService {
         Pattern pattern;
         Matcher matcher;
         Parameter p;
-        boolean matches = false;
 
         List<HashMap<String, String>> list;
 
@@ -623,14 +622,14 @@ public class DataLibService implements IDataLibService {
 
                 /**
                  * Before making the call we check if the Service Path is
-                 * already a propper URL. If it is not, we prefix with the
-                 * CsvUrl defined from corresponding database. This is used to
-                 * get the data from the correct environment.
+                 * already a proper URL. If it is not, we prefix with the CsvUrl
+                 * defined from corresponding database. This is used to get the
+                 * data from the correct environment.
                  */
                 String servicePathCsv = lib.getCsvUrl();
-                matches = Pattern.matches("(^[/|\\\\][\\d]+[/|\\\\]).*", servicePathCsv);
-                
+
                 LOG.debug("Service Path (Csv) : " + lib.getCsvUrl());
+                // Trying making an URL with database context path.
                 if (!StringUtil.isURL(servicePathCsv)) {
                     // Url is not valid, we try to get the corresponding DatabaseURL CsvURL to prefix.
                     if (!(StringUtil.isNullOrEmpty(lib.getDatabaseCsv()))) {
@@ -691,28 +690,14 @@ public class DataLibService implements IDataLibService {
                             result.setResultMessage(msg);
                             return result;
                         }
-
-                    } else if(matches){                    	 
-                    	AnswerItem a = parameterService.readByKey("", "cerberus_testdatalibcsv_path");
-                    	if (a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                    		 p = (Parameter) a.getItem();
-                    		 servicePathCsv = lib.getCsvUrl();
-                    	}else {
-                    		msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
-                                    "cerberus_testdatalibcsv_path Parameter not found");
-                    		result.setResultMessage(msg);
-                    		return result;
-                    	}
-                    }                   
-                    else { // URL is not valid and DatabaseCsv is not defined.
-                        msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_CSV_URLKOANDNODATABASE);
-                        msg.setDescription(msg.getDescription()
-                                .replace("%SERVICEURL%", lib.getCsvUrl())
-                                .replace("%ENTRY%", lib.getName())
-                                .replace("%ENTRYID%", lib.getTestDataLibID().toString()));
-                        result.setResultMessage(msg);
-                        return result;
                     }
+                }
+
+                // Trying make a valid path with csv parameter path.
+                if (!StringUtil.isURL(servicePathCsv)) {
+                    // Url is still not valid. We try to add the path from csv parameter.
+                    String csv_path = parameterService.getParameterStringByKey("cerberus_testdatalibcsv_path", "", "");
+                    servicePathCsv = csv_path + servicePathCsv;
                 }
 
                 // CSV Call is made here.

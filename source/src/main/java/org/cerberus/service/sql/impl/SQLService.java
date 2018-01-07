@@ -237,8 +237,8 @@ public class SQLService implements ISQLService {
             }
         } catch (SQLException exception) {
             LOG.warn(exception.toString());
-            msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_CANNOTACCESSJDBC);
-            msg.setDescription(msg.getDescription().replace("%JDBC%", "jdbc/" + connectionName));
+            msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_ERROR);
+            msg.setDescription(msg.getDescription().replace("%SQL%", sql));
             msg.setDescription(msg.getDescription().replace("%EX%", exception.toString()));
             throwEx = true;
         } catch (NullPointerException exception) {
@@ -311,8 +311,8 @@ public class SQLService implements ISQLService {
                             }
                         } catch (SQLException exception) {
                             LOG.warn(exception.toString());
-                            msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_CANNOTACCESSJDBC);
-                            msg.setDescription(msg.getDescription().replace("%JDBC%", "jdbc/" + connectionName));
+                            msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_ERROR);
+                            msg.setDescription(msg.getDescription().replace("%SQL%", sql));
                             msg.setDescription(msg.getDescription().replace("%EX%", exception.toString()));
                         } catch (NullPointerException exception) {
                             LOG.warn(exception.toString());
@@ -395,8 +395,8 @@ public class SQLService implements ISQLService {
                             }
                         } catch (SQLException exception) {
                             LOG.warn(exception.toString());
-                            msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_CANNOTACCESSJDBC);
-                            msg.setDescription(msg.getDescription().replace("%JDBC%", "jdbc/" + connectionName));
+                            msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_ERROR);
+                            msg.setDescription(msg.getDescription().replace("%SQL%", sql));
                             msg.setDescription(msg.getDescription().replace("%EX%", exception.toString()));
                         } catch (NullPointerException exception) {
                             LOG.warn(exception.toString());
@@ -537,8 +537,8 @@ public class SQLService implements ISQLService {
             }
         } catch (SQLException exception) {
             LOG.warn(exception.toString());
-            msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_CANNOTACCESSJDBC);
-            msg.setDescription(msg.getDescription().replace("%JDBC%", "jdbc/" + connectionName));
+            msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_ERROR);
+            msg.setDescription(msg.getDescription().replace("%SQL%", sql));
             msg.setDescription(msg.getDescription().replace("%EX%", exception.toString()));
         } catch (NullPointerException exception) {
             //TODO check where exception occur

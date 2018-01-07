@@ -332,9 +332,14 @@ function loadBuildRevTable() {
     selectSystem = "VC";
     var jqxhr = $.getJSON("GetEnvironmentsPerBuildRevision", "system=" + getUser().defaultSystem);
     $.when(jqxhr).then(function (result) {
-        $.each(result["contentTable"], function (idx, obj) {
-            appendBuildRevRow(obj);
-        });
+        if (result["contentTable"].length > 0) {
+            $.each(result["contentTable"], function (idx, obj) {
+                appendBuildRevRow(obj);
+            });
+
+        } else {
+            $("#ReportByStatusPanel").hide();
+        }
     }).fail(handleErrorAjaxAfterTimeout);
 }
 

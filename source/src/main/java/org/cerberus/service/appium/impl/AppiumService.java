@@ -63,7 +63,8 @@ public abstract class AppiumService implements IAppiumService {
 
     /**
      * The default Appium swipe duration if no
-     * {@link AppiumService#CERBERUS_APPIUM_SWIPE_DURATION_PARAMETER} has been defined
+     * {@link AppiumService#CERBERUS_APPIUM_SWIPE_DURATION_PARAMETER} has been
+     * defined
      */
     private static final int DEFAULT_CERBERUS_APPIUM_SWIPE_DURATION = 2000;
 
@@ -235,13 +236,13 @@ public abstract class AppiumService implements IAppiumService {
         LOG.debug("Finding Element : " + identifier.getIdentifier() + "=" + identifier.getLocator());
         return driver.findElement(locator);
     }
-    
+
     /**
-     * 
+     *
      * @param session
      * @param action
      * @return
-     * @throws IllegalArgumentException 
+     * @throws IllegalArgumentException
      */
     @Override
     public Direction getDirectionForSwipe(Session session, SwipeAction action) throws IllegalArgumentException {
