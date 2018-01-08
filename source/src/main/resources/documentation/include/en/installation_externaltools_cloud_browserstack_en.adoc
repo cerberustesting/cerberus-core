@@ -4,3 +4,44 @@ In the Cerberus demo integration chain, functionnal tests are executed through B
 http://browserstack.com/[image:browserstack-logo.png[Browserstack,200,100]]
 
 To run your tests on BrowserStack Automate, you must configure a Robot in Cerberus with your BrowserStack account information.
+
+To do it navigate into Robot page and fill the necessary fields:
+
+* Robot - robot name
+* Hostname - here we will need to put our username and access key from browserstack <bsusername>:<bsAccessKey>@hub-cloud.browserstack.com
+* Port - 80 (default for bs)
+* Platform - iOS / Android
+* Browser - iphone and android
+
+image::browserstackrobot.png[configuringrobot]
+
+There is also a minimum of capabilities that should be set in order to work:
+
+app: bs//<hashed_appid> - Following browserstack documentation this hashed app id can be retrieved from their REST API:
+
+curl -u "bsusername:bsAccessKey" -X POST "https://api.browserstack.com/app-automate/upload" -F "file=@/path/to/app/file/Application.apk"
+
+the response will give the app hash id:
+bs://fecad32e3d0900192ccc27747d037ead7427b1ba
+
+device: deviceName to use 
+
+realMobile: true 
+
+os_version: os to test
+
+
+image::browserstackcaps.png[settingcaps]
+
+[IMPORTANT]
+====
+Setting the App Path in cerberus:
+
+In order for browserstack to work you must set the hashed app id on the application page editing the environment of the desired application as well as on the desired capabilities of the robot.
+
+You should also take in consideration the robothost configuration and poolsize to limit the number of parallel executions when launching a campaign.
+====
+image::browserstacksettingapplication.png[settingapp]
+
+
+Now you can start testing.
