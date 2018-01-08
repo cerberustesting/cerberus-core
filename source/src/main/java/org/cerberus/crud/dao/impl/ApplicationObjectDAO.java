@@ -667,7 +667,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
     }
 
     @Override
-    public AnswerList<String> readDistinctValuesByCriteria(String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
+    public AnswerList<String> readDistinctValuesByCriteria(String searchTerm, Map<String, List<String>> individualSearch, String columnName, Boolean likeColumn ) {
         AnswerList answer = new AnswerList();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -677,34 +677,39 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
 
         StringBuilder query = new StringBuilder();
 
-        query.append("SELECT distinct ");
+        query.append("SELECT distinct `");
         query.append(columnName);
-        query.append(" as distinctValues FROM applicationobject ");
+        query.append("` as distinctValues FROM applicationobject ");
 
-        searchSQL.append("WHERE 1=1");
-
-        if (!StringUtil.isNullOrEmpty(searchTerm)) {
-            searchSQL.append(" and (`Application` like ?");
-            searchSQL.append(" or `Object` like ?");
-            searchSQL.append(" or `Value` like ?");
-            searchSQL.append(" or `ScreenshotFileName` like ?");
-            searchSQL.append(" or `UsrCreated` like ?");
-            searchSQL.append(" or `DateCreated` like ?");
-            searchSQL.append(" or `UsrModif` like ?");
-            searchSQL.append(" or `DateModif` like ?)");
-        }
-        if (individualSearch != null && !individualSearch.isEmpty()) {
-            searchSQL.append(" and ( 1=1 ");
-            for (Map.Entry<String, List<String>> entry : individualSearch.entrySet()) {
-                searchSQL.append(" and ");
-                searchSQL.append(SqlUtil.getInSQLClauseForPreparedStatement(entry.getKey(), entry.getValue()));
-                individalColumnSearchValues.addAll(entry.getValue());
+        searchSQL.append("WHERE 1=1 ");
+        
+        if(likeColumn) {
+        	searchSQL.append("and `" +columnName+ "` like ? ");
+        }else {
+        	if (!StringUtil.isNullOrEmpty(searchTerm)) {
+                searchSQL.append(" and (`Application` like ?");
+                searchSQL.append(" or `Object` like ?");
+                searchSQL.append(" or `Value` like ?");
+                searchSQL.append(" or `ScreenshotFileName` like ?");
+                searchSQL.append(" or `UsrCreated` like ?");
+                searchSQL.append(" or `DateCreated` like ?");
+                searchSQL.append(" or `UsrModif` like ?");
+                searchSQL.append(" or `DateModif` like ?)");
             }
-            searchSQL.append(" )");
+            if (individualSearch != null && !individualSearch.isEmpty()) {
+                searchSQL.append(" and ( 1=1 ");
+                for (Map.Entry<String, List<String>> entry : individualSearch.entrySet()) {
+                    searchSQL.append(" and ");
+                    searchSQL.append(SqlUtil.getInSQLClauseForPreparedStatement(entry.getKey(), entry.getValue()));
+                    individalColumnSearchValues.addAll(entry.getValue());
+                }
+                searchSQL.append(" )");
+            }
         }
-        query.append(searchSQL);
-        query.append(" order by ").append(columnName).append(" asc");
 
+        query.append(searchSQL);
+        query.append(" order by `").append(columnName).append("` asc");
+        
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
@@ -713,20 +718,25 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
                 PreparedStatement preStat = connection.prepareStatement(query.toString())) {
 
             int i = 1;
-            if (!StringUtil.isNullOrEmpty(searchTerm)) {
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
+            
+            if(likeColumn) {
+            	preStat.setString(i++, "%" + searchTerm + "%");
+            }else {
+            	if (!StringUtil.isNullOrEmpty(searchTerm)) {
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                }
+                for (String individualColumnSearchValue : individalColumnSearchValues) {
+                    preStat.setString(i++, individualColumnSearchValue);
+                }
             }
-            for (String individualColumnSearchValue : individalColumnSearchValues) {
-                preStat.setString(i++, individualColumnSearchValue);
-            }
-
+            
             ResultSet resultSet = preStat.executeQuery();
 
             //gets the data

@@ -114,10 +114,12 @@ public class ReadTestCaseExecution extends HttpServlet {
             AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
             // Data/Filter Parameters.
             String Tag = ParameterParserUtil.parseStringParam(request.getParameter("Tag"), "");
+            String value = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
             String test = ParameterParserUtil.parseStringParam(request.getParameter("test"), "");
             String testCase = ParameterParserUtil.parseStringParam(request.getParameter("testCase"), "");
             String system = ParameterParserUtil.parseStringParam(request.getParameter("system"), "");
             long executionId = ParameterParserUtil.parseLongParam(request.getParameter("executionId"), 0);
+            boolean likeColumn = ParameterParserUtil.parseBooleanParam(request.getParameter("likeColumn"), false);
             // Switch Parameters.
             boolean executionWithDependency = ParameterParserUtil.parseBooleanParam("executionWithDependency", false);
             String columnName = ParameterParserUtil.parseStringParam(request.getParameter("columnName"), "");
@@ -125,9 +127,9 @@ public class ReadTestCaseExecution extends HttpServlet {
 
             if (!Strings.isNullOrEmpty(columnName)) {
                 //If columnName is present, then return the distinct value of this column.
-                answer = findValuesForColumnFilter(system, test, appContext, request, columnName);
+                answer = findValuesForColumnFilter(system, test, appContext, request, columnName,likeColumn);
                 jsonResponse = (JSONObject) answer.getItem();
-            } else if (!Tag.equals("") && byColumns) {
+            }else if (!Tag.equals("") && byColumns) {
                 //Return the columns to display in the execution table
                 answer = findExecutionColumns(appContext, request, Tag);
                 jsonResponse = (JSONObject) answer.getItem();
@@ -733,7 +735,7 @@ public class ReadTestCaseExecution extends HttpServlet {
      * @return
      * @throws JSONException
      */
-    private AnswerItem findValuesForColumnFilter(String system, String test, ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
+    private AnswerItem findValuesForColumnFilter(String system, String test, ApplicationContext appContext, HttpServletRequest request, String columnName, Boolean likeColumn) throws JSONException {
         AnswerItem answer = new AnswerItem();
         JSONObject object = new JSONObject();
         AnswerList values = new AnswerList();
@@ -818,15 +820,19 @@ public class ReadTestCaseExecution extends HttpServlet {
                 String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
                 String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "tec.test,tec.testcase,application,project,ticket,description,behaviororvalueexpected,readonly,bugtrackernewurl,deploytype,mavengroupid");
                 String columnToSort[] = sColumns.split(",");
-
-                individualSearch = new HashMap<>();
-                for (int a = 0; a < columnToSort.length; a++) {
-                    if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
-                        List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
-                        individualSearch.put(columnToSort[a], search);
-                    }
+                
+                if(likeColumn) {
+                	values = testCaseExecutionService.readDistinctValuesByCriteria(system, test, searchParameter, individualSearch, columnName, likeColumn);
+                }else {
+                	 individualSearch = new HashMap<>();
+                     for (int a = 0; a < columnToSort.length; a++) {
+                         if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
+                             List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
+                             individualSearch.put(columnToSort[a], search);
+                         }
+                     }
+                     values = testCaseExecutionService.readDistinctValuesByCriteria(system, test, searchParameter, individualSearch, columnName, likeColumn);
                 }
-                values = testCaseExecutionService.readDistinctValuesByCriteria(system, test, searchParameter, individualSearch, columnName);
         }
 
         object.put("distinctValues", values.getDataList());

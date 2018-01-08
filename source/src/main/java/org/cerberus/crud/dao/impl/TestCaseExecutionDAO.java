@@ -1177,7 +1177,6 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         }
         List<TestCaseExecution> testCaseExecutionList = new ArrayList<TestCaseExecution>();
         Connection connection = this.databaseSpring.connect();
-        System.out.println(query);
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             int i = 1;
@@ -1886,7 +1885,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     }
 
     @Override
-    public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
+    public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName, Boolean likeColumn) {
         AnswerList answer = new AnswerList();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -1899,43 +1898,47 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         query.append(columnName);
         query.append(" as distinctValues FROM testcaseexecution exe ");
         query.append("where exe.`start`> '").append(DateUtil.getMySQLTimestampTodayDeltaMinutes(-360000)).append("' ");
-
-        if (!StringUtil.isNullOrEmpty(searchParameter)) {
-            query.append("and (exe.`id` like ? ");
-            query.append(" or exe.`test` like ? ");
-            query.append(" or exe.`testCase` like ? ");
-            query.append(" or exe.`build` like ? ");
-            query.append(" or exe.`revision` like ? ");
-            query.append(" or exe.`environment` like ? ");
-            query.append(" or exe.`country` like ? ");
-            query.append(" or exe.`browser` like ? ");
-            query.append(" or exe.`version` like ? ");
-            query.append(" or exe.`platform` like ? ");
-            query.append(" or exe.`browserfullversion` like ? ");
-            query.append(" or exe.`start` like ? ");
-            query.append(" or exe.`end` like ? ");
-            query.append(" or exe.`controlstatus` like ? ");
-            query.append(" or exe.`controlmessage` like ? ");
-            query.append(" or exe.`application` like ? ");
-            query.append(" or exe.`ip` like ? ");
-            query.append(" or exe.`url` like ? ");
-            query.append(" or exe.`port` like ? ");
-            query.append(" or exe.`tag` like ? ");
-            query.append(" or exe.`finished` like ? ");
-            query.append(" or exe.`status` like ? ");
-            query.append(" or exe.`crbversion` like ? ");
-            query.append(" or exe.`executor` like ? ");
-            query.append(" or exe.`screensize` like ? )");
-        }
-        if (individualSearch != null && !individualSearch.isEmpty()) {
-            query.append(" and ( 1=1 ");
-            for (Map.Entry<String, List<String>> entry : individualSearch.entrySet()) {
-                query.append(" and ");
-                query.append(SqlUtil.getInSQLClauseForPreparedStatement(entry.getKey(), entry.getValue()));
-                individalColumnSearchValues.addAll(entry.getValue());
+        
+        if(likeColumn) {
+            query.append("and " +columnName+ " like ? ");
+        }else {
+        	if (!StringUtil.isNullOrEmpty(searchParameter)) {
+                query.append("and (exe.`id` like ? ");
+                query.append(" or exe.`test` like ? ");
+                query.append(" or exe.`testCase` like ? ");
+                query.append(" or exe.`build` like ? ");
+                query.append(" or exe.`revision` like ? ");
+                query.append(" or exe.`environment` like ? ");
+                query.append(" or exe.`country` like ? ");
+                query.append(" or exe.`browser` like ? ");
+                query.append(" or exe.`version` like ? ");
+                query.append(" or exe.`platform` like ? ");
+                query.append(" or exe.`browserfullversion` like ? ");
+                query.append(" or exe.`start` like ? ");
+                query.append(" or exe.`end` like ? ");
+                query.append(" or exe.`controlstatus` like ? ");
+                query.append(" or exe.`controlmessage` like ? ");
+                query.append(" or exe.`application` like ? ");
+                query.append(" or exe.`ip` like ? ");
+                query.append(" or exe.`url` like ? ");
+                query.append(" or exe.`port` like ? ");
+                query.append(" or exe.`tag` like ? ");
+                query.append(" or exe.`finished` like ? ");
+                query.append(" or exe.`status` like ? ");
+                query.append(" or exe.`crbversion` like ? ");
+                query.append(" or exe.`executor` like ? ");
+                query.append(" or exe.`screensize` like ? )");
             }
-            query.append(" ) ");
-        }
+            if (individualSearch != null && !individualSearch.isEmpty()) {
+                query.append(" and ( 1=1 ");
+                for (Map.Entry<String, List<String>> entry : individualSearch.entrySet()) {
+                    query.append(" and ");
+                    query.append(SqlUtil.getInSQLClauseForPreparedStatement(entry.getKey(), entry.getValue()));
+                    individalColumnSearchValues.addAll(entry.getValue());
+                }
+                query.append(" ) ");
+            }
+        } 
 
         query.append(" order by ").append(columnName).append(" asc");
 
@@ -1943,41 +1946,46 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
         }
-
+        
         try (Connection connection = databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(query.toString())) {
 
             int i = 1;
-            if (!Strings.isNullOrEmpty(searchParameter)) {
-                preStat.setString(i++, "%" + searchParameter + "%");
-                preStat.setString(i++, "%" + searchParameter + "%");
-                preStat.setString(i++, "%" + searchParameter + "%");
-                preStat.setString(i++, "%" + searchParameter + "%");
-                preStat.setString(i++, "%" + searchParameter + "%");
-                preStat.setString(i++, "%" + searchParameter + "%");
-                preStat.setString(i++, "%" + searchParameter + "%");
-                preStat.setString(i++, "%" + searchParameter + "%");
-                preStat.setString(i++, "%" + searchParameter + "%");
-                preStat.setString(i++, "%" + searchParameter + "%");
-                preStat.setString(i++, "%" + searchParameter + "%");
-                preStat.setString(i++, "%" + searchParameter + "%");
-                preStat.setString(i++, "%" + searchParameter + "%");
-                preStat.setString(i++, "%" + searchParameter + "%");
-                preStat.setString(i++, "%" + searchParameter + "%");
-                preStat.setString(i++, "%" + searchParameter + "%");
-                preStat.setString(i++, "%" + searchParameter + "%");
-                preStat.setString(i++, "%" + searchParameter + "%");
-                preStat.setString(i++, "%" + searchParameter + "%");
-                preStat.setString(i++, "%" + searchParameter + "%");
-                preStat.setString(i++, "%" + searchParameter + "%");
-                preStat.setString(i++, "%" + searchParameter + "%");
-                preStat.setString(i++, "%" + searchParameter + "%");
-                preStat.setString(i++, "%" + searchParameter + "%");
-                preStat.setString(i++, "%" + searchParameter + "%");
-                preStat.setString(i++, "%" + searchParameter + "%");
-            }
-            for (String individualColumnSearchValue : individalColumnSearchValues) {
-                preStat.setString(i++, individualColumnSearchValue);
+            
+            if(likeColumn) {
+            	preStat.setString(i++, "%" + searchParameter + "%");
+            }else {
+            	if (!Strings.isNullOrEmpty(searchParameter)) {
+                    preStat.setString(i++, "%" + searchParameter + "%");
+                    preStat.setString(i++, "%" + searchParameter + "%");
+                    preStat.setString(i++, "%" + searchParameter + "%");
+                    preStat.setString(i++, "%" + searchParameter + "%");
+                    preStat.setString(i++, "%" + searchParameter + "%");
+                    preStat.setString(i++, "%" + searchParameter + "%");
+                    preStat.setString(i++, "%" + searchParameter + "%");
+                    preStat.setString(i++, "%" + searchParameter + "%");
+                    preStat.setString(i++, "%" + searchParameter + "%");
+                    preStat.setString(i++, "%" + searchParameter + "%");
+                    preStat.setString(i++, "%" + searchParameter + "%");
+                    preStat.setString(i++, "%" + searchParameter + "%");
+                    preStat.setString(i++, "%" + searchParameter + "%");
+                    preStat.setString(i++, "%" + searchParameter + "%");
+                    preStat.setString(i++, "%" + searchParameter + "%");
+                    preStat.setString(i++, "%" + searchParameter + "%");
+                    preStat.setString(i++, "%" + searchParameter + "%");
+                    preStat.setString(i++, "%" + searchParameter + "%");
+                    preStat.setString(i++, "%" + searchParameter + "%");
+                    preStat.setString(i++, "%" + searchParameter + "%");
+                    preStat.setString(i++, "%" + searchParameter + "%");
+                    preStat.setString(i++, "%" + searchParameter + "%");
+                    preStat.setString(i++, "%" + searchParameter + "%");
+                    preStat.setString(i++, "%" + searchParameter + "%");
+                    preStat.setString(i++, "%" + searchParameter + "%");
+                    preStat.setString(i++, "%" + searchParameter + "%");
+                }
+                for (String individualColumnSearchValue : individalColumnSearchValues) {
+                    preStat.setString(i++, individualColumnSearchValue);
+                }
             }
 
             ResultSet resultSet = preStat.executeQuery();

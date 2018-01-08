@@ -1356,6 +1356,7 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
         configs["createdRow"] = createdRowCallback;
     }
     if (tableConfigurations.serverSide) {
+    	
 
         configs["sAjaxSource"] = tableConfigurations.ajaxSource;
         configs["sAjaxDataProp"] = tableConfigurations.ajaxProp;

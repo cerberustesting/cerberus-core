@@ -227,7 +227,7 @@ public interface ITestCaseExecutionService {
      */
     void convert(Answer answer) throws CerberusException;
 
-    public AnswerList readDistinctValuesByCriteria(String system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+    public AnswerList readDistinctValuesByCriteria(String system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName, Boolean likeColumn);
 
     /**
      *

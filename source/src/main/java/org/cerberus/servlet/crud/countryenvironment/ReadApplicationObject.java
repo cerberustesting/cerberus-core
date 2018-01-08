@@ -19,8 +19,16 @@
  */
 package org.cerberus.servlet.crud.countryenvironment;
 
+import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import org.cerberus.crud.entity.ApplicationObject;
+import org.cerberus.crud.entity.Invariant;
+import org.cerberus.crud.entity.TestCaseExecution;
+import org.cerberus.crud.service.IApplicationObjectService;
+import org.cerberus.crud.service.impl.ApplicationService;
+import org.cerberus.crud.service.impl.BuildRevisionInvariantService;
+import org.cerberus.crud.service.impl.InvariantService;
+import org.cerberus.crud.service.impl.TestCaseService;
 import org.cerberus.crud.service.IApplicationObjectService;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
@@ -115,13 +123,17 @@ public class ReadApplicationObject extends HttpServlet {
                     answer = findApplicationObject(id, appContext, userHasPermissions, request);
                     jsonResponse = (JSONObject) answer.getItem();
                 }
-            } else if (request.getParameter("application") == null) {
+            } else if (request.getParameter("columnName") != null) {
+            	answer = findValuesForColumnFilter(appContext, request);
+                jsonResponse = (JSONObject) answer.getItem();
+            }
+            else if (request.getParameter("application") == null) {
                 answer = findApplicationObjectList(null, appContext, userHasPermissions, request);
                 jsonResponse = (JSONObject) answer.getItem();
             } else if (request.getParameter("iDisplayStart") == null){
                 answer = findApplicationObjectList(request.getParameter("application"), appContext, userHasPermissions);
                 jsonResponse = (JSONObject) answer.getItem();
-            } else {
+            }else {
                 answer = findApplicationObjectList(request.getParameter("application"), appContext, userHasPermissions, request);
                 jsonResponse = (JSONObject) answer.getItem();
             }
@@ -303,6 +315,36 @@ public class ReadApplicationObject extends HttpServlet {
         Gson gson = new Gson();
         JSONObject result = new JSONObject(gson.toJson(application));
         return result;
+    }
+    
+    /**
+     * Find Values to display for Column Filter
+     *
+     * @param appContext
+     * @param request
+     * @param columnName
+     * @return
+     * @throws JSONException
+     */
+    private AnswerItem findValuesForColumnFilter(ApplicationContext appContext, HttpServletRequest request) throws JSONException {
+        AnswerItem answer = new AnswerItem();
+        JSONObject object = new JSONObject();
+        AnswerList values = new AnswerList();
+        Map<String, List<String>> individualSearch = new HashMap();
+        
+        applicationObjectService = appContext.getBean(IApplicationObjectService.class);
+
+        String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
+        String columnName = ParameterParserUtil.parseStringParam(request.getParameter("columnName"), "");
+        Boolean likeColumn = ParameterParserUtil.parseBooleanParam(request.getParameter("likeColumn"), false);
+                
+        values = applicationObjectService.readDistinctValuesByCriteria(searchParameter, individualSearch, columnName, likeColumn);
+
+        object.put("distinctValues", values.getDataList());
+
+        answer.setItem(object);
+        answer.setResultMessage(values.getResultMessage());
+        return answer;
     }
 
 }
