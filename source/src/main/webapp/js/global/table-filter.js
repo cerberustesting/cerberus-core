@@ -154,11 +154,7 @@ function createEditable(tableId, columnVisibleIndex, title, contentUrl, index, t
                 }
             },
             display: function (value, sourceData) {
-                var val;
-                $(value).each(function (i) {
-                    val = "<input placeholder='Search...' autocomplete='off' id='inputsearch_"+index+"' class='col-sm-8 form-control input-sm' name='searchField' />";
-                });
-                $(this).html(val);
+
             },
             success: function (response, newValue) {
                 if(clientSide) {
@@ -626,6 +622,15 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
 	         	 
 	         	 $(that).parent().click(function(e){
 	         		$(this).children().focus()
+	         		if(allcolumnSearchValues[currentValue] === undefined){
+	                	if ($(this).find("span").size() < 2) {
+	                		$("#" + tableId + '_wrapper .editable-checklist').find("input").prop('checked', true);
+	                	} else {
+	                		$(this).find("span").each(function () {
+	                			$("#" + tableId + '_wrapper .editable-checklist').find("input[value='" + $(this).text() + "']").prop('checked', true);
+	           	         	});
+	                	}
+	            	}
 	         	 })
 	         	 
 	         	$(that).click(function (e) {
