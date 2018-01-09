@@ -388,7 +388,7 @@ public class LabelDAO implements ILabelDAO {
             searchSQL.append(" and (`System` = ? )");
         }
 
-        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+    	if (!StringUtil.isNullOrEmpty(searchTerm)) {
             searchSQL.append(" and (`id` like ?");
             searchSQL.append(" or `system` like ?");
             searchSQL.append(" or `label` like ?");
@@ -414,6 +414,7 @@ public class LabelDAO implements ILabelDAO {
             }
             searchSQL.append(" )");
         }
+        
         query.append(searchSQL);
         query.append(" order by ").append(columnName).append(" asc");
 
@@ -428,7 +429,8 @@ public class LabelDAO implements ILabelDAO {
             if (!StringUtil.isNullOrEmpty(system)) {
                 preStat.setString(i++, system);
             }
-            if (!StringUtil.isNullOrEmpty(searchTerm)) {
+
+        	if (!StringUtil.isNullOrEmpty(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
@@ -448,7 +450,7 @@ public class LabelDAO implements ILabelDAO {
             for (String individualColumnSearchValue : individalColumnSearchValues) {
                 preStat.setString(i++, individualColumnSearchValue);
             }
-
+            
             ResultSet resultSet = preStat.executeQuery();
 
             //gets the data

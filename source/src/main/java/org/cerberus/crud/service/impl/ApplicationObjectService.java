@@ -100,8 +100,8 @@ public class ApplicationObjectService implements IApplicationObjectService {
     }
 
     @Override
-    public AnswerList<String> readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName, Boolean likeColumn) {
-        return ApplicationObjectDAO.readDistinctValuesByCriteria(searchParameter, individualSearch, columnName, likeColumn);
+    public AnswerList<String> readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
+        return ApplicationObjectDAO.readDistinctValuesByCriteria(searchParameter, individualSearch, columnName);
     }
 
     @Override

@@ -127,7 +127,7 @@ public class ReadTestCaseExecution extends HttpServlet {
 
             if (!Strings.isNullOrEmpty(columnName)) {
                 //If columnName is present, then return the distinct value of this column.
-                answer = findValuesForColumnFilter(system, test, appContext, request, columnName,likeColumn);
+                answer = findValuesForColumnFilter(system, test, appContext, request, columnName);
                 jsonResponse = (JSONObject) answer.getItem();
             }else if (!Tag.equals("") && byColumns) {
                 //Return the columns to display in the execution table
@@ -445,14 +445,17 @@ public class ReadTestCaseExecution extends HttpServlet {
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
 
         Map<String, List<String>> individualSearch = new HashMap<>();
+        List<String> individualLike = new ArrayList(Arrays.asList(request.getParameter("sLike").split(",")));
+        
+        
         for (int a = 0; a < columnToSort.length; a++) {
             if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
                 List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
                 individualSearch.put(columnToSort[a], search);
             }
         }
-
-        testCaseExecutionList = testCaseExecutionService.readByCriteria(startPosition, length, columnName.concat(" ").concat(sort), searchParameter, individualSearch);
+        
+        testCaseExecutionList = testCaseExecutionService.readByCriteria(startPosition, length, columnName.concat(" ").concat(sort), searchParameter, individualSearch, individualLike);
 
         JSONArray jsonArray = new JSONArray();
         if (testCaseExecutionList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
@@ -735,11 +738,12 @@ public class ReadTestCaseExecution extends HttpServlet {
      * @return
      * @throws JSONException
      */
-    private AnswerItem findValuesForColumnFilter(String system, String test, ApplicationContext appContext, HttpServletRequest request, String columnName, Boolean likeColumn) throws JSONException {
+    private AnswerItem findValuesForColumnFilter(String system, String test, ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
         AnswerItem answer = new AnswerItem();
         JSONObject object = new JSONObject();
         AnswerList values = new AnswerList();
         Map<String, List<String>> individualSearch = new HashMap();
+        Map<String, List<String>> individualLike = new HashMap();
 
         testCaseService = appContext.getBean(TestCaseService.class);
         invariantService = appContext.getBean(InvariantService.class);
@@ -820,19 +824,17 @@ public class ReadTestCaseExecution extends HttpServlet {
                 String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
                 String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "tec.test,tec.testcase,application,project,ticket,description,behaviororvalueexpected,readonly,bugtrackernewurl,deploytype,mavengroupid");
                 String columnToSort[] = sColumns.split(",");
-                
-                if(likeColumn) {
-                	values = testCaseExecutionService.readDistinctValuesByCriteria(system, test, searchParameter, individualSearch, columnName, likeColumn);
-                }else {
-                	 individualSearch = new HashMap<>();
-                     for (int a = 0; a < columnToSort.length; a++) {
-                         if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
-                             List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
-                             individualSearch.put(columnToSort[a], search);
-                         }
-                     }
-                     values = testCaseExecutionService.readDistinctValuesByCriteria(system, test, searchParameter, individualSearch, columnName, likeColumn);
+
+                individualSearch = new HashMap<>();
+                individualLike = new HashMap<>();
+                for (int a = 0; a < columnToSort.length; a++) {
+                    if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
+                        List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
+                        individualSearch.put(columnToSort[a], search);
+                    }
+                    
                 }
+                values = testCaseExecutionService.readDistinctValuesByCriteria(system, test, searchParameter, individualSearch, columnName);
         }
 
         object.put("distinctValues", values.getDataList());

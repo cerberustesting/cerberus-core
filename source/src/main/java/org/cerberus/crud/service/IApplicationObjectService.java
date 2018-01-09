@@ -130,7 +130,7 @@ public interface IApplicationObjectService {
      * @param columnName
      * @return
      */
-    AnswerList<String> readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName, Boolean likeColumn);
+    AnswerList<String> readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 
     /**
      *

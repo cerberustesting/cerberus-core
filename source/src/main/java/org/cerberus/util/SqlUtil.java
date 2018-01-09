@@ -81,6 +81,35 @@ public class SqlUtil {
         String res = result.toString().substring(0, (result.length() - 1));
         return res + ")";
     }
+    
+    public static String getInSQLClauseForPreparedStatement(String parameter, List<?> obj, List<?>like) {
+    	String res = "";
+        if (obj == null) {
+            return "";
+        }
+        if (obj.isEmpty()) {
+            return "";
+        }
+        StringBuilder result = new StringBuilder();
+        result.append(" ");
+        result.append(parameter);
+        if(!like.contains(parameter)) {
+        	result.append(" in (");
+        	for (Object myObj : obj) {
+                result.append("?");
+                result.append(",");
+            }
+        	res = result.toString().substring(0, (result.length() - 1)) + ")";
+        }else {
+        	result.append(" like ");
+        	for (Object myObj : obj) {
+                result.append("'%' ? '%'");
+            }
+        	res = result.toString();
+        }
+
+        return res;
+    }
 
     public static String createWhereInClause(String field, List<String> values, boolean isString) {
 

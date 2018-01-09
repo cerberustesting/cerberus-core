@@ -1403,6 +1403,18 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
             };
         }
         configs["fnServerData"] = function (sSource, aoData, fnCallback, oSettings) {
+        	
+        	var like = ""
+        	
+        	$.each(oSettings.aoColumns, function(index,value){
+        		if(oSettings.aoColumns[index].like){
+        			like += oSettings.aoColumns[index].sName + ","
+        		}
+        	})
+        	
+        	like = like.substring(0, like.length-1);
+
+        	aoData.push({name: "sLike", value: like});
 
             var objectWL = $(objectWaitingLayer);
             if (objectWaitingLayer !== undefined) {

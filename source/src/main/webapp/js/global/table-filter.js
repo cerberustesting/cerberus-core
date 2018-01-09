@@ -52,42 +52,6 @@ function resetFilters(oTable, columnNumber, clearGlobalSearch) {
     oTable.fnDraw();
 }
 
-;(function($){
-    $.fn.extend({
-        donetyping: function(callback,timeout){
-            timeout = timeout || 900; // 1 second default timeout
-            var timeoutReference,
-                doneTyping = function(el){
-                    if (!timeoutReference) return;
-                    timeoutReference = null;
-                    callback.call(el);
-                };
-            return this.each(function(i,el){
-                var $el = $(el);
-                // Chrome Fix (Use keyup over keypress to detect backspace)
-                $el.is(':input') && $el.on('keyup keypress paste',function(e){
-                    // This catches the backspace button in chrome, but also prevents
-                    // the event from triggering too preemptively. Without this line,
-                    // using tab/shift+tab will make the focused element fire the callback.
-                    if (e.type=='keyup' && e.keyCode!=8) return;
-                    
-                    // Check if timeout has been set. If it has, "reset" the clock and
-                    // start over again.
-                    if (timeoutReference) clearTimeout(timeoutReference);
-                    timeoutReference = setTimeout(function(){
-                        // if we made it here, our timeout has elapsed. Fire the
-                        // callback
-                        doneTyping(el);
-                    }, timeout);
-                }).on('blur',function(){
-                    // If we can, fire the event since we're leaving the field
-                    doneTyping(el);
-                });
-            });
-        }
-    });
-})(jQuery);
-
 function resetTooltip() {
     $(".tooltip.fade").remove();
 }
@@ -105,7 +69,7 @@ function createEditable(tableId, columnVisibleIndex, title, contentUrl, index, t
                 if(clientSide) {
                     return data;
                 }else if(init){
-                	return [{"value":0,"text":"please enter a value (need 2 letters)"}];
+                	return [{}];
                 }
 
                 //Check if URL already contains parameters
@@ -113,14 +77,8 @@ function createEditable(tableId, columnVisibleIndex, title, contentUrl, index, t
                 var url;
                 var result;
                 
-                if(!like){
-                	url = './' + contentUrl + urlSeparator + 'columnName=' + title;
-                }else{
-                	contentUrl = (contentUrl.split("?"))[0]
-                	urlSeparator = contentUrl.indexOf("?") > -1 ? "&" : "?";
-                	url = './' + contentUrl + urlSeparator + 'columnName=' + title + "&sSearch=" +inputText +"&likeColumn=true";
-                }
-                
+                url = './' + contentUrl + urlSeparator + 'columnName=' + title;
+
                 $.ajax({
                     type: 'GET',
                     async: false,
@@ -158,6 +116,7 @@ function createEditable(tableId, columnVisibleIndex, title, contentUrl, index, t
             },
             success: function (response, newValue) {
                 if(clientSide) {
+                	
                     columnSearchValuesForClientSide[index] = newValue;
                     var filterForFnFilter = "";//create the filter list that will be used by fnFilter
                     for (var i in newValue) {
@@ -174,7 +133,6 @@ function createEditable(tableId, columnVisibleIndex, title, contentUrl, index, t
     if(value != undefined){
     	select.editable("setValue", value.toString(), false)
     }
-
 }
 
 /**
@@ -259,7 +217,7 @@ function applyFiltersOnMultipleColumns(tableId, searchColumns, fromURL) {
             searchArray.push(searchObject);
         }
     }
-
+    
     // Apply filter on table
     var oTable = $('#' + tableId).dataTable();
     resetFilters(oTable);
@@ -411,6 +369,7 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
             //Build the Alert Message for filtered column information
             var filteredColumnInformation = new Array();
             var filteredTooltip = '<div>';
+            
             $(columnSearchValues).each(function (i) {
                 valueFiltered[i] = $('<p>' + columnSearchValues[i] + '</p>').text();
                 filteredTooltip += "<br><span>" + $('<p>' + columnSearchValues[i] + '</p>').text() + "</span> ";
@@ -422,7 +381,11 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
             filteredInformation.push("<div class=\"col-sm-2 alert alert-warning\" style=\"margin-bottom:0px;\">");
             filteredInformation.push("<span id='clearFilterButton" + index + "' onclick='"+fctClearIndividualFilter+"(\"" + tableId + "\", \"" + index + "\", false)' data-toggle='tooltip' title='Clear filter " + title + "' class='pull-right glyphicon glyphicon-remove-sign'  style='cursor:pointer;'></span>");
             filteredInformation.push("<div style=\"margin-bottom:0px;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;\">");
-            filteredInformation.push("<strong>" + title + "</strong> IN <br>");
+            if(oSettings.aoColumns[index].like){
+            	filteredInformation.push("<strong>" + title + "</strong> LIKE <br>");
+            }else{
+            	filteredInformation.push("<strong>" + title + "</strong> IN <br>");
+            }
             filteredInformation.push("<div data-toggle=\"tooltip\" data-html=\"true\" title=\"" + filteredTooltip + "\" id=\"alertFilteredValues" + index + "\">[ ");
             filteredInformation.push(filteredColumnInformation);
             filteredInformation.push(" ]</div></div></div>");
@@ -453,7 +416,6 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
                 //Then init the editable object
             	if(!oSettings.aoColumns[index].like || oSettings.aoColumns[index].like === null){
             		createEditable(tableId, columnVisibleIndex, title, contentUrl, index, tableCell, display, clientSide, false, null,false, allcolumnSearchValues[value])
-            		
             	}else{
             		createEditable(tableId, columnVisibleIndex, title, contentUrl, index, tableCell, display, clientSide, false, null,true, allcolumnSearchValues[value])
             	}
@@ -511,6 +473,7 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
     //To put into a function
     //When clicking on the edit filter links
     $("#" + tableId + "_wrapper .editable").click(function () {
+    	
     	var currentValue = $(this).next().find(".popover-title").text() != "" ? $(this).next().find(".popover-title").text() : "undefined"
         //Clear custom fields to avoid duplication
         $("#" + tableId + "_wrapper [data-type='custom']").remove();
@@ -544,7 +507,14 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
                 allElement.find("[type='checkbox']").prop('checked', false);
                 allElement.hide();
                 //check and show element that need to be check
-                elementsTocheck.find("[type='checkbox']").prop('checked', true);
+                
+                if(allcolumnSearchValues[currentValue] != undefined){
+                	$.each(allcolumnSearchValues[currentValue], function(index,value){
+                		elementsTocheck.find("input[value='"+value+"']").prop('checked', true);
+                    })
+                }else{
+                	elementsTocheck.find("[type='checkbox']").prop('checked', true);
+                }
                 elementsTocheck.show();
         	}
         	
@@ -569,82 +539,15 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
             }
         });
         
-        var event = function(that){
-         	var currentColumn = oSettings.aoColumns[$(that).attr('id').split('_')[1]] 
-         	if(!currentColumn.like != null && currentColumn.like){
-	         	var columnVisibleIndex = $(that).attr('id').split('_')[1]
-	         	$(that).parent().remove();
-	         	$(that).parent().editable("destroy")
-	         	
-	         	var title = currentColumn["sName"]
-	         	var index = $(that).attr('id').split('_')[1]
-	            var tableCell = $($("#" + tableId + '_wrapper [name="filterColumnHeader"]')[columnVisibleIndex])[0];
-	         	var txt = $(that).val()
-	         	
-	         	if(txt.length >= 2){
-	         		createEditable(tableId, columnVisibleIndex, title, contentUrl, index, tableCell, $(that), false, true, $(that).val(),false, allcolumnSearchValues[currentValue])
-	        	}else{
-	        		createEditable(tableId, columnVisibleIndex, title, contentUrl, index, tableCell, $(that), false, false, null,true, allcolumnSearchValues[currentValue])
-	        	}
-	         	
-	         	$(that).parent().editable("show");
-	         	
-	         	if(allcolumnSearchValues[currentValue] === undefined){
-	            	if ($(that).parent().size() < 2) {
-	            		$("#" + tableId + '_wrapper .editable-checklist').find("input").prop('checked', true);
-	            	} else {
-	            		$(that).parent().each(function () {
-	            			$("#" + tableId + '_wrapper .editable-checklist').find("input[value='" + $(that).text() + "']").prop('checked', true);
-	       	         	});
-	            	}
-	        	}
-	         	
-	         	 $("#" + tableId + "_wrapper .popover-title").after(
-	                     $('<button>').attr('class', 'glyphicon glyphicon-check')
-	                         .attr('type', 'button')
-	                         .attr('title', 'select all').attr('name', 'selectAll')
-	                         .attr('data-type', 'custom').on('click', function () {
-	                         $(this).parent().parent().find("[type='checkbox']:visible").prop('checked', true);
-	                     }));
-	                 $("#" + tableId + "_wrapper .popover-title").after(
-	                     $('<button>').attr('class', 'glyphicon glyphicon-unchecked')
-	                         .attr('type', 'button')
-	                         .attr('title', 'unselect all').attr('name', 'unSelectAll')
-	                         .attr('data-type', 'custom').on('click', function () {
-	                         $(this).parent().parent().find("[type='checkbox']:visible").prop('checked', false);
-	                     }));
-	                 
-	         	 $(that).focus();
-	         	
-	         	 $(that).donetyping(function(e){
-	             	event($(this))
-	             });
-	         	 
-	         	 $(that).parent().click(function(e){
-	         		$(this).children().focus()
-	         		if(allcolumnSearchValues[currentValue] === undefined){
-	                	if ($(this).find("span").size() < 2) {
-	                		$("#" + tableId + '_wrapper .editable-checklist').find("input").prop('checked', true);
-	                	} else {
-	                		$(this).find("span").each(function () {
-	                			$("#" + tableId + '_wrapper .editable-checklist').find("input[value='" + $(this).text() + "']").prop('checked', true);
-	           	         	});
-	                	}
-	            	}
-	         	 })
-	         	 
-	         	$(that).click(function (e) {
-	                if($(that).parent().parent().find(".popover.editable-popup").length>0) {
-	                    return false;
-	                }
-	            });
-         	}
-        }
- 
-        searchInput.donetyping(function(e){
-        	event($(this))
+        $(searchInput).parent().parent().find(".editable-submit").click(function(e){
+        	var currentColumn = oSettings.aoColumns[$(searchInput).attr('id').split('_')[1]] 
+        	if(currentColumn.like != null && currentColumn.like){
+        		var value = [$(searchInput).val()]
+        		$(searchInput).parent().editable("submit", value)
+        	}
+        	  
         });
-        
+                
         searchInput.click(function (e) {
             if($(this).parent().parent().find(".popover.editable-popup").length>0) {
                 return false;
@@ -652,7 +555,7 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
         });
 
         searchInput.focus();
-
+        
         //Add selectAll/unSelectAll button
         $("#" + tableId + "_wrapper .popover-title").after(
             $('<button>').attr('class', 'glyphicon glyphicon-check')
@@ -668,7 +571,9 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
                 .attr('data-type', 'custom').on('click', function () {
                 $(this).parent().parent().find("[type='checkbox']:visible").prop('checked', false);
             }));
+
     });
+    
 
     if(focusOnNextSearchInputBool) {
         focusOnNextSearchInput(lastSearchInput);

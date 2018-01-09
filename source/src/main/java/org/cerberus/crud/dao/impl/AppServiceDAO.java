@@ -372,7 +372,6 @@ public class AppServiceDAO implements IAppServiceDAO {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
                 preStat.setString(1, key);
-                System.out.print(preStat);
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     if (resultSet.first()) {
@@ -384,11 +383,9 @@ public class AppServiceDAO implements IAppServiceDAO {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
                     }
                 } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
                 } finally {
-                    resultSet.close();
                 }
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());

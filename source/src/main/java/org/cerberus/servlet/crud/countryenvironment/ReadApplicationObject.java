@@ -336,9 +336,8 @@ public class ReadApplicationObject extends HttpServlet {
 
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
         String columnName = ParameterParserUtil.parseStringParam(request.getParameter("columnName"), "");
-        Boolean likeColumn = ParameterParserUtil.parseBooleanParam(request.getParameter("likeColumn"), false);
                 
-        values = applicationObjectService.readDistinctValuesByCriteria(searchParameter, individualSearch, columnName, likeColumn);
+        values = applicationObjectService.readDistinctValuesByCriteria(searchParameter, individualSearch, columnName);
 
         object.put("distinctValues", values.getDataList());
 

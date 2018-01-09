@@ -179,8 +179,8 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     }
     
     @Override
-    public AnswerList readByCriteria(int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException {
-        return testCaseExecutionDao.readByCriteria(start, amount, sort, searchTerm, individualSearch);
+    public AnswerList readByCriteria(int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch, List<String> individualLike) throws CerberusException {
+        return testCaseExecutionDao.readByCriteria(start, amount, sort, searchTerm, individualSearch, individualLike);
     }
     
     @Override
@@ -296,8 +296,8 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     }
     
     @Override
-    public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName, Boolean likeColumn) {
-        return testCaseExecutionDao.readDistinctValuesByCriteria(system, test, searchParameter, individualSearch, columnName, likeColumn);
+    public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
+        return testCaseExecutionDao.readDistinctValuesByCriteria(system, test, searchParameter, individualSearch, columnName);
     }
     
     @Override
