@@ -445,13 +445,16 @@ public class ReadTestCaseExecution extends HttpServlet {
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
 
         Map<String, List<String>> individualSearch = new HashMap<>();
-        List<String> individualLike = new ArrayList(Arrays.asList(request.getParameter("sLike").split(",")));
-        
+        List<String> individualLike = new ArrayList(Arrays.asList(ParameterParserUtil.parseStringParam(request.getParameter("sLike"), "").split(",")));
         
         for (int a = 0; a < columnToSort.length; a++) {
             if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
                 List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
-                individualSearch.put(columnToSort[a], search);
+                if(individualLike.contains(columnToSort[a])) {
+                	individualSearch.put(columnToSort[a]+":like", search);
+                }else {
+                	individualSearch.put(columnToSort[a], search);
+                }
             }
         }
         
@@ -743,7 +746,6 @@ public class ReadTestCaseExecution extends HttpServlet {
         JSONObject object = new JSONObject();
         AnswerList values = new AnswerList();
         Map<String, List<String>> individualSearch = new HashMap();
-        Map<String, List<String>> individualLike = new HashMap();
 
         testCaseService = appContext.getBean(TestCaseService.class);
         invariantService = appContext.getBean(InvariantService.class);
@@ -826,7 +828,6 @@ public class ReadTestCaseExecution extends HttpServlet {
                 String columnToSort[] = sColumns.split(",");
 
                 individualSearch = new HashMap<>();
-                individualLike = new HashMap<>();
                 for (int a = 0; a < columnToSort.length; a++) {
                     if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
                         List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));

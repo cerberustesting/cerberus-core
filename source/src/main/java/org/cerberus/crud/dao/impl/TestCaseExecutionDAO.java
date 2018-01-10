@@ -1155,7 +1155,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             query.append(" and ( 1=1 ");
             for (Map.Entry<String, List<String>> entry : individualSearch.entrySet()) {
                 query.append(" and ");
-                query.append(SqlUtil.getInSQLClauseForPreparedStatement(entry.getKey(), entry.getValue(), individualLike));
+                query.append(SqlUtil.getInSQLClauseForPreparedStatement(entry.getKey(), entry.getValue()));
                 individalColumnSearchValues.addAll(entry.getValue());
             }
             query.append(" ) ");
@@ -1946,8 +1946,6 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
 
             int i = 1;
             
-        	preStat.setString(i++, "%" + searchParameter + "%");
-
         	if (!Strings.isNullOrEmpty(searchParameter)) {
                 preStat.setString(i++, "%" + searchParameter + "%");
                 preStat.setString(i++, "%" + searchParameter + "%");

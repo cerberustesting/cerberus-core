@@ -556,25 +556,27 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
 
         searchInput.focus();
         
-        //Add selectAll/unSelectAll button
-        $("#" + tableId + "_wrapper .popover-title").after(
-            $('<button>').attr('class', 'glyphicon glyphicon-check')
-                .attr('type', 'button')
-                .attr('title', 'select all').attr('name', 'selectAll')
-                .attr('data-type', 'custom').on('click', function () {
-                $(this).parent().parent().find("[type='checkbox']:visible").prop('checked', true);
-            }));
-        $("#" + tableId + "_wrapper .popover-title").after(
-            $('<button>').attr('class', 'glyphicon glyphicon-unchecked')
-                .attr('type', 'button')
-                .attr('title', 'unselect all').attr('name', 'unSelectAll')
-                .attr('data-type', 'custom').on('click', function () {
-                $(this).parent().parent().find("[type='checkbox']:visible").prop('checked', false);
-            }));
-
+        var currentColumn = oSettings.aoColumns[$(searchInput).attr('id').split('_')[1]] 
+        if(currentColumn.like == null || !currentColumn.like){
+        	//Add selectAll/unSelectAll button
+        	$("#" + tableId + "_wrapper .popover-title").after(
+                $('<button>').attr('class', 'glyphicon glyphicon-check')
+                    .attr('type', 'button')
+                    .attr('title', 'select all').attr('name', 'selectAll')
+                    .attr('data-type', 'custom').on('click', function () {
+                    $(this).parent().parent().find("[type='checkbox']:visible").prop('checked', true);
+                }));
+        	$("#" + tableId + "_wrapper .popover-title").after(
+        		$('<button>').attr('class', 'glyphicon glyphicon-unchecked')
+                    .attr('type', 'button')
+                    .attr('title', 'unselect all').attr('name', 'unSelectAll')
+                    .attr('data-type', 'custom').on('click', function () {
+                    $(this).parent().parent().find("[type='checkbox']:visible").prop('checked', false);
+                }));
+        }
+        
     });
     
-
     if(focusOnNextSearchInputBool) {
         focusOnNextSearchInput(lastSearchInput);
     }

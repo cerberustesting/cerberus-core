@@ -650,7 +650,7 @@ public class TestDAO implements ITestDAO {
         } else {
             query.append(" limit ").append(start).append(" , ").append(amount);
         }
-
+        
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());

@@ -565,8 +565,7 @@ public class SqlLibraryDAO implements ISqlLibraryDAO {
             searchSQL.append(" and ( 1=1 ");
             for (Map.Entry<String, List<String>> entry : individualSearch.entrySet()) {
                 searchSQL.append(" and ");
-                String key = "IFNULL(`sql`." + entry.getKey() + ",'')";
-                String q = SqlUtil.getInSQLClauseForPreparedStatement(key, entry.getValue());
+                String q = SqlUtil.getInSQLClauseForPreparedStatement(entry.getKey(), entry.getValue());
                 if (q == null || q == "") {
                     q = "(`sql`." + entry.getKey() + " IS NULL OR " + entry.getKey() + " = '')";
                 }

@@ -543,8 +543,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
             searchSQL.append(" and ( 1=1 ");
             for (Map.Entry<String, List<String>> entry : individualSearch.entrySet()) {
                 searchSQL.append(" and ");
-                String key = "IFNULL(exq." + entry.getKey() + ",'')";
-                String q = SqlUtil.getInSQLClauseForPreparedStatement(key, entry.getValue());
+                String q = SqlUtil.getInSQLClauseForPreparedStatement(entry.getKey(), entry.getValue());
                 if (q == null || q == "") {
                     q = "(exq." + entry.getKey() + " IS NULL OR " + entry.getKey() + " = '')";
                 }
@@ -565,7 +564,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
         } else {
             query.append(" limit ").append(start).append(" , ").append(amount);
         }
-
+        
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
