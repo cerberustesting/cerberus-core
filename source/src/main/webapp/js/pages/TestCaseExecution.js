@@ -368,6 +368,8 @@ function setConfigPanel(data) {
     configPanel.find("input#end").val(new Date(data.end));
     configPanel.find("input#finished").val(data.finished);
     configPanel.find("input#id").val(data.id);
+    configPanel.find("input#controlstatus2").val(data.controlStatus);
+    configPanel.find("input#controlmessage").val(data.controlMessage);
     configPanel.find("input#ip").val(data.ip);
     configPanel.find("input#port").val(data.port);
     configPanel.find("input#platform").val(data.platform);
