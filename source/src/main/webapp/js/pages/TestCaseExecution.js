@@ -913,6 +913,8 @@ function createStepList(data, stepList) {
 
 function Step(json, stepList, id) {
     this.stepActionContainer = $("<div></div>").addClass("list-group").css("display", "none");
+    
+    console.log(json)
 
     this.description = json.description;
     this.end = json.end;
@@ -1230,10 +1232,10 @@ function Action(json, parentStep) {
         this.controlList = [];
         this.fileList = json.fileList;
         this.conditionOper = json.conditionOper;
-        this.conditionVal1Init = json.conditionVal1Init;
-        this.conditionVal2Init = json.conditionVal2Init;
-        this.conditionVal1 = json.conditionVal1;
-        this.conditionVal2 = json.conditionVal2;
+        this.conditionVal1Init = json.conditionVal1;
+        this.conditionVal2Init = json.conditionVal2;
+        this.conditionVal1 = json.conditionVal1Init;
+        this.conditionVal2 = json.conditionVal2Init;
     } else {
         this.action = "Unknown";
         this.description = "";
