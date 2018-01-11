@@ -202,7 +202,7 @@ public class ReadLabel extends HttpServlet {
         String columnToSort[] = sColumns.split(",");
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
-        List<String> individualLike = new ArrayList(Arrays.asList(request.getParameter("sLike").split(",")));
+        List<String> individualLike = new ArrayList(Arrays.asList(ParameterParserUtil.parseStringParam(request.getParameter("sLike"),"").split(",")));
 
         Map<String, List<String>> individualSearch = new HashMap<>();
         for (int a = 0; a < columnToSort.length; a++) {

@@ -2743,7 +2743,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 			testcase = thistestcase;
 		}
 		
-		$(document).on('focus', "div.step-action .content div.fieldRow input", function(e , state){
+		$(document).on('focus', "div.step-action .content div.fieldRow input:not('.description')", function(e , state){
 			var currentAction = $(this).parent().parent().find("#actionSelect").val();
 			
 			if(currentAction === "callService" || currentAction === "calculateProperty"){
