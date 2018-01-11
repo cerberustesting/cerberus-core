@@ -259,7 +259,7 @@ function updatePage(data, stepList) {
             setLinkOnEditTCStepInfoButton();
         });
 
-        $("#runTestCase").attr("disabled", false);
+        $("#runTestCase").attr("disabled", false);	
         $("#runTestCase").attr("href", "RunTests.jsp?test=" + data.test + "&testcase=" + data.testcase + "&country=" + data.country + "&environment=" + data.environment + "&browser=" + data.browser + "&tag=" + data.tag);
     }
 
@@ -914,8 +914,6 @@ function createStepList(data, stepList) {
 function Step(json, stepList, id) {
     this.stepActionContainer = $("<div></div>").addClass("list-group").css("display", "none");
     
-    console.log(json)
-
     this.description = json.description;
     this.end = json.end;
     this.fullEnd = json.fullEnd;
@@ -1232,10 +1230,10 @@ function Action(json, parentStep) {
         this.controlList = [];
         this.fileList = json.fileList;
         this.conditionOper = json.conditionOper;
-        this.conditionVal1Init = json.conditionVal1;
-        this.conditionVal2Init = json.conditionVal2;
-        this.conditionVal1 = json.conditionVal1Init;
-        this.conditionVal2 = json.conditionVal2Init;
+        this.conditionVal1Init = json.conditionVal1Init;
+        this.conditionVal2Init = json.conditionVal2Init;
+        this.conditionVal1 = json.conditionVal1;
+        this.conditionVal2 = json.conditionVal2;
     } else {
         this.action = "Unknown";
         this.description = "";

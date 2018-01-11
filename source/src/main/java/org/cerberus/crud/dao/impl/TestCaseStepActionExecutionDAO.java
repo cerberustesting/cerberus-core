@@ -420,10 +420,10 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
                 preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionExecution.getValue1Init(), 2500));
                 preStat.setString(i++, StringUtil.getLeftString(ParameterParserUtil.securePassword(testCaseStepActionExecution.getValue2Init(), testCaseStepActionExecution.getPropertyName()), 2500));
                 preStat.setString(i++, testCaseStepActionExecution.getConditionOper());
-                preStat.setString(i++, testCaseStepActionExecution.getConditionVal1Init());
-                preStat.setString(i++, testCaseStepActionExecution.getConditionVal2Init());
                 preStat.setString(i++, testCaseStepActionExecution.getConditionVal1());
                 preStat.setString(i++, testCaseStepActionExecution.getConditionVal2());
+                preStat.setString(i++, testCaseStepActionExecution.getConditionVal1Init());
+                preStat.setString(i++, testCaseStepActionExecution.getConditionVal2Init());
                 preStat.setLong(i++, testCaseStepActionExecution.getId());
                 preStat.setString(i++, testCaseStepActionExecution.getTest());
                 preStat.setString(i++, testCaseStepActionExecution.getTestCase());
