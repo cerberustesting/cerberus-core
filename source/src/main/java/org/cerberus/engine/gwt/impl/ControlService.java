@@ -1069,67 +1069,100 @@ public class ControlService implements IControlService {
 
     }
 
-    private MessageEvent VerifyRegexInElement(TestCaseExecution tCExecution, String html, String regex) {
-        LOG.debug("Control : verifyRegexInElement on : " + html + " element against value : " + regex);
+    private MessageEvent VerifyRegexInElement(TestCaseExecution tCExecution, String path, String regex) {
+        LOG.debug("Control : verifyRegexInElement on : " + path + " element against value : " + regex);
         MessageEvent mes;
+        String pathContent = null;
+        try {
 
-        if (Application.TYPE_GUI.equalsIgnoreCase(tCExecution.getApplicationObj().getType())
-                || Application.TYPE_APK.equalsIgnoreCase(tCExecution.getApplicationObj().getType())
-                || Application.TYPE_IPA.equalsIgnoreCase(tCExecution.getApplicationObj().getType())) {
+            Identifier identifier = identifierService.convertStringToIdentifier(path);
+            String applicationType = tCExecution.getApplicationObj().getType();
+            // Get value from the path element according to the application type
+            if (Application.TYPE_GUI.equalsIgnoreCase(applicationType)
+                    || Application.TYPE_APK.equalsIgnoreCase(applicationType)
+                    || Application.TYPE_IPA.equalsIgnoreCase(applicationType)) {
 
-            try {
-                Identifier identifier = identifierService.convertStringToIdentifier(html);
-                String str = this.webdriverService.getValueFromHTML(tCExecution.getSession(), identifier);
-                LOG.debug("Control : verifyRegexInElement element : " + html + " has value : " + StringUtil.sanitize(str));
-                if (html != null && str != null) {
-                    try {
-                        Pattern pattern = Pattern.compile(regex);
-                        Matcher matcher = pattern.matcher(str);
-                        if (matcher.find()) {
-                            mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_REGEXINELEMENT);
-                            mes.setDescription(mes.getDescription().replace("%STRING1%", html));
-                            mes.setDescription(mes.getDescription().replace("%STRING2%", StringUtil.sanitize(str)));
-                            mes.setDescription(mes.getDescription().replace("%STRING3%", regex));
+                pathContent = this.webdriverService.getValueFromHTML(tCExecution.getSession(), identifier);
+            } else if (Application.TYPE_SRV.equalsIgnoreCase(applicationType)) {
+                if (tCExecution.getLastServiceCalled() != null) {
+                    String responseBody = tCExecution.getLastServiceCalled().getResponseHTTPBody();
+                    switch (tCExecution.getLastServiceCalled().getResponseHTTPBodyContentType()) {
+                        case AppService.RESPONSEHTTPBODYCONTENTTYPE_XML:
+                            if (!xmlUnitService.isElementPresent(responseBody, path)) {
+                                mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTINELEMENT_NO_SUCH_ELEMENT);
+                                mes.setDescription(mes.getDescription().replace("%ELEMENT%", path));
+                                return mes;
+                            }
+                            String newPath = StringUtil.addSuffixIfNotAlready(path, "/text()");
+                            pathContent = xmlUnitService.getFromXml(responseBody, newPath);
+
+                        case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON:
+                            try {
+                                pathContent = jsonService.getFromJson(responseBody, null, path);
+                            } catch (Exception ex) {
+                                mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_GENERIC);
+                                mes.setDescription(mes.getDescription().replace("%ERROR%", ex.toString()));
+                                return mes;
+                            }
+
+                        default:
+                            mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_MESSAGETYPE);
+                            mes.setDescription(mes.getDescription().replace("%TYPE%", tCExecution.getLastServiceCalled().getResponseHTTPBodyContentType()));
+                            mes.setDescription(mes.getDescription().replace("%CONTROL%", "verifyRegexInElement"));
                             return mes;
-                        } else {
-                            mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_REGEXINELEMENT);
-                            mes.setDescription(mes.getDescription().replace("%STRING1%", html));
-                            mes.setDescription(mes.getDescription().replace("%STRING2%", StringUtil.sanitize(str)));
-                            mes.setDescription(mes.getDescription().replace("%STRING3%", regex));
-                            return mes;
-                        }
-                    } catch (PatternSyntaxException e) {
-                        mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_REGEXINELEMENT_INVALIDPATERN);
-                        mes.setDescription(mes.getDescription().replace("%PATERN%", regex));
-                        mes.setDescription(mes.getDescription().replace("%ERROR%", e.getMessage()));
-                        return mes;
                     }
-                } else if (str != null) {
-                    mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_REGEXINELEMENT_NULL);
-                    return mes;
+
+                    // TODO Give the actual element found into the description.
                 } else {
-                    mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_REGEXINELEMENT_NO_SUCH_ELEMENT);
-                    mes.setDescription(mes.getDescription().replace("%ELEMENT%", html));
+                    mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOOBJECTINMEMORY);
                     return mes;
                 }
-            } catch (NoSuchElementException exception) {
-                LOG.debug(exception.toString());
-                mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_REGEXINELEMENT_NO_SUCH_ELEMENT);
-                mes.setDescription(mes.getDescription().replace("%ELEMENT%", html));
+            } else {
+                mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+                mes.setDescription(mes.getDescription().replace("%CONTROL%", "verifyRegexInElement"));
+                mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
                 return mes;
-            } catch (WebDriverException exception) {
-                return parseWebDriverException(exception);
             }
-
-        } else {
-
-            mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-            mes.setDescription(mes.getDescription().replace("%CONTROL%", "verifyRegexInElement"));
-            mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
+            LOG.debug("Control : verifyRegexInElement element : " + path + " has value : " + StringUtil.sanitize(pathContent));
+            if (path != null && pathContent != null) {
+                try {
+                    Pattern pattern = Pattern.compile(regex);
+                    Matcher matcher = pattern.matcher(pathContent);
+                    if (matcher.find()) {
+                        mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_REGEXINELEMENT);
+                        mes.setDescription(mes.getDescription().replace("%STRING1%", path));
+                        mes.setDescription(mes.getDescription().replace("%STRING2%", StringUtil.sanitize(pathContent)));
+                        mes.setDescription(mes.getDescription().replace("%STRING3%", regex));
+                        return mes;
+                    } else {
+                        mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_REGEXINELEMENT);
+                        mes.setDescription(mes.getDescription().replace("%STRING1%", path));
+                        mes.setDescription(mes.getDescription().replace("%STRING2%", StringUtil.sanitize(pathContent)));
+                        mes.setDescription(mes.getDescription().replace("%STRING3%", regex));
+                        return mes;
+                    }
+                } catch (PatternSyntaxException e) {
+                    mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_REGEXINELEMENT_INVALIDPATERN);
+                    mes.setDescription(mes.getDescription().replace("%PATERN%", regex));
+                    mes.setDescription(mes.getDescription().replace("%ERROR%", e.getMessage()));
+                    return mes;
+                }
+            } else if (pathContent != null) {
+                mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_REGEXINELEMENT_NULL);
+                return mes;
+            } else {
+                mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_REGEXINELEMENT_NO_SUCH_ELEMENT);
+                mes.setDescription(mes.getDescription().replace("%ELEMENT%", path));
+                return mes;
+            }
+        } catch (NoSuchElementException exception) {
+            LOG.debug(exception.toString());
+            mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_REGEXINELEMENT_NO_SUCH_ELEMENT);
+            mes.setDescription(mes.getDescription().replace("%ELEMENT%", path));
             return mes;
-
+        } catch (WebDriverException exception) {
+            return parseWebDriverException(exception);
         }
-
     }
 
     private MessageEvent verifyTextInDialog(TestCaseExecution tCExecution, String property, String value) {
