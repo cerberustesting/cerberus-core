@@ -79,7 +79,7 @@ function loadExecutionQueue(executionQueueId) {
                 }
                 if (tceq.exeId > 0) {
                     var url = "./TestCaseExecution.jsp?executionId=" + tceq.exeId;
-                    console.info("redir : " + url);
+                    //console.info("redir : " + url);
                     window.location = url;
                 }
             }
@@ -242,7 +242,7 @@ function updatePage(data, stepList) {
     sortData(data.testCaseStepExecutionList);
 
     if (data.testCaseObj === undefined) {
-        console.info("testcase not exist.");
+        //console.info("testcase not exist.");
         $("#editTcInfo").attr("disabled", true);
         $("#editTcInfo").attr("href", "#");
         $("#editTcStepInfo").attr("disabled", true);
@@ -1410,17 +1410,28 @@ Action.prototype.generateHeader = function (id) {
 
         var buttonFA = $($("<button>").addClass("btn btn-warning btn-inverse").attr("type", "button").text("FA"));
         var buttonOK = $($("<button>").addClass("btn btn-success btn-inverse").attr("type", "button").text("OK"));
+        
+        //var buttonUpload = $($("<button>").addClass("btn btn-info btn-inverse").attr("type", "button").text("UPLOAD"));
+        //buttonUpload.click(function(event){
+        //})
+        
+        
         buttonOK.click(function (event) {
             event.preventDefault();
             event.stopPropagation();
             triggerActionExecution(this, id, "OK");
+            //$(this).parent().parent().find(buttonUpload).remove()
         });
         buttonFA.click(function (event) {
             event.preventDefault();
             event.stopPropagation();
             triggerActionExecution(this, id, "FA");
+            //$(this).parent().parent().find(".col-sm-10").removeClass("col-sm-10").addClass("col-sm-8")
+            //$(this).parent().parent().append(buttonUpload)
+            //$(buttonUpload).css("float","right")
 
         });
+
         contentField.append($("<div class='col-xs-2'>").addClass("btn-group btn-group-xs").attr("role", "group").append(buttonOK).append(buttonFA));
         //hide save button
         showSaveTestCaseExecutionButton();

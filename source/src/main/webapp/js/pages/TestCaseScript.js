@@ -3339,7 +3339,7 @@ function setPlaceholderProperty(propertyElement, property) {
 
 
 		function initChange() {
-
+			
 			if ($("#" + editor.container.id).parent().parent().find("[name='propertyType']").val() === "getFromDataLib") {
 				$("#" + editor.container.id).parent().find('.input-group').remove();
 				var escaped = editor.getValue().replace(/[^\w\s]/gi, '');
@@ -3347,7 +3347,7 @@ function setPlaceholderProperty(propertyElement, property) {
 					$.ajax({
 						url: "ReadTestDataLib",
 						data:{
-							name:editor.getValue(),
+							name:escaped,
 							limit:15,
 							like:"N"
 						},
@@ -3366,7 +3366,7 @@ function setPlaceholderProperty(propertyElement, property) {
 									var editEntry = $('<div class="input-group col-sm-5 col-sm-offset-3"><label>Choose one data library</label><select class="datalib  form-control"></select><span class="input-group-btn"  style="vertical-align:bottom"><button class="btn btn-secondary" type="button"><span class="glyphicon glyphicon-pencil"></span></button></span></div>');
 									$("#"+editor.container.id).parent().append(editEntry);
 
-									displayDataLibList(editor.container.id, undefined,escaped).then(function(){
+									displayDataLibList(editor.container.id, undefined,data).then(function(){
 										$("#"+editor.container.id).parent().find("button").attr('onclick', 'openModalDataLib(' + $("#"+editor.container.id).parent().find("select").val() + ",'EDIT',"+"'"+escaped+"')");
 									});
 									$("#"+editor.container.id).parent().find("select").unbind("change").change(function(){
@@ -3486,7 +3486,7 @@ function CompleterForAllDataLib(){
 	var staticWordCompleter = {
 
 			getCompletions: function (editor, session, pos, prefix, callback) {
-				$.getJSON("ReadTestDataLib?name=" + editor.getValue() + "&limit=15&like=Y", function (wordList) {
+				$.getJSON("ReadTestDataLib?name=" + editor.getValue().replace(/[^\w\s]/gi, '') + "&limit=15&like=Y", function (wordList) {
 					callback(null, wordList.contentTable.map(function (ea) {
 						return {name: ea.name, value: ea.name, meta: "DataLib"}
 					}));
