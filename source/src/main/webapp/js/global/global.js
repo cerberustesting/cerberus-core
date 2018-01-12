@@ -265,52 +265,44 @@ function displayAppServiceList(selectName, defaultValue) {
     });
 }
 
-function displayDataLibList(selectName, defaultValue, name) {
+function displayDataLibList(selectName, defaultValue, data) {
 
-    return new Promise((resolve, reject) => {
-        $("#" + selectName).parent().find("select").find('option').remove();
-        $.when($.getJSON("ReadTestDataLib?name=" + name + "&limit=15&like=N")).then(function (data) {
+    $("#" + selectName).parent().find("select").find('option').remove();
 
-            for (var option in data.contentTable) {
-                let system = "";
-                let environment = "";
-                let country = "";
-                let value = "";
-                let context = "";
-                if (!isEmpty(data.contentTable[option].system)) {
-                    system = data.contentTable[option].system + " - "
-                }
-                if (!isEmpty(data.contentTable[option].environment)) {
-                    environment = data.contentTable[option].environment + " - "
-                }
-                if (!isEmpty(data.contentTable[option].country)) {
-                    country = data.contentTable[option].country + " - "
-                }
+    for (var option in data.contentTable) {
+        let system = "";
+        let environment = "";
+        let country = "";
+        let value = "";
+        let context = "";
+        if (!isEmpty(data.contentTable[option].system)) {
+            system = data.contentTable[option].system + " - "
+        }
+        if (!isEmpty(data.contentTable[option].environment)) {
+            environment = data.contentTable[option].environment + " - "
+        }
+        if (!isEmpty(data.contentTable[option].country)) {
+            country = data.contentTable[option].country + " - "
+        }
 
-                if (data.contentTable[option].type === "INTERNAL") {
-                    if (!isEmpty(data.contentTable[option].subDataValue)) {
-                        value = data.contentTable[option].subDataValue + " - "
-                    }
-                }
-
-                if (!isEmpty(system) || !isEmpty(environment) || !isEmpty(country) || !isEmpty(value)) {
-                    context = system + environment + country + value
-                    context = context.substr(0, context.length - 3)
-                    context = " [" + context + "]"
-                }
-
-                $("#" + selectName).parent().find("select").append($('<option></option>').text(data.contentTable[option].name + context).val(data.contentTable[option].testDataLibID));
+        if (data.contentTable[option].type === "INTERNAL") {
+            if (!isEmpty(data.contentTable[option].subDataValue)) {
+                value = data.contentTable[option].subDataValue + " - "
             }
+        }
 
-            if (defaultValue != undefined) {
-                $("#" + selectName).parent().find("select").val(defaultValue);
-            }
-            resolve(data);
+        if (!isEmpty(system) || !isEmpty(environment) || !isEmpty(country) || !isEmpty(value)) {
+            context = system + environment + country + value
+            context = context.substr(0, context.length - 3)
+            context = " [" + context + "]"
+        }
 
-        })
-    })
+        $("#" + selectName).parent().find("select").append($('<option></option>').text(data.contentTable[option].name + context).val(data.contentTable[option].testDataLibID));
+    }
 
-
+    if (defaultValue != undefined) {
+        $("#" + selectName).parent().find("select").val(defaultValue);
+    }
 }
 
 

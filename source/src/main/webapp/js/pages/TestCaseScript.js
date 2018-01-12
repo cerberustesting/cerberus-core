@@ -3366,13 +3366,11 @@ function setPlaceholderProperty(propertyElement, property) {
 									var editEntry = $('<div class="input-group col-sm-5 col-sm-offset-3"><label>Choose one data library</label><select class="datalib  form-control"></select><span class="input-group-btn"  style="vertical-align:bottom"><button class="btn btn-secondary" type="button"><span class="glyphicon glyphicon-pencil"></span></button></span></div>');
 									$("#"+editor.container.id).parent().append(editEntry);
 
-									displayDataLibList(editor.container.id, undefined,data).then(function(){
-										$("#"+editor.container.id).parent().find("button").attr('onclick', 'openModalDataLib(' + $("#"+editor.container.id).parent().find("select").val() + ",'EDIT',"+"'"+escaped+"')");
-									});
+									displayDataLibList(editor.container.id, undefined,data)
+									$("#"+editor.container.id).parent().find("button").attr('onclick', 'openModalDataLib(' + $("#"+editor.container.id).parent().find("select").val() + ",'EDIT',"+"'"+escaped+"')");
 									$("#"+editor.container.id).parent().find("select").unbind("change").change(function(){
 										$("#"+editor.container.id).parent().find("button").attr('onclick', 'openModalDataLib(' + $("#"+editor.container.id).parent().find("select").val() + ",'EDIT',"+"'"+escaped+"')");
 									})
-									
 
 								}else{
 									$("#"+editor.container.id).parent().find('.input-group').remove();
@@ -3520,7 +3518,10 @@ function configureAceEditor(editor, mode, property) {
 
 			if (property.type === "getFromDataLib") {
 				CompleterForAllDataLib();              
-				editor.setOptions({maxLines : 15, enableBasicAutocompletion: false, enableLiveAutocompletion: true});
+				$("pre").off("input").on("input",function(e){
+					editor.execCommand("startAutocomplete") 
+				})
+				editor.setOptions({maxLines : 15, enableBasicAutocompletion: true, enableLiveAutocompletion: false});
 			} else {
 				editor.setOptions({maxLines : 15, enableBasicAutocompletion: true, enableLiveAutocompletion: false});
 
