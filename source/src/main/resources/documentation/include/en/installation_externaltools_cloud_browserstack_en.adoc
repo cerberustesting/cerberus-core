@@ -3,26 +3,37 @@ In the Cerberus demo integration chain, functionnal tests are executed through B
 
 http://browserstack.com/[image:browserstack-logo.png[Browserstack,200,100]]
 
-To run your tests on BrowserStack Automate, you must configure a Robot in Cerberus with your BrowserStack account information.
+To run your tests on BrowserStack Automate, you must:
+
+=====  1) Upload the app:
+
+According to browserstack https://www.browserstack.com/app-automate/rest-api[documentation] the app can be uploaded through it's REST API:
+
+
+curl -u "USERNAME:ACCESS_KEY" -X POST https://api.browserstack.com/app-automate/upload -F "file=@/path/to/app/file/Application-debug.apk"
+
+the response will give the app hash id:
+bs://fecad32e3d0900192ccc27747d037ead7427b1ba
+
+=====  2) Create/Update the Robot
+
+To execute the tests with browserstack the usage of a robot is required to pass certain https://www.browserstack.com/app-automate/capabilities[capabilities] to appium
 
 To do it navigate into Robot page and fill the necessary fields:
 
 * Robot - robot name
-* Hostname - here we will need to put our username and access key from browserstack <bsusername>:<bsAccessKey>@hub-cloud.browserstack.com
-* Port - 80 (default for bs)
+* Hostname - hub-cloud.browserstack.com 
+* Host Username - browserstack username
+* Host Password - browserstack access key
+* Port - 80
 * Platform - iOS / Android
 * Browser - iphone and android
 
 image::browserstackrobot.png[configuringrobot]
 
-There is also a minimum of capabilities that should be set in order to work:
+The minimum capabilities that should be set are:
 
-app: bs//<hashed_appid> - Following browserstack documentation this hashed app id can be retrieved from their REST API:
-
-curl -u "bsusername:bsAccessKey" -X POST "https://api.browserstack.com/app-automate/upload" -F "file=@/path/to/app/file/Application.apk"
-
-the response will give the app hash id:
-bs://fecad32e3d0900192ccc27747d037ead7427b1ba
+app: bs://<hashed_appid>
 
 device: deviceName to use 
 
@@ -33,15 +44,13 @@ os_version: os to test
 
 image::browserstackcaps.png[settingcaps]
 
-[IMPORTANT]
-====
-Setting the App Path in cerberus:
 
-In order for browserstack to work you must set the hashed app id on the application page editing the environment of the desired application as well as on the desired capabilities of the robot.
+=====  3) Update the application
 
-You should also take in consideration the robothost configuration and poolsize to limit the number of parallel executions when launching a campaign.
-====
-image::browserstacksettingapplication.png[settingapp]
+The environment of the application to test with Cerberus must have set in the field Host login URL the bs://<hashed_appid> 
 
+image::browserstackapplication.png[settingapp]
 
-Now you can start testing.
+=====  4) Trigger the test
+
+Go to Run test page and select the test you want to execute with the previously created robot and trigger the execution.
