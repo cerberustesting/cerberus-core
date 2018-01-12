@@ -523,9 +523,9 @@ public class RecorderService implements IRecorderService {
 
             /**
              * Root folder initialisation. The root folder is confugures from
-             * the parameter cerberus_mediastorage_path.
+             * the parameter cerberus_exeautomedia_path.
              */
-            String rootFolder = parameterService.getParameterStringByKey("cerberus_mediastorage_path", "", "");
+            String rootFolder = parameterService.getParameterStringByKey("cerberus_exeautomedia_path", "", "");
             rootFolder = StringUtil.addSuffixIfNotAlready(rootFolder, File.separator);
             newRecorder.setRootFolder(rootFolder);
 

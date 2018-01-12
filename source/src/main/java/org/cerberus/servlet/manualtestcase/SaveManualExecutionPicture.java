@@ -126,7 +126,7 @@ public class SaveManualExecutionPicture extends HttpServlet {
 ////        ITestCaseStepActionExecutionService testCaseStepActionExecutionService = appContext.getBean(ITestCaseStepActionExecutionService.class);
 //
 //        try {
-//            String imgPath = parameterService.findParameterByKey("cerberus_mediastorage_path", "").getValue();
+//            String imgPath = parameterService.findParameterByKey("cerberus_exeautomedia_path", "").getValue();
 //
 //            File dir = new File(imgPath + runId);
 //            dir.mkdirs();

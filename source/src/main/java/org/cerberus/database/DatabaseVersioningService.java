@@ -9666,6 +9666,16 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('usergroup','GroupName','','fr','Nom du groupe',NULL,'_management_des_utilisateurs')");
         SQLInstruction.add(SQLS.toString());
 
+        // ADD a parameter for the path to store manual exe files
+        //-- ------------------------ 1276-1277
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` (`system`,`param`, `value`, `description`) VALUES ");
+        SQLS.append("  ('','cerberus_exemanualmedia_path', '/path/to/exemanualmedia', 'Path to store the Cerberus Media files for Manual executions.')");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `parameter` SET `param`='cerberus_exeautomedia_path', `description`='Path to store the Cerberus Media files for Automatic executions (like Selenium Screenshot or SOAP requests and responses).' WHERE `param`='cerberus_mediastorage_path';");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 
