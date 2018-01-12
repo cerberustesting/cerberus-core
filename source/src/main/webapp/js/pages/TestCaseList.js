@@ -537,6 +537,13 @@ function aoColumnsFunc(countries, tableId) {
             "sDefaultContent": ""
         },
         {
+            "data": "description",
+            "sName": "tec.description",
+            "title": doc.getDocOnline("testcase", "Description"),
+            "sWidth": "300px",
+            "sDefaultContent": ""
+        },
+        {
             "data": "labels",
             "sName": "lab.label",
             "title": doc.getDocOnline("label", "label"),
@@ -551,9 +558,9 @@ function aoColumnsFunc(countries, tableId) {
             }
         },
         {
-            "data": "system",
-            "sName": "app.system",
-            "title": doc.getDocOnline("invariant", "SYSTEM"),
+            "data": "status",
+            "sName": "tec.status",
+            "title": doc.getDocOnline("testcase", "Status"),
             "sWidth": "100px",
             "sDefaultContent": ""
         },
@@ -565,23 +572,9 @@ function aoColumnsFunc(countries, tableId) {
             "sDefaultContent": ""
         },
         {
-            "data": "project",
-            "sName": "tec.project",
-            "title": doc.getDocOnline("project", "idproject"),
-            "sWidth": "100px",
-            "sDefaultContent": ""
-        },
-        {
-            "data": "usrCreated",
-            "sName": "tec.usrCreated",
-            "title": doc.getDocOnline("testcase", "Creator"),
-            "sWidth": "100px",
-            "sDefaultContent": ""
-        },
-        {
-            "data": "usrModif",
-            "sName": "tec.usrModif",
-            "title": doc.getDocOnline("testcase", "LastModifier"),
+            "data": "system",
+            "sName": "app.system",
+            "title": doc.getDocOnline("invariant", "SYSTEM"),
             "sWidth": "100px",
             "sDefaultContent": ""
         },
@@ -611,10 +604,10 @@ function aoColumnsFunc(countries, tableId) {
             }
         },
         {
-            "data": "status",
-            "sName": "tec.status",
-            "title": doc.getDocOnline("testcase", "Status"),
-            "sWidth": "100px",
+            "data": "priority",
+            "sName": "tec.priority",
+            "title": doc.getDocOnline("invariant", "PRIORITY"),
+            "sWidth": "70px",
             "sDefaultContent": ""
         },
         {
@@ -625,10 +618,10 @@ function aoColumnsFunc(countries, tableId) {
             "sDefaultContent": ""
         },
         {
-            "data": "priority",
-            "sName": "tec.priority",
-            "title": doc.getDocOnline("invariant", "PRIORITY"),
-            "sWidth": "70px",
+            "data": "project",
+            "sName": "tec.project",
+            "title": doc.getDocOnline("project", "idproject"),
+            "sWidth": "100px",
             "sDefaultContent": ""
         },
         {
@@ -653,17 +646,31 @@ function aoColumnsFunc(countries, tableId) {
             "sDefaultContent": ""
         },
         {
-            "data": "description",
-            "sName": "tec.description",
-            "title": doc.getDocOnline("testcase", "Description"),
-            "sWidth": "300px",
+            "data": "dateCreated",
+            "sName": "tec.dateCreated",
+            "title": doc.getDocOnline("transversal", "DateCreated"),
+            "sWidth": "150px",
             "sDefaultContent": ""
         },
         {
-            "data": "dateCreated",
-            "sName": "tec.dateCreated",
-            "title": doc.getDocOnline("testcase", "TCDateCrea"),
+            "data": "usrCreated",
+            "sName": "tec.usrCreated",
+            "title": doc.getDocOnline("transversal", "UsrCreated"),
+            "sWidth": "100px",
+            "sDefaultContent": ""
+        },
+        {
+            "data": "dateModif",
+            "sName": "tec.dateModif",
+            "title": doc.getDocOnline("transversal", "DateModif"),
             "sWidth": "150px",
+            "sDefaultContent": ""
+        },
+        {
+            "data": "usrModif",
+            "sName": "tec.usrModif",
+            "title": doc.getDocOnline("transversal", "UsrModif"),
+            "sWidth": "100px",
             "sDefaultContent": ""
         }
     ];

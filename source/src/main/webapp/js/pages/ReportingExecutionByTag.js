@@ -117,7 +117,7 @@ function loadCountryFilter() {
             for (var i = 0; i < len; i++) {
                 var filter = JSON.parse(sessionStorage.getItem("countryFilter"));
                 var cb;
- 
+
                 //Load the filters depenbding on the preferences retrieved from session storage
                 if (filter !== null && !filter.hasOwnProperty(data[i].value)) {
                     cb = '<label class="checkbox-inline">\n\
@@ -407,10 +407,16 @@ function loadEnvCountryBrowserReport(data) {
     $("#progressEnvCountryBrowser").empty();
 
     var len = data.contentTable.split.length;
-    createSummaryTable(data.contentTable);
-    for (var index = 0; index < len; index++) {
-        //draw a progress bar for each combo retrieved
-        buildBar(data.contentTable.split[index]);
+    if (len > 0) {
+
+        $("#reportByEnvCountryBrowser").show();
+        createSummaryTable(data.contentTable);
+        for (var index = 0; index < len; index++) {
+            //draw a progress bar for each combo retrieved
+            buildBar(data.contentTable.split[index]);
+        }
+    } else {
+        $("#reportByEnvCountryBrowser").hide();
     }
     hideLoader($("#reportEnvCountryBrowser"));
 
@@ -423,6 +429,7 @@ function loadLabelReport(data) {
 
     var len = data.labelStats.split.length;
     if (len > 0) {
+        $("#reportByLabel").show();
         //createSummaryTable(data.contentTable);
         for (var index = 0; index < len; index++) {
             //draw a progress bar for each combo retrieved
@@ -439,6 +446,8 @@ function loadReportList(data2, selectTag) {
     if (data2.tableColumns) {
         showLoader($("#listReport"));
 
+        $("#ListPanel").show();
+
         if (selectTag !== "") {
             if ($("#listTable_wrapper").hasClass("initialized")) {
                 $("#tableArea").empty();
@@ -454,6 +463,9 @@ function loadReportList(data2, selectTag) {
             hideLoader($("#listReport"));
             renderOptionsForExeList(selectTag);
         }
+
+    } else {
+        $("#ListPanel").hide();
     }
 }
 
@@ -469,6 +481,7 @@ function loadBugReportByStatusTable(data, selectTag) {
     $("#bugTableBody tr").remove();
 
     if (len > 0) {
+        $("#BugReportByStatusPanel").show();
         //calculate totaltest nb
         for (var index = 0; index < len; index++) {
             // increase the total execution
@@ -685,113 +698,119 @@ function convertData(dataset) {
 function loadReportByFunctionChart(dataset) {
     var data = convertData(dataset.axis);
 
-    var margin = {top: 20, right: 20, bottom: 200, left: 150},
-            width = 1200 - margin.left - margin.right,
-            height = 600 - margin.top - margin.bottom;
+    if (dataset.axis.length > 0) {
+        $("#ReportByFunctionPanel").show();
 
-    var x = d3.scale.ordinal()
-            .rangeRoundBands([0, width], .1);
+        var margin = {top: 20, right: 20, bottom: 200, left: 150},
+                width = 1200 - margin.left - margin.right,
+                height = 600 - margin.top - margin.bottom;
 
-    var y = d3.scale.linear()
-            .rangeRound([height, 0]);
+        var x = d3.scale.ordinal()
+                .rangeRoundBands([0, width], .1);
 
-    var xAxis = d3.svg.axis()
-            .scale(x)
-            .orient("bottom");
+        var y = d3.scale.linear()
+                .rangeRound([height, 0]);
 
-    var yAxis = d3.svg.axis()
-            .scale(y)
-            .orient("left");
+        var xAxis = d3.svg.axis()
+                .scale(x)
+                .orient("bottom");
 
-    var tip = d3.tip()
-            .attr('class', 'd3-tip')
-            .offset([-10, 0])
-            .html(function (d) {
-                var res = "<strong>Function :</strong> <span style='color:red'>" + d.name + "</span>";
-                var len = d.chartData.length;
+        var yAxis = d3.svg.axis()
+                .scale(y)
+                .orient("left");
 
-                for (var index = 0; index < len; index++) {
-                    res = res + "<div><div class='color-box' style='background-color:" + d.chartData[index].color + " ;'>\n\
+        var tip = d3.tip()
+                .attr('class', 'd3-tip')
+                .offset([-10, 0])
+                .html(function (d) {
+                    var res = "<strong>Function :</strong> <span style='color:red'>" + d.name + "</span>";
+                    var len = d.chartData.length;
+
+                    for (var index = 0; index < len; index++) {
+                        res = res + "<div><div class='color-box' style='background-color:" + d.chartData[index].color + " ;'>\n\
                     </div>" + d.chartData[index].name + " : " + d[d.chartData[index].name].value + "</div>";
+                    }
+                    return res;
+                });
+
+        var svg = d3.select("#ReportByfunctionChart").append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        svg.call(tip);
+
+
+        data.forEach(function (d) {
+            var y0 = 0;
+            d.chartData = [];
+            for (var status in d) {
+                if (status !== "name" && status !== "chartData") {
+                    d.chartData.push({name: status, y0: y0, y1: y0 += +d[status].value, color: d[status].color});
                 }
-                return res;
-            });
-
-    var svg = d3.select("#ReportByfunctionChart").append("svg")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
-            .append("g")
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-    svg.call(tip);
-
-
-    data.forEach(function (d) {
-        var y0 = 0;
-        d.chartData = [];
-        for (var status in d) {
-            if (status !== "name" && status !== "chartData") {
-                d.chartData.push({name: status, y0: y0, y1: y0 += +d[status].value, color: d[status].color});
             }
-        }
-        d.totalTests = d.chartData[d.chartData.length - 1].y1;
-    });
+            d.totalTests = d.chartData[d.chartData.length - 1].y1;
+        });
 
-    x.domain(data.map(function (d) {
-        return d.name;
-    }));
-    y.domain([0, d3.max(data, function (d) {
-            return d.totalTests;
-        })]);
+        x.domain(data.map(function (d) {
+            return d.name;
+        }));
+        y.domain([0, d3.max(data, function (d) {
+                return d.totalTests;
+            })]);
 
-    svg.append("g")
-            .attr("class", "x axis")
-            .attr("transform", "translate(0," + height + ")")
-            .call(xAxis)
-            .selectAll("text")
-            .call(wrap, 200)
-            .style({"text-anchor": "end"})
-            .attr("dx", "-.8em")
-            .attr("dy", "-.55em")
-            .attr("transform", "rotate(-75)");
+        svg.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(0," + height + ")")
+                .call(xAxis)
+                .selectAll("text")
+                .call(wrap, 200)
+                .style({"text-anchor": "end"})
+                .attr("dx", "-.8em")
+                .attr("dy", "-.55em")
+                .attr("transform", "rotate(-75)");
 
-    svg.append("g")
-            .attr("class", "y axis")
-            .call(yAxis)
-            .append("text")
-            .attr("transform", "rotate(-90)")
-            .attr("y", 6)
-            .attr("dy", ".71em")
-            .style("text-anchor", "end")
-            .text("TestCase Number");
+        svg.append("g")
+                .attr("class", "y axis")
+                .call(yAxis)
+                .append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 6)
+                .attr("dy", ".71em")
+                .style("text-anchor", "end")
+                .text("TestCase Number");
 
-    var name = svg.selectAll(".name")
-            .data(data)
-            .enter().append("g")
-            .attr("class", "g")
-            .attr("transform", function (d) {
-                return "translate(" + x(d.name) + ",0)";
-            });
+        var name = svg.selectAll(".name")
+                .data(data)
+                .enter().append("g")
+                .attr("class", "g")
+                .attr("transform", function (d) {
+                    return "translate(" + x(d.name) + ",0)";
+                });
 
-    svg.selectAll(".g")
-            .on('mouseover', tip.show)
-            .on('mouseout', tip.hide);
+        svg.selectAll(".g")
+                .on('mouseover', tip.show)
+                .on('mouseout', tip.hide);
 
-    name.selectAll("rect")
-            .data(function (d) {
-                return d.chartData;
-            })
-            .enter().append("rect")
-            .attr("width", x.rangeBand())
-            .attr("y", function (d) {
-                return y(d.y1);
-            })
-            .attr("height", function (d) {
-                return y(d.y0) - y(d.y1);
-            })
-            .style("fill", function (d) {
-                return d.color;
-            });
+        name.selectAll("rect")
+                .data(function (d) {
+                    return d.chartData;
+                })
+                .enter().append("rect")
+                .attr("width", x.rangeBand())
+                .attr("y", function (d) {
+                    return y(d.y1);
+                })
+                .attr("height", function (d) {
+                    return y(d.y0) - y(d.y1);
+                })
+                .style("fill", function (d) {
+                    return d.color;
+                });
+    } else {
+        $("#ReportByFunctionPanel").hide();
+    }
     hideLoader($("#functionChart"));
 }
 

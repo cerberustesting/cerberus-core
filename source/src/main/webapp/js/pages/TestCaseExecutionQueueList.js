@@ -87,6 +87,8 @@ function initPage() {
 }
 
 function displayAndRefresh_followup() {
+    showLoader('#followUpTableList');
+
     // Display table
     var jqxhr = $.getJSON("ReadTestCaseExecutionQueue?flag=queueStatus");
     $.when(jqxhr).then(function (data) {
@@ -111,6 +113,8 @@ function displayAndRefresh_followup() {
             var configurations1 = new TableConfigurationsClientSide("followUpTable", array, aoColumnsFunc_followUp(), true, [1, 'asc']);
             createDataTableWithPermissions(configurations1, undefined, "#followUpTableList", undefined, true);
         }
+
+        hideLoader('#followUpTableList');
     });
 
 
