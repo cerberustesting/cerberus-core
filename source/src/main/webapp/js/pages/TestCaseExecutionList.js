@@ -44,7 +44,7 @@ function loadTable() {
     $("#testCaseExecution").html('<table id="testCaseExecutionTable" class="table table-bordered table-hover display" name="testCaseExecutionTable">\n\
                                             </table><div class="marginBottom20"></div>');
 
-    var contentUrl = "ReadTestCaseExecution";
+    var contentUrl = "ReadTestCaseExecution?likeColumn=false";
 
     //configure and create the dataTable
     var lengthMenu = [10, 25, 50, 100, 500, 1000];
@@ -189,7 +189,8 @@ function aoColumnsFunc() {
         {
             "data": "description",
             "sName": "exe.description",
-            "bSearchable": false,
+            "bSearchable": true,
+            "like":true,
             "title": doc.getDocOnline("testcase", "Description"),
             "sWidth": "150px",
             "sDefaultContent": ""

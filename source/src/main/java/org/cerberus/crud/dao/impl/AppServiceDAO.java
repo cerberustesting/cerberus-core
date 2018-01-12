@@ -229,8 +229,7 @@ public class AppServiceDAO implements IAppServiceDAO {
             searchSQL.append(" and ( 1=1 ");
             for (Map.Entry<String, List<String>> entry : individualSearch.entrySet()) {
                 searchSQL.append(" and ");
-                String key = "IFNULL(" + entry.getKey() + ",'')";
-                String q = SqlUtil.getInSQLClauseForPreparedStatement(key, entry.getValue());
+                String q = SqlUtil.getInSQLClauseForPreparedStatement(entry.getKey(), entry.getValue());
                 if (q == null || q == "") {
                     q = "(" + entry.getKey() + " IS NULL OR " + entry.getKey() + " = '')";
                 }
@@ -372,7 +371,6 @@ public class AppServiceDAO implements IAppServiceDAO {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
                 preStat.setString(1, key);
-                System.out.print(preStat);
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     if (resultSet.first()) {
@@ -384,11 +382,9 @@ public class AppServiceDAO implements IAppServiceDAO {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
                     }
                 } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
                 } finally {
-                    resultSet.close();
                 }
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());

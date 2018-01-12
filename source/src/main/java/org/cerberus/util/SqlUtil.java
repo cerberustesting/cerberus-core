@@ -19,6 +19,8 @@
  */
 package org.cerberus.util;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
@@ -64,24 +66,42 @@ public class SqlUtil {
      * surounded by '
      */
     public static String getInSQLClauseForPreparedStatement(String parameter, List<?> obj) {
+    	String res = "";
         if (obj == null) {
             return "";
         }
         if (obj.isEmpty()) {
             return "";
         }
+        
+        List<String> search = new ArrayList(Arrays.asList(parameter.split(":")));
+        
         StringBuilder result = new StringBuilder();
         result.append(" ");
-        result.append(parameter);
-        result.append(" in (");
-        for (Object myObj : obj) {
-            result.append("?");
-            result.append(",");
+        result.append(search.get(0));
+        
+        if(!search.get(0).equals("") || search.get(0) != null) {
+        	if(search.size() == 1) {
+            	result.append(" in (");
+                for (Object myObj : obj) {
+                    result.append("?");
+                    result.append(",");
+                }
+                res = result.toString().substring(0, (result.length() - 1)) + ")";
+            }else if(search.get(1).equals("like")) {
+            	result.append(" like ");
+            	for (Object myObj : obj) {
+                    result.append("'%' ? '%'");
+                    result.append(" or ");
+                    result.append(search.get(0));
+                    result.append(" like ");
+                }
+            	res = result.toString().substring(0, (result.length() - (10 + search.get(0).length())));
+            }
         }
-        String res = result.toString().substring(0, (result.length() - 1));
-        return res + ")";
+        return res;
     }
-
+    
     public static String createWhereInClause(String field, List<String> values, boolean isString) {
 
         if (field == null || field.isEmpty() || values == null || values.isEmpty()) {

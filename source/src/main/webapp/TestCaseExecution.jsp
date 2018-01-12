@@ -52,7 +52,7 @@
                                 </div>
                             </div>
                             <div class="col-lg-6 pull-left">
-                                <div class="">
+                                <div class="text-nowrap">
                                     <span id="idlabel"></span>
                                     <span> - </span>
                                     <span id="test"></span>
@@ -65,10 +65,10 @@
                                     <span> - </span>
                                     <span id="controlstatus" style="font-weight: 900"></span>
                                 </div>
-                                <div class="">
+                                <div class="text-nowrap">
                                     <span id="tcDescription" style="font-size:.9em;margin:0px;line-height:1;height:.95em;">Descr</span>
                                 </div>
-                                <div class="">
+                                <div class="text-nowrap">
                                     <span id="exReturnMessage" style="font-size:.9em;margin:0px;line-height:1;height:.95em;">Descr</span>
                                 </div>
                             </div>

@@ -97,10 +97,12 @@ function aoColumnsFunc() {
     var doc = new Doc();
 
     var aoColumns = [
-        {"data": null,
+        {
+            "data": null,
             "title": doc.getDocLabel("page_global", "columnAction"),
             "bSortable": false,
             "bSearchable": false,
+            "sWidth": "50px",
             "mRender": function (data, type, obj) {
                 var editEntry = '<button id="editEntry" onclick="editEntryClick(\'' + obj["LogEventID"] + '\');"\n\
                                 class="editEntry btn btn-default btn-xs margin-right5" \n\
@@ -110,12 +112,42 @@ function aoColumnsFunc() {
                 return '<div class="center btn-group width150">' + editEntry + '</div>';
             }
         },
-        {"data": "LogEventID", "sName": "LogEventID", "title": doc.getDocOnline("logevent", "logeventid")},
-        {"data": "time", "sName": "Time", "title": doc.getDocOnline("logevent", "time")},
-        {"data": "login", "sName": "Login", "title": doc.getDocOnline("logevent", "login")},
-        {"data": "page", "sName": "Page", "title": doc.getDocOnline("logevent", "page")},
-        {"data": "action", "sName": "Action", "title": doc.getDocOnline("logevent", "action")},
-        {"data": "log", "sName": "Log", "title": doc.getDocOnline("logevent", "log")}
+        {
+            "data": "LogEventID", 
+            "sName": "LogEventID", 
+            "sWidth": "50px",
+            "title": doc.getDocOnline("logevent", "logeventid")
+        },
+        {
+            "data": "time", 
+            "sName": "Time", 
+            "sWidth": "90px",
+            "title": doc.getDocOnline("logevent", "time")
+        },
+        {
+            "data": "login", 
+            "sName": "Login", 
+            "sWidth": "50px",
+            "title": doc.getDocOnline("logevent", "login")
+        },
+        {
+            "data": "page", 
+            "sName": "Page", 
+            "sWidth": "100px",
+            "title": doc.getDocOnline("logevent", "page")
+        },
+        {
+            "data": "action", 
+            "sName": "Action", 
+            "sWidth": "50px",
+            "title": doc.getDocOnline("logevent", "action")
+        },
+        {
+            "data": "log", 
+            "sName": "Log", 
+            "sWidth": "250px",
+            "title": doc.getDocOnline("logevent", "log")
+        }
     ];
     return aoColumns;
 }

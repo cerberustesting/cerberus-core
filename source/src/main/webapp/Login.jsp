@@ -36,12 +36,13 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
         <script type='text/javascript' src='js/pages/Login.js'></script>
-        <script type="text/javascript">
-            EnvTuning("<%=System.getProperty("org.cerberus.environment")%>");
-        </script>
+        <script type='text/javascript' src='js/global/global.js'></script>
         <title>Login</title>
     </head>
     <body style="background-color: #fff">
+        <script type="text/javascript">
+            envTuning("<%=System.getProperty("org.cerberus.environment")%>");
+        </script>
 
         <%
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
@@ -102,7 +103,7 @@
                                     <span class="input-group-addon " id="user-icon">	
                                         <span class="glyphicon glyphicon-user"></span>
                                     </span>
-                                    <input name="j_username" class="form-control" title="Username" placeholder="Username" value="" size="50" maxlength="50" aria-describedby="user-icon" autofocus>
+                                    <input id="username" name="j_username" class="form-control" title="Username" placeholder="Username" value="" size="50" maxlength="50" aria-describedby="user-icon" autofocus>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -113,7 +114,7 @@
                                     <span class="input-group-addon " id="user-icon">	
                                         <span class="glyphicon glyphicon-lock"></span>
                                     </span>
-                                    <input name="j_password" class="form-control" type="password" placeholder="Password" title="Password" value="" size="30" maxlength="20">
+                                    <input name="j_password" autocomplete class="form-control" type="password" placeholder="Password" title="Password" value="" size="30" maxlength="20">
                                 </div>
                             </div>
                             <button id="forgot-password" type="button" name="forgotPassword" class="btn btn-default" onclick="showForgotPasswordFormulary()">Forgot password</button>

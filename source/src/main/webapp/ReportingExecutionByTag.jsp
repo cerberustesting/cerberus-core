@@ -113,7 +113,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="panel panel-default">
+                    <div class="panel panel-default" id="BugReportByStatusPanel">
                         <div class="panel-heading card" data-toggle="collapse" data-target="#BugReportByStatus">
                             <span class="fa fa-pie-chart fa-fw"></span>
                             <label id="bugStatus">Bug Status</label>

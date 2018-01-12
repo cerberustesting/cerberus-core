@@ -60,16 +60,16 @@ public class FileService implements IFileService {
             /**
              * Get CSV File and parse it line by line
              */
-        	
-        	BufferedReader br;
-        	
-        	if(StringUtil.isURL(urlToCSVFile)) {
-        		URL urlToCall = new URL(urlToCSVFile);
-        		br = new BufferedReader(new InputStreamReader(urlToCall.openStream()));
-        	}else {
-            	br = new BufferedReader(new FileReader(urlToCSVFile));
-            	br.readLine();
-        	}
+
+            BufferedReader br;
+
+            if (StringUtil.isURL(urlToCSVFile)) {
+                URL urlToCall = new URL(urlToCSVFile);
+                br = new BufferedReader(new InputStreamReader(urlToCall.openStream()));
+            } else {
+                br = new BufferedReader(new FileReader(urlToCSVFile));
+                br.readLine();
+            }
 
             if ("".equals(separator)) {
                 separator = ",";

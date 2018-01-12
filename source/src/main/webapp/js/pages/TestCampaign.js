@@ -472,7 +472,7 @@ function editEntryModalSaveHandler() {
 
     // Get the header data from the form.
     //var data = convertSerialToJSONObject(formEdit.serialize());
-
+    
     showLoaderInModal('#editTestcampaignModal');
     $.ajax({
         url: "UpdateCampaign",
@@ -859,6 +859,7 @@ function aoColumnsFunc(tableId) {
             "data": null,
             "bSortable": false,
             "bSearchable": false,
+            "sWidth": "80px",
             "title": doc.getDocLabel("page_testcampaign", "button_col"),
             "mRender": function (data, type, obj) {
                 var hasPermissions = $("#" + tableId).attr("hasPermissions");
@@ -884,21 +885,25 @@ function aoColumnsFunc(tableId) {
         {
             "data": "distribList",
             "sName": "distribList",
+            "sWidth": "80px",
             "title": doc.getDocLabel("testcampaign", "distribList")
         },
         {
             "data": "notifyStartTagExecution",
             "sName": "notifyStartTagExecution",
+            "sWidth": "30px",
             "title": doc.getDocLabel("testcampaign", "notifyStartTagExecution")
         },
         {
             "data": "notifyEndTagExecution",
             "sName": "notifyEndTagExecution",
+            "sWidth": "30px",
             "title": doc.getDocLabel("testcampaign", "notifyEndTagExecution")
         },
         {
             "data": "description",
             "sName": "description",
+            "sWidth": "80px",
             "title": doc.getDocLabel("page_testcampaign", "description_col")
         }
     ];

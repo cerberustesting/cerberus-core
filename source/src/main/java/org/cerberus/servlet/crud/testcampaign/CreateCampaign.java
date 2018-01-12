@@ -92,7 +92,7 @@ public class CreateCampaign extends HttpServlet {
         String desc = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("Description"), null, charset);
         // Parameter that we cannot secure as we need the html --> We DECODE them
         String distribList = ParameterParserUtil.parseStringParam(request.getParameter("DistribList"), "");
-        String battery = ParameterParserUtil.parseStringParam(request.getParameter("Batteries"), null);
+        //String battery = ParameterParserUtil.parseStringParam(request.getParameter("Batteries"), null);
         String parameter = ParameterParserUtil.parseStringParam(request.getParameter("Parameters"), null);
         String label = ParameterParserUtil.parseStringParam(request.getParameter("Labels"), null);
 
@@ -115,6 +115,7 @@ public class CreateCampaign extends HttpServlet {
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
                 logEventService.createForPrivateCalls("/CreateCampaign", "CREATE", "Create Campaign : " + camp.getCampaign(), request);
 
+                /**
                 if (battery != null) {
                     JSONArray batteries = new JSONArray(battery);
                     ICampaignContentService campaignContentService = appContext.getBean(ICampaignContentService.class);
@@ -129,11 +130,13 @@ public class CreateCampaign extends HttpServlet {
                         if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                             /**
                              * Adding Log entry.
-                             */
+                             
                             logEventService.createForPrivateCalls("/CreateCampaign", "CREATE", "Update Campaign Content : " + co.getCampaign() + ", " + co.getTestbattery(), request);
                         }
                     }
                 }
+    			
+    			**/
 
                 if (parameter != null) {
                     JSONArray parameters = new JSONArray(parameter);

@@ -221,7 +221,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('index_smtp_from','Team <team@mail.com>','smtp from used for notification')");
         SQLS.append(",('index_smtp_host','smtp.mail.com','Smtp host used with notification')");
         SQLS.append(",('index_smtp_port','25','smtp port used for notification ')");
-        SQLS.append(",('integration_notification_disableenvironment_body','Hello to all.<br><br>Use of environment %ENV% for country %COUNTRY% with Sprint %BUILD% (Revision %REVISION%) has been disabled, either to cancel the environment or to start deploying a new Sprint/revision.<br>Please don\\'t use the VC applications until you receive further notification.<br><br>If you have any question, please contact us at mail@mail.com<br><br>Cumprimentos / Regards / Cordialement,<br><br>Test and Integration Team','Default Mail Body on event disableenvironment.')");
+        SQLS.append(",('integration_notification_disableenvironment_body','Hello to all.<br><br>Use of environment %ENV% for country %COUNTRY% with Sprint %BUILD% (Revision %REVISION%) has been disabled, either to cancel the environment or to start deploying a new Sprint/revision.<br>Please don\\'t use the applications until you receive further notification.<br><br>If you have any question, please contact us at mail@mail.com<br><br>Cumprimentos / Regards / Cordialement,<br><br>Test and Integration Team','Default Mail Body on event disableenvironment.')");
         SQLS.append(",('integration_notification_disableenvironment_cc','Team <team@mail.com>','Default Mail cc on event disableenvironment.')");
         SQLS.append(",('integration_notification_disableenvironment_subject','[TIT] Env %ENV% for %COUNTRY% (with Sprint %BUILD% revision %REVISION%) has been disabled for Maintenance.','Default Mail Subject on event disableenvironment.')");
         SQLS.append(",('integration_notification_disableenvironment_to','Team <team@mail.com>','Default Mail to on event disableenvironment.')");
@@ -277,16 +277,9 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('GROUP','',6,2,'Group of tests which are not already defined',NULL,NULL,NULL)");
         SQLS.append(",('COUNTRY','BE',10,4,'Belgium','800',NULL,NULL)");
         SQLS.append(",('COUNTRY','CH',11,4,'Switzerland','500',NULL,NULL)");
-        SQLS.append(",('COUNTRY','ES',13,4,'Spain','900',NULL,NULL)");
-        SQLS.append(",('COUNTRY','IT',14,4,'Italy','205',NULL,NULL)");
         SQLS.append(",('COUNTRY','PT',15,4,'Portugal','200',NULL,NULL)");
-        SQLS.append(",('COUNTRY','RU',16,4,'Russia','240',NULL,NULL)");
         SQLS.append(",('COUNTRY','UK',17,4,'Great Britan','300',NULL,NULL)");
-        SQLS.append(",('COUNTRY','UA',25,4,'Ukrainia','290',NULL,NULL)");
         SQLS.append(",('COUNTRY','DE',40,4,'Germany','600',NULL,NULL)");
-        SQLS.append(",('COUNTRY','AT',41,4,'Austria','600',NULL,NULL)");
-        SQLS.append(",('COUNTRY','GR',42,4,'Greece','220',NULL,NULL)");
-        SQLS.append(",('COUNTRY','RX',50,4,'Transversal Country used for Transversal Applications.','RBX',NULL,NULL)");
         SQLS.append(",('COUNTRY','FR',60,4,'France',NULL,NULL,NULL)");
         SQLS.append(",('ENVIRONMENT','DEV',0,5,'Developpement','DEV',NULL,NULL)");
         SQLS.append(",('ENVIRONMENT','QA',5,5,'Quality Assurance','QA',NULL,NULL)");
@@ -438,43 +431,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('ORIGIN','UK',10,21,'Great Britain',NULL,NULL,NULL)");
         SQLS.append(",('ORIGIN','DE',15,21,'Germany',NULL,NULL,NULL)");
         SQLS.append(",('ORIGIN','FR',16,21,'France',NULL,NULL,NULL)");
-        SQLS.append(",('PROPERTYDATABASE','VC',1,22,'VC Database',NULL,NULL,NULL)");
-        SQLS.append(",('PROPERTYDATABASE','ICS',2,22,'ICSDatabase',NULL,NULL,NULL)");
-        SQLS.append(",('PROPERTYDATABASE','IDW',3,22,'IDW Database',NULL,NULL,NULL)");
-        SQLS.append(",('PROPERTYDATABASE','CRB',4,22,'CERBERUS Database',NULL,NULL,NULL)");
-        SQLS.append(",('PROPERTYDATABASE','IRT',5,22,'IRT Database',NULL,NULL,NULL)");
-        SQLS.append(",('PROPERTYBAM','NBC',2,23,'Number of Orders','line','sum',NULL)");
-        SQLS.append(",('PROPERTYBAM','AOL',4,23,'Number of Orders in the last 10 minutes','table','sum',NULL)");
-        SQLS.append(",('PROPERTYBAM','API',5,23,'Number of API call in the last 10 minutes','line','sum',NULL)");
-        SQLS.append(",('PROPERTYBAM','APT',6,23,'Average of Duration of API call in the last 10 minutes','line','avg','1.6')");
-        SQLS.append(",('PROPERTYBAM','NBA',7,23,'Number of API longer than 1 second in the last 10 minutes','','sum',NULL)");
-        SQLS.append(",('PROPERTYBAM','APE',8,23,'Number of API Errors in the last 10 minutes','line','sum','20')");
-        SQLS.append(",('PROPERTYBAM','AVT',9,23,'Average of duration of a simple VCCRM scenario','line','avg',NULL)");
-        SQLS.append(",('PROPERTYBAM','APT',10,23,'Average of Duration of API call in the last 10 minutes','table','avg','1.6')");
-        SQLS.append(",('PROPERTYBAM','BAT',11,23,'Batch','gantt',NULL,NULL)");
-        SQLS.append(",('PROPERTYBAM','BKP',12,23,'Backup','gantt',NULL,NULL)");
-        SQLS.append(",('PROPERTYBAM','DTW',13,23,'Dataware','gantt',NULL,NULL)");
-        SQLS.append(",('PROPERTYBAM','FST',14,23,'Fast Chain','gantt',NULL,NULL)");
-        SQLS.append(",('PROPERTYBAM','IMG',15,23,'Selling Data File','gantt',NULL,NULL)");
-        SQLS.append(",('PROPERTYBAM','MOR',16,23,'Morning Chain','gantt',NULL,NULL)");
-        SQLS.append(",('PROPERTYBAM','WEB',17,23,'Product Data File','gantt',NULL,NULL)");
-        SQLS.append(",('PROPERTYBAM','SIZ',18,23,'Size of the homepage','line','sum',NULL)");
-        SQLS.append(",('PROPERTYBAM','LOG',19,23,'Web : Login Duration','line','avg','150')");
-        SQLS.append(",('PROPERTYBAM','SIS',20,23,'Web : Search : Total size of pages','line','avg',NULL)");
-        SQLS.append(",('PROPERTYBAM','NAV',21,23,'Web : Search : Duration','line','avg',NULL)");
-        SQLS.append(",('PROPERTYBAM','PLP',22,23,'Web : PLP Duration','line','avg','100')");
-        SQLS.append(",('PROPERTYBAM','PDP',23,23,'Web : PDP Duration','line','avg','150')");
-        SQLS.append(",('PROPERTYBAM','CHE',24,23,'Web : Checkout Duration','line','avg',NULL)");
-        SQLS.append(",('PROPERTYBAM','APC',25,23,'APC : API Error code 12 & 17','line','sum','50')");
-        SQLS.append(",('PROPERTYBAM','MTE',26,23,'Web : Megatab ELLOS Duration','line','avg',NULL)");
-        SQLS.append(",('PROPERTYBAM','PLD',27,23,'Web : PLP DRESSES Duration','line','avg',NULL)");
-        SQLS.append(",('PROPERTYBAM','OMP',28,23,'Web : Outlet-MiniPDP Duration','line','avg',NULL)");
-        SQLS.append(",('PROPERTYBAM','DBC',29,23,'Demand ','line','sum',NULL)");
-        SQLS.append(",('PROPERTYBAM','MAR',30,23,'Margin in the last 10 minutes','line','sum',NULL)");
-        SQLS.append(",('PROPERTYBAM','APD',31,23,'APD : API Error code 20','line','sum',NULL)");
-        SQLS.append(",('PROPERTYBAM','DOR',32,23,'Performance : Direct Order','line','avg',NULL)");
-        SQLS.append(",('PROPERTYBAM','EBP',33,23,'Performance : EBoutique Pull','line','avg',NULL)");
-        SQLS.append(",('PROPERTYBAM','LOH',34,23,'Web : Login Duration','LINE','AVG',NULL)");
+        SQLS.append(",('PROPERTYDATABASE','EXAMPLE',1,22,'Example Fake Database',NULL,NULL,NULL)");
         SQLS.append(",('OUTPUTFORMAT','gui',1,24,'GUI HTLM output','','',NULL)");
         SQLS.append(",('OUTPUTFORMAT','compact',2,24,'Compact single line output.',NULL,NULL,NULL)");
         SQLS.append(",('OUTPUTFORMAT','verbose-txt',3,24,'Verbose key=value format.',NULL,NULL,NULL)");
@@ -491,47 +448,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('FILTERNBDAYS','30',2,29,'30 Days (1 month)',NULL,NULL,NULL)");
         SQLS.append(",('FILTERNBDAYS','182',3,29,'182 Days (6 months)',NULL,NULL,NULL)");
         SQLS.append(",('FILTERNBDAYS','365',4,29,'365 Days (1 year)',NULL,NULL,NULL)");
-        SQLS.append(",('PROBLEMCATEGORY','ERROR PAGES',10,30,'High amount of error pages','QUALITY',NULL,NULL)");
-        SQLS.append(",('PROBLEMCATEGORY','PERFORMANCE',15,30,'Performance issue','QUALITY',NULL,NULL)");
-        SQLS.append(",('PROBLEMCATEGORY','UNAVAILABILITY',20,30,'System Unavailable','QUALITY',NULL,NULL)");
-        SQLS.append(",('PROBLEMCATEGORY','CONTENT ERROR',25,30,'Content Error','QUALITY',NULL,NULL)");
-        SQLS.append(",('PROBLEMCATEGORY','API ERRORS',30,30,'API ERRORS',NULL,NULL,NULL)");
-        SQLS.append(",('ROOTCAUSECATEGORY','HUMAN ERROR',1,31,'Problem due to wrong manipulation','PROCESS',NULL,NULL)");
-        SQLS.append(",('ROOTCAUSECATEGORY','DEVELLOPMENT ERROR',2,31,'Problem with the code',NULL,NULL,NULL)");
-        SQLS.append(",('ROOTCAUSECATEGORY','SERVER ERROR',3,31,'Technical issue',NULL,NULL,NULL)");
-        SQLS.append(",('ROOTCAUSECATEGORY','COMMUNICATION ISSUE',4,31,'Communication',NULL,NULL,NULL)");
-        SQLS.append(",('ROOTCAUSECATEGORY','PROCESS ERROR',5,31,'Problem with the process implemented','QUALITY',NULL,NULL)");
-        SQLS.append(",('ROOTCAUSECATEGORY','MAINTENANCE',6,31,'Application Maintenance','QUALITY',NULL,NULL)");
-        SQLS.append(",('RESPONSABILITY','[VC] TIT',1,32,'Tit Team','VC',NULL,NULL)");
-        SQLS.append(",('RESPONSABILITY','[VC] CDI',20,32,'CDITeam','VC',NULL,NULL)");
-        SQLS.append(",('RESPONSABILITY','[VC] QUALITY TEAM',25,32,'Quality Team','VC',NULL,NULL)");
-        SQLS.append(",('RESPONSABILITY','[VC] UK TEAM',26,32,'UK TEAM','VC',NULL,NULL)");
-        SQLS.append(",('RESPONSABILITY','[EXT] ESB',30,32,'ESB Team','EXT',NULL,NULL)");
-        SQLS.append(",('RESPONSABILITY','[EXT] IT FRANCE',35,32,'IT France','EXT',NULL,NULL)");
-        SQLS.append(",('RESPONSABILITY','[WEB] MILLENA',40,32,'Millena','WEB',NULL,NULL)");
-        SQLS.append(",('RESPONSABILITY','[WEB] MEMO',50,32,'Memo','WEB',NULL,NULL)");
-        SQLS.append(",('RESPONSABILITY','[WEB] THESEUS',60,32,'Theseus','WEB',NULL,NULL)");
-        SQLS.append(",('RESPONSABILITY','[WEB] STUDIO',65,32,'Studio','WEB',NULL,NULL)");
-        SQLS.append(",('RESPONSABILITY','[USERS] BE',70,32,'Belgium','USERS',NULL,NULL)");
-        SQLS.append(",('RESPONSABILITY','[USERS] CH',71,32,'Switzerland','USERS',NULL,NULL)");
-        SQLS.append(",('RESPONSABILITY','[USERS] ES',72,32,'Spain','USERS',NULL,NULL)");
-        SQLS.append(",('RESPONSABILITY','[USERS] IT',73,32,'Italy','USERS',NULL,NULL)");
-        SQLS.append(",('RESPONSABILITY','[USERS] PT',74,32,'Portugal','USERS',NULL,NULL)");
-        SQLS.append(",('RESPONSABILITY','[USERS] RU',75,32,'Russia','USERS',NULL,NULL)");
-        SQLS.append(",('RESPONSABILITY','[USERS] UA',76,32,'Ukrainia','USERS',NULL,NULL)");
-        SQLS.append(",('RESPONSABILITY','[USERS] UK',77,32,'United Kingdom','USERS',NULL,NULL)");
-        SQLS.append(",('RESPONSABILITY','[USERS] VI',78,32,'Generic','USERS',NULL,NULL)");
-        SQLS.append(",('RESPONSABILITY','[USERS] DE',79,32,'Germany','USERS',NULL,NULL)");
-        SQLS.append(",('RESPONSABILITY','[SUPPLIER] ATOS',80,32,'Atos','SUPPLIER',NULL,NULL)");
-        SQLS.append(",('RESPONSABILITY','[SUPPLIER] LINKBYNET',90,32,'Link By Net','SUPPLIER',NULL,NULL)");
-        SQLS.append(",('RESPONSABILITY','[SUPPLIER] TELINDUS',100,32,'Teloindus','SUPPLIER',NULL,NULL)");
-        SQLS.append(",('RESPONSABILITY','[SUPPLIER] EXTERNAL',101,32,'External Supplier','SUPPLIER',NULL,NULL)");
-        SQLS.append(",('STATUS','OPEN',1,33,'Non conformities is still in investigation',NULL,NULL,NULL)");
-        SQLS.append(",('STATUS','CLOSED',2,33,'Non conformity is closed',NULL,NULL,NULL)");
-        SQLS.append(",('SEVERITY','1',10,34,'The Most critical : Unavailability',NULL,NULL,NULL)");
-        SQLS.append(",('SEVERITY','2',20,34,'Bad Customer experience : Slowness or error page',NULL,NULL,NULL)");
-        SQLS.append(",('SEVERITY','3',30,34,'No customer impact but impact for internal resources',NULL,NULL,NULL)");
-        SQLS.append(",('SEVERITY','4',40,34,'Low severity',NULL,NULL,NULL)");
         SQLS.append(",('TCESTATUS','OK',1,35,'Test was fully executed and no bug are to be reported.',NULL,NULL,NULL)");
         SQLS.append(",('TCESTATUS','KO',2,35,'Test was executed and bug have been detected.',NULL,NULL,NULL)");
         SQLS.append(",('TCESTATUS','PE',3,35,'Test execution is still running...',NULL,NULL,NULL)");
@@ -566,7 +482,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("CREATE TABLE `application` (");
         SQLS.append("  `Application` varchar(45) NOT NULL,");
         SQLS.append("  `description` varchar(200) DEFAULT NULL,");
-        SQLS.append("  `internal` varchar(1) NOT NULL COMMENT 'VC Application',");
+        SQLS.append("  `internal` varchar(1) NOT NULL COMMENT 'Application',");
         SQLS.append("  `sort` int(11) NOT NULL,");
         SQLS.append("  `type` varchar(10) DEFAULT NULL,");
         SQLS.append("  `system` varchar(45) NOT NULL DEFAULT '',");
@@ -1103,11 +1019,11 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
 
         SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `testcase` VALUES ('Examples','0001A','Google',' ','','Search for Cerberus Website','','Y',NULL,1,'WORKING','Y','INTERACTIVE','RX','','','','2012-06-19 09:56:40','','','','','','','','cerberus','cerberus','cerberus',NULL,'Y','Y','Y')");
+        SQLS.append("INSERT INTO `testcase` VALUES ('Examples','0001A','Google',' ','','Search for Cerberus Website','','Y',NULL,1,'WORKING','Y','INTERACTIVE','FR','','','','2012-06-19 09:56:40','','','','','','','','cerberus','cerberus','cerberus',NULL,'Y','Y','Y')");
         SQLInstruction.add(SQLS.toString());
 
         SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `testcasecountry` VALUES ('Examples','0001A','RX')");
+        SQLS.append("INSERT INTO `testcasecountry` VALUES ('Examples','0001A','FR')");
         SQLInstruction.add(SQLS.toString());
 
         SQLS = new StringBuilder();
@@ -1115,17 +1031,17 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
 
         SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `testcasecountryproperties` VALUES ('Examples','0001A','RX','MYTEXT','text','VC','cerberus automated testing',0,0,'STATIC'), ('Examples','0001A','RX','WAIT','text','VC','5000',0,0,'STATIC')");
+        SQLS.append("INSERT INTO `testcasecountryproperties` VALUES ('Examples','0001A','FR','MYTEXT','text','','cerberus automated testing',0,0,'STATIC'), ('Examples','0001A','FR','WAIT','text','','5000',0,0,'STATIC')");
         SQLInstruction.add(SQLS.toString());
 
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `testcasestepaction` VALUES ('Examples','0001A',1,10,'openUrlLogin','','')");
-        SQLS.append(",('Examples','0001A',1,20,'type','id=gbqfq','MYTEXT')");
-        SQLS.append(",('Examples','0001A',1,30,'clickAndWait','id=gbqfb','WAIT')");
+        SQLS.append(",('Examples','0001A',1,20,'type','lst-ib','MYTEXT')");
+        SQLS.append(",('Examples','0001A',1,30,'click','name=btnK','')");
         SQLInstruction.add(SQLS.toString());
 
         SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `testcasestepactioncontrol` VALUES ('Examples','0001A',1,30,1,'verifyRegexInElement','Welcome to Cerberus Website','xpath=//div[@id=\\'search\\']/div/ol/li/div/div/div/span','Y')");
+        SQLS.append("INSERT INTO `testcasestepactioncontrol` VALUES ('Examples','0001A',1,30,1,'verifyTextInPage','','Welcome to Cerberus Website','Y')");
         SQLInstruction.add(SQLS.toString());
 
         SQLS = new StringBuilder();
@@ -1566,10 +1482,10 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("UPDATE `invariant` SET `idname`='TCSTATUS' WHERE `id`='1' and`sort`='6';");
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
-        SQLS.append("UPDATE `invariant` SET `idname`='NCONFSTATUS' WHERE `id`='33' and`sort`='1';");
+        SQLS.append("SELECT 1 FROM dual;");
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
-        SQLS.append("UPDATE `invariant` SET `idname`='NCONFSTATUS' WHERE `id`='33' and`sort`='2';");
+        SQLS.append("SELECT 1 FROM dual;");
         SQLInstruction.add(SQLS.toString());
 
 //-- New invariant for execution detail list page.
@@ -1783,7 +1699,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 //-- New parameter used by netexport. 
 //-- ------------------------
         SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `parameter` (`param`, `value`, `description`) VALUES ('cerberus_url', 'http://localhost:8080/GuiCerberusV2-2.0.0-SNAPSHOT', 'URL to Cerberus used in order to call back cerberus from NetExport plugin. This parameter is mandatory for saving the firebug detail information back to cerberus. ex : http://host:port/contextroot');");
+        SQLS.append("INSERT INTO `parameter` (`param`, `value`, `description`) VALUES ('cerberus_url', 'http://localhost:8080/Cerberus', 'URL to Cerberus used in order to call back cerberus from NetExport plugin. This parameter is mandatory for saving the firebug detail information back to cerberus. ex : http://host:port/contextroot');");
         SQLInstruction.add(SQLS.toString());
 
 //-- Making controls standard. 
@@ -2234,10 +2150,10 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 //-- Insert default environment in order to get examples running.
 //-- ------------------------
         SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `countryenvparam` (`system`, `Country`, `Environment`, `Build`, `Revision`, `Chain`, `DistribList`, `EMailBodyRevision`, `Type`, `EMailBodyChain`, `EMailBodyDisableEnvironment`, `active`, `maintenanceact`) VALUES ('DEFAULT', 'RX', 'PROD', '', '', '', '', '', 'STD', '', '', 'Y', 'N');");
+        SQLS.append("INSERT INTO `countryenvparam` (`system`, `Country`, `Environment`, `Build`, `Revision`, `Chain`, `DistribList`, `EMailBodyRevision`, `Type`, `EMailBodyChain`, `EMailBodyDisableEnvironment`, `active`, `maintenanceact`) VALUES ('DEFAULT', 'FR', 'PROD', '', '', '', '', '', 'STD', '', '', 'Y', 'N');");
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `countryenvironmentparameters` (`system`, `Country`, `Environment`, `Application`, `IP`, `URL`, `URLLOGIN`) VALUES ('DEFAULT', 'RX', 'PROD', 'Google', 'www.google.com', '/', '');");
+        SQLS.append("INSERT INTO `countryenvironmentparameters` (`system`, `Country`, `Environment`, `Application`, `IP`, `URL`, `URLLOGIN`) VALUES ('DEFAULT', 'FR', 'PROD', 'Google', 'www.google.fr', '/', '');");
         SQLInstruction.add(SQLS.toString());
 
 //-- Force default system to DEFAULT.
@@ -3047,7 +2963,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 //-- ------------------------ 461
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `robot` (`robot` ,`host` ,`port` ,`platform` ,`browser` ,`version` , `active` ,`description`)");
-        SQLS.append("VALUES ('MyRobot', '127.0.0.1', '5555', 'LINUX', 'firefox', '28', 'Y', 'My Robot');");
+        SQLS.append("VALUES ('MyRobot', '127.0.0.1', '4444', 'LINUX', 'firefox', '28', 'Y', 'My Robot');");
         SQLInstruction.add(SQLS.toString());
 
 //Insert parameter cerberus_picture_testcase_path.
@@ -4344,9 +4260,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // New invariant.
         //-- ------------------------ 667
         SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`)");
-        SQLS.append("VALUES ('MNTACTIVE', 'N', '20', 'Disable', ''),");
-        SQLS.append("       ('MNTACTIVE', 'Y', '10', 'Active', '');");
+        SQLS.append("SELECT 1 FROM dual;");
         SQLInstruction.add(SQLS.toString());
 
         // Tracability on Testdatalib object.
@@ -7532,6 +7446,113 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // New updated Documentation.
         //-- ------------------------ 1258-1259
         SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+
+        // rename parameters in order to fit standard
+        //-- ------------------------ 1260-1263
+        SQLS = new StringBuilder();
+        SQLS.append("update parameter set param = replace(param, 'integration_', 'cerberus_') where param like 'integration_%';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("update parameter set param = replace(param, 'jenkins_', 'cerberus_jenkins') where param like 'jenkins_%';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("update parameter set param = 'cerberus_appium_swipe_duration' where param = 'appium_swipeDuration';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("update parameter set param = replace(param, 'CI_OK_', 'cerberus_ci_okcoef') where param like 'CI_OK%';");
+        SQLInstruction.add(SQLS.toString());
+
+        // moved Battery to Label
+        //-- ------------------------ 1264-1268
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `label` ADD COLUMN `Type` VARCHAR(45) NOT NULL DEFAULT 'STICKER' AFTER `Label`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO label (`system`,`Label`,`Type`,`Color`,`ParentLabel`, `Description`, `UsrCreated`)");
+        SQLS.append(" SELECT '', testbattery, 'BATTERY', '#CCCCCC', '', Description, 'DatabaseVersioningV1264' from testbattery");
+        SQLS.append(" ON DUPLICATE KEY UPDATE `UsrModif` = 'DatabaseVersioningV1264', DateModif = now();");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO testcaselabel (`Test`,`TestCase`,`LabelId`, `UsrCreated`)");
+        SQLS.append(" SELECT Test, TestCase, l.id, 'DatabaseVersioningV1264' from testbatterycontent b");
+        SQLS.append("  join label l where b.testbattery = l.Label");
+        SQLS.append("  ON DUPLICATE KEY UPDATE `UsrModif` = 'DatabaseVersioningV1264', DateModif = now();");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO campaignlabel (`campaign`,`LabelId`, `UsrCreated`)");
+        SQLS.append(" SELECT campaign, l.id, 'DatabaseVersioningV1264' from campaigncontent b");
+        SQLS.append("  join label l where b.testbattery = l.Label");
+        SQLS.append("  ON DUPLICATE KEY UPDATE `UsrModif` = 'DatabaseVersioningV1264', DateModif = now();");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ");
+        SQLS.append("('LABELTYPE', 'STICKER', 100, 'Sticker.')");
+        SQLS.append(",('LABELTYPE', 'BATTERY', 200, 'Battery.')");
+        SQLS.append(",('LABELTYPE', 'REQUIREMENT', 300, 'Requirement.')");
+        SQLS.append(",('INVARIANTPRIVATE', 'LABELTYPE', 700, '');");
+        SQLInstruction.add(SQLS.toString());
+
+        // ADD a parameter for the path to store csv file
+        //-- ------------------------ 1269
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` (`system`,`param`, `value`, `description`) VALUES ");
+        SQLS.append("  ('','cerberus_testdatalibcsv_path', '/path/to/csv', 'Default path for the csv file location')");
+        SQLInstruction.add(SQLS.toString());
+
+        // ADD requirement additional data
+        //-- ------------------------ 1270-1271
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `label` ");
+        SQLS.append("ADD COLUMN `ReqType` VARCHAR(100) NOT NULL DEFAULT '' AFTER `ParentLabel`,");
+        SQLS.append("ADD COLUMN `ReqStatus` VARCHAR(100) NOT NULL DEFAULT '' AFTER `ReqType`,");
+        SQLS.append("ADD COLUMN `ReqCriticity` VARCHAR(100) NOT NULL DEFAULT '' AFTER `ReqStatus`,");
+        SQLS.append("ADD COLUMN `LongDesc` TEXT NOT NULL AFTER `Description`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES  ");
+        SQLS.append(" ('REQUIREMENTTYPE', 'Unknown', 100, '')");
+        SQLS.append(",('REQUIREMENTTYPE', 'Ergonomy', 110, '')");
+        SQLS.append(",('REQUIREMENTTYPE', 'Evolutivity', 120, '')");
+        SQLS.append(",('REQUIREMENTTYPE', 'Functional', 130, '')");
+        SQLS.append(",('REQUIREMENTTYPE', 'Internationalization', 140, '')");
+        SQLS.append(",('REQUIREMENTTYPE', 'Legal', 150, '')");
+        SQLS.append(",('REQUIREMENTTYPE', 'Maintenance', 160, '')");
+        SQLS.append(",('REQUIREMENTTYPE', 'Operation', 170, '')");
+        SQLS.append(",('REQUIREMENTTYPE', 'Portability', 180, '')");
+        SQLS.append(",('REQUIREMENTTYPE', 'Performance', 190, '')");
+        SQLS.append(",('REQUIREMENTTYPE', 'Scalability', 200, '')");
+        SQLS.append(",('REQUIREMENTTYPE', 'Security', 210, '')");
+        SQLS.append(",('REQUIREMENTSTATUS', 'Unknown', 100, '')");
+        SQLS.append(",('REQUIREMENTSTATUS', 'Approved', 200, '')");
+        SQLS.append(",('REQUIREMENTSTATUS', 'In Progress', 300, '')");
+        SQLS.append(",('REQUIREMENTSTATUS', 'Verified', 400, '')");
+        SQLS.append(",('REQUIREMENTSTATUS', 'Obsolete', 500, '')");
+        SQLS.append(",('REQUIREMENTCRITICITY', 'Unknown', 100, '')");
+        SQLS.append(",('REQUIREMENTCRITICITY', 'Low', 200, '')");
+        SQLS.append(",('REQUIREMENTCRITICITY', 'Medium', 300, '')");
+        SQLS.append(",('REQUIREMENTCRITICITY', 'High', 400, '')");
+        SQLS.append(",('INVARIANTPUBLIC', 'REQUIREMENTTYPE', '700', '')");
+        SQLS.append(",('INVARIANTPUBLIC', 'REQUIREMENTSTATUS', '750', '')");
+        SQLS.append(",('INVARIANTPUBLIC', 'REQUIREMENTCRITICITY', '800', '');");
+        SQLInstruction.add(SQLS.toString());
+
+        // New updated Documentation.
+        //-- ------------------------ 1272-1273
+        SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+
+        // New updated Documentation.
+        //-- ------------------------ 1274-1275
+        SQLS = new StringBuilder();
         SQLS.append("DELETE FROM `documentation`;");
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
@@ -7786,10 +7807,20 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('label','id','','fr','ID','',NULL)");
         SQLS.append(",('label','label','','en','Label','<p>This value is the label attached to testcase for the purpose of identification or to give other information.</p>',NULL)");
         SQLS.append(",('label','label','','fr','Label','<p>Cette valeur représente le label qui sera attaché au testcase à des fins d\\'identification ou de regroupement.</p>',NULL)");
+        SQLS.append(",('label','longdesc','','en','Long Description','',NULL)");
+        SQLS.append(",('label','longdesc','','fr','Description Longue','',NULL)");
         SQLS.append(",('label','parentid','','en','Parent LabelID','<p>This value represent the labelID of the parent label. This allow to group or create hierachy in label</p>',NULL)");
         SQLS.append(",('label','parentid','','fr','ID du label parent','<p>Cette valeur est l\\'ID du label parent. Cela permet de grouper ou de créer une hiérarchie au sein des labels</p>',NULL)");
+        SQLS.append(",('label','reqcriticity','','en','Criticity','',NULL)");
+        SQLS.append(",('label','reqcriticity','','fr','Criticité','',NULL)");
+        SQLS.append(",('label','reqstatus','','en','Status','',NULL)");
+        SQLS.append(",('label','reqstatus','','fr','Status','',NULL)");
+        SQLS.append(",('label','reqtype','','en','Requirement Type','',NULL)");
+        SQLS.append(",('label','reqtype','','fr','Type d\\'Exigeance','',NULL)");
         SQLS.append(",('label','system','','en','System','',NULL)");
         SQLS.append(",('label','system','','fr','Système','',NULL)");
+        SQLS.append(",('label','type','','en','Type','<p>This field is the type of label. Labels can be STICKER, REQUIREMENT and BATTERY.</p><p>STICKER: Appears in testcase list page and also Reporting By Tag page.</p><p>BATTERY: Will only appear in testcase list page. You can use that type of label is you want to group your testcases in a hidden mode.',NULL)");
+        SQLS.append(",('label','type','','fr','Type','<p>Correspond au type de Label. Prend une des valeurs : STICKER, REQUIREMENT et BATTERY.</p><p>STICKER: Apparait dans la liste des cas de tests mais aussi dans la page de Reporting By Tag.</p><p>BATTERY: N\\'apparait que dans la liste des cas des tests. Ce type est à utiliser pour grouper des cas de t',NULL)");
         SQLS.append(",('logevent','action','','en','Action','Type of the action performed',NULL)");
         SQLS.append(",('logevent','action','','fr','Action','Type de l\\'action effetué',NULL)");
         SQLS.append(",('logevent','localip','','en','Local IP','IP of the Cerberus server that provided the service.',NULL)");
@@ -8408,11 +8439,11 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_invariant','message_remove','','fr','Etes vous sûrs?','',NULL)");
         SQLS.append(",('page_invariant','private','','en','Private','',NULL)");
         SQLS.append(",('page_invariant','private','','fr','Privés','',NULL)");
-        SQLS.append(",('page_invariant','private_invariant','','en','Private InvariantS','',NULL)");
+        SQLS.append(",('page_invariant','private_invariant','','en','Private Invariants','',NULL)");
         SQLS.append(",('page_invariant','private_invariant','','fr','Invariants privés','',NULL)");
         SQLS.append(",('page_invariant','public','','en','Public','',NULL)");
         SQLS.append(",('page_invariant','public','','fr','Publiques','',NULL)");
-        SQLS.append(",('page_invariant','public_invariant','','en','Public InvariantS','',NULL)");
+        SQLS.append(",('page_invariant','public_invariant','','en','Public Invariants','',NULL)");
         SQLS.append(",('page_invariant','public_invariant','','fr','Invariants publiques','',NULL)");
         SQLS.append(",('page_invariant','sort','','en','Sort','',NULL)");
         SQLS.append(",('page_invariant','sort','','fr','Tri','',NULL)");
@@ -8432,8 +8463,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_label','btn_view','','fr','Voir le Label','',NULL)");
         SQLS.append(",('page_label','display','','en','Display','Display the generated label from the label and the color defined',NULL)");
         SQLS.append(",('page_label','display','','fr','Affichage','Affiche le label généré à partir du label et de la couleur définis',NULL)");
-        SQLS.append(",('page_label','table_label','','en','Label List',NULL,NULL)");
-        SQLS.append(",('page_label','table_label','','fr','Liste de Labels',NULL,NULL)");
+        SQLS.append(",('page_label','table_label','','en','Label List','',NULL)");
+        SQLS.append(",('page_label','table_label','','fr','Liste de Labels','',NULL)");
         SQLS.append(",('page_label','title','','en','LABEL','This page can be used in order to manage the labels.','_label')");
         SQLS.append(",('page_label','title','','fr','LABEL','Cette page permet de gérer et créer des labels.','_label')");
         SQLS.append(",('page_logviewer','button_view','','en','Log entry detail','',NULL)");
@@ -9633,58 +9664,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('user','Team','','fr','Equipe','Correspond à l\\'équipe de l\\'utilisateur','_management_des_utilisateurs')");
         SQLS.append(",('usergroup','GroupName','','en','Group Name','Authorities are managed by group. In order to be granted to a set of feature, you must belong to the corresponding group.<br>Every user can of course belong to as many group as necessary in order to get access to as many feature as required.<br>In order to get the full access to the system you must belong to every group.<br>Some groups are linked together on the test perimeter and integration perimeter.<br><br><b>Test perimeter :</b><br><br><code class=\\'doc-fixed\\'>TestRO</code>: Has read only access to the information related to test cases and also has access to execution reporting options.<br><br><code class=\\'doc-fixed\\'>Test</code>: Can modify non WORKING test cases but cannot delete test cases.<br><br><code class=\\'doc-fixed\\'>TestAdmin</code>: Can modify or delete any test case (including Pre Testing test cases). Can also create or delete a test.<br><br>The minimum group you need to belong is <code class=\\'doc-fixed\\'>TestRO</code> that will give you access in read only to all test data (including its execution reporting page).<br>If you want to be able to modify the testcases (except the WORKING ones), you need <code class=\\'doc-fixed\\'>Test</code> group on top of <code class=\\'doc-fixed\\'>TestRO</code> group.<br>If you want the full access to all testcase (including beeing able to delete any testcase), you will need <code class=\\'doc-fixed\\'>TestAdmin</code> on top of <code class=\\'doc-fixed\\'>TestRO</code> and <code class=\\'doc-fixed\\'>Test</code> group.<br><br><b>Test Data perimeter :</b><br><br><code class=\\'doc-fixed\\'>TestDataManager</code>: Can modify the test data..<br><br><b>Test Execution perimeter :</b><br><br><code class=\\'doc-fixed\\'>RunTest</code>: Can run both Manual and Automated test cases from GUI.<br><br><b>Integration perimeter :</b><br><br><code class=\\'doc-fixed\\'>IntegratorRO</code>: Has access to the integration status.<br><br><code class=\\'doc-fixed\\'>Integrator</code>: Can add an application. Can change parameters of the environments.<br><br><code class=\\'doc-fixed\\'>IntegratorNewChain</code>: Can register the end of the chain execution. Has read only access to the other informations on the same page.<br><br><code class=\\'doc-fixed\\'>IntegratorDeploy</code>: Can disable or enable environments and register new build / revision.<br><br>The minimum group you need to belong is <code class=\\'doc-fixed\\'>IntegratorRO</code> that will give you access in read only to all environment data.<br>If you want to be able to modify the environment data, you need <code class=\\'doc-fixed\\'>Integrator</code> group on top of <code class=\\'doc-fixed\\'>IntegratorRO</code> group.<br><code class=\\'doc-fixed\\'>IntegratorNewChain</code> and <code class=\\'doc-fixed\\'>IntegratorDeploy</code> are used on top of <code class=\\'doc-fixed\\'>Integrator</code> Group to be able to create a new chain on an environment or perform a deploy operation.<br><br><b>Administration perimeter :</b><br><br><code class=\\'doc-fixed\\'>Administrator</code>: Can create, modify or delete users. Has access to log Event and Database Maintenance. Can change Parameter values.','_user_management')");
         SQLS.append(",('usergroup','GroupName','','fr','Nom du groupe',NULL,'_management_des_utilisateurs')");
-        SQLInstruction.add(SQLS.toString());
-
-        // rename parameters in order to fir standard
-        //-- ------------------------ 1259-1262
-        SQLS = new StringBuilder();
-        SQLS.append("update parameter set param = replace(param, 'integration_', 'cerberus_') where param like 'integration_%';");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("update parameter set param = replace(param, 'jenkins_', 'cerberus_jenkins') where param like 'jenkins_%';");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("update parameter set param = 'cerberus_appium_swipe_duration' where param = 'appium_swipeDuration';");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("update parameter set param = replace(param, 'CI_OK_', 'cerberus_ci_okcoef') where param like 'CI_OK%';");
-        SQLInstruction.add(SQLS.toString());
-
-        // moved Battery to Label
-        //-- ------------------------ 1263-1267
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `label` ADD COLUMN `Type` VARCHAR(45) NOT NULL DEFAULT 'STICKER' AFTER `Label`;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO label (`system`,`Label`,`Type`,`Color`,`ParentLabel`, `Description`, `UsrCreated`)");
-        SQLS.append(" SELECT '', testbattery, 'BATTERY', '#CCCCCC', '', Description, 'DatabaseVersioningV1264' from testbattery");
-        SQLS.append(" ON DUPLICATE KEY UPDATE `UsrModif` = 'DatabaseVersioningV1264', DateModif = now();");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO testcaselabel (`Test`,`TestCase`,`LabelId`, `UsrCreated`)");
-        SQLS.append(" SELECT Test, TestCase, l.id, 'DatabaseVersioningV1264' from testbatterycontent b");
-        SQLS.append("  join label l where b.testbattery = l.Label");
-        SQLS.append("  ON DUPLICATE KEY UPDATE `UsrModif` = 'DatabaseVersioningV1264', DateModif = now();");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO campaignlabel (`campaign`,`LabelId`, `UsrCreated`)");
-        SQLS.append(" SELECT campaign, l.id, 'DatabaseVersioningV1264' from campaigncontent b");
-        SQLS.append("  join label l where b.testbattery = l.Label");
-        SQLS.append("  ON DUPLICATE KEY UPDATE `UsrModif` = 'DatabaseVersioningV1264', DateModif = now();");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ");
-        SQLS.append("('LABELTYPE', 'STICKER', 100, 'Sticker.')");
-        SQLS.append(",('LABELTYPE', 'BATTERY', 200, 'Battery.')");
-        SQLS.append(",('LABELTYPE', 'REQUIREMENT', 300, 'Requirement.')");
-        SQLS.append(",('INVARIANTPRIVATE', 'LABELTYPE', 700, '');");
-        SQLInstruction.add(SQLS.toString());
-        
-        // ADD a parameter for the path to store csv file
-        //-- ------------------------ 1268
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `parameter` (`system`,`param`, `value`, `description`) VALUES ");
-        SQLS.append("  ('','cerberus_testdatalibcsv_path', '/path/to/csv', 'Default path for the csv file location')");
         SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;

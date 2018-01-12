@@ -303,20 +303,21 @@ function aoColumnsFunc() {
     var status = readStatus();
     var statusLen = status.length;
     var aoColumns = [
-        {"data": "Application", "bSortable": true, "sName": "Application", "title": displayDocLink(doc.application.Application),
+        {"data": "Application", "bSortable": true, "sName": "Application", "title": displayDocLink(doc.application.Application), "sWidth": "50px",
             "mRender": function (data, type, oObj) {
                 var href = "TestCaseList.jsp?application=" + data;
 
                 return "<a href='" + href + "'>" + data + "</a>";
             }
         },
-        {"data": "Total", "bSortable": true, "sName": "Total", "title": "Total"}
+        {"data": "Total", "bSortable": true, "sName": "Total", "title": "Total", "sWidth": "10px"}
     ];
 
     for (var s = 0; s < statusLen; s++) {
         var obj = {
             "data": status[s].value,
             "bSortable": true,
+            "sWidth": "10px",
             "sName": status[s].value,
             "title": status[s].value
         };
@@ -331,9 +332,14 @@ function loadBuildRevTable() {
     selectSystem = "VC";
     var jqxhr = $.getJSON("GetEnvironmentsPerBuildRevision", "system=" + getUser().defaultSystem);
     $.when(jqxhr).then(function (result) {
-        $.each(result["contentTable"], function (idx, obj) {
-            appendBuildRevRow(obj);
-        });
+        if (result["contentTable"].length > 0) {
+            $.each(result["contentTable"], function (idx, obj) {
+                appendBuildRevRow(obj);
+            });
+
+        } else {
+            $("#ReportByStatusPanel").hide();
+        }
     }).fail(handleErrorAjaxAfterTimeout);
 }
 

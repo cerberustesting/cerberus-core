@@ -56,7 +56,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class UpdateLabel extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(UpdateLabel.class);
-    
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -92,17 +92,21 @@ public class UpdateLabel extends HttpServlet {
         String system = policy.sanitize(request.getParameter("system"));
         String type = policy.sanitize(request.getParameter("type"));
         Integer id = Integer.valueOf(policy.sanitize(request.getParameter("id")));
+        String reqtype = policy.sanitize(request.getParameter("reqtype"));
+        String reqstatus = policy.sanitize(request.getParameter("reqstatus"));
+        String reqcriticity = policy.sanitize(request.getParameter("reqcriticity"));
         // Parameter that needs to be secured --> We SECURE+DECODE them
         String label = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("label"), "", charset);
         String color = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("color"), "", charset);
         String parentLabel = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("parentLabel"), "", charset);
-        String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("description"), "", charset);
+        String description = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("description"), "", charset);
+        String longDesc = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("longdesc"), "", charset);
         String usr = request.getUserPrincipal().getName();
-        
+
         /**
          * Checking all constrains before calling the services.
          */
-        if (id==0) {
+        if (id == 0) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Label")
                     .replace("%OPERATION%", "Update")
@@ -129,7 +133,7 @@ public class UpdateLabel extends HttpServlet {
                  * object exist, then we can delete it.
                  */
                 Timestamp updateDate = new Timestamp(new Date().getTime());
-                Label l = labelFactory.create(id, system, label, type, color, parentLabel, description, null, null, usr, updateDate);
+                Label l = labelFactory.create(id, system, label, type, color, parentLabel, reqtype, reqstatus, reqcriticity, description, longDesc, null, null, usr, updateDate);
                 ans = labelService.update(l);
 
                 if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
@@ -162,7 +166,7 @@ public class UpdateLabel extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-        @Override
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {

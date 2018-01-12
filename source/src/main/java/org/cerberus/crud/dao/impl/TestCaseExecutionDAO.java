@@ -1113,7 +1113,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     }
 
     @Override
-    public AnswerList readByCriteria(int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException {
+    public AnswerList readByCriteria(int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch, List<String> individualLike) throws CerberusException {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
         AnswerList answer = new AnswerList();
         List<String> individalColumnSearchValues = new ArrayList<String>();
@@ -1160,7 +1160,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             }
             query.append(" ) ");
         }
-
+        
         if (!StringUtil.isNullOrEmpty(sort)) {
             query.append(" order by ").append(sort);
         }
@@ -1177,7 +1177,6 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         }
         List<TestCaseExecution> testCaseExecutionList = new ArrayList<TestCaseExecution>();
         Connection connection = this.databaseSpring.connect();
-        System.out.println(query);
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             int i = 1;
@@ -1212,8 +1211,6 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             for (String individualColumnSearchValue : individalColumnSearchValues) {
                 preStat.setString(i++, individualColumnSearchValue);
             }
-            
-            
 
             try {
                 ResultSet resultSet = preStat.executeQuery();
@@ -1899,8 +1896,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         query.append(columnName);
         query.append(" as distinctValues FROM testcaseexecution exe ");
         query.append("where exe.`start`> '").append(DateUtil.getMySQLTimestampTodayDeltaMinutes(-360000)).append("' ");
-
-        if (!StringUtil.isNullOrEmpty(searchParameter)) {
+        
+    	if (!StringUtil.isNullOrEmpty(searchParameter)) {
             query.append("and (exe.`id` like ? ");
             query.append(" or exe.`test` like ? ");
             query.append(" or exe.`testCase` like ? ");
@@ -1943,12 +1940,13 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
         }
-
+        
         try (Connection connection = databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(query.toString())) {
 
             int i = 1;
-            if (!Strings.isNullOrEmpty(searchParameter)) {
+            
+        	if (!Strings.isNullOrEmpty(searchParameter)) {
                 preStat.setString(i++, "%" + searchParameter + "%");
                 preStat.setString(i++, "%" + searchParameter + "%");
                 preStat.setString(i++, "%" + searchParameter + "%");

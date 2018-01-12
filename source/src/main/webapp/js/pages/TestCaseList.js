@@ -384,7 +384,7 @@ function setActive(checkbox) {
     $.ajax({
         url: "UpdateTestCase",
         method: "POST",
-        data: {test: test, testCase: testCase, active: active},
+        data: {test: test, testCase: testCase, originalTest: test, originalTestCase: testCase, active: active},
         dataType: "json",
         success: function (data) {
             if (active === "Y") {
@@ -474,7 +474,7 @@ function aoColumnsFunc(countries, tableId) {
             "bSearchable": false,
             "title": doc.getDocOnline("page_global", "columnAction"),
             "sDefaultContent": "",
-            "sWidth": "190px",
+            "sWidth": "160px",
             "mRender": function (data, type, obj) {
                 var buttons = "";
 

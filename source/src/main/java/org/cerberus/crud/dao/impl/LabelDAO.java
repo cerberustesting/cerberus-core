@@ -126,7 +126,11 @@ public class LabelDAO implements ILabelDAO {
             searchSQL.append(" or `type` like ?");
             searchSQL.append(" or `color` like ?");
             searchSQL.append(" or `parentLabel` like ?");
+            searchSQL.append(" or `ReqType` like ?");
+            searchSQL.append(" or `ReqStatus` like ?");
+            searchSQL.append(" or `ReqCriticity` like ?");
             searchSQL.append(" or `description` like ?");
+            searchSQL.append(" or `longdesc` like ?");
             searchSQL.append(" or `usrCreated` like ?");
             searchSQL.append(" or `dateCreated` like ?");
             searchSQL.append(" or `usrModif` like ?");
@@ -166,6 +170,10 @@ public class LabelDAO implements ILabelDAO {
 
             int i = 1;
             if (!StringUtil.isNullOrEmpty(searchTerm)) {
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
@@ -229,8 +237,8 @@ public class LabelDAO implements ILabelDAO {
         Answer response = new Answer();
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO label (`system`, `label`, `type`, `color`, `parentLabel`, `description`, `usrCreated`, `dateCreated`, `usrModif`, `dateModif` ) ");
-        query.append("VALUES (?,?,?,?,?,?,?,?,?,?)");
+        query.append("INSERT INTO label (`system`, `label`, `type`, `color`, `parentLabel`, `ReqType`, `ReqStatus`, `ReqCriticity`, `description`, `longdesc`, `usrCreated`, `dateCreated`, `usrModif`, `dateModif` ) ");
+        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -239,13 +247,17 @@ public class LabelDAO implements ILabelDAO {
         try (Connection connection = databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(query.toString())) {
 
-            int i=1;
+            int i = 1;
             preStat.setString(i++, object.getSystem());
             preStat.setString(i++, object.getLabel());
             preStat.setString(i++, object.getType());
             preStat.setString(i++, object.getColor());
             preStat.setString(i++, object.getParentLabel());
+            preStat.setString(i++, object.getReqType());
+            preStat.setString(i++, object.getReqStatus());
+            preStat.setString(i++, object.getReqCriticity());
             preStat.setString(i++, object.getDescription());
+            preStat.setString(i++, object.getLongDesc());
             preStat.setString(i++, object.getUsrCreated());
             preStat.setTimestamp(i++, object.getDateCreated());
             preStat.setString(i++, object.getUsrModif());
@@ -298,29 +310,34 @@ public class LabelDAO implements ILabelDAO {
     public Answer update(Label object) {
         Answer response = new Answer();
         MessageEvent msg = null;
-        final String query = "UPDATE label SET `system` = ?, `label` = ?, `type` = ?, `color` = ?, `parentLabel` = ?, `usrModif` = ?, `dateModif` = ?, `description` = ?  WHERE id = ?";
+        final String query = "UPDATE label SET `system` = ?, `label` = ?, `type` = ?, `color` = ?, `parentLabel` = ?, `usrModif` = ?, `dateModif` = ?, `description` = ?"
+                + ", `LongDesc` = ?, `ReqType` = ?, `ReqStatus` = ?, `ReqCriticity` = ?  WHERE id = ?";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
         }
-         try (Connection connection = databaseSpring.connect();
+        try (Connection connection = databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(query.toString())) {
-             int i=1;
-                preStat.setString(i++, object.getSystem());
-                preStat.setString(i++, object.getLabel());
-                preStat.setString(i++, object.getType());
-                preStat.setString(i++, object.getColor());
-                preStat.setString(i++, object.getParentLabel());
-                preStat.setString(i++, object.getUsrModif());
-                preStat.setTimestamp(i++, object.getDateModif());
-                preStat.setString(i++, object.getDescription());
-                preStat.setInt(i++, object.getId());
-                
-                preStat.executeUpdate();
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
-            } catch (Exception e) {
+            int i = 1;
+            preStat.setString(i++, object.getSystem());
+            preStat.setString(i++, object.getLabel());
+            preStat.setString(i++, object.getType());
+            preStat.setString(i++, object.getColor());
+            preStat.setString(i++, object.getParentLabel());
+            preStat.setString(i++, object.getUsrModif());
+            preStat.setTimestamp(i++, object.getDateModif());
+            preStat.setString(i++, object.getDescription());
+            preStat.setString(i++, object.getLongDesc());
+            preStat.setString(i++, object.getReqType());
+            preStat.setString(i++, object.getReqStatus());
+            preStat.setString(i++, object.getReqCriticity());
+            preStat.setInt(i++, object.getId());
+
+            preStat.executeUpdate();
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
+        } catch (Exception e) {
             LOG.warn("Unable to update label: " + e.getMessage());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
                     e.toString());
@@ -339,12 +356,16 @@ public class LabelDAO implements ILabelDAO {
         String type = ParameterParserUtil.parseStringParam(rs.getString("lab.type"), "");
         String color = ParameterParserUtil.parseStringParam(rs.getString("lab.color"), "");
         String parentLabel = ParameterParserUtil.parseStringParam(rs.getString("lab.parentLabel"), "");
+        String reqType = ParameterParserUtil.parseStringParam(rs.getString("lab.ReqType"), "");
+        String reqStatus = ParameterParserUtil.parseStringParam(rs.getString("lab.ReqStatus"), "");
+        String reqCriticity = ParameterParserUtil.parseStringParam(rs.getString("lab.ReqCriticity"), "");
         String description = ParameterParserUtil.parseStringParam(rs.getString("lab.description"), "");
+        String longdesc = ParameterParserUtil.parseStringParam(rs.getString("lab.longdesc"), "");
         String usrCreated = ParameterParserUtil.parseStringParam(rs.getString("lab.usrCreated"), "");
         Timestamp dateCreated = rs.getTimestamp("lab.dateCreated");
         String usrModif = ParameterParserUtil.parseStringParam(rs.getString("lab.usrModif"), "");
         Timestamp dateModif = rs.getTimestamp("lab.dateModif");
-        return factoryLabel.create(id, system, label, type, color, parentLabel, description, usrCreated, dateCreated, usrModif, dateModif);
+        return factoryLabel.create(id, system, label, type, color, parentLabel, reqType, reqStatus, reqCriticity, description, longdesc, usrCreated, dateCreated, usrModif, dateModif);
     }
 
     @Override
@@ -367,14 +388,18 @@ public class LabelDAO implements ILabelDAO {
             searchSQL.append(" and (`System` = ? )");
         }
 
-        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+    	if (!StringUtil.isNullOrEmpty(searchTerm)) {
             searchSQL.append(" and (`id` like ?");
             searchSQL.append(" or `system` like ?");
             searchSQL.append(" or `label` like ?");
             searchSQL.append(" or `type` like ?");
             searchSQL.append(" or `color` like ?");
             searchSQL.append(" or `parentLabel` like ?");
+            searchSQL.append(" or `ReqType` like ?");
+            searchSQL.append(" or `ReqStatus` like ?");
+            searchSQL.append(" or `ReqCriticity` like ?");
             searchSQL.append(" or `description` like ?");
+            searchSQL.append(" or `longdesc` like ?");
             searchSQL.append(" or `usrCreated` like ?");
             searchSQL.append(" or `dateCreated` like ?");
             searchSQL.append(" or `usrModif` like ?");
@@ -389,6 +414,7 @@ public class LabelDAO implements ILabelDAO {
             }
             searchSQL.append(" )");
         }
+        
         query.append(searchSQL);
         query.append(" order by ").append(columnName).append(" asc");
 
@@ -403,7 +429,12 @@ public class LabelDAO implements ILabelDAO {
             if (!StringUtil.isNullOrEmpty(system)) {
                 preStat.setString(i++, system);
             }
-            if (!StringUtil.isNullOrEmpty(searchTerm)) {
+
+        	if (!StringUtil.isNullOrEmpty(searchTerm)) {
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
@@ -419,7 +450,7 @@ public class LabelDAO implements ILabelDAO {
             for (String individualColumnSearchValue : individalColumnSearchValues) {
                 preStat.setString(i++, individualColumnSearchValue);
             }
-
+            
             ResultSet resultSet = preStat.executeQuery();
 
             //gets the data
@@ -461,5 +492,5 @@ public class LabelDAO implements ILabelDAO {
         answer.setDataList(distinctValues);
         return answer;
     }
-  
+
 }

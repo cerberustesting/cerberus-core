@@ -84,8 +84,7 @@ public class CampaignDAO implements ICampaignDAO {
             searchSQL.append(" and ( 1=1 ");
             for (Map.Entry<String, List<String>> entry : individualSearch.entrySet()) {
                 searchSQL.append(" and ");
-                String key = "IFNULL(" + entry.getKey() + ",'')";
-                String q = SqlUtil.getInSQLClauseForPreparedStatement(key, entry.getValue());
+                String q = SqlUtil.getInSQLClauseForPreparedStatement(entry.getKey(), entry.getValue());
                 if (q == null || "".equals(q)) {
                     q = "(" + entry.getKey() + " IS NULL OR " + entry.getKey() + " = '')";
                 }

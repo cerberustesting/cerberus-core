@@ -199,6 +199,7 @@ function aoColumnsFunc(tableId) {
             "title": doc.getDocLabel("page_global", "columnAction"),
             "bSortable": false,
             "bSearchable": false,
+            "sWidth": "50px",
             "mRender": function (data, type, obj) {
                 var hasPermissions = $("#" + tableId).attr("hasPermissions");
 
@@ -220,20 +221,30 @@ function aoColumnsFunc(tableId) {
                 return '<div class="center btn-group width150">' + viewEntry + '</div>';
             }
         },
-        {"data": "idProject",
+        {
+            "data": "idProject",
             "sName": "idProject",
+            "sWidth": "50px",
             "title": doc.getDocOnline("project", "idproject")},
-        {"data": "code",
+        {
+            "data": "code",
             "sName": "VCCode",
+            "sWidth": "50px",
             "title": doc.getDocOnline("project", "code")},
-        {"data": "description",
+        {
+            "data": "description",
             "sName": "description",
+            "sWidth": "50px",
             "title": doc.getDocOnline("project", "description")},
-        {"data": "active",
+        {
+            "data": "active",
             "sName": "active",
+            "sWidth": "50px",
             "title": doc.getDocOnline("project", "active")},
-        {"data": "dateCreation",
+        {
+            "data": "dateCreation",
             "sName": "dateCre",
+            "sWidth": "50px",
             "title": doc.getDocOnline("project", "dateCreation")}
     ];
     return aoColumns;

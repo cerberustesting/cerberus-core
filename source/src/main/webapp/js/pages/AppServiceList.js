@@ -102,6 +102,7 @@ function aoColumnsFunc(tableId) {
             "data": null,
             "bSortable": false,
             "bSearchable": false,
+            "sWidth": "75px",
             "title": doc.getDocLabel("page_global", "columnAction"),
             "mRender": function (data, type, obj) {
             	var hasPermissions = $("#" + tableId).attr("hasPermissions");
@@ -127,8 +128,7 @@ function aoColumnsFunc(tableId) {
                 }
                 return '<div class="center btn-group width150">' + viewEntry + '</div>';
             
-            },
-            "width": "75px"
+            }
         },
         {
             "sName": "srv.Service",

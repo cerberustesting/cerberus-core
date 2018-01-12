@@ -117,7 +117,9 @@ function displayAndRefresh_followup() {
 }
 
 function displayAndRefresh_jobStatus() {
-    // Display table
+    showLoader('#QueueJobStatus');
+    showLoader('#QueueJobActive');
+
     var jqxhr = $.getJSON("ExecuteNextInQueue");
     $.when(jqxhr).then(function (data) {
         var obj = data;
@@ -131,11 +133,15 @@ function displayAndRefresh_jobStatus() {
         } else {
             $("#modifyParambutton").attr("disabled", true);
         }
+
+        hideLoader('#QueueJobStatus');
+        hideLoader('#QueueJobActive');
+
     });
 }
 
 function forceExecution() {
-    // Display table
+
     var jqxhr = $.getJSON("ExecuteNextInQueue?forceExecution=Y");
     $.when(jqxhr).then(function (data) {
         var obj = data;
@@ -143,6 +149,9 @@ function forceExecution() {
         $("#jobRunning").val(data["jobRunning"]);
         $("#jobStart").val(data["jobStart"]);
         $("#jobActive").val(data["jobActive"]);
+
+        displayAndRefresh_jobStatus();
+
     });
 }
 
@@ -710,6 +719,7 @@ function aoColumnsFunc_followUp() {
     var aoColumns = [
         {
             "data": null,
+            "sWidth": "50px",
             "sName": "action",
             "title": doc.getDocLabel("page_global", "columnAction"),
             "mRender": function (data, type, oObj) {
@@ -750,15 +760,15 @@ function aoColumnsFunc_followUp() {
             }
         }
         ,
-        {"data": "0", "sName": "constrainsId", "title": doc.getDocLabel("page_testcaseexecutionqueue", "constrain")},
-        {"data": "1", "sName": "system", "title": doc.getDocLabel("invariant", "SYSTEM")},
-        {"data": "2", "sName": "environment", "title": doc.getDocLabel("invariant", "ENVIRONMENT")},
-        {"data": "3", "sName": "country", "title": doc.getDocLabel("invariant", "COUNTRY")},
-        {"data": "4", "sName": "application", "title": doc.getDocLabel("application", "Application")},
-        {"data": "5", "sName": "robot", "title": doc.getDocLabel("robot", "robot")},
-        {"data": "6", "sName": "nbRunning", "title": doc.getDocLabel("page_testcaseexecutionqueue", "nbRunning")},
-        {"data": "7", "sName": "nbPoolSize", "title": doc.getDocLabel("page_testcaseexecutionqueue", "nbPoolSize")},
-        {"data": "8", "sName": "nbInQueue", "title": doc.getDocLabel("page_testcaseexecutionqueue", "nbInQueue")},
+        {"data": "0", "sName": "constrainsId", "sWidth": "100px", "title": doc.getDocLabel("page_testcaseexecutionqueue", "constrain")},
+        {"data": "1", "sName": "system", "sWidth": "50px", "title": doc.getDocLabel("invariant", "SYSTEM")},
+        {"data": "2", "sName": "environment", "sWidth": "50px", "title": doc.getDocLabel("invariant", "ENVIRONMENT")},
+        {"data": "3", "sName": "country", "sWidth": "50px", "title": doc.getDocLabel("invariant", "COUNTRY")},
+        {"data": "4", "sName": "application", "sWidth": "50px", "title": doc.getDocLabel("application", "Application")},
+        {"data": "5", "sName": "robot", "sWidth": "50px", "title": doc.getDocLabel("robot", "robot")},
+        {"data": "6", "sName": "nbRunning", "sWidth": "50px", "title": doc.getDocLabel("page_testcaseexecutionqueue", "nbRunning")},
+        {"data": "7", "sName": "nbPoolSize", "sWidth": "50px", "title": doc.getDocLabel("page_testcaseexecutionqueue", "nbPoolSize")},
+        {"data": "8", "sName": "nbInQueue", "sWidth": "50px", "title": doc.getDocLabel("page_testcaseexecutionqueue", "nbInQueue")},
         {
             "data": null, "sName": "saturation", "title": doc.getDocLabel("page_testcaseexecutionqueue", "saturation"),
             "mRender": function (data, type, obj) {

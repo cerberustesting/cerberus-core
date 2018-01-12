@@ -153,7 +153,7 @@ public interface ITestCaseExecutionService {
      * @return
      * @throws CerberusException
      */
-    AnswerList readByCriteria( int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException;
+    AnswerList readByCriteria( int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch, List<String> individualLike) throws CerberusException;
 
     /**
      *

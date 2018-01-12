@@ -116,7 +116,7 @@ SELECT distinct cep.system, cep.application, a.system from countryenvironmentpar
 join application a on cep.application=a.application where cep.system<>a.system;
 
 
--- Check Action consistency with documetation.
+-- Check Action consistency with documentation.
 -----------------------------------------
 
 select * from invariant where idname like 'ACTION' order by sort;
@@ -129,7 +129,7 @@ where Lang='en' and DocValue <>'' and DocTable='testcasestepaction' and DocField
 order by inv.sort;
 
 
--- Check Control consistency with documetation.
+-- Check Control consistency with documentation.
 -----------------------------------------
 
 select * from invariant where idname like 'CONTROL' order by sort;
@@ -142,7 +142,7 @@ where Lang='en' and DocValue <>'' and DocTable='testcasestepactioncontrol' and D
 order by inv.sort;
 
 
--- Check Properties consistency with documetation.
+-- Check Properties consistency with documentation.
 -----------------------------------------
 
 select * from invariant where idname like 'PROPERTYTYPE' order by sort;

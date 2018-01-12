@@ -23,19 +23,34 @@
 //$.getScript("js/jquery.blockUI.js");
 
 
-var show = false;
+var showBurger = false;
+var showSettings = false;
 
 (function () {
     $("#burger").unbind("click").click(function () {
-        if (show === false) {
+        if (showBurger === false) {
             $("#side-menu li").show();
-            show = true;
+            showBurger = true;
         } else {
             $("#side-menu li:not(.MainItem)").hide();
-            show = false;
+            showBurger = false;
         }
 
     })
+    
+    $("#burger-setting").unbind("click").click(function () {
+        if (showSettings === false) {
+            $(".nav.navbar-top-links.navbar-right").show();
+            $(".navbar-header").show()
+            showSettings = true;
+        } else {
+            $(".nav.navbar-top-links.navbar-right").hide();
+            $(".navbar-header").hide()
+            showSettings = false;
+        }
+
+    })
+    
 })()
 
 function handleErrorAjaxAfterTimeout(result) {
@@ -114,7 +129,9 @@ function displayInvariantList(selectName, idName, forceReload, defaultValue, add
                 sessionStorage.setItem(cacheEntryName, JSON.stringify(data));
                 for (var index = 0; index < list.length; index++) {
                     var item = list[index].value;
-                    var desc = list[index].value + " - " + list[index].description;
+                    var desc = list[index].value;
+                    if (!isEmpty(list[index].description))
+                        desc += " - " + list[index].description;
 
                     $("[name='" + selectName + "']").append($('<option></option>').text(desc).val(item));
                 }
@@ -870,7 +887,7 @@ function showMessage(obj, dialog) {
 
 /**
  * Method that allows us to append a message in an already existing alert.
- * @param {type} obj  - object containing the message and the message type
+ * @param {object} obj  - object containing the message and the message type
  * @param {type} dialog - dialog where the message should be displayed; if null then the message
  * is displayed in the main page.
  */
@@ -885,9 +902,10 @@ function appendMessage(obj, dialog) {
 
 /***
  * Shows a message in the main page. The area is defined in the header.jsp
- * @param {type} type - type of message: success, info, ...
- * @param {type} message - message to show
- * @param {boolean} silentMode - if true, message is not displayed if OK.
+ * @param {String} type - type of message: success, info, error, warning, ...
+ * @param {String} message - message to show
+ * @param {boolean} silentMode - if true, message is not displayed if OK (default is false).
+ * @param {integer} waitinMs - delay that the modal will stay visible in ms (default is automaticly calculated).
  */
 function showMessageMainPage(type, message, silentMode, waitinMs) {
     if (isEmpty(silentMode)) {
@@ -903,13 +921,26 @@ function showMessageMainPage(type, message, silentMode, waitinMs) {
             waitinMs = 5000;
         }
     }
+    // Only display if not success in silent mode.
     if (!((type === "success") && (silentMode))) {
+        // We stop the previous delayed slide up (if any) and hide the alert.
+        $("#mainAlert").stop();
+        $("#mainAlert").slideUp(10);
+
+        // We feed the new content and disply the alert.
+        $("#mainAlert").removeClass("alert-success");
+        $("#mainAlert").removeClass("alert-error");
+        $("#mainAlert").removeClass("alert-info");
+        $("#mainAlert").removeClass("alert-warning");
         $("#mainAlert").addClass("alert-" + type);
         $("#alertDescription").html(message);
-        $("#mainAlert").fadeIn();
-        $("#mainAlert").fadeTo(waitinMs, 500).slideUp(500, function () {
+        $("#mainAlert").slideDown(10);
+
+        // We slowly hide it after waitinMs ms delay.
+        $("#mainAlert").fadeTo(waitinMs, 1, function () {
             $("#mainAlert").slideUp(500);
         });
+
     }
 }
 
@@ -1325,6 +1356,7 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
         configs["createdRow"] = createdRowCallback;
     }
     if (tableConfigurations.serverSide) {
+    	
 
         configs["sAjaxSource"] = tableConfigurations.ajaxSource;
         configs["sAjaxDataProp"] = tableConfigurations.ajaxProp;
@@ -1371,6 +1403,18 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
             };
         }
         configs["fnServerData"] = function (sSource, aoData, fnCallback, oSettings) {
+        	
+        	var like = ""
+        	
+        	$.each(oSettings.aoColumns, function(index,value){
+        		if(oSettings.aoColumns[index].like){
+        			like += oSettings.aoColumns[index].sName + ","
+        		}
+        	})
+        	
+        	like = like.substring(0, like.length-1);
+
+        	aoData.push({name: "sLike", value: like});
 
             var objectWL = $(objectWaitingLayer);
             if (objectWaitingLayer !== undefined) {
@@ -1437,7 +1481,7 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
         $("#" + tableConfigurations.divId + "_wrapper #restoreFilterButton").remove();
         $("#" + tableConfigurations.divId + "_wrapper")
                 .find("[class='dt-buttons btn-group']").removeClass().addClass("pull-right").find("a").attr('id', 'showHideColumnsButton').removeClass()
-                .addClass("btn btn-default").attr("data-toggle", "tooltip").attr("title", showHideButtonTooltip).click(function () {
+                .addClass("btn btn-default pull-right").attr("data-toggle", "tooltip").attr("title", showHideButtonTooltip).click(function () {
             //$("#" + tableConfigurations.divId + " thead").empty();
         }).html("<span class='glyphicon glyphicon-cog'></span> " + showHideButtonLabel);
         $("#" + tableConfigurations.divId + "_wrapper #showHideColumnsButton").parent().before(
@@ -1747,11 +1791,21 @@ function displayFooter(doc) {
     footerBugString = footerBugString.replace("%LINK%", "https://github.com/vertigo17/Cerberus/issues/new?body=Cerberus%20Version%20:%20" + cerberusInformation.projectVersion + "-" + cerberusInformation.databaseCerberusTargetVersion);
     $("#footer").html(footerString + " - " + footerBugString);
 
+    // Tune the page layout to the environment where Cerberus is running.
+    envTuning(cerberusInformation.environment);
+
+}
+
+/**
+ * Change the page layout in order to show that we are in production or not.
+ * @param {String} myenv
+ * @returns {void}
+ */
+function envTuning(myenv) {
     // Background color is light yellow if the environment is not production.
-    if ((cerberusInformation.environment !== "prd") && (cerberusInformation.environment !== "prod") && (cerberusInformation.environment !== "PROD")) {
+    if ((myenv !== "prd") && (myenv !== "prod") && (myenv !== "PROD")) {
         document.body.style.background = "#FFFFCC";
     }
-
 }
 
 /**

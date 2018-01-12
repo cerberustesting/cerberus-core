@@ -281,6 +281,7 @@ public class SeleniumServerService implements ISeleniumServerService {
             /**
              * If Gui application, maximize window Get IP of Node in case of
              * remote Server. Maximize does not work for chrome browser
+             * We also get the Real UserAgent from the browser.
              */
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
                     && !caps.getPlatform().equals(Platform.ANDROID)) {

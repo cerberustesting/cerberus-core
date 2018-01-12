@@ -79,6 +79,10 @@ $.when($.getScript("js/global/global.js")).then(function () {
             runCampaign();
         });
 
+        $("#runCampaignUp").click(function () {
+            runCampaign();
+        });
+
         $("#loadFiltersBtn").click(function () {
             loadTestCaseFromFilter(null, null);
         });
@@ -266,6 +270,7 @@ function selectionCampaign() {
         $("#run").hide();
         $("#addQueueAndRunBis").hide();
         $("#runCampaign").show();
+        $("#runCampaignUp").show();
 
         $("#filtersPanelContainer").hide();
         $("#campaignSelection").show();
@@ -324,6 +329,7 @@ function selectionManual(test, testcase, environment, country) {
         $("#run").show();
         $("#addQueueAndRunBis").show();
         $("#runCampaign").hide();
+        $("#runCampaignUp").hide();
         $("#filtersPanelContainer").show();
 
         loadTestCaseFromFilter(test, testcase);
@@ -420,6 +426,7 @@ function appendCountryList(defCountry) {
 /** UTILITY FUNCTIONS FOR CAMPAIGN LAUNCHING **/
 
 function loadCampaignContent(campaign) {
+	clearResponseMessageMainPage();
     if (campaign !== "") {
         showLoader("#chooseTest");
         $.ajax({
@@ -429,22 +436,26 @@ function loadCampaignContent(campaign) {
             datatype: "json",
             async: true,
             success: function (data) {
-                var testCaseList = $("#testCaseList");
 
-                testCaseList.empty().prop("disabled", "disabled");
+        		 var testCaseList = $("#testCaseList");
 
-                for (var index = 0; index < data.contentTable.length; index++) {
-                    var text = data.contentTable[index].test + " - " + data.contentTable[index].testCase + " [" + data.contentTable[index].application + "]: " + data.contentTable[index].description;
+                 testCaseList.empty().prop("disabled", "disabled");
 
-                    testCaseList.append($("<option></option>")
-                            .text(text)
-                            .val(data.contentTable[index].testCase)
-                            .prop("selected", true)
-                            .data("item", data.contentTable[index]));
-                }
+                 for (var index = 0; index < data.contentTable.length; index++) {
+                     var text = data.contentTable[index].test + " - " + data.contentTable[index].testCase + " [" + data.contentTable[index].application + "]: " + data.contentTable[index].description;
+
+                     testCaseList.append($("<option></option>")
+                             .text(text)
+                             .val(data.contentTable[index].testCase)
+                             .prop("selected", true)
+                             .data("item", data.contentTable[index]));
+                 }
+
+                showMessage(data, $('#page-layout'));
                 updatePotentialNumber();
                 hideLoader("#chooseTest");
-            }
+            },
+            error: showUnexpectedError
         });
     }
 }
@@ -539,15 +550,17 @@ function runCampaign() {
 
     showLoader('#page-layout');
 
-    var jqxhr = $.post("AddToExecutionQueueV001", paramSerialized, "json");
+    var jqxhr = $.post("AddToExecutionQueueV002", paramSerialized, "json");
     $.when(jqxhr).then(function (data) {
         // unblock when remote call returns 
         hideLoader('#page-layout');
+        var str = data.message.replace(/\n/g, '<br>');
+
         if (getAlertType(data.messageType) === "success") {
             data.message = data.message + "<a href='ReportingExecutionByTag.jsp?Tag=" + data.tag + "'><button class='btn btn-primary' id='goToTagReport'>Report by Tag</button></a>"
-            showMessageMainPage(getAlertType(data.messageType), data.message, false, 60000);
+            showMessageMainPage(getAlertType(data.messageType), str, false, 60000);
         } else {
-            showMessageMainPage(getAlertType(data.messageType), data.message, false);
+            showMessageMainPage(getAlertType(data.messageType), str, false);
         }
     }).fail(handleErrorAjaxAfterTimeout);
 

@@ -31,11 +31,21 @@ function initPage() {
     if ($("#error").text() === "1") {
         showUnexpectedError(null, "Error", "Login or Password incorrect !");
     }
-    $("#forgotpassword-box").submit(function() { return false; });
+
+    // We trim username.
+    $('#username').change(function () {
+        var usr = $('#username').val();
+        $('#username').val(usr.trim());
+    });
+
+
+    $("#forgotpassword-box").submit(function () {
+        return false;
+    });
 }
 
 function forgotPassword() {
-    
+
     var login = $("#loginForgotPassword").val();
     $("body").block({message: "processing"});
     var jqxhr = $.ajax({

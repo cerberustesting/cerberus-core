@@ -210,6 +210,7 @@ function aoColumnsFunc(tableId) {
             "title": doc.getDocLabel("page_global", "columnAction"),
             "bSortable": false,
             "bSearchable": false,
+            "sWidth": "50px",
             "mRender": function (data, type, obj) {
                 var hasPermissions = $("#" + tableId).attr("hasPermissions");
 
@@ -231,17 +232,25 @@ function aoColumnsFunc(tableId) {
                 return '<div class="center btn-group width150">' + viewEntry + '</div>';
             }
         },
-        {"data": "system",
+        {
+            "data": "system",
             "sName": "system",
+            "sWidth": "50px",
             "title": doc.getDocOnline("buildrevisioninvariant", "system")},
-        {"data": "level",
+        {
+            "data": "level",
             "sName": "level",
+            "sWidth": "30px",
             "title": doc.getDocOnline("buildrevisioninvariant", "level")},
-        {"data": "seq",
+        {
+            "data": "seq",
             "sName": "seq",
+            "sWidth": "40px",
             "title": doc.getDocOnline("buildrevisioninvariant", "seq")},
-        {"data": "versionName",
+        {
+            "data": "versionName",
             "sName": "versionName",
+            "sWidth": "50px",
             "title": doc.getDocOnline("buildrevisioninvariant", "versionName")}
     ];
     return aoColumns;

@@ -149,7 +149,7 @@ public class RunTestCase extends HttpServlet {
         int screenshot = ParameterParserUtil.parseIntegerParam(request.getParameter("screenshot"), 1);
         int verbose = ParameterParserUtil.parseIntegerParam(request.getParameter("verbose"), 0);
         timeout = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("timeout"), "");
-        synchroneous = ParameterParserUtil.parseBooleanParam(request.getParameter("synchroneous"), true);
+        synchroneous = ParameterParserUtil.parseBooleanParam(request.getParameter("synchroneous"), false);
         getPageSource = ParameterParserUtil.parseIntegerParam(request.getParameter("pageSource"), 1);
         getSeleniumLog = ParameterParserUtil.parseIntegerParam(request.getParameter("seleniumLog"), 1);
         manualExecution = ParameterParserUtil.parseStringParam(request.getParameter("manualExecution"), "N");

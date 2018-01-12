@@ -180,18 +180,8 @@ function addEntryModalSaveHandler() {
         nameElement.parents("div.form-group").removeClass("has-error");
     }
 
-    var deployTypeElement = formAdd.find("#deploytype");
-    var deployTypeElementEmpty = deployTypeElement.prop("value") === '';
-    if (deployTypeElementEmpty) {
-        var localMessage = new Message("danger", "Please specify the Deploy Type! If necessary create at least one Deploy Type in the corresponding screen under Application menu.");
-        deployTypeElement.parents("div.form-group").addClass("has-error");
-        showMessage(localMessage, $('#addApplicationModal'));
-    } else {
-        deployTypeElement.parents("div.form-group").removeClass("has-error");
-    }
-
     // verif if all mendatory fields are not empty
-    if ((nameElementEmpty) || (deployTypeElementEmpty))
+    if ((nameElementEmpty))
         return;
 
     // Get the header data from the form.
@@ -467,7 +457,6 @@ function displayWarningOnChangeApplicationKey() {
     // Compare with original value in order to display the warning message.
     let old1 = $("#originalApplication").val();
     let new1 = $('#editApplicationModal input[name="application"]').val();
-    console.info(old1 + " " + new1);
     if (old1 !== new1) {
         var localMessage = new Message("WARNING", "If you rename that application, All the corresponding execution historic will stay on old application name.");
         showMessage(localMessage, $('#editApplicationModal'));
@@ -483,6 +472,7 @@ function aoColumnsFunc(tableId) {
             "title": doc.getDocLabel("page_global", "columnAction"),
             "bSortable": false,
             "bSearchable": false,
+            "sWidth": "50px",
             "mRender": function (data, type, obj) {
                 var hasPermissions = $("#" + tableId).attr("hasPermissions");
 
@@ -506,24 +496,31 @@ function aoColumnsFunc(tableId) {
         },
         {"data": "application",
             "sName": "application",
+            "sWidth": "60px",
             "title": doc.getDocOnline("application", "Application")},
         {"data": "description",
             "sName": "description",
+            "sWidth": "80px",
             "title": doc.getDocOnline("application", "Description")},
         {"data": "sort",
             "sName": "sort",
+            "sWidth": "60px",
             "title": doc.getDocOnline("application", "sort")},
         {"data": "type",
             "sName": "type",
+            "sWidth": "60px",
             "title": doc.getDocOnline("application", "type")},
         {"data": "system",
             "sName": "system",
+            "sWidth": "60px",
             "title": doc.getDocOnline("application", "system")},
         {"data": "subsystem",
             "sName": "subsystem",
+            "sWidth": "60px",
             "title": doc.getDocOnline("application", "subsystem")},
         {"data": "svnurl",
             "sName": "svnurl",
+            "sWidth": "80px",
             "title": doc.getDocOnline("application", "svnurl"),
             "mRender": function (data, type, oObj) {
                 return drawURL(data);
@@ -531,6 +528,7 @@ function aoColumnsFunc(tableId) {
         },
         {"data": "bugTrackerUrl",
             "sName": "bugTrackerUrl",
+            "sWidth": "80px",
             "title": doc.getDocOnline("application", "bugtrackerurl"),
             "mRender": function (data, type, oObj) {
                 return drawURL(data);
@@ -538,6 +536,7 @@ function aoColumnsFunc(tableId) {
         },
         {"data": "bugTrackerNewUrl",
             "sName": "bugTrackerNewUrl",
+            "sWidth": "80px",
             "title": doc.getDocOnline("application", "bugtrackernewurl"),
             "mRender": function (data, type, oObj) {
                 return drawURL(data);
@@ -545,9 +544,11 @@ function aoColumnsFunc(tableId) {
         },
         {"data": "deploytype",
             "sName": "deploytype",
+            "sWidth": "60px",
             "title": doc.getDocOnline("application", "deploytype")},
         {"data": "mavengroupid",
             "sName": "mavengroupid",
+            "sWidth": "60px",
             "title": doc.getDocOnline("application", "mavengroupid")}
     ];
     return aoColumns;

@@ -677,13 +677,13 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
 
         StringBuilder query = new StringBuilder();
 
-        query.append("SELECT distinct ");
+        query.append("SELECT distinct `");
         query.append(columnName);
-        query.append(" as distinctValues FROM applicationobject ");
+        query.append("` as distinctValues FROM applicationobject ");
 
-        searchSQL.append("WHERE 1=1");
+        searchSQL.append("WHERE 1=1 ");
 
-        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+    	if (!StringUtil.isNullOrEmpty(searchTerm)) {
             searchSQL.append(" and (`Application` like ?");
             searchSQL.append(" or `Object` like ?");
             searchSQL.append(" or `Value` like ?");
@@ -702,18 +702,21 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
             }
             searchSQL.append(" )");
         }
-        query.append(searchSQL);
-        query.append(" order by ").append(columnName).append(" asc");
 
+        query.append(searchSQL);
+        query.append(" order by `").append(columnName).append("` asc");
+        
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
         }
+        
         try (Connection connection = databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(query.toString())) {
 
             int i = 1;
-            if (!StringUtil.isNullOrEmpty(searchTerm)) {
+            
+        	if (!StringUtil.isNullOrEmpty(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
@@ -726,7 +729,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
             for (String individualColumnSearchValue : individalColumnSearchValues) {
                 preStat.setString(i++, individualColumnSearchValue);
             }
-
+            
             ResultSet resultSet = preStat.executeQuery();
 
             //gets the data
