@@ -58,9 +58,10 @@ Script execution automation can be done using the scripts located in tools/batch
  
 NB : don't forget to update the cerberus parameters according to your Environment --> parameter page in Admin menu needs to be changed according to your local config.
 3 parameters are mandatory in order to start :
-  - cerberus_mediastorage_path : in order to store the various execution media files (ex : /home/pete/cerberus_media/) inside the correct local folder. This is where Cerberus will try to store the files xml, json or images taken during the execution.
-  - cerberus_applicationobject_path : in order to store the various object files (ex : (ex : /home/pete/cerberus_objects/))
-  - cerberus_url : in order to define the url to access Cerberus from Cerberus.
+  - cerberus_exeautomedia_path : in order to store the various execution media files (ex : /home/pete/cerberus_exeautomedia/) inside the correct local folder. This is where Cerberus will try to store the files xml, json or images taken during the execution.
+  - cerberus_exemanualmedia_path : in order to store the various manual execution media files (ex : /home/pete/cerberus_exemanualmedia/) inside the correct local folder.
+  - cerberus_applicationobject_path : in order to store the various object screenshot files (ex : (ex : /home/pete/cerberus_objects/))
+  - cerberus_url : in order to define the url to access Cerberus from Cerberus (used to trigger executions from the queue and in email notifications).
 
 
 Update
