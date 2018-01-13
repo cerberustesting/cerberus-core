@@ -73,6 +73,9 @@ function initModalTestcaseExecutionQueue() {
     $("#test").bind("change", function (event) {
         feedTestCase($(this).val(), "#testCase");
     });
+    $("#robot").bind("change", function (event) {
+        robot_change();
+    });
 }
 
 /***
@@ -201,8 +204,9 @@ function confirmExecutionQueueModalHandler(mode, queueAction, saveAction) {
                 oTable.fnDraw(true);
                 $('#editExecutionQueueModal').data("Saved", true);
                 $('#editExecutionQueueModal').modal('hide');
-                data.message += "<a href='TestCaseExecution.jsp?executionQueueId=" + data.testCaseExecutionQueue.id + "'><button class='btn btn-primary' id='goToExecution'>Get to Execution</button></a>"
-//            showMessage(data);
+                if (data.testCaseExecutionQueue) {
+                    data.message += "<a href='TestCaseExecution.jsp?executionQueueId=" + data.testCaseExecutionQueue.id + "'><button class='btn btn-primary' id='goToExecution'>Get to Execution</button></a>"
+                }
                 showMessageMainPage(getAlertType(data.messageType), data.message, false, 30000);
             } else {
                 showMessage(data, $('#editExecutionQueueModal'));
@@ -370,7 +374,9 @@ function feedExecutionQueueModalData(exeQ, modalId, mode, hasPermissionsUpdate) 
             robotList.append($('<option></option>').text(data.contentTable[index].robot).val(data.contentTable[index].robot));
         }
         $("#robot").prop("value", exeQ.robot);
-
+        if (isEditable) {
+            robot_change();
+        }
     });
 
     $("#debugFlag").empty();
@@ -520,6 +526,26 @@ function feedExecutionQueueModalData(exeQ, modalId, mode, hasPermissionsUpdate) 
         formEdit.find("#timeout").prop("readonly", "readonly");
         formEdit.find("#retries").prop("disabled", "disabled");
         formEdit.find("#manualExecution").prop("disabled", "disabled");
+    }
+}
+
+function robot_change() {
+    console.info("toto");
+    var formEdit = $('#editExecutionQueueModal');
+    if (!isEmpty(formEdit.find("#robot").val())) {
+        formEdit.find("#robotIP").prop("readonly", "readonly");
+        formEdit.find("#robotPort").prop("readonly", "readonly");
+        formEdit.find("#browser").prop("disabled", "disabled");
+        formEdit.find("#browserVersion").prop("readonly", "readonly");
+        formEdit.find("#platform").prop("disabled", "disabled");
+        formEdit.find("#screenSize").prop("readonly", "readonly");
+    } else {
+        formEdit.find("#robotIP").prop("readonly", false);
+        formEdit.find("#robotPort").prop("readonly", false);
+        formEdit.find("#browser").removeAttr("disabled");
+        formEdit.find("#browserVersion").prop("readonly", false);
+        formEdit.find("#platform").removeAttr("disabled");
+        formEdit.find("#screenSize").prop("readonly", false);
     }
 }
 

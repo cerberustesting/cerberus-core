@@ -93,20 +93,20 @@ public class UpdateTestCaseExecutionQueue extends HttpServlet {
         String country = policy.sanitize(request.getParameter("country"));
         String manualEnvData = policy.sanitize(request.getParameter("manualEnvData"));
         // Parameter that needs to be secured --> We SECURE+DECODE them
-        String test = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("test"), "", charset);
-        String testcase = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("testCase"), "", charset);
+        String test = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("test"), null, charset);
+        String testcase = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("testCase"), null, charset);
         int manualURL = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("manualURL"), 0, charset);
-        String manualHost = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("manualHost"), "", charset);
+        String manualHost = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("manualHost"), null, charset);
         String manualContextRoot = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("manualContextRoot"), "", charset);
         String manualLoginRelativeURL = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("manualLoginRelativeURL"), "", charset);
-        String tag = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("tag"), "", charset);
-        String robot = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("robot"), "", charset);
-        String robotIP = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("robotIP"), "", charset);
-        String robotPort = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("robotPort"), "", charset);
-        String browser = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("browser"), "", charset);
-        String browserVersion = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("browserVersion"), "", charset);
-        String platform = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("platform"), "", charset);
-        String screenSize = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("screenSize"), "", charset);
+        String tag = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("tag"), null, charset);
+        String robot = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("robot"), null, charset);
+        String robotIP = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("robotIP"), null, charset);
+        String robotPort = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("robotPort"), null, charset);
+        String browser = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("browser"), null, charset);
+        String browserVersion = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("browserVersion"), null, charset);
+        String platform = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("platform"), null, charset);
+        String screenSize = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("screenSize"), null, charset);
 
         int verbose = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("verbose"), 1, charset);
         int screenshot = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("screenshot"), 0, charset);
@@ -191,24 +191,24 @@ public class UpdateTestCaseExecutionQueue extends HttpServlet {
                          * The service was able to perform the query and confirm
                          * the object exist, then we can update it.
                          */
-                        executionQueueData.setTest(test);
-                        executionQueueData.setTestCase(testcase);
-                        executionQueueData.setTag(tag);
-                        executionQueueData.setEnvironment(environment);
-                        executionQueueData.setCountry(country);
-                        executionQueueData.setManualURL(manualURL);
-                        executionQueueData.setManualHost(manualHost);
-                        executionQueueData.setManualContextRoot(manualContextRoot);
-                        executionQueueData.setManualLoginRelativeURL(manualLoginRelativeURL);
-                        executionQueueData.setManualEnvData(manualEnvData);
-                        executionQueueData.setRobot(robot);
-                        executionQueueData.setRobotIP(robotIP);
-                        executionQueueData.setRobotPort(robotPort);
-                        executionQueueData.setBrowser(browser);
-                        executionQueueData.setBrowserVersion(browserVersion);
-                        executionQueueData.setPlatform(platform);
-                        executionQueueData.setScreenSize(screenSize);
-                        executionQueueData.setVerbose(verbose);
+                        executionQueueData.setTest(ParameterParserUtil.parseStringParam(test, executionQueueData.getTest()));
+                        executionQueueData.setTestCase(ParameterParserUtil.parseStringParam(testcase, executionQueueData.getTestCase()));
+                        executionQueueData.setTag(ParameterParserUtil.parseStringParam(tag, executionQueueData.getTag()));
+                        executionQueueData.setEnvironment(ParameterParserUtil.parseStringParam(environment, executionQueueData.getEnvironment()));
+                        executionQueueData.setCountry(ParameterParserUtil.parseStringParam(country, executionQueueData.getCountry()));
+                        executionQueueData.setManualURL(ParameterParserUtil.parseIntegerParam(manualURL, executionQueueData.getManualURL()));
+                        executionQueueData.setManualHost(ParameterParserUtil.parseStringParam(manualHost, executionQueueData.getManualHost()));
+                        executionQueueData.setManualContextRoot(ParameterParserUtil.parseStringParam(manualContextRoot, executionQueueData.getManualContextRoot()));
+                        executionQueueData.setManualLoginRelativeURL(ParameterParserUtil.parseStringParam(manualLoginRelativeURL, executionQueueData.getManualLoginRelativeURL()));
+                        executionQueueData.setManualEnvData(ParameterParserUtil.parseStringParam(manualEnvData, executionQueueData.getManualEnvData()));
+                        executionQueueData.setRobot(ParameterParserUtil.parseStringParam(robot, executionQueueData.getRobot()));
+                        executionQueueData.setRobotIP(ParameterParserUtil.parseStringParam(robotIP, executionQueueData.getRobotIP()));
+                        executionQueueData.setRobotPort(ParameterParserUtil.parseStringParam(robotPort, executionQueueData.getRobotPort()));
+                        executionQueueData.setBrowser(ParameterParserUtil.parseStringParam(browser, executionQueueData.getBrowser()));
+                        executionQueueData.setBrowserVersion(ParameterParserUtil.parseStringParam(browserVersion, executionQueueData.getBrowserVersion()));
+                        executionQueueData.setPlatform(ParameterParserUtil.parseStringParam(platform, executionQueueData.getPlatform()));
+                        executionQueueData.setScreenSize(ParameterParserUtil.parseStringParam(screenSize, executionQueueData.getScreenSize()));
+                        executionQueueData.setVerbose(ParameterParserUtil.parseIntegerParam(verbose, executionQueueData.getVerbose()));
                         executionQueueData.setScreenshot(screenshot);
                         executionQueueData.setPageSource(pageSource);
                         executionQueueData.setSeleniumLog(seleniumLog);
