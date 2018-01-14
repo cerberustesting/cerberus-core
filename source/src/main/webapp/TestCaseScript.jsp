@@ -67,7 +67,7 @@
                                 <div class="col-lg-8" style="padding: 0px;">
                                     <div id="TestCaseButton" style="display:none;">
 
-                                        <div class="btn-group pull-right" role="group" aria-label="Button group with nested dropdown">
+                                        <div class="btn-group pull-right" role="group" aria-label="Button group with nested dropdown" style="margin-top: 10px;">
 
                                             <div class="btn-group ">
                                                 <button id="btnGroupDrop1" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

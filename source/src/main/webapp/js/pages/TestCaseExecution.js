@@ -253,7 +253,7 @@ function updatePage(data, stepList) {
     if (data.testCaseObj === undefined) {
         //console.info("testcase not exist.");
         $("#editTcInfo").attr("disabled", true);
-        $("#editTcInfo").parent().attr("href", "#");
+        $("#editTcInfo").attr("href", "#");
         $("#editTcStepInfo").attr("disabled", true);
         $("#editTcStepInfo").parent().attr("href", "#");
         $("#btnGroupDrop4").unbind("click");
@@ -263,7 +263,7 @@ function updatePage(data, stepList) {
         $("#rerunTestCase").parent().attr("href", "#");
     } else {
         $("#editTcInfo").attr("disabled", false);
-        $("#editTcInfo").parent().attr("href", "TestCaseScript.jsp?test=" + data.test + "&testcase=" + data.testcase);
+        $("#editTcInfo").attr("href", "TestCaseScript.jsp?test=" + data.test + "&testcase=" + data.testcase);
         $("#editTcStepInfo").attr("disabled", false);
         $("#editTcStepInfo").parent().attr("href", "TestCaseScript.jsp?test=" + data.test + "&testcase=" + data.testcase);
         $("#btnGroupDrop4").click(function () {
@@ -362,6 +362,7 @@ function updatePage(data, stepList) {
 function setConfigPanel(data) {
 
     var configPanel = $("#testCaseConfig");
+    $("[name='Separator']").text(" - ");
     configPanel.find("#idlabel").text(data.id);
     configPanel.find("#test").text(data.test);
     configPanel.find("#testcase").text(data.testcase);

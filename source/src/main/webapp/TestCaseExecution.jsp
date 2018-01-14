@@ -54,22 +54,22 @@
                             <div class="col-lg-6 pull-left">
                                 <div class="text-nowrap">
                                     <span id="idlabel"></span>
-                                    <span> - </span>
+                                    <span name="Separator">Loading...</span>
                                     <span id="test"></span>
-                                    <span> - </span>
+                                    <span name="Separator"> </span>
                                     <span id="testcase"></span>
-                                    <span> - </span>
+                                    <span name="Separator"> </span>
                                     <span id="country"></span>
-                                    <span> - </span>
+                                    <span name="Separator"> </span>
                                     <span id="environment"></span>
-                                    <span> - </span>
+                                    <span name="Separator"> </span>
                                     <span id="controlstatus" style="font-weight: 900"></span>
                                 </div>
                                 <div class="text-nowrap">
-                                    <span id="tcDescription" style="font-size:.9em;margin:0px;line-height:1;height:.95em;">Descr</span>
+                                    <span id="tcDescription" style="font-size:.9em;margin:0px;line-height:1;height:.95em;"></span>
                                 </div>
                                 <div class="text-nowrap">
-                                    <span id="exReturnMessage" style="font-size:.9em;margin:0px;line-height:1;height:.95em;">Descr</span>
+                                    <span id="exReturnMessage" style="font-size:.9em;margin:0px;line-height:1;height:.95em;"></span>
                                 </div>
                             </div>
                             <div class="col-lg-6" style="padding: 0px;">
@@ -78,7 +78,7 @@
                                 </div>
                                 <div id="TestCaseButton">
 
-                                    <div class="btn-group pull-right" role="group" aria-label="Button group with nested dropdown">
+                                    <div class="btn-group pull-right" role="group" aria-label="Button group with nested dropdown" style="margin-top: 10px;">
 
                                         <div class="btn-group ">
                                             <button id="btnGroupDrop1" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -105,8 +105,8 @@
                                         </div>
 
                                         <div class="btn-group">
-                                            <a><button class="btn btn-default" id="editTcInfo" ><span class="glyphicon glyphicon-new-window"></span> Edit Test Case</button></a>
-                                            <button id="btnGroupDrop4" type="button" class="btn btn-default pull-right dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <a type="button" class="btn btn-default" id="editTcInfo" ><span class="glyphicon glyphicon-new-window"></span> Edit Test Case</a>
+                                            <button id="btnGroupDrop4" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                 <span class="caret"></span>
                                                 <span class="sr-only">Toggle Dropdown</span>
                                             </button>
