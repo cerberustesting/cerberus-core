@@ -334,21 +334,21 @@ function feedExecutionQueueModalData(exeQ, modalId, mode, hasPermissionsUpdate) 
     var isEditable = (((hasPermissionsUpdate) && (mode === "EDIT") && ((exeQ.state === "WAITING") || (exeQ.state === "QUEUED") || (exeQ.state === "ERROR") || (exeQ.state === "CANCELLED")))
             || (mode === "DUPLICATE"));
 
-    $("#test").empty();
-    $("#testCase").empty();
+    formEdit.find("#test").empty();
+    formEdit.find("#testCase").empty();
 
 
     if (isEditable) {
         var jqxhr = $.getJSON("ReadTest", "");
         $.when(jqxhr).then(function (data) {
-            var testList = $("#test");
+            var testList = formEdit.find("#test");
 
             for (var index = 0; index < data.contentTable.length; index++) {
                 testList.append($('<option></option>').text(data.contentTable[index].test).val(data.contentTable[index].test));
             }
-            $("#test").prop("value", exeQ.test);
+            formEdit.find("#test").prop("value", exeQ.test);
 
-            feedTestCase(exeQ.test, "#testCase", exeQ.testCase);
+            feedTestCase(exeQ.test, "#" + modalId + " #testCase", exeQ.testCase);
 
         });
 
@@ -364,7 +364,7 @@ function feedExecutionQueueModalData(exeQ, modalId, mode, hasPermissionsUpdate) 
     }
 
 
-    $("#robot").empty();
+    formEdit.find("#robot").empty();
     var jqxhr = $.getJSON("ReadRobot", "");
     $.when(jqxhr).then(function (data) {
         var robotList = $("#robot");
@@ -373,44 +373,44 @@ function feedExecutionQueueModalData(exeQ, modalId, mode, hasPermissionsUpdate) 
         for (var index = 0; index < data.contentTable.length; index++) {
             robotList.append($('<option></option>').text(data.contentTable[index].robot).val(data.contentTable[index].robot));
         }
-        $("#robot").prop("value", exeQ.robot);
+        formEdit.find("#robot").prop("value", exeQ.robot);
         if (isEditable) {
             robot_change();
         }
     });
 
-    $("#debugFlag").empty();
+    formEdit.find("#debugFlag").empty();
     displayInvariantList("debugFlag", "QUEUEDEBUGFLAG", false, exeQ.debugFlag);
-    $("#country").empty();
+    formEdit.find("#country").empty();
     displayInvariantList("country", "COUNTRY", false, exeQ.country);
-    $("#environment").empty();
+    formEdit.find("#environment").empty();
     displayInvariantList("environment", "ENVIRONMENT", false, exeQ.environment);
-    $("#browser").empty();
+    formEdit.find("#browser").empty();
     displayInvariantList("browser", "BROWSER", false, exeQ.browser, "");
-    $("#platform").empty();
+    formEdit.find("#platform").empty();
     displayInvariantList("platform", "PLATFORM", false, exeQ.platform, "");
 
-    $("#verbose").empty();
+    formEdit.find("#verbose").empty();
     displayInvariantList("verbose", "VERBOSE", false, exeQ.verbose);
-    $("#screenshot").empty();
+    formEdit.find("#screenshot").empty();
     displayInvariantList("screenshot", "SCREENSHOT", false, exeQ.screenshot);
-    $("#pageSource").empty();
+    formEdit.find("#pageSource").empty();
     displayInvariantList("pageSource", "PAGESOURCE", false, exeQ.pageSource);
-    $("#seleniumLog").empty();
+    formEdit.find("#seleniumLog").empty();
     displayInvariantList("seleniumLog", "SELENIUMLOG", false, exeQ.seleniumLog);
-    $("#retries").empty();
+    formEdit.find("#retries").empty();
     displayInvariantList("retries", "RETRIES", false, exeQ.retries);
 
-    $("#manualExecution").empty();
+    formEdit.find("#manualExecution").empty();
     displayInvariantList("manualExecution", "MANUALEXECUTION", false, exeQ.manualExecution);
 
 
-    $("#manualURL").empty();
+    formEdit.find("#manualURL").empty();
     displayInvariantList("manualURL", "MANUALURL", false, exeQ.manualURL);
     formEdit.find("#manualHost").prop("value", exeQ.manualHost);
     formEdit.find("#manualContextRoot").prop("value", exeQ.manualContextRoot);
     formEdit.find("#manualLoginRelativeURL").prop("value", exeQ.manualLoginRelativeURL);
-    $("#manualEnvData").empty();
+    formEdit.find("#manualEnvData").empty();
     displayInvariantList("manualEnvData", "ENVIRONMENT", true, exeQ.manualEnvData, "");
 
     formEdit.find("#originalId").prop("value", exeQ.id);
@@ -530,7 +530,6 @@ function feedExecutionQueueModalData(exeQ, modalId, mode, hasPermissionsUpdate) 
 }
 
 function robot_change() {
-    console.info("toto");
     var formEdit = $('#editExecutionQueueModal');
     if (!isEmpty(formEdit.find("#robot").val())) {
         formEdit.find("#robotIP").prop("readonly", "readonly");
