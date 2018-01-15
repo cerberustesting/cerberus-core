@@ -113,13 +113,15 @@ function aoColumnsFunc() {
             }
         },
         {
-            "data": "LogEventID", 
+            "data": "LogEventID",
+            "like":true,
             "sName": "LogEventID", 
             "sWidth": "50px",
             "title": doc.getDocOnline("logevent", "logeventid")
         },
         {
-            "data": "time", 
+            "data": "time",
+            "like":true,
             "sName": "Time", 
             "sWidth": "90px",
             "title": doc.getDocOnline("logevent", "time")
@@ -143,7 +145,8 @@ function aoColumnsFunc() {
             "title": doc.getDocOnline("logevent", "action")
         },
         {
-            "data": "log", 
+            "data": "log",
+            "like":true,
             "sName": "Log", 
             "sWidth": "250px",
             "title": doc.getDocOnline("logevent", "log")

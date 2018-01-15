@@ -354,6 +354,7 @@ function aoColumnsFunc(tableId) {
             "title": doc.getDocLabel("page_sqlLibrary", "database_col")},
         {
             "data": "script",
+            "like":true,
             "sName": "Script",
             "sWidth": "150px",
             "title": doc.getDocLabel("page_sqlLibrary", "script_col"),
@@ -363,6 +364,7 @@ function aoColumnsFunc(tableId) {
         },
         {
             "data": "description",
+            "like":true,
             "sName": "Description",
             "sWidth": "100px",
             "title": doc.getDocLabel("page_sqlLibrary", "description_col")

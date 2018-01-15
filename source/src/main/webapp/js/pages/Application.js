@@ -499,6 +499,7 @@ function aoColumnsFunc(tableId) {
             "sWidth": "60px",
             "title": doc.getDocOnline("application", "Application")},
         {"data": "description",
+            "like":true,
             "sName": "description",
             "sWidth": "80px",
             "title": doc.getDocOnline("application", "Description")},
@@ -527,6 +528,7 @@ function aoColumnsFunc(tableId) {
             }
         },
         {"data": "bugTrackerUrl",
+        	"like":true,
             "sName": "bugTrackerUrl",
             "sWidth": "80px",
             "title": doc.getDocOnline("application", "bugtrackerurl"),
@@ -535,6 +537,7 @@ function aoColumnsFunc(tableId) {
             }
         },
         {"data": "bugTrackerNewUrl",
+        	"like":true,
             "sName": "bugTrackerNewUrl",
             "sWidth": "80px",
             "title": doc.getDocOnline("application", "bugtrackernewurl"),

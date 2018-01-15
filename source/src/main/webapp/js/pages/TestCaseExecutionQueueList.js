@@ -455,6 +455,7 @@ function aoColumnsFunc(tableId) {
         },
         {
             "data": "id",
+            "like":true,
             "sName": "id",
             "title": doc.getDocLabel("page_testcaseexecutionqueue", "id_col"),
             "sWidth": "40px"
@@ -467,6 +468,7 @@ function aoColumnsFunc(tableId) {
         },
         {
             "data": "tag",
+            "like":true,
             "sName": "tag",
             "title": doc.getDocLabel("page_testcaseexecutionqueue", "tag_col"),
             "sWidth": "150px",
@@ -499,6 +501,7 @@ function aoColumnsFunc(tableId) {
         },
         {
             "data": "exeId",
+            "like":true,
             "sName": "exeId",
             "title": doc.getDocLabel("page_testcaseexecutionqueue", "exeId"),
             "sWidth": "40px",
@@ -533,6 +536,7 @@ function aoColumnsFunc(tableId) {
         },
         {
             "data": "testCase",
+            "like":true,
             "sName": "testcase",
             "title": doc.getDocLabel("page_testcaseexecutionqueue", "testcase_col"),
             "sWidth": "70px"
@@ -724,6 +728,7 @@ function aoColumnsFunc_followUp() {
         {
             "data": null,
             "sWidth": "50px",
+            "sSearchable":false,
             "sName": "action",
             "title": doc.getDocLabel("page_global", "columnAction"),
             "mRender": function (data, type, oObj) {

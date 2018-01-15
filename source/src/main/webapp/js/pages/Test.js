@@ -237,6 +237,7 @@ function aoColumnsFunc() {
         {
             "data": "description",
             "sName": "description",
+            "like":true,
             "sWidth": "100px",
             "title": doc.getDocOnline("test", "Description")
         },
@@ -257,6 +258,7 @@ function aoColumnsFunc() {
         {
             "data": "tDateCrea",
             "sName": "tdatecrea",
+            "like":true,
             "sWidth": "80px",
             "title": doc.getDocOnline("test", "dateCreation")
         }

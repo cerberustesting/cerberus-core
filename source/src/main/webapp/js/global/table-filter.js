@@ -56,84 +56,6 @@ function resetTooltip() {
     $(".tooltip.fade").remove();
 }
 
-function createEditable(tableId, columnVisibleIndex, title, contentUrl, index, tableCell, display, clientSide, like, inputText, init, value){
-	var data = [];
-	var select =
-		$('<span></span>')
-        .appendTo($(tableCell).attr('data-id', 'filter_' + columnVisibleIndex)
-            .attr('data-order', index))
-        .editable({
-            type: 'checklist',
-            title: title,
-            source: function () {
-                if(clientSide) {
-                    return data;
-                }else if(init){
-                	return [{}];
-                }
-
-                //Check if URL already contains parameters
-                var urlSeparator = contentUrl.indexOf("?") > -1 ? "&" : "?";
-                var url;
-                var result;
-                
-                url = './' + contentUrl + urlSeparator + 'columnName=' + title;
-
-                $.ajax({
-                    type: 'GET',
-                    async: false,
-                    url: url,
-                    success: function (responseObject) {
-                        if (responseObject.distinctValues !== undefined) {
-                            result = responseObject.distinctValues;
-                        } else {
-                            //TODO : To remove when all servlet have method to find distinct values
-                            //if undefined, display the distinct value displayed in the table
-                            result = data;
-                        }
-                    },
-                    error: function () {
-                        //TODO : To remove when all servlet have method to find distinct values
-                        //if error, display the distinct value displayed in the table
-                        result = data;
-                    }
-                });
-                return result;
-            }
-            ,
-            onblur: 'cancel',
-            mode: 'popup',
-            placement: 'bottom',
-            emptytext: display,
-            send: 'always',
-            validate: function (value) {
-                if (value === null || value === '' || value.length === 0) {
-                    $("#" + tableId).dataTable().fnFilter('', Math.max($("#" + tableId + " [name='filterColumnHeader']").index($(this).parent()), index));
-                }
-            },
-            display: function (value, sourceData) {
-
-            },
-            success: function (response, newValue) {
-                if(clientSide) {
-                	
-                    columnSearchValuesForClientSide[index] = newValue;
-                    var filterForFnFilter = "";//create the filter list that will be used by fnFilter
-                    for (var i in newValue) {
-                        filterForFnFilter += newValue[i] + "|";
-                    }
-                    filterForFnFilter = filterForFnFilter.slice(0, -1);
-                    $("#" + tableId).dataTable().fnFilter("^" + filterForFnFilter + "$", index, true);
-                } else {
-                    $("#" + tableId).dataTable().fnFilter(newValue, Math.max($("#" + tableId + " [name='filterColumnHeader']").index($(this).parent()), index));
-                }
-            }
-        });
-
-    if(value != undefined){
-    	select.editable("setValue", value.toString(), false)
-    }
-}
 
 /**
  * Function that allow to filter column on specific value
@@ -414,11 +336,86 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
             $(tableCell).removeClass().addClass("filterHeader");
             if (clientSide && oSettings.aoColumns[index].bSearchable || !clientSide && table.ajax.params()["bSearchable_" + index]) { // TODO verify why it's different
                 //Then init the editable object
-            	if(!oSettings.aoColumns[index].like || oSettings.aoColumns[index].like === null){
-            		createEditable(tableId, columnVisibleIndex, title, contentUrl, index, tableCell, display, clientSide, false, null,false, allcolumnSearchValues[value])
-            	}else{
-            		createEditable(tableId, columnVisibleIndex, title, contentUrl, index, tableCell, display, clientSide, false, null,true, allcolumnSearchValues[value])
-            	}
+
+            		 
+        		var select =
+        	        $('<span></span>')
+        	        .appendTo($(tableCell).attr('data-id', 'filter_' + columnVisibleIndex)
+        	            .attr('data-order', index))
+        	        .editable({
+        	            type: 'checklist',
+        	            title: title,
+        	            source: function () {
+        	                if(clientSide) {
+        	                    return data;
+        	                }else if (oSettings.aoColumns[index].like){
+        	                	return [];
+        	                }
+
+        	                //Check if URL already contains parameters
+        	                var urlSeparator = contentUrl.indexOf("?") > -1 ? "&" : "?";
+        	                var url = './' + contentUrl + urlSeparator + 'columnName=' + title;
+        	                var result;
+        	                
+        	                $.ajax({
+        	                    type: 'GET',
+        	                    async: false,
+        	                    url: url,
+        	                    success: function (responseObject) {
+        	                        if (responseObject.distinctValues !== undefined) {
+        	                            result = responseObject.distinctValues;
+        	                        } else {
+        	                            //TODO : To remove when all servlet have method to find distinct values
+        	                            //if undefined, display the distinct value displayed in the table
+        	                            result = data;
+        	                        }
+        	                        
+        	                    },
+        	                    error: function () {
+        	                        //TODO : To remove when all servlet have method to find distinct values
+        	                       //if error, display the distinct value displayed in the table
+        	                       result = data;
+        	                   }
+        	                });
+        	                return result;
+        	            }
+        	            ,
+        	          onblur: 'cancel',
+        	            mode: 'popup',
+        	            placement: 'bottom',
+        	            emptytext: display,
+        	           send: 'always',
+        	           validate: function (value) {
+        	               if (value === null || value === '' || value.length === 0) {
+        	                    $("#" + tableId).dataTable().fnFilter('', Math.max($("#" + tableId + " [name='filterColumnHeader']").index($(this).parent()), index));
+        	                }
+        	            },
+        	           display: function (value, sourceData) {
+        	          	
+        	               var val;
+        	               $(value).each(function (i) {
+        	                  val = "<input placeholder='Search...' autocomplete='off' id='inputsearch_"+index+"' class='col-sm-8 form-control input-sm' name='searchField' />";
+        	            });
+        	             $(this).html(val);
+        	         },
+        	          success: function (response, newValue) {
+
+        	               if(clientSide) {
+        	                   columnSearchValuesForClientSide[index] = newValue;
+        	                   var filterForFnFilter = "";//create the filter list that will be used by fnFilter
+        	                   for (var i in newValue) {
+        	                       filterForFnFilter += newValue[i] + "|";
+        	                  }
+        	                   filterForFnFilter = filterForFnFilter.slice(0, -1);
+        	                   $("#" + tableId).dataTable().fnFilter("^" + filterForFnFilter + "$", index, true);
+        	                } else {
+        	                    $("#" + tableId).dataTable().fnFilter(newValue, Math.max($("#" + tableId + " [name='filterColumnHeader']").index($(this).parent()), index));
+        	               }
+        	               
+        	        }
+        	    });
+
+            		
             }
             columnVisibleIndex++;
         }
@@ -435,7 +432,7 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
             filteredStringToDisplay += filteredInformation[l];
         }
         $("#" + tableId + "_wrapper #activatedFilters").html(filteredStringToDisplay);
-        $("#" + tableId + "_wrapper #clearFilterButton").click(function () {
+        $("#" + tableId + "_wrapper #clearFilterButton").off("click").click(function () {
             if(clientSide) {
                 columnSearchValuesForClientSide = [];//reset the search value when the user click on the clear all buton
             }
@@ -545,7 +542,6 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
         		var value = [$(searchInput).val()]
         		$(searchInput).parent().editable("submit", value)
         	}
-        	  
         });
                 
         searchInput.click(function (e) {

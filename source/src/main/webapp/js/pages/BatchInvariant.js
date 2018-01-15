@@ -238,6 +238,7 @@ function aoColumnsFunc(tableId) {
             "title": doc.getDocOnline("batchinvariant", "system")},
         {
             "data": "description",
+            "like":true,
             "sName": "description",
             "sWidth": "100px",
             "title": doc.getDocOnline("batchinvariant", "Description")}
