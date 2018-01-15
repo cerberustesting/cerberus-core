@@ -391,12 +391,7 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
         	                }
         	            },
         	           display: function (value, sourceData) {
-        	          	
-        	               var val;
-        	               $(value).each(function (i) {
-        	                  val = "<input placeholder='Search...' autocomplete='off' id='inputsearch_"+index+"' class='col-sm-8 form-control input-sm' name='searchField' />";
-        	            });
-        	             $(this).html(val);
+
         	         },
         	          success: function (response, newValue) {
 
@@ -414,8 +409,12 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
         	               
         	        }
         	    });
-
-            		
+        		
+        		if(!oSettings.aoColumns[index].like || isEmpty(oSettings.aoColumns[index])){
+        			$(select).click(function(e){
+            			$(this).editable("setValue",allcolumnSearchValues[value],false)
+            		})
+        		}    		
             }
             columnVisibleIndex++;
         }
@@ -552,24 +551,29 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
 
         searchInput.focus();
         
-        var currentColumn = oSettings.aoColumns[$(searchInput).attr('id').split('_')[1]] 
-        if(currentColumn.like == null || !currentColumn.like){
-        	//Add selectAll/unSelectAll button
-        	$("#" + tableId + "_wrapper .popover-title").after(
-                $('<button>').attr('class', 'glyphicon glyphicon-check')
-                    .attr('type', 'button')
-                    .attr('title', 'select all').attr('name', 'selectAll')
-                    .attr('data-type', 'custom').on('click', function () {
-                    $(this).parent().parent().find("[type='checkbox']:visible").prop('checked', true);
-                }));
-        	$("#" + tableId + "_wrapper .popover-title").after(
-        		$('<button>').attr('class', 'glyphicon glyphicon-unchecked')
-                    .attr('type', 'button')
-                    .attr('title', 'unselect all').attr('name', 'unSelectAll')
-                    .attr('data-type', 'custom').on('click', function () {
-                    $(this).parent().parent().find("[type='checkbox']:visible").prop('checked', false);
-                }));
+        if($(searchInput).length){
+        	var currentColumn = oSettings.aoColumns[$(searchInput).attr('id').split('_')[1]] 
+            console.log($(searchInput))
+            if(currentColumn.like == null || !currentColumn.like){
+            	//Add selectAll/unSelectAll button
+            	$("#" + tableId + "_wrapper .popover-title").after(
+                    $('<button>').attr('class', 'glyphicon glyphicon-check')
+                        .attr('type', 'button')
+                        .attr('title', 'select all').attr('name', 'selectAll')
+                        .attr('data-type', 'custom').on('click', function () {
+                        $(this).parent().parent().find("[type='checkbox']:visible").prop('checked', true);
+                    }));
+            	$("#" + tableId + "_wrapper .popover-title").after(
+            		$('<button>').attr('class', 'glyphicon glyphicon-unchecked')
+                        .attr('type', 'button')
+                        .attr('title', 'unselect all').attr('name', 'unSelectAll')
+                        .attr('data-type', 'custom').on('click', function () {
+                        $(this).parent().parent().find("[type='checkbox']:visible").prop('checked', false);
+                    }));
+            }
+            
         }
+
         
     });
     
