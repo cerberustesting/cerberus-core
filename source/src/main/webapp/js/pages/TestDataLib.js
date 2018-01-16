@@ -441,6 +441,7 @@ function aoColumnsFuncTestDataLib(tableId) {
         },
         {
             "sName": "tdl.Created",
+            "like":true,
             "data": "created",
             "sWidth": "150px",
             "title": doc.getDocOnline("testdatalib", "created")
@@ -453,6 +454,7 @@ function aoColumnsFuncTestDataLib(tableId) {
         },
         {
             "sName": "tdl.LastModified",
+            "like":true,
             "data": "lastModified",
             "sWidth": "150px",
             "title": doc.getDocOnline("testdatalib", "lastmodified")

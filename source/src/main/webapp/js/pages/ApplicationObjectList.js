@@ -276,6 +276,7 @@ function aoColumnsFunc(tableId) {
 			},
 			{
 				"data" : "datecreated",
+				"like":true,
 				"sName" : "datecreated",
 				"sWidth" : "80px",
 				"title" : doc.getDocOnline("page_applicationObject",
@@ -290,6 +291,7 @@ function aoColumnsFunc(tableId) {
 			},
 			{
 				"data" : "datemodif",
+				"like":true,
 				"sName" : "datemodif",
 				"sWidth" : "80px",
 				"title" : doc.getDocOnline("page_applicationObject",

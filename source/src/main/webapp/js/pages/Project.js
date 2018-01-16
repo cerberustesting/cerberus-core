@@ -245,6 +245,7 @@ function aoColumnsFunc(tableId) {
             "title": doc.getDocOnline("project", "active")},
         {
             "data": "dateCreation",
+            "like":true,
             "sName": "dateCre",
             "sWidth": "50px",
             "title": doc.getDocOnline("project", "dateCreation")}

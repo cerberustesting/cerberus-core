@@ -482,6 +482,7 @@ function aoColumnsFunc(tableId) {
         },
         {
             "data": "requestDate",
+            "like":true,
             "sName": "requestDate",
             "title": doc.getDocLabel("page_testcaseexecutionqueue", "requestDate_col"),
             "sWidth": "110px"
@@ -494,6 +495,7 @@ function aoColumnsFunc(tableId) {
         },
         {
             "data": "comment",
+            "like":true,
             "sName": "comment",
             "title": doc.getDocLabel("page_testcaseexecutionqueue", "comment_col"),
             "sWidth": "200px",
@@ -523,6 +525,7 @@ function aoColumnsFunc(tableId) {
         },
         {
             "data": "DateCreated",
+            "like":true,
             "sName": "DateCreated",
             "sWidth": "110px",
             "defaultContent": "",

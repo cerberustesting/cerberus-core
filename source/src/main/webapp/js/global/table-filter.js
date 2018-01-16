@@ -150,7 +150,6 @@ function applyFiltersOnMultipleColumns(tableId, searchColumns, fromURL) {
                 oTable.api().column(iCol).search(searchArray[sCol].values);
             }
         }
-
     }
     oTable.fnDraw();
 }
@@ -263,6 +262,7 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
     $.each(orderedColumns, function (index, value) {  	
     	var columnSearchValues;
         var json_obj = JSON.stringify(table.ajax.params());
+        
         if(clientSide) { // TODO verify if it's normal it's different for clientSide
             columnSearchValues = columnSearchValuesForClientSide[index]; //Get the value from storage (To display specific string if already filtered)
         } else {
@@ -336,8 +336,6 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
             $(tableCell).removeClass().addClass("filterHeader");
             if (clientSide && oSettings.aoColumns[index].bSearchable || !clientSide && table.ajax.params()["bSearchable_" + index]) { // TODO verify why it's different
                 //Then init the editable object
-
-            		 
         		var select =
         	        $('<span></span>')
         	        .appendTo($(tableCell).attr('data-id', 'filter_' + columnVisibleIndex)
@@ -358,9 +356,10 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
         	                var result;
         	                
         	                $.ajax({
-        	                    type: 'GET',
+        	                    type: 'POST',
         	                    async: false,
         	                    url: url,
+        	                    data: table.ajax.params(),
         	                    success: function (responseObject) {
         	                        if (responseObject.distinctValues !== undefined) {
         	                            result = responseObject.distinctValues;
@@ -402,7 +401,7 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
         	                       filterForFnFilter += newValue[i] + "|";
         	                  }
         	                   filterForFnFilter = filterForFnFilter.slice(0, -1);
-        	                   $("#" + tableId).dataTable().fnFilter("^" + filterForFnFilter + "$", index, true);
+        	                   $("#" + tableId).dataTable().fnFilter("^" + "0001A" + "$", index, true);
         	                } else {
         	                    $("#" + tableId).dataTable().fnFilter(newValue, Math.max($("#" + tableId + " [name='filterColumnHeader']").index($(this).parent()), index));
         	               }
@@ -553,7 +552,6 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
         
         if($(searchInput).length){
         	var currentColumn = oSettings.aoColumns[$(searchInput).attr('id').split('_')[1]] 
-            console.log($(searchInput))
             if(currentColumn.like == null || !currentColumn.like){
             	//Add selectAll/unSelectAll button
             	$("#" + tableId + "_wrapper .popover-title").after(

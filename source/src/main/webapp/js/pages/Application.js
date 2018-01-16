@@ -576,6 +576,7 @@ function aoColumnsFunc_object(tableId) {
             "sName": "usrcreated",
             "title": doc.getDocOnline("transversal", "UsrCreated")},
         {"data": "datecreated",
+            "like":true,
             "sName": "datecreated",
             "title": doc.getDocOnline("transversal", "DateCreated")},
         {"data": "usrmodif",
@@ -583,6 +584,7 @@ function aoColumnsFunc_object(tableId) {
             "title": doc.getDocOnline("transversal", "UsrModif")
         },
         {"data": "datemodif",
+        	"like":true,
             "sName": "datemodif",
             "title": doc.getDocOnline("transversal", "DateModif")
         }

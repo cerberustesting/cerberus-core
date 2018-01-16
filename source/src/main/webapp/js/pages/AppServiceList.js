@@ -236,6 +236,7 @@ function aoColumnsFunc(tableId) {
 				"title" : doc.getDocLabel("appservice", "description")
 			}, {
 				"sName" : "srv.DateCreated",
+				"like":true,
 				"data" : "DateCreated",
 				"sWidth" : "150px",
 				"title" : doc.getDocOnline("transversal", "DateCreated")
@@ -246,6 +247,7 @@ function aoColumnsFunc(tableId) {
 				"title" : doc.getDocOnline("transversal", "UsrCreated")
 			}, {
 				"sName" : "srv.DateModif",
+				"like":true,
 				"data" : "DateModif",
 				"sWidth" : "150px",
 				"title" : doc.getDocOnline("transversal", "DateModif")

@@ -764,6 +764,7 @@ function aoColumnsFunc(tableId) {
             "title": doc.getDocOnline("buildrevisionparameters", "subject")},
         {"data": "datecre",
             "sName": "datecre",
+            "like":true,
             "sWidth": "150px",
             "title": doc.getDocOnline("buildrevisionparameters", "datecre")},
         {"data": "jenkinsBuildId",
