@@ -401,7 +401,6 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
         	                       filterForFnFilter += newValue[i] + "|";
         	                  }
         	                   filterForFnFilter = filterForFnFilter.slice(0, -1);
-        	                   console.log(filterForFnFilter)
         	                   $("#" + tableId).dataTable().fnFilter("(" + filterForFnFilter + ")", index, true);
         	                } else {
         	                    $("#" + tableId).dataTable().fnFilter(newValue, Math.max($("#" + tableId + " [name='filterColumnHeader']").index($(this).parent()), index));
