@@ -200,7 +200,6 @@ public class ReadApplicationObject extends HttpServlet {
 
     private AnswerItem findApplicationObjectList(String application, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
-    	System.out.print("here");
         AnswerItem item = new AnswerItem();
         JSONObject object = new JSONObject();
         applicationObjectService = appContext.getBean(IApplicationObjectService.class);
