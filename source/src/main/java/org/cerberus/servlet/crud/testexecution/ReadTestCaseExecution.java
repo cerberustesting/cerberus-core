@@ -146,6 +146,7 @@ public class ReadTestCaseExecution extends HttpServlet {
                 JSONObject result = new JSONObject();
                 if (lastExec != null) {
                     result.put("id", lastExec.getId());
+                    result.put("queueId", lastExec.getQueueID());
                     result.put("controlStatus", lastExec.getControlStatus());
                     result.put("env", lastExec.getEnvironment());
                     result.put("country", lastExec.getCountry());

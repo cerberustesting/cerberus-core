@@ -223,6 +223,7 @@ function aoColumnsFunc(tableId) {
         },
         {
             "data": "idProject",
+            "like":true,
             "sName": "idProject",
             "sWidth": "50px",
             "title": doc.getDocOnline("project", "idproject")},
@@ -233,6 +234,7 @@ function aoColumnsFunc(tableId) {
             "title": doc.getDocOnline("project", "code")},
         {
             "data": "description",
+            "like":true,
             "sName": "description",
             "sWidth": "50px",
             "title": doc.getDocOnline("project", "description")},
@@ -243,6 +245,7 @@ function aoColumnsFunc(tableId) {
             "title": doc.getDocOnline("project", "active")},
         {
             "data": "dateCreation",
+            "like":true,
             "sName": "dateCre",
             "sWidth": "50px",
             "title": doc.getDocOnline("project", "dateCreation")}

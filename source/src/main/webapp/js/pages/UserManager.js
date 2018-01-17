@@ -557,7 +557,8 @@ function aoColumnsFunc(tableId) {
             "title": doc.getDocLabel("page_user", "login_col")
         },
         {
-            "data": "name", 
+            "data": "name",
+            "like":true,
             "sName": "name", 
             "sWidth": "80px",
             "title": doc.getDocLabel("page_user", "name_col")
@@ -619,7 +620,8 @@ function aoColumnsFunc(tableId) {
             "title": doc.getDocLabel("page_user", "request_col")
         },
         {
-            "data": "email", 
+            "data": "email",
+            "like":true,
             "sName": "email", 
             "sWidth": "80px",
             "title": doc.getDocLabel("page_user", "email_col")

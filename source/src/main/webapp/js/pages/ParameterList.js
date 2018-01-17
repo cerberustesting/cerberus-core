@@ -93,7 +93,8 @@ function aoColumnsFunc(tableId) {
             "title": doc.getDocLabel("page_parameter", "system_col") + " (" + getSys() + ")"
         },
         {
-            "data": "description", 
+            "data": "description",
+            "like":true,
             "sName": "par.description", 
             "sWidth": "200px",
             "title": doc.getDocLabel("page_parameter", "description_col")

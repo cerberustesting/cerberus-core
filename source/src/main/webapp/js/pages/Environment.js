@@ -1241,6 +1241,7 @@ function aoColumnsFunc(tableId) {
             "sWidth": "100px",
             "title": doc.getDocOnline("invariant", "ENVIRONMENT")},
         {"data": "description",
+            "like":true,
             "sName": "description",
             "sWidth": "150px",
             "title": doc.getDocOnline("countryenvparam", "Description")},

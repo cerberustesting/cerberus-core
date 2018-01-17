@@ -7553,6 +7553,25 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // New updated Documentation.
         //-- ------------------------ 1274-1275
         SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+
+        // ADD a parameter for the path to store manual exe files
+        //-- ------------------------ 1276-1277
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` (`system`,`param`, `value`, `description`) VALUES ");
+        SQLS.append("  ('','cerberus_exemanualmedia_path', '/path/to/exemanualmedia', 'Path to store the Cerberus Media files for Manual executions.')");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `parameter` SET `param`='cerberus_exeautomedia_path', `description`='Path to store the Cerberus Media files for Automatic executions (like Selenium Screenshot or SOAP requests and responses).' WHERE `param`='cerberus_mediastorage_path';");
+        SQLInstruction.add(SQLS.toString());
+
+        // New updated Documentation.
+        //-- ------------------------ 1278-1279
+        SQLS = new StringBuilder();
         SQLS.append("DELETE FROM `documentation`;");
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
@@ -8101,9 +8120,9 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_executiondetail','build','','en','Build','',NULL)");
         SQLS.append(",('page_executiondetail','build','','fr','Build','',NULL)");
         SQLS.append(",('page_executiondetail','buildrevision','','en','BuildRev','Build and Revision of the <code class=\\'doc-crbvvoca\\'>environment</code> of the <code class=\\'doc-crbvvoca\\'>system</code> of the <code class=\\'doc-crbvvoca\\'>application</code> that has been tested.',NULL)");
-        SQLS.append(",('page_executiondetail','buildrevision','','fr','BuildRev',NULL,NULL)");
+        SQLS.append(",('page_executiondetail','buildrevision','','fr','BuildRev','',NULL)");
         SQLS.append(",('page_executiondetail','buildrevisionlink','','en','BuildRev Linked','Build and Revision of the <code class=\\'doc-crbvvoca\\'>environment</code> of the linked <code class=\\'doc-crbvvoca\\'>system</code>. The linked systems are defined in the \\'Environment Dependancy\\' section of the <code class=\\'doc-crbvvoca\\'>environment</code> page.',NULL)");
-        SQLS.append(",('page_executiondetail','buildrevisionlink','','fr','BuildRev liée',NULL,NULL)");
+        SQLS.append(",('page_executiondetail','buildrevisionlink','','fr','BuildRev liée','',NULL)");
         SQLS.append(",('page_executiondetail','cerberusversion','','en','Cerberus Version','',NULL)");
         SQLS.append(",('page_executiondetail','cerberusversion','','fr','Version de Cerberus','',NULL)");
         SQLS.append(",('page_executiondetail','conditionOper','','en','Condition Operator','',NULL)");
@@ -8127,13 +8146,15 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_executiondetail','description','','en','Description','',NULL)");
         SQLS.append(",('page_executiondetail','description','','fr','Description','',NULL)");
         SQLS.append(",('page_executiondetail','edittc','','en','Edit Test Case','',NULL)");
-        SQLS.append(",('page_executiondetail','edittc','','fr','Modifier le Cas de Test','',NULL)");
-        SQLS.append(",('page_executiondetail','edittcstep','','en','Edit Test Case from the current Step','',NULL)");
-        SQLS.append(",('page_executiondetail','edittcstep','','fr','Editer le Cas de Test à partir de l\\'Etape courante','',NULL)");
+        SQLS.append(",('page_executiondetail','edittc','','fr','Editer le TestCase','',NULL)");
+        SQLS.append(",('page_executiondetail','edittch','','en','Edit TestCase Header','',NULL)");
+        SQLS.append(",('page_executiondetail','edittch','','fr','Modifier l\\'Entete du TestCase','',NULL)");
+        SQLS.append(",('page_executiondetail','edittcstep','','en','Edit Test Case (From Current Step)','',NULL)");
+        SQLS.append(",('page_executiondetail','edittcstep','','fr','Editer le TestCase (à partir de l\\'Etape Courante)','',NULL)");
         SQLS.append(",('page_executiondetail','end','','en','End','',NULL)");
         SQLS.append(",('page_executiondetail','end','','fr','Fin','',NULL)");
         SQLS.append(",('page_executiondetail','environment','','en','Environment','',NULL)");
-        SQLS.append(",('page_executiondetail','environment','','fr','Environement','',NULL)");
+        SQLS.append(",('page_executiondetail','environment','','fr','Environnement','',NULL)");
         SQLS.append(",('page_executiondetail','executor','','en','Executor','',NULL)");
         SQLS.append(",('page_executiondetail','executor','','fr','Executeur','',NULL)");
         SQLS.append(",('page_executiondetail','fatal','','en','Fatal','',NULL)");
@@ -8142,14 +8163,16 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_executiondetail','finished','','fr','Fini','',NULL)");
         SQLS.append(",('page_executiondetail','forceexec','','en','Force Execution','',NULL)");
         SQLS.append(",('page_executiondetail','forceexec','','fr','Forcer L\\'Execution','',NULL)");
+        SQLS.append(",('page_executiondetail','goto','','en','Go To','',NULL)");
+        SQLS.append(",('page_executiondetail','goto','','fr','Aller','',NULL)");
         SQLS.append(",('page_executiondetail','id','','en','ID','',NULL)");
         SQLS.append(",('page_executiondetail','id','','fr','ID','',NULL)");
         SQLS.append(",('page_executiondetail','ip','','en','IP','',NULL)");
         SQLS.append(",('page_executiondetail','ip','','fr','IP','',NULL)");
-        SQLS.append(",('page_executiondetail','lastexecution','','en','Filter on Last Executions','',NULL)");
-        SQLS.append(",('page_executiondetail','lastexecution','','fr','Filtrer les Dernières exécutions','',NULL)");
-        SQLS.append(",('page_executiondetail','lastexecutionwithenvcountry','','en','Last Execution with Environment & Country','',NULL)");
-        SQLS.append(",('page_executiondetail','lastexecutionwithenvcountry','','fr','Dernières Exécutions même Environement & Pays','',NULL)");
+        SQLS.append(",('page_executiondetail','lastexecution','','en','Executions List','',NULL)");
+        SQLS.append(",('page_executiondetail','lastexecution','','fr','Liste d\\'Executions','',NULL)");
+        SQLS.append(",('page_executiondetail','lastexecutionwithenvcountry','','en','Executions List (same Environment & Country)','',NULL)");
+        SQLS.append(",('page_executiondetail','lastexecutionwithenvcountry','','fr','Liste d\\'Executions (même Environnement & Pays)','',NULL)");
         SQLS.append(",('page_executiondetail','more_detail','','en','More details','',NULL)");
         SQLS.append(",('page_executiondetail','more_detail','','fr','Plus de détails','',NULL)");
         SQLS.append(",('page_executiondetail','platform','','en','Platform','',NULL)");
@@ -8158,20 +8181,30 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_executiondetail','port','','fr','Port','',NULL)");
         SQLS.append(",('page_executiondetail','queueId','','en','Execution Queue ID',NULL,NULL)");
         SQLS.append(",('page_executiondetail','queueId','','fr','ID de la queue',NULL,NULL)");
+        SQLS.append(",('page_executiondetail','reruntc','','en','ReRun TestCase','',NULL)");
+        SQLS.append(",('page_executiondetail','reruntc','','fr','ReExecuter le TestCase','',NULL)");
+        SQLS.append(",('page_executiondetail','reruntcqueue','','en','ReRun From Queue','',NULL)");
+        SQLS.append(",('page_executiondetail','reruntcqueue','','fr','ReExecuter de la Queue','',NULL)");
         SQLS.append(",('page_executiondetail','return_code','','en','Return Code','',NULL)");
         SQLS.append(",('page_executiondetail','return_code','','fr','Code de retour','',NULL)");
         SQLS.append(",('page_executiondetail','return_message','','en','Return Message','',NULL)");
         SQLS.append(",('page_executiondetail','return_message','','fr','Message de retour','',NULL)");
         SQLS.append(",('page_executiondetail','revision','','en','Revision','',NULL)");
         SQLS.append(",('page_executiondetail','revision','','fr','Revision','',NULL)");
-        SQLS.append(",('page_executiondetail','runtc','','en','Run this Test Case again','',NULL)");
-        SQLS.append(",('page_executiondetail','runtc','','fr','Executer ce Cas de Test encore','',NULL)");
-        SQLS.append(",('page_executiondetail','save','','en','Save',NULL,NULL)");
-        SQLS.append(",('page_executiondetail','save','','fr','Sauvegarder',NULL,NULL)");
+        SQLS.append(",('page_executiondetail','run','','en','Run','',NULL)");
+        SQLS.append(",('page_executiondetail','run','','fr','Executer','',NULL)");
+        SQLS.append(",('page_executiondetail','runtc','','en','Run TestCase','',NULL)");
+        SQLS.append(",('page_executiondetail','runtc','','fr','Executer TestCase','',NULL)");
+        SQLS.append(",('page_executiondetail','save','','en','Save Execution','',NULL)");
+        SQLS.append(",('page_executiondetail','save','','fr','Sauvegarder Execution','',NULL)");
         SQLS.append(",('page_executiondetail','screensize','','en','Screen Size','',NULL)");
         SQLS.append(",('page_executiondetail','screensize','','fr','Taille de l\\'ecran','',NULL)");
-        SQLS.append(",('page_executiondetail','see_execution_tag','','en','See Execution Report By Tag','',NULL)");
-        SQLS.append(",('page_executiondetail','see_execution_tag','','fr','Voir le rapport d\\'execution par Tag','',NULL)");
+        SQLS.append(",('page_executiondetail','see_executionq','','en','Queue Parameters','',NULL)");
+        SQLS.append(",('page_executiondetail','see_executionq','','fr','Parametre de la Queue','',NULL)");
+        SQLS.append(",('page_executiondetail','see_executionq_tag','','en','Queue List by Tag','',NULL)");
+        SQLS.append(",('page_executiondetail','see_executionq_tag','','fr','Liste des Queues par Tag','',NULL)");
+        SQLS.append(",('page_executiondetail','see_execution_tag','','en','Report By Tag','',NULL)");
+        SQLS.append(",('page_executiondetail','see_execution_tag','','fr','Rapport d\\'Execution par Tag','',NULL)");
         SQLS.append(",('page_executiondetail','SeleniumLog','','en','Media Files','Link to the media execution files (ex : selenium logs).',NULL)");
         SQLS.append(",('page_executiondetail','sort','','en','Sort','',NULL)");
         SQLS.append(",('page_executiondetail','sort','','fr','Ordre','',NULL)");
@@ -8266,7 +8299,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_global','footer_bug','','en','Open a bug or ask for any new feature <a target=\"_blank\"  href=\"%LINK%\">here</a>.','',NULL)");
         SQLS.append(",('page_global','footer_bug','','fr','Ouvrir un bug ou envoyer une demande d\\'évolution <a target=\"_blank\"  href=\"%LINK%\">ici</a>.','',NULL)");
         SQLS.append(",('page_global','footer_text','','en','Page started generating on %DATE% by %VERSION% in %ENV% and took %TIMING%ms','',NULL)");
-        SQLS.append(",('page_global','footer_text','','fr','Page générée le %DATE% par %VERSION% en environment : %ENV% et a pris %TIMING%ms','',NULL)");
+        SQLS.append(",('page_global','footer_text','','fr','Page générée le %DATE% par %VERSION% en environnement : %ENV% et a pris %TIMING%ms','',NULL)");
         SQLS.append(",('page_global','invalid_extension_message','','en','Please select a file with the extension ','',NULL)");
         SQLS.append(",('page_global','invalid_extension_message','','fr','Merci de selectionner un fichier avec l\\'extension ','',NULL)");
         SQLS.append(",('page_global','lbl_all','','en','All','',NULL)");
@@ -8528,8 +8561,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_reportbytag','button_reload','','fr','Recharger','',NULL)");
         SQLS.append(",('page_reportbytag','filters','','en','Filters','Filters for the report',NULL)");
         SQLS.append(",('page_reportbytag','filters','','fr','Filtres','Filtres du rapport',NULL)");
-        SQLS.append(",('page_reportbytag','report_envcountrybrowser','','en','Report By Application Environement Country Browser','Report of the execution filtering by Application Environement Country and Browser',NULL)");
-        SQLS.append(",('page_reportbytag','report_envcountrybrowser','','fr','Rapport par Application Envrionnement Pays Navigateur','Rapport d\\'execution filtré par Application Envrionnment Pays et Navigateur',NULL)");
+        SQLS.append(",('page_reportbytag','report_envcountrybrowser','','en','Report By Application Environment Country Browser','Report of the execution filtering by Application Environement Country and Browser',NULL)");
+        SQLS.append(",('page_reportbytag','report_envcountrybrowser','','fr','Rapport par Application / Environnement / Pays / Navigateur','Rapport d\\'execution filtré par Application Envrionnment Pays et Navigateur',NULL)");
         SQLS.append(",('page_reportbytag','report_function','','en','Report by Function','A bar chart with the number of execution and their status for each function',NULL)");
         SQLS.append(",('page_reportbytag','report_function','','fr','Rapport par Fonction','diagramme en bâtons contenant le nombre d\\'execution par status pour chaque fonction',NULL)");
         SQLS.append(",('page_reportbytag','report_list','','en','List','A list of all test case execution for each Environement, Country and Browser',NULL)");
@@ -8599,7 +8632,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_runtest','mycontextroot','','en','My Context Root','',NULL)");
         SQLS.append(",('page_runtest','mycontextroot','','fr','Ma racine de contexte','',NULL)");
         SQLS.append(",('page_runtest','myenvdata','','en','My environment data','',NULL)");
-        SQLS.append(",('page_runtest','myenvdata','','fr','Mes données d\\'environment','',NULL)");
+        SQLS.append(",('page_runtest','myenvdata','','fr','Mes données d\\'environnement','',NULL)");
         SQLS.append(",('page_runtest','myhost','','en','My host','',NULL)");
         SQLS.append(",('page_runtest','myhost','','fr','Mon hôte','',NULL)");
         SQLS.append(",('page_runtest','myloginrelativeurl','','en','My login relative url','',NULL)");
@@ -8647,7 +8680,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_runtest','select_one_country','','en','Select at least one Country !','',NULL)");
         SQLS.append(",('page_runtest','select_one_country','','fr','Sélectionner au moins un Pays !','',NULL)");
         SQLS.append(",('page_runtest','select_one_env','','en','Select at least one Environment !','',NULL)");
-        SQLS.append(",('page_runtest','select_one_env','','fr','Sélectionner au moins un Environment !','',NULL)");
+        SQLS.append(",('page_runtest','select_one_env','','fr','Sélectionner au moins un Environnement !','',NULL)");
         SQLS.append(",('page_runtest','select_one_testcase','','en','Select at least one TestCase !','',NULL)");
         SQLS.append(",('page_runtest','select_one_testcase','','fr','Sélectionner au moins un cas de test !','',NULL)");
         SQLS.append(",('page_runtest','select_robot','','en','Select a robot','',NULL)");
@@ -8923,7 +8956,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_testcaseexecutionqueue','country_col','','en','Country','',NULL)");
         SQLS.append(",('page_testcaseexecutionqueue','country_col','','fr','Pays','',NULL)");
         SQLS.append(",('page_testcaseexecutionqueue','environment_col','','en','Environment','',NULL)");
-        SQLS.append(",('page_testcaseexecutionqueue','environment_col','','fr','Environement','',NULL)");
+        SQLS.append(",('page_testcaseexecutionqueue','environment_col','','fr','Environnement','',NULL)");
         SQLS.append(",('page_testcaseexecutionqueue','exeId','','en','Execution ID','',NULL)");
         SQLS.append(",('page_testcaseexecutionqueue','exeId','','fr','ID de l\\'éxécution','',NULL)");
         SQLS.append(",('page_testcaseexecutionqueue','id_col','','en','ID','',NULL)");
@@ -9040,6 +9073,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_testcasescript','control_field','','fr','Control : ','',NULL)");
         SQLS.append(",('page_testcasescript','db_field','','en','Database : ','',NULL)");
         SQLS.append(",('page_testcasescript','db_field','','fr','Base de donnée : ','',NULL)");
+        SQLS.append(",('page_testcasescript','delete','','en','Delete','',NULL)");
+        SQLS.append(",('page_testcasescript','delete','','fr','Supprimer','',NULL)");
         SQLS.append(",('page_testcasescript','describe_action','','en','Describe Action','',NULL)");
         SQLS.append(",('page_testcasescript','describe_action','','fr','Décrivez cette action','',NULL)");
         SQLS.append(",('page_testcasescript','describe_control','','en','Describe Control','',NULL)");
@@ -9047,7 +9082,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_testcasescript','description_field','','en','Description : ','',NULL)");
         SQLS.append(",('page_testcasescript','description_field','','fr','Description : ','',NULL)");
         SQLS.append(",('page_testcasescript','edit_testcase','','en','Edit TestCase Header','',NULL)");
-        SQLS.append(",('page_testcasescript','edit_testcase','','fr','Modifier l\\'Entete du Cas de Test','',NULL)");
+        SQLS.append(",('page_testcasescript','edit_testcase','','fr','Modifier l\\'Entete du TestCase','',NULL)");
         SQLS.append(",('page_testcasescript','fatal_field','','en','Fatal :','',NULL)");
         SQLS.append(",('page_testcasescript','fatal_field','','fr','Fatal :','',NULL)");
         SQLS.append(",('page_testcasescript','feed_propertydescription','','en','Feed Property Description','',NULL)");
@@ -9056,6 +9091,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_testcasescript','feed_propertyname','','fr','Remplissez le nom de la propriété','',NULL)");
         SQLS.append(",('page_testcasescript','force_execution_field','','en','Force Execution : ','',NULL)");
         SQLS.append(",('page_testcasescript','force_execution_field','','fr','Forcer l\\'execution : ','',NULL)");
+        SQLS.append(",('page_testcasescript','goto','','en','Go To','',NULL)");
+        SQLS.append(",('page_testcasescript','goto','','fr','Aller','',NULL)");
         SQLS.append(",('page_testcasescript','imported_from','','en','Imported from','',NULL)");
         SQLS.append(",('page_testcasescript','imported_from','','fr','Importé depuis','',NULL)");
         SQLS.append(",('page_testcasescript','index','','en','Index : ','',NULL)");
@@ -9076,6 +9113,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_testcasescript','property_field','','fr','Propriété : ','',NULL)");
         SQLS.append(",('page_testcasescript','rc','','en','Result Code :','',NULL)");
         SQLS.append(",('page_testcasescript','rc','','fr','Code Retour :','',NULL)");
+        SQLS.append(",('page_testcasescript','rerunqueue_testcase','','en','Run From Queue','',NULL)");
+        SQLS.append(",('page_testcasescript','rerunqueue_testcase','','fr','Executer de la Queue','',NULL)");
         SQLS.append(",('page_testcasescript','rerun_testcase','','en','Rerun TestCase','',NULL)");
         SQLS.append(",('page_testcasescript','rerun_testcase','','fr','ReExecuter le TestCase','',NULL)");
         SQLS.append(",('page_testcasescript','retrynb','','en','Retry Number :','',NULL)");
@@ -9088,16 +9127,24 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_testcasescript','rowlimit_field','','fr','Nombre de lignes limite : ','',NULL)");
         SQLS.append(",('page_testcasescript','row_limit','','en','Row Limit','',NULL)");
         SQLS.append(",('page_testcasescript','row_limit','','fr','Nombre de lignes limite','',NULL)");
+        SQLS.append(",('page_testcasescript','run','','en','Run','',NULL)");
+        SQLS.append(",('page_testcasescript','run','','fr','Executer','',NULL)");
         SQLS.append(",('page_testcasescript','run_old','','en','Old page','',NULL)");
         SQLS.append(",('page_testcasescript','run_old','','fr','Ancienne page','',NULL)");
         SQLS.append(",('page_testcasescript','run_testcase','','en','Run TestCase','',NULL)");
         SQLS.append(",('page_testcasescript','run_testcase','','fr','Executer le TestCase','',NULL)");
-        SQLS.append(",('page_testcasescript','save_script','','en','Save','',NULL)");
-        SQLS.append(",('page_testcasescript','save_script','','fr','Sauvegarder','',NULL)");
-        SQLS.append(",('page_testcasescript','see_lastexec','','en','See last Executions','',NULL)");
-        SQLS.append(",('page_testcasescript','see_lastexec','','fr','Dernières Exécutions','',NULL)");
+        SQLS.append(",('page_testcasescript','saveas_script','','en','Save As','',NULL)");
+        SQLS.append(",('page_testcasescript','saveas_script','','fr','Sauvergarder Sous','',NULL)");
+        SQLS.append(",('page_testcasescript','save_script','','en','Save Test Case','',NULL)");
+        SQLS.append(",('page_testcasescript','save_script','','fr','Sauvegarder TestCase','',NULL)");
+        SQLS.append(",('page_testcasescript','see_lastexec','','en','Executions List','',NULL)");
+        SQLS.append(",('page_testcasescript','see_lastexec','','fr','Liste d\\'Exécutions','',NULL)");
+        SQLS.append(",('page_testcasescript','see_lastexecuniq','','en','Last Execution','',NULL)");
+        SQLS.append(",('page_testcasescript','see_lastexecuniq','','fr','Dernière Execution','',NULL)");
         SQLS.append(",('page_testcasescript','see_logs','','en','Logs','',NULL)");
         SQLS.append(",('page_testcasescript','see_logs','','fr','Logs','',NULL)");
+        SQLS.append(",('page_testcasescript','see_test','','en','Test Case List','',NULL)");
+        SQLS.append(",('page_testcasescript','see_test','','fr','Liste des TestCases','',NULL)");
         SQLS.append(",('page_testcasescript','select_test','','en','Select a test','',NULL)");
         SQLS.append(",('page_testcasescript','select_test','','fr','Sélectionner un test','',NULL)");
         SQLS.append(",('page_testcasescript','select_testcase','','en','Select a TestCase','',NULL)");
@@ -9127,7 +9174,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_testcasescript','value_field','','en','Value :','',NULL)");
         SQLS.append(",('page_testcasescript','value_field','','fr','Valeur :','',NULL)");
         SQLS.append(",('page_testcasescript','warning_nocountry','','en','That Testcase has no country selected, please add at east one country (in \\'Activation Criteria\\' Tab of the testcase) in order to be able to add and define properties.','',NULL)");
-        SQLS.append(",('page_testcasescript','warning_nocountry','','fr','Ce Cas de Test n\\'a auncu pays de défini. Merci d\\'en ajouter en minimum 1 (depuis \\'Activation Criteria\\' au niveau de l\\'entete du cas de test) avant d\\'ajouter une propriété.',NULL,NULL)");
+        SQLS.append(",('page_testcasescript','warning_nocountry','','fr','Ce Cas de Test n\\'a auncu pays de défini. Merci d\\'en ajouter en minimum 1 (depuis \\'Activation Criteria\\' au niveau de l\\'entete du cas de test) avant d\\'ajouter une propriété.','',NULL)");
         SQLS.append(",('page_testcasescript','warning_no_country','','en','There is no country selected for at least one property. If you save it will be removed. Do you still want to save ?','',NULL)");
         SQLS.append(",('page_testcasescript','warning_no_country','','fr','Il y a au moins une propriété sans pays de selectionné. Si vous sauvegardez elle sera supprimée. Voulez-vous vraiment sauvegarder ?','',NULL)");
         SQLS.append(",('page_testcasescript','warning_one_empty_prop','','en','There is at least one property with no name defined. If you save it will be removed. Do you still want to save ?','',NULL)");
@@ -9664,16 +9711,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('user','Team','','fr','Equipe','Correspond à l\\'équipe de l\\'utilisateur','_management_des_utilisateurs')");
         SQLS.append(",('usergroup','GroupName','','en','Group Name','Authorities are managed by group. In order to be granted to a set of feature, you must belong to the corresponding group.<br>Every user can of course belong to as many group as necessary in order to get access to as many feature as required.<br>In order to get the full access to the system you must belong to every group.<br>Some groups are linked together on the test perimeter and integration perimeter.<br><br><b>Test perimeter :</b><br><br><code class=\\'doc-fixed\\'>TestRO</code>: Has read only access to the information related to test cases and also has access to execution reporting options.<br><br><code class=\\'doc-fixed\\'>Test</code>: Can modify non WORKING test cases but cannot delete test cases.<br><br><code class=\\'doc-fixed\\'>TestAdmin</code>: Can modify or delete any test case (including Pre Testing test cases). Can also create or delete a test.<br><br>The minimum group you need to belong is <code class=\\'doc-fixed\\'>TestRO</code> that will give you access in read only to all test data (including its execution reporting page).<br>If you want to be able to modify the testcases (except the WORKING ones), you need <code class=\\'doc-fixed\\'>Test</code> group on top of <code class=\\'doc-fixed\\'>TestRO</code> group.<br>If you want the full access to all testcase (including beeing able to delete any testcase), you will need <code class=\\'doc-fixed\\'>TestAdmin</code> on top of <code class=\\'doc-fixed\\'>TestRO</code> and <code class=\\'doc-fixed\\'>Test</code> group.<br><br><b>Test Data perimeter :</b><br><br><code class=\\'doc-fixed\\'>TestDataManager</code>: Can modify the test data..<br><br><b>Test Execution perimeter :</b><br><br><code class=\\'doc-fixed\\'>RunTest</code>: Can run both Manual and Automated test cases from GUI.<br><br><b>Integration perimeter :</b><br><br><code class=\\'doc-fixed\\'>IntegratorRO</code>: Has access to the integration status.<br><br><code class=\\'doc-fixed\\'>Integrator</code>: Can add an application. Can change parameters of the environments.<br><br><code class=\\'doc-fixed\\'>IntegratorNewChain</code>: Can register the end of the chain execution. Has read only access to the other informations on the same page.<br><br><code class=\\'doc-fixed\\'>IntegratorDeploy</code>: Can disable or enable environments and register new build / revision.<br><br>The minimum group you need to belong is <code class=\\'doc-fixed\\'>IntegratorRO</code> that will give you access in read only to all environment data.<br>If you want to be able to modify the environment data, you need <code class=\\'doc-fixed\\'>Integrator</code> group on top of <code class=\\'doc-fixed\\'>IntegratorRO</code> group.<br><code class=\\'doc-fixed\\'>IntegratorNewChain</code> and <code class=\\'doc-fixed\\'>IntegratorDeploy</code> are used on top of <code class=\\'doc-fixed\\'>Integrator</code> Group to be able to create a new chain on an environment or perform a deploy operation.<br><br><b>Administration perimeter :</b><br><br><code class=\\'doc-fixed\\'>Administrator</code>: Can create, modify or delete users. Has access to log Event and Database Maintenance. Can change Parameter values.','_user_management')");
         SQLS.append(",('usergroup','GroupName','','fr','Nom du groupe',NULL,'_management_des_utilisateurs')");
-        SQLInstruction.add(SQLS.toString());
-
-        // ADD a parameter for the path to store manual exe files
-        //-- ------------------------ 1276-1277
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `parameter` (`system`,`param`, `value`, `description`) VALUES ");
-        SQLS.append("  ('','cerberus_exemanualmedia_path', '/path/to/exemanualmedia', 'Path to store the Cerberus Media files for Manual executions.')");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `parameter` SET `param`='cerberus_exeautomedia_path', `description`='Path to store the Cerberus Media files for Automatic executions (like Selenium Screenshot or SOAP requests and responses).' WHERE `param`='cerberus_mediastorage_path';");
         SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;

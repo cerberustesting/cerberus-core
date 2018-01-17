@@ -226,6 +226,7 @@ function aoColumnsFunc(tableId) {
             "title": doc.getDocOnline("deploytype", "deploytype")},
         {
             "data": "description",
+            "like":true,
             "sName": "description",
             "sWidth": "50px",
             "title": doc.getDocOnline("deploytype", "description")}

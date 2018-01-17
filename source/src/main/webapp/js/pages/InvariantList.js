@@ -170,6 +170,7 @@ function aoColumnsFuncPublic(tableId) {
         },
         {
             "data": "value",
+            "like":true,
             "sName": "value",
             "sWidth": "60px",
             "title": doc.getDocLabel("page_invariant", "value")
@@ -182,6 +183,7 @@ function aoColumnsFuncPublic(tableId) {
         },
         {
             "data": "description",
+            "like":true,
             "sName": "description",
             "sWidth": "100px",
             "title": doc.getDocLabel("page_invariant", "description")

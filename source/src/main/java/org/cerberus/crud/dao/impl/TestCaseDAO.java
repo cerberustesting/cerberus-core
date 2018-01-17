@@ -1555,7 +1555,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         }
         query.append(searchSQL);
         query.append(" order by ").append(columnName).append(" asc");
-
+        
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());

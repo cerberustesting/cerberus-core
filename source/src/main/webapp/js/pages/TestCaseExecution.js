@@ -160,6 +160,7 @@ function initPage(id) {
 
     $("#editTcInfo").attr("disabled", true);
     $("#runTestCase").attr("disabled", true);
+    $("#rerunTestCase").attr("disabled", true);
     $("#lastExecution").attr("disabled", true);
 
     $("#runOld").click(function () {
@@ -199,7 +200,6 @@ function displayPageLabel(doc) {
     $("#pageTitle").text(doc.getDocLabel("page_executiondetail", "title"));
     $(".alert.alert-warning span").text(doc.getDocLabel("page_global", "beta_message"));
     $(".alert.alert-warning button").text(doc.getDocLabel("page_global", "old_page"));
-    $("#ExecutionByTag").html("<span class='glyphicon glyphicon-tag'></span> " + doc.getDocLabel("page_executiondetail", "see_execution_tag"));
     $("#more").text(doc.getDocLabel("page_executiondetail", "more_detail"));
     $("#testCaseDetails label[for='application']").text(doc.getDocLabel("page_executiondetail", "application"));
     $("#testCaseDetails label[for='browser']").text(doc.getDocLabel("page_executiondetail", "browser"));
@@ -228,13 +228,22 @@ function displayPageLabel(doc) {
     $("#testCaseDetails label[for='version']").text(doc.getDocLabel("page_executiondetail", "version"));
     $("#steps h3").text(doc.getDocLabel("page_executiondetail", "steps"));
     $("#actions h3").text(doc.getDocLabel("page_global", "columnAction"));
+
+    $("#btnGroupDrop1").html(doc.getDocLabel("page_executiondetail", "goto") + " <span class='caret'></span>");
+    $("#lastExecution").html("<span class='glyphicon glyphicon-list'></span> " + doc.getDocLabel("page_executiondetail", "lastexecution"));
+    $("#lastExecutionwithEnvCountry").html("<span class='glyphicon glyphicon-list'></span> " + doc.getDocLabel("page_executiondetail", "lastexecutionwithenvcountry"));
+    $("#ExecutionByTag").html("<span class='glyphicon glyphicon-tag'></span> " + doc.getDocLabel("page_executiondetail", "see_execution_tag"));
+    $("#ExecutionQueue").html("<span class='glyphicon glyphicon-eye-open'></span> " + doc.getDocLabel("page_executiondetail", "see_executionq"));
+    $("#ExecutionQueueByTag").html("<span class='glyphicon glyphicon-list'></span> " + doc.getDocLabel("page_executiondetail", "see_executionq_tag"));
+
+    $("#btnGroupDrop2").html(doc.getDocLabel("page_executiondetail", "run") + " <span class='caret'></span>");
+    $("#runTestCase").html("<span class='glyphicon glyphicon-play'></span> " + doc.getDocLabel("page_executiondetail", "runtc"));
+    $("#rerunTestCase").html("<span class='glyphicon glyphicon-forward'></span> " + doc.getDocLabel("page_executiondetail", "reruntc"));
+    $("#rerunFromQueue").html("<span class='glyphicon glyphicon-forward'></span> " + doc.getDocLabel("page_executiondetail", "reruntcqueue"));
     $("#editTcInfo").html("<span class='glyphicon glyphicon-new-window'></span> " + doc.getDocLabel("page_executiondetail", "edittc"));
-    $("#editTcHeader").html("<span class='glyphicon glyphicon-pencil'></span> " + doc.getDocLabel("page_testcaselist", "btn_edit"));
+    $("#editTcHeader").html("<span class='glyphicon glyphicon-pencil'></span> " + doc.getDocLabel("page_executiondetail", "edittch"));
     $("#editTcStepInfo").html("<span class='glyphicon glyphicon-new-window'></span> " + doc.getDocLabel("page_executiondetail", "edittcstep"));
-    $("#runTestCase").html("<span class='glyphicon glyphicon-forward'></span> " + doc.getDocLabel("page_executiondetail", "runtc"));
     $("#saveTestCaseExecution").html("<span class='glyphicon glyphicon-save'></span> " + doc.getDocLabel("page_executiondetail", "save"));
-    $("#lastExecution").html("<span class='glyphicon glyphicon-backward'></span> " + doc.getDocLabel("page_executiondetail", "lastexecution"));
-    $("#lastExecutionwithEnvCountry").html("<span class='glyphicon glyphicon-backward'></span> " + doc.getDocLabel("page_executiondetail", "lastexecutionwithenvcountry"));
 }
 
 function updatePage(data, stepList) {
@@ -246,41 +255,51 @@ function updatePage(data, stepList) {
         $("#editTcInfo").attr("disabled", true);
         $("#editTcInfo").attr("href", "#");
         $("#editTcStepInfo").attr("disabled", true);
-        $("#editTcStepInfo").attr("href", "#");
-        $("#editTcToggleButton").unbind("click");
+        $("#editTcStepInfo").parent().attr("href", "#");
+        $("#btnGroupDrop4").unbind("click");
         $("#runTestCase").attr("disabled", true);
-        $("#runTestCase").attr("href", "#");
+        $("#runTestCase").parent().attr("href", "#");
+        $("#rerunTestCase").attr("disabled", true);
+        $("#rerunTestCase").parent().attr("href", "#");
     } else {
         $("#editTcInfo").attr("disabled", false);
         $("#editTcInfo").attr("href", "TestCaseScript.jsp?test=" + data.test + "&testcase=" + data.testcase);
         $("#editTcStepInfo").attr("disabled", false);
-        $("#editTcStepInfo").attr("href", "TestCaseScript.jsp?test=" + data.test + "&testcase=" + data.testcase);
-        $("#editTcToggleButton").click(function () {
+        $("#editTcStepInfo").parent().attr("href", "TestCaseScript.jsp?test=" + data.test + "&testcase=" + data.testcase);
+        $("#btnGroupDrop4").click(function () {
             setLinkOnEditTCStepInfoButton();
         });
 
-        $("#runTestCase").attr("disabled", false);	
-        $("#runTestCase").attr("href", "RunTests.jsp?test=" + data.test + "&testcase=" + data.testcase + "&country=" + data.country + "&environment=" + data.environment + "&browser=" + data.browser + "&tag=" + data.tag);
+        $("#runTestCase").attr("disabled", false);
+        $("#runTestCase").parent().attr("href", "RunTests.jsp?test=" + data.test + "&testcase=" + data.testcase);
+        $("#rerunTestCase").attr("disabled", false);
+        $("#rerunTestCase").parent().attr("href", "RunTests.jsp?test=" + data.test + "&testcase=" + data.testcase + "&country=" + data.country + "&environment=" + data.environment + "&browser=" + data.browser + "&tag=" + data.tag);
     }
 
     $("#lastExecution").attr("disabled", false);
-    $("#lastExecution").attr("href", "TestCaseExecutionList.jsp?test=" + data.test + "&testcase=" + data.testcase);
-
-    $("#ExecutionQueueByTag").attr("href", "TestCaseExecutionQueueList.jsp?tag=" + data.tag);
-
-    $("#ExecutionByTag").attr("href", "ReportingExecutionByTag.jsp?Tag=" + data.tag);
-    $("#lastExecutionwithEnvCountry").attr("href", "TestCaseExecutionList.jsp?test=" + data.test + "&testcase=" + data.testcase + "&country=" + data.country + "&environment=" + data.environment + "&application=" + data.application);
+    $("#lastExecution").parent().attr("href", "TestCaseExecutionList.jsp?test=" + data.test + "&testcase=" + data.testcase);
+    $("#lastExecutionwithEnvCountry").attr("disabled", false);
+    $("#lastExecutionwithEnvCountry").parent().attr("href", "TestCaseExecutionList.jsp?test=" + data.test + "&testcase=" + data.testcase + "&country=" + data.country + "&environment=" + data.environment + "&application=" + data.application);
+    if (!isEmpty(data.tag)) {
+        $("#ExecutionByTag").parent().attr("href", "ReportingExecutionByTag.jsp?Tag=" + data.tag);
+        $("#ExecutionQueueByTag").parent().attr("href", "TestCaseExecutionQueueList.jsp?tag=" + data.tag);
+    } else {
+        $("#ExecutionByTag").attr("disabled", true);
+        $("#ExecutionQueueByTag").attr("disabled", true);
+    }
 
     if (isEmpty(data.queueId) || (data.queueId === 0)) {
         $("#ExecutionQueue").attr("disabled", "disabled");
-        $("#ExecutionQueueDup").attr("disabled", "disabled");
         $("#ExecutionQueue").unbind("click");
-        $("#ExecutionQueueDup").unbind("click");
+        $("#rerunFromQueue").attr("disabled", "disabled");
+        $("#rerunFromQueue").unbind("click");
     } else {
+        $("#ExecutionQueue").attr("disabled", false);
         $("#ExecutionQueue").click(function () {
             openModalTestCaseExecutionQueue(data.queueId, 'EDIT');
         });
-        $("#ExecutionQueueDup").click(function () {
+        $("#rerunFromQueue").attr("disabled", false);
+        $("#rerunFromQueue").click(function () {
             openModalTestCaseExecutionQueue(data.queueId, 'DUPLICATE');
         });
     }
@@ -343,6 +362,7 @@ function updatePage(data, stepList) {
 function setConfigPanel(data) {
 
     var configPanel = $("#testCaseConfig");
+    $("[name='Separator']").text(" - ");
     configPanel.find("#idlabel").text(data.id);
     configPanel.find("#test").text(data.test);
     configPanel.find("#testcase").text(data.testcase);
@@ -409,7 +429,8 @@ function removeColorClass(element) {
  * @returns {undefined}
  */
 function showSaveTestCaseExecutionButton() {
-    $("#saveTestCaseExecution").css("display", "inherit");
+    $("#saveTestCaseExecution").attr("disabled", false);
+
 }
 /*
  * 
@@ -418,17 +439,15 @@ function showSaveTestCaseExecutionButton() {
  * @returns {undefined}
  */
 function setUpClickFunctionToSaveTestCaseExecutionButton(data) {
-    if ($("#saveTestCaseExecution").is(":visible")) {
-        $("#saveTestCaseExecution").click(function () {
-            saveExecution(data);
-        });
-    }
+    $("#saveTestCaseExecution").click(function () {
+        saveExecution(data);
+    });
 }
 
 
 function setLinkOnEditTCStepInfoButton() {
     var currentStep = $('#stepInfo');
-    $("#editTcStepInfo").attr("href", "TestCaseScript.jsp?test=" + currentStep.attr('test') + "&testcase=" + currentStep.attr('testcase') + "&step=" + currentStep.attr('step'));
+    $("#editTcStepInfo").parent().attr("href", "TestCaseScript.jsp?test=" + currentStep.attr('test') + "&testcase=" + currentStep.attr('testcase') + "&step=" + currentStep.attr('step'));
 }
 
 function setLoadBar(data) {
@@ -913,7 +932,7 @@ function createStepList(data, stepList) {
 
 function Step(json, stepList, id) {
     this.stepActionContainer = $("<div></div>").addClass("list-group").css("display", "none");
-    
+
     this.description = json.description;
     this.end = json.end;
     this.fullEnd = json.fullEnd;
@@ -1410,12 +1429,12 @@ Action.prototype.generateHeader = function (id) {
 
         var buttonFA = $($("<button>").addClass("btn btn-warning btn-inverse").attr("type", "button").text("FA"));
         var buttonOK = $($("<button>").addClass("btn btn-success btn-inverse").attr("type", "button").text("OK"));
-        
+
         //var buttonUpload = $($("<button>").addClass("btn btn-info btn-inverse").attr("type", "button").text("UPLOAD"));
         //buttonUpload.click(function(event){
         //})
-        
-        
+
+
         buttonOK.click(function (event) {
             event.preventDefault();
             event.stopPropagation();
