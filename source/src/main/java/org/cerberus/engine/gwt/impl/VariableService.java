@@ -227,6 +227,7 @@ public class VariableService implements IVariableService {
         stringToDecode = stringToDecode.replace("%SYS_COUNTRYGP9%", tCExecution.getCountryObj().getGp9());
         stringToDecode = stringToDecode.replace("%SYS_TEST%", tCExecution.getTest());
         stringToDecode = stringToDecode.replace("%SYS_TESTCASE%", tCExecution.getTestCase());
+        stringToDecode = stringToDecode.replace("%SYS_TESTCASEDESCRIPTION%", tCExecution.getDescription());
         stringToDecode = stringToDecode.replace("%SYS_SSIP%", tCExecution.getSeleniumIP());
         stringToDecode = stringToDecode.replace("%SYS_SSPORT%", tCExecution.getSeleniumPort());
         stringToDecode = stringToDecode.replace("%SYS_TAG%", tCExecution.getTag());
@@ -259,6 +260,7 @@ public class VariableService implements IVariableService {
         stringToDecode = stringToDecode.replace("%system.COUNTRYGP9%", tCExecution.getCountryObj().getGp9());
         stringToDecode = stringToDecode.replace("%system.TEST%", tCExecution.getTest());
         stringToDecode = stringToDecode.replace("%system.TESTCASE%", tCExecution.getTestCase());
+        stringToDecode = stringToDecode.replace("%system.TESTCASEDESCRIPTION%", tCExecution.getDescription());
         stringToDecode = stringToDecode.replace("%system.SSIP%", tCExecution.getSeleniumIP());
         stringToDecode = stringToDecode.replace("%system.SSPORT%", tCExecution.getSeleniumPort());
         stringToDecode = stringToDecode.replace("%system.TAG%", tCExecution.getTag());

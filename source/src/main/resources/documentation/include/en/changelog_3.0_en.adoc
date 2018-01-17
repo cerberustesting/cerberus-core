@@ -21,6 +21,8 @@
 * [GUI] Protecting password display from the GUI. Robot password and parameter password are no longuer displayed in GUI.
 * [GUI] When resubmit an execution to the queue, the popup message allow now to get to the execution page to see the result directly. Execution page will report the nb of execution in the queue before the current entry (in order to feedback the user how long to wait).
 * [GUI] Battery has been moved to label that have now 3 types available : STICKER (same as before), BATTERY (correspond to former battery) and REQUIREMENT (will be used in order to sort and identify requirements).
+* [ENGINE] Control 'verifyRegexInElement' is now supported for application type SRV.
+* [ENGINE] Variable %System.TESTCASEDESCRIPTION% is now available.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

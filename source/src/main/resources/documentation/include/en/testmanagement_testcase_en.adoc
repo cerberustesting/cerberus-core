@@ -275,6 +275,7 @@ Below you will find useful properties :
 | %system.COUNTRYGP9% |	Country group9 value
 | %system.TEST% |	Test.
 | %system.TESTCASE% |	TestCase
+| %system.TESTCASEDESCRIPTION% |	TestCaseDescription
 | %system.SSIP% |	Selenium server IP
 | %system.SSPORT% |	Selenium server port
 | %system.TAG% |	Execution tag
