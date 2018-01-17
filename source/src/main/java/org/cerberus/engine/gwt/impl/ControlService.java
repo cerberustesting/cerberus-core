@@ -1095,6 +1095,7 @@ public class ControlService implements IControlService {
                             }
                             String newPath = StringUtil.addSuffixIfNotAlready(path, "/text()");
                             pathContent = xmlUnitService.getFromXml(responseBody, newPath);
+                            break;
 
                         case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON:
                             try {
@@ -1104,6 +1105,7 @@ public class ControlService implements IControlService {
                                 mes.setDescription(mes.getDescription().replace("%ERROR%", ex.toString()));
                                 return mes;
                             }
+                            break;
 
                         default:
                             mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_MESSAGETYPE);
