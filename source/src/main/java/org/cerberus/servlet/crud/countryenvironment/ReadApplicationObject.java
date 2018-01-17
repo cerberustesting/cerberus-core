@@ -342,6 +342,17 @@ public class ReadApplicationObject extends HttpServlet {
 
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
         String columnName = ParameterParserUtil.parseStringParam(request.getParameter("columnName"), "");
+        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "tec.test,tec.testcase,application,project,ticket,description,behaviororvalueexpected,readonly,bugtrackernewurl,deploytype,mavengroupid");
+        String columnToSort[] = sColumns.split(",");
+        
+        individualSearch = new HashMap<>();
+        for (int a = 0; a < columnToSort.length; a++) {
+            if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
+                List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
+                individualSearch.put(columnToSort[a], search);
+            }
+            
+        }
                 
         values = applicationObjectService.readDistinctValuesByCriteria(searchParameter, individualSearch, columnName);
 
