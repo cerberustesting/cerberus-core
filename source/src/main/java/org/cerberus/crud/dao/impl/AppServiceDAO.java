@@ -240,6 +240,7 @@ public class AppServiceDAO implements IAppServiceDAO {
         }
 
         query.append(searchSQL);
+        
 
         if (!StringUtil.isNullOrEmpty(column)) {
             query.append(" order by ").append(column).append(" ").append(dir);
@@ -462,12 +463,13 @@ public class AppServiceDAO implements IAppServiceDAO {
         if (individualSearch != null && !individualSearch.isEmpty()) {
             searchSQL.append(" and ( 1=1 ");
             for (Map.Entry<String, List<String>> entry : individualSearch.entrySet()) {
-                searchSQL.append(" and srv.");
+                searchSQL.append(" and ");
                 searchSQL.append(SqlUtil.getInSQLClauseForPreparedStatement(entry.getKey(), entry.getValue()));
                 individalColumnSearchValues.addAll(entry.getValue());
             }
             searchSQL.append(" )");
         }
+        
         query.append(searchSQL);
         query.append(" group by ifnull(").append(columnName).append(",'')");
         query.append(" order by ").append(columnName).append(" asc");
