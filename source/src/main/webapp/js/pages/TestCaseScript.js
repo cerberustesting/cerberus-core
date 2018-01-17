@@ -212,7 +212,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
                             "ENV", "ENVGP",
                             "COUNTRY", "COUNTRYGP1", "COUNTRYGP2", "COUNTRYGP3", "COUNTRYGP4", "COUNTRYGP5", "COUNTRYGP6", "COUNTRYGP7", "COUNTRYGP8", "COUNTRYGP9",
                             "TEST",
-                            "TESTCASE",
+                            "TESTCASE","TESTCASEDESCRIPTION",
                             "SSIP", "SSPORT",
                             "TAG",
                             "EXECUTIONID",
