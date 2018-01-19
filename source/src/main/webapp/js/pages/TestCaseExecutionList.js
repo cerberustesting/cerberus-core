@@ -95,7 +95,7 @@ function aoColumnsFunc() {
             "mRender": function (data, type, obj) {
                 var buttons = "";
 
-                var viewExecution = '<button id="viewExecution" onclick="window.location = \'./TestCaseExecution.jsp?executionId=' + obj.id + '\';"\n\
+                var viewExecution = '<button id="viewExecution" onclick="window.location = \'./TestCaseExecution.jsp?executionId=' + obj.id + "&manual="+obj.manualExecution + '\';"\n\
                                 class="btn btn-primary btn-xs margin-right25" \n\
                                 data-toggle="tooltip"  title="' + doc.getDocLabel("page_executiondetail", "viewExecution") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-eye-open"></span></button>';
@@ -136,7 +136,7 @@ function aoColumnsFunc() {
             "sClass": "center",
             "mRender": function (data, type, obj) {
                 if (obj !== "") {
-                    var executionLink = "./TestCaseExecution.jsp?executionId=" + obj.id;
+                    var executionLink = "./TestCaseExecution.jsp?executionId=" + obj.id + "&manual=" +obj.manualExecution;
                     var glyphClass = getRowClass(obj.controlStatus);
                     var tooltip = generateTooltip(obj);
                     var cell = '<a href="' + executionLink + '"><div class="progress-bar status' + obj.controlStatus + '" \n\

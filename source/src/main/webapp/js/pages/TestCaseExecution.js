@@ -26,7 +26,8 @@ $.when($.getScript("js/global/global.js")).then(function () {
         displayPageLabel(doc);
 
         var executionId = GetURLParameter("executionId");
-        var executionQueueId = GetURLParameter("executionQueueId");
+        var executionQueueId = GetURLParameter("executionQueueId"); 
+        
         if (isEmpty(executionId)) {
             // executionId parameter is not feed so we probably want to see the queue status.
             $("#TestCaseButton").hide();
@@ -306,7 +307,7 @@ function updatePage(data, stepList) {
 
     // Adding all media attached to execution.
     var fileContainer = $("#testCaseConfig #tcFileContentField");
-    addFileLink(data.fileList, fileContainer);
+    addFileLink(data.fileList, fileContainer,GetURLParameter("manual"));
 
     var myURL = $("#bugID").data("appBugURL");
     if (myURL === undefined) {
@@ -625,7 +626,7 @@ function drawProperty(property, table) {
     // Starting to reduce the size of the row by the length of elements.
     $(row).find("#contentField").removeClass("col-sm-10").addClass("col-sm-" + (10 - property.fileList.length));
     // Adding all media attached to action execution.
-    addFileLink(property.fileList, $(row).find("#contentRow"));
+    addFileLink(property.fileList, $(row).find("#contentRow"),GetURLParameter("manual"));
 
     htmlElement.prepend(button);
     htmlElement.prepend(row);
@@ -966,6 +967,7 @@ function Step(json, stepList, id) {
     this.toDelete = false;
 
     this.html = $("<a href='#'></a>").addClass("list-group-item row").css("margin-left", "0px").css("margin-right", "0px");
+    $(this.html).data("index", this.sort-1)
     if (this.test === "Pre Testing") {
         var stepDesc = "[PRE]  " + this.description + "  (" + this.timeElapsed + ")";
     } else {
@@ -1286,6 +1288,7 @@ function Action(json, parentStep) {
     }
 
     this.toDelete = false;
+    $(this.html).data("index",this.sort-1)
 }
 
 Action.prototype.draw = function (idMotherStep, id) {
@@ -1341,7 +1344,7 @@ Action.prototype.draw = function (idMotherStep, id) {
     // Starting to reduce the size of the row by the length of elements.
     $(header).find("#contentField").removeClass("col-xs-12").addClass("col-xs-" + (12 - this.fileList.length));
     // Adding all media attached to action execution.
-    addFileLink(this.fileList, $(header).find(".row"));
+    addFileLink(this.fileList, $(header).find(".row"),GetURLParameter("manual"));
 
     htmlElement.click(function () {
         if ($(this).find(".glyphicon-chevron-down").length > 0) {
@@ -1430,24 +1433,36 @@ Action.prototype.generateHeader = function (id) {
         var buttonFA = $($("<button>").addClass("btn btn-warning btn-inverse").attr("type", "button").text("FA"));
         var buttonOK = $($("<button>").addClass("btn btn-success btn-inverse").attr("type", "button").text("OK"));
 
-        //var buttonUpload = $($("<button>").addClass("btn btn-info btn-inverse").attr("type", "button").text("UPLOAD"));
-        //buttonUpload.click(function(event){
-        //})
+        var buttonUpload = $($("<button>").addClass("btn btn-info btn-inverse").attr("type", "button").text("UPLOAD"));
+        buttonUpload.click(function(event){
+        	var indexStep = $("#nav-execution").find(".active").data("index");
+        	var indexAction = $(this).parents("a").data('index')
+        	var currentActionOrControl = getScriptInformationOfStep()[indexStep]["actionArr"][indexAction]
+        	var idex = $("#idlabel").text()
+        	openModalManualFile(true,currentActionOrControl, "ADD", idex)
+        	event.preventDefault()
+        	event.stopPropagation()
+        })
 
 
         buttonOK.click(function (event) {
             event.preventDefault();
             event.stopPropagation();
             triggerActionExecution(this, id, "OK");
-            //$(this).parent().parent().find(buttonUpload).remove()
+            $(this).parent().parent().find(buttonUpload).remove()
+            $(this).parent().parent().find(".col-sm-10").removeClass("col-sm-10").addClass("col-sm-8")
+            $(this).parent().parent().append(buttonUpload)
+            $(buttonUpload).css("float","right")
+
         });
         buttonFA.click(function (event) {
             event.preventDefault();
             event.stopPropagation();
             triggerActionExecution(this, id, "FA");
-            //$(this).parent().parent().find(".col-sm-10").removeClass("col-sm-10").addClass("col-sm-8")
-            //$(this).parent().parent().append(buttonUpload)
-            //$(buttonUpload).css("float","right")
+            $(this).parent().parent().find(buttonUpload).remove()
+            $(this).parent().parent().find(".col-sm-10").removeClass("col-sm-10").addClass("col-sm-8")
+            $(this).parent().parent().append(buttonUpload)
+            $(buttonUpload).css("float","right")
 
         });
 
@@ -1997,7 +2012,7 @@ Control.prototype.draw = function (idMotherStep, idMotherAction, idControl) {
     // Starting to reduce the size of the row by the length of elements.
     $(header).find("#contentField").removeClass("col-xs-12").addClass("col-xs-" + (12 - this.fileList.length));
     // Adding all media attached to control execution.
-    addFileLink(this.fileList, $(header).find(".row"));
+    addFileLink(this.fileList, $(header).find(".row"),GetURLParameter("manual"));
 
     $(this.parentAction.html).parent().append(htmlElement);
     $(this.parentAction.html).parent().append(content);
@@ -2293,11 +2308,13 @@ Control.prototype.getJsonData = function () {
 };
 
 // Function in order to add the Media files links into TestCase, step, action and control level.
-function addFileLink(fileList, container) {
+function addFileLink(fileList, container,auto) {
+	auto = auto == "Y" ? false:true;
+	
     $(container).find($("div[name='mediaMiniature']")).remove();
     for (var i = 0; i < fileList.length; i++) {
         if ((fileList[i].fileType === "JPG") || (fileList[i].fileType === "PNG")) {
-            var urlImage = "ReadTestCaseExecutionMedia?filename=" + fileList[i].fileName + "&filetype=" + fileList[i].fileType + "&filedesc=" + fileList[i].fileDesc;
+            var urlImage = "ReadTestCaseExecutionMedia?filename=" + fileList[i].fileName + "&filetype=" + fileList[i].fileType + "&filedesc=" + fileList[i].fileDesc + "&auto=" + auto;
             var fileDesc = fileList[i].fileDesc;
             var linkBox = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px")
                     .append(fileList[i].fileDesc).append($("<img>").attr("src", urlImage + "&h=30&w=60").css("max-height", "30px").css("max-width", "60px")
@@ -2308,21 +2325,21 @@ function addFileLink(fileList, container) {
             container.append(linkBox);
         } else if ((fileList[i].fileType === "HTML") || (fileList[i].fileType === "JSON") || (fileList[i].fileType === "TXT") || (fileList[i].fileType === "XML")) {
             var j = i;
-            var urlImagetxt = "ReadTestCaseExecutionMedia?filename=" + fileList[i].fileName + "&filetype=" + fileList[i].fileType + "&filedesc=" + fileList[i].fileDesc;
+            var urlImagetxt = "ReadTestCaseExecutionMedia?filename=" + fileList[i].fileName + "&filetype=" + fileList[i].fileType + "&filedesc=" + fileList[i].fileDesc + "&auto=" + auto;;
             var fileDesctxt = fileList[i].fileDesc;
             var filetypetxt = fileList[i].fileType.toLowerCase();
             if (i === 0) {
                 var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px")
                         .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
                         .css("height", "30px").click(function (f) {
-                    showTextArea(fileList[0].fileDesc, "", "ReadTestCaseExecutionMedia?filename=" + fileList[0].fileName + "&filetype=" + fileList[0].fileType + "&filedesc=" + fileList[0].fileDesc);
+                    showTextArea(fileList[0].fileDesc, "", "ReadTestCaseExecutionMedia?filename=" + fileList[0].fileName + "&filetype=" + fileList[0].fileType + "&filedesc=" + fileList[0].fileDesc + "&auto=" + auto);
                     return false;
                 }));
             } else if (i === 1) {
                 var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px")
                         .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
                         .css("height", "30px").click(function (f) {
-                    showTextArea(fileList[1].fileDesc, "", "ReadTestCaseExecutionMedia?filename=" + fileList[1].fileName + "&filetype=" + fileList[1].fileType + "&filedesc=" + fileList[1].fileDesc);
+                    showTextArea(fileList[1].fileDesc, "", "ReadTestCaseExecutionMedia?filename=" + fileList[1].fileName + "&filetype=" + fileList[1].fileType + "&filedesc=" + fileList[1].fileDesc + "&auto=" + auto);
                     return false;
                 }));
             } else if (i === 2) {

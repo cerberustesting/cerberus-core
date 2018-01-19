@@ -185,8 +185,8 @@ function clearIndividualFilterForClientSide(tableId, columnNumber, clearGlobalSe
  * @returns {undefined}
  */
 var columnSearchValuesForClientSide = [];//global var that take the role of the ajax function
-function displayColumnSearchForClientSideTable(tableData, tableId, oSettings) {
-    privateDisplayColumnSearch(tableId, null, oSettings,true); // table data not use ?
+function displayColumnSearchForClientSideTable(tableData, contentUrl, oSettings) {
+    privateDisplayColumnSearch(tableId, contentUrl, oSettings,true); // table data not use ?
 }
 
 /**
@@ -355,11 +355,24 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
         	                var url = './' + contentUrl + urlSeparator + 'columnName=' + title;
         	                var result;
         	                
+        	                var params = table.ajax.params()  
+        	                
+							var like = ""
+								
+							$.each(oSettings.aoColumns, function(index,value){
+								if(oSettings.aoColumns[index].like){
+									like += oSettings.aoColumns[index].sName + ","
+								}
+							})
+							
+							like = like.substring(0, like.length-1);
+        	                params["sLike"] = like
+        	                
         	                $.ajax({
         	                    type: 'POST',
         	                    async: false,
         	                    url: url,
-        	                    data: table.ajax.params(),
+        	                    data: params,
         	                    success: function (responseObject) {
         	                        if (responseObject.distinctValues !== undefined) {
         	                            result = responseObject.distinctValues;

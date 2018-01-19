@@ -1,0 +1,84 @@
+<!--addApplicationObject custom css-->
+<link rel="stylesheet" type="text/css"
+	href="css/pages/ApplicationObject.css">
+<!--Add an applicationObject -->
+<div data-backdrop="static" class="modal fade center"
+	id="editManualFileModal" tabindex="-1" role="dialog"
+	aria-labelledby="editManualFileModalLabel" aria-hidden="true">
+	<div class="modal-dialog nomargintop nomarginbottom modal-md">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"
+					aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<h4 class="modal-title" id="editEntryModalLabel"
+					name="editManualFileField">Create Manual Execution File</h4>
+			</div>
+			<div class="modal-body">
+
+				<!--add form-->
+				<form id="editManualFileModalForm"
+					name="editManualModalForm"
+					title="Edit Manual Execution File" role="form">
+					<div class="container-fluid center">
+						<!-- messages area-->
+						<div id="DialogMessagesArea">
+							<div class="alert" id="DialogMessagesAlert"
+								style="display: none;">
+								<strong><span class="alert-description"
+									id="DialogAlertDescription"></span></strong>
+								<button type="button" class="close" data-hide="alert"
+									aria-hidden="true">
+									<span
+										class="glyphicon glyphicon-remove alert-right alert-close pull-right"></span>
+								</button>
+							</div>
+						</div>
+						<div class="row">
+							<div class="form-group col-xs-12">
+								<label for="type" name="typeField">Type de fichier</label>
+								<select class="form-control" name="type" id="type"
+									aria-describedby="basic-editon1" maxlength="200"></select>
+							</div>
+						</div>
+						<div class="row">
+							<div class="form-group col-xs-12">
+								<label for="desc" name="descField">Description</label> 
+								<textarea class="form-control" name="desc" maxlength="150" rows="3" id="desc"></textarea>
+							</div>
+						</div>
+						<div class="row">
+							<div class="form-group col-xs-12">
+								<!-- Drop Zone -->
+								<label for="filenameLabel"
+									name="filenameField">Screenshot File</label> <label
+									for="inputFile" id="dropzone" class="upload-drop-zone">
+									<h3 id="dropzoneText">
+										Drag and drop Files <span
+											class="glyphicon glyphicon-download-alt"></span>
+									</h3> <label for="inputFile" class="btn btn-primary browseFile">Browse
+										Files </label>
+								</label> <input type="file" name="filename" id="inputFile"
+									class="hidden" />
+								<div class="text-muted" id="DropzoneClipboardPasteMessage">
+									<kbd>Ctrl+v</kbd>
+									to paste it from your clipboard
+								</div>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal"
+					name="buttonClose">Close</button>
+				<button type="button" id="editManualFileButton"
+					class="btn btn-primary" name="buttonEdit">Save</button>
+				<button type="button" id="addManualFileButton"
+					class="btn btn-primary" name="buttonAdd">Add</button>
+			</div>
+		</div>
+	</div>
+</div>

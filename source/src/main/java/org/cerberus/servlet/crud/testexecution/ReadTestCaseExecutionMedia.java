@@ -78,7 +78,7 @@ public class ReadTestCaseExecutionMedia extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, CerberusException {
         String charset = request.getCharacterEncoding();
-
+        boolean auto = ParameterParserUtil.parseBooleanParam(request.getParameter("auto"), true);
         String type = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("type"), "", charset);
         String test = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("test"), "", charset);
         String testcase = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("testcase"), "", charset);
@@ -154,7 +154,13 @@ public class ReadTestCaseExecutionMedia extends HttpServlet {
         }
 
         if (tceFile != null) {
-            String pathString = parameterService.getParameterStringByKey("cerberus_exeautomedia_path", "", "");
+        	String pathString = "";
+        	if(auto) {
+        		pathString = parameterService.getParameterStringByKey("cerberus_exeautomedia_path", "", "");
+        	}else {
+        		pathString = parameterService.getParameterStringByKey("cerberus_exemanualmedia_path", "", "");
+        	}
+            
             switch (tceFile.getFileType()) {
                 case "JPG":
                 case "JPEG":
