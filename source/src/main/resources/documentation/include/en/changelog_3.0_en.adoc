@@ -23,6 +23,9 @@
 * [GUI] Battery has been moved to label that have now 3 types available : STICKER (same as before), BATTERY (correspond to former battery) and REQUIREMENT (will be used in order to sort and identify requirements).
 * [ENGINE] Control 'verifyRegexInElement' is now supported for application type SRV.
 * [ENGINE] Variable %System.TESTCASEDESCRIPTION% is now available.
+* [ENGINE] For FAT applications, application is automatically closed at the end of the execution.
+* [GUI] For Execution and TestCase screen, contextual buttons has been harmonized.
+* [GUI] Improved filter performances by removing distinct feature on id, timestamps and descriptions.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
