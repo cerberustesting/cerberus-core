@@ -1,7 +1,7 @@
 # Cerberus 
 
 [![Build Status](https://travis-ci.org/cerberustesting/cerberus-source.svg?branch=master)](//travis-ci.org/cerberustesting/cerberus-source)
-[![Test Status](http://demo.cerberus-testing.org:28081/Cerberus/ResultCIV002?tag=CerberusTesting-1.1.12&outputFormat=svg)](http://demo.cerberus-testing.org:28081/Cerberus/ReportingExecutionByTag.jsp?Tag=CerberusTesting-1.1.12)
+[![Test Status](http://vm.cerberus-testing.org:28082/CerberusPROD/ResultCIV002?tag=Cerberus.180119-033001&outputFormat=svg)](http://vm.cerberus-testing.org:28082/CerberusPROD/ResultCIV002?tag=Cerberus.180119-033001&outputFormat=svg)
 
 User-friendly automated testing framework.
 
