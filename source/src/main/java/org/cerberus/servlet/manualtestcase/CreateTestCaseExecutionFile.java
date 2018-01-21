@@ -71,7 +71,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  *
- * @author bcivel
+ * @author ryltar
  */
 @WebServlet(name = "CreateTestCaseExecutionFile", urlPatterns = {"/CreateTestCaseExecutionFile"})
 public class CreateTestCaseExecutionFile extends HttpServlet {
@@ -154,7 +154,6 @@ public class CreateTestCaseExecutionFile extends HttpServlet {
         	TestCaseStepActionExecution testCaseStepActionExecution = null;
         	TestCaseStepActionControlExecution testCaseStepActionControlExecution = null;
         	JSONArray obj = null;
-        	//recorderService.recordManuallyFile(testCaseStepActionExecution, testCaseStepActionControlExecution, extension, description, file);
         	if (action) {
                 obj = new JSONArray(fileData.get("action"));
                 testCaseStepActionExecution = updateTestCaseStepActionExecutionFromJsonArray(obj, appContext);

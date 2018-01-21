@@ -20,7 +20,7 @@
 
 var imagePasteFromClipboard = undefined;//stock the picture if the user chose to upload it from his clipboard
 
-function openModalManualFile(action,manualFile,mode,idex){
+function openModalManualFile(action,manualFile,mode,idex,file){
 	
 	if ($('#editManualFileModal').data("initLabel") === undefined){	
 		initModalManualFile()
@@ -28,9 +28,9 @@ function openModalManualFile(action,manualFile,mode,idex){
 	}
 	
 	if (mode === "EDIT"){
-		editManualFileClick(action,manualFile);
+		editManualFileClick(file);
 	}else if (mode == "ADD"){
-		addManualFileClick(action,manualFile);
+		addManualFileClick(file);
 	}
 	
 	$("#editManualFileButton").off("click");
@@ -121,12 +121,13 @@ function confirmManualFileModalHandler(action,manualFile, mode, idex) {
             formData.append("file",file.prop("files")[0]);
         };
         
-        if(action){
-        	var temp = [];
-        	temp.push(manualFile)
+        var temp = [];
+    	temp.push(manualFile)
+        
+        if(action){       	
         	formData.append("action",JSON.stringify(temp))
         }else{
-        	
+        	formData.append("control",JSON.stringify(temp))
         }
         formData.append("idex",idex)
     }
@@ -154,7 +155,6 @@ function confirmManualFileModalHandler(action,manualFile, mode, idex) {
 		success : function(data) {
 			// data = JSON.parse(data);
 			if (getAlertType(data.messageType) === "success") {
-				
 				$('#editManualFileModal').data("Saved", true);
 				$('#editManualFileModal').modal('hide');
 				showMessage(data);			
@@ -177,8 +177,9 @@ function feedManualFileModal(manualFile, modalId, mode) {
 	var formEdit = $('#' + modalId);
 
 	if (mode === "EDIT") {
-		
-
+		var hasPermissions = true;
+		feedManualFileModalData(manualFile, modalId, mode, hasPermissions);
+		formEdit.modal('show');
 	} else {
 		var manualFile1 = {};
 		manualFile1.type = "";
@@ -217,23 +218,16 @@ function feedManualFileModalData(manualFile, modalId, mode, hasPermissionsUpdate
 		formEdit.find("#inputFile").val("Drag and drop Files");
 		
 	} else{
-		if(manualFile.type === undefined){
-			formEdit.find("#type")[0].selectedIndex = 0;
-		}else{
-			formEdit.find("#type").val(manualFile.type);
-		}
+		formEdit.find("#type").val(manualFile.fileType);
+		formEdit.find("#desc").prop("value", manualFile.fileDesc);
 		
-		
-		if(manualFile.filename == ""){
+		if(manualFile.fileName == ""){
 			updateDropzone("Drag and drop Files","#" + modalId);
 		}else{
-			updateDropzone(manualFile.filename,"#" + modalId);
+			updateDropzone(manualFile.fileName,"#" + modalId);
 		}
-		
-		formEdit.find("#desc").prop("value", manualFile.desc);
-		
-		
 	}
+		
 	
 	if (isEditable) { // If readonly, we readonly all fields
 		formEdit.find("#type").prop("readonly", false);

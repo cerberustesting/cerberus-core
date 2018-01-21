@@ -307,7 +307,7 @@ function updatePage(data, stepList) {
 
     // Adding all media attached to execution.
     var fileContainer = $("#testCaseConfig #tcFileContentField");
-    addFileLink(data.fileList, fileContainer,GetURLParameter("manual"));
+    addFileLink(data.fileList, fileContainer, isTheExecutionManual);
 
     var myURL = $("#bugID").data("appBugURL");
     if (myURL === undefined) {
@@ -626,7 +626,7 @@ function drawProperty(property, table) {
     // Starting to reduce the size of the row by the length of elements.
     $(row).find("#contentField").removeClass("col-sm-10").addClass("col-sm-" + (10 - property.fileList.length));
     // Adding all media attached to action execution.
-    addFileLink(property.fileList, $(row).find("#contentRow"),GetURLParameter("manual"));
+    addFileLink(property.fileList, $(row).find("#contentRow"),isTheExecutionManual);
 
     htmlElement.prepend(button);
     htmlElement.prepend(row);
@@ -933,7 +933,6 @@ function createStepList(data, stepList) {
 
 function Step(json, stepList, id) {
     this.stepActionContainer = $("<div></div>").addClass("list-group").css("display", "none");
-
     this.description = json.description;
     this.end = json.end;
     this.fullEnd = json.fullEnd;
@@ -967,7 +966,7 @@ function Step(json, stepList, id) {
     this.toDelete = false;
 
     this.html = $("<a href='#'></a>").addClass("list-group-item row").css("margin-left", "0px").css("margin-right", "0px");
-    $(this.html).data("index", this.sort-1)
+    $(this.html).data("index", id)
     if (this.test === "Pre Testing") {
         var stepDesc = "[PRE]  " + this.description + "  (" + this.timeElapsed + ")";
     } else {
@@ -1344,8 +1343,8 @@ Action.prototype.draw = function (idMotherStep, id) {
     // Starting to reduce the size of the row by the length of elements.
     $(header).find("#contentField").removeClass("col-xs-12").addClass("col-xs-" + (12 - this.fileList.length));
     // Adding all media attached to action execution.
-    addFileLink(this.fileList, $(header).find(".row"),GetURLParameter("manual"));
-
+    addFileLink(this.fileList, $(header).find(".row"),isTheExecutionManual);
+    
     htmlElement.click(function () {
         if ($(this).find(".glyphicon-chevron-down").length > 0) {
             $(this).find(".glyphicon-chevron-down").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-up");
@@ -1443,7 +1442,6 @@ Action.prototype.generateHeader = function (id) {
         	event.preventDefault()
         	event.stopPropagation()
         })
-
 
         buttonOK.click(function (event) {
             event.preventDefault();
@@ -2012,7 +2010,7 @@ Control.prototype.draw = function (idMotherStep, idMotherAction, idControl) {
     // Starting to reduce the size of the row by the length of elements.
     $(header).find("#contentField").removeClass("col-xs-12").addClass("col-xs-" + (12 - this.fileList.length));
     // Adding all media attached to control execution.
-    addFileLink(this.fileList, $(header).find(".row"),GetURLParameter("manual"));
+    addFileLink(this.fileList, $(header).find(".row"),isTheExecutionManual);
 
     $(this.parentAction.html).parent().append(htmlElement);
     $(this.parentAction.html).parent().append(content);
@@ -2308,9 +2306,8 @@ Control.prototype.getJsonData = function () {
 };
 
 // Function in order to add the Media files links into TestCase, step, action and control level.
-function addFileLink(fileList, container,auto) {
-	auto = auto == "Y" ? false:true;
-	
+function addFileLink(fileList, container,manual) {
+    var auto = manual == true ? false : true;
     $(container).find($("div[name='mediaMiniature']")).remove();
     for (var i = 0; i < fileList.length; i++) {
         if ((fileList[i].fileType === "JPG") || (fileList[i].fileType === "PNG")) {
@@ -2359,7 +2356,25 @@ function addFileLink(fileList, container,auto) {
             }
             container.append(linkBoxtxt);
         }
+        
+        if(isTheExecutionManual){
+        	let z = i
+        	 var buttonUpload = $($("<button>").addClass("btn btn-info btn-inverse").attr("type", "button").text("UPDATE"));
+        	 $(buttonUpload).css("float","right")
+             buttonUpload.click(function(event){
+             	var indexStep = $("#nav-execution").find(".active").data("index");
+             	var indexAction = $(this).parents("a").data('index')
+             	var currentActionOrControl = getScriptInformationOfStep()[indexStep]["actionArr"][indexAction]
+             	var idex = $("#idlabel").text()
+             	openModalManualFile(true,currentActionOrControl, "EDIT", idex, fileList[z])
+             	event.preventDefault()
+             	event.stopPropagation()
+             })
+        	$(container).parent().find("#contentField").append(buttonUpload)
+        	$(container).parent().find("#contentField").find(".col-sm-10").removeClass("col-sm-10").addClass("col-sm-8")
+        }
     }
+    
 }
 
 /*
