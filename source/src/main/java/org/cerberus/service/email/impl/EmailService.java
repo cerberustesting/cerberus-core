@@ -27,9 +27,11 @@ import org.cerberus.crud.entity.User;
 import org.cerberus.crud.service.ICampaignService;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.service.ciresult.ICIService;
 import org.cerberus.service.email.IEmailGenerationService;
 import org.cerberus.service.email.IEmailService;
 import org.cerberus.util.StringUtil;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -46,6 +48,8 @@ public class EmailService implements IEmailService {
     private IEmailGenerationService emailGenerationService;
     @Autowired
     private ICampaignService campaignService;
+    @Autowired
+    private ICIService ciService;
 
     @Override
     public void sendHtmlMail(Email cerberusEmail) throws Exception {
@@ -243,21 +247,35 @@ public class EmailService implements IEmailService {
 
         try {
             Campaign myCampaign = campaignService.convert(campaignService.readByKey(campaign));
-            if (!StringUtil.isNullOrEmpty(myCampaign.getDistribList()) && myCampaign.getNotifyEndTagExecution().equalsIgnoreCase("Y")) {
+            if (!StringUtil.isNullOrEmpty(myCampaign.getDistribList())) {
+                // Distribution List is not empty
 
-                Email email = null;
-                try {
-                    email = emailGenerationService.generateNotifyEndTagExecution(tag, campaign, myCampaign.getDistribList());
-                } catch (Exception ex) {
-                    LOG.warn("Exception generating email for End Tag Execution :" + ex);
-                    return new MessageEvent(MessageEventEnum.GENERIC_ERROR).resolveDescription("REASON", ex.toString());
-                }
+                if (myCampaign.getNotifyEndTagExecution().equalsIgnoreCase(Campaign.NOTIFYSTARTTAGEXECUTION_Y)
+                        || myCampaign.getNotifyEndTagExecution().equalsIgnoreCase(Campaign.NOTIFYSTARTTAGEXECUTION_CIKO)) {
+                    // Flag is activated.
 
-                try {
-                    this.sendHtmlMail(email);
-                } catch (Exception ex) {
-                    LOG.warn("Exception sending email for End Tag Execution :" + ex);
-                    return new MessageEvent(MessageEventEnum.GENERIC_ERROR).resolveDescription("REASON", ex.toString());
+                    JSONObject jsonResponse = new JSONObject();
+                    jsonResponse = ciService.getCIResult(tag);
+
+                    if (myCampaign.getNotifyEndTagExecution().equalsIgnoreCase(Campaign.NOTIFYSTARTTAGEXECUTION_Y)
+                            || (myCampaign.getNotifyEndTagExecution().equalsIgnoreCase(Campaign.NOTIFYSTARTTAGEXECUTION_CIKO) && jsonResponse.getString("result").equalsIgnoreCase("KO"))) {
+                        // Flag is Y or CIKO with KO result.
+
+                        Email email = null;
+                        try {
+                            email = emailGenerationService.generateNotifyEndTagExecution(tag, campaign, myCampaign.getDistribList(), jsonResponse.getString("result"), (double) jsonResponse.get("CI_finalResult"));
+                        } catch (Exception ex) {
+                            LOG.warn("Exception generating email for End Tag Execution :" + ex);
+                            return new MessageEvent(MessageEventEnum.GENERIC_ERROR).resolveDescription("REASON", ex.toString());
+                        }
+
+                        try {
+                            this.sendHtmlMail(email);
+                        } catch (Exception ex) {
+                            LOG.warn("Exception sending email for End Tag Execution :" + ex);
+                            return new MessageEvent(MessageEventEnum.GENERIC_ERROR).resolveDescription("REASON", ex.toString());
+                        }
+                    }
                 }
 
             }

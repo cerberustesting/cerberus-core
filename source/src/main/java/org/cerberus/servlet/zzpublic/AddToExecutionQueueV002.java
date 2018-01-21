@@ -246,7 +246,7 @@ public class AddToExecutionQueueV002 extends HttpServlet {
                 + "- " + PARAMETER_MANUAL_EXECUTION + " : Execute testcase in manual mode for every execution triggered. [" + manualExecution + "]\n"
                 + "- " + PARAMETER_RETRIES + " : Number of tries if the result is not OK for every execution triggered. [" + retries + "]\n"
                 + "- " + PARAMETER_EXEPRIORITY + " : Priority that will be used in the queue for every execution triggered. [" + priority + "]\n"
-                + "- " + PARAMETER_OUTPUTFORMAT + " : Format of the servlet output. can be compact, json [" + priority + "]\n";
+                + "- " + PARAMETER_OUTPUTFORMAT + " : Format of the servlet output. can be compact, json [" + outputFormat + "]\n";
 
 //        try {
         // Checking the parameter validity.
@@ -335,6 +335,7 @@ public class AddToExecutionQueueV002 extends HttpServlet {
         int nbExe = 0;
         JSONArray jsonArray = new JSONArray();
         String user = request.getRemoteUser() == null ? "" : request.getRemoteUser();
+
         // Starting the request only if previous parameters exist.
         if (!error) {
 
@@ -429,7 +430,7 @@ public class AddToExecutionQueueV002 extends HttpServlet {
                     errorMessages.add(errorMessageTmp);
                     continue;
                 } catch (JSONException ex) {
-                    java.util.logging.Logger.getLogger(AddToExecutionQueueV002.class.getName()).log(Level.SEVERE, null, ex);
+                    LOG.error(ex);
                 }
             }
 

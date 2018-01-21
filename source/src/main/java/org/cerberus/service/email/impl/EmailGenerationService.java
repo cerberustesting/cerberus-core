@@ -316,7 +316,7 @@ public class EmailGenerationService implements IEmailGenerationService {
     }
 
     @Override
-    public Email generateNotifyEndTagExecution(String tag, String campaign, String to) throws Exception {
+    public Email generateNotifyEndTagExecution(String tag, String campaign, String to, String ciResult, double ciScore) throws Exception {
         Email email = new Email();
         String system = "";
 
@@ -338,6 +338,8 @@ public class EmailGenerationService implements IEmailGenerationService {
         body = body.replace("%TAG%", tag);
         body = body.replace("%URLTAGREPORT%", urlreporttag.toString());
         body = body.replace("%CAMPAIGN%", campaign);
+        body = body.replace("%CIRESULT%", ciResult);
+        body = body.replace("%CISCORE%", String.format("%.2f", ciScore));
 
         Tag mytag = tagService.convert(tagService.readByKey(tag));
         long tagDur = (mytag.getDateEndQueue().getTime() - mytag.getDateCreated().getTime()) / 60000;

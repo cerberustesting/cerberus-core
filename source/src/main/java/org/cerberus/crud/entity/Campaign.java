@@ -55,6 +55,13 @@ public class Campaign implements Serializable {
 
     private List<CampaignContent> campaignContentList;
 
+    /**
+     * Invariant PROPERTY TYPE String.
+     */
+    public static final String NOTIFYSTARTTAGEXECUTION_Y = "Y";
+    public static final String NOTIFYSTARTTAGEXECUTION_N = "N";
+    public static final String NOTIFYSTARTTAGEXECUTION_CIKO = "CIKO";
+
     public Campaign() {
     }
 

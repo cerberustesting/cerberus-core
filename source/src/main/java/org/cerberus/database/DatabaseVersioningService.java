@@ -9722,6 +9722,29 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('usergroup','GroupName','','fr','Nom du groupe',NULL,'_management_des_utilisateurs')");
         SQLInstruction.add(SQLS.toString());
 
+        // New Invariant to activate campaign notification
+        //-- ------------------------ 1282
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES  ");
+        SQLS.append(" ('CAMPAIGNSTARTNOTIF', 'Y', 100, 'Yes')");
+        SQLS.append(",('CAMPAIGNSTARTNOTIF', 'N', 200, 'No')");
+        SQLS.append(",('CAMPAIGNENDNOTIF', 'Y', 100, 'Yes')");
+        SQLS.append(",('CAMPAIGNENDNOTIF', 'N', 200, 'No')");
+        SQLS.append(",('CAMPAIGNENDNOTIF', 'CIKO', 300, 'Only when Continuous Integration result is KO.')");
+        SQLS.append(",('INVARIANTPRIVATE', 'CAMPAIGNSTARTNOTIF', '750', '')");
+        SQLS.append(",('INVARIANTPRIVATE', 'CAMPAIGNENDNOTIF', '800', '');");
+        SQLInstruction.add(SQLS.toString());
+        
+        // Enrich email notification.
+        //-- ------------------------ 1283
+        SQLS = new StringBuilder(); // adding table with CI result. 
+        SQLS.append("UPDATE `parameter` SET ");
+        SQLS.append(" description='Cerberus End of tag execution notification email body. %TAG%, %URLTAGREPORT%, %CAMPAIGN%, %TAGDURATION%, %TAGSTART%, %TAGEND%, %CIRESULT%, %CISCORE%, %TAGGLOBALSTATUS% and %TAGTCDETAIL% can be used as variables.'");
+        SQLS.append(" , value=replace(value,'%TAGDURATION% min</td></tr></tbody></table>','%TAGDURATION% min</td></tr></tbody></table><table><thead><tr style=\"background-color:#cad3f1; font-style:bold\"><td>CI Result</td><td>CI Score</td></tr></thead><tbody><tr><td>%CIRESULT%</td><td>%CISCORE%</td></tr></tbody></table>') ");
+        SQLS.append(" where param='cerberus_notification_tagexecutionend_body';");
+        SQLInstruction.add(SQLS.toString());
+
+        
         return SQLInstruction;
     }
 
