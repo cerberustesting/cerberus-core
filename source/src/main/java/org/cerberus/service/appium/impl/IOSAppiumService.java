@@ -149,19 +149,19 @@ public class IOSAppiumService extends AppiumService {
             Integer myduration = parameters.getParameterIntegerByKey(CERBERUS_APPIUM_SWIPE_DURATION_PARAMETER, "", DEFAULT_CERBERUS_APPIUM_SWIPE_DURATION);
 
             // Do the swipe thanks to the Appium driver
-            //TouchAction dragNDrop
-            //        = new IOSTouchAction(session.getAppiumDriver()).longPress(direction.getX1(), direction.getY1(), Duration.ofMillis(duration == null ? DEFAULT_APPIUM_SWIPE_DURATION : Integer.parseInt(duration.getValue())))
-            //                .moveTo(direction.getX2(), direction.getY2()).release();
-            //dragNDrop.perform();
+            TouchAction dragNDrop
+                    = new IOSTouchAction(session.getAppiumDriver()).longPress(direction.getX1(), direction.getY1(), Duration.ofMillis(myduration))
+                            .moveTo(direction.getX2(), direction.getY2()).release();
+            dragNDrop.perform();
 
-            JavascriptExecutor js = (JavascriptExecutor) session.getAppiumDriver();
-            HashMap<String, Integer> swipeObject = new HashMap<String, Integer>();
-            swipeObject.put("startX", direction.getX1());
-            swipeObject.put("startY", direction.getY1());
-            swipeObject.put("endX", direction.getX2());
-            swipeObject.put("endY", direction.getY2());
-            swipeObject.put("duration", myduration);
-            js.executeScript("mobile: swipe", swipeObject);
+//            JavascriptExecutor js = (JavascriptExecutor) session.getAppiumDriver();
+//            HashMap<String, Integer> swipeObject = new HashMap<String, Integer>();
+//            swipeObject.put("startX", direction.getX1());
+//            swipeObject.put("startY", direction.getY1());
+//            swipeObject.put("endX", direction.getX2());
+//            swipeObject.put("endY", direction.getY2());
+//            swipeObject.put("duration", myduration);
+//            js.executeScript("mobile: swipe", swipeObject);
 
             return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SWIPE).resolveDescription("DIRECTION", action.getActionType().name());
         } catch (IllegalArgumentException e) {
