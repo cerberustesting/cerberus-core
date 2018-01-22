@@ -94,6 +94,12 @@ public class TestCaseExecutionFileService implements ITestCaseExecutionFileServi
     }
     
     @Override
+    public boolean exist(long exeId, String level) {
+        AnswerItem objectAnswer = readByKey(exeId, level, null);
+        return (objectAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) && (objectAnswer.getItem() != null); // Call was successfull and object was found.
+    }
+    
+    @Override
     public Answer create(TestCaseExecutionFile object) {
         return testCaseExecutionFileDAO.create(object);
     }
@@ -116,6 +122,17 @@ public class TestCaseExecutionFileService implements ITestCaseExecutionFileServi
             return create(object);
         }
     }
+    
+    @Override
+    public Answer saveManual(TestCaseExecutionFile object) {
+        if (this.exist(object.getExeId(), object.getLevel())) {
+            return update(object);
+        } else {
+            return create(object);
+        }
+    }
+    
+    
     @Override
     public TestCaseExecutionFile convert(AnswerItem answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {

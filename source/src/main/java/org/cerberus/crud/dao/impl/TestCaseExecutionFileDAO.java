@@ -133,7 +133,10 @@ public class TestCaseExecutionFileDAO implements ITestCaseExecutionFileDAO {
     public AnswerItem<TestCaseExecutionFile> readByKey(long exeId, String level, String fileDesc) {
         AnswerItem ans = new AnswerItem();
         TestCaseExecutionFile result = null;
-        final String query = "SELECT * FROM `testcaseexecutionfile` exf WHERE `exeid` = ? and `level` = ? and `filedesc` = ? ";
+        String query = "SELECT * FROM `testcaseexecutionfile` exf WHERE `exeid` = ? and `level` = ? ";
+        if(fileDesc != null) {
+        	query = query + "and `filedesc` = ? ";
+        }
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
@@ -144,14 +147,16 @@ public class TestCaseExecutionFileDAO implements ITestCaseExecutionFileDAO {
             LOG.debug("SQL.param.id : " + level);
             LOG.debug("SQL.param.id : " + fileDesc);
         }
-
+        
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
                 preStat.setLong(1, exeId);
                 preStat.setString(2, level);
-                preStat.setString(3, fileDesc);
+                if(fileDesc != null) {
+                    preStat.setString(3, fileDesc);
+                }
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     if (resultSet.first()) {

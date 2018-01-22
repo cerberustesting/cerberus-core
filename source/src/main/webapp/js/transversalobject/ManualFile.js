@@ -23,7 +23,7 @@ var imagePasteFromClipboard = undefined;//stock the picture if the user chose to
 function openModalManualFile(action,manualFile,mode,idex,file){
 	
 	if ($('#editManualFileModal').data("initLabel") === undefined){	
-		initModalManualFile()
+		initModalManualFile(file, mode)
 		$('#editManualFileModal').data("initLabel", true);
 	}
 	
@@ -35,30 +35,28 @@ function openModalManualFile(action,manualFile,mode,idex,file){
 	
 	$("#editManualFileButton").off("click");
 	$("#editManualFileButton").click(function() {
-		confirmManualFileModalHandler(action,manualFile,"EDIT",idex);
+		confirmManualFileModalHandler(action,manualFile,"EDIT",idex,file);
 	});
 	$("#addManualFileButton").off("click");
 	$("#addManualFileButton").click(function() {
-		confirmManualFileModalHandler(action,manualFile,"ADD",idex);
+		confirmManualFileModalHandler(action,manualFile,"ADD",idex,file);
 	});
 }
 
-function initModalManualFile(){
+function initModalManualFile(file, mode){
 	console.info("init");
 	var doc = new Doc();
 	$("[name='buttonClose']").html(
 			doc.getDocLabel("page_global", "buttonClose"));
 	$("[name='buttonAdd']").html(doc.getDocLabel("page_global", "btn_add"));	
 	$("[name='buttonEdit']").html(doc.getDocLabel("page_global", "btn_edit"));
-	$("[name='addEntryField']").html(
-			doc.getDocLabel("page_applicationObject", "button_create"));
-	$("[name='confirmationField']").html(
-			doc.getDocLabel("page_applicationObject", "button_delete"));
-	$("[name='editEntryField']").html(
-			doc.getDocLabel("page_applicationObject", "button_edit"));
-
 	
-	displayInvariantList("type", "FILETYPE", false, undefined, "");
+	if(mode === "EDIT"){
+		displayInvariantList("type", "FILETYPE",false, file.fileType, "");
+	}else{
+		displayInvariantList("type", "FILETYPE",false, undefined, "");
+	}
+	
 	setUpDragAndDrop('#editManualFileModal');
     hidePasteMessageIfNotOnFirefox()
 }
@@ -100,7 +98,7 @@ function addManualFileClick(manualFile){
 	pasteListennerForClipboardPicture('#editManualFileModal');
 }
 
-function confirmManualFileModalHandler(action,manualFile, mode, idex) {
+function confirmManualFileModalHandler(action,manualFile, mode, idex, myFile) {
 	clearResponseMessage($('#editManualFileModal'));
 	
 	var formEdit = $('#editManualFileModal #editManualFileModalForm');
@@ -130,16 +128,15 @@ function confirmManualFileModalHandler(action,manualFile, mode, idex) {
         	formData.append("control",JSON.stringify(temp))
         }
         formData.append("idex",idex)
+        formData.append("fileName", $("#editManualFileModal").find("#dropzoneText").text())
+        formData.append("fileID", myFile.id)
     }
     catch(e){
     	
     } 
     
 	// Calculate servlet name to call.
-	var myServlet = "UpdateTestCaseExecutionFile";
-	if ((mode === "ADD")) {
-		myServlet = "CreateTestCaseExecutionFile";
-	}
+	var myServlet = "CreateUpdateTestCaseExecutionFile";
 
 	// Get the header data from the form.
 	
@@ -157,7 +154,7 @@ function confirmManualFileModalHandler(action,manualFile, mode, idex) {
 			if (getAlertType(data.messageType) === "success") {
 				$('#editManualFileModal').data("Saved", true);
 				$('#editManualFileModal').modal('hide');
-				showMessage(data);			
+				saveExecution(null)	
 							
 			} else {
 				showMessage(data, $('#editManualFileModal'));
@@ -170,7 +167,6 @@ function confirmManualFileModalHandler(action,manualFile, mode, idex) {
 	
 }
 
-
 function feedManualFileModal(manualFile, modalId, mode) {
 	clearResponseMessageMainPage();
 
@@ -182,9 +178,9 @@ function feedManualFileModal(manualFile, modalId, mode) {
 		formEdit.modal('show');
 	} else {
 		var manualFile1 = {};
-		manualFile1.type = "";
-		manualFile1.description = "";
-		manualFile1.filename = "Drag and drop Files";
+		manualFile1.fileType = "";
+		manualFile1.fileDesc = "";
+		manualFile1.fileName = "Drag and drop Files";
 		var hasPermissions = true;
 		feedManualFileModalData(manualFile1, modalId, mode, hasPermissions);
 		formEdit.modal('show');

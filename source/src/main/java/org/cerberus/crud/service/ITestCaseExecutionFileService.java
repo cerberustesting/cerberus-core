@@ -100,6 +100,15 @@ public interface ITestCaseExecutionFileService {
      * @return
      */
     boolean exist(long exeId, String level, String fileDesc);
+    
+    /**
+    *
+    * @param exeId
+    * @param level
+    * @return
+    */
+   boolean exist(long exeId, String level);
+
 
     /**
      *
@@ -127,7 +136,14 @@ public interface ITestCaseExecutionFileService {
      * @param object
      * @return
      */
-    Answer save(TestCaseExecutionFile object);    
+    Answer save(TestCaseExecutionFile object);
+    
+    /**
+    *
+    * @param object
+    * @return
+    */
+   Answer saveManual(TestCaseExecutionFile object);
     
     /**
      *

@@ -186,7 +186,7 @@ function clearIndividualFilterForClientSide(tableId, columnNumber, clearGlobalSe
  */
 var columnSearchValuesForClientSide = [];//global var that take the role of the ajax function
 function displayColumnSearchForClientSideTable(tableData, contentUrl, oSettings) {
-    privateDisplayColumnSearch(tableId, contentUrl, oSettings,true); // table data not use ?
+    privateDisplayColumnSearch(tableData, contentUrl, oSettings,true); // table data not use ?
 }
 
 /**

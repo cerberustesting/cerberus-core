@@ -21,6 +21,8 @@ package org.cerberus.servlet.manualtestcase;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -73,10 +75,10 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author ryltar
  */
-@WebServlet(name = "CreateTestCaseExecutionFile", urlPatterns = {"/CreateTestCaseExecutionFile"})
-public class CreateTestCaseExecutionFile extends HttpServlet {
+@WebServlet(name = "UpdateTestCaseExecutionFile", urlPatterns = {"/UpdateTestCaseExecutionFile"})
+public class UpdateTestCaseExecutionFile extends HttpServlet {
 
-    private static final Logger LOG = LogManager.getLogger(CreateTestCaseExecutionFile.class);
+    private static final Logger LOG = LogManager.getLogger(UpdateTestCaseExecutionFile.class);
     
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -162,7 +164,7 @@ public class CreateTestCaseExecutionFile extends HttpServlet {
                 testCaseStepActionControlExecution = updateTestCaseStepActionControlExecutionFromJsonArray(obj, appContext);
             }
         	
-        	ans = recorderService.recordManuallyFile(testCaseStepActionExecution, testCaseStepActionControlExecution, extension, description, file, idex);
+        	ans = recorderService.recordManuallyFile(testCaseStepActionExecution, testCaseStepActionControlExecution, extension, description, file, idex, fileName);
         	
             if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                 /**
@@ -409,4 +411,6 @@ public class CreateTestCaseExecutionFile extends HttpServlet {
 
         return testCaseStepActionExecution;
     }
+    
+    
 }

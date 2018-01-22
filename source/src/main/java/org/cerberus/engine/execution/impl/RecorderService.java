@@ -81,7 +81,7 @@ public class RecorderService implements IRecorderService {
     public List<TestCaseExecutionFile> recordExecutionInformationAfterStepActionandControl(TestCaseStepActionExecution testCaseStepActionExecution, TestCaseStepActionControlExecution testCaseStepActionControlExecution) {
         List<TestCaseExecutionFile> objectFileList = new ArrayList<TestCaseExecutionFile>();
         TestCaseExecutionFile objectFile = null;
-
+        
         // Used for logging purposes
         String logPrefix = Infos.getInstance().getProjectNameAndVersion() + " - ";
 
@@ -188,8 +188,8 @@ public class RecorderService implements IRecorderService {
     }
     
     
-    public AnswerItem recordManuallyFile(TestCaseStepActionExecution testCaseStepActionExecution, TestCaseStepActionControlExecution testCaseStepActionControlExecution, String extension, String desc, FileItem file, Integer id) {
-    	
+    public AnswerItem recordManuallyFile(TestCaseStepActionExecution testCaseStepActionExecution, TestCaseStepActionControlExecution testCaseStepActionControlExecution, String extension, String desc, FileItem file, Integer id, String fileName, Integer fileID) {
+
     	MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
                 "Can't upload file");
     	
@@ -227,46 +227,84 @@ public class RecorderService implements IRecorderService {
         }
     	// Used for logging purposes
         String logPrefix = Infos.getInstance().getProjectNameAndVersion() + " - [" + test + " - " + testCase + " - step: " + step + " action: " + sequence + "] ";
-    	
     	try {
-    		Recorder recorder = this.initFilenames(myExecution, test, testCase, step, index, sequence, controlString, null, 0, desc ,extension, true);
+    		Recorder recorder;
+    		if(file != null) {
+    			String name = file.getName();
+    	        
+    	        if(extension.isEmpty()) {
+    	        	extension = name.substring(name.lastIndexOf('.')+1, name.length());
+    	        	extension = extension.toUpperCase();
+    	        }
+    			recorder = this.initFilenames(myExecution, test, testCase, step, index, sequence, controlString, null, 0, name.substring(0, name.lastIndexOf('.')) ,extension, true);
+    			File dir = new File(recorder.getFullPath());
+    			if (!dir.exists()) {
+    				try {
+    					dir.mkdirs();
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                    } catch (SecurityException se) {
+                        LOG.warn("Unable to create manual execution file dir: " + se.getMessage());
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                                se.toString());
+                    }
+                }else {
+                	AnswerItem<TestCaseExecutionFile> current = testCaseExecutionFileService.readByKey(myExecution, recorder.getLevel(), null);
+                	if(current.getItem() != null) {
+                		try {
+                			File temp = new File(recorder.getRootFolder() + current.getItem().getFileName());
+                    		temp.delete();
+                            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                        } catch (SecurityException se) {
+                            LOG.warn("Unable to create manual execution file dir: " + se.getMessage());
+                            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                                    se.toString());
+                        }
+                	}else {
+                		msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                	}
+                }
+                if(msg.getCode() == MessageEventEnum.DATA_OPERATION_OK.getCode()){
+                	try {
+                		file.write(new File(recorder.getFullFilename()));
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("DESCRIPTION",
+                                "Manual Execution File uploaded");
+                        msg.setDescription(msg.getDescription().replace("%ITEM%", "Manual Execution File").replace("%OPERATION%", "Upload"));
+                        LOG.debug(logPrefix + "Copy file finished with success - source: " + file.getName() + " destination: " + recorder.getRelativeFilenameURL());
+                        
+                        object = testCaseExecutionFileFactory.create(fileID, myExecution, recorder.getLevel(), desc, recorder.getRelativeFilenameURL(), extension, "", null, "", null);
 
-    		File dir = new File(recorder.getFullPath());
-             if (!dir.exists()) {
-            	 try {
-                     dir.mkdirs();
-                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                 } catch (SecurityException se) {
-                     LOG.warn("Unable to create manual execution file dir: " + se.getMessage());
-                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
-                             se.toString());
-                 }
-             }
-             if(msg.getCode() == MessageEventEnum.DATA_OPERATION_OK.getCode()){
-            	 try {
-                	 file.write(new File(recorder.getFullFilename()));
-                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("DESCRIPTION",
-                             "Manual Execution File uploaded");
-                     msg.setDescription(msg.getDescription().replace("%ITEM%", "Manual Execution File").replace("%OPERATION%", "Upload"));
-                     LOG.debug(logPrefix + "Copy file finished with success - source: " + file.getName() + " destination: " + recorder.getRelativeFilenameURL());
-
-                     // Index file created to database.
-                     object = testCaseExecutionFileFactory.create(0, myExecution, recorder.getLevel(), desc, recorder.getRelativeFilenameURL(), extension, "", null, "", null);
-                     testCaseExecutionFileService.save(object);
-                 } catch (Exception e) {
-                     LOG.warn("Unable to upload Manual Execution File: " + e.getMessage());
-                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
-                             e.toString());
-                 }
-             }
-             //copies the temp file to the execution file
+                        System.out.print("test");
+                        System.out.print(object.getExeId());
+                        System.out.print(object.getLevel());
+                        // Index file created to database.                       
+                    } catch (Exception e) {
+                    	LOG.warn("Unable to upload Manual Execution File: " + e.getMessage());
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                                e.toString());
+                    }
+                }
+                //copies the temp file to the execution file
+    		}else {
+    			String name = fileName;
+    	        if(extension.isEmpty()) {
+    	        	extension = fileName.substring(fileName.lastIndexOf('.')+1, fileName.length());
+    	        	extension = extension.toUpperCase();
+    	        }
+    			recorder = this.initFilenames(myExecution, test, testCase, step, index, sequence, controlString, null, 0, fileName.substring(0, fileName.lastIndexOf('.')) ,extension, true);
+    			
+    			object = testCaseExecutionFileFactory.create(fileID, myExecution, recorder.getLevel(), desc, fileName, extension, "", null, "", null);
+    			System.out.print("test");
+    			System.out.print(object.getExeId());
+                System.out.print(object.getLevel());
+    			msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "Manual Execution File").replace("%OPERATION%", "Update/Create"));
+    		}
+             testCaseExecutionFileService.saveManual(object);
     	}catch(CerberusException e) {
-    		LOG.error(logPrefix + e.toString());
-    	}
-    	
+       		LOG.error(logPrefix + e.toString());
+       	}
     	a.setResultMessage(msg);
     	a.setItem(object);
-    	
     	return a;
     }
 
@@ -670,6 +708,7 @@ public class RecorderService implements IRecorderService {
             if (!StringUtil.isNullOrEmpty(filename)) {
                 sbfileName.append(filename).append("-");
             }
+            
             String fileName = StringUtil.removeLastChar(sbfileName.toString(), 1) + "." + extention;
             fileName = fileName.replace(" ", "");
             newRecorder.setFileName(fileName);
@@ -727,6 +766,22 @@ public class RecorderService implements IRecorderService {
             return idString.substring((idString.length() - 2)) + File.separator + idString.substring((idString.length() - 4), (idString.length() - 2)) + File.separator + idString;
         } else {
             return idString;
+        }
+    }
+    
+    private static void deleteFolder(File folder, boolean deleteit) {
+        File[] files = folder.listFiles();
+        if (files != null) { //some JVMs return null for empty dirs
+            for (File f : files) {
+                if (f.isDirectory()) {
+                    deleteFolder(f, true);
+                } else {
+                    f.delete();
+                }
+            }
+        }
+        if (deleteit) {
+            folder.delete();
         }
     }
 }
