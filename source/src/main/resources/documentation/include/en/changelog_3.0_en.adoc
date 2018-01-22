@@ -32,6 +32,7 @@
 * A Bug has been fixed on useStep that are not correctly referenced. SQL #1247 will clean badly reference Steps. You can get that list before beeing automaticly cleaned with SQL : SELECT a.* from testcasestep a LEFT OUTER JOIN testcasestep b on a.usesteptest=b.test and a.usesteptestcase=b.testcase and a.usestepstep=b.step WHERE b.test is null and a.usesteptest is not null and a.usesteptest != ''
 * Upgrade Java to v1.8 --> Please check your Cerberus infra has JAVA 8.
 * Upgrade Appium java-client to 5.0.4 --> Please check that your Robot infra support the change before moving to that new client version.
+* Upgrade Appium java-client to 5.0.4 --> Please notice that custom swipe is now using relative coordinate instead of absolute one. You may have to change your test implementation.
 * Upgrade Selenium to 3.6.0 --> Please check that your Robot infra support the change before moving to that new client version.
 * Battery has been moved to label (table not yet removed but will be soon).
 
