@@ -148,14 +148,14 @@ public class ReadLabel extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-        @Override
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
             LOG.warn(ex);
-        } 
+        }
     }
 
     /**
@@ -173,7 +173,7 @@ public class ReadLabel extends HttpServlet {
             processRequest(request, response);
         } catch (CerberusException ex) {
             LOG.warn(ex);
-        } 
+        }
     }
 
     /**
@@ -220,7 +220,11 @@ public class ReadLabel extends HttpServlet {
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
             for (Label label : (List<Label>) resp.getDataList()) {
-                jsonArray.put(convertLabelToJSONObject(label));
+                JSONObject labelObject = convertLabelToJSONObject(label);
+                if (!"".equals(label.getParentLabel())) {
+                    labelObject.put("labelParentObject", convertLabelToJSONObject((Label) labelService.readByKey(Integer.valueOf(label.getParentLabel())).getItem()));
+                }
+                jsonArray.put(labelObject);
             }
         }
 
@@ -246,7 +250,11 @@ public class ReadLabel extends HttpServlet {
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item and convert it to JSONformat
             Label label = (Label) answer.getItem();
-            JSONObject response = convertLabelToJSONObject(label);
+            JSONObject labelObject = convertLabelToJSONObject(label);
+            if (!"".equals(label.getParentLabel())) {
+                labelObject.put("labelParentObject", convertLabelToJSONObject((Label) labelService.readByKey(Integer.valueOf(label.getParentLabel())).getItem()));
+            }
+            JSONObject response = labelObject;
             object.put("contentTable", response);
         }
 
@@ -275,7 +283,7 @@ public class ReadLabel extends HttpServlet {
         AnswerList testCaseList = new AnswerList();
 
         labelService = appContext.getBean(ILabelService.class);
-        
+
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
         String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "System,Label,Color,Display,parentLabelId,Description");
         String columnToSort[] = sColumns.split(",");

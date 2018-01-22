@@ -2449,3 +2449,70 @@ function getComboConfigTag() {
 
 }
 
+function comboConfigLabel_format(label) {
+    var markup = "<div class='select2-result-tag clearfix'>" +
+        "<div style='float:left;'><span class='label label-primary' style='background-color:" 
+        + label.color + "' data-toggle='tooltip' data-labelid='" 
+        + label.id + "' title='" 
+        + label.description + "'>" 
+        + label.label + "</span></div>";
+    
+    markup += "</div>";
+
+    return markup;
+}
+
+function comboConfigLabel_formatSelection(label) {
+    var result = label.id;
+    if (!isEmpty(label.label)) {
+        result = "<div style='float:left;height: 34px'><span class='label label-primary' style='background-color:" 
+        + label.color + "' data-toggle='tooltip' data-labelid='" 
+        + label.id + "' title='" 
+        + label.description + "'>" 
+        + label.label + "</span></div>";
+    }
+    return result;
+}
+
+
+function getComboConfigLabel(labelType) {
+
+    var config =
+            {
+                ajax: {
+                    url: "ReadLabel?iSortCol_0=0&sSortDir_0=desc&sColumns=type&iDisplayLength=30&sSearch_0="+labelType,
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            sSearch: params.term, // search term
+                            iDisplayStartPage: params.page
+                        };
+                    },
+                    processResults: function (data, params) {
+                        params.page = params.page || 1;
+                        return {
+                            results: $.map(data.contentTable, function (obj) {
+                                return {id: obj.id, label: obj.label, color: obj.color, description: obj.description};
+                            }),
+                            pagination: {
+                                more: (params.page * 30) < data.iTotalRecords
+                            }
+                        };
+                    },
+                    cache: true,
+                    allowClear: true
+                },
+                width: "100%",
+                escapeMarkup: function (markup) {
+                    return markup;
+                }, // let our custom formatter work
+                minimumInputLength: 0,
+                templateResult: comboConfigLabel_format, // omitted for brevity, see the source of this page
+                templateSelection: comboConfigLabel_formatSelection // omitted for brevity, see the source of this page
+            };
+
+    return config;
+
+}
+
