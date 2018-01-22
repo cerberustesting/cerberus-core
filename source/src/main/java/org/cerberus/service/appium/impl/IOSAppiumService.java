@@ -150,7 +150,7 @@ public class IOSAppiumService extends AppiumService {
 
             // Do the swipe thanks to the Appium driver
             TouchAction dragNDrop
-                    = new IOSTouchAction(session.getAppiumDriver()).longPress(direction.getX1(), direction.getY1(), Duration.ofMillis(myduration))
+                    = new TouchAction(session.getAppiumDriver()).press(direction.getX1(), direction.getY1()).waitAction(Duration.ofMillis(myduration))
                             .moveTo(direction.getX2(), direction.getY2()).release();
             dragNDrop.perform();
 
