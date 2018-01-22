@@ -57,7 +57,7 @@ You can use the start-selenium.sh script in tools/selenium/bin/ folder. Update i
 Script execution automation can be done using the scripts located in tools/batchexecution/.
  
 NB : don't forget to update the cerberus parameters according to your Environment --> parameter page in Admin menu needs to be changed according to your local config.
-3 parameters are mandatory in order to start :
+4 parameters are mandatory in order to start :
   - cerberus_exeautomedia_path : in order to store the various execution media files (ex : /home/pete/cerberus_exeautomedia/) inside the correct local folder. This is where Cerberus will try to store the files xml, json or images taken during the execution.
   - cerberus_exemanualmedia_path : in order to store the various manual execution media files (ex : /home/pete/cerberus_exemanualmedia/) inside the correct local folder.
   - cerberus_applicationobject_path : in order to store the various object screenshot files (ex : (ex : /home/pete/cerberus_objects/))

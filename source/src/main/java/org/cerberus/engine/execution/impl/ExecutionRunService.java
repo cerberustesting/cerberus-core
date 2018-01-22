@@ -75,6 +75,7 @@ import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.email.IEmailService;
+import org.cerberus.service.sikuli.ISikuliService;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
@@ -97,7 +98,9 @@ public class ExecutionRunService implements IExecutionRunService {
     private static final Logger LOG = LogManager.getLogger(ExecutionRunService.class);
 
     @Autowired
-    private ISeleniumServerService serverService;
+    private ISikuliService sikuliService;
+    @Autowired
+    private ISeleniumServerService seleniumServerService;
     @Autowired
     private IActionService actionService;
     @Autowired
@@ -206,7 +209,7 @@ public class ExecutionRunService implements IExecutionRunService {
             LOG.debug(logPrefix + "Getting Selenium capabitities for GUI applications.");
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
                 try {
-                    Capabilities caps = this.serverService.getUsedCapabilities(tCExecution.getSession());
+                    Capabilities caps = this.seleniumServerService.getUsedCapabilities(tCExecution.getSession());
                     tCExecution.setBrowserFullVersion(caps.getBrowserName() + " " + caps.getVersion() + " " + caps.getPlatform().toString());
                     tCExecution.setVersion(caps.getVersion());
                     tCExecution.setPlatform(caps.getPlatform().toString());
@@ -1280,12 +1283,20 @@ public class ExecutionRunService implements IExecutionRunService {
                 || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
                 || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
             try {
-                this.serverService.stopServer(tCExecution.getSession());
+                this.seleniumServerService.stopServer(tCExecution.getSession());
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Stop server for execution " + tCExecution.getId());
                 }
             } catch (WebDriverException exception) {
                 LOG.warn("Selenium didn't manage to close connection for execution " + tCExecution.getId() + " due to " + exception.toString());
+            }
+        }
+        if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Stop Sikuli server for execution " + tCExecution.getId() + " closing application " + tCExecution.getCountryEnvironmentParameters().getIp());
+            }
+            if (!StringUtil.isNullOrEmpty(tCExecution.getCountryEnvironmentParameters().getIp())) {
+                this.sikuliService.doSikuliActionCloseApp(tCExecution.getSession(), tCExecution.getCountryEnvironmentParameters().getIp());
             }
         }
 

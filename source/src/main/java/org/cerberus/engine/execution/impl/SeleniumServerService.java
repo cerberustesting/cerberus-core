@@ -113,7 +113,7 @@ public class SeleniumServerService implements ISeleniumServerService {
 
         try {
 
-            LOG.info(logPrefix + "Start Selenium Server");
+            LOG.info(logPrefix + "Start Robot Server (Selenium, Appium or Sikuli)");
 
             /**
              * Set Session
@@ -261,7 +261,7 @@ public class SeleniumServerService implements ISeleniumServerService {
                  * If CountryEnvParameter IP is set, open the App
                  */
                 if (!tCExecution.getCountryEnvironmentParameters().getIp().isEmpty()) {
-                    sikuliService.doSikuliAction(session, "openApp", null, tCExecution.getCountryEnvironmentParameters().getIp());
+                    sikuliService.doSikuliActionOpenApp(session, tCExecution.getCountryEnvironmentParameters().getIp());
                 }
             }
 
@@ -280,8 +280,8 @@ public class SeleniumServerService implements ISeleniumServerService {
 
             /**
              * If Gui application, maximize window Get IP of Node in case of
-             * remote Server. Maximize does not work for chrome browser
-             * We also get the Real UserAgent from the browser.
+             * remote Server. Maximize does not work for chrome browser We also
+             * get the Real UserAgent from the browser.
              */
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
                     && !caps.getPlatform().equals(Platform.ANDROID)) {
