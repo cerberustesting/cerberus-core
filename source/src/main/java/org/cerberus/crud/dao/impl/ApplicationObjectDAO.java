@@ -702,7 +702,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
             }
             searchSQL.append(" )");
         }
-
+        
         query.append(searchSQL);
         query.append(" order by `").append(columnName).append("` asc");
         

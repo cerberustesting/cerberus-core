@@ -116,7 +116,7 @@ public class ReadLabel extends HttpServlet {
                     answer = findLabelByKey(id, appContext, userHasPermissions);
                     jsonResponse = (JSONObject) answer.getItem();
                 } else if (request.getParameter("system1") != null && !Strings.isNullOrEmpty(columnName)) {
-                    answer = findDistinctValuesOfColumn(request.getParameter("system1"),appContext, request, columnName, likeColumn);
+                    answer = findDistinctValuesOfColumn(request.getParameter("system1"),appContext, request, columnName);
                     
                     jsonResponse = (JSONObject) answer.getItem();
                 } else if (request.getParameter("system1") != null) {
@@ -276,10 +276,9 @@ public class ReadLabel extends HttpServlet {
         return result;
     }
 
-    private AnswerItem findDistinctValuesOfColumn(String system, ApplicationContext appContext, HttpServletRequest request, String columnName, Boolean likeColumn) throws JSONException {
+    private AnswerItem findDistinctValuesOfColumn(String system, ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
         AnswerItem answer = new AnswerItem();
         JSONObject object = new JSONObject();
-        Map<String, List<String>> individualSearch = new HashMap<>();
         AnswerList testCaseList = new AnswerList();
 
         labelService = appContext.getBean(ILabelService.class);
@@ -288,18 +287,18 @@ public class ReadLabel extends HttpServlet {
         String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "System,Label,Color,Display,parentLabelId,Description");
         String columnToSort[] = sColumns.split(",");
         
-        if(likeColumn) {
-        	testCaseList = labelService.readDistinctValuesByCriteria(system, searchParameter, individualSearch, columnName);
-        }else {
-        	individualSearch = new HashMap<String, List<String>>();
-            for (int a = 0; a < columnToSort.length; a++) {
-                if (null!=request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
-                    List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
-                    individualSearch.put(columnToSort[a], search);
-                }
-            }
-            testCaseList = labelService.readDistinctValuesByCriteria(system, searchParameter, individualSearch, columnName);
+        List<String> individualLike = new ArrayList(Arrays.asList(ParameterParserUtil.parseStringParam(request.getParameter("sLike"), "").split(",")));
 
+        Map<String, List<String>> individualSearch = new HashMap<>();
+        for (int a = 0; a < columnToSort.length; a++) {
+            if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
+            	List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
+            	if(individualLike.contains(columnToSort[a])) {
+                	individualSearch.put(columnToSort[a]+":like", search);
+                }else {
+                	individualSearch.put(columnToSort[a], search);
+                } 
+            }
         }
 
         object.put("distinctValues", testCaseList.getDataList());
