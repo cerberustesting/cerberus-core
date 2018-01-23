@@ -9722,23 +9722,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('usergroup','GroupName','','fr','Nom du groupe',NULL,'_management_des_utilisateurs')");
         SQLInstruction.add(SQLS.toString());
         
-     // Add invariant filter type.
-        //-- ------------------------ 1280, 1281
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) ");
-        SQLS.append(" VALUES ('INVARIANTPRIVATE','FILETYPE', '710','All type of file', 'file type')");
-        SQLInstruction.add(SQLS.toString());
-        
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ");
-        SQLS.append("('FILETYPE', 'PNG', '6600', '', ''),");
-        SQLS.append("('FILETYPE', 'JPG', '6700', '', ''),");
-        SQLS.append("('FILETYPE', 'XML', '16500', '', ''),");
-        SQLS.append("('FILETYPE', 'JSON', '18500', '', ''),");
-        SQLS.append("('FILETYPE', 'TXT', '22500', '', '')");
-        SQLInstruction.add(SQLS.toString());
-
-
         // New Invariant to activate campaign notification
         //-- ------------------------ 1282
         SQLS = new StringBuilder();
@@ -9759,6 +9742,22 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(" description='Cerberus End of tag execution notification email body. %TAG%, %URLTAGREPORT%, %CAMPAIGN%, %TAGDURATION%, %TAGSTART%, %TAGEND%, %CIRESULT%, %CISCORE%, %TAGGLOBALSTATUS% and %TAGTCDETAIL% can be used as variables.'");
         SQLS.append(" , value=replace(value,'%TAGDURATION% min</td></tr></tbody></table>','%TAGDURATION% min</td></tr></tbody></table><table><thead><tr style=\"background-color:#cad3f1; font-style:bold\"><td>CI Result</td><td>CI Score</td></tr></thead><tbody><tr><td>%CIRESULT%</td><td>%CISCORE%</td></tr></tbody></table>') ");
         SQLS.append(" where param='cerberus_notification_tagexecutionend_body';");
+        SQLInstruction.add(SQLS.toString());
+        
+        // Add invariant filter type.
+        //-- ------------------------ 1284, 1285
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) ");
+        SQLS.append(" VALUES ('INVARIANTPRIVATE','FILETYPE', '710','All type of file', 'file type')");
+        SQLInstruction.add(SQLS.toString());
+        
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ");
+        SQLS.append("('FILETYPE', 'PNG', '6600', '', ''),");
+        SQLS.append("('FILETYPE', 'JPG', '6700', '', ''),");
+        SQLS.append("('FILETYPE', 'XML', '16500', '', ''),");
+        SQLS.append("('FILETYPE', 'JSON', '18500', '', ''),");
+        SQLS.append("('FILETYPE', 'TXT', '22500', '', '')");
         SQLInstruction.add(SQLS.toString());
 
         
