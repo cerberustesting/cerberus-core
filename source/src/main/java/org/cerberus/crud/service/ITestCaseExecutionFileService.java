@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.service;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -130,6 +131,12 @@ public interface ITestCaseExecutionFileService {
      * @return
      */
     Answer update(TestCaseExecutionFile object);
+    
+    /**
+     * 
+     * @param folder
+     */
+    void deleteFile(String root, String fileName);
 
     /**
      *

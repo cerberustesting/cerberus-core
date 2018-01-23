@@ -19,6 +19,7 @@
  */
 package org.cerberus.servlet.manualtestcase;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import javax.servlet.ServletException;
@@ -29,10 +30,12 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.engine.entity.MessageEvent;
+import org.cerberus.engine.execution.IRecorderService;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseExecutionFile;
 import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.crud.service.ILogEventService;
+import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ITestCaseExecutionFileService;
 import org.cerberus.crud.service.ITestCaseService;
 import org.cerberus.crud.service.ITestCaseStepService;
@@ -48,6 +51,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.cerberus.servlet.manualtestcase.DeleteTestCaseExecutionFile;
@@ -59,8 +63,7 @@ import org.cerberus.servlet.manualtestcase.DeleteTestCaseExecutionFile;
 @WebServlet(name = "DeleteTestCaseExecutionFile", urlPatterns = {"/DeleteTestCaseExecutionFile"})
 public class DeleteTestCaseExecutionFile extends HttpServlet {
 
-    private static final Logger LOG = LogManager.getLogger(DeleteTestCaseExecutionFile.class);
-    
+    private static final Logger LOG = LogManager.getLogger(DeleteTestCaseExecutionFile.class);    
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -78,6 +81,7 @@ public class DeleteTestCaseExecutionFile extends HttpServlet {
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         ans.setResultMessage(msg);
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
+    	
 
         response.setContentType("application/json");
 
@@ -87,9 +91,8 @@ public class DeleteTestCaseExecutionFile extends HttpServlet {
         /**
          * Parsing and securing all required parameters.
          */
-        Integer fileId = ParameterParserUtil.parseIntegerParam(request.getParameter("fileID"), 0);
-
-
+        Long fileId = ParameterParserUtil.parseLongParam(request.getParameter("fileID"), 0);
+        
         /**
          * Checking all constrains before calling the services.
          */
@@ -105,8 +108,10 @@ public class DeleteTestCaseExecutionFile extends HttpServlet {
              */
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             ITestCaseExecutionFileService testCaseExecutionFileService = appContext.getBean(ITestCaseExecutionFileService.class);
-
+            IParameterService parameterService = appContext.getBean(IParameterService.class);
+            IRecorderService recorderService = appContext.getBean(IRecorderService.class);
             AnswerItem resp = testCaseExecutionFileService.readByKey(fileId);
+            
             if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem()!=null)) {
                 /**
                  * Object could not be found. We stop here and report the error.
@@ -123,6 +128,8 @@ public class DeleteTestCaseExecutionFile extends HttpServlet {
                  * object exist, then we can delete it.
                  */
             	TestCaseExecutionFile testCaseExecutionFile = (TestCaseExecutionFile) resp.getItem();
+            	String rootFolder = parameterService.getParameterStringByKey("cerberus_exemanualmedia_path", "", "");
+            	testCaseExecutionFileService.deleteFile(rootFolder,testCaseExecutionFile.getFileName());
             	
                 ans = testCaseExecutionFileService.delete(testCaseExecutionFile);
 

@@ -41,6 +41,10 @@ function openModalManualFile(action,manualFile,mode,idex,file){
 	$("#addManualFileButton").click(function() {
 		confirmManualFileModalHandler(action,manualFile,"ADD",idex,file);
 	});
+	$("#deleteManualFileButton").off("click");
+	$("#deleteManualFileButton").click(function() {
+		confirmManualFileModalHandler(action,manualFile,"DELETE",idex,file);
+	});
 }
 
 function initModalManualFile(file, mode){
@@ -67,6 +71,9 @@ function editManualFileClick(manualFile){
 
 	$('#editManualFileButton').attr('class', 'btn btn-primary');
 	$('#editManualFileButton').removeProp('hidden');
+	
+	$('#deleteManualFileButton').attr('class', 'btn btn-danger');
+	$('#deleteManualFileButton').removeProp('hidden');
 
 	$('#addManualFileButton').attr('class', '');
 	$('#addManualFileButton').attr('hidden', 'hidden');
@@ -85,6 +92,9 @@ function addManualFileClick(manualFile){
 
 	$('#editManualFileButton').attr('class', '');
 	$('#editManualFileButton').attr('hidden', 'hidden');
+	
+	$('#deleteManualFileButton').attr('class', '');
+	$('#deleteManualFileButton').attr('hidden', 'hidden');
 	
 	$('#addManualFileButton').attr('class', 'btn btn-primary');
 	$('#addManualFileButton').removeProp('hidden');
@@ -135,8 +145,11 @@ function confirmManualFileModalHandler(action,manualFile, mode, idex, myFile) {
     	
     } 
     
-	// Calculate servlet name to call.
-	var myServlet = "CreateUpdateTestCaseExecutionFile";
+    var myServlet = "CreateUpdateTestCaseExecutionFile"
+    
+    if(mode == "DELETE"){
+    	var myServlet = "DeleteTestCaseExecutionFile?fileID="+myFile.id;
+    }
 
 	// Get the header data from the form.
 	

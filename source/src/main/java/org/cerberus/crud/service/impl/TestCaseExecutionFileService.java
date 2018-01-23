@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.service.impl;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 import org.apache.logging.log4j.Logger;
@@ -121,6 +122,11 @@ public class TestCaseExecutionFileService implements ITestCaseExecutionFileServi
         } else {
             return create(object);
         }
+    }
+    @Override
+    public void deleteFile(String root, String fileName) {
+    	File currentFile = new File(root + File.separator +fileName);
+    	currentFile.delete();
     }
     
     @Override
