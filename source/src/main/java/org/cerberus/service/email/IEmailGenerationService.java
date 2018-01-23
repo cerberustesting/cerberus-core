@@ -28,17 +28,74 @@ import org.cerberus.service.email.entity.Email;
  */
 public interface IEmailGenerationService {
 
+    /**
+     *
+     * @param system
+     * @param country
+     * @param env
+     * @param build
+     * @param revision
+     * @return
+     * @throws Exception
+     */
     public Email generateRevisionChangeEmail(String system, String country, String env, String build, String revision) throws Exception;
 
+    /**
+     *
+     * @param system
+     * @param country
+     * @param env
+     * @return
+     * @throws Exception
+     */
     public Email generateDisableEnvEmail(String system, String country, String env) throws Exception;
 
+    /**
+     *
+     * @param system
+     * @param country
+     * @param env
+     * @param chain
+     * @return
+     * @throws Exception
+     */
     public Email generateNewChainEmail(String system, String country, String env, String chain) throws Exception;
 
+    /**
+     *
+     * @param user
+     * @return
+     * @throws Exception
+     */
     public Email generateAccountCreationEmail(User user) throws Exception;
 
+    /**
+     *
+     * @param user
+     * @return
+     * @throws Exception
+     */
     public Email generateForgotPasswordEmail(User user) throws Exception;
     
+    /**
+     *
+     * @param Tag
+     * @param campaign
+     * @param to
+     * @return
+     * @throws Exception
+     */
     public Email generateNotifyStartTagExecution(String Tag, String campaign, String to) throws Exception;
     
-    public Email generateNotifyEndTagExecution(String Tag, String campaign, String to) throws Exception;
+    /**
+     *
+     * @param Tag
+     * @param campaign
+     * @param to
+     * @param ciResult
+     * @param ciScore
+     * @return
+     * @throws Exception
+     */
+    public Email generateNotifyEndTagExecution(String Tag, String campaign, String to, String ciResult, double ciScore) throws Exception;
 }

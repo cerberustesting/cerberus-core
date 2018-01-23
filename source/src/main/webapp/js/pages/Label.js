@@ -70,8 +70,6 @@ function displayPageLabel() {
     $("[name='reqcriticityField']").html(doc.getDocOnline("label", "reqcriticity"));
     $("[name='longdescField']").html(doc.getDocOnline("label", "longdesc"));
     $("[name='parentLabelField']").html(doc.getDocOnline("label", "parentid"));
-    $("[name='parentLabel']").attr("readonly", "readonly");
-
     $("[name='tabsEdit1']").html(doc.getDocOnline("page_label", "tabDef"));
     $("[name='tabsEdit2']").html(doc.getDocOnline("page_label", "tabEnv"));
 
@@ -80,7 +78,68 @@ function displayPageLabel() {
     displayInvariantList("reqtype", "REQUIREMENTTYPE", false);
     displayInvariantList("reqstatus", "REQUIREMENTSTATUS", false);
     displayInvariantList("reqcriticity", "REQUIREMENTCRITICITY", false);
+
+    refreshParentLabelCombo($("#type").val());
+    $("#type").change(function () {
+        refreshParentLabelCombo($("#type").val());
+    });
     displayFooter(doc);
+    generateLabelTree();
+}
+
+function generateLabelTree() {
+    $.when($.ajax("ReadLabel?iColumns=1&sColumns=type,type&sSearch_0=REQUIREMENT")).then(function (data) {
+        var treeObj = new Object();
+        for (var i = 0; i < data.contentTable.length; i++) {
+            //1st : Create the object
+            var ele = new Object();
+            ele.text = "<span class='label label-primary' style='background-color:" + data.contentTable[i].color + "' data-toggle='tooltip' data-labelid='" + data.contentTable[i].id + "' title='' data-original-title=''>" + data.contentTable[i].label + "</span>";
+            ele.text += "<span class='badge badge-pill badge-secondary'>" + data.contentTable[i].reqType + "</span>";
+            ele.text += "<span class='badge badge-pill badge-secondary'>" + data.contentTable[i].reqStatus + "</span>";
+            ele.text += "<span class='badge badge-pill badge-secondary'>" + data.contentTable[i].reqCriticity + "</span>";
+            //if label has parent label
+            if (data.contentTable[i].parentLabel !== "") {
+                //if parentLabel already created, find it and add a child
+                if (treeObj.hasOwnProperty(data.contentTable[i].labelParentObject.id)) {
+                    var existingParent = treeObj[data.contentTable[i].labelParentObject.id];
+                    if (existingParent.nodes === undefined) {
+                        existingParent.nodes = [ele];
+                    } else {
+                        existingParent.nodes.push(ele);
+                    }
+                    existingParent.tags = [existingParent.tags === undefined ? 1 : parseInt(existingParent.tags) + 1];
+                } else {
+                    //else create parent object and add child
+                    var parent = new Object();
+                    if (parent.nodes === undefined) {
+                        parent.nodes = [ele];
+                    } else {
+                        parent.nodes.push(ele);
+                    }
+
+                    parent.text = "<span class='label label-primary' style='background-color:" + data.contentTable[i].labelParentObject.color + "' data-toggle='tooltip' data-labelid='" + data.contentTable[i].labelParentObject.id + "' title='' data-original-title=''>" + data.contentTable[i].labelParentObject.label + "</span>";
+                    parent.text += "<span class='badge badge-pill badge-secondary'>" + data.contentTable[i].labelParentObject.reqType + "</span>";
+                    parent.text += "<span class='badge badge-pill badge-secondary'>" + data.contentTable[i].labelParentObject.reqStatus + "</span>";
+                    parent.text += "<span class='badge badge-pill badge-secondary'>" + data.contentTable[i].labelParentObject.reqCriticity + "</span>";
+                    parent.tags = [1];
+                    treeObj[data.contentTable[i].labelParentObject.id] = parent;
+                }
+            } else {
+                //if no parent label, push the object if not already exists
+                if (!treeObj.hasOwnProperty(data.contentTable[i].id)) {
+                    treeObj[data.contentTable[i].id] = ele;
+                }
+            }
+        }
+        $('#requirementTree').empty();
+        $('#requirementTree').treeview({data: Object.values(treeObj),
+            showTags: true});
+    });
+}
+
+
+function refreshParentLabelCombo(type) {
+    $("[name='parentLabel']").select2(getComboConfigLabel(type));
 }
 
 function renderOptionsForLabel(data) {
@@ -90,7 +149,6 @@ function renderOptionsForLabel(data) {
         if ($("#createLabelButton").length === 0) {
             var contentToAdd = "<div class='marginBottom10'><button id='createLabelButton' type='button' class='btn btn-default'>\n\
             <span class='glyphicon glyphicon-plus-sign'></span> " + doc.getDocLabel("page_label", "btn_create") + "</button></div>";
-
             $("#labelsTable_wrapper div#labelsTable_length").before(contentToAdd);
             $('#labelList #createLabelButton').click(addEntryClick);
         }
@@ -99,6 +157,7 @@ function renderOptionsForLabel(data) {
 
 function showHideRequirementPanel() {
 
+    refreshParentLabelCombo($('#editLabelModal #editLabelModalForm #type').val());
     if ($('#editLabelModal #editLabelModalForm #type').val() === "REQUIREMENT") {
         $("#panelReq").show();
     } else {
@@ -113,17 +172,16 @@ function deleteEntryHandlerClick() {
     $.when(jqxhr).then(function (data) {
         var messageType = getAlertType(data.messageType);
         if (messageType === "success") {
-            //redraw the datatable
+//redraw the datatable
             var oTable = $("#labelsTable").dataTable();
             oTable.fnDraw(true);
             var info = oTable.fnGetData().length;
-
             if (info === 1) {//page has only one row, then returns to the previous page
                 oTable.fnPageChange('previous');
             }
 
         }
-        //show message in the main page
+//show message in the main page
         showMessageMainPage(messageType, data.message, false);
         //close confirmation window
         $('#confirmationModal').modal('hide');
@@ -142,7 +200,6 @@ function deleteEntryClick(id, label) {
 function addEntryModalSaveHandler() {
     clearResponseMessage($('#addLabelModal'));
     var formAdd = $("#addLabelModal #addLabelModalForm");
-
     var nameElement = formAdd.find("#addLabelModalForm");
     var nameElementEmpty = nameElement.prop("value") === '';
     if (nameElementEmpty) {
@@ -153,13 +210,11 @@ function addEntryModalSaveHandler() {
         nameElement.parents("div.form-group").removeClass("has-error");
     }
 
-    // verif if all mendatory fields are not empty
+// verif if all mendatory fields are not empty
     if (nameElementEmpty)
         return;
-
     // Get the header data from the form.
     var dataForm = convertSerialToJSONObject(formAdd.serialize());
-
     showLoaderInModal('#addLabelModal');
     var jqxhr = $.post("CreateLabel", dataForm);
     $.when(jqxhr).then(function (data) {
@@ -177,7 +232,7 @@ function addEntryModalSaveHandler() {
 }
 
 function addEntryModalCloseHandler() {
-    // reset form values
+// reset form values
     $('#addLabelModal #addLabelModalForm')[0].reset();
     // remove all errors on the form fields
     $(this).find('div.has-error').removeClass("has-error");
@@ -187,14 +242,11 @@ function addEntryModalCloseHandler() {
 
 function addEntryClick() {
     clearResponseMessageMainPage();
-
     // When creating a new label, System takes the default value of the 
     // system already selected in header.
     var formAdd = $('#addLabelModal');
     formAdd.find("#system").prop("value", getUser().defaultSystem);
-
     $('#addLabelModal').modal('show');
-
     //ColorPicker
     $("[name='colorDiv']").colorpicker();
     $("[name='colorDiv']").colorpicker('setValue', '#000000');
@@ -204,10 +256,8 @@ function editEntryModalSaveHandler() {
     clearResponseMessage($('#editLabelModal'));
     var formEdit = $('#editLabelModal #editLabelModalForm');
     tinyMCE.triggerSave();
-
     // Get the header data from the form.
     var data = convertSerialToJSONObject(formEdit.serialize());
-
     showLoaderInModal('#editLabelModal');
     $.ajax({
         url: "UpdateLabel",
@@ -237,11 +287,10 @@ function editEntryModalSaveHandler() {
         },
         error: showUnexpectedError
     });
-
 }
 
 function editEntryModalCloseHandler() {
-    // reset form values
+// reset form values
     $('#editLabelModal #editLabelModalForm')[0].reset();
     // remove all errors on the form fields
     $(this).find('div.has-error').removeClass("has-error");
@@ -254,14 +303,11 @@ function editEntryClick(id, system) {
     var jqxhr = $.getJSON("ReadLabel", "id=" + id);
     $.when(jqxhr).then(function (data) {
         var obj = data["contentTable"];
-
         var formEdit = $('#editLabelModal');
-
         formEdit.find("#id").prop("value", id);
         formEdit.find("#label").prop("value", obj["label"]);
         formEdit.find("#color").prop("value", obj["color"]);
         formEdit.find("#type").prop("value", obj["type"]);
-        formEdit.find("#parentLabel").prop("value", obj["parentLabel"]);
         formEdit.find("#description").prop("value", obj["description"]);
         formEdit.find("#longdesc").prop("value", obj["longDesc"]);
         formEdit.find("#reqtype").prop("value", obj["reqType"]);
@@ -270,27 +316,25 @@ function editEntryClick(id, system) {
         formEdit.find("#system").prop("value", obj["system"]);
         if (tinyMCE.get('longdesc') != null)
             tinyMCE.get('longdesc').setContent(obj["longDesc"]);
-
         if (!(data["hasPermissions"])) { // If readonly, we only readonly all fields
             formEdit.find("#label").prop("readonly", "readonly");
             formEdit.find("#color").prop("readonly", "readonly");
             formEdit.find("#parentLabel").prop("disabled", "disabled");
             formEdit.find("#description").prop("disabled", "disabled");
             formEdit.find("#system").prop("disabled", "disabled");
-
             $('#editLabelButton').attr('class', '');
             $('#editLabelButton').attr('hidden', 'hidden');
         }
+        
+        $("#editLabelModal #editLabelModalForm #parentLabel").val(obj.labelParentObject===undefined?"":obj.labelParentObject.id).trigger('change');
+        
 
-        //ColorPicker
+//ColorPicker
         $("[name='colorDiv']").colorpicker();
         $("[name='colorDiv']").colorpicker('setValue', obj["color"]);
-
         showHideRequirementPanel();
-
         formEdit.modal('show');
     });
-
 }
 
 function aoColumnsFunc(tableId) {
@@ -303,7 +347,6 @@ function aoColumnsFunc(tableId) {
             "sWidth": "50px",
             "mRender": function (data, type, obj) {
                 var hasPermissions = $("#" + tableId).attr("hasPermissions");
-
                 var editLabel = '<button id="editLabel" onclick="editEntryClick(\'' + obj["id"] + '\', \'' + obj["system"] + '\');"\n\
                                     class="editLabel btn btn-default btn-xs margin-right5" \n\
                                     name="editLabel" title="' + doc.getDocLabel("page_label", "btn_edit") + '" type="button">\n\
@@ -323,7 +366,7 @@ function aoColumnsFunc(tableId) {
             }
         },
         {"data": "id",
-        	"like":true,
+            "like": true,
             "sWidth": "30px",
             "sName": "id",
             "title": doc.getDocOnline("label", "id")},
@@ -336,12 +379,12 @@ function aoColumnsFunc(tableId) {
             "sName": "label",
             "title": doc.getDocOnline("label", "label")},
         {"data": "longDesc",
-            "like":true,
+            "like": true,
             "sWidth": "100px",
             "sName": "longDesc",
             "title": doc.getDocOnline("label", "longdesc")},
         {"data": "description",
-            "like":true,
+            "like": true,
             "sWidth": "100px",
             "sName": "description",
             "title": doc.getDocOnline("label", "description")},
@@ -351,7 +394,7 @@ function aoColumnsFunc(tableId) {
             "title": doc.getDocOnline("label", "type")},
         {"data": "color",
             "sWidth": "30px",
-            "like":true,
+            "like": true,
             "sName": "color",
             "title": doc.getDocOnline("label", "color")},
         {"data": "display",
@@ -364,11 +407,18 @@ function aoColumnsFunc(tableId) {
                 return '<span class="label label-primary" style="background-color:' + data.color + '">' + data.label + '</span> ';
             }
         },
-        {"data": "parentLabel",
-        	"like":true,
-            "sWidth": "50px",
-            "sName": "parentLabel",
-            "title": doc.getDocOnline("label", "parentid")},
+        {"sName": "parentLabel",
+            "sWidth": "80px",
+            "title": doc.getDocOnline("label", "parentid"),
+            "data": function (data, type, full, meta) {
+                if (data.labelParentObject !== undefined) {
+                    //return '<span class="label label-primary" style="background-color:' + data.display.color + '">' + data.display.label + '</span> ';
+                    return '<div style="float:left"><span class="label label-primary" onclick="filterOnLabel(this)" style="cursor:pointer;background-color:' + data.labelParentObject.color + '" data-toggle="tooltip" data-labelid="' + data.labelParentObject.id + '" title="' + data.labelParentObject.description + '">' + data.labelParentObject.label + '</span></div> ';
+                } else {
+
+                    return '';
+                }
+            }},
         {"data": "reqType",
             "sWidth": "30px",
             "sName": "reqType",
@@ -386,7 +436,7 @@ function aoColumnsFunc(tableId) {
             "sName": "usrCreated",
             "title": doc.getDocOnline("transversal", "UsrCreated")},
         {"data": "dateCreated",
-            "like":true,
+            "like": true,
             "sWidth": "80px",
             "sName": "dateCreated",
             "title": doc.getDocOnline("transversal", "DateCreated")},
@@ -396,7 +446,7 @@ function aoColumnsFunc(tableId) {
             "title": doc.getDocOnline("transversal", "UsrModif")
         },
         {"data": "dateModif",
-        	"like":true,
+            "like": true,
             "sWidth": "80px",
             "sName": "dateModif",
             "title": doc.getDocOnline("transversal", "DateModif")
@@ -405,3 +455,14 @@ function aoColumnsFunc(tableId) {
     ];
     return aoColumns;
 }
+
+function filterOnLabel(element) {
+    var newLabel = $(element).attr('data-labelid');
+    var colIndex = $(element).parent().parent().get(0).cellIndex;
+    $("#labelsTable").dataTable().fnFilter(newLabel, colIndex);
+}
+
+function afterTableLoad() {
+    generateLabelTree();
+}
+

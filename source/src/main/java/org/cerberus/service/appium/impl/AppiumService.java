@@ -254,8 +254,8 @@ public abstract class AppiumService implements IAppiumService {
                         new Line2D.Double(
                                 window.getWidth() / 2,
                                 2 * window.getHeight() / 3,
-                                window.getWidth() / 2,
-                                window.getHeight() / 3
+                                0,
+                                - window.getHeight() / 3
                         )
                 );
                 break;
@@ -264,8 +264,8 @@ public abstract class AppiumService implements IAppiumService {
                         new Line2D.Double(
                                 window.getWidth() / 2,
                                 window.getHeight() / 3,
-                                window.getWidth() / 2,
-                                2 * window.getHeight() / 3
+                                0,
+                                window.getHeight() / 3
                         )
                 );
                 break;
@@ -274,8 +274,8 @@ public abstract class AppiumService implements IAppiumService {
                         new Line2D.Double(
                                 2 * window.getWidth() / 3,
                                 window.getHeight() / 2,
-                                window.getWidth() / 3,
-                                window.getHeight() / 2
+                                - window.getWidth() / 3,
+                                0
                         )
                 );
                 break;
@@ -284,8 +284,8 @@ public abstract class AppiumService implements IAppiumService {
                         new Line2D.Double(
                                 window.getWidth() / 3,
                                 window.getHeight() / 2,
-                                2 * window.getWidth() / 3,
-                                window.getHeight() / 2
+                                window.getWidth() / 3,
+                                0
                         )
                 );
                 break;

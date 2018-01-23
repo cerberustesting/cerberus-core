@@ -7572,6 +7572,15 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // New updated Documentation.
         //-- ------------------------ 1278-1279
         SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+
+        // New updated Documentation.
+        //-- ------------------------ 1280-1281
+        SQLS = new StringBuilder();
         SQLS.append("DELETE FROM `documentation`;");
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
@@ -7689,8 +7698,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('countryenvironmentdatabase','Database','','fr','Base de donnée','','_environnement')");
         SQLS.append(",('countryenvironmentparameters','domain','','en','Domain','Domain of the Application. Can be used inside any test execution with %SYS_APP_DOMAIN% variable.','_environment')");
         SQLS.append(",('countryenvironmentparameters','domain','','fr','Domaine','Domaine Internet de l\\'application. Peut être utilisé pendant l\\'execution des tests avec la variable %SYS_APP_DOMAIN%.','_environnement')");
-        SQLS.append(",('countryenvironmentparameters','IP','','en','Host','Ressource location of the application.<br><br>Examples :<br><doc class=\"examples\"><code class=\\'doc-url\\'>www.domain.com</code><br><code class=\\'doc-url\\'>192.168.1.1:80</code><br><code class=\\'doc-url\\'>user:password@www.domain.com:8080</code><br><code class=\\'doc-url\\'>user:password@192.168.1.1:80</code><br><code class=\\'doc-url\\'>http://www.laredoute.fr</code><br><code class=\\'doc-url\\'>https://www.facebook.com</code><br></doc><br>NB : If the protocol is not specified, the default selected is http://<br>In case you want to test an https:// application, this ressource location must begin by https://.','_environment')");
-        SQLS.append(",('countryenvironmentparameters','IP','','fr','Hote','Chemin de l\\'application.<br><br>Exemples :<br><doc class=\"examples\"><code class=\\'doc-url\\'>www.domain.com</code><br><code class=\\'doc-url\\'>192.168.1.1:80</code><br><code class=\\'doc-url\\'>user:password@www.domain.com:8080</code><br><code class=\\'doc-url\\'>user:password@192.168.1.1:80</code><br><code class=\\'doc-url\\'>http://www.laredoute.fr</code><br><code class=\\'doc-url\\'>https://www.facebook.com</code><br></doc><br>NB : Si le protocole n\\'est pas specifié, le protocople par default utilisé est http://<br>En cas de test d\\'une application en https, il faut commencer l\\'URL par https://.','_environnement')");
+        SQLS.append(",('countryenvironmentparameters','IP','','en','Host','Ressource location of the application.<br><br>Examples for GUI, IPA and APK applications:<br><doc class=\"examples\"><code class=\\'doc-url\\'>www.domain.com</code><br><code class=\\'doc-url\\'>192.168.1.1:80</code><br><code class=\\'doc-url\\'>user:pass@www.domain.com:8080</code><br><code class=\\'doc-url\\'>user:pass@192.168.1.1:80</code><br><code class=\\'doc-url\\'>http://www.laredoute.fr</code><br><code class=\\'doc-url\\'>https://www.facebook.com</code><br></doc><br>Examples for FAT applications:<br><doc class=\"examples\"><code class=\\'doc-url\\'>/usr/bin/kate</code><br><code class=\\'doc-url\\'>C:\\Programs\\prog.exe</code><br></doc><br>NB : For GUI applications, if the protocol is not specified, the default selected is http://<br>In case you want to test an https:// application, this ressource location must begin by https://.','_environment')");
+        SQLS.append(",('countryenvironmentparameters','IP','','fr','Hote','Chemin de l\\'application.<br><br>Exemples pour applications GUI, IPA et APK :<br><doc class=\"examples\"><code class=\\'doc-url\\'>www.domain.com</code><br><code class=\\'doc-url\\'>192.168.1.1:80</code><br><code class=\\'doc-url\\'>user:password@www.domain.com:8080</code><br><code class=\\'doc-url\\'>user:password@192.168.1.1:80</code><br><code class=\\'doc-url\\'>http://www.laredoute.fr</code><br><code class=\\'doc-url\\'>https://www.facebook.com</code><br></doc><br>Exemples pour les applications FAT :<br><doc class=\"examples\"><code class=\\'doc-url\\'>/usr/bin/kate</code><br><code class=\\'doc-url\\'>C:\\Programs\\prog.exe</code><br></doc><br>NB : Pour les applications GUI, si le protocole n\\'est pas specifié, le protocople par default utilisé est http://<br>En cas de test d\\'une application en https, il faut commencer l\\'URL par https://.','_environnement')");
         SQLS.append(",('countryenvironmentparameters','poolSize','','en','Pool size','Maximal number of testcases that can be executed in same time by a single Cerberus instance','_environment')");
         SQLS.append(",('countryenvironmentparameters','poolSize','','fr','Parallelisation','Nombre maximal, par instances Cerberus, de tests pouvant être exécutés en parallèle','_environnement')");
         SQLS.append(",('countryenvironmentparameters','URL','','en','Context Root','Root URL used to access the application. Equivalent to context root.<br>This path will always be added to the information specified in the testcase.<br><br>Example :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=3><th class=\\'ex\\'>URL</th><th class=\\'ex\\'>Description</th><tr><td class=\\'ex\\'><code class=\\'doc-url\\'>/Cerberus-1.0.1-SNAPSHOT/</code></td><td class=\\'ex\\'>When opening <code class=\\'doc-url\\'>login.jsp</code>, Cerberus will open <code class=\\'doc-url\\'>/Cerberus-1.0.1-SNAPSHOT/login.jsp</code> URL</td></tr></table></doc>','_environment')");
@@ -9730,6 +9739,29 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
 
 
+        // New Invariant to activate campaign notification
+        //-- ------------------------ 1282
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES  ");
+        SQLS.append(" ('CAMPAIGNSTARTNOTIF', 'Y', 100, 'Yes')");
+        SQLS.append(",('CAMPAIGNSTARTNOTIF', 'N', 200, 'No')");
+        SQLS.append(",('CAMPAIGNENDNOTIF', 'Y', 100, 'Yes')");
+        SQLS.append(",('CAMPAIGNENDNOTIF', 'N', 200, 'No')");
+        SQLS.append(",('CAMPAIGNENDNOTIF', 'CIKO', 300, 'Only when Continuous Integration result is KO.')");
+        SQLS.append(",('INVARIANTPRIVATE', 'CAMPAIGNSTARTNOTIF', '750', '')");
+        SQLS.append(",('INVARIANTPRIVATE', 'CAMPAIGNENDNOTIF', '800', '');");
+        SQLInstruction.add(SQLS.toString());
+        
+        // Enrich email notification.
+        //-- ------------------------ 1283
+        SQLS = new StringBuilder(); // adding table with CI result. 
+        SQLS.append("UPDATE `parameter` SET ");
+        SQLS.append(" description='Cerberus End of tag execution notification email body. %TAG%, %URLTAGREPORT%, %CAMPAIGN%, %TAGDURATION%, %TAGSTART%, %TAGEND%, %CIRESULT%, %CISCORE%, %TAGGLOBALSTATUS% and %TAGTCDETAIL% can be used as variables.'");
+        SQLS.append(" , value=replace(value,'%TAGDURATION% min</td></tr></tbody></table>','%TAGDURATION% min</td></tr></tbody></table><table><thead><tr style=\"background-color:#cad3f1; font-style:bold\"><td>CI Result</td><td>CI Score</td></tr></thead><tbody><tr><td>%CIRESULT%</td><td>%CISCORE%</td></tr></tbody></table>') ");
+        SQLS.append(" where param='cerberus_notification_tagexecutionend_body';");
+        SQLInstruction.add(SQLS.toString());
+
+        
         return SQLInstruction;
     }
 

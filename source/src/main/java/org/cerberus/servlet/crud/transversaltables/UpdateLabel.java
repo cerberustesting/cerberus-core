@@ -92,11 +92,11 @@ public class UpdateLabel extends HttpServlet {
         String system = policy.sanitize(request.getParameter("system"));
         String type = policy.sanitize(request.getParameter("type"));
         Integer id = Integer.valueOf(policy.sanitize(request.getParameter("id")));
-        String reqtype = policy.sanitize(request.getParameter("reqtype"));
-        String reqstatus = policy.sanitize(request.getParameter("reqstatus"));
-        String reqcriticity = policy.sanitize(request.getParameter("reqcriticity"));
+        String reqtype = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("reqtype"), "", charset);
+        String reqstatus = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("reqstatus"), "", charset);
+        String reqcriticity = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("reqcriticity"), "", charset);
         // Parameter that needs to be secured --> We SECURE+DECODE them
-        String label = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("label"), "", charset);
+        String label = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("label"), "", charset);
         String color = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("color"), "", charset);
         String parentLabel = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("parentLabel"), "", charset);
         String description = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("description"), "", charset);

@@ -40,8 +40,8 @@ function initPage() {
     $('#addTestcampaignModal').on('hidden.bs.modal', addEntryModalCloseHandler);
     $('#viewTestcampaignModal').on('hidden.bs.modal', viewEntryModalCloseHandler);
 
-    displayInvariantList("notifystart", "APPSERVICECONTENTACT", false);
-    displayInvariantList("notifyend", "APPSERVICECONTENTACT", false);
+    displayInvariantList("notifystart", "CAMPAIGNSTARTNOTIF", false);
+    displayInvariantList("notifyend", "CAMPAIGNENDNOTIF", false);
 
 
     $('#editTestcampaignModal a[data-toggle="tab"]').on('shown.bs.tab', function (e) {

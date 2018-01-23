@@ -75,6 +75,7 @@ public class SikuliService implements ISikuliService {
     public static final String SIKULI_VERIFYELEMENTPRESENT = "exists";
     public static final String SIKULI_VERIFYELEMENTNOTPRESENT = "notExists";
     public static final String SIKULI_VERIFYTEXTINPAGE = "findText";
+    public static final String SIKULI_CAPTURE = "capture";
 
     public static final String SIKULI_IDENTIFIER_PICTURE = "picture";
     public static final String SIKULI_IDENTIFIER_TEXT = "text";
@@ -488,7 +489,7 @@ public class SikuliService implements ISikuliService {
 
         return actionResult.getResultMessage();
     }
-    
+
     @Override
     public MessageEvent doSikuliVerifyElementNotPresent(Session session, String locator) {
         AnswerItem<JSONObject> actionResult = doSikuliAction(session, this.SIKULI_VERIFYELEMENTNOTPRESENT, locator, "");
@@ -531,7 +532,7 @@ public class SikuliService implements ISikuliService {
         long timeout = System.currentTimeMillis() + (session.getCerberus_selenium_wait_element());
 
         try {
-            AnswerItem<JSONObject> actionResult = doSikuliAction(session, "capture", null, "");
+            AnswerItem<JSONObject> actionResult = doSikuliAction(session, this.SIKULI_CAPTURE, null, "");
             String screenshotInBase64 = ((JSONObject) actionResult.getItem()).getString("screenshot");
             byte[] data = Base64.decodeBase64(screenshotInBase64);
 

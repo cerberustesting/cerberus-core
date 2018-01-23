@@ -81,7 +81,7 @@ image:testcasemovestep1.png[testcaseusestep] image:testcasemovestep2.png[testcas
 | Unknown | Unknown action. Default Action when creating a new action | 
 | keypress | will allow you to press any key in the current web page. *[red]#Value1#* : Location of the element from which press the key. *[red]#Value2#* : Keycode of the key to press Example : ENTER |
 | hidekeyboard | Hide the currently visible keyboard | 
-| swipe | TBD | 
+| swipe | The action simulates a user pressing down on the screen, sliding to another position, and removing their finger from the screen. Swipe action can be used neither with unique parameter *[red]#UP#*,*[red]#DOWN#*,*[red]#LEFT#*,*[red]#RIGHT#*, or with combination of parameter *[red]#CUSTOM#* and *[red]#x1;y1;x2;y2#*, which are coordinates of origin point (x1;y1) and #relatives# coodinates of destination point (x2;y2) | swipe UP : will swipe from the 2/3 to the 1/3 of the screen. swipe CUSTOM 100;100;0;100 : will swipe from the point (100;100) to the point (100;200)
 | click | will allow you to click on an element inside the current page. 
 *[red]#Value1#*	Identifier and name of the element to click in the form of : identifier=html_reference. Example : id=html_reference | 
 | mouseButtonLeftPress |TBD | 

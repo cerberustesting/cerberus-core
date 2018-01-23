@@ -27,6 +27,7 @@
         <%@ include file="include/global/dependenciesInclusions.html" %>
         <script type="text/javascript" src="dependencies/Tinymce-4.2.6/tinymce.min.js"></script>
         <script type="text/javascript" src="js/pages/Label.js"></script>
+        <script type="text/javascript" src="dependencies/Bootstrap-treeview-1.2.0/js/bootstrap-treeview.js"></script>
         <title id="pageTitle">Label</title>
     </head>
     <body>
@@ -44,8 +45,19 @@
                     Label List
                 </div>
                 <div class="panel-body" id="labelList">
-                    <table id="labelsTable" class="table table-bordered table-hover display" name="labelsTable"></table>
-                    <div class="marginBottom20"></div>
+                    <ul id="tabsScriptEdit" class="nav nav-tabs" data-tabs="tabs">
+                        <li class="active"><a data-toggle="tab" href="#tabDetails" id="editTabDetails" name="tabDetails">List</a></li>
+                        <li><a data-toggle="tab" href="#tabRequirement" id="editTabRequirement" name="tabRequirement">Requirement</a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="center marginTop25 tab-pane fade in active" id="tabDetails">
+                            <table id="labelsTable" class="table table-bordered table-hover display" name="labelsTable"></table>
+                            <div class="marginBottom20"></div>
+                        </div>
+                        <div class="center marginTop25 tab-pane fade in" id="tabRequirement">
+                            <div id="requirementTree"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <footer class="footer">

@@ -142,7 +142,7 @@ public class AndroidAppiumService extends AppiumService {
 
             // Do the swipe thanks to the Appium driver
             TouchAction dragNDrop
-                    = new TouchAction(session.getAppiumDriver()).longPress(direction.getX1(), direction.getY1(), Duration.ofMillis(duration == null ? DEFAULT_CERBERUS_APPIUM_SWIPE_DURATION : Integer.parseInt(duration.getValue())))
+                    = new TouchAction(session.getAppiumDriver()).press(direction.getX1(), direction.getY1()).waitAction(Duration.ofMillis(duration == null ? DEFAULT_CERBERUS_APPIUM_SWIPE_DURATION : Integer.parseInt(duration.getValue())))
                             .moveTo(direction.getX2(), direction.getY2()).release();
             dragNDrop.perform();
                        
