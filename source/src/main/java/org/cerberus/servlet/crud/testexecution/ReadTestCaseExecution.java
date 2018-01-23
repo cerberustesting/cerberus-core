@@ -746,6 +746,7 @@ public class ReadTestCaseExecution extends HttpServlet {
         AnswerItem answer = new AnswerItem();
         JSONObject object = new JSONObject();
         AnswerList values = new AnswerList();
+        Map<String, List<String>> individualSearch = new HashMap<>();
 
         testCaseService = appContext.getBean(TestCaseService.class);
         invariantService = appContext.getBean(InvariantService.class);
@@ -809,7 +810,7 @@ public class ReadTestCaseExecution extends HttpServlet {
              */
             case "exe.build":
             case "exe.revision":
-                individualSearch = new HashMap();
+            	individualSearch = new HashMap<>();
                 individualSearch.put("level", new ArrayList(Arrays.asList(columnName.equals("exe.build") ? "1" : "2")));
                 values = buildRevisionInvariantService.readDistinctValuesByCriteria(system, "", individualSearch, "versionName");
                 break;
@@ -829,7 +830,7 @@ public class ReadTestCaseExecution extends HttpServlet {
 
                 List<String> individualLike = new ArrayList(Arrays.asList(ParameterParserUtil.parseStringParam(request.getParameter("sLike"), "").split(",")));
 
-                Map<String, List<String>> individualSearch = new HashMap<>();
+                individualSearch = new HashMap<>();
                 for (int a = 0; a < columnToSort.length; a++) {
                     if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
                     	List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));

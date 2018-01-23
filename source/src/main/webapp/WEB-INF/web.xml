@@ -647,6 +647,10 @@
         <servlet-class>org.cerberus.servlet.manualtestcase.CreateUpdateTestCaseExecutionFile</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>DeleteTestCaseExecutionFile</servlet-name>
+        <servlet-class>org.cerberus.servlet.manualtestcase.DeleteTestCaseExecutionFile</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>GetStepInLibrary</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.test.GetStepInLibrary</servlet-class>
     </servlet>
