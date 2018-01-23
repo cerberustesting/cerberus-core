@@ -192,11 +192,8 @@ public class RecorderService implements IRecorderService {
 
     	MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
                 "Can't upload file");
-    	
     	AnswerItem a = new AnswerItem();
-    	
     	TestCaseExecutionFile object = null;
-    	
         String returnCode;
         Integer controlNumber = 0;
         String test = "";
@@ -231,7 +228,6 @@ public class RecorderService implements IRecorderService {
     		Recorder recorder;
     		if(file != null) {
     			String name = file.getName();
-    	        
     	        if(extension.isEmpty()) {
     	        	extension = name.substring(name.lastIndexOf('.')+1, name.length());
     	        	extension = extension.toUpperCase();
@@ -249,18 +245,16 @@ public class RecorderService implements IRecorderService {
                     }
                 }else {
                 	AnswerItem<TestCaseExecutionFile> current = testCaseExecutionFileService.readByKey(myExecution, recorder.getLevel(), null);
+                	msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                 	if(current.getItem() != null) {
                 		try {
                 			File temp = new File(recorder.getRootFolder() + current.getItem().getFileName());
                     		temp.delete();
-                            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                         } catch (SecurityException se) {
                             LOG.warn("Unable to create manual execution file dir: " + se.getMessage());
                             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
                                     se.toString());
                         }
-                	}else {
-                		msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                 	}
                 }
                 if(msg.getCode() == MessageEventEnum.DATA_OPERATION_OK.getCode()){
@@ -270,12 +264,7 @@ public class RecorderService implements IRecorderService {
                                 "Manual Execution File uploaded");
                         msg.setDescription(msg.getDescription().replace("%ITEM%", "Manual Execution File").replace("%OPERATION%", "Upload"));
                         LOG.debug(logPrefix + "Copy file finished with success - source: " + file.getName() + " destination: " + recorder.getRelativeFilenameURL());
-                        
                         object = testCaseExecutionFileFactory.create(fileID, myExecution, recorder.getLevel(), desc, recorder.getRelativeFilenameURL(), extension, "", null, "", null);
-
-                        System.out.print("test");
-                        System.out.print(object.getExeId());
-                        System.out.print(object.getLevel());
                         // Index file created to database.                       
                     } catch (Exception e) {
                     	LOG.warn("Unable to upload Manual Execution File: " + e.getMessage());
@@ -293,9 +282,6 @@ public class RecorderService implements IRecorderService {
     			recorder = this.initFilenames(myExecution, test, testCase, step, index, sequence, controlString, null, 0, fileName.substring(0, fileName.lastIndexOf('.')) ,extension, true);
     			
     			object = testCaseExecutionFileFactory.create(fileID, myExecution, recorder.getLevel(), desc, fileName, extension, "", null, "", null);
-    			System.out.print("test");
-    			System.out.print(object.getExeId());
-                System.out.print(object.getLevel());
     			msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                 msg.setDescription(msg.getDescription().replace("%ITEM%", "Manual Execution File").replace("%OPERATION%", "Update/Create"));
     		}

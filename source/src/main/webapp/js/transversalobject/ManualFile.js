@@ -188,7 +188,6 @@ function feedManualFileModal(manualFile, modalId, mode) {
 
 }
 
-
 function feedManualFileModalData(manualFile, modalId, mode, hasPermissionsUpdate) {
 	var formEdit = $('#' + modalId);
 	var doc = new Doc();
@@ -344,23 +343,16 @@ function hidePasteMessageIfNotOnFirefox(){
 function listennerForInputTypeFile(idModal){
     
     var inputs = $(idModal).find("#inputFile");
-    
-
     inputs[0].addEventListener( 'change', function( e ){
-        //check if the input is an image
-        if(  inputs[0].files[0].type.indexOf("image") !== -1 ){
-            var fileName = '';
-            if( this.files && this.files.length > 1 )
-                fileName = ( this.getAttribute( 'data-multiple-caption' ) || '' ).replace( '{count}', this.files.length );
-            else
-                fileName = e.target.value.split( '\\' ).pop();
+    //check if the input is an image
+        var fileName = '';
+        if( this.files && this.files.length > 1 )
+            fileName = ( this.getAttribute( 'data-multiple-caption' ) || '' ).replace( '{count}', this.files.length );
+        else
+            fileName = e.target.value.split( '\\' ).pop();
 
-            if( fileName ){
-                updateDropzone(fileName, idModal);
-            }
-        }else{//not an image 
-            var message = new Message("danger", "The file input is not a picture");
-            showMessage(message, $(idModal));
+        if( fileName ){
+            updateDropzone(fileName, idModal);
         }
     });
     

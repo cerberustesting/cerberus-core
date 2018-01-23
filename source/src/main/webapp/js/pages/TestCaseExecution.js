@@ -2077,7 +2077,6 @@ Control.prototype.generateHeader = function (id) {
         var buttonOK = $($("<button>").addClass("btn btn-success btn-inverse").attr("type", "button").text("OK"));
         var buttonUpload = $($("<button>").addClass("btn btn-info btn-inverse").attr("type", "button").text("UPLOAD"));
    	 	$(buttonUpload).css("float","right")
-        
         buttonOK.click(function (event) {
             event.preventDefault();
             event.stopPropagation();
@@ -2106,8 +2105,9 @@ Control.prototype.generateHeader = function (id) {
             $(this).parent().parent().append(buttonUpload)
             $(buttonUpload).click(function(event){
 	        	var indexStep = $("#nav-execution").find(".active").data("index");
-	        	var indexAction = $(this).parents("a").data('index')
-	        	var currentActionOrControl = getScriptInformationOfStep()[indexStep]["actionArr"][indexAction]
+	        	var indexAction = $(this).parents("a").parent().find(".action").data('index')
+	        	var indexControl = $(this).parents("a").data('index')
+	        	var currentActionOrControl = getScriptInformationOfStep()[indexStep]["actionArr"][indexAction]["controlArr"][indexControl]
 	        	var idex = $("#idlabel").text()
 	        	openModalManualFile(false,currentActionOrControl, "ADD", idex)
 	        	event.preventDefault()
