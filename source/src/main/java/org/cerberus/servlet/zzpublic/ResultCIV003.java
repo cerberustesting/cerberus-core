@@ -148,6 +148,8 @@ public class ResultCIV003 extends HttpServlet {
         switch (outputFormat) {
             case "svg":
                 response.setContentType("image/svg+xml");
+                response.setHeader("Cache-Control", "no-cache");
+                response.setDateHeader("Expires", 0);
                 try {
                     String tagToDisplay = "";
                     String resultToDisplay = "";
