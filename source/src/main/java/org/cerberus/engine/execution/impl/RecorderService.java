@@ -28,6 +28,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import javax.persistence.criteria.CriteriaBuilder.Trimspec;
+
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
 import org.cerberus.crud.entity.AppService;
@@ -189,7 +192,6 @@ public class RecorderService implements IRecorderService {
     
     
     public AnswerItem recordManuallyFile(TestCaseStepActionExecution testCaseStepActionExecution, TestCaseStepActionControlExecution testCaseStepActionControlExecution, String extension, String desc, FileItem file, Integer id, String fileName, Integer fileID) {
-
     	MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
                 "Can't upload file");
     	AnswerItem a = new AnswerItem();
@@ -203,7 +205,6 @@ public class RecorderService implements IRecorderService {
         String sequence = "";
         String controlString = "";
         Integer myExecution = id;
-    	
     	if (testCaseStepActionControlExecution == null) {
     		test = testCaseStepActionExecution.getTest();
     	    testCase = testCaseStepActionExecution.getTestCase();
@@ -225,25 +226,48 @@ public class RecorderService implements IRecorderService {
     	// Used for logging purposes
         String logPrefix = Infos.getInstance().getProjectNameAndVersion() + " - [" + test + " - " + testCase + " - step: " + step + " action: " + sequence + "] ";
     	try {
-    		Recorder recorder;
-    		if(file != null) {
-    			String name = file.getName();
-    	        if(extension.isEmpty()) {
-    	        	extension = name.substring(name.lastIndexOf('.')+1, name.length());
+    		Recorder recorder = new Recorder();
+			String name = "";
+			File dir = null;
+			if(file!=null) {
+				name = file.getName();
+				extension = name.substring(name.lastIndexOf('.')+1, name.length());
+	        	extension = extension.toUpperCase();
+				recorder = this.initFilenames(myExecution, test, testCase, step, index, sequence, controlString, null, 0, name.substring(0, name.lastIndexOf('.')) ,extension, true);
+				dir = new File(recorder.getFullPath());
+			}else {
+				name = fileName;
+				if(extension.isEmpty()) {
+    	        	extension = fileName.substring(name.lastIndexOf('.')+1, name.length());
     	        	extension = extension.toUpperCase();
     	        }
-    			recorder = this.initFilenames(myExecution, test, testCase, step, index, sequence, controlString, null, 0, name.substring(0, name.lastIndexOf('.')) ,extension, true);
-    			File dir = new File(recorder.getFullPath());
-    			if (!dir.exists()) {
-    				try {
-    					dir.mkdirs();
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                    } catch (SecurityException se) {
-                        LOG.warn("Unable to create manual execution file dir: " + se.getMessage());
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
-                                se.toString());
+				if(name.contains(".")) {
+					recorder = this.initFilenames(myExecution, test, testCase, step, index, sequence, controlString, null, 0, name.substring(0, name.lastIndexOf('.')) ,extension, true);
+					dir = new File(recorder.getFullPath());
+				}else {
+					msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+		            msg.setDescription(msg.getDescription().replace("%ITEM%", "manual testcase execution file")
+		                    .replace("%OPERATION%", "Create")
+		                    .replace("%REASON%", "file is missing!"));
+                    a.setResultMessage(msg);
+                    return a;
+				}
+			}
+			if (!dir.exists()) {
+				try {
+					boolean isCreated = dir.mkdirs();
+                    if(!isCreated) {
+                    	throw new SecurityException();
                     }
-                }else {
+                } catch (SecurityException se) {
+                    LOG.warn("Unable to create manual execution file dir: " + se.getMessage());
+                    msg = new MessageEvent(MessageEventEnum.FILE_ERROR).resolveDescription("DESCRIPTION",
+                            se.toString()).resolveDescription("MORE", "Please check the parameter cerberus_exemanualmedia_path");
+                    a.setResultMessage(msg);
+                    return a;
+                }
+            }else {
+        		if(file != null) {
                 	AnswerItem<TestCaseExecutionFile> current = testCaseExecutionFileService.readByKey(myExecution, recorder.getLevel(), null);
                 	msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                 	if(current.getItem() != null) {
@@ -256,36 +280,27 @@ public class RecorderService implements IRecorderService {
                                     se.toString());
                         }
                 	}
-                }
-                if(msg.getCode() == MessageEventEnum.DATA_OPERATION_OK.getCode()){
                 	try {
                 		file.write(new File(recorder.getFullFilename()));
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("DESCRIPTION",
-                                "Manual Execution File uploaded");
-                        msg.setDescription(msg.getDescription().replace("%ITEM%", "Manual Execution File").replace("%OPERATION%", "Upload"));
-                        LOG.debug(logPrefix + "Copy file finished with success - source: " + file.getName() + " destination: " + recorder.getRelativeFilenameURL());
-                        object = testCaseExecutionFileFactory.create(fileID, myExecution, recorder.getLevel(), desc, recorder.getRelativeFilenameURL(), extension, "", null, "", null);
-                        // Index file created to database.                       
-                    } catch (Exception e) {
+	                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("DESCRIPTION",
+	                            "Manual Execution File uploaded");
+	                    msg.setDescription(msg.getDescription().replace("%ITEM%", "Manual Execution File").replace("%OPERATION%", "Upload"));
+	                    LOG.debug(logPrefix + "Copy file finished with success - source: " + file.getName() + " destination: " + recorder.getRelativeFilenameURL());
+	                    object = testCaseExecutionFileFactory.create(fileID, myExecution, recorder.getLevel(), desc, recorder.getRelativeFilenameURL(), extension, "", null, "", null);
+                	}catch (Exception e) {
                     	LOG.warn("Unable to upload Manual Execution File: " + e.getMessage());
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
                                 e.toString());
                     }
-                }
-                //copies the temp file to the execution file
-    		}else {
-    			String name = fileName;
-    	        if(extension.isEmpty()) {
-    	        	extension = fileName.substring(fileName.lastIndexOf('.')+1, fileName.length());
-    	        	extension = extension.toUpperCase();
-    	        }
-    			recorder = this.initFilenames(myExecution, test, testCase, step, index, sequence, controlString, null, 0, fileName.substring(0, fileName.lastIndexOf('.')) ,extension, true);
-    			
-    			object = testCaseExecutionFileFactory.create(fileID, myExecution, recorder.getLevel(), desc, fileName, extension, "", null, "", null);
-    			msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", "Manual Execution File").replace("%OPERATION%", "Update/Create"));
-    		}
-             testCaseExecutionFileService.saveManual(object);
+        		}else {
+        			msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("DESCRIPTION",
+                            "Manual Execution File updated");
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", "Manual Execution File").replace("%OPERATION%", "updated"));
+                    LOG.debug(logPrefix + "Updated test case manual file finished with success");
+	    			object = testCaseExecutionFileFactory.create(fileID, myExecution, recorder.getLevel(), desc, name, extension, "", null, "", null);
+        		}
+                testCaseExecutionFileService.saveManual(object);
+            }
     	}catch(CerberusException e) {
        		LOG.error(logPrefix + e.toString());
        	}
