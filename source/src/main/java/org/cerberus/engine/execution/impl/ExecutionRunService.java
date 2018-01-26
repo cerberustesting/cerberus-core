@@ -415,6 +415,7 @@ public class ExecutionRunService implements IExecutionRunService {
                                         testCaseStepExecution.setStepResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Step Condition Value1"));
                                         testCaseStepExecution.setReturnMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Step Condition Value1").getDescription());
                                         testCaseStepExecution.setReturnCode(answerDecode.getResultMessage().getCodeString());
+                                        testCaseStepExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
                                         testCaseStepExecution.setEnd(new Date().getTime());
                                         LOG.debug("Step interupted due to decode 'Step Condition Value1' Error.");
                                         conditionStepDecodeError = true;
@@ -431,6 +432,7 @@ public class ExecutionRunService implements IExecutionRunService {
                                             testCaseStepExecution.setStepResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Step Condition Value2"));
                                             testCaseStepExecution.setReturnMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Step Condition Value2").getDescription());
                                             testCaseStepExecution.setReturnCode(answerDecode.getResultMessage().getCodeString());
+                                            testCaseStepExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
                                             testCaseStepExecution.setEnd(new Date().getTime());
                                             LOG.debug("Step interupted due to decode 'Step Condition Value2' Error.");
                                             conditionStepDecodeError = true;
@@ -857,6 +859,7 @@ public class ExecutionRunService implements IExecutionRunService {
                         // If anything wrong with the decode --> we stop here with decode message in the action result.
                         testCaseStepActionExecution.setActionResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Action Condition Value1"));
                         testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
+                        testCaseStepActionExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
                         testCaseStepActionExecution.setEnd(new Date().getTime());
                         LOG.debug("Action interupted due to decode 'Action Condition Value1' Error.");
                         conditionDecodeError = true;
@@ -873,6 +876,7 @@ public class ExecutionRunService implements IExecutionRunService {
                         // If anything wrong with the decode --> we stop here with decode message in the action result.
                         testCaseStepActionExecution.setActionResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Action Condition Value2"));
                         testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
+                        testCaseStepActionExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
                         testCaseStepActionExecution.setEnd(new Date().getTime());
                         LOG.debug("Action interupted due to decode 'Action Condition Value2' Error.");
                         conditionDecodeError = true;
@@ -972,8 +976,12 @@ public class ExecutionRunService implements IExecutionRunService {
                 testCaseStepActionExecution.setEnd(new Date().getTime());
                 testCaseStepExecution.setExecutionResultMessage(testCaseStepActionExecution.getExecutionResultMessage());
                 testCaseStepExecution.setStepResultMessage(testCaseStepActionExecution.getActionResultMessage());
+                testCaseStepExecution.setStopExecution(testCaseStepActionExecution.isStopExecution());
                 this.testCaseStepActionExecutionService.updateTestCaseStepActionExecution(testCaseStepActionExecution);
                 LOG.debug("Registered Action");
+                if (testCaseStepActionExecution.isStopExecution()) {
+                    break;
+                }
 
             }
 
@@ -1083,6 +1091,7 @@ public class ExecutionRunService implements IExecutionRunService {
                         // If anything wrong with the decode --> we stop here with decode message in the action result.
                         testCaseStepActionControlExecution.setControlResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Control Condition Value1"));
                         testCaseStepActionControlExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
+                        testCaseStepActionControlExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
                         testCaseStepActionControlExecution.setEnd(new Date().getTime());
                         LOG.debug("Control interupted due to decode 'Control Condition Value1' Error.");
                         conditionDecodeError = true;
@@ -1099,6 +1108,7 @@ public class ExecutionRunService implements IExecutionRunService {
                         // If anything wrong with the decode --> we stop here with decode message in the action result.
                         testCaseStepActionControlExecution.setControlResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Control Condition Value2"));
                         testCaseStepActionControlExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
+                        testCaseStepActionControlExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
                         testCaseStepActionControlExecution.setEnd(new Date().getTime());
                         LOG.debug("Control interupted due to decode 'Control Condition Value2' Error.");
                         conditionDecodeError = true;

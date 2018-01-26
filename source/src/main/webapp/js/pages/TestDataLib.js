@@ -40,26 +40,8 @@ function initPage() {
     $("select[id='service']").append($('<option></option>').text("").val(""));
     displayAppServiceList("service", "");
 
-    $("#addTestDataLibModal #service").change(function () {
-        activateSOAPServiceFields("#addTestDataLibModal", $(this).val());
-    });
     $("#editTestDataLibModal #service").change(function () {
         activateSOAPServiceFields("#editTestDataLibModal", $(this).val());
-    });
-    $("#duplicateTestDataLibModal #service").change(function () {
-        activateSOAPServiceFields("#duplicateTestDataLibModal", $(this).val());
-    });
-
-
-    // Click on add row button adds a Subdata entry.
-    $("#addSubData").click(function () {
-        addNewSubDataRow("subdataTableBody");
-    });
-    $("#addSubData_edit").click(function () {
-        addNewSubDataRow("subdataTableBody_edit")
-    });
-    $("#dupSubData").click(function () {
-        addNewSubDataRow("subdataTableBody_dup")
     });
 
     var configurations = new TableConfigurationsServerSide("listOfTestDataLib", "ReadTestDataLib", "contentTable", aoColumnsFuncTestDataLib("listOfTestDataLib"), [2, 'asc']);

@@ -399,7 +399,7 @@ public class PropertyService implements IPropertyService {
                                     stringToReplace = stringToReplace.replace("%property." + variableString1 + "%", variableValue);
                                     stringToReplace = stringToReplace.replace("%" + variableString1 + "%", variableValue);
                                     variableString2 = tced.getProperty() + "." + key;
-                                    stringToReplace = stringToReplace.replace("%property" + variableString2 + "%", variableValue);
+                                    stringToReplace = stringToReplace.replace("%property." + variableString2 + "%", variableValue);
                                     stringToReplace = stringToReplace.replace("%" + variableString2 + "%", variableValue);
                                 }
 
@@ -560,6 +560,7 @@ public class PropertyService implements IPropertyService {
                     // If anything wrong with the decode --> we stop here with decode message in the property result.
                     testCaseExecutionData.setPropertyResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Property Value1"));
                     testCaseExecutionData.setEnd(new Date().getTime());
+                    testCaseExecutionData.setStopExecution(answerDecode.getResultMessage().isStopTest());
                     LOG.debug("Finished to calculate Property (interupted) : '" + testCaseCountryProperty.getProperty() + "' : " + testCaseExecutionData.getPropertyResultMessage().getDescription());
                     return;
                 }
@@ -574,6 +575,7 @@ public class PropertyService implements IPropertyService {
                     // If anything wrong with the decode --> we stop here with decode message in the property result.
                     testCaseExecutionData.setPropertyResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Property Value2"));
                     testCaseExecutionData.setEnd(new Date().getTime());
+                    testCaseExecutionData.setStopExecution(answerDecode.getResultMessage().isStopTest());
                     LOG.debug("Finished to calculate Property (interupted) : '" + testCaseCountryProperty.getProperty() + "' : " + testCaseExecutionData.getPropertyResultMessage().getDescription());
                     return;
                 }
@@ -950,6 +952,7 @@ public class PropertyService implements IPropertyService {
                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                         // If anything wrong with the decode --> we stop here with decode message in the action result.
                         testCaseExecutionData.setPropertyResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "SOAP Service Request"));
+                        testCaseExecutionData.setStopExecution(answerDecode.getResultMessage().isStopTest());
                         LOG.debug("Property interupted due to decode 'SOAP Service Request' Error.");
                         return testCaseExecutionData;
                     }
@@ -960,6 +963,7 @@ public class PropertyService implements IPropertyService {
                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                         // If anything wrong with the decode --> we stop here with decode message in the action result.
                         testCaseExecutionData.setPropertyResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "SOAP Service Path"));
+                        testCaseExecutionData.setStopExecution(answerDecode.getResultMessage().isStopTest());
                         LOG.debug("Property interupted due to decode 'SOAP Service Path.");
                         return testCaseExecutionData;
                     }
@@ -970,6 +974,7 @@ public class PropertyService implements IPropertyService {
                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                         // If anything wrong with the decode --> we stop here with decode message in the action result.
                         testCaseExecutionData.setPropertyResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "SOAP Operation"));
+                        testCaseExecutionData.setStopExecution(answerDecode.getResultMessage().isStopTest());
                         LOG.debug("Property interupted due to decode 'SOAP Operation.");
                         return testCaseExecutionData;
                     }
@@ -980,6 +985,7 @@ public class PropertyService implements IPropertyService {
                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                         // If anything wrong with the decode --> we stop here with decode message in the action result.
                         testCaseExecutionData.setPropertyResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "SOAP Attachement URL"));
+                        testCaseExecutionData.setStopExecution(answerDecode.getResultMessage().isStopTest());
                         LOG.debug("Property interupted due to decode 'SOAP Attachement URL.");
                         return testCaseExecutionData;
                     }
@@ -1034,8 +1040,8 @@ public class PropertyService implements IPropertyService {
         else if (xmlToParse == null) {
             testCaseExecutionData.setPropertyResultMessage(
                     new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMXML)
-                    .resolveDescription("VALUE1", testCaseExecutionData.getValue1())
-                    .resolveDescription("VALUE2", testCaseExecutionData.getValue2()));
+                            .resolveDescription("VALUE1", testCaseExecutionData.getValue1())
+                            .resolveDescription("VALUE2", testCaseExecutionData.getValue2()));
             return testCaseExecutionData;
         }
         // Else we can try to parse it thanks to the dedicated service
@@ -1208,6 +1214,7 @@ public class PropertyService implements IPropertyService {
                     if (!(answerDecode.isCodeStringEquals("OK"))) {
                         // If anything wrong with the decode --> we stop here with decode message in the action result.
                         testCaseExecutionData.setPropertyResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "SQL Script"));
+                        testCaseExecutionData.setStopExecution(answerDecode.getResultMessage().isStopTest());
                         LOG.debug("Property interupted due to decode 'SQL Script'.");
                         return testCaseExecutionData;
                     }

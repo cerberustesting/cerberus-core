@@ -110,6 +110,7 @@ public class ControlService implements IControlService {
                     // If anything wrong with the decode --> we stop here with decode message in the control result.
                     testCaseStepActionControlExecution.setControlResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Control Value1"));
                     testCaseStepActionControlExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
+                    testCaseStepActionControlExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
                     testCaseStepActionControlExecution.setEnd(new Date().getTime());
                     LOG.debug("Control interupted due to decode 'Control Value1' Error.");
                     return testCaseStepActionControlExecution;
@@ -130,6 +131,7 @@ public class ControlService implements IControlService {
                     // If anything wrong with the decode --> we stop here with decode message in the control result.
                     testCaseStepActionControlExecution.setControlResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Control Value2"));
                     testCaseStepActionControlExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
+                    testCaseStepActionControlExecution.setStopExecution(answerDecode.getResultMessage().isStopTest());
                     testCaseStepActionControlExecution.setEnd(new Date().getTime());
                     LOG.debug("Control interupted due to decode 'Control Value2' Error.");
                     return testCaseStepActionControlExecution;

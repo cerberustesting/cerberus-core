@@ -1,0 +1,14 @@
+*Bug fixes*
+[square]
+* Fixed issue in ReRun Page when selecting environment
+
+*Improvements / New features*
+[square]
+* [GUI] 
+
+*Warning to be considered before applying the version (deprecated features)*
+[square]
+* 
+
+
+

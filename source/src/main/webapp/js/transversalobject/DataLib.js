@@ -21,24 +21,7 @@
 $(function () {
     $('[data-toggle="popover"]').popover()
     $('#editTestDataLibModal #types').change(function () {
-        if ($(this).val() === "SQL") {
-            $("#panelSQLEdit").collapse("show");
-            $("#panelSERVICEEdit").collapse("hide");
-            $("#panelCSVEdit").collapse("hide");
-        } else if ($(this).val() === "SERVICE") {
-            $("#panelSQLEdit").collapse("hide");
-            $("#panelSERVICEEdit").collapse("show");
-            $("#panelCSVEdit").collapse("hide");
-        } else if ($(this).val() === "CSV") {
-            $("#panelSQLEdit").collapse("hide");
-            $("#panelSERVICEEdit").collapse("hide");
-            $("#panelCSVEdit").collapse("show");
-        } else {
-            $("#panelSQLEdit").collapse("hide");
-            $("#panelSERVICEEdit").collapse("hide");
-            $("#panelCSVEdit").collapse("hide");
-        }
-
+        collapseOrExpandTypes();
     });
 
     $('#editTestDataLibModal #service').change(function () {
@@ -47,7 +30,27 @@ $(function () {
 
 })
 
+function collapseOrExpandTypes() {
+    var typesVal = $('#editTestDataLibModal #types').val();
+    if (typesVal === "SQL") {
+        $("#panelSQLEdit").collapse("show");
+        $("#panelSERVICEEdit").collapse("hide");
+        $("#panelCSVEdit").collapse("hide");
+    } else if (typesVal === "SERVICE") {
+        $("#panelSQLEdit").collapse("hide");
+        $("#panelSERVICEEdit").collapse("show");
+        $("#panelCSVEdit").collapse("hide");
+    } else if (typesVal === "CSV") {
+        $("#panelSQLEdit").collapse("hide");
+        $("#panelSERVICEEdit").collapse("hide");
+        $("#panelCSVEdit").collapse("show");
+    } else {
+        $("#panelSQLEdit").collapse("hide");
+        $("#panelSERVICEEdit").collapse("hide");
+        $("#panelCSVEdit").collapse("hide");
+    }
 
+}
 function openModalAppServiceFromHere() {
     var doc = new Doc();
 
@@ -72,6 +75,7 @@ function openModalAppServiceFromHere() {
         formEdit.find("#servicepaths").prop("readonly", false);
 
     }
+
 }
 
 function openModalDataLib(service, mode, id) {
@@ -82,7 +86,6 @@ function openModalDataLib(service, mode, id) {
 
     $('[data-toggle="popover"]').popover()
 
-
     if (mode === "EDIT") {
         editDataLibClick(service);
     } else if (mode == "ADD") {
@@ -90,6 +93,9 @@ function openModalDataLib(service, mode, id) {
     } else {
         duplicateDataLibClick(service);
     }
+    
+    collapseOrExpandTypes();
+    
 }
 
 function initModalDataLib(id) {
@@ -105,8 +111,8 @@ function initModalDataLib(id) {
 
     $("#editDataLibButton").off("click");
     $("#editDataLibButton").click(function () {
-    	$("#SubdataTable_edit").find("button").click
-    	
+        $("#SubdataTable_edit").find("button").click
+
         confirmDataLibModalHandler("EDIT", id);
     });
 
@@ -119,6 +125,13 @@ function initModalDataLib(id) {
     $("#duplicateDataLibButton").click(function () {
         confirmDataLibModalHandler("DUPLICATE", id);
     });
+    
+    // Click on add row button adds a Subdata entry.
+    $("#addSubData_edit").off("click");
+    $("#addSubData_edit").click(function () {
+        addNewSubDataRow("SubdataTable_edit");
+    });
+
 
     displayInvariantList("system", "SYSTEM", false, "", "");
     displayInvariantList("environment", "ENVIRONMENT", false, "", "");
@@ -289,15 +302,15 @@ function confirmDataLibModalHandler(mode, id) {
     // Getting Data from Database TAB
     var table1 = $("#subdataTableBody_edit tr");
     var table_subdata = [];
-    
+
     for (var i = 0; i < table1.length; i++) {
         table_subdata.push($(table1[i]).data("subdata"));
     }
-    
-    if($("#tabsedit-1 #subdataCheck").is(":checked")){
-    	for(var i = 1; i < table_subdata.length; i++){
-    		table_subdata[i].toDelete = true;
-    	}
+
+    if ($("#tabsedit-1 #subdataCheck").is(":checked")) {
+        for (var i = 1; i < table_subdata.length; i++) {
+            table_subdata[i].toDelete = true;
+        }
     }
 
     // Get the header data from the form.
@@ -310,27 +323,27 @@ function confirmDataLibModalHandler(mode, id) {
     dataForm.envelope = encodeURIComponent(editorEnv.getSession().getDocument().getValue());
     var editorScr = ace.edit($("#editTestLibData #script")[0]);
     dataForm.script = encodeURIComponent(editorScr.getSession().getDocument().getValue());
-    
+
     var file = $("#editTestDataLibModal input[type=file]");
     files = file.prop("files")[0]
-    
-    var sa = formEdit.serializeArray();	
-	var formData = new FormData();
-	
+
+    var sa = formEdit.serializeArray();
+    var formData = new FormData();
+
     for (var i in dataForm) {
         formData.append(i, dataForm[i]);
     }
-    
-    formData.append("file",file.prop("files")[0]);
-  
+
+    formData.append("file", file.prop("files")[0]);
+
     formData.append("subDataList", JSON.stringify(table_subdata));
 
     $.ajax({
-    	async : true,
-    	url: myServlet,
-		method : "POST",
-		data : formData,
-		processData: false,
+        async: true,
+        url: myServlet,
+        method: "POST",
+        data: formData,
+        processData: false,
         contentType: false,
         success: function (data) {
             hideLoaderInModal('#editTestDataLibModal');
@@ -531,11 +544,11 @@ function feedDataLibModalData(testDataLib, modalId, mode, hasPermissionsUpdate) 
             $('#editTestDataLibModal #groupedit').change();
         });
 
-         if (!hasPermissionsUpdate) { // If readonly, we only readonly all fields
-	         $('#editDataLibButton').attr('class', '');
-	         $('#editDataLibButton').attr('hidden', 'hidden');
-         }
-         
+        if (!hasPermissionsUpdate) { // If readonly, we only readonly all fields
+            $('#editDataLibButton').attr('class', '');
+            $('#editDataLibButton').attr('hidden', 'hidden');
+        }
+
         //Highlight envelop on modal loading
         var editor = ace.edit($("#editTestDataLibModal #envelope")[0]);
         editor.setTheme("ace/theme/chrome");
