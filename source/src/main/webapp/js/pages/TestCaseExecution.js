@@ -2440,7 +2440,7 @@ function addFileLink(fileList, container,manual,idStep) {
 		}
 	}
 	
-	if(isTheExecutionManual){
+	if(isTheExecutionManual && fileList.length != 0){
 		var buttonUpload = $($("<button>").addClass("btn btn-info btn-inverse").attr("type", "button").text("UPLOAD"));
 		$(buttonUpload).css("float","right")
 		buttonUpload.click(function(event){            	

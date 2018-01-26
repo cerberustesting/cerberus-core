@@ -422,7 +422,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
                         $("#seeLastExecUniq").parent().attr("href", "./TestCaseExecution.jsp?executionId=" + data.contentTable.id);
                         $("#seeLastExec").parent().attr("href", "./TestCaseExecutionList.jsp?test=" + test + "&testcase=" + testcase);
                         $("#rerunTestCase").attr("title", "Last Execution was " + data.contentTable.controlStatus + " in " + data.contentTable.env + " in " + data.contentTable.country + " on " + data.contentTable.end)
-                        $("#rerunTestCase").parent().attr("href", "./RunTests.jsp?test=" + test + "&testcase=" + testcase + "&country=" + data.contentTable.country + "&environment=" + data.contentTable.env + "'");
+                        $("#rerunTestCase").parent().attr("href", "./RunTests.jsp?test=" + test + "&testcase=" + testcase + "&country=" + data.contentTable.country + "&environment=" + data.contentTable.env);
                         $("#rerunFromQueue").attr("title", "Last Execution was " + data.contentTable.controlStatus + " in " + data.contentTable.env + " in " + data.contentTable.country + " on " + data.contentTable.end)
                         if (data.contentTable.queueId > 0) {
                             $("#rerunFromQueue").click(function () {
