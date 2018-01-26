@@ -2349,106 +2349,119 @@ Control.prototype.getJsonData = function () {
 
 // Function in order to add the Media files links into TestCase, step, action and control level.
 function addFileLink(fileList, container,manual,idStep) {
-    var auto = manual == true ? false : true;
-    $(container).find($("div[name='mediaMiniature']")).remove();
-    for (var i = 0; i < fileList.length; i++) {
-        if ((fileList[i].fileType === "JPG") || (fileList[i].fileType === "PNG")) {
-            var urlImage = "ReadTestCaseExecutionMedia?filename=" + fileList[i].fileName + "&filetype=" + fileList[i].fileType + "&filedesc=" + fileList[i].fileDesc + "&auto=" + auto;
-            var fileDesc = fileList[i].fileDesc;
-            var linkBox = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px")
-                    .append(fileList[i].fileDesc).append($("<img>").attr("src", urlImage + "&h=30&w=60").css("max-height", "30px").css("max-width", "60px")
-                    .click(function (e) {
-                        showPicture(fileDesc, urlImage);
-                        return false;
-                    }));
-            container.append(linkBox);
-        } else if ((fileList[i].fileType === "HTML") || (fileList[i].fileType === "JSON") || (fileList[i].fileType === "TXT") || (fileList[i].fileType === "XML")) {
-            var j = i;
-            var urlImagetxt = "ReadTestCaseExecutionMedia?filename=" + fileList[i].fileName + "&filetype=" + fileList[i].fileType + "&filedesc=" + fileList[i].fileDesc + "&auto=" + auto;;
-            var fileDesctxt = fileList[i].fileDesc;
-            var filetypetxt = fileList[i].fileType.toLowerCase();
-            if (i === 0) {
-                var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px")
-                        .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
-                        .css("height", "30px").click(function (f) {
-                    showTextArea(fileList[0].fileDesc, "", "ReadTestCaseExecutionMedia?filename=" + fileList[0].fileName + "&filetype=" + fileList[0].fileType + "&filedesc=" + fileList[0].fileDesc + "&auto=" + auto);
-                    return false;
-                }));
-            } else if (i === 1) {
-                var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px")
-                        .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
-                        .css("height", "30px").click(function (f) {
-                    showTextArea(fileList[1].fileDesc, "", "ReadTestCaseExecutionMedia?filename=" + fileList[1].fileName + "&filetype=" + fileList[1].fileType + "&filedesc=" + fileList[1].fileDesc + "&auto=" + auto);
-                    return false;
-                }));
-            } else if (i === 2) {
-                var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px")
-                        .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
-                        .css("height", "30px").click(function (f) {
-                    showTextArea(fileList[2].fileDesc, "", "ReadTestCaseExecutionMedia?filename=" + fileList[2].fileName + "&filetype=" + fileList[2].fileType + "&filedesc=" + fileList[2].fileDesc);
-                    return false;
-                }));
-            } else if (i === 3) {
-                var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px")
-                        .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
-                        .css("height", "30px").click(function (f) {
-                    showTextArea(fileList[3].fileDesc, "", "ReadTestCaseExecutionMedia?filename=" + fileList[3].fileName + "&filetype=" + fileList[3].fileType + "&filedesc=" + fileList[3].fileDesc);
-                    return false;
-                }));
-            }
-            container.append(linkBoxtxt);
-        }
-        
-        if(isTheExecutionManual){
-        	let z = i
-        	 var buttonUpload = $($("<button>").addClass("btn btn-info btn-inverse").attr("type", "button").text("UPDATE"));
-        	 $(buttonUpload).css("float","right")
-             buttonUpload.click(function(event){            	
-             	var idex = $("#idlabel").text()
-             	if ($(container).parent().parent().parent().hasClass("action")){
-             		var indexAction = $(this).parents("a").data('index')
-             		var currentActionOrControl = getScriptInformationOfStep()[idStep]["actionArr"][indexAction]
-             		openModalManualFile(true,currentActionOrControl, "EDIT", idex, fileList[z])
-             	}else{
-    	        	var indexAction = $(this).parents("a").parent().find(".action").data('index')
-    	        	var indexControl = $(this).parents("a").data('index')
-    	        	var currentActionOrControl = getScriptInformationOfStep()[idStep]["actionArr"][indexAction]["controlArr"][indexControl]
-             		openModalManualFile(false,currentActionOrControl, "EDIT", idex, fileList[z])
-             	}
-             	
-             	event.preventDefault()
-             	event.stopPropagation()
-             })
-        	$(container).parent().find("#contentField").append(buttonUpload)
-        	$(container).parent().find("#contentField").find(".col-sm-10").removeClass("col-sm-10").addClass("col-sm-8")
-        	$(container).parent().find("#contentField").find(".col-xs-10").removeClass("col-xs-10").addClass("col-xs-8")
-        }
-    }
-    
-    if(isTheExecutionManual && fileList.length == 0){
-    	if ($(container).has("button").length == 0 && $(container).hasClass('row')){
-    		var buttonUpload = $($("<button>").addClass("btn btn-info btn-inverse").attr("type", "button").text("CREATE"));
-		   	$(buttonUpload).css("float","right")
-		   		buttonUpload.click(function(event){            	
-		   			var idex = $("#idlabel").text()
-		        	if ($(container).parent().parent().parent().hasClass("action")){
-		        		var indexAction = $(this).parents("a").data('index')
-		        		var currentActionOrControl = getScriptInformationOfStep()[idStep]["actionArr"][indexAction]
-		        		openModalManualFile(true,currentActionOrControl, "ADD", idex)
-		        	}else{
-		        		var indexAction = $(this).parents("a").parent().find(".action").data('index')
-		        		var indexControl = $(this).parents("a").data('index')
-		        		var currentActionOrControl = getScriptInformationOfStep()[idStep]["actionArr"][indexAction]["controlArr"][indexControl]
-		        		openModalManualFile(false,currentActionOrControl, "ADD", idex)
-		        	}
-		        	event.preventDefault()
-		        	event.stopPropagation()
-		        })
-		   	$(container).parent().find("#contentField").append(buttonUpload)
-		   	$(container).parent().find("#contentField").find(".col-sm-10").removeClass("col-sm-10").addClass("col-sm-8")
-		   	$(container).parent().find("#contentField").find(".col-xs-10").removeClass("col-xs-10").addClass("col-xs-8")
-    	}
-    }
+	var auto = manual == true ? false : true;
+	$(container).find($("div[name='mediaMiniature']")).remove();
+	for (var i = 0; i < fileList.length; i++) {
+		if ((fileList[i].fileType === "JPG") || (fileList[i].fileType === "PNG")) {
+			var urlImage = "ReadTestCaseExecutionMedia?filename=" + fileList[i].fileName + "&filetype=" + fileList[i].fileType + "&filedesc=" + fileList[i].fileDesc + "&auto=" + auto;
+			var fileDesc = fileList[i].fileDesc;
+			var linkBox = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px")
+			.append(fileList[i].fileDesc).append($("<img>").attr("src", urlImage + "&h=30&w=60").css("max-height", "30px").css("max-width", "60px")
+					.click(function (e) {
+						showPicture(fileDesc, urlImage);
+						return false;
+					}));
+			container.append(linkBox);
+
+			if(isTheExecutionManual){
+				let z = i
+				$(linkBox).find("img").off("click").click(function(e){
+					var idex = $("#idlabel").text()
+					if ($(container).parent().parent().parent().hasClass("action")){
+						var indexAction = $(this).parents("a").data('index')
+						var currentActionOrControl = getScriptInformationOfStep()[idStep]["actionArr"][indexAction]
+						openModalManualFile(true,currentActionOrControl, "EDIT", idex, fileList[z])
+					}else{
+						var indexAction = $(this).parents("a").parent().find(".action").data('index')
+						var indexControl = $(this).parents("a").data('index')
+						var currentActionOrControl = getScriptInformationOfStep()[idStep]["actionArr"][indexAction]["controlArr"][indexControl]
+						openModalManualFile(false,currentActionOrControl, "EDIT", idex, fileList[z])
+					}
+					e.preventDefault()
+					e.stopPropagation()
+				})
+			}
+
+		} else if ((fileList[i].fileType === "HTML") || (fileList[i].fileType === "JSON") || (fileList[i].fileType === "TXT") || (fileList[i].fileType === "XML")) {
+			var j = i;
+			var urlImagetxt = "ReadTestCaseExecutionMedia?filename=" + fileList[i].fileName + "&filetype=" + fileList[i].fileType + "&filedesc=" + fileList[i].fileDesc + "&auto=" + auto;;
+			var fileDesctxt = fileList[i].fileDesc;
+			var filetypetxt = fileList[i].fileType.toLowerCase();
+			if (i === 0) {
+				var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px")
+				.append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
+						.css("height", "30px").click(function (f) {
+							showTextArea(fileList[0].fileDesc, "", "ReadTestCaseExecutionMedia?filename=" + fileList[0].fileName + "&filetype=" + fileList[0].fileType + "&filedesc=" + fileList[0].fileDesc + "&auto=" + auto);
+							return false;
+						}));
+			} else if (i === 1) {
+				var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px")
+				.append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
+						.css("height", "30px").click(function (f) {
+							showTextArea(fileList[1].fileDesc, "", "ReadTestCaseExecutionMedia?filename=" + fileList[1].fileName + "&filetype=" + fileList[1].fileType + "&filedesc=" + fileList[1].fileDesc + "&auto=" + auto);
+							return false;
+						}));
+			} else if (i === 2) {
+				var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px")
+				.append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
+						.css("height", "30px").click(function (f) {
+							showTextArea(fileList[2].fileDesc, "", "ReadTestCaseExecutionMedia?filename=" + fileList[2].fileName + "&filetype=" + fileList[2].fileType + "&filedesc=" + fileList[2].fileDesc);
+							return false;
+						}));
+			} else if (i === 3) {
+				var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px")
+				.append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
+						.css("height", "30px").click(function (f) {
+							showTextArea(fileList[3].fileDesc, "", "ReadTestCaseExecutionMedia?filename=" + fileList[3].fileName + "&filetype=" + fileList[3].fileType + "&filedesc=" + fileList[3].fileDesc);
+							return false;
+						}));
+			}
+
+			container.append(linkBoxtxt);
+
+			if(isTheExecutionManual){
+				let z = i
+				$(linkBox).find("img").off("click").click(function(e){
+					var idex = $("#idlabel").text()
+					if ($(container).parent().parent().parent().hasClass("action")){
+						var indexAction = $(this).parents("a").data('index')
+						var currentActionOrControl = getScriptInformationOfStep()[idStep]["actionArr"][indexAction]
+						openModalManualFile(true,currentActionOrControl, "EDIT", idex, fileList[z])
+					}else{
+						var indexAction = $(this).parents("a").parent().find(".action").data('index')
+						var indexControl = $(this).parents("a").data('index')
+						var currentActionOrControl = getScriptInformationOfStep()[idStep]["actionArr"][indexAction]["controlArr"][indexControl]
+						openModalManualFile(false,currentActionOrControl, "EDIT", idex, fileList[z])
+					}
+					e.preventDefault()
+					e.stopPropagation()
+				})
+			}
+		}
+	}
+	
+	if(isTheExecutionManual){
+		var buttonUpload = $($("<button>").addClass("btn btn-info btn-inverse").attr("type", "button").text("UPLOAD"));
+		$(buttonUpload).css("float","right")
+		buttonUpload.click(function(event){            	
+			var idex = $("#idlabel").text()
+			if ($(container).parent().parent().parent().hasClass("action")){
+				var indexAction = $(this).parents("a").data('index')
+				var currentActionOrControl = getScriptInformationOfStep()[idStep]["actionArr"][indexAction]
+				openModalManualFile(true,currentActionOrControl, "ADD", idex)
+			}else{
+				var indexAction = $(this).parents("a").parent().find(".action").data('index')
+				var indexControl = $(this).parents("a").data('index')
+				var currentActionOrControl = getScriptInformationOfStep()[idStep]["actionArr"][indexAction]["controlArr"][indexControl]
+				openModalManualFile(false,currentActionOrControl, "ADD", idex)
+			}
+			event.preventDefault()
+			event.stopPropagation()
+		})
+		$(container).parent().find("#contentField").append(buttonUpload)
+		$(container).parent().find("#contentField").find(".col-sm-10").removeClass("col-sm-10").addClass("col-sm-8")
+		$(container).parent().find("#contentField").find(".col-xs-10").removeClass("col-xs-10").addClass("col-xs-8")
+	}
 }
 
 /*

@@ -151,7 +151,16 @@ public class CreateUpdateTestCaseExecutionFile extends HttpServlet {
             testCaseStepActionControlExecution = updateTestCaseStepActionControlExecutionFromJsonArray(obj, appContext);
         }
     	
-    	ans = recorderService.recordManuallyFile(testCaseStepActionExecution, testCaseStepActionControlExecution, extension, description, file, idex, fileName,fileID);
+    	if(description.isEmpty()) {
+        	msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "manual testcase execution file")
+                    .replace("%OPERATION%", "Create/Update")
+                    .replace("%REASON%", "desc is missing!"));
+            ans.setResultMessage(msg);
+        }else {
+        	ans = recorderService.recordManuallyFile(testCaseStepActionExecution, testCaseStepActionControlExecution, extension, description, file, idex, fileName,fileID);
+        }
+    	
     	
         if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             /**

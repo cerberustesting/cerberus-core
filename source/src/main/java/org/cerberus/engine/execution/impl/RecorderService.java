@@ -268,7 +268,7 @@ public class RecorderService implements IRecorderService {
                 }
             }else {
         		if(file != null) {
-                	AnswerItem<TestCaseExecutionFile> current = testCaseExecutionFileService.readByKey(myExecution, recorder.getLevel(), null);
+                	AnswerItem<TestCaseExecutionFile> current = testCaseExecutionFileService.readByKey(myExecution, recorder.getLevel(), desc);
                 	msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                 	if(current.getItem() != null) {
                 		try {
@@ -299,7 +299,7 @@ public class RecorderService implements IRecorderService {
                     LOG.debug(logPrefix + "Updated test case manual file finished with success");
 	    			object = testCaseExecutionFileFactory.create(fileID, myExecution, recorder.getLevel(), desc, name, extension, "", null, "", null);
         		}
-                testCaseExecutionFileService.saveManual(object);
+                testCaseExecutionFileService.save(object);
             }
     	}catch(CerberusException e) {
        		LOG.error(logPrefix + e.toString());

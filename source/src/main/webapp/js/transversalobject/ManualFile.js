@@ -74,6 +74,9 @@ function editManualFileClick(manualFile){
 	
 	$('#deleteManualFileButton').attr('class', 'btn btn-danger');
 	$('#deleteManualFileButton').removeProp('hidden');
+	
+	$('#seeManualFileButton').attr('class', 'btn btn-default');
+	$('#seeManualFileButton').removeProp('hidden');
 
 	$('#addManualFileButton').attr('class', '');
 	$('#addManualFileButton').attr('hidden', 'hidden');
@@ -92,6 +95,9 @@ function addManualFileClick(manualFile){
 
 	$('#editManualFileButton').attr('class', '');
 	$('#editManualFileButton').attr('hidden', 'hidden');
+	
+	$('#seeManualFileButton').attr('class', '');
+	$('#seeManualFileButton').attr('hidden', 'hidden');
 	
 	$('#deleteManualFileButton').attr('class', '');
 	$('#deleteManualFileButton').attr('hidden', 'hidden');
@@ -193,7 +199,7 @@ function feedManualFileModal(manualFile, modalId, mode) {
 		var manualFile1 = {};
 		manualFile1.fileType = "";
 		manualFile1.fileDesc = "";
-		manualFile1.fileName = "Drag and drop Files";
+		manualFile1.fileName = "";
 		var hasPermissions = true;
 		feedManualFileModalData(manualFile1, modalId, mode, hasPermissions);
 		formEdit.modal('show');
@@ -209,15 +215,25 @@ function feedManualFileModalData(manualFile, modalId, mode, hasPermissionsUpdate
 
 	// Data Feed.
 	if (mode === "EDIT") {
-		$("[name='editManualFileField']").html(
-				doc.getDocOnline("page_global", "btn_edit"));
-		formEdit.find("#application").attr("disabled", true);
-		formEdit.find("#object").prop("readonly", true);
-	} else if (mode === "ADD") { // DUPLICATE or ADD
-		$("[name='editApplicationObjectField']").html(
-				doc.getDocOnline("page_global", "btn_add"));
-		formEdit.find("#application").attr("readonly", false);
-		formEdit.find("#object").prop("readonly", false );
+		formEdit.find("#inputFile").parent().removeClass("col-xs-12").addClass("col-xs-6");
+		formEdit.find("#desc").prop("readonly", true);
+		formEdit.find("#inputFile").parent().css("float","right");
+		var urlImage = "ReadTestCaseExecutionMedia?filename=" + manualFile.fileName + "&filetype=" + manualFile.fileType + "&filedesc=" + manualFile.fileDesc + "&auto=false";
+		var container = $('<div>').addClass("col-xs-6 image");
+	    $("#seeManualFileButton").off("click").click(function(e){
+	    	window.open(urlImage+ "&r=true", "_blank");
+	    	e.preventDefault();
+	    	e.stopPropagation();
+	    })
+		var image = $('<img>').addClass("selectedPicture").attr("src", urlImage);
+		$(container).remove()
+		$(image).width("100%")
+		$(container).append(image)
+		formEdit.find("#inputFile").parent().parent().find(".image").remove()
+		formEdit.find("#inputFile").parent().parent().append(container)
+	}else{
+		formEdit.find("#desc").prop("readonly", false);
+		formEdit.find("#inputFile").parent().parent().find(".image").remove()
 	}
 
 	if (isEmpty(manualFile)) {
