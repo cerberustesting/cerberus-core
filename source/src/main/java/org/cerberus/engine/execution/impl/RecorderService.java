@@ -266,41 +266,41 @@ public class RecorderService implements IRecorderService {
                     a.setResultMessage(msg);
                     return a;
                 }
-            }else {
-        		if(file != null) {
-                	AnswerItem<TestCaseExecutionFile> current = testCaseExecutionFileService.readByKey(myExecution, recorder.getLevel(), desc);
-                	msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                	if(current.getItem() != null) {
-                		try {
-                			File temp = new File(recorder.getRootFolder() + current.getItem().getFileName());
-                    		temp.delete();
-                        } catch (SecurityException se) {
-                            LOG.warn("Unable to create manual execution file dir: " + se.getMessage());
-                            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
-                                    se.toString());
-                        }
-                	}
-                	try {
-                		file.write(new File(recorder.getFullFilename()));
-	                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("DESCRIPTION",
-	                            "Manual Execution File uploaded");
-	                    msg.setDescription(msg.getDescription().replace("%ITEM%", "Manual Execution File").replace("%OPERATION%", "Upload"));
-	                    LOG.debug(logPrefix + "Copy file finished with success - source: " + file.getName() + " destination: " + recorder.getRelativeFilenameURL());
-	                    object = testCaseExecutionFileFactory.create(fileID, myExecution, recorder.getLevel(), desc, recorder.getRelativeFilenameURL(), extension, "", null, "", null);
-                	}catch (Exception e) {
-                    	LOG.warn("Unable to upload Manual Execution File: " + e.getMessage());
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
-                                e.toString());
-                    }
-        		}else {
-        			msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("DESCRIPTION",
-                            "Manual Execution File updated");
-                    msg.setDescription(msg.getDescription().replace("%ITEM%", "Manual Execution File").replace("%OPERATION%", "updated"));
-                    LOG.debug(logPrefix + "Updated test case manual file finished with success");
-	    			object = testCaseExecutionFileFactory.create(fileID, myExecution, recorder.getLevel(), desc, name, extension, "", null, "", null);
-        		}
-                testCaseExecutionFileService.save(object);
             }
+    		if(file != null) {
+            	AnswerItem<TestCaseExecutionFile> current = testCaseExecutionFileService.readByKey(myExecution, recorder.getLevel(), desc);
+            	msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+            	if(current.getItem() != null) {
+            		try {
+            			File temp = new File(recorder.getRootFolder() + current.getItem().getFileName());
+                		temp.delete();
+                    } catch (SecurityException se) {
+                        LOG.warn("Unable to create manual execution file dir: " + se.getMessage());
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                                se.toString());
+                    }
+            	}
+            	try {
+            		file.write(new File(recorder.getFullFilename()));
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("DESCRIPTION",
+                            "Manual Execution File uploaded");
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", "Manual Execution File").replace("%OPERATION%", "Upload"));
+                    LOG.debug(logPrefix + "Copy file finished with success - source: " + file.getName() + " destination: " + recorder.getRelativeFilenameURL());
+                    object = testCaseExecutionFileFactory.create(fileID, myExecution, recorder.getLevel(), desc, recorder.getRelativeFilenameURL(), extension, "", null, "", null);
+            	}catch (Exception e) {
+                	LOG.warn("Unable to upload Manual Execution File: " + e.getMessage());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                            e.toString());
+                }
+    		}else {
+    			msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("DESCRIPTION",
+                        "Manual Execution File updated");
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "Manual Execution File").replace("%OPERATION%", "updated"));
+                LOG.debug(logPrefix + "Updated test case manual file finished with success");
+    			object = testCaseExecutionFileFactory.create(fileID, myExecution, recorder.getLevel(), desc, name, extension, "", null, "", null);
+    		}
+            testCaseExecutionFileService.save(object);
+            
     	}catch(CerberusException e) {
        		LOG.error(logPrefix + e.toString());
        	}
