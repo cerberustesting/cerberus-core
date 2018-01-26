@@ -2421,7 +2421,7 @@ function addFileLink(fileList, container,manual,idStep) {
 
 			if(isTheExecutionManual){
 				let z = i
-				$(linkBox).find("img").off("click").click(function(e){
+				$(linkBoxtxt).find("img").off("click").click(function(e){
 					var idex = $("#idlabel").text()
 					if ($(container).parent().parent().parent().hasClass("action")){
 						var indexAction = $(this).parents("a").data('index')
