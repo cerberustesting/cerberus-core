@@ -552,7 +552,7 @@
             <id>qa-demo-deploy</id>
             <properties>
                 <env>qa-demo</env>
-                <cerberus.demo.host>137.74.112.94</cerberus.demo.host>
+                <cerberus.demo.host>vm.cerberus-testing.org</cerberus.demo.host>
                 <cerberus.demo.upload.path>/opt/delivery</cerberus.demo.upload.path>
                 <cerberus.demo.glassfish.asadmin-path>/opt/glassfish4/glassfish/bin/asadmin</cerberus.demo.glassfish.asadmin-path>
                 <cerberus.demo.glassfish.application>CerberusQA</cerberus.demo.glassfish.application>
