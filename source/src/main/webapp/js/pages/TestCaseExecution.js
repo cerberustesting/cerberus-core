@@ -26,8 +26,8 @@ $.when($.getScript("js/global/global.js")).then(function () {
         displayPageLabel(doc);
 
         var executionId = GetURLParameter("executionId");
-        var executionQueueId = GetURLParameter("executionQueueId"); 
-        
+        var executionQueueId = GetURLParameter("executionQueueId");
+
         if (isEmpty(executionId)) {
             // executionId parameter is not feed so we probably want to see the queue status.
             $("#TestCaseButton").hide();
@@ -587,8 +587,8 @@ function drawProperty(property, table) {
 
     propertyName.append(property.property);
 
-    contentfirstRow.append($("<div class='col-sm-2'>").append(propertyName));
-    contentfirstRow.append($("<div class='col-sm-10'>").attr("id", "contentField").append(descriptionField).append(returnMessageField));
+    contentfirstRow.append($("<div class='col-sm-3' title='" + property.property + "'>").append(propertyName));
+    contentfirstRow.append($("<div class='col-sm-9'>").attr("id", "contentField").append(descriptionField).append(returnMessageField));
 
     contentField.append(contentfirstRow);
     firstRow.append(contentField);
@@ -624,9 +624,9 @@ function drawProperty(property, table) {
     }
 
     // Starting to reduce the size of the row by the length of elements.
-    $(row).find("#contentField").removeClass("col-sm-10").addClass("col-sm-" + (10 - property.fileList.length));
+    $(row).find("#contentField").removeClass("col-sm-10").addClass("col-sm-" + (9 - property.fileList.length));
     // Adding all media attached to action execution.
-    addFileLink(property.fileList, $(row).find("#contentRow"),isTheExecutionManual);
+    addFileLink(property.fileList, $(row).find("#contentRow"), isTheExecutionManual);
 
     htmlElement.prepend(button);
     htmlElement.prepend(row);
@@ -1287,7 +1287,7 @@ function Action(json, parentStep) {
     }
 
     this.toDelete = false;
-    $(this.html).data("index",this.sort-1)
+    $(this.html).data("index", this.sort - 1)
 }
 
 Action.prototype.draw = function (idMotherStep, id) {
@@ -1296,7 +1296,7 @@ Action.prototype.draw = function (idMotherStep, id) {
     var htmlElement = this.html;
     var action = this;
     var idCurrentElement = {stepId: idMotherStep, actionId: id, controlId: -1};
-    
+
     var row = $("<div class='itemContainer'></div>").addClass("col-xs-10");
     var type = $("<div></div>").addClass("type");
 
@@ -1343,7 +1343,7 @@ Action.prototype.draw = function (idMotherStep, id) {
     // Starting to reduce the size of the row by the length of elements.
     $(header).find("#contentField").removeClass("col-xs-12").addClass("col-xs-" + (12 - this.fileList.length));
     // Adding all media attached to action execution.
-    
+
     htmlElement.click(function () {
         if ($(this).find(".glyphicon-chevron-down").length > 0) {
             $(this).find(".glyphicon-chevron-down").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-up");
@@ -1357,7 +1357,7 @@ Action.prototype.draw = function (idMotherStep, id) {
     fullActionElement.append(content);
     this.parentStep.stepActionContainer.append(fullActionElement);
     //this.parentStep.stepActionContainer.append(content);
-    addFileLink(this.fileList, $(header).find(".row"),isTheExecutionManual,idMotherStep);
+    addFileLink(this.fileList, $(header).find(".row"), isTheExecutionManual, idMotherStep);
 };
 
 Action.prototype.setControlList = function (controlList, idMotherStep, idMotherAction) {
@@ -1433,7 +1433,7 @@ Action.prototype.generateHeader = function (id) {
         var buttonOK = $($("<button>").addClass("btn btn-success btn-inverse").attr("type", "button").text("OK"));
 
         var buttonUpload = $($("<button>").addClass("btn btn-info btn-inverse").attr("type", "button").text("UPLOAD"));
-        
+
         buttonOK.click(function (event) {
             event.preventDefault();
             event.stopPropagation();
@@ -1441,17 +1441,17 @@ Action.prototype.generateHeader = function (id) {
             $(this).parent().parent().find(buttonUpload).remove()
             $(this).parent().parent().find(".col-sm-10").removeClass("col-sm-10").addClass("col-sm-8")
             $(this).parent().parent().append(buttonUpload)
-            buttonUpload.click(function(event){
-	        	var indexStep = $("#nav-execution").find(".active").data("index");
-	        	var indexAction = $(this).parents("a").data('index')
-	        	var currentActionOrControl = getScriptInformationOfStep()[indexStep]["actionArr"][indexAction]
-	        	var idex = $("#idlabel").text()
-	        	openModalManualFile(true,currentActionOrControl, "ADD", idex)
-	        	event.preventDefault()
-	        	event.stopPropagation()
+            buttonUpload.click(function (event) {
+                var indexStep = $("#nav-execution").find(".active").data("index");
+                var indexAction = $(this).parents("a").data('index')
+                var currentActionOrControl = getScriptInformationOfStep()[indexStep]["actionArr"][indexAction]
+                var idex = $("#idlabel").text()
+                openModalManualFile(true, currentActionOrControl, "ADD", idex)
+                event.preventDefault()
+                event.stopPropagation()
             })
 
-            $(buttonUpload).css("float","right")
+            $(buttonUpload).css("float", "right")
 
         });
         buttonFA.click(function (event) {
@@ -1461,17 +1461,17 @@ Action.prototype.generateHeader = function (id) {
             $(this).parent().parent().find(buttonUpload).remove()
             $(this).parent().parent().find(".col-sm-10").removeClass("col-sm-10").addClass("col-sm-8")
             $(this).parent().parent().append(buttonUpload)
-            buttonUpload.click(function(event){
-	        	var indexStep = $("#nav-execution").find(".active").data("index");
-	        	var indexAction = $(this).parents("a").data('index')
-	        	var currentActionOrControl = getScriptInformationOfStep()[indexStep]["actionArr"][indexAction]
-	        	var idex = $("#idlabel").text()
-	        	openModalManualFile(true,currentActionOrControl, "ADD", idex)
-	        	event.preventDefault()
-	        	event.stopPropagation()
+            buttonUpload.click(function (event) {
+                var indexStep = $("#nav-execution").find(".active").data("index");
+                var indexAction = $(this).parents("a").data('index')
+                var currentActionOrControl = getScriptInformationOfStep()[indexStep]["actionArr"][indexAction]
+                var idex = $("#idlabel").text()
+                openModalManualFile(true, currentActionOrControl, "ADD", idex)
+                event.preventDefault()
+                event.stopPropagation()
             })
 
-            $(buttonUpload).css("float","right")
+            $(buttonUpload).css("float", "right")
 
         });
 
@@ -1974,7 +1974,7 @@ function Control(json, parentAction) {
     this.toDelete = false;
 
     this.html = $("<a href='#'></a>").addClass("action-group control").css("margin-left", "0px");
-    $(this.html).data("index",this.sort-1)
+    $(this.html).data("index", this.sort - 1)
 }
 
 Control.prototype.draw = function (idMotherStep, idMotherAction, idControl) {
@@ -2022,7 +2022,7 @@ Control.prototype.draw = function (idMotherStep, idMotherAction, idControl) {
     // Starting to reduce the size of the row by the length of elements.
     $(header).find("#contentField").removeClass("col-xs-12").addClass("col-xs-" + (12 - this.fileList.length));
     // Adding all media attached to control execution.
-    addFileLink(this.fileList, $(header).find(".row"),isTheExecutionManual,idMotherStep);
+    addFileLink(this.fileList, $(header).find(".row"), isTheExecutionManual, idMotherStep);
 
     $(this.parentAction.html).parent().append(htmlElement);
     $(this.parentAction.html).parent().append(content);
@@ -2076,7 +2076,7 @@ Control.prototype.generateHeader = function (id) {
         var buttonFA = $($("<button>").addClass("btn btn-danger btn-inverse").attr("type", "button").text("KO"));
         var buttonOK = $($("<button>").addClass("btn btn-success btn-inverse").attr("type", "button").text("OK"));
         var buttonUpload = $($("<button>").addClass("btn btn-info btn-inverse").attr("type", "button").text("UPLOAD"));
-   	 	$(buttonUpload).css("float","right")
+        $(buttonUpload).css("float", "right")
         buttonOK.click(function (event) {
             event.preventDefault();
             event.stopPropagation();
@@ -2084,17 +2084,17 @@ Control.prototype.generateHeader = function (id) {
             $(this).parent().parent().find(buttonUpload).remove()
             $(this).parent().parent().find(".col-xs-10").removeClass("col-xs-10").addClass("col-xs-8")
             $(this).parent().parent().append(buttonUpload)
-            $(buttonUpload).click(function(event){
-	        	var indexStep = $("#nav-execution").find(".active").data("index");
-	        	var indexAction = $(this).parents("a").parent().find(".action").data('index')
-	        	var indexControl = $(this).parents("a").data('index')
-	        	var currentActionOrControl = getScriptInformationOfStep()[indexStep]["actionArr"][indexAction]["controlArr"][indexControl]
-	        	var idex = $("#idlabel").text()
-	        	openModalManualFile(false,currentActionOrControl, "ADD", idex)
-	        	event.preventDefault()
-	        	event.stopPropagation()
+            $(buttonUpload).click(function (event) {
+                var indexStep = $("#nav-execution").find(".active").data("index");
+                var indexAction = $(this).parents("a").parent().find(".action").data('index')
+                var indexControl = $(this).parents("a").data('index')
+                var currentActionOrControl = getScriptInformationOfStep()[indexStep]["actionArr"][indexAction]["controlArr"][indexControl]
+                var idex = $("#idlabel").text()
+                openModalManualFile(false, currentActionOrControl, "ADD", idex)
+                event.preventDefault()
+                event.stopPropagation()
             })
-            $(buttonUpload).css("float","right")
+            $(buttonUpload).css("float", "right")
         });
         buttonFA.click(function (event) {
             event.preventDefault();
@@ -2103,17 +2103,17 @@ Control.prototype.generateHeader = function (id) {
             $(this).parent().parent().find(buttonUpload).remove()
             $(this).parent().parent().find(".col-xs-10").removeClass("col-xs-10").addClass("col-xs-8")
             $(this).parent().parent().append(buttonUpload)
-            $(buttonUpload).click(function(event){
-	        	var indexStep = $("#nav-execution").find(".active").data("index");
-	        	var indexAction = $(this).parents("a").parent().find(".action").data('index')
-	        	var indexControl = $(this).parents("a").data('index')
-	        	var currentActionOrControl = getScriptInformationOfStep()[indexStep]["actionArr"][indexAction]["controlArr"][indexControl]
-	        	var idex = $("#idlabel").text()
-	        	openModalManualFile(false,currentActionOrControl, "ADD", idex)
-	        	event.preventDefault()
-	        	event.stopPropagation()
+            $(buttonUpload).click(function (event) {
+                var indexStep = $("#nav-execution").find(".active").data("index");
+                var indexAction = $(this).parents("a").parent().find(".action").data('index')
+                var indexControl = $(this).parents("a").data('index')
+                var currentActionOrControl = getScriptInformationOfStep()[indexStep]["actionArr"][indexAction]["controlArr"][indexControl]
+                var idex = $("#idlabel").text()
+                openModalManualFile(false, currentActionOrControl, "ADD", idex)
+                event.preventDefault()
+                event.stopPropagation()
             })
-            $(buttonUpload).css("float","right")
+            $(buttonUpload).css("float", "right")
         });
         contentField.append($("<div class='col-xs-2'>").addClass("btn-group btn-group-xs").attr("role", "group").append(buttonOK).append(buttonFA));
         showSaveTestCaseExecutionButton();
@@ -2348,120 +2348,121 @@ Control.prototype.getJsonData = function () {
 };
 
 // Function in order to add the Media files links into TestCase, step, action and control level.
-function addFileLink(fileList, container,manual,idStep) {
-	var auto = manual == true ? false : true;
-	$(container).find($("div[name='mediaMiniature']")).remove();
-	for (var i = 0; i < fileList.length; i++) {
-		if ((fileList[i].fileType === "JPG") || (fileList[i].fileType === "PNG")) {
-			var urlImage = "ReadTestCaseExecutionMedia?filename=" + fileList[i].fileName + "&filetype=" + fileList[i].fileType + "&filedesc=" + fileList[i].fileDesc + "&auto=" + auto;
-			var fileDesc = fileList[i].fileDesc;
-			var linkBox = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px")
-			.append(fileList[i].fileDesc).append($("<img>").attr("src", urlImage + "&h=30&w=60").css("max-height", "30px").css("max-width", "60px")
-					.click(function (e) {
-						showPicture(fileDesc, urlImage);
-						return false;
-					}));
-			container.append(linkBox);
+function addFileLink(fileList, container, manual, idStep) {
+    var auto = manual == true ? false : true;
+    $(container).find($("div[name='mediaMiniature']")).remove();
+    for (var i = 0; i < fileList.length; i++) {
+        if ((fileList[i].fileType === "JPG") || (fileList[i].fileType === "PNG")) {
+            var urlImage = "ReadTestCaseExecutionMedia?filename=" + fileList[i].fileName + "&filetype=" + fileList[i].fileType + "&filedesc=" + fileList[i].fileDesc + "&auto=" + auto;
+            var fileDesc = fileList[i].fileDesc;
+            var linkBox = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px")
+                    .append(fileList[i].fileDesc).append($("<img>").attr("src", urlImage + "&h=30&w=60").css("max-height", "30px").css("max-width", "60px")
+                    .click(function (e) {
+                        showPicture(fileDesc, urlImage);
+                        return false;
+                    }));
+            container.append(linkBox);
 
-			if(isTheExecutionManual){
-				let z = i
-				$(linkBox).find("img").off("click").click(function(e){
-					var idex = $("#idlabel").text()
-					if ($(container).parent().parent().parent().hasClass("action")){
-						var indexAction = $(this).parents("a").data('index')
-						var currentActionOrControl = getScriptInformationOfStep()[idStep]["actionArr"][indexAction]
-						openModalManualFile(true,currentActionOrControl, "EDIT", idex, fileList[z])
-					}else{
-						var indexAction = $(this).parents("a").parent().find(".action").data('index')
-						var indexControl = $(this).parents("a").data('index')
-						var currentActionOrControl = getScriptInformationOfStep()[idStep]["actionArr"][indexAction]["controlArr"][indexControl]
-						openModalManualFile(false,currentActionOrControl, "EDIT", idex, fileList[z])
-					}
-					e.preventDefault()
-					e.stopPropagation()
-				})
-			}
+            if (isTheExecutionManual) {
+                let z = i
+                $(linkBox).find("img").off("click").click(function (e) {
+                    var idex = $("#idlabel").text()
+                    if ($(container).parent().parent().parent().hasClass("action")) {
+                        var indexAction = $(this).parents("a").data('index')
+                        var currentActionOrControl = getScriptInformationOfStep()[idStep]["actionArr"][indexAction]
+                        openModalManualFile(true, currentActionOrControl, "EDIT", idex, fileList[z])
+                    } else {
+                        var indexAction = $(this).parents("a").parent().find(".action").data('index')
+                        var indexControl = $(this).parents("a").data('index')
+                        var currentActionOrControl = getScriptInformationOfStep()[idStep]["actionArr"][indexAction]["controlArr"][indexControl]
+                        openModalManualFile(false, currentActionOrControl, "EDIT", idex, fileList[z])
+                    }
+                    e.preventDefault()
+                    e.stopPropagation()
+                })
+            }
 
-		} else if ((fileList[i].fileType === "HTML") || (fileList[i].fileType === "JSON") || (fileList[i].fileType === "TXT") || (fileList[i].fileType === "XML")) {
-			var j = i;
-			var urlImagetxt = "ReadTestCaseExecutionMedia?filename=" + fileList[i].fileName + "&filetype=" + fileList[i].fileType + "&filedesc=" + fileList[i].fileDesc + "&auto=" + auto;;
-			var fileDesctxt = fileList[i].fileDesc;
-			var filetypetxt = fileList[i].fileType.toLowerCase();
-			if (i === 0) {
-				var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px")
-				.append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
-						.css("height", "30px").click(function (f) {
-							showTextArea(fileList[0].fileDesc, "", "ReadTestCaseExecutionMedia?filename=" + fileList[0].fileName + "&filetype=" + fileList[0].fileType + "&filedesc=" + fileList[0].fileDesc + "&auto=" + auto);
-							return false;
-						}));
-			} else if (i === 1) {
-				var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px")
-				.append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
-						.css("height", "30px").click(function (f) {
-							showTextArea(fileList[1].fileDesc, "", "ReadTestCaseExecutionMedia?filename=" + fileList[1].fileName + "&filetype=" + fileList[1].fileType + "&filedesc=" + fileList[1].fileDesc + "&auto=" + auto);
-							return false;
-						}));
-			} else if (i === 2) {
-				var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px")
-				.append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
-						.css("height", "30px").click(function (f) {
-							showTextArea(fileList[2].fileDesc, "", "ReadTestCaseExecutionMedia?filename=" + fileList[2].fileName + "&filetype=" + fileList[2].fileType + "&filedesc=" + fileList[2].fileDesc);
-							return false;
-						}));
-			} else if (i === 3) {
-				var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px")
-				.append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
-						.css("height", "30px").click(function (f) {
-							showTextArea(fileList[3].fileDesc, "", "ReadTestCaseExecutionMedia?filename=" + fileList[3].fileName + "&filetype=" + fileList[3].fileType + "&filedesc=" + fileList[3].fileDesc);
-							return false;
-						}));
-			}
+        } else if ((fileList[i].fileType === "HTML") || (fileList[i].fileType === "JSON") || (fileList[i].fileType === "TXT") || (fileList[i].fileType === "XML")) {
+            var j = i;
+            var urlImagetxt = "ReadTestCaseExecutionMedia?filename=" + fileList[i].fileName + "&filetype=" + fileList[i].fileType + "&filedesc=" + fileList[i].fileDesc + "&auto=" + auto;
+            ;
+            var fileDesctxt = fileList[i].fileDesc;
+            var filetypetxt = fileList[i].fileType.toLowerCase();
+            if (i === 0) {
+                var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px")
+                        .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
+                        .css("height", "30px").click(function (f) {
+                    showTextArea(fileList[0].fileDesc, "", "ReadTestCaseExecutionMedia?filename=" + fileList[0].fileName + "&filetype=" + fileList[0].fileType + "&filedesc=" + fileList[0].fileDesc + "&auto=" + auto);
+                    return false;
+                }));
+            } else if (i === 1) {
+                var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px")
+                        .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
+                        .css("height", "30px").click(function (f) {
+                    showTextArea(fileList[1].fileDesc, "", "ReadTestCaseExecutionMedia?filename=" + fileList[1].fileName + "&filetype=" + fileList[1].fileType + "&filedesc=" + fileList[1].fileDesc + "&auto=" + auto);
+                    return false;
+                }));
+            } else if (i === 2) {
+                var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px")
+                        .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
+                        .css("height", "30px").click(function (f) {
+                    showTextArea(fileList[2].fileDesc, "", "ReadTestCaseExecutionMedia?filename=" + fileList[2].fileName + "&filetype=" + fileList[2].fileType + "&filedesc=" + fileList[2].fileDesc);
+                    return false;
+                }));
+            } else if (i === 3) {
+                var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px")
+                        .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
+                        .css("height", "30px").click(function (f) {
+                    showTextArea(fileList[3].fileDesc, "", "ReadTestCaseExecutionMedia?filename=" + fileList[3].fileName + "&filetype=" + fileList[3].fileType + "&filedesc=" + fileList[3].fileDesc);
+                    return false;
+                }));
+            }
 
-			container.append(linkBoxtxt);
+            container.append(linkBoxtxt);
 
-			if(isTheExecutionManual){
-				let z = i
-				$(linkBoxtxt).find("img").off("click").click(function(e){
-					var idex = $("#idlabel").text()
-					if ($(container).parent().parent().parent().hasClass("action")){
-						var indexAction = $(this).parents("a").data('index')
-						var currentActionOrControl = getScriptInformationOfStep()[idStep]["actionArr"][indexAction]
-						openModalManualFile(true,currentActionOrControl, "EDIT", idex, fileList[z])
-					}else{
-						var indexAction = $(this).parents("a").parent().find(".action").data('index')
-						var indexControl = $(this).parents("a").data('index')
-						var currentActionOrControl = getScriptInformationOfStep()[idStep]["actionArr"][indexAction]["controlArr"][indexControl]
-						openModalManualFile(false,currentActionOrControl, "EDIT", idex, fileList[z])
-					}
-					e.preventDefault()
-					e.stopPropagation()
-				})
-			}
-		}
-	}
-	
-	if(isTheExecutionManual && fileList.length != 0){
-		var buttonUpload = $($("<button>").addClass("btn btn-info btn-inverse").attr("type", "button").text("UPLOAD"));
-		$(buttonUpload).css("float","right")
-		buttonUpload.click(function(event){            	
-			var idex = $("#idlabel").text()
-			if ($(container).parent().parent().parent().hasClass("action")){
-				var indexAction = $(this).parents("a").data('index')
-				var currentActionOrControl = getScriptInformationOfStep()[idStep]["actionArr"][indexAction]
-				openModalManualFile(true,currentActionOrControl, "ADD", idex)
-			}else{
-				var indexAction = $(this).parents("a").parent().find(".action").data('index')
-				var indexControl = $(this).parents("a").data('index')
-				var currentActionOrControl = getScriptInformationOfStep()[idStep]["actionArr"][indexAction]["controlArr"][indexControl]
-				openModalManualFile(false,currentActionOrControl, "ADD", idex)
-			}
-			event.preventDefault()
-			event.stopPropagation()
-		})
-		$(container).parent().find("#contentField").append(buttonUpload)
-		$(container).parent().find("#contentField").find(".col-sm-10").removeClass("col-sm-10").addClass("col-sm-8")
-		$(container).parent().find("#contentField").find(".col-xs-10").removeClass("col-xs-10").addClass("col-xs-8")
-	}
+            if (isTheExecutionManual) {
+                let z = i
+                $(linkBoxtxt).find("img").off("click").click(function (e) {
+                    var idex = $("#idlabel").text()
+                    if ($(container).parent().parent().parent().hasClass("action")) {
+                        var indexAction = $(this).parents("a").data('index')
+                        var currentActionOrControl = getScriptInformationOfStep()[idStep]["actionArr"][indexAction]
+                        openModalManualFile(true, currentActionOrControl, "EDIT", idex, fileList[z])
+                    } else {
+                        var indexAction = $(this).parents("a").parent().find(".action").data('index')
+                        var indexControl = $(this).parents("a").data('index')
+                        var currentActionOrControl = getScriptInformationOfStep()[idStep]["actionArr"][indexAction]["controlArr"][indexControl]
+                        openModalManualFile(false, currentActionOrControl, "EDIT", idex, fileList[z])
+                    }
+                    e.preventDefault()
+                    e.stopPropagation()
+                })
+            }
+        }
+    }
+
+    if (isTheExecutionManual && fileList.length != 0) {
+        var buttonUpload = $($("<button>").addClass("btn btn-info btn-inverse").attr("type", "button").text("UPLOAD"));
+        $(buttonUpload).css("float", "right")
+        buttonUpload.click(function (event) {
+            var idex = $("#idlabel").text()
+            if ($(container).parent().parent().parent().hasClass("action")) {
+                var indexAction = $(this).parents("a").data('index')
+                var currentActionOrControl = getScriptInformationOfStep()[idStep]["actionArr"][indexAction]
+                openModalManualFile(true, currentActionOrControl, "ADD", idex)
+            } else {
+                var indexAction = $(this).parents("a").parent().find(".action").data('index')
+                var indexControl = $(this).parents("a").data('index')
+                var currentActionOrControl = getScriptInformationOfStep()[idStep]["actionArr"][indexAction]["controlArr"][indexControl]
+                openModalManualFile(false, currentActionOrControl, "ADD", idex)
+            }
+            event.preventDefault()
+            event.stopPropagation()
+        })
+        $(container).parent().find("#contentField").append(buttonUpload)
+        $(container).parent().find("#contentField").find(".col-sm-10").removeClass("col-sm-10").addClass("col-sm-8")
+        $(container).parent().find("#contentField").find(".col-xs-10").removeClass("col-xs-10").addClass("col-xs-8")
+    }
 }
 
 /*

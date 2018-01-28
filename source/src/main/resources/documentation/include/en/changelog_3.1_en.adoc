@@ -1,10 +1,13 @@
 *Bug fixes*
 [square]
-* Fixed issue in ReRun Page when selecting environment
+* Fixed issue in ReRun Button (from TestCase and Execution detail page) where environment was not selected.
+* Fixed various issues on Datalib modal when opened from TestCase page.
+* Fixed syntax %property.PROP.SUBDATA% that was not decoded.
 
 *Improvements / New features*
 [square]
-* [GUI] 
+* [GUI] Various improvements on file attachement on Manual Executions.
+* [GUI] Display Changelog of latest version on homepage.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

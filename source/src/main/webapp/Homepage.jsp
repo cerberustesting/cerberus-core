@@ -65,7 +65,7 @@
         <div class="container-fluid center" id="page-layout">
             <%@ include file="include/global/messagesArea.html"%>
             <h1 class="page-title-line" id="title">Welcome to Cerberus Application</h1>
-            
+
             <div id="homeTableDiv" class="panel panel-default">
                 <div class="panel-heading card" data-toggle="collapse" data-target="#applicationPanel">
                     <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
@@ -94,31 +94,46 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-6" id="ReportByStatusPanel">
-                    <div class="panel panel-default">
-                        <div class="panel-heading card" data-toggle="collapse" data-target="#EnvStatus">
-                            <span class="fa fa-pie-chart fa-fw"></span>
-                            <label id="reportStatus">Environment Status</label>
-                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
-                        </div>
-                        <div class="panel-body collapse in" id="EnvStatus">
-                            <div class="row">
-                                <div class="col-xs-12" id="EnvByBuildRevisionTable">
-                                    <table class="table dataTable table-bordered table-hover nomarginbottom" id="envTable">
-                                        <thead>
-                                            <tr>
-                                                <th class="text-center" id="buildHeader" name="buildHeader">Build</th>
-                                                <th class="text-center" id="revisionHeader" name="revisionHeader">Revision</th>
-                                                <th class="text-center" id="devHeader" name="devHeader">DEV</th>
-                                                <th class="text-center" id="qaHeader" name="qaHeader">QA</th>
-                                                <th class="text-center" id="uatHeader" name="uatHeader">UAT</th>
-                                                <th class="text-center" id="prodHeader" name="prodHeader">PROD</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="envTableBody">
-                                        </tbody>
-                                    </table>
+                <div class="col-lg-6">
+                    <div id="ReportByStatusPanel">
+                        <div class="panel panel-default">
+                            <div class="panel-heading card" data-toggle="collapse" data-target="#EnvStatus">
+                                <span class="fa fa-pie-chart fa-fw"></span>
+                                <label id="reportStatus">Environment Status</label>
+                                <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                            </div>
+                            <div class="panel-body collapse in" id="EnvStatus">
+                                <div class="row">
+                                    <div class="col-xs-12" id="EnvByBuildRevisionTable">
+                                        <table class="table dataTable table-bordered table-hover nomarginbottom" id="envTable">
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-center" id="buildHeader" name="buildHeader">Build</th>
+                                                    <th class="text-center" id="revisionHeader" name="revisionHeader">Revision</th>
+                                                    <th class="text-center" id="devHeader" name="devHeader">DEV</th>
+                                                    <th class="text-center" id="qaHeader" name="qaHeader">QA</th>
+                                                    <th class="text-center" id="uatHeader" name="uatHeader">UAT</th>
+                                                    <th class="text-center" id="prodHeader" name="prodHeader">PROD</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="envTableBody">
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="ChangelogPanel">
+                        <div class="panel panel-default">
+                            <div class="panel-heading card" data-toggle="collapse" data-target="#Changelog31">
+                                <span class="fa fa-pie-chart fa-fw"></span>
+                                <label id="changelogLabel">Changelog</label>
+                                <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                            </div>
+                            <div class="panel-body collapse in" id="Changelog31">
+                                <iframe id="documentationFrame" style="width:100%" frameborder="0" scrolling="yes"/>
+                                </iframe>
                             </div>
                         </div>
                     </div>
