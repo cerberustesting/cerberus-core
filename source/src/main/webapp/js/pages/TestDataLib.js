@@ -37,9 +37,7 @@ function initPage() {
     /*
      * Handles the change of the type when adding a new test data lib entry
      */
-    $("select[id='service']").append($('<option></option>').text("").val(""));
-    displayAppServiceList("service", "");
-
+   
     $("#editTestDataLibModal #service").change(function () {
         activateSOAPServiceFields("#editTestDataLibModal", $(this).val());
     });

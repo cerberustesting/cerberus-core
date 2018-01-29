@@ -21,6 +21,7 @@
 var canUpdate = false;
 var allDelete = false;
 var Tags = [];
+
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
 
@@ -326,7 +327,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
                                 toDelete: false
                             };
 
-                            var prop = drawProperty(newProperty, testcaseinfo, true);
+                            var prop = drawProperty(newProperty, testcaseinfo, true, document.getElementsByClassName("property").length);
                             setPlaceholderProperty(prop[0], prop[1]);
 
                             $(prop[0]).find("#propName").focus();
@@ -3348,8 +3349,9 @@ function setPlaceholderProperty(propertyElement, property) {
 
     $(propertyElement).find('select[name="propertyType"] option:selected').each(function (i, e) {
 
-
         function initChange() {
+        	
+        	console.log(editor.container.id)
 
             if ($("#" + editor.container.id).parent().parent().find("[name='propertyType']").val() === "getFromDataLib") {
                 $("#" + editor.container.id).parent().find('.input-group').remove();
@@ -3378,9 +3380,9 @@ function setPlaceholderProperty(propertyElement, property) {
                                     $("#" + editor.container.id).parent().append(editEntry);
 
                                     displayDataLibList(editor.container.id, undefined, data)
-                                    $("#" + editor.container.id).parent().find("button").attr('onclick', 'openModalDataLib(' + $("#" + editor.container.id).parent().find("select").val() + ",'EDIT'," + "'" + escaped + "')");
+                                    $("#" + editor.container.id).parent().find("button").attr('onclick', 'openModalDataLib(' +editor.container.id + "\','" + $("#" + editor.container.id).parent().find("select").val() + ",'EDIT'," + "'" + escaped + "')");
                                     $("#" + editor.container.id).parent().find("select").unbind("change").change(function () {
-                                        $("#" + editor.container.id).parent().find("button").attr('onclick', 'openModalDataLib(' + $("#" + editor.container.id).parent().find("select").val() + ",'EDIT'," + "'" + escaped + "')");
+                                        $("#" + editor.container.id).parent().find("button").attr('onclick', 'openModalDataLib('+editor.container.id+ "\','" + $("#" + editor.container.id).parent().find("select").val() + ",'EDIT'," + "'" + escaped + "')");
                                     })
 
                                 } else {
@@ -3392,14 +3394,14 @@ function setPlaceholderProperty(propertyElement, property) {
                                         $("#" + editor.container.id).parent().removeClass("col-sm-10").addClass("col-sm-8")
                                         $("#" + editor.container.id).parent().parent().append(editEntry);
                                         $("#" + editor.container.id).parent().parent().append(addEntry);
-                                        $("#" + editor.container.id).parent().parent().find("button:eq(0)").attr('onclick', 'openModalDataLib(\'' + service[0].testDataLibID + "\','EDIT'," + "'" + escaped + "')");
-                                        $("#" + editor.container.id).parent().parent().find("button:eq(1)").attr('onclick', 'openModalDataLib(\'' + escaped + "\','ADD'," + "'" + escaped + "')");
+                                        $("#" + editor.container.id).parent().parent().find("button:eq(0)").attr('onclick', 'openModalDataLib(\''+editor.container.id+ "\','" + service[0].testDataLibID + "\','EDIT'," + "'" + escaped + "')");
+                                        $("#" + editor.container.id).parent().parent().find("button:eq(1)").attr('onclick', 'openModalDataLib(\''+editor.container.id+ "\','" + escaped + "\','ADD'," + "'" + escaped + "')");
                                     } else {
-                                        var addEntry = $('<div class="col-btn col-sm-2" style="text-align:center"><label style="width:100%">Add the DataLib</label><button class="btn btn-secondary" type="button"><span class="glyphicon glyphicon-plus"></span></button></div>');
+                                        var addEntry = $('<div class="col-btn col-sm-2" style="text-align:center"><label style="width:100%">Add the DataLib</label><button class="btn btn-secondary '+escaped+ '" type="button"><span class="glyphicon glyphicon-plus"></span></button></div>');
                                         addEntry.find("button").attr("disabled", !canUpdate);
                                         $("#" + editor.container.id).parent().removeClass("col-sm-10").addClass("col-sm-8")
                                         $("#" + editor.container.id).parent().parent().append(addEntry);
-                                        $("#" + editor.container.id).parent().parent().find("button").attr('onclick', 'openModalDataLib(\'' + escaped + "\','ADD'," + "'" + escaped + "')");
+                                        $("#" + editor.container.id).parent().parent().find("button").attr('onclick', 'openModalDataLib(\''+editor.container.id+ "\','" + escaped + "\','ADD'," + "'" + escaped + "')");
                                     }
                                 }
                             }
