@@ -33,6 +33,10 @@
     }
 }
 
+#dropzoneText{
+	word-wrap:break-word;
+}
+
 
 .separator-left {
     border-left: 1px solid #E3E3E3;

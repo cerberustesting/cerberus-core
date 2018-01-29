@@ -212,28 +212,50 @@ function feedManualFileModalData(manualFile, modalId, mode, hasPermissionsUpdate
 	var doc = new Doc();
 	var isEditable = (((hasPermissionsUpdate) && (mode === "EDIT"))
 			|| (mode === "ADD"));
-
+	
 	// Data Feed.
 	if (mode === "EDIT") {
-		formEdit.find("#inputFile").parent().removeClass("col-xs-12").addClass("col-xs-6");
+		formEdit.find("#preview").empty()
 		formEdit.find("#desc").prop("readonly", true);
-		formEdit.find("#inputFile").parent().css("float","right");
 		var urlImage = "ReadTestCaseExecutionMedia?filename=" + manualFile.fileName + "&filetype=" + manualFile.fileType + "&filedesc=" + manualFile.fileDesc + "&auto=false";
-		var container = $('<div>').addClass("col-xs-6 image");
 	    $("#seeManualFileButton").off("click").click(function(e){
 	    	window.open(urlImage+ "&r=true", "_blank");
 	    	e.preventDefault();
 	    	e.stopPropagation();
 	    })
-		var image = $('<img>').addClass("selectedPicture").attr("src", urlImage);
-		$(container).remove()
-		$(image).width("100%")
-		$(container).append(image)
-		formEdit.find("#inputFile").parent().parent().find(".image").remove()
-		formEdit.find("#inputFile").parent().parent().append(container)
+	    
+	    if(manualFile.fileType == "JPG" || manualFile.fileType == "PNG"){
+	    	var image = $('<img>').addClass("selectedPicture").attr("src", urlImage+"&h=400&w=560");
+	    	$("#preview").append(image)
+	    }else{
+	    	var jqxhr = $.get(urlImage, "&autoContentType=N");
+	        $.when(jqxhr).then(function (data) {
+	            $('#preview').append($("<div>").addClass("form-group").append($("<pre id='previewContent'></pre>").addClass("form-control").attr("style", "min-height:15px").text(data)));
+	            //Highlight content on modal loading
+	            var editor = ace.edit($("#previewContent")[0]);
+	            editor.setTheme("ace/theme/chrome");
+	            var textMode = defineAceMode(editor.getSession().getDocument().getValue());
+	            editor.getSession().setMode(textMode);
+	            editor.setOptions({
+	                maxLines: 30
+	            });
+
+	            //Autoindentation
+	            var jsbOpts = {
+	                indent_size: 2
+	            };
+	            var session = editor.getSession();
+
+	            if (textMode.endsWith("json")) {
+	                session.setValue(js_beautify(session.getValue(), jsbOpts));
+	            } else if (textMode.endsWith("xml")) {
+	                session.setValue(html_beautify(session.getValue(), jsbOpts));
+	            }
+	        });
+	    }
 	}else{
 		formEdit.find("#desc").prop("readonly", false);
-		formEdit.find("#inputFile").parent().parent().find(".image").remove()
+		formEdit.find("#preview").empty()
 	}
 
 	if (isEmpty(manualFile)) {

@@ -2141,6 +2141,7 @@
             <url-pattern>/UpdateMyUserRobotPreference</url-pattern>
             <url-pattern>/ReadUserPublic</url-pattern>
             <url-pattern>/FindInvariantByID</url-pattern>
+            <url-pattern>/ImportTestCaseFromJson</url-pattern>
             <url-pattern>/GetReportData</url-pattern>
             <url-pattern>/ReadApplication</url-pattern>
             <url-pattern>/ReadApplicationObject</url-pattern>
