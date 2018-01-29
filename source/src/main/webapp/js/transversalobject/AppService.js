@@ -462,7 +462,6 @@ function feedAppServiceModalDataContent(ContentList) {
     if(!isEmpty(ContentList)){
     	$.each(ContentList, function (idx, obj) {
             obj.toDelete = false;
-            console.debug(obj);
             appendContentRow(obj);
         });
     } 

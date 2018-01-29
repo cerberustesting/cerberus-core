@@ -3351,8 +3351,6 @@ function setPlaceholderProperty(propertyElement, property) {
 
         function initChange() {
         	
-        	console.log(editor.container.id)
-
             if ($("#" + editor.container.id).parent().parent().find("[name='propertyType']").val() === "getFromDataLib") {
                 $("#" + editor.container.id).parent().find('.input-group').remove();
                 var escaped = editor.getValue().replace(/[^\w\s]/gi, '');
@@ -3380,9 +3378,9 @@ function setPlaceholderProperty(propertyElement, property) {
                                     $("#" + editor.container.id).parent().append(editEntry);
 
                                     displayDataLibList(editor.container.id, undefined, data)
-                                    $("#" + editor.container.id).parent().find("button").attr('onclick', 'openModalDataLib(' +editor.container.id + "\','" + $("#" + editor.container.id).parent().find("select").val() + ",'EDIT'," + "'" + escaped + "')");
+                                    $("#" + editor.container.id).parent().find("button").attr('onclick', 'openModalDataLib(\'' +editor.container.id + "\','" + $("#" + editor.container.id).parent().find("select").val() + "\','EDIT'," + "'" + escaped + "')");
                                     $("#" + editor.container.id).parent().find("select").unbind("change").change(function () {
-                                        $("#" + editor.container.id).parent().find("button").attr('onclick', 'openModalDataLib('+editor.container.id+ "\','" + $("#" + editor.container.id).parent().find("select").val() + ",'EDIT'," + "'" + escaped + "')");
+                                        $("#" + editor.container.id).parent().find("button").attr('onclick', 'openModalDataLib(\''+editor.container.id+ "\','" + $("#" + editor.container.id).parent().find("select").val() + "\','EDIT'," + "'" + escaped + "')");
                                     })
 
                                 } else {
@@ -3488,7 +3486,6 @@ function setPlaceholderProperty(propertyElement, property) {
 
 }
 
-
 function CompleterForAllDataLib() {
 
     var langTools = ace.require("ace/ext/language_tools");
@@ -3502,16 +3499,11 @@ function CompleterForAllDataLib() {
                     return {name: ea.name, value: ea.name, meta: "DataLib"}
                 }));
             })
-
         }
-
     }
 
     langTools.addCompleter(staticWordCompleter);
-
 }
-
-
 
 var oldCompleters = null;
 /*
@@ -3524,7 +3516,6 @@ function configureAceEditor(editor, mode, property) {
     // event listenner
     editor.commands.on("afterExec", function (e) {
         var langTools = ace.require('ace/ext/language_tools');
-
 
         if (e.command.name == "insertstring" || e.command.name == "paste" || e.command.name == "backspace") {
             // recreate the array at each loop
@@ -3545,22 +3536,16 @@ function configureAceEditor(editor, mode, property) {
                     editor.commands.exec(commandNameForAutoCompletePopup);// set
                     // autocomplete
                     // popup*/
-
                 } else {
                     addCommandToDetectKeywordIssue(editor, allKeyword, commandNameForIssueDetection);
                     editor.commands.exec(commandNameForIssueDetection);// set
                     // annotation
                 }
-
-
             }
-
         }
 
         createGuterCellListenner(editor);
         property.value1 = editor.session.getValue();
-
-
     });
 
     // editor option

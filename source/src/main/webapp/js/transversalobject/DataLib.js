@@ -52,6 +52,7 @@ function collapseOrExpandTypes() {
 
 }
 function openModalAppServiceFromHere() {
+
     var doc = new Doc();
 
     $('#editTestDataLibModal #service').parent().find(".input-group-btn").remove();
@@ -78,7 +79,7 @@ function openModalAppServiceFromHere() {
 
 }
 
-function openModalDataLib(service, mode, id) {
+function openModalDataLib(element, service, mode, id) {
     if ($('#editTestDataLibModal').data("initLabel") === undefined) {
         initModalDataLib(id);
         $('#editTestDataLibModal').data("initLabel", true);
@@ -96,6 +97,23 @@ function openModalDataLib(service, mode, id) {
     
     collapseOrExpandTypes();
     
+    $("#editDataLibButton").off("click");
+    $("#editDataLibButton").click(function () {
+        $("#SubdataTable_edit").find("button").click
+
+        confirmDataLibModalHandler(element, "EDIT", id);
+    });
+
+    $("#addDataLibButton").off("click");
+    $("#addDataLibButton").click(function () {
+        confirmDataLibModalHandler(element, "ADD", id);
+    });
+
+    $("#duplicateDataLibButton").off("click");
+    $("#duplicateDataLibButton").click(function () {
+        confirmDataLibModalHandler(element, "DUPLICATE", id);
+    });
+    
 }
 
 function initModalDataLib(id) {
@@ -109,23 +127,6 @@ function initModalDataLib(id) {
     console.info("init");
     var doc = new Doc();
 
-    $("#editDataLibButton").off("click");
-    $("#editDataLibButton").click(function () {
-        $("#SubdataTable_edit").find("button").click
-
-        confirmDataLibModalHandler("EDIT", id);
-    });
-
-    $("#addDataLibButton").off("click");
-    $("#addDataLibButton").click(function () {
-        confirmDataLibModalHandler("ADD", id);
-    });
-
-    $("#duplicateDataLibButton").off("click");
-    $("#duplicateDataLibButton").click(function () {
-        confirmDataLibModalHandler("DUPLICATE", id);
-    });
-    
     // Click on add row button adds a Subdata entry.
     $("#addSubData_edit").off("click");
     $("#addSubData_edit").click(function () {
@@ -140,6 +141,9 @@ function initModalDataLib(id) {
     displayInvariantList("databaseUrl", "PROPERTYDATABASE", false, "", "");
     displayInvariantList("databaseCsv", "PROPERTYDATABASE", false, "", "");
     displayInvariantList("types", "TESTDATATYPE", false, "INTERNAL");
+    
+    $("select[id='service']").append($('<option></option>').text("").val(""));
+    displayAppServiceList("service", "");
 
 
     $("#testCaseListModalLabel").text(doc.getDocLabel("page_testdatalib_m_gettestcases", "title"));
@@ -263,7 +267,7 @@ function addDataLibClick(service) {
  * @param {String} id - id of the selected service item if GetFromDataLib is selected.
  * @returns {null}
  */
-function confirmDataLibModalHandler(mode, id) {
+function confirmDataLibModalHandler(element, mode, id) {
     //shows the modal that allows the creation of test data lib 
     var formEdit = $("#editTestDataLibModal #editTestLibData");
 
@@ -352,12 +356,13 @@ function confirmDataLibModalHandler(mode, id) {
                     var oTable = $("#listOfTestDataLib").dataTable();
                     oTable.fnDraw(true);
                 } else {
-                    displayDataLibList(id, undefined).then(function () {
+                	if(element != null){
+                		var editor = ace.edit($("#"+element)[0])
+                        displayDataLibList(id, undefined,data)
                         $("." + id).parent().find("button").attr('onclick', 'openModalDataLib(' + $("." + id).val() + ",'EDIT'," + "'" + id + "')");
                         $("." + id).parent().find("button").find('span').removeClass("glyphicon-plus").addClass("glyphicon-pencil")
-                        editor.setValue($("." + id).val())
-                    })
-                            ;
+                        editor.setValue(editor.getValue())
+                	}
                 }
 
                 $('#editTestDataLibModal').modal('hide');
