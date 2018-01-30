@@ -54,7 +54,7 @@ SELECT @ID730 := IFNULL(MAX(ID), 0) from testcaseexecution where TO_DAYS(NOW()) 
 -- Test Execution Control History
 DELETE FROM testcaseexecutionfile
 -- SELECT count(*) FROM testcaseexecutionfile
-where ID < @ID60 ;
+where ExeID < @ID60 ;
 
 -- Test Execution Control History
 DELETE FROM testcasestepactioncontrolexecution
