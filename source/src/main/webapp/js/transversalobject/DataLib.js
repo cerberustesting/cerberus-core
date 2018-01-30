@@ -361,7 +361,7 @@ function confirmDataLibModalHandler(element, mode, id) {
                         displayDataLibList(id, undefined,data)
                         $("." + id).parent().find("button").attr('onclick', 'openModalDataLib(' + $("." + id).val() + ",'EDIT'," + "'" + id + "')");
                         $("." + id).parent().find("button").find('span').removeClass("glyphicon-plus").addClass("glyphicon-pencil")
-                        editor.setValue(editor.getValue())
+                        editor.setValue($("#name").val())
                 	}
                 }
 

@@ -1427,12 +1427,11 @@ Action.prototype.generateHeader = function (id) {
     /**
      * If returnCode is NE, display button, else display elapsed time
      */
-    if (this.returnCode === "NE" && isTheExecutionManual) {
+    if (isTheExecutionManual) {
 
         var buttonFA = $($("<button>").addClass("btn btn-warning btn-inverse").attr("type", "button").text("FA"));
         var buttonOK = $($("<button>").addClass("btn btn-success btn-inverse").attr("type", "button").text("OK"));
-
-        var buttonUpload = $($("<button>").addClass("btn btn-info btn-inverse").attr("type", "button").text("UPLOAD"));
+        var buttonUpload = $($("<button>").addClass("btn btn-upload btn-info btn-inverse").attr("type", "button").text("UPLOAD"));
 
         buttonOK.click(function (event) {
             event.preventDefault();
@@ -1440,7 +1439,10 @@ Action.prototype.generateHeader = function (id) {
             triggerActionExecution(this, id, "OK");
             $(this).parent().parent().find(buttonUpload).remove()
             $(this).parent().parent().find(".col-sm-10").removeClass("col-sm-10").addClass("col-sm-8")
-            $(this).parent().parent().append(buttonUpload)
+            
+            if($(this).parent().parent().find(".btn-upload").length == 0){
+            	$(this).parent().parent().append(buttonUpload)
+            }
             buttonUpload.click(function (event) {
                 var indexStep = $("#nav-execution").find(".active").data("index");
                 var indexAction = $(this).parents("a").data('index')
@@ -1450,9 +1452,7 @@ Action.prototype.generateHeader = function (id) {
                 event.preventDefault()
                 event.stopPropagation()
             })
-
             $(buttonUpload).css("float", "right")
-
         });
         buttonFA.click(function (event) {
             event.preventDefault();
@@ -1460,7 +1460,9 @@ Action.prototype.generateHeader = function (id) {
             triggerActionExecution(this, id, "FA");
             $(this).parent().parent().find(buttonUpload).remove()
             $(this).parent().parent().find(".col-sm-10").removeClass("col-sm-10").addClass("col-sm-8")
-            $(this).parent().parent().append(buttonUpload)
+            if($(this).parent().parent().find(".btn-upload").length == 0){
+            	$(this).parent().parent().append(buttonUpload)
+            }
             buttonUpload.click(function (event) {
                 var indexStep = $("#nav-execution").find(".active").data("index");
                 var indexAction = $(this).parents("a").data('index')
@@ -1472,7 +1474,6 @@ Action.prototype.generateHeader = function (id) {
             })
 
             $(buttonUpload).css("float", "right")
-
         });
 
         contentField.append($("<div class='col-xs-2'>").addClass("btn-group btn-group-xs").attr("role", "group").append(buttonOK).append(buttonFA));
@@ -2072,7 +2073,7 @@ Control.prototype.generateHeader = function (id) {
         elapsedTime.append("...");
     }
 
-    if (this.returnCode === "NE" && isTheExecutionManual) {
+    if (isTheExecutionManual) {
         var buttonFA = $($("<button>").addClass("btn btn-danger btn-inverse").attr("type", "button").text("KO"));
         var buttonOK = $($("<button>").addClass("btn btn-success btn-inverse").attr("type", "button").text("OK"));
         var buttonUpload = $($("<button>").addClass("btn btn-info btn-inverse").attr("type", "button").text("UPLOAD"));
@@ -2083,7 +2084,9 @@ Control.prototype.generateHeader = function (id) {
             triggerControlExecution(this, id, "OK");
             $(this).parent().parent().find(buttonUpload).remove()
             $(this).parent().parent().find(".col-xs-10").removeClass("col-xs-10").addClass("col-xs-8")
-            $(this).parent().parent().append(buttonUpload)
+            if($(this).parent().parent().find(".btn-upload").length == 0){
+            	$(this).parent().parent().append(buttonUpload)
+            }
             $(buttonUpload).click(function (event) {
                 var indexStep = $("#nav-execution").find(".active").data("index");
                 var indexAction = $(this).parents("a").parent().find(".action").data('index')
@@ -2102,7 +2105,9 @@ Control.prototype.generateHeader = function (id) {
             triggerControlExecution(this, id, "KO");
             $(this).parent().parent().find(buttonUpload).remove()
             $(this).parent().parent().find(".col-xs-10").removeClass("col-xs-10").addClass("col-xs-8")
-            $(this).parent().parent().append(buttonUpload)
+            if($(this).parent().parent().find(".btn-upload").length == 0){
+            	$(this).parent().parent().append(buttonUpload)
+            }
             $(buttonUpload).click(function (event) {
                 var indexStep = $("#nav-execution").find(".active").data("index");
                 var indexAction = $(this).parents("a").parent().find(".action").data('index')
@@ -2349,7 +2354,6 @@ Control.prototype.getJsonData = function () {
 
 // Function in order to add the Media files links into TestCase, step, action and control level.
 function addFileLink(fileList, container, manual, idStep) {
-	console.log(fileList)
     var auto = manual == true ? false : true;
     $(container).find($("div[name='mediaMiniature']")).remove();
     for (var i = 0; i < fileList.length; i++) {
@@ -2444,7 +2448,7 @@ function addFileLink(fileList, container, manual, idStep) {
     }
 
     if (isTheExecutionManual && fileList.length != 0) {
-        var buttonUpload = $($("<button>").addClass("btn btn-info btn-inverse").attr("type", "button").text("UPLOAD"));
+        var buttonUpload = $($("<button>").addClass("btn btn-info btn-upload btn-inverse").attr("type", "button").text("UPLOAD"));
         $(buttonUpload).css("float", "right")
         buttonUpload.click(function (event) {
             var idex = $("#idlabel").text()

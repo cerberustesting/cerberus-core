@@ -237,14 +237,15 @@ public class RecorderService implements IRecorderService {
 				dir = new File(recorder.getFullPath());
 			}else {
 				name = fileName;
-				if(extension.isEmpty()) {
-					if(fileName.contains(".")) {
-						extension = fileName.substring(name.lastIndexOf('.')+1, name.length());
+				if(extension.isEmpty() || extension != name.substring(name.lastIndexOf('.')+1, name.length())) {
+					if(name.contains(".")) {
+						extension = name.substring(name.lastIndexOf('.')+1, name.length());
 						extension = extension.trim().toUpperCase();
 					}else {
 						extension = "BIN";
 					}
     	        }
+				
 				if(name.contains(".")) {
 					recorder = this.initFilenames(myExecution, test, testCase, step, index, sequence, controlString, null, 0, name.substring(0, name.lastIndexOf('.')) ,extension, true);
 					dir = new File(recorder.getFullPath());
