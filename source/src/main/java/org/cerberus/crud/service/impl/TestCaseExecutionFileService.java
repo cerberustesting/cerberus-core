@@ -131,11 +131,11 @@ public class TestCaseExecutionFileService implements ITestCaseExecutionFileServi
     
     @Override
     public Answer saveManual(TestCaseExecutionFile object) {
-        if (this.exist(object.getExeId(), object.getLevel())) {
-            return update(object);
-        } else {
-            return create(object);
-        }
+    	if(this.exist(object.getId())) {
+    		return update(object);
+    	}else {
+    		return create(object);
+    	}
     }
     
     

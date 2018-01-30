@@ -52,8 +52,6 @@ function initModalManualFile(file, mode){
 	var doc = new Doc();
 	$("[name='buttonClose']").html(
 			doc.getDocLabel("page_global", "buttonClose"));
-	$("[name='buttonAdd']").html(doc.getDocLabel("page_global", "btn_add"));	
-	$("[name='buttonEdit']").html(doc.getDocLabel("page_global", "btn_edit"));
 	
 	if(mode === "EDIT"){
 		displayInvariantList("type", "FILETYPE",false, file.fileType, "");
@@ -68,6 +66,8 @@ function initModalManualFile(file, mode){
 function editManualFileClick(manualFile){
 	
 	clearResponseMessage($('#editManualFileModal'));
+	
+	$("#editEntryModalLabel").text("Edit Manual Execution File")
 
 	$('#editManualFileButton').attr('class', 'btn btn-primary');
 	$('#editManualFileButton').removeProp('hidden');
@@ -92,6 +92,8 @@ function editManualFileClick(manualFile){
 function addManualFileClick(manualFile){
 	
 	clearResponseMessage($('#editManualFileModal'));
+	
+	$("#editEntryModalLabel").text("Create Manual Execution File")
 
 	$('#editManualFileButton').attr('class', '');
 	$('#editManualFileButton').attr('hidden', 'hidden');
@@ -216,7 +218,6 @@ function feedManualFileModalData(manualFile, modalId, mode, hasPermissionsUpdate
 	// Data Feed.
 	if (mode === "EDIT") {
 		formEdit.find("#preview").empty()
-		formEdit.find("#desc").prop("readonly", true);
 		var urlImage = "ReadTestCaseExecutionMedia?filename=" + manualFile.fileName + "&filetype=" + manualFile.fileType + "&filedesc=" + manualFile.fileDesc + "&auto=false";
 	    $("#seeManualFileButton").off("click").click(function(e){
 	    	window.open(urlImage+ "&r=true", "_blank");
@@ -224,7 +225,7 @@ function feedManualFileModalData(manualFile, modalId, mode, hasPermissionsUpdate
 	    	e.stopPropagation();
 	    })
 	    
-	    if(manualFile.fileType == "JPG" || manualFile.fileType == "PNG"){
+	    if(manualFile.fileType == "JPG" || manualFile.fileType == "PNG" || manualFile.fileType == "PDF"){
 	    	var image = $('<img>').addClass("selectedPicture").attr("src", urlImage+"&h=400&w=560");
 	    	$("#preview").append(image)
 	    }else{

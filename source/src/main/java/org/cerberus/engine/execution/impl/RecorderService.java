@@ -238,8 +238,12 @@ public class RecorderService implements IRecorderService {
 			}else {
 				name = fileName;
 				if(extension.isEmpty()) {
-    	        	extension = fileName.substring(name.lastIndexOf('.')+1, name.length());
-    	        	extension = extension.toUpperCase();
+					if(fileName.contains(".")) {
+						extension = fileName.substring(name.lastIndexOf('.')+1, name.length());
+						extension = extension.trim().toUpperCase();
+					}else {
+						extension = "BIN";
+					}
     	        }
 				if(name.contains(".")) {
 					recorder = this.initFilenames(myExecution, test, testCase, step, index, sequence, controlString, null, 0, name.substring(0, name.lastIndexOf('.')) ,extension, true);
@@ -299,7 +303,7 @@ public class RecorderService implements IRecorderService {
                 LOG.debug(logPrefix + "Updated test case manual file finished with success");
     			object = testCaseExecutionFileFactory.create(fileID, myExecution, recorder.getLevel(), desc, name, extension, "", null, "", null);
     		}
-            testCaseExecutionFileService.save(object);
+            testCaseExecutionFileService.saveManual(object);
             
     	}catch(CerberusException e) {
        		LOG.error(logPrefix + e.toString());

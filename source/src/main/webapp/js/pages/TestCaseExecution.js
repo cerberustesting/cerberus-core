@@ -2349,6 +2349,7 @@ Control.prototype.getJsonData = function () {
 
 // Function in order to add the Media files links into TestCase, step, action and control level.
 function addFileLink(fileList, container, manual, idStep) {
+	console.log(fileList)
     var auto = manual == true ? false : true;
     $(container).find($("div[name='mediaMiniature']")).remove();
     for (var i = 0; i < fileList.length; i++) {
@@ -2382,7 +2383,8 @@ function addFileLink(fileList, container, manual, idStep) {
                 })
             }
 
-        } else if ((fileList[i].fileType === "HTML") || (fileList[i].fileType === "JSON") || (fileList[i].fileType === "TXT") || (fileList[i].fileType === "XML")) {
+        } else if ((fileList[i].fileType === "HTML") || (fileList[i].fileType === "JSON") || (fileList[i].fileType === "TXT") || (fileList[i].fileType === "XML") || (fileList[i].fileType === "PDF") || (fileList[i].fileType === "BIN") ) {
+        	
             var j = i;
             var urlImagetxt = "ReadTestCaseExecutionMedia?filename=" + fileList[i].fileName + "&filetype=" + fileList[i].fileType + "&filedesc=" + fileList[i].fileDesc + "&auto=" + auto;
             ;

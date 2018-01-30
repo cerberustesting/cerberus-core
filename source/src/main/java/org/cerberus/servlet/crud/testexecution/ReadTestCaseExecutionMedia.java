@@ -19,6 +19,7 @@
  */
 package org.cerberus.servlet.crud.testexecution;
 
+import com.google.common.io.Files;
 import com.mortennobel.imagescaling.DimensionConstrain;
 import com.mortennobel.imagescaling.ResampleOp;
 import org.apache.commons.io.IOUtils;
@@ -49,6 +50,7 @@ import org.cerberus.crud.factory.IFactoryTestCaseExecutionFile;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ITestCaseExecutionFileService;
 import org.cerberus.util.servlet.ServletUtil;
+import org.jfree.util.Log;
 
 /**
  *
@@ -202,6 +204,8 @@ public class ReadTestCaseExecutionMedia extends HttpServlet {
                 case "TXT":
                     returnFile(request, response, tceFile, pathString);
                     break;
+                case "PDF":
+                	returnPDF(request, response, tceFile, pathString);
                 default:
                     returnNotSupported(request, response, tceFile, pathString);
             }
@@ -263,6 +267,21 @@ public class ReadTestCaseExecutionMedia extends HttpServlet {
         response.setHeader("Description", tc.getFileDesc());
 
         ImageIO.write(b, "png", response.getOutputStream());
+    }
+    
+    private void returnPDF(HttpServletRequest request, HttpServletResponse response, TestCaseExecutionFile tc, String filePath ) {
+
+    	File pdfFile = null;
+    	filePath = StringUtil.addSuffixIfNotAlready(filePath, "/");
+	    pdfFile = new File(filePath + tc.getFileName());
+		response.setContentType("application/pdf");
+		response.setContentLength((int) pdfFile.length());
+		try {
+			Files.copy(pdfFile, response.getOutputStream());
+		}catch(IOException e) {
+			Log.warn(e);
+		}
+		
     }
 
     private void returnFile(HttpServletRequest request, HttpServletResponse response, TestCaseExecutionFile tc, String filePath) {
