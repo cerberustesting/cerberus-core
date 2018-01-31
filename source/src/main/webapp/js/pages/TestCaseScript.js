@@ -2781,7 +2781,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 
         $(document).on('input', "div.step-action .content div.fieldRow:nth-child(2) input", function (e, state) {
             e = e.currentTarget
-            var doc = new Doc()
+            var doc = new Doc()       
 
             if ($(e).parent().parent().find("select").val() === "callService") {
 
@@ -2837,6 +2837,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
                 var data = loadGuiProperties()
 
                 if (state != "first") {
+                	$(e).parent().parent().parent().parent().find(".input-group-btn").remove()
                     $(e).autocomplete('option', 'source', function (request, response) {
                         var MyArray = $.map(data, function (item) {
                             return {
@@ -2853,15 +2854,11 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 						title="' + doc.getDocLabel("page_applicationObject", "button_edit") + '" type="button">\n\
 				<span class="glyphicon glyphicon-eye-open"></span></button></span>');
 
-                try {
-                    $(e).parent().find("." + $(e).parent().data("LastName")).remove();
-                } catch (e) {
-                    $(e).parent().find(".input-group-btn").remove();
-                }
+
 
                 if (data[$(e).val()]) {
 
-                    viewEntry.find("button").on("click", function () {
+                    viewEntry.find("button").off("click").on("click", function () {
                         let firstRow = $('<p style="text-align:center" > Type : ' + data[$(e).val()].type + '</p>');
                         let secondRow = $('<p style="text-align:center"> Value : ' + data[$(e).val()].value + '</p>');
                         $("#modalProperty").find("#firstRowProperty").find("p").remove();
@@ -2871,11 +2868,14 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
                     });
 
                     $(e).parent().append(viewEntry);
-                    $(e).parent().data("LastName", $(e).val());
                 }
 
             } else {
-
+            	
+            	if(state != "first"){
+            		$(e).parent().find(".input-group-btn").remove()
+            	}
+            	
                 var name = undefined;
                 var nameNotExist = undefined;
                 var objectNotExist = false;
@@ -2883,13 +2883,18 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
                 var doc = new Doc();
                 var checkObject = [];
                 var betweenPercent = $(e).val().match(new RegExp(/%[^%]*%/g));
+                
+                var data = loadGuiProperties()
 
                 if (betweenPercent != null && betweenPercent.length > 0) {
+                	
                     var i = betweenPercent.length - 1;
                     while (i >= 0) {
                         var findname = betweenPercent[i].match(/\.[^\.]*(\.|.$)/g);
-
+                        
+                        
                         if (betweenPercent[i].startsWith("%object.") && findname != null && findname.length > 0) {
+                        	
                             name = findname[0];
                             name = name.slice(1, name.length - 1);
 
@@ -2897,38 +2902,25 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 
                             if (!objectIntoTagToUseExist(TagsToUse[1], name)) {
 
-                                var addEntry = $('<span class="input-group-btn ' + name + '"><button id="editEntry" onclick="openModalApplicationObject(\'' + tcInfo.application + '\', \'' + name + '\',\'ADD\'  ,\'testCaseScript\' );"\n\
+                                var addEntry = $('<span class="input-group-btn many ' + name + '"><button id="editEntry" onclick="openModalApplicationObject(\'' + tcInfo.application + '\', \'' + name + '\',\'ADD\'  ,\'testCaseScript\' );"\n\
 										class="buttonObject btn btn-default input-sm " \n\
-										title="' + doc.getDocLabel("page_applicationObject", "button_create") + '" type="button">\n\
+										title="' + name + '" type="button">\n\
 								<span class="glyphicon glyphicon-plus"></span></button></span>');
 
                                 objectNotExist = true;
                                 nameNotExist = name;
                                 typeNotExist = "applicationObject";
-
-                                try {
-                                    $(e).parent().find("." + $(e).parent().data("LastName")).remove();
-                                } catch (f) {
-                                    $(e).parent().find(".input-group-btn").remove();
-                                }
-
+                                
                                 $(e).parent().append(addEntry);
-                                $(e).parent().data("LastName", name);
 
                             } else if (objectIntoTagToUseExist(TagsToUse[1], name)) {
-
-                                var editEntry = '<span class="input-group-btn ' + name + '"><button id="editEntry" onclick="openModalApplicationObject(\'' + tcInfo.application + '\', \'' + name + '\',\'EDIT\'  ,\'testCaseScript\' );"\n\
+                            	
+                                var editEntry = '<span class="input-group-btn many ' + name + '"><button id="editEntry" onclick="openModalApplicationObject(\'' + tcInfo.application + '\', \'' + name + '\',\'EDIT\'  ,\'testCaseScript\' );"\n\
 								class="buttonObject btn btn-default input-sm " \n\
-								title="' + doc.getDocLabel("page_applicationObject", "button_edit") + '" type="button">\n\
+								title="' + name + '" type="button">\n\
 								<span class="glyphicon glyphicon-pencil"></span></button></span>';
-
-                                try {
-                                    $(e).parent().find("." + $(e).parent().data("LastName")).remove();
-                                } catch (e) {
-                                    $(e).parent().find(".input-group-btn").remove();
-                                }
                                 $(e).parent().append(editEntry);
-                                $(e).parent().data("LastName", name);
+                                
                             }
                         } else if (betweenPercent[i].startsWith("%property.") && findname != null && findname.length > 0) {
 
@@ -2936,46 +2928,30 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
                             name = name.slice(1, name.length - 1);
 
                             if (objectIntoTagToUseExist(TagsToUse[2], name)) {
-
-                                var data = loadGuiProperties()
-                                var viewEntry = $('<span class="input-group-btn ' + name + '"><button id="editEntry" data-toggle="modal" data-target="#modalProperty" "\n\
+                                var viewEntry = $('<span class="input-group-btn many ' + name + '"><button id="editEntry" data-toggle="modal" data-target="#modalProperty" "\n\
 										class="buttonObject btn btn-default input-sm " \n\
-										title="' + doc.getDocLabel("page_applicationObject", "button_edit") + '" type="button">\n\
+										title="' + name + '" type="button">\n\
 								<span class="glyphicon glyphicon-eye-open"></span></button></span>');
 
-                                try {
-                                    $(e).parent().find("." + $(e).parent().data("LastName")).remove();
-                                } catch (e) {
-                                    $(e).parent().find(".input-group-btn").remove();
-                                }
-
                                 if (data[name]) {
+                                	let property  = name
                                     viewEntry.find("button").on("click", function () {
-                                        let firstRow = $('<p style="text-align:center" > Type : ' + data[name].type + '</p>');
-                                        let secondRow = $('<p style="text-align:center"> Value : ' + data[name].value + '</p>');
+                                        let firstRow = $('<p style="text-align:center" > Type : ' + data[property].type + '</p>');
+                                        let secondRow = $('<p style="text-align:center"> Value : ' + data[property].value + '</p>');
                                         $("#modalProperty").find("#firstRowProperty").find("p").remove();
                                         $("#modalProperty").find("#secondRowProperty").find("p").remove();
                                         $("#modalProperty").find("#firstRowProperty").append(firstRow);
                                         $("#modalProperty").find("#secondRowProperty").append(secondRow);
+                                        $("#modalProperty").find(".modal-title").html(property);
                                     });
-
                                     $(e).parent().append(viewEntry);
-                                    $(e).parent().data("LastName", name);
                                 }
-                            } else if (!objectIntoTagToUseExist(TagsToUse[2], name)) {
-                                try {
-                                    $(e).parent().find("." + $(e).parent().data("LastName")).remove();
-                                } catch (e) {
-                                    $(e).parent().find(".input-group-btn").remove();
-                                }
-                            }
+                            } 
                         }
 
                         i--;
                     }
-                } else {
-                    $(e).parent().find(".input-group-btn").remove();
-                }
+                } 
             }
 
         })

@@ -2184,7 +2184,6 @@ function autocompleteVariable(identifier, Tags) {
                     val = $(this).val();
                     $(this).autocomplete("search", val); //keep autocomplete open by
                     //searching the same input again
-                    $(this).focus();
                     return false;
                 }
             });
