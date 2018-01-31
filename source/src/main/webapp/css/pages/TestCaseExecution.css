@@ -261,3 +261,11 @@ textarea { resize:vertical ; }
     color: #fff;
     background-color: #34495E;
 }
+
+h4{
+	white-space: inherit!important;
+	overflow: initial!important;
+	text-overflow: initial!important;
+	word-wrap:break-word!important;
+	height:inherit!important;
+}
