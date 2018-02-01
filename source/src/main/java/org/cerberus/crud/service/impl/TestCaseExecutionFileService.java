@@ -138,6 +138,54 @@ public class TestCaseExecutionFileService implements ITestCaseExecutionFileServi
     	}
     }
     
+    /**
+     * this function allow to check if extension exist in invariants table
+     */
+    
+    @Override
+    public String checkExtension(String fileName, String extension) {
+		if(extension.isEmpty() || extension != fileName.substring(fileName.lastIndexOf('.')+1, fileName.length())) {
+			if(fileName.contains(".")) {
+				extension = fileName.substring(fileName.lastIndexOf('.')+1, fileName.length());
+				extension = extension.trim().toUpperCase();
+			}else {
+				extension = "BIN";
+			}
+			
+			switch(extension) {
+				case TestCaseExecutionFile.FILETYPE_JPG:
+					extension = "JPG";
+					break;
+				case TestCaseExecutionFile.FILETYPE_PNG:
+					extension = "PNG";
+					break;
+				case TestCaseExecutionFile.FILETYPE_JPEG:
+					extension = "JPG";
+					break;
+				case TestCaseExecutionFile.FILETYPE_PDF:
+					extension = "PDF";
+					break;
+				case TestCaseExecutionFile.FILETYPE_JSON:
+					extension = "JSON";
+					break;
+				case TestCaseExecutionFile.FILETYPE_XML:
+					extension = "XML";
+					break;
+				case TestCaseExecutionFile.FILETYPE_TXT:
+					extension = "TXT";
+					break;
+				case TestCaseExecutionFile.FILETYPE_BIN:
+					extension = "BIN";
+					break;
+				default:
+					extension = "BIN";
+					break;
+			}
+        }
+		
+		return extension;
+    }
+    
     
     @Override
     public TestCaseExecutionFile convert(AnswerItem answerItem) throws CerberusException {

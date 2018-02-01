@@ -9759,6 +9759,14 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("('FILETYPE', 'JSON', '18500', '', ''),");
         SQLS.append("('FILETYPE', 'TXT', '22500', '', '')");
         SQLInstruction.add(SQLS.toString());
+        
+     // Add more invariant filter type.
+        //-- ------------------------ 1286
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ");
+        SQLS.append("('FILETYPE', 'PDF', '23500', '', ''),");
+        SQLS.append("('FILETYPE', 'BIN', '24500', '', '')");
+        SQLInstruction.add(SQLS.toString());
 
         
         return SQLInstruction;

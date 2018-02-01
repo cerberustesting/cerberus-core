@@ -2352,6 +2352,28 @@ Control.prototype.getJsonData = function () {
     return json;
 };
 
+function changeClickIfManual(element, isTheExecutionManual, i, container, idStep, fileList){
+	let z = i
+	if (isTheExecutionManual) {
+		$(element).find("img").off("click").click(function (e) {
+			var idex = $("#idlabel").text()
+			if ($(container).parent().parent().parent().hasClass("action")) {
+				var indexAction = $(this).parents("a").data('index')
+				var currentActionOrControl = getScriptInformationOfStep()[idStep]["actionArr"][indexAction]
+				openModalManualFile(true, currentActionOrControl, "EDIT", idex, fileList[z])
+			} else {
+				var indexAction = $(this).parents("a").parent().find(".action").data('index')
+				var indexControl = $(this).parents("a").data('index')
+				var currentActionOrControl = getScriptInformationOfStep()[idStep]["actionArr"][indexAction]["controlArr"][indexControl]
+				openModalManualFile(false, currentActionOrControl, "EDIT", idex, fileList[z])
+			}
+			e.preventDefault()
+			e.stopPropagation()
+		})
+	}
+}
+
+
 // Function in order to add the Media files links into TestCase, step, action and control level.
 function addFileLink(fileList, container, manual, idStep) {
     var auto = manual == true ? false : true;
@@ -2367,27 +2389,10 @@ function addFileLink(fileList, container, manual, idStep) {
                         return false;
                     }));
             container.append(linkBox);
+            
+            changeClickIfManual(linkBox,isTheExecutionManual,i,container,idStep,fileList)
 
-            if (isTheExecutionManual) {
-                let z = i
-                $(linkBox).find("img").off("click").click(function (e) {
-                    var idex = $("#idlabel").text()
-                    if ($(container).parent().parent().parent().hasClass("action")) {
-                        var indexAction = $(this).parents("a").data('index')
-                        var currentActionOrControl = getScriptInformationOfStep()[idStep]["actionArr"][indexAction]
-                        openModalManualFile(true, currentActionOrControl, "EDIT", idex, fileList[z])
-                    } else {
-                        var indexAction = $(this).parents("a").parent().find(".action").data('index')
-                        var indexControl = $(this).parents("a").data('index')
-                        var currentActionOrControl = getScriptInformationOfStep()[idStep]["actionArr"][indexAction]["controlArr"][indexControl]
-                        openModalManualFile(false, currentActionOrControl, "EDIT", idex, fileList[z])
-                    }
-                    e.preventDefault()
-                    e.stopPropagation()
-                })
-            }
-
-        } else if ((fileList[i].fileType === "HTML") || (fileList[i].fileType === "JSON") || (fileList[i].fileType === "TXT") || (fileList[i].fileType === "XML") || (fileList[i].fileType === "PDF") || (fileList[i].fileType === "BIN") ) {
+        } else if ((fileList[i].fileType === "HTML") || (fileList[i].fileType === "JSON") || (fileList[i].fileType === "TXT") || (fileList[i].fileType === "XML")) {
         	
             var j = i;
             var urlImagetxt = "ReadTestCaseExecutionMedia?filename=" + fileList[i].fileName + "&filetype=" + fileList[i].fileType + "&filedesc=" + fileList[i].fileDesc + "&auto=" + auto;
@@ -2425,27 +2430,30 @@ function addFileLink(fileList, container, manual, idStep) {
             }
 
             container.append(linkBoxtxt);
-
-            if (isTheExecutionManual) {
-                let z = i
-                $(linkBoxtxt).find("img").off("click").click(function (e) {
-                    var idex = $("#idlabel").text()
-                    if ($(container).parent().parent().parent().hasClass("action")) {
-                        var indexAction = $(this).parents("a").data('index')
-                        var currentActionOrControl = getScriptInformationOfStep()[idStep]["actionArr"][indexAction]
-                        openModalManualFile(true, currentActionOrControl, "EDIT", idex, fileList[z])
-                    } else {
-                        var indexAction = $(this).parents("a").parent().find(".action").data('index')
-                        var indexControl = $(this).parents("a").data('index')
-                        var currentActionOrControl = getScriptInformationOfStep()[idStep]["actionArr"][indexAction]["controlArr"][indexControl]
-                        openModalManualFile(false, currentActionOrControl, "EDIT", idex, fileList[z])
-                    }
-                    e.preventDefault()
-                    e.stopPropagation()
-                })
-            }
+            changeClickIfManual(linkBoxtxt,isTheExecutionManual,i,container,idStep,fileList);
+            
+        }else if((fileList[i].fileType === "BIN") || (fileList[i].fileType === "PDF")){
+        	
+        	var linkBoxtxt = null;
+        	
+        	if(fileList[i].fileType === "BIN"){
+        		linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px").append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-binaire.png").css("height", "30px").click(function (f) {
+               	 	showPicture(fileDesc, urlImage);
+               	 		return false;
+               	 	}))
+        	}else if(fileList[i].fileType === "PDF"){
+        		linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px").append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-pdf.svg").css("height", "30px").click(function (f) {
+               	 	showPicture(fileDesc, urlImage);
+               	 		return false;
+               	 	}))
+        	}
+       	 	
+       	 	container.append(linkBoxtxt);
+       	 	changeClickIfManual(linkBoxtxt,isTheExecutionManual,i,container,idStep,fileList)
         }
     }
+        
+    
 
     if (isTheExecutionManual && fileList.length != 0) {
         var buttonUpload = $($("<button>").addClass("btn btn-info btn-upload btn-inverse").attr("type", "button").text("UPLOAD"));
@@ -2567,4 +2575,6 @@ function getScriptInformationOfStep() {
     }
     return stepArr;
 }
+
+
 

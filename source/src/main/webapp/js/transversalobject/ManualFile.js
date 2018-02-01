@@ -225,9 +225,11 @@ function feedManualFileModalData(manualFile, modalId, mode, hasPermissionsUpdate
 	    	e.stopPropagation();
 	    })
 	    
-	    if(manualFile.fileType == "JPG" || manualFile.fileType == "PNG" || manualFile.fileType == "PDF"){
+	    if(manualFile.fileType == "JPG" || manualFile.fileType == "PNG"){
 	    	var image = $('<img>').addClass("selectedPicture").attr("src", urlImage+"&h=400&w=560");
 	    	$("#preview").append(image)
+	    }if((manualFile.fileType == "PDF") || (manualFile.fileType == "BIN")){
+	    	$("#preview").append("<p>impossible to get a preview of your file</p>");
 	    }else{
 	    	var jqxhr = $.get(urlImage, "&autoContentType=N");
 	        $.when(jqxhr).then(function (data) {

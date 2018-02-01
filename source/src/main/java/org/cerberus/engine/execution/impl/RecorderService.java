@@ -233,18 +233,12 @@ public class RecorderService implements IRecorderService {
 				name = file.getName();
 				extension = name.substring(name.lastIndexOf('.')+1, name.length());
 	        	extension = extension.toUpperCase();
+	        	extension = testCaseExecutionFileService.checkExtension(name, extension);
 				recorder = this.initFilenames(myExecution, test, testCase, step, index, sequence, controlString, null, 0, name.substring(0, name.lastIndexOf('.')) ,extension, true);
 				dir = new File(recorder.getFullPath());
 			}else {
 				name = fileName;
-				if(extension.isEmpty() || extension != name.substring(name.lastIndexOf('.')+1, name.length())) {
-					if(name.contains(".")) {
-						extension = name.substring(name.lastIndexOf('.')+1, name.length());
-						extension = extension.trim().toUpperCase();
-					}else {
-						extension = "BIN";
-					}
-    	        }
+				extension = testCaseExecutionFileService.checkExtension(name, extension);
 				
 				if(name.contains(".")) {
 					recorder = this.initFilenames(myExecution, test, testCase, step, index, sequence, controlString, null, 0, name.substring(0, name.lastIndexOf('.')) ,extension, true);

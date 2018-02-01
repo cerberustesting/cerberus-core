@@ -51,6 +51,9 @@ public class TestCaseExecutionFile {
     public static final String FILETYPE_JPG = "JPG";
     public static final String FILETYPE_PNG = "PNG";
     public static final String FILETYPE_GIF = "GIF";
+    public static final String FILETYPE_JPEG = "JPEG";
+    public static final String FILETYPE_BIN = "BIN";
+    public static final String FILETYPE_PDF = "PDF";
     
     
     public long getId() {

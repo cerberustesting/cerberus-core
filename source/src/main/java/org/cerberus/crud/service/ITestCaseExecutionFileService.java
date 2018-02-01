@@ -174,5 +174,13 @@ public interface ITestCaseExecutionFileService {
      * @throws CerberusException
      */
     void convert(Answer answer) throws CerberusException;
+    
+    /**
+     * 
+     * @param fileName
+     * @param extension
+     * @return
+     */
+    public String checkExtension(String fileName, String extension);
 
 }
