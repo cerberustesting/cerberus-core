@@ -22,7 +22,7 @@
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
         initPage();
-
+        
         bindToggleCollapse();
 
         var urlTag = GetURLParameter('Tag');
@@ -37,7 +37,12 @@ $.when($.getScript("js/global/global.js")).then(function () {
                 filterCountryBrowserReport(urlTag);
             }
         });
-
+        
+        $(document).on("mouseover", "td.center", function(e){
+        	var id = $(e.currentTarget).attr("aria-describedby")
+        	$("#"+id).css("display","none")
+        })
+        
         splitFilterPreferences();
 
         $("#splitLabelFilter input").click(function () {
@@ -1145,7 +1150,12 @@ function aoColumnsFunc(Columns) {
 //            "sWidth": testCaseInfoWidth + "%",
             "sWidth": "80px",
             "title": doc.getDocOnline("test", "Test"),
-            "sClass": "bold"
+            "sClass": "bold",
+            "fnCreatedCell": function( row, data, dataIndex ) {
+                // Set the data-status attribute, and add a class
+                $( row ).attr('data-original-title', data)
+                $( row ).attr('data-toggle', "tooltip")
+            }
         },
         {
             "data": "testCase",
