@@ -426,7 +426,7 @@ function appendCountryList(defCountry) {
 /** UTILITY FUNCTIONS FOR CAMPAIGN LAUNCHING **/
 
 function loadCampaignContent(campaign) {
-	clearResponseMessageMainPage();
+    clearResponseMessageMainPage();
     if (campaign !== "") {
         showLoader("#chooseTest");
         $.ajax({
@@ -437,19 +437,19 @@ function loadCampaignContent(campaign) {
             async: true,
             success: function (data) {
 
-        		 var testCaseList = $("#testCaseList");
+                var testCaseList = $("#testCaseList");
 
-                 testCaseList.empty().prop("disabled", "disabled");
+                testCaseList.empty().prop("disabled", "disabled");
 
-                 for (var index = 0; index < data.contentTable.length; index++) {
-                     var text = data.contentTable[index].test + " - " + data.contentTable[index].testCase + " [" + data.contentTable[index].application + "]: " + data.contentTable[index].description;
+                for (var index = 0; index < data.contentTable.length; index++) {
+                    var text = data.contentTable[index].test + " - " + data.contentTable[index].testCase + " [" + data.contentTable[index].application + "]: " + data.contentTable[index].description;
 
-                     testCaseList.append($("<option></option>")
-                             .text(text)
-                             .val(data.contentTable[index].testCase)
-                             .prop("selected", true)
-                             .data("item", data.contentTable[index]));
-                 }
+                    testCaseList.append($("<option></option>")
+                            .text(text)
+                            .val(data.contentTable[index].testCase)
+                            .prop("selected", true)
+                            .data("item", data.contentTable[index]));
+                }
 
                 showMessage(data, $('#page-layout'));
                 updatePotentialNumber();
@@ -554,13 +554,15 @@ function runCampaign() {
     $.when(jqxhr).then(function (data) {
         // unblock when remote call returns 
         hideLoader('#page-layout');
-        var str = data.message.replace(/\n/g, '<br>');
-
+        data.message = data.message.replace(/\n/g, '<br>');
         if (getAlertType(data.messageType) === "success") {
+            if (data.nbExe === 1) {
+                data.message = data.message + "<a href='TestCaseExecution.jsp?executionQueueId=" + data.queueList[0].queueId + "'><button class='btn btn-primary' id='goToExecution'>Get to Execution</button></a>";
+            }
             data.message = data.message + "<a href='ReportingExecutionByTag.jsp?Tag=" + data.tag + "'><button class='btn btn-primary' id='goToTagReport'>Report by Tag</button></a>"
-            showMessageMainPage(getAlertType(data.messageType), str, false, 60000);
+            showMessageMainPage(getAlertType(data.messageType), data.message, false, 60000);
         } else {
-            showMessageMainPage(getAlertType(data.messageType), str, false);
+            showMessageMainPage(getAlertType(data.messageType), data.message, false);
         }
     }).fail(handleErrorAjaxAfterTimeout);
 
