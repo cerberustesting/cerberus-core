@@ -29,5 +29,12 @@ import org.cerberus.util.answer.AnswerList;
  */
 public interface IFileService {
 
+    /**
+     *
+     * @param urlToCSVFile
+     * @param separator
+     * @param columnsToGet
+     * @return
+     */
     AnswerList<List<HashMap<String, String>>> parseCSVFile(String urlToCSVFile, String separator, HashMap<String, String> columnsToGet);
 }

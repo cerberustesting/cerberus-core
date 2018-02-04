@@ -20,6 +20,7 @@
 package org.cerberus.servlet.crud.testdata;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,13 +28,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUploadException;
@@ -41,8 +40,6 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cerberus.engine.entity.MessageEvent;
-import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.crud.entity.TestDataLib;
 import org.cerberus.crud.entity.TestDataLibData;
 import org.cerberus.crud.factory.IFactoryTestDataLib;
@@ -52,6 +49,8 @@ import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ITestDataLibDataService;
 import org.cerberus.crud.service.ITestDataLibService;
 import org.cerberus.crud.service.impl.LogEventService;
+import org.cerberus.engine.entity.MessageEvent;
+import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
@@ -74,7 +73,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class CreateTestDataLib extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(CreateTestDataLib.class);
-    
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -86,9 +85,9 @@ public class CreateTestDataLib extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-    	
-    	ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-    	IFactoryTestDataLibData tdldFactory = appContext.getBean(IFactoryTestDataLibData.class);
+
+        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+        IFactoryTestDataLibData tdldFactory = appContext.getBean(IFactoryTestDataLibData.class);
         ITestDataLibDataService tdldService = appContext.getBean(ITestDataLibDataService.class);
         IParameterService parameterService = appContext.getBean(IParameterService.class);
 
@@ -102,7 +101,7 @@ public class CreateTestDataLib extends HttpServlet {
         String charset = request.getCharacterEncoding();
 
         response.setContentType("application/json");
-        
+
         Map<String, String> fileData = new HashMap<String, String>();
         FileItem file = null;
 
@@ -126,7 +125,7 @@ public class CreateTestDataLib extends HttpServlet {
         } catch (FileUploadException e) {
             e.printStackTrace();
         }
-        
+
         try {
 
             /**
@@ -172,8 +171,6 @@ public class CreateTestDataLib extends HttpServlet {
                  */
                 ITestDataLibService libService = appContext.getBean(ITestDataLibService.class);
                 IFactoryTestDataLib factoryLibService = appContext.getBean(IFactoryTestDataLib.class);
-                
-                
 
                 TestDataLib lib = factoryLibService.create(0, name, system, environment, country, group,
                         type, database, script, databaseUrl, service, servicePath, method, envelope, databaseCsv, csvUrl, separator, description,
@@ -190,53 +187,64 @@ public class CreateTestDataLib extends HttpServlet {
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
                     logEventService.createForPrivateCalls("/CreateTestDataLib", "CREATE", "Create TestDataLib  : " + request.getParameter("name"), request);
                 }
-                
+
                 List<TestDataLibData> tdldList = new ArrayList();
-                TestDataLib toto = (TestDataLib) ansItem.getItem();
-                
+                TestDataLib dataLibWithUploadedFile = (TestDataLib) ansItem.getItem();
+
                 if (file != null) {
-                    ans = libService.uploadFile(toto.getTestDataLibID(), file);
+                    ans = libService.uploadFile(dataLibWithUploadedFile.getTestDataLibID(), file);
                     if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                        toto.setCsvUrl("/"+toto.getTestDataLibID()+"/"+file.getName());
-                        libService.update(toto);
+                        dataLibWithUploadedFile.setCsvUrl(File.separator + dataLibWithUploadedFile.getTestDataLibID() + File.separator + file.getName());
+                        libService.update(dataLibWithUploadedFile);
                     }
                 }
-                
+
                 // Getting list of SubData from JSON Call
                 if (fileData.get("subDataList") != null) {
                     JSONArray objSubDataArray = new JSONArray(fileData.get("subDataList"));
-                    tdldList = getSubDataFromParameter(request, appContext, toto.getTestDataLibID(), objSubDataArray);
+                    tdldList = getSubDataFromParameter(request, appContext, dataLibWithUploadedFile.getTestDataLibID(), objSubDataArray);
                 }
 
-                if(file!= null && test.equals("1")) {
-            		String str = "";   
-            		String secondLine = ""; 
+                if (file != null && test.equals("1")) {
+                    String firstLine = "";
+                    String secondLine = "";
                     try {
-                    	BufferedReader reader = new BufferedReader(new FileReader(parameterService.getParameterStringByKey("cerberus_testdatalibCSV_path", "", null)+lib.getCsvUrl()));
-                        str = reader.readLine();
+                        BufferedReader reader = new BufferedReader(new FileReader(parameterService.getParameterStringByKey("cerberus_testdatalibCSV_path", "", null) + lib.getCsvUrl()));
+                        firstLine = reader.readLine();
                         secondLine = reader.readLine();
-                        String[] subData = (!toto.getSeparator().isEmpty()) ? str.split(toto.getSeparator()) : str.split(",");
-                        String[] subDataValue = (!toto.getSeparator().isEmpty()) ? secondLine.split(toto.getSeparator()) : secondLine.split(",");  
+                        String[] firstLineSubData = (!dataLibWithUploadedFile.getSeparator().isEmpty()) ? firstLine.split(dataLibWithUploadedFile.getSeparator()) : firstLine.split(",");
+                        String[] secondLineSubData = (!dataLibWithUploadedFile.getSeparator().isEmpty()) ? secondLine.split(dataLibWithUploadedFile.getSeparator()) : secondLine.split(",");
                         int i = 0;
                         int y = 1;
-                        TestDataLibData firstLine = tdldList.get(0);
+                        TestDataLibData firstLineLibData = tdldList.get(0);
                         tdldList = new ArrayList();
-                        tdldList.add(firstLine);
-                        for(String item: subData) {
-                        	TestDataLibData tdld = tdldFactory.create(null, toto.getTestDataLibID(), item+"_"+y, subDataValue[i], item, null, Integer.toString(y), null);
+                        if (StringUtil.isNullOrEmpty(firstLineLibData.getColumnPosition())) {
+                            firstLineLibData.setColumnPosition("1");
+                        }
+                        if (StringUtil.isNullOrEmpty(firstLineLibData.getValue())) {
+                            firstLineLibData.setValue(secondLineSubData[0]);
+                        }
+                        if (StringUtil.isNullOrEmpty(firstLineLibData.getColumn())) {
+                            firstLineLibData.setColumn(firstLineSubData[0]);
+                        }
+                        tdldList.add(firstLineLibData);
+                        for (String item : firstLineSubData) {
+                            TestDataLibData tdld = tdldFactory.create(null, dataLibWithUploadedFile.getTestDataLibID(), item + "_" + y, secondLineSubData[i], item, null, Integer.toString(y), null);
                             tdldList.add(tdld);
                             i++;
                             y++;
                         }
-                        
+
                         // Update the Database with the new list.
-                       
                     } finally {
-                        try { file.getInputStream().close(); } catch (Throwable ignore) {}
+                        try {
+                            file.getInputStream().close();
+                        } catch (Throwable ignore) {
+                        }
                     }
-            	}
-                
-                ans = tdldService.compareListAndUpdateInsertDeleteElements(toto.getTestDataLibID(), tdldList);
+                }
+
+                ans = tdldService.compareListAndUpdateInsertDeleteElements(dataLibWithUploadedFile.getTestDataLibID(), tdldList);
                 finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
             }
 

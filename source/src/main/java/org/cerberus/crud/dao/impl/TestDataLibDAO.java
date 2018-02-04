@@ -220,7 +220,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         answer.setResultMessage(msg);
         return answer;
     }
-    
+
     private static void deleteFolder(File folder, boolean deleteit) {
         File[] files = folder.listFiles();
         if (files != null) { //some JVMs return null for empty dirs
@@ -245,7 +245,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         if (a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             Parameter p = (Parameter) a.getItem();
             String uploadPath = p.getValue();
-            File appDir = new File(uploadPath + "/" + id);
+            File appDir = new File(uploadPath + File.separator + id);
             if (!appDir.exists()) {
                 try {
                     appDir.mkdirs();
@@ -258,7 +258,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
             }
             if (a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                 deleteFolder(appDir, false);
-                File picture = new File(uploadPath + "/" + id + "/" + file.getName());
+                File picture = new File(uploadPath + File.separator + id + File.separator + file.getName());
                 try {
                     file.write(picture);
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("DESCRIPTION",

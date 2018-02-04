@@ -74,7 +74,7 @@ public class importFile extends HttpServlet {
                             pathFile.mkdirs();
                         }
 
-                        uploadedFile = new File(pathFile + "/" + fileName);
+                        uploadedFile = new File(pathFile + File.separator + fileName);
                         LOG.debug(uploadedFile.getAbsolutePath());
                         item.write(uploadedFile);
                     } else {

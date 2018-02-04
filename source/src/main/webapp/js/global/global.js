@@ -37,7 +37,7 @@ var showSettings = false;
         }
 
     })
-    
+
     $("#burger-setting").unbind("click").click(function () {
         if (showSettings === false) {
             $(".nav.navbar-top-links.navbar-right").show();
@@ -50,7 +50,7 @@ var showSettings = false;
         }
 
     })
-    
+
 })()
 
 function handleErrorAjaxAfterTimeout(result) {
@@ -97,7 +97,7 @@ function getSubDataLabel(type) {
  * @param {String} asyn [optional] Do a async ajax request. Default: true
  * @returns {void}
  */
-function displayInvariantList(selectName, idName, forceReload, defaultValue, addValue1, asyn) {
+function displayInvariantList(selectName, idName, forceReload, defaultValue, addValue1, asyn, funcAfterLoad) {
     // Adding the specific value when defined.
     if (addValue1 !== undefined) {
         $("[name='" + selectName + "']").append($('<option></option>').text(addValue1).val(addValue1));
@@ -138,6 +138,9 @@ function displayInvariantList(selectName, idName, forceReload, defaultValue, add
                 if (defaultValue !== undefined) {
                     $("[name='" + selectName + "']").val(defaultValue);
                 }
+                if (funcAfterLoad !== undefined) {
+                    funcAfterLoad();
+                }
             }
         });
     } else {
@@ -149,6 +152,10 @@ function displayInvariantList(selectName, idName, forceReload, defaultValue, add
         }
         if (defaultValue !== undefined) {
             $("[name='" + selectName + "']").val(defaultValue);
+        }
+        if (funcAfterLoad !== undefined) {
+                    console.info("toto");
+            funcAfterLoad();
         }
     }
 }
@@ -1348,7 +1355,7 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
         configs["createdRow"] = createdRowCallback;
     }
     if (tableConfigurations.serverSide) {
-    	
+
 
         configs["sAjaxSource"] = tableConfigurations.ajaxSource;
         configs["sAjaxDataProp"] = tableConfigurations.ajaxProp;
@@ -1395,18 +1402,18 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
             };
         }
         configs["fnServerData"] = function (sSource, aoData, fnCallback, oSettings) {
-        	
-        	var like = ""
-        	
-        	$.each(oSettings.aoColumns, function(index,value){
-        		if(oSettings.aoColumns[index].like){
-        			like += oSettings.aoColumns[index].sName + ","
-        		}
-        	})
-        	
-        	like = like.substring(0, like.length-1);
 
-        	aoData.push({name: "sLike", value: like});
+            var like = ""
+
+            $.each(oSettings.aoColumns, function (index, value) {
+                if (oSettings.aoColumns[index].like) {
+                    like += oSettings.aoColumns[index].sName + ","
+                }
+            })
+
+            like = like.substring(0, like.length - 1);
+
+            aoData.push({name: "sLike", value: like});
 
             var objectWL = $(objectWaitingLayer);
             if (objectWaitingLayer !== undefined) {
@@ -2450,12 +2457,12 @@ function getComboConfigTag() {
 
 function comboConfigLabel_format(label) {
     var markup = "<div class='select2-result-tag clearfix'>" +
-        "<div style='float:left;'><span class='label label-primary' style='background-color:" 
-        + label.color + "' data-toggle='tooltip' data-labelid='" 
-        + label.id + "' title='" 
-        + label.description + "'>" 
-        + label.label + "</span></div>";
-    
+            "<div style='float:left;'><span class='label label-primary' style='background-color:"
+            + label.color + "' data-toggle='tooltip' data-labelid='"
+            + label.id + "' title='"
+            + label.description + "'>"
+            + label.label + "</span></div>";
+
     markup += "</div>";
 
     return markup;
@@ -2464,11 +2471,11 @@ function comboConfigLabel_format(label) {
 function comboConfigLabel_formatSelection(label) {
     var result = label.id;
     if (!isEmpty(label.label)) {
-        result = "<div style='float:left;height: 34px'><span class='label label-primary' style='background-color:" 
-        + label.color + "' data-toggle='tooltip' data-labelid='" 
-        + label.id + "' title='" 
-        + label.description + "'>" 
-        + label.label + "</span></div>";
+        result = "<div style='float:left;height: 34px'><span class='label label-primary' style='background-color:"
+                + label.color + "' data-toggle='tooltip' data-labelid='"
+                + label.id + "' title='"
+                + label.description + "'>"
+                + label.label + "</span></div>";
     }
     return result;
 }
@@ -2479,7 +2486,7 @@ function getComboConfigLabel(labelType) {
     var config =
             {
                 ajax: {
-                    url: "ReadLabel?iSortCol_0=0&sSortDir_0=desc&sColumns=type&iDisplayLength=30&sSearch_0="+labelType,
+                    url: "ReadLabel?iSortCol_0=0&sSortDir_0=desc&sColumns=type&iDisplayLength=30&sSearch_0=" + labelType,
                     dataType: 'json',
                     delay: 250,
                     data: function (params) {

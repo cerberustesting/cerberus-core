@@ -79,7 +79,7 @@ function openModalAppServiceFromHere() {
 
 }
 
-function openModalDataLib(element, service, mode, id) {
+function openModalDataLib(element, dataLibEntry, mode, id) {
     if ($('#editTestDataLibModal').data("initLabel") === undefined) {
         initModalDataLib(id);
         $('#editTestDataLibModal').data("initLabel", true);
@@ -88,15 +88,13 @@ function openModalDataLib(element, service, mode, id) {
     $('[data-toggle="popover"]').popover()
 
     if (mode === "EDIT") {
-        editDataLibClick(service);
-    } else if (mode == "ADD") {
-        addDataLibClick(service);
+        editDataLibClick(dataLibEntry);
+    } else if (mode === "ADD") {
+        addDataLibClick(dataLibEntry);
     } else {
-        duplicateDataLibClick(service);
+        duplicateDataLibClick(dataLibEntry);
     }
-    
-    collapseOrExpandTypes();
-    
+
     $("#editDataLibButton").off("click");
     $("#editDataLibButton").click(function () {
         $("#SubdataTable_edit").find("button").click
@@ -113,7 +111,7 @@ function openModalDataLib(element, service, mode, id) {
     $("#duplicateDataLibButton").click(function () {
         confirmDataLibModalHandler(element, "DUPLICATE", id);
     });
-    
+
 }
 
 function initModalDataLib(id) {
@@ -124,7 +122,6 @@ function initModalDataLib(id) {
         'container': 'body'}
     )
 
-    console.info("init");
     var doc = new Doc();
 
     // Click on add row button adds a Subdata entry.
@@ -141,7 +138,7 @@ function initModalDataLib(id) {
     displayInvariantList("databaseUrl", "PROPERTYDATABASE", false, "", "");
     displayInvariantList("databaseCsv", "PROPERTYDATABASE", false, "", "");
     displayInvariantList("types", "TESTDATATYPE", false, "INTERNAL");
-    
+
     $("select[id='service']").append($('<option></option>').text("").val(""));
     displayAppServiceList("service", "");
 
@@ -190,7 +187,7 @@ function initModalDataLib(id) {
     $("#cancelDuplicateTestDataLib").text(doc.getDocLabel("page_global", "btn_cancel"));
     $("#duplicateDataLibButton").text(doc.getDocLabel("page_global", "btn_duplicate"));
     //cancel + add buttons
-    $("#editDataLibButton").text(doc.getDocLabel("page_global", "btn_edit"));
+    $("#editDataLibButton").text(doc.getDocLabel("page_global", "btn_save"));
     $("#cancelTestDataLibButton").text(doc.getDocLabel("page_global", "btn_cancel"));
     $("#closeButton").text(doc.getDocLabel("page_global", "buttonClose"));
     //tabs, tab2 is updated when the entries are managed
@@ -202,10 +199,10 @@ function initModalDataLib(id) {
 
 /***
  * Open the modal with testcase information.
- * @param {String} service - type selected
+ * @param {String} dataLibEntry - type selected
  * @returns {null}
  */
-function editDataLibClick(service) {
+function editDataLibClick(dataLibEntry) {
 
     clearResponseMessage($('#editApplicationObjectModal'));
 
@@ -220,15 +217,15 @@ function editDataLibClick(service) {
     $('#addDataLibButton').attr('class', '');
     $('#addDataLibButton').attr('hidden', 'hidden');
 
-    feedDataLibModal(service, "editTestDataLibModal", "EDIT");
+    feedDataLibModal(dataLibEntry, "editTestDataLibModal", "EDIT");
 }
 
 /***
  * Open the modal with testcase information.
- * @param {String} service - type selected
+ * @param {String} dataLibEntry - type selected
  * @returns {null}
  */
-function duplicateDataLibClick(service) {
+function duplicateDataLibClick(dataLibEntry) {
 
     $('#editDataLibButton').attr('class', '');
     $('#editDataLibButton').attr('hidden', 'hidden');
@@ -237,15 +234,15 @@ function duplicateDataLibClick(service) {
     $('#addDataLibButton').attr('class', '');
     $('#addDataLibButton').attr('hidden', 'hidden');
 
-    feedDataLibModal(service, "editTestDataLibModal", "DUPLICATE");
+    feedDataLibModal(dataLibEntry, "editTestDataLibModal", "DUPLICATE");
 }
 
 /***
  * Open the modal in order to create a new testcase.
- * @param {String} service - type selected
+ * @param {String} dataLibEntry - type selected
  * @returns {null}
  */
-function addDataLibClick(service) {
+function addDataLibClick(dataLibEntry) {
 
     // Prepare all Events handler of the modal.
 
@@ -258,7 +255,7 @@ function addDataLibClick(service) {
     $('#duplicateDataLibButton').attr('class', '');
     $('#duplicateDataLibButton').attr('hidden', 'hidden');
 
-    feedDataLibModal(service, "editTestDataLibModal", "ADD");
+    feedDataLibModal(dataLibEntry, "editTestDataLibModal", "ADD");
 }
 
 /***
@@ -356,13 +353,13 @@ function confirmDataLibModalHandler(element, mode, id) {
                     var oTable = $("#listOfTestDataLib").dataTable();
                     oTable.fnDraw(true);
                 } else {
-                	if(element != null){
-                		var editor = ace.edit($("#"+element)[0])
-                        displayDataLibList(id, undefined,data)
+                    if (element != null) {
+                        var editor = ace.edit($("#" + element)[0])
+                        displayDataLibList(id, undefined, data)
                         $("." + id).parent().find("button").attr('onclick', 'openModalDataLib(' + $("." + id).val() + ",'EDIT'," + "'" + id + "')");
                         $("." + id).parent().find("button").find('span').removeClass("glyphicon-plus").addClass("glyphicon-pencil")
                         editor.setValue($("#name").val())
-                	}
+                    }
                 }
 
                 $('#editTestDataLibModal').modal('hide');
@@ -481,6 +478,7 @@ function feedDataLibModalData(testDataLib, modalId, mode, hasPermissionsUpdate) 
         $('#editTestDataLibModal #name').prop("value", obj.name);
 
         $('#editTestDataLibModal #types').prop("value", obj.type);
+        collapseOrExpandTypes();
         $('#editTestDataLibModal #system').find('option[value="' + obj.system + '"]').prop("selected", true);
         $('#editTestDataLibModal #environment').find('option[value="' + obj.environment + '"]').prop("selected", true);
         $('#editTestDataLibModal #country').find('option[value="' + obj.country + '"]').prop("selected", true);
@@ -505,25 +503,6 @@ function feedDataLibModalData(testDataLib, modalId, mode, hasPermissionsUpdate) 
         $('#editTestDataLibModal #creator').prop("value", obj.creator);
         $('#editTestDataLibModal #lastModified').prop("value", obj.lastModified);
         $('#editTestDataLibModal #lastModifier').prop("value", obj.lastModifier);
-
-        if (obj.types === "SQL") {
-            $("#panelSQLEdit").collapse("show");
-            $("#panelSERVICEEdit").collapse("hide");
-            $("#panelCSVEdit").collapse("hide");
-        } else if (obj.types === "SERVICE") {
-            $("#panelSERVICEEdit").collapse("show");
-            $("#panelSQLEdit").collapse("hide");
-            $("#panelCSVEdit").collapse("hide");
-        } else if (obj.types === "CSV") {
-            $("#panelCSVEdit").collapse("show");
-            $("#panelSQLEdit").collapse("hide");
-            $("#panelSERVICEEdit").collapse("hide");
-        } else {
-            //hide all if the type is static
-            $("#panelSQLEdit").collapse("hide");
-            $("#panelSERVICEEdit").collapse("hide");
-            $("#panelCSVEdit").collapse("hide");
-        }
 
         openModalAppServiceFromHere();
 

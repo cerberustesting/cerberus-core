@@ -19,6 +19,7 @@
  */
 package org.cerberus.service.datalib.impl;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,7 +27,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.AppService;
@@ -489,11 +489,11 @@ public class DataLibService implements IDataLibService {
                 answerData = testDataLibDataService.readByVarious(lib.getTestDataLibID(), null, null, "N");
                 if ((answerData.getResultMessage().getCode() == MessageEventEnum.DATA_OPERATION_OK.getCode()) && !answerData.getDataList().isEmpty()) {
                     objectDataList = answerData.getDataList();
-                    boolean missingKey = false;
+                    boolean missingKey = true;
                     for (TestDataLibData tdld : objectDataList) {
                         row.put(tdld.getSubData(), tdld.getColumnPosition());
                         if (tdld.getSubData().equalsIgnoreCase("")) {
-                            missingKey = true;
+                            missingKey = false;
                         }
                     }
                     result.setItem(row);
@@ -697,6 +697,7 @@ public class DataLibService implements IDataLibService {
                 if (!StringUtil.isURL(servicePathCsv)) {
                     // Url is still not valid. We try to add the path from csv parameter.
                     String csv_path = parameterService.getParameterStringByKey("cerberus_testdatalibcsv_path", "", "");
+                    csv_path = StringUtil.addSuffixIfNotAlready(csv_path, File.separator);
                     servicePathCsv = csv_path + servicePathCsv;
                 }
 

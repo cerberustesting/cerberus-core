@@ -20,21 +20,19 @@
 package org.cerberus.servlet.crud.testdata;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUploadException;
@@ -42,14 +40,15 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.TestDataLib;
 import org.cerberus.crud.entity.TestDataLibData;
 import org.cerberus.crud.factory.IFactoryTestDataLibData;
 import org.cerberus.crud.service.ILogEventService;
+import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ITestDataLibDataService;
 import org.cerberus.crud.service.ITestDataLibService;
 import org.cerberus.crud.service.impl.LogEventService;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
@@ -63,7 +62,6 @@ import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-import org.cerberus.crud.service.IParameterService;
 
 /**
  * Handles the UPDATE operation for test data lib entries.
@@ -74,6 +72,7 @@ import org.cerberus.crud.service.IParameterService;
 public class UpdateTestDataLib extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(UpdateTestDataLib.class);
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -99,7 +98,7 @@ public class UpdateTestDataLib extends HttpServlet {
         IParameterService parameterService = appContext.getBean(IParameterService.class);
 
         response.setContentType("application/json");
-        
+
         Map<String, String> fileData = new HashMap<String, String>();
         FileItem file = null;
 
@@ -147,7 +146,7 @@ public class UpdateTestDataLib extends HttpServlet {
         String envelope = ParameterParserUtil.parseStringParamAndDecode(fileData.get("envelope"), "", charset);
         String csvUrl = ParameterParserUtil.parseStringParamAndDecode(fileData.get("csvUrl"), "", charset);
         String separator = ParameterParserUtil.parseStringParamAndDecode(fileData.get("separator"), "", charset);
-        String test = ParameterParserUtil.parseStringParamAndDecode(fileData.get("subdataCheck"), "", charset);
+        String activateAutoSubdata = ParameterParserUtil.parseStringParamAndDecode(fileData.get("subdataCheck"), "", charset);
 
         Integer testdatalibid = 0;
         boolean testdatalibid_error = true;
@@ -203,17 +202,17 @@ public class UpdateTestDataLib extends HttpServlet {
                      * The service was able to perform the query and confirm the
                      * object exist, then we can update it.
                      */
-                	
-                	TestDataLib lib = (TestDataLib) resp.getItem();
-                	
-                	String fileName = lib.getCsvUrl();
+
+                    TestDataLib lib = (TestDataLib) resp.getItem();
+
+                    String fileName = lib.getCsvUrl();
                     if (file != null) {
                         ans = libService.uploadFile(lib.getTestDataLibID(), file);
                         if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                             fileName = file.getName();
                         }
                     }
-                	
+
                     lib.setName(name);
                     lib.setType(type);
                     lib.setGroup(group);
@@ -229,7 +228,11 @@ public class UpdateTestDataLib extends HttpServlet {
                     lib.setMethod(method);
                     lib.setEnvelope(envelope);
                     lib.setDatabaseCsv(databaseCsv);
-                    lib.setCsvUrl("/"+lib.getTestDataLibID()+"/"+fileName);
+                    if (file == null) {
+                        lib.setCsvUrl(csvUrl);
+                    } else {
+                        lib.setCsvUrl(File.separator + lib.getTestDataLibID() + File.separator + fileName);
+                    }
                     lib.setSeparator(separator);
                     lib.setLastModifier(request.getRemoteUser());
 
@@ -245,38 +248,44 @@ public class UpdateTestDataLib extends HttpServlet {
                         logEventService.createForPrivateCalls("/UpdateTestDataLib", "UPDATE", "Update TestDataLib - id: " + testdatalibid + " name: " + name + " system: "
                                 + system + " environment: " + environment + " country: " + country, request);
                     }
-                    
+
                     List<TestDataLibData> tdldList = new ArrayList();
-                    
+
                     // Getting list of SubData from JSON Call
                     if (fileData.get("subDataList") != null) {
                         JSONArray objSubDataArray = new JSONArray(fileData.get("subDataList"));
                         tdldList = getSubDataFromParameter(request, appContext, testdatalibid, objSubDataArray);
                     }
 
-                    if(file!= null && test.equals("1")) {
-                		String str = "";     
+                    // When File has just been uploaded to servlet and flag to load the subdata value has been checked, we will parse it in order to automatically feed the subdata.
+                    if (file != null && activateAutoSubdata.equals("1")) {
+                        String str = "";
                         try {
-                        	BufferedReader reader = new BufferedReader(new FileReader(parameterService.getParameterStringByKey("cerberus_testdatalibcsv_path", "", null)+lib.getCsvUrl()));
+                            BufferedReader reader = new BufferedReader(new FileReader(parameterService.getParameterStringByKey("cerberus_testdatalibcsv_path", "", null) + lib.getCsvUrl()));
+                            // First line of the file is split by separator.
                             str = reader.readLine();
-                            String[] subData = (!lib.getSeparator().isEmpty()) ? str.split(lib.getSeparator()) : str.split(",");                          
-                            int i = 1;
+                            String[] subData = (!lib.getSeparator().isEmpty()) ? str.split(lib.getSeparator()) : str.split(",");
+                            // We take the subdata from the servlet input.
                             TestDataLibData firstLine = tdldList.get(0);
                             tdldList = new ArrayList();
+                            firstLine.setColumnPosition("1");
                             tdldList.add(firstLine);
-                            for(String item: subData) {
-                            	String temp = "SUBDATA"+i;
-                            	TestDataLibData tdld = tdldFactory.create(null, testdatalibid, temp, item, null, null, Integer.toString(i), null);
+                            int i = 1;
+                            for (String item : subData) {
+                                String subdataName = "SUBDATA" + i;
+                                TestDataLibData tdld = tdldFactory.create(null, testdatalibid, subdataName, item, null, null, Integer.toString(i), null);
                                 tdldList.add(tdld);
                                 i++;
                             }
-                            
+
                             // Update the Database with the new list.
-                           
                         } finally {
-                            try { file.getInputStream().close(); } catch (Throwable ignore) {}
+                            try {
+                                file.getInputStream().close();
+                            } catch (Throwable ignore) {
+                            }
                         }
-                	}
+                    }
                     ans = tdldService.compareListAndUpdateInsertDeleteElements(testdatalibid, tdldList);
                     finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
                 }
@@ -296,8 +305,8 @@ public class UpdateTestDataLib extends HttpServlet {
     }
 
     private List<TestDataLibData> getSubDataFromParameter(HttpServletRequest request, ApplicationContext appContext, int testDataLibId, JSONArray json) throws JSONException {
-    	List<TestDataLibData> tdldList = new ArrayList();
-    	IFactoryTestDataLibData tdldFactory = appContext.getBean(IFactoryTestDataLibData.class);
+        List<TestDataLibData> tdldList = new ArrayList();
+        IFactoryTestDataLibData tdldFactory = appContext.getBean(IFactoryTestDataLibData.class);
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
         String charset = request.getCharacterEncoding();
 

@@ -84,7 +84,7 @@ public class RecorderService implements IRecorderService {
     public List<TestCaseExecutionFile> recordExecutionInformationAfterStepActionandControl(TestCaseStepActionExecution testCaseStepActionExecution, TestCaseStepActionControlExecution testCaseStepActionControlExecution) {
         List<TestCaseExecutionFile> objectFileList = new ArrayList<TestCaseExecutionFile>();
         TestCaseExecutionFile objectFile = null;
-        
+
         // Used for logging purposes
         String logPrefix = Infos.getInstance().getProjectNameAndVersion() + " - ";
 
@@ -134,7 +134,7 @@ public class RecorderService implements IRecorderService {
                     LOG.debug(logPrefix + "Not Doing screenshot because connectivity with selenium server lost.");
                 }
 
-            } 
+            }
         } else {
             LOG.debug(logPrefix + "Not Doing screenshot because of the screenshot parameter or flag on the last Action result.");
         }
@@ -189,13 +189,13 @@ public class RecorderService implements IRecorderService {
 
         return objectFileList;
     }
-    
-    
+
+    @Override
     public AnswerItem recordManuallyFile(TestCaseStepActionExecution testCaseStepActionExecution, TestCaseStepActionControlExecution testCaseStepActionControlExecution, String extension, String desc, FileItem file, Integer id, String fileName, Integer fileID) {
-    	MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
                 "Can't upload file");
-    	AnswerItem a = new AnswerItem();
-    	TestCaseExecutionFile object = null;
+        AnswerItem a = new AnswerItem();
+        TestCaseExecutionFile object = null;
         String returnCode;
         Integer controlNumber = 0;
         String test = "";
@@ -205,58 +205,58 @@ public class RecorderService implements IRecorderService {
         String sequence = "";
         String controlString = "";
         Integer myExecution = id;
-    	if (testCaseStepActionControlExecution == null) {
-    		test = testCaseStepActionExecution.getTest();
-    	    testCase = testCaseStepActionExecution.getTestCase();
-    	    step = String.valueOf(testCaseStepActionExecution.getStep());
-    	    index = String.valueOf(testCaseStepActionExecution.getIndex());
-    	    sequence = String.valueOf(testCaseStepActionExecution.getSequence());
-    	    controlString = controlNumber.equals(0) ? null : String.valueOf(controlNumber);
+        if (testCaseStepActionControlExecution == null) {
+            test = testCaseStepActionExecution.getTest();
+            testCase = testCaseStepActionExecution.getTestCase();
+            step = String.valueOf(testCaseStepActionExecution.getStep());
+            index = String.valueOf(testCaseStepActionExecution.getIndex());
+            sequence = String.valueOf(testCaseStepActionExecution.getSequence());
+            controlString = controlNumber.equals(0) ? null : String.valueOf(controlNumber);
             returnCode = testCaseStepActionExecution.getReturnCode();
         } else {
             returnCode = testCaseStepActionControlExecution.getReturnCode();
             controlNumber = testCaseStepActionControlExecution.getControlSequence();
             test = testCaseStepActionControlExecution.getTest();
-    	    testCase = testCaseStepActionControlExecution.getTestCase();
-    	    step = String.valueOf(testCaseStepActionControlExecution.getStep());
-    	    index = String.valueOf(testCaseStepActionControlExecution.getIndex());
-    	    sequence = String.valueOf(testCaseStepActionControlExecution.getSequence());
-    	    controlString = controlNumber.equals(0) ? null : String.valueOf(controlNumber);
+            testCase = testCaseStepActionControlExecution.getTestCase();
+            step = String.valueOf(testCaseStepActionControlExecution.getStep());
+            index = String.valueOf(testCaseStepActionControlExecution.getIndex());
+            sequence = String.valueOf(testCaseStepActionControlExecution.getSequence());
+            controlString = controlNumber.equals(0) ? null : String.valueOf(controlNumber);
         }
-    	// Used for logging purposes
+        // Used for logging purposes
         String logPrefix = Infos.getInstance().getProjectNameAndVersion() + " - [" + test + " - " + testCase + " - step: " + step + " action: " + sequence + "] ";
-    	try {
-    		Recorder recorder = new Recorder();
-			String name = "";
-			File dir = null;
-			if(file!=null) {
-				name = file.getName();
-				extension = name.substring(name.lastIndexOf('.')+1, name.length());
-	        	extension = extension.toUpperCase();
-	        	extension = testCaseExecutionFileService.checkExtension(name, extension);
-				recorder = this.initFilenames(myExecution, test, testCase, step, index, sequence, controlString, null, 0, name.substring(0, name.lastIndexOf('.')) ,extension, true);
-				dir = new File(recorder.getFullPath());
-			}else {
-				name = fileName;
-				extension = testCaseExecutionFileService.checkExtension(name, extension);
-				
-				if(name.contains(".")) {
-					recorder = this.initFilenames(myExecution, test, testCase, step, index, sequence, controlString, null, 0, name.substring(0, name.lastIndexOf('.')) ,extension, true);
-					dir = new File(recorder.getFullPath());
-				}else {
-					msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-		            msg.setDescription(msg.getDescription().replace("%ITEM%", "manual testcase execution file")
-		                    .replace("%OPERATION%", "Create")
-		                    .replace("%REASON%", "file is missing!"));
+        try {
+            Recorder recorder = new Recorder();
+            String name = "";
+            File dir = null;
+            if (file != null) {
+                name = file.getName();
+                extension = name.substring(name.lastIndexOf('.') + 1, name.length());
+                extension = extension.toUpperCase();
+                extension = testCaseExecutionFileService.checkExtension(name, extension);
+                recorder = this.initFilenames(myExecution, test, testCase, step, index, sequence, controlString, null, 0, name.substring(0, name.lastIndexOf('.')), extension, true);
+                dir = new File(recorder.getFullPath());
+            } else {
+                name = fileName;
+                extension = testCaseExecutionFileService.checkExtension(name, extension);
+
+                if (name.contains(".")) {
+                    recorder = this.initFilenames(myExecution, test, testCase, step, index, sequence, controlString, null, 0, name.substring(0, name.lastIndexOf('.')), extension, true);
+                    dir = new File(recorder.getFullPath());
+                } else {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", "manual testcase execution file")
+                            .replace("%OPERATION%", "Create")
+                            .replace("%REASON%", "file is missing!"));
                     a.setResultMessage(msg);
                     return a;
-				}
-			}
-			if (!dir.exists()) {
-				try {
-					boolean isCreated = dir.mkdirs();
-                    if(!isCreated) {
-                    	throw new SecurityException();
+                }
+            }
+            if (!dir.exists()) {
+                try {
+                    boolean isCreated = dir.mkdirs();
+                    if (!isCreated) {
+                        throw new SecurityException();
                     }
                 } catch (SecurityException se) {
                     LOG.warn("Unable to create manual execution file dir: " + se.getMessage());
@@ -266,46 +266,46 @@ public class RecorderService implements IRecorderService {
                     return a;
                 }
             }
-    		if(file != null) {
-            	AnswerItem<TestCaseExecutionFile> current = testCaseExecutionFileService.readByKey(myExecution, recorder.getLevel(), desc);
-            	msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-            	if(current.getItem() != null) {
-            		try {
-            			File temp = new File(recorder.getRootFolder() + current.getItem().getFileName());
-                		temp.delete();
+            if (file != null) {
+                AnswerItem<TestCaseExecutionFile> current = testCaseExecutionFileService.readByKey(myExecution, recorder.getLevel(), desc);
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                if (current.getItem() != null) {
+                    try {
+                        File temp = new File(recorder.getRootFolder() + current.getItem().getFileName());
+                        temp.delete();
                     } catch (SecurityException se) {
                         LOG.warn("Unable to create manual execution file dir: " + se.getMessage());
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
                                 se.toString());
                     }
-            	}
-            	try {
-            		file.write(new File(recorder.getFullFilename()));
+                }
+                try {
+                    file.write(new File(recorder.getFullFilename()));
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("DESCRIPTION",
                             "Manual Execution File uploaded");
                     msg.setDescription(msg.getDescription().replace("%ITEM%", "Manual Execution File").replace("%OPERATION%", "Upload"));
                     LOG.debug(logPrefix + "Copy file finished with success - source: " + file.getName() + " destination: " + recorder.getRelativeFilenameURL());
                     object = testCaseExecutionFileFactory.create(fileID, myExecution, recorder.getLevel(), desc, recorder.getRelativeFilenameURL(), extension, "", null, "", null);
-            	}catch (Exception e) {
-                	LOG.warn("Unable to upload Manual Execution File: " + e.getMessage());
+                } catch (Exception e) {
+                    LOG.warn("Unable to upload Manual Execution File: " + e.getMessage());
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
                             e.toString());
                 }
-    		}else {
-    			msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("DESCRIPTION",
+            } else {
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("DESCRIPTION",
                         "Manual Execution File updated");
                 msg.setDescription(msg.getDescription().replace("%ITEM%", "Manual Execution File").replace("%OPERATION%", "updated"));
                 LOG.debug(logPrefix + "Updated test case manual file finished with success");
-    			object = testCaseExecutionFileFactory.create(fileID, myExecution, recorder.getLevel(), desc, name, extension, "", null, "", null);
-    		}
+                object = testCaseExecutionFileFactory.create(fileID, myExecution, recorder.getLevel(), desc, name, extension, "", null, "", null);
+            }
             testCaseExecutionFileService.saveManual(object);
-            
-    	}catch(CerberusException e) {
-       		LOG.error(logPrefix + e.toString());
-       	}
-    	a.setResultMessage(msg);
-    	a.setItem(object);
-    	return a;
+
+        } catch (CerberusException e) {
+            LOG.error(logPrefix + e.toString());
+        }
+        a.setResultMessage(msg);
+        a.setItem(object);
+        return a;
     }
 
     @Override
@@ -332,13 +332,13 @@ public class RecorderService implements IRecorderService {
          */
         File newImage = null;
         if (applicationType.equals(Application.TYPE_GUI)
-                    || applicationType.equals(Application.TYPE_APK)
-                    || applicationType.equals(Application.TYPE_IPA)) { 
-        newImage = this.webdriverService.takeScreenShotFile(testCaseExecution.getSession());
+                || applicationType.equals(Application.TYPE_APK)
+                || applicationType.equals(Application.TYPE_IPA)) {
+            newImage = this.webdriverService.takeScreenShotFile(testCaseExecution.getSession());
         } else if (applicationType.equals(Application.TYPE_FAT)) {
-        newImage = this.sikuliService.takeScreenShotFile(testCaseExecution.getSession());
+            newImage = this.sikuliService.takeScreenShotFile(testCaseExecution.getSession());
         }
-        
+
         if (newImage != null) {
             try {
                 Recorder recorder = this.initFilenames(runId, test, testCase, step, index, sequence, controlString, null, 0, "screenshot", "png", false);
@@ -644,19 +644,20 @@ public class RecorderService implements IRecorderService {
         Recorder newRecorder = new Recorder();
 
         try {
-        	
-        	String rootFolder = "";
+
+            String rootFolder = "";
 
             /**
              * Root folder initialisation. The root folder is configures from
-             * the parameter cerberus_exeautomedia_path or cerberus_exemanualmedia_path .
+             * the parameter cerberus_exeautomedia_path or
+             * cerberus_exemanualmedia_path .
              */
-        	if(!manual) {
-        		rootFolder = parameterService.getParameterStringByKey("cerberus_exeautomedia_path", "", "");
-        	}else {
-        		rootFolder = parameterService.getParameterStringByKey("cerberus_exemanualmedia_path", "", "");	
-        	}
-            
+            if (!manual) {
+                rootFolder = parameterService.getParameterStringByKey("cerberus_exeautomedia_path", "", "");
+            } else {
+                rootFolder = parameterService.getParameterStringByKey("cerberus_exemanualmedia_path", "", "");
+            }
+
             rootFolder = StringUtil.addSuffixIfNotAlready(rootFolder, File.separator);
             newRecorder.setRootFolder(rootFolder);
 
@@ -708,7 +709,7 @@ public class RecorderService implements IRecorderService {
             if (!StringUtil.isNullOrEmpty(filename)) {
                 sbfileName.append(filename).append("-");
             }
-            
+
             String fileName = StringUtil.removeLastChar(sbfileName.toString(), 1) + "." + extention;
             fileName = fileName.replace(" ", "");
             newRecorder.setFileName(fileName);
@@ -768,7 +769,7 @@ public class RecorderService implements IRecorderService {
             return idString;
         }
     }
-    
+
     private static void deleteFolder(File folder, boolean deleteit) {
         File[] files = folder.listFiles();
         if (files != null) { //some JVMs return null for empty dirs

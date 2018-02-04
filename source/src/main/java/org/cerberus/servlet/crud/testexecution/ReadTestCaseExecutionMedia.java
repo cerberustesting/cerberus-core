@@ -156,13 +156,13 @@ public class ReadTestCaseExecutionMedia extends HttpServlet {
         }
 
         if (tceFile != null) {
-        	String pathString = "";
-        	if(auto) {
-        		pathString = parameterService.getParameterStringByKey("cerberus_exeautomedia_path", "", "");
-        	}else {
-        		pathString = parameterService.getParameterStringByKey("cerberus_exemanualmedia_path", "", "");
-        	}
-            
+            String pathString = "";
+            if (auto) {
+                pathString = parameterService.getParameterStringByKey("cerberus_exeautomedia_path", "", "");
+            } else {
+                pathString = parameterService.getParameterStringByKey("cerberus_exemanualmedia_path", "", "");
+            }
+
             switch (tceFile.getFileType()) {
                 case "JPG":
                 case "JPEG":
@@ -205,7 +205,7 @@ public class ReadTestCaseExecutionMedia extends HttpServlet {
                     returnFile(request, response, tceFile, pathString);
                     break;
                 case "PDF":
-                	returnPDF(request, response, tceFile, pathString);
+                    returnPDF(request, response, tceFile, pathString);
                 default:
                     returnNotSupported(request, response, tceFile, pathString);
             }
@@ -268,26 +268,26 @@ public class ReadTestCaseExecutionMedia extends HttpServlet {
 
         ImageIO.write(b, "png", response.getOutputStream());
     }
-    
-    private void returnPDF(HttpServletRequest request, HttpServletResponse response, TestCaseExecutionFile tc, String filePath ) {
 
-    	File pdfFile = null;
-    	filePath = StringUtil.addSuffixIfNotAlready(filePath, "/");
-	    pdfFile = new File(filePath + tc.getFileName());
-		response.setContentType("application/pdf");
-		response.setContentLength((int) pdfFile.length());
-		try {
-			Files.copy(pdfFile, response.getOutputStream());
-		}catch(IOException e) {
-			Log.warn(e);
-		}
-		
+    private void returnPDF(HttpServletRequest request, HttpServletResponse response, TestCaseExecutionFile tc, String filePath) {
+
+        File pdfFile = null;
+        filePath = StringUtil.addSuffixIfNotAlready(filePath, File.separator);
+        pdfFile = new File(filePath + tc.getFileName());
+        response.setContentType("application/pdf");
+        response.setContentLength((int) pdfFile.length());
+        try {
+            Files.copy(pdfFile, response.getOutputStream());
+        } catch (IOException e) {
+            Log.warn(e);
+        }
+
     }
 
     private void returnFile(HttpServletRequest request, HttpServletResponse response, TestCaseExecutionFile tc, String filePath) {
 
         String everything = "";
-        filePath = StringUtil.addSuffixIfNotAlready(filePath, "/");
+        filePath = StringUtil.addSuffixIfNotAlready(filePath, File.separator);
 
         LOG.debug("Accessing File : " + filePath + tc.getFileName());
         try (FileInputStream inputStream = new FileInputStream(filePath + tc.getFileName())) {

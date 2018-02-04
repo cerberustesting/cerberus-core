@@ -211,7 +211,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
             if (a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                 ApplicationObject ao = (ApplicationObject) a.getItem();
                 if (ao != null) {
-                    File picture = new File(uploadPath + "/" + ao.getID() + "/" + ao.getScreenShotFileName());
+                    File picture = new File(uploadPath + File.separator + ao.getID() + File.separator + ao.getScreenShotFileName());
                     try {
                         image = ImageIO.read(picture);
                     } catch (IOException e) {
@@ -252,7 +252,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
         if (a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             Parameter p = (Parameter) a.getItem();
             String uploadPath = p.getValue();
-            File appDir = new File(uploadPath + "/" + id);
+            File appDir = new File(uploadPath + File.separator + id);
             if (!appDir.exists()) {
                 try {
                     appDir.mkdirs();
@@ -265,7 +265,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
             }
             if (a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                 deleteFolder(appDir, false);
-                File picture = new File(uploadPath + "/" + id + "/" + file.getName());
+                File picture = new File(uploadPath + File.separator + id + File.separator + file.getName());
                 try {
                     file.write(picture);
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("DESCRIPTION",
