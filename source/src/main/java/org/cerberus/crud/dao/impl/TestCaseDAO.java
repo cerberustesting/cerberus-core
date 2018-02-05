@@ -364,20 +364,19 @@ public class TestCaseDAO implements ITestCaseDAO {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<TestCase> testCaseList = new ArrayList<TestCase>();
-        final String sql = "select count(*) as total, t.Test, tc.TestCase, t.Description as testDescription, tc.Description as testCaseDescription, tc.Application,"
-        		+ "tc.TcActive as Active, tc.`Group`, tc.UsrCreated, tc.`Status` "
-        		+ " from testcase tc INNER JOIN test t ON t.test = tc.test  WHERE TestCase IN "
-        		+ "(select TestCase from testcasestepaction WHERE Action = 'CallService' and Value1 = ?)"
-        	    + " OR TestCase IN (select r.TestCase from testcasecountryproperties r INNER JOIN testdatalib td ON r.Value1 = td.Name "
-        	    + " WHERE r.Type = 'getFromDataLib' AND td.Service = ?)"
-        	    + " group by tc.test, tc.testcase";
-
+        final String sql = " select count(*) as total, t.Test, tc.TestCase, t.Description as testDescription, tc.Description as testCaseDescription, tc.Application," + 
+        		"tc.TcActive as Active, tc.`Group`, tc.UsrCreated, tc.`Status` " + 
+        		" from testcase tc INNER JOIN test t ON t.test = tc.test " + 
+        		" INNER JOIN testcasestepaction tcsa ON tcsa.TestCase = tc.TestCase AND tcsa.Test = t.Test " + 
+        		" INNER JOIN appservice ser ON ser.Service = tcsa.Value1 " + 
+        		" WHERE ser.Service = ? " + 
+        		" group by tc.test, tc.TestCase";
+        
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(sql.toString());
             try {
                 preStat.setString(1, service);
-                preStat.setString(2, service);
 
                 HashMap<String, TestListDTO> map = new HashMap<String, TestListDTO>();
 
@@ -411,10 +410,116 @@ public class TestCaseDAO implements ITestCaseDAO {
                         testCaseDTO.setIsActive(resultSet.getString("Active"));
                         testList.getTestCaseList().add(testCaseDTO);
                         map.put(test, testList);
+
                     }
 
                     listOfTests = new ArrayList<TestListDTO>(map.values());
 
+                    if (listOfTests.isEmpty()) {
+                        rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                    } else {
+                        rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                        rs.setDescription(rs.getDescription().replace("%ITEM%", "List of Test Cases").replace("%OPERATION%", "Select"));
+                    }
+
+                } catch (SQLException exception) {
+                    LOG.error("Unable to execute query : " + exception.toString());
+                    rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    rs.setDescription(rs.getDescription().replace("%DESCRIPTION%", "Unable to get the list of test cases."));
+                } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
+                }
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                rs.setDescription(rs.getDescription().replace("%DESCRIPTION%", "Unable to get the list of test cases."));
+            } finally {
+                if (preStat != null) {
+                    preStat.close();
+                }
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            rs.setDescription(rs.getDescription().replace("%DESCRIPTION%", "Unable to get the list of test cases."));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                LOG.warn(e.toString());
+            }
+        }
+        ansList.setResultMessage(rs);
+        ansList.setDataList(listOfTests);
+
+        return ansList;
+    }
+    
+    @Override
+    public AnswerList findTestCaseByServiceByDataLib(String service) {
+    	AnswerList ansList = new AnswerList();
+        MessageEvent rs;
+    	List<TestListDTO> listOfTests = new ArrayList<TestListDTO>();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+        List<TestCase> testCaseList = new ArrayList<TestCase>();
+               
+        final String sql = " select count(*) as total, t.Test, tc.TestCase, t.Description as testDescription, tc.Description as testCaseDescription, tc.Application," + 
+        		"tc.TcActive as Active, tc.`Group`, tc.UsrCreated, tc.`Status` " + 
+        		" from testcase tc INNER JOIN test t ON t.test = tc.test" + 
+        		" INNER JOIN testcasecountryproperties tccp ON tccp.Test = t.Test AND tccp.TestCase = tc.TestCase" + 
+        		" INNER JOIN testdatalib td ON td.Name = tccp.Value1 AND (tccp.Country = td.Country or td.country='') and tccp.test = t.test and tccp.testcase = tc.testcase" + 
+        		" INNER JOIN appservice ser on ser.Service = td.Service" + 
+        		" WHERE ser.Service = ?" + 
+        		" group by tc.test, tc.TestCase";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(sql.toString());
+            try {
+                preStat.setString(1, service);
+
+                HashMap<String, TestListDTO> map = new HashMap<String, TestListDTO>();
+
+                String key, test, testCase;
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    while (resultSet.next()) {
+                        TestListDTO testList;
+                        TestCaseListDTO testCaseDTO;
+
+                        test = resultSet.getString("Test");
+                        testCase = resultSet.getString("TestCase");
+
+                        if (map.containsKey(test)) {
+                            testList = map.get(test);
+                        } else {
+                            testList = new TestListDTO();
+
+                            testList.setDescription(resultSet.getString("testDescription"));
+                            testList.setTest(test);
+                        }
+
+                        testCaseDTO = new TestCaseListDTO();
+                        testCaseDTO.setTestCaseDescription(resultSet.getString("testCaseDescription"));
+                        testCaseDTO.setTestCaseNumber(testCase);
+                        testCaseDTO.setApplication(resultSet.getString("Application"));
+                        testCaseDTO.setCreator(resultSet.getString("tc.UsrCreated"));
+                        testCaseDTO.setStatus(resultSet.getString("Status"));
+
+                        testCaseDTO.setGroup(resultSet.getString("Group"));
+                        testCaseDTO.setIsActive(resultSet.getString("Active"));
+                        testList.getTestCaseList().add(testCaseDTO);
+                        map.put(test, testList);
+
+                    }
+
+                    listOfTests = new ArrayList<TestListDTO>(map.values());
+                    
                     if (listOfTests.isEmpty()) {
                         rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
                     } else {

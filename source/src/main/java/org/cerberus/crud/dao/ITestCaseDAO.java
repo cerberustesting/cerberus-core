@@ -162,4 +162,13 @@ public interface ITestCaseDAO {
      * @return
      */
     public AnswerList findTestCaseByService(String service);
+    
+    /**
+     * 
+     * @param service
+     * @return
+     */
+    public AnswerList findTestCaseByServiceByDataLib(String service);
+    
+    
 }
