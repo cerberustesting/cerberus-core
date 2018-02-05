@@ -327,6 +327,11 @@ public class TestCaseService implements ITestCaseService {
     public AnswerList findTestCasesThatUseTestDataLib(int testDataLibId, String name, String country) {
         return testCaseCountryPropertiesService.findTestCaseCountryPropertiesByValue1(testDataLibId, name, country, TestCaseCountryProperties.TYPE_GETFROMDATALIB);
     }
+    
+    @Override
+    public AnswerList findTestCasesThatUseService(String service) {
+    	return  testCaseDao.findTestCaseByService(service);
+    }
 
     @Override
     public AnswerList readTestCaseByStepsInLibrary(String test) {

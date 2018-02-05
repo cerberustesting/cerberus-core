@@ -24,6 +24,8 @@ import com.google.gson.Gson;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.AppService;
 import org.cerberus.crud.service.impl.AppServiceService;
+import org.cerberus.dto.TestCaseListDTO;
+import org.cerberus.dto.TestListDTO;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.AnswerItem;
@@ -47,6 +49,7 @@ import java.util.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.service.IAppServiceService;
+import org.cerberus.crud.service.ITestCaseService;
 
 /**
  * @author bcivel
@@ -95,6 +98,7 @@ public class ReadAppService extends HttpServlet {
 
         // Init Answer with potencial error from Parsing soapLibrary.
         AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+        boolean testcase = ParameterParserUtil.parseBooleanParam(request.getParameter("testcase"), false);
 
         try {
 
@@ -109,6 +113,9 @@ public class ReadAppService extends HttpServlet {
                 jsonResponse = (JSONObject) answer.getItem();
             }else if (request.getParameter("service") != null && request.getParameter("limit") != null ){
                 answer = findAppServiceByLikeName(request.getParameter("service"), appContext, Integer.parseInt(request.getParameter("limit")));
+                jsonResponse = (JSONObject) answer.getItem();
+            }else if(request.getParameter("service") != null && testcase){
+            	answer = getTestCasesUsingService(request.getParameter("service"), appContext) ;
                 jsonResponse = (JSONObject) answer.getItem();
             }else {
                 answer = findAppServiceBySystemByKey(request.getParameter("service"), appContext, userHasPermissions);
@@ -215,6 +222,58 @@ public class ReadAppService extends HttpServlet {
         answerItem.setItem(response);
         answerItem.setResultMessage(resp.getResultMessage());
         return answerItem;
+    }
+    
+    /**
+     * Auxiliary method that extracts the list of test cases that are currently
+     * using one service.
+     *
+     * @param appContext - context object used to get the required beans
+     * @param service - identifier of the service
+     * @return an answer item containing the information about the test cases
+     * that use the entry
+     * @throws JSONException
+     */
+    private AnswerItem getTestCasesUsingService(String service,ApplicationContext appContext) throws JSONException {
+        JSONObject object = new JSONObject();
+        JSONArray objectArray = new JSONArray();
+        AnswerItem ansItem = new AnswerItem();
+        ITestCaseService tcService = appContext.getBean(ITestCaseService.class);
+
+        AnswerList ansList = tcService.findTestCasesThatUseService(service);
+
+        //if the response is success then we can iterate and search for the data
+        if (ansList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            List<TestListDTO> listDTO = ansList.getDataList();
+            for (TestListDTO l : listDTO) {
+                JSONArray jsonArray = new JSONArray();
+                JSONArray arrTestCase = new JSONArray();
+                for (TestCaseListDTO testCase : l.getTestCaseList()) {
+                    JSONObject jsonTestCase = new JSONObject();
+
+                    jsonTestCase.put("TestCaseNumber", testCase.getTestCaseNumber());
+                    jsonTestCase.put("TestCaseDescription", testCase.getTestCaseDescription());
+                    jsonTestCase.put("Creator", testCase.getCreator());
+                    jsonTestCase.put("Active", testCase.isIsActive());
+                    jsonTestCase.put("Status", testCase.getStatus());
+                    jsonTestCase.put("Group", testCase.getGroup());
+                    jsonTestCase.put("Application", testCase.getApplication());
+                    arrTestCase.put(jsonTestCase);
+                }
+                //test details
+                jsonArray.put(l.getTest());
+                jsonArray.put(l.getDescription());
+                jsonArray.put(l.getTestCaseList().size());
+                jsonArray.put(arrTestCase);
+                //test case details
+                objectArray.put(jsonArray);
+            }
+        }
+
+        object.put("TestCasesList", objectArray);
+        ansItem.setItem(object);
+        ansItem.setResultMessage(ansList.getResultMessage());
+        return ansItem;
     }
 
     private AnswerItem findDistinctValuesOfColumn(ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
