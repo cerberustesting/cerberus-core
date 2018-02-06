@@ -62,6 +62,7 @@ import org.cerberus.util.XmlUtil;
 import org.cerberus.util.XmlUtilException;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
+import org.jfree.util.Log;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -121,11 +122,19 @@ public class DataLibService implements IDataLibService {
         MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS);
 
         // Length contains the nb of rows that the result must fetch. If defined at 0 we force at 1.
-        int nbRowsRequested = testCaseCountryProperty.getLength();
-        if (nbRowsRequested < 1) {
-            nbRowsRequested = 1;
+        int nbRowsRequested = 1;
+        
+        // We cast from string to integer ((String)testcasecountryproperty field `length` -> (Integer)testdatalib field `rowlimit`)
+        // if we can't, testdatalib field `rowlimit` will be equal to 0
+        try {
+        	nbRowsRequested = Integer.parseInt(testCaseCountryProperty.getLength());
+        	if (nbRowsRequested < 1) {
+                nbRowsRequested = 1;
+            }
+        }catch(NumberFormatException e) {
+        	LOG.info(e.toString());
         }
-
+        
         /**
          * Gets the list of columns (subdata) to get from TestDataLibData.
          */

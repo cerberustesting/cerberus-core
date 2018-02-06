@@ -28,6 +28,6 @@ import org.cerberus.crud.entity.TestCaseCountryProperties;
 public interface IFactoryTestCaseCountryProperties {
 
     TestCaseCountryProperties create(String test, String testCase, String country, String property, String description,
-            String type, String database, String value1, String value2, int length, int rowLimit, String nature, int retryNb, int retryPeriod);
+            String type, String database, String value1, String value2, String length, int rowLimit, String nature, int retryNb, int retryPeriod);
 
 }
