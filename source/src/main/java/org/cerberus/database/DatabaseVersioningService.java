@@ -9767,8 +9767,16 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("('FILETYPE', 'PDF', '23500', '', ''),");
         SQLS.append("('FILETYPE', 'BIN', '24500', '', '')");
         SQLInstruction.add(SQLS.toString());
-
         
+        
+        // Change datatype of testcasecountryproperties column `Length` to text
+        //-- ------------------------ 1287
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE testcasecountryproperties ");
+        SQLS.append("MODIFY COLUMN Length text");
+        SQLInstruction.add(SQLS.toString());
+
+       
         return SQLInstruction;
     }
 

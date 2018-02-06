@@ -182,7 +182,7 @@ public class UpdateTestCaseProperties1 extends HttpServlet {
             String type = propJson.getString("type");
             String value = propJson.getString("value1");
             String value2 = propJson.getString("value2");
-            int length = propJson.getInt("length");
+            String length = propJson.getString("length");
             int rowLimit = propJson.getInt("rowLimit");
             int retryNb = propJson.optInt("retryNb");
             int retryPeriod = propJson.optInt("retryPeriod");

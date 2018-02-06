@@ -97,7 +97,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                         String database = resultSet.getString("database");
                         String value1 = resultSet.getString("value1");
                         String value2 = resultSet.getString("value2");
-                        int length = resultSet.getInt("length");
+                        String length = resultSet.getString("length");
                         int rowLimit = resultSet.getInt("rowLimit");
                         String nature = resultSet.getString("nature");
                         int retryNb = resultSet.getInt("RetryNb");
@@ -154,7 +154,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                         String database = resultSet.getString("database");
                         String value1 = resultSet.getString("value1");
                         String value2 = resultSet.getString("value2");
-                        int length = resultSet.getInt("length");
+                        String length = resultSet.getString("length");
                         int rowLimit = resultSet.getInt("rowLimit");
                         String nature = resultSet.getString("nature");
                         int retryNb = resultSet.getInt("RetryNb");
@@ -212,7 +212,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                         String database = resultSet.getString("database");
                         String value1 = resultSet.getString("value1");
                         String value2 = resultSet.getString("value2");
-                        int length = resultSet.getInt("length");
+                        String length = resultSet.getString("length");
                         int rowLimit = resultSet.getInt("rowLimit");
                         String nature = resultSet.getString("nature");
                         int retryNb = resultSet.getInt("RetryNb");
@@ -339,7 +339,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                         String database = resultSet.getString("database");
                         String value1 = resultSet.getString("value1");
                         String value2 = resultSet.getString("value2");
-                        int length = resultSet.getInt("length");
+                        String length = resultSet.getString("length");
                         int rowLimit = resultSet.getInt("rowLimit");
                         String nature = resultSet.getString("nature");
                         int retryNb = resultSet.getInt("RetryNb");
@@ -393,7 +393,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                         String database = resultSet.getString("database");
                         String value1 = resultSet.getString("value1");
                         String value2 = resultSet.getString("value2");
-                        int length = resultSet.getInt("length");
+                        String length = resultSet.getString("length");
                         int rowLimit = resultSet.getInt("rowLimit");
                         String nature = resultSet.getString("nature");
                         int retryNb = resultSet.getInt("RetryNb");
@@ -452,7 +452,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                 preStat.setString(7, testCaseCountryProperties.getDatabase());
                 preStat.setBytes(8, testCaseCountryProperties.getValue1().getBytes("UTF-8"));
                 preStat.setBytes(9, testCaseCountryProperties.getValue2().getBytes("UTF-8"));
-                preStat.setInt(10, testCaseCountryProperties.getLength());
+                preStat.setString(10, testCaseCountryProperties.getLength());
                 preStat.setInt(11, testCaseCountryProperties.getRowLimit());
                 preStat.setString(12, testCaseCountryProperties.getNature());
                 preStat.setInt(13, testCaseCountryProperties.getRetryNb());
@@ -501,7 +501,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                 preStat.setString(3, testCaseCountryProperties.getDatabase());
                 preStat.setBytes(4, testCaseCountryProperties.getValue1().getBytes("UTF-8"));
                 preStat.setBytes(5, testCaseCountryProperties.getValue2().getBytes("UTF-8"));
-                preStat.setInt(6, testCaseCountryProperties.getLength());
+                preStat.setString(6, testCaseCountryProperties.getLength());
                 preStat.setInt(7, testCaseCountryProperties.getRowLimit());
                 preStat.setString(8, testCaseCountryProperties.getNature());
                 preStat.setInt(9, testCaseCountryProperties.getRetryNb());
@@ -786,7 +786,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                     preStat.setString(7, prop.getDatabase());
                     preStat.setString(8, prop.getValue1());
                     preStat.setString(9, prop.getValue2());
-                    preStat.setInt(10, prop.getLength());
+                    preStat.setString(10, prop.getLength());
                     preStat.setInt(11, prop.getRowLimit());
                     preStat.setString(12, prop.getNature());
                     preStat.setInt(13, prop.getRetryNb());
@@ -867,7 +867,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                 preStat.setString(7, object.getDatabase());
                 preStat.setString(8, object.getValue1());
                 preStat.setString(9, object.getValue2());
-                preStat.setInt(10, object.getLength());
+                preStat.setString(10, object.getLength());
                 preStat.setInt(11, object.getRowLimit());
                 preStat.setString(12, object.getNature());
                 preStat.setInt(13, object.getRetryNb());
@@ -968,7 +968,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                 preStat.setString(3, object.getDatabase());
                 preStat.setString(4, object.getValue1());
                 preStat.setString(5, object.getValue2());
-                preStat.setInt(6, object.getLength());
+                preStat.setString(6, object.getLength());
                 preStat.setInt(7, object.getRowLimit());
                 preStat.setString(8, object.getNature());
                 preStat.setInt(9, object.getRetryNb());

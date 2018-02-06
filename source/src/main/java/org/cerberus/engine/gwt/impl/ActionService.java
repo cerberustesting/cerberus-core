@@ -1209,9 +1209,17 @@ public class ActionService implements IActionService {
                     // We calculate the property here.
                     long now = new Date().getTime();
                     TestCaseExecutionData tcExeData;
+                    // We cast from string to integer ((String)testcasecountryproperty field `length` -> (Integer)testcaseexecutiondata field `length`)
+                    // if we can't, testCaseExecutionData field `length` will be equal to 0
+                    int tccpLength = 0;
+                    try {
+                    	tccpLength = Integer.parseInt(tccp.getLength());
+                    }catch(NumberFormatException e) {
+                    	LOG.info(e.toString());
+                    }
                     tcExeData = factoryTestCaseExecutionData.create(tCExecution.getId(), tccp.getProperty(), 1, tccp.getDescription(), null, tccp.getType(),
                             tccp.getValue1(), tccp.getValue2(), null, null, now, now, now, now, new MessageEvent(MessageEventEnum.PROPERTY_PENDING),
-                            tccp.getRetryNb(), tccp.getRetryPeriod(), tccp.getDatabase(), tccp.getValue1(), tccp.getValue2(), tccp.getLength(),
+                            tccp.getRetryNb(), tccp.getRetryPeriod(), tccp.getDatabase(), tccp.getValue1(), tccp.getValue2(), tccpLength,
                             tccp.getRowLimit(), tccp.getNature());
                     tcExeData.setTestCaseCountryProperties(tccp);
                     propertyService.calculateProperty(tcExeData, tCExecution, testCaseStepActionExecution, tccp, true);

@@ -259,5 +259,12 @@ public interface ITestCaseService {
      * @return
      */
     public boolean hasPermissionsCreate(TestCase testCase, HttpServletRequest request);
+    
+    /**
+     * 
+     * @param service
+     * @return
+     */
+    public AnswerList findTestCasesThatUseService(String service);
 
 }

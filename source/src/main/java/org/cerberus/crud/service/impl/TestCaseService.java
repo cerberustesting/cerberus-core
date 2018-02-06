@@ -21,6 +21,7 @@ package org.cerberus.crud.service.impl;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -47,11 +48,14 @@ import org.cerberus.crud.service.ITestCaseService;
 import org.cerberus.crud.service.ITestCaseStepActionControlService;
 import org.cerberus.crud.service.ITestCaseStepActionService;
 import org.cerberus.crud.service.ITestCaseStepService;
+import org.cerberus.dto.TestCaseListDTO;
+import org.cerberus.dto.TestListDTO;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.service.datalib.impl.DataLibService;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
@@ -326,6 +330,42 @@ public class TestCaseService implements ITestCaseService {
     @Override
     public AnswerList findTestCasesThatUseTestDataLib(int testDataLibId, String name, String country) {
         return testCaseCountryPropertiesService.findTestCaseCountryPropertiesByValue1(testDataLibId, name, country, TestCaseCountryProperties.TYPE_GETFROMDATALIB);
+    }
+    
+    public boolean containsTestCase(final List<TestCaseListDTO> list, final String number){
+        return list.stream().filter(o -> o.getTestCaseNumber().equals(number)).findFirst().isPresent();
+    }
+    
+    @Override
+    public AnswerList findTestCasesThatUseService(String service) {
+    	
+    	AnswerList testCaseByServiceByDataLib = testCaseDao.findTestCaseByServiceByDataLib(service);
+    	AnswerList testCaseByService = testCaseDao.findTestCaseByService(service);
+    	List<TestListDTO> listOfTestCaseByDataLib =  testCaseByServiceByDataLib.getDataList();
+    	List<TestListDTO> listOfTestCaseByService = testCaseByService.getDataList();
+    	List<TestListDTO> newTestCase = new ArrayList<TestListDTO>();
+    	
+    	if(!listOfTestCaseByDataLib.isEmpty()) {
+	    	for(TestListDTO datalibList : listOfTestCaseByDataLib) {
+	    		for(TestListDTO serviceList : listOfTestCaseByService) {
+	        		if(datalibList.getTest().equals(serviceList.getTest())) {
+	        			List<TestCaseListDTO> testCaseDataLibList = datalibList.getTestCaseList();
+	        			for(TestCaseListDTO testCaseService : serviceList.getTestCaseList()) {
+	        				if(!containsTestCase(testCaseDataLibList, testCaseService.getTestCaseNumber())) {
+	        					testCaseDataLibList.add(testCaseService);
+	        				}
+	        			}
+	        		}else {
+	        			newTestCase.add(serviceList);
+	        		}
+	        	}
+	    	}
+	    	listOfTestCaseByDataLib.addAll(newTestCase);
+	    	testCaseByServiceByDataLib.setDataList(listOfTestCaseByDataLib);
+	    	return testCaseByServiceByDataLib;
+    	}else {
+    		return testCaseByService;
+    	}
     }
 
     @Override
