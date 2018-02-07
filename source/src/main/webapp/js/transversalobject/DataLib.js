@@ -187,7 +187,7 @@ function initModalDataLib(id) {
     $("#cancelDuplicateTestDataLib").text(doc.getDocLabel("page_global", "btn_cancel"));
     $("#duplicateDataLibButton").text(doc.getDocLabel("page_global", "btn_duplicate"));
     //cancel + add buttons
-    $("#editDataLibButton").text(doc.getDocLabel("page_global", "btn_save"));
+    $("#editDataLibButton").text(doc.getDocLabel("page_global", "buttonAdd"));
     $("#cancelTestDataLibButton").text(doc.getDocLabel("page_global", "btn_cancel"));
     $("#closeButton").text(doc.getDocLabel("page_global", "buttonClose"));
     //tabs, tab2 is updated when the entries are managed
