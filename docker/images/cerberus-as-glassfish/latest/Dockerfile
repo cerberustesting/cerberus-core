@@ -45,7 +45,7 @@ RUN apt-get update && apt-get install dos2unix
 
 # Get and extract the Cerberus package
 # Use RUN instead of ADD to avoid re-download (see https://github.com/docker/docker/issues/15717)
-RUN curl -L -o /tmp/${CERBERUS_PACKAGE_NAME}.zip https://github.com/cerberustesting/cerberus-source/releases/download/cerberus-testing-${CERBERUS_VERSION}/${CERBERUS_PACKAGE_NAME}.zip && \
+RUN curl -L -o /tmp/${CERBERUS_PACKAGE_NAME}.zip https://sourceforge.net/projects/cerberus-source/files/${CERBERUS_PACKAGE_NAME}.zip/download && \
     unzip -q -d /tmp /tmp/${CERBERUS_PACKAGE_NAME}.zip
 
 # Get and extract the MySQL connector library
