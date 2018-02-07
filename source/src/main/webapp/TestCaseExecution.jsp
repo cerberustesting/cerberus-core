@@ -317,7 +317,7 @@
                                         <div class="input-group">
                                             <input type="text" class="form-control" id="tag" placeholder="Tag" readonly>
                                             <span class="input-group-btn">
-                                                <button id="editTag" class="btn btn-default">Edit</button>
+                                                <button id="editTags" class="btn btn-default">Edit</button>
                                                 <button id="saveTag" class="btn btn-primary" style="display : none;">Save</button>
                                             </span>
                                         </div>
