@@ -141,7 +141,7 @@ public class UpdateTestDataLib extends HttpServlet {
         String service = fileData.get("service");
         // Parameter that we cannot secure as we need the html --> We DECODE them
         String script = fileData.get("script");
-        String servicePath = fileData.get("servicePath");
+        String servicePath = fileData.get("servicepath");
         String method = fileData.get("method");
         String envelope = fileData.get("envelope");
         String csvUrl = fileData.get("csvUrl");
