@@ -23,9 +23,6 @@
 #   Where:
 #       - <release version> is the needed release version
 
-# Update master branch with latest version
-git checkout master
-git pull --rebase origin master
 
 # Prepare the release version
 awk '/ENV CERBERUS_VERSION/ {$0="ENV CERBERUS_VERSION ${RELEASE_VERSION}"} {print}' latest/Dockerfile > latest/Dockerfile.back && mv latest/Dockerfile.back latest/Dockerfile
@@ -43,6 +40,4 @@ docker push cerberustesting/cerberus-as-glassfish:latest
 # Apply changes to SCM
 git add README.md ${RELEASE_VERSION} latest
 git commit -m 'chore: new cerberus-as-glassfish-${RELEASE_VERSION} version'
-git tag cerberus-as-glassfish-${RELEASE_VERSION}
 git push origin master
-git push --tags origin

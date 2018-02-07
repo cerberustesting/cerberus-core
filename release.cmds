@@ -43,10 +43,6 @@
 #       - <release version> is the needed release version
 #       - <next development version> is the next needed development version
 
-# Update master branch with latest version
-git checkout master
-git pull --rebase origin master
-
 # Prepare the release version
 awk '/asadmin deploy/{print "$GLASSFISHPATH/asadmin undeploy --target server --cascade=true Cerberus-${RELEASE_VERSION}"}1' bin/02DeployApp.sh > bin/02DeployApp.sh.back && mv bin/02DeployApp.sh.back bin/02DeployApp.sh
 awk '/asadmin deploy/ {$0="$GLASSFISHPATH/asadmin deploy --target server --contextroot Cerberus --availabilityenabled=true $MYPATH/../Cerberus-${RELEASE_VERSION}.war"} {print}' bin/02DeployApp.sh > bin/02DeployApp.sh.back && mv bin/02DeployApp.sh.back bin/02DeployApp.sh
