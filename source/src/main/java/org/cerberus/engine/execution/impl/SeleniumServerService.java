@@ -171,9 +171,9 @@ public class SeleniumServerService implements ISeleniumServerService {
              * SetUp Proxy
              */
             String hubUrl = StringUtil.cleanHostURL(
-                                    StringUtil.formatURLCredential(
-                                            tCExecution.getSession().getHostUser(),
-                                            tCExecution.getSession().getHostPassword()) + SeleniumServerService.getBaseUrl(session.getHost(),
+                                     SeleniumServerService.getBaseUrl(StringUtil.formatURLCredential(
+                                             tCExecution.getSession().getHostUser(),
+                                             tCExecution.getSession().getHostPassword()) + session.getHost(),
                                             session.getPort())) + "/wd/hub";
             LOG.debug(logPrefix + "Hub URL :" + hubUrl);
             URL url = new URL(hubUrl);
@@ -331,7 +331,6 @@ public class SeleniumServerService implements ISeleniumServerService {
             throw new CerberusException(mes);
         } catch (Exception exception) {
             LOG.error(logPrefix + exception.toString(),exception);
-            exception.printStackTrace();
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
             mes.setDescription(mes.getDescription().replace("%MES%", exception.toString()));
             throw new CerberusException(mes);
