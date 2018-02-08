@@ -8,6 +8,7 @@
 [square]
 * [GUI] Various improvements on file attachement on Manual Executions.
 * [GUI] Display Changelog of latest version on homepage.
+* [ENGINE] Robot can now have https:// protocol specified inside the host name.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

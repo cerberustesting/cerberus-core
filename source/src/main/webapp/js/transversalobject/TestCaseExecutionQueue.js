@@ -258,7 +258,7 @@ function feedExecutionQueueModal(queueid, modalId, mode) {
                 // Feed the data to the screen and manage authorities.
                 var exeQ = data.contentTable;
                 var hasPermissions = data.hasPermissions;
-
+                
                 if (mode === "EDIT") {
                     // Cannot Cancel an execution that is already cancelled.
                     if (exeQ.state === "CANCELLED") {
@@ -279,7 +279,6 @@ function feedExecutionQueueModal(queueid, modalId, mode) {
                     if ((exeQ.state === "QUEUED")) {
                         $('#submitExecutionQueueButton').attr('class', '');
                         $('#submitExecutionQueueButton').prop('hidden', 'hidden');
-                        hasPermissions = false;
                     }
                 }
 
@@ -334,6 +333,11 @@ function feedExecutionQueueModalData(exeQ, modalId, mode, hasPermissionsUpdate) 
     var isEditable = (((hasPermissionsUpdate) && (mode === "EDIT") && ((exeQ.state === "WAITING") || (exeQ.state === "QUEUED") || (exeQ.state === "ERROR") || (exeQ.state === "CANCELLED")))
             || (mode === "DUPLICATE"));
 
+    console.info(isEditable);
+    console.info(mode);
+    console.info(hasPermissionsUpdate);
+    console.info(exeQ.state);
+    
     formEdit.find("#test").empty();
     formEdit.find("#testCase").empty();
 

@@ -1,0 +1,14 @@
+*Bug fixes*
+[square]
+* Allow to modify queue entry in QUEUED state.
+
+*Improvements / New features*
+[square]
+* [ENGINE] Datalib length can now be decoded in order to allow dynamic size of datalib.
+
+*Warning to be considered before applying the version (deprecated features)*
+[square]
+* none
+
+
+
