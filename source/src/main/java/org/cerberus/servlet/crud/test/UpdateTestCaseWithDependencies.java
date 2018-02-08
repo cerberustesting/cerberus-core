@@ -60,6 +60,7 @@ import org.cerberus.crud.service.impl.TestCaseStepActionControlService;
 import org.cerberus.crud.service.impl.TestCaseStepActionService;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -236,11 +237,12 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         for (TestCaseCountryProperties tccpDifference : tccpToUpdateOrInsertToIterate) {
             for (TestCaseCountryProperties tccpInDatabase : tccpFromDtb) {
                 if (tccpDifference.hasSameKey(tccpInDatabase)) {
-                    tccpService.updateTestCaseCountryProperties(tccpDifference);
-                    tccpToUpdateOrInsert.remove(tccpDifference);
+                	tccpService.updateTestCaseCountryProperties(tccpDifference);
+            		tccpToUpdateOrInsert.remove(tccpDifference);
                 }
             }
         }
+        
         tccpService.insertListTestCaseCountryProperties(tccpToUpdateOrInsert);
 
         /**
@@ -478,7 +480,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                 String type = getParameterIfExists(request, "properties_type_" + inc);
                 String value = getParameterIfExists(request, "properties_value1_" + inc);
                 String value2 = getParameterIfExists(request, "properties_value2_" + inc);
-                int length = Integer.valueOf(getParameterIfExists(request, "properties_length_" + inc).equals("") ? "0" : getParameterIfExists(request, "properties_length_" + inc));
+                String length = ParameterParserUtil.parseStringParam(getParameterIfExists(request, "properties_length_" + inc), "0");  
                 int rowLimit = Integer.valueOf(getParameterIfExists(request, "properties_rowlimit_" + inc).equals("") ? "0" : getParameterIfExists(request, "properties_rowlimit_" + inc));
                 int retryNb = Integer.valueOf(getParameterIfExists(request, "properties_retrynb_" + inc).equals("") ? "0" : getParameterIfExists(request, "properties_retrynb_" + inc));
                 int retryPeriod = Integer.valueOf(getParameterIfExists(request, "properties_retryperiod_" + inc).equals("") ? "0" : getParameterIfExists(request, "properties_retryperiod_" + inc));

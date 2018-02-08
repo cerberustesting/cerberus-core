@@ -168,10 +168,21 @@ public class PropertyService implements IPropertyService {
             /**
              * First create testCaseExecutionData object
              */
+            
+            int eachTccpLength = 0;
+            
+            // We cast from string to integer ((String)testcasecountryproperty field `length` -> (Integer)testcaseexecutiondata field `length`)
+            // if we can't, testCaseExecutionData field `length` will be equal to 0
+            try {
+            	eachTccpLength = Integer.parseInt(eachTccp.getLength());
+            }catch(NumberFormatException e) {
+            	LOG.error(e.toString());
+            }
+            
             now = new Date().getTime();
             tcExeData = factoryTestCaseExecutionData.create(tCExecution.getId(), eachTccp.getProperty(), 1, eachTccp.getDescription(), null, eachTccp.getType(),
                     eachTccp.getValue1(), eachTccp.getValue2(), null, null, now, now, now, now, new MessageEvent(MessageEventEnum.PROPERTY_PENDING),
-                    eachTccp.getRetryNb(), eachTccp.getRetryPeriod(), eachTccp.getDatabase(), eachTccp.getValue1(), eachTccp.getValue2(), eachTccp.getLength(),
+                    eachTccp.getRetryNb(), eachTccp.getRetryPeriod(), eachTccp.getDatabase(), eachTccp.getValue1(), eachTccp.getValue2(), eachTccpLength,
                     eachTccp.getRowLimit(), eachTccp.getNature());
             tcExeData.setTestCaseCountryProperties(eachTccp);
             tcExeData.settCExecution(tCExecution);
@@ -767,7 +778,7 @@ public class PropertyService implements IPropertyService {
         if (TestCaseCountryProperties.NATURE_RANDOM.equals(testCaseCountryProperty.getNature())
                 //TODO CTE Voir avec B. Civel "RANDOM_NEW"
                 || (testCaseCountryProperty.getNature().equals(TestCaseCountryProperties.NATURE_RANDOMNEW))) {
-            if (testCaseCountryProperty.getLength() == 0) {
+            if (testCaseCountryProperty.getLength().equals("0")) {
                 MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_TEXTRANDOMLENGHT0);
                 testCaseExecutionData.setPropertyResultMessage(res);
             } else {
@@ -777,7 +788,7 @@ public class PropertyService implements IPropertyService {
                 } else {
                     charset = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
                 }
-                String value = StringUtil.getRandomString(testCaseCountryProperty.getLength(), charset);
+                String value = StringUtil.getRandomString(ParameterParserUtil.parseIntegerParam(testCaseCountryProperty.getLength(), 0), charset);
                 testCaseExecutionData.setValue(value);
                 MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_RANDOM);
                 res.setDescription(res.getDescription().replace("%FORCED%", forceRecalculation == true ? "Re-" : ""));
@@ -1223,7 +1234,31 @@ public class PropertyService implements IPropertyService {
             } catch (CerberusEventException cex) {
                 LOG.error(cex.toString());
             }
+            
+            String decodedLength = null;
+            
+            // Here, we try to decode testCaseCountryProperty field `length` to get the value of property if needed
+            try {
+            	answerDecode = variableService.decodeStringCompletly(testCaseCountryProperty.getLength(), tCExecution, testCaseStepActionExecution, false);
+            	decodedLength = (String) answerDecode.getItem();
+            } catch (CerberusEventException cex) {
+                LOG.error(cex.toString());
+            }
 
+            int testCaseExecutionDataLength = 0;
+            
+            // We cast from string to integer ((String)testcasecountryproperty field `length` -> (Integer)testcaseexecutiondata field `length`)
+            // if we can't, testCaseExecutionData field `length` will be equal to 0
+            // if we can, we set the value of testCaseExecutionData field `length` to the casted value
+            if(decodedLength != null) {
+            	try {
+            		testCaseExecutionDataLength = Integer.parseInt(decodedLength);
+            		testCaseExecutionData.setLength(testCaseExecutionDataLength);
+            	}catch(NumberFormatException e) {
+            		LOG.error(e.toString());
+            	}
+            }
+           
             //we need to recalculate the result for the lib
             serviceAnswer = dataLibService.getFromDataLib(testDataLib, testCaseCountryProperty, tCExecution, testCaseExecutionData);
 

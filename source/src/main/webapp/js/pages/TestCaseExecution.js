@@ -168,7 +168,7 @@ function initPage(id) {
         window.location = "TestCaseExecution.jsp?executionId=" + id;
     });
 
-    $("#editTag").click(function () {
+    $("#editTags").click(function () {
         $(this).hide();
         $("#saveTag").show();
         $("#testCaseDetails #tag").attr("readonly", false);
@@ -183,7 +183,7 @@ function initPage(id) {
             success: function (data) {
                 $("#saveTag").attr("disabled", false);
                 $("#saveTag").hide();
-                $("#editTag").show();
+                $("#editTags").show();
             }
         })
     });

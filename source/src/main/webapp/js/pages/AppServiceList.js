@@ -36,7 +36,8 @@ function initPage() {
 			aoColumnsFunc("soapLibrarysTable"), [ 1, 'asc' ]);
 	createDataTableWithPermissions(configurations, renderOptionsForAppService,
 			"#soapLibraryList", undefined, true);
-
+	
+	 $('#testCaseListModal').on('hidden.bs.modal', getTestCasesUsingModalCloseHandler);
 }
 
 function displayPageLabel() {
@@ -105,6 +106,68 @@ function removeEntryClick(service) {
 			undefined);
 }
 
+/**
+ * Handler that cleans the test case list modal when it is closed
+ */
+function getTestCasesUsingModalCloseHandler() {
+    //we need to clear the item-groups that were inserted
+    $('#testCaseListModal #testCaseListGroup a[id*="cat"]').remove();
+    $('#testCaseListModal #testCaseListGroup div[id*="sub_cat"]').remove();
+}
+
+/**
+ * Function that loads all test cases that are associated with the selected entry 
+ * @param {type} service service name
+ */
+function getTestCasesUsingService(service) {
+    clearResponseMessageMainPage();
+    showLoaderInModal('#testCaseListModal');
+    var jqxhr = $.getJSON("ReadAppService", "service=" + service + "&testcase=Y");
+
+    var doc = new Doc();
+    
+    $("#testCaseListModalLabel").text("List of test cases affected by the service : "+service)
+
+    $.when(jqxhr).then(function (result) {
+
+        $('#testCaseListModal #totalTestCases').text(doc.getDocLabel("page_testdatalib_m_gettestcases", "nrTests") + " " + result["TestCasesList"].length);
+        
+        var htmlContent = "";
+
+        $.each(result["TestCasesList"], function (idx, obj) {
+
+            var item = '<b><a class="list-group-item ListItem" data-remote="true" href="#sub_cat' + idx + '" id="cat' + idx + '" data-toggle="collapse" \n\
+            data-parent="#sub_cat' + idx + '"><span class="pull-left">' + obj[0] + '</span>\n\
+                                        <span style="margin-left: 25px;" class="pull-right">' + doc.getDocLabel("page_testdatalib_m_gettestcases", "nrTestCases") + obj[2] + '</span>\n\
+                                        <span class="menu-ico-collapse"><i class="fa fa-chevron-down"></i></span>\n\
+                                    </a></b>';
+            htmlContent += item;
+            htmlContent += '<div class="collapse list-group-submenu" id="sub_cat' + idx + '">';
+
+
+            $.each(obj[3], function (idx2, obj2) {
+                var hrefTest = 'TestCaseScript.jsp?test=' + obj[0] + '&testcase=' + obj2.TestCaseNumber;
+                htmlContent += '<span class="list-group-item sub-item ListItem" data-parent="#sub_cat' + idx + '" style="padding-left: 78px;height: 50px;">';
+                htmlContent += '<span class="pull-left"><a href="' + hrefTest + '" target="_blank">' + obj2.TestCaseNumber + '- ' + obj2.TestCaseDescription + '</a></span></br>';
+                htmlContent += '<span class="pull-left"> ' + doc.getDocLabel("testcase", "Creator") + ": " + obj2.Creator + ' | '
+                        + doc.getDocLabel("testcase", "TcActive") + ": " + obj2.Active + ' | ' + doc.getDocLabel("testcase", "Status") + ": " + obj2.Status + ' | ' +
+                        doc.getDocLabel("invariant", "GROUP") + ": " + obj2.Group + ' | ' + doc.getDocLabel("application", "Application") + ": " + obj2.Application + '</span>';
+                htmlContent += '</span>';
+            });
+
+            htmlContent += '</div>';
+
+        });
+        if (htmlContent !== '') {
+            $('#testCaseListModal #testCaseListGroup').append(htmlContent);
+        }
+        hideLoaderInModal('#testCaseListModal');
+        $('#testCaseListModal').modal('show');
+
+    }).fail(handleErrorAjaxAfterTimeout);
+
+}
+
 function aoColumnsFunc(tableId) {
 	var doc = new Doc();
 	var aoColumns = [
@@ -112,7 +175,7 @@ function aoColumnsFunc(tableId) {
 				"data" : null,
 				"bSortable" : false,
 				"bSearchable" : false,
-				"sWidth" : "75px",
+				"sWidth" : "150px",
 				"title" : doc.getDocLabel("page_global", "columnAction"),
 				"mRender" : function(data, type, obj) {
 					var hasPermissions = $("#" + tableId)
@@ -160,15 +223,22 @@ function aoColumnsFunc(tableId) {
 									"button_delete")
 							+ '" type="button">\n\
                                     <span class="glyphicon glyphicon-trash"></span></button>';
+					
+				
+					var viewTestCase = '<button class="getTestCasesUsing btn  btn-default btn-xs margin-right5" \n\
+                        name="getTestCasesUsing" title="' + doc.getDocLabel("page_testdatalib", "tooltip_gettestcases") + '" type="button" \n\
+                        onclick="getTestCasesUsingService('+ "'" + obj.service +'\')"><span class="glyphicon glyphicon-list"></span></button>';
+
+					
 					if (hasPermissions === "true") { // only draws the
 														// options if the user
 														// has the correct
 														// privileges
-						return '<div class="center btn-group width150">'
-								+ editEntry + duplicateEntry + deleteEntry
+						return '<div class="center btn-group width250">'
+								+ editEntry + duplicateEntry + deleteEntry + viewTestCase
 								+ '</div>';
 					}
-					return '<div class="center btn-group width150">'
+					return '<div class="center btn-group width250">'
 							+ viewEntry + '</div>';
 
 				}

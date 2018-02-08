@@ -39,6 +39,7 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.apache.http.message.BasicHttpEntityEnclosingRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -169,7 +170,11 @@ public class SeleniumServerService implements ISeleniumServerService {
             /**
              * SetUp Proxy
              */
-            String hubUrl = StringUtil.cleanHostURL(StringUtil.formatURLCredential(tCExecution.getSession().getHostUser(), tCExecution.getSession().getHostPassword()) + tCExecution.getSession().getHost()) + ":" + tCExecution.getSession().getPort() + "/wd/hub";
+            String hubUrl = StringUtil.cleanHostURL(
+                                     SeleniumServerService.getBaseUrl(StringUtil.formatURLCredential(
+                                             tCExecution.getSession().getHostUser(),
+                                             tCExecution.getSession().getHostPassword()) + session.getHost(),
+                                            session.getPort())) + "/wd/hub";
             LOG.debug(logPrefix + "Hub URL :" + hubUrl);
             URL url = new URL(hubUrl);
             HttpCommandExecutor executor = null;
@@ -310,22 +315,22 @@ public class SeleniumServerService implements ISeleniumServerService {
             tCExecution.getSession().setStarted(true);
 
         } catch (CerberusException exception) {
-            LOG.error(logPrefix + exception.toString());
+            LOG.error(logPrefix + exception.toString(),exception);
             throw new CerberusException(exception.getMessageError());
         } catch (MalformedURLException exception) {
-            LOG.error(logPrefix + exception.toString());
+            LOG.error(logPrefix + exception.toString(),exception);
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_URL_MALFORMED);
             mes.setDescription(mes.getDescription().replace("%URL%", tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort()));
             throw new CerberusException(mes);
         } catch (UnreachableBrowserException exception) {
-            LOG.error(logPrefix + exception.toString());
+            LOG.error(logPrefix + exception.toString(),exception);
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_COULDNOTCONNECT);
             mes.setDescription(mes.getDescription().replace("%SSIP%", tCExecution.getSeleniumIP()));
             mes.setDescription(mes.getDescription().replace("%SSPORT%", tCExecution.getSeleniumPort()));
             mes.setDescription(mes.getDescription().replace("%ERROR%", exception.toString()));
             throw new CerberusException(mes);
         } catch (Exception exception) {
-            LOG.error(logPrefix + exception.toString());
+            LOG.error(logPrefix + exception.toString(),exception);
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
             mes.setDescription(mes.getDescription().replace("%MES%", exception.toString()));
             throw new CerberusException(mes);
@@ -528,8 +533,13 @@ public class SeleniumServerService implements ISeleniumServerService {
             String hostName = ce.getAddressOfRemoteServer().getHost();
             int port = ce.getAddressOfRemoteServer().getPort();
             HttpHost host = new HttpHost(hostName, port);
-            HttpClient client = HttpClientBuilder.create().build();
-            URL sessionURL = new URL("http://" + session.getHost() + ":" + session.getPort() + "/grid/api/testsession?session=" + sessionId);
+
+
+            HttpClient client = HttpClientBuilder.create().setRedirectStrategy(new LaxRedirectStrategy()).build();
+
+
+            URL sessionURL = new URL(SeleniumServerService.getBaseUrl(session.getHost(), session.getPort()) + "/grid/api/testsession?session=" + sessionId);
+
             BasicHttpEntityEnclosingRequest r = new BasicHttpEntityEnclosingRequest("POST", sessionURL.toExternalForm());
             HttpResponse response = client.execute(host, r);
             if (!response.getStatusLine().toString().contains("403")
@@ -567,4 +577,20 @@ public class SeleniumServerService implements ISeleniumServerService {
         return driver.manage().window().getSize().width + "*" + driver.manage().window().getSize().height;
     }
 
+
+    private static String getBaseUrl(String host, String port) {
+        String baseurl="";
+
+        if(!StringUtil.isNullOrEmpty(host) && (host.contains("https://") || host.contains("http://")) ) {
+            baseurl=host;
+        } else {
+            baseurl="http://" + host;
+        }
+
+        if(!StringUtil.isNullOrEmpty(port) && Integer.valueOf(port) > 0) {
+            baseurl+=":" + port;
+        }
+
+        return baseurl;
+    }
 }

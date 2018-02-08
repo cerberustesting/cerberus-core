@@ -114,7 +114,7 @@ public class UpdateTestDataLib extends HttpServlet {
                 FileItem fileItem = it.next();
                 boolean isFormField = fileItem.isFormField();
                 if (isFormField) {
-                    fileData.put(fileItem.getFieldName(), ParameterParserUtil.parseStringParamAndDecode(fileItem.getString("UTF-8"), null, charset));
+                    fileData.put(fileItem.getFieldName(), ParameterParserUtil.parseStringParamAndDecode(fileItem.getString("UTF-8"), "", charset));
                 } else {
                     file = fileItem;
                 }
@@ -135,18 +135,18 @@ public class UpdateTestDataLib extends HttpServlet {
         String databaseUrl = policy.sanitize(fileData.get("databaseUrl"));
         String databaseCsv = policy.sanitize(fileData.get("databaseCsv"));
         // Parameter that needs to be secured --> We SECURE+DECODE them
-        String name = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("name"), "", charset); //this is mandatory
-        String group = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("group"), "", charset);
-        String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("libdescription"), "", charset);
-        String service = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("service"), "", charset);
+        String name = fileData.get("name"); //this is mandatory
+        String group = fileData.get("group");
+        String description = fileData.get("libdescription");
+        String service = fileData.get("service");
         // Parameter that we cannot secure as we need the html --> We DECODE them
-        String script = ParameterParserUtil.parseStringParamAndDecode(fileData.get("script"), "", charset);
-        String servicePath = ParameterParserUtil.parseStringParamAndDecode(fileData.get("servicePath"), "", charset);
-        String method = ParameterParserUtil.parseStringParamAndDecode(fileData.get("method"), "", charset);
-        String envelope = ParameterParserUtil.parseStringParamAndDecode(fileData.get("envelope"), "", charset);
-        String csvUrl = ParameterParserUtil.parseStringParamAndDecode(fileData.get("csvUrl"), "", charset);
-        String separator = ParameterParserUtil.parseStringParamAndDecode(fileData.get("separator"), "", charset);
-        String activateAutoSubdata = ParameterParserUtil.parseStringParamAndDecode(fileData.get("subdataCheck"), "", charset);
+        String script = fileData.get("script");
+        String servicePath = fileData.get("servicepath");
+        String method = fileData.get("method");
+        String envelope = fileData.get("envelope");
+        String csvUrl = fileData.get("csvUrl");
+        String separator = fileData.get("separator");
+        String activateAutoSubdata = fileData.get("subdataCheck");
 
         Integer testdatalibid = 0;
         boolean testdatalibid_error = true;

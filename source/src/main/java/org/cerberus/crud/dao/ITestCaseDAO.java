@@ -155,4 +155,20 @@ public interface ITestCaseDAO {
      * @see FactoryTestCase
      */
     public TestCase loadFromResultSet(ResultSet resultSet) throws SQLException;
+    
+    /**
+     * 
+     * @param service
+     * @return
+     */
+    public AnswerList findTestCaseByService(String service);
+    
+    /**
+     * 
+     * @param service
+     * @return
+     */
+    public AnswerList findTestCaseByServiceByDataLib(String service);
+    
+    
 }

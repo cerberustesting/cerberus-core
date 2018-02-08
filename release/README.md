@@ -12,6 +12,33 @@ A `.cmds` file gathers all necessary commands to be executed in order to apply a
  
 Finally, each `.cmds` file contains a documentation header part to describe how to use it.
 
+### step by step
+
+Clone runcmds.sh somewhere on your computer :
+`
+git clone https://github.com/abourdon/runcmds
+`
+
+Go to your cerberus/release folder
+`
+    cd <path_to_cerberusclone>/release/
+`
+
+
+And run the release cmd :
+`
+ <path_to_runcmds>/runcmds.sh
+       -e RELEASE_VERSION <release version> \
+       -e NEXT_DEVELOPMENT_VERSION <next development version> \
+       -e RUNCMDS_PATH <runcmds command path> \
+       -s ./common.cmds
+`
+
+`common.cmds` will clone a cerberus on release/cerberus-testing, change some version on bin/*.sh script and make a `mvn release`.
+After that, common.cmds will wait new version of cerberus is available on sourceforge, and create new docker version.
+
+
+
 ## List of available release processes
 
 Hereafter the list of available release processes:

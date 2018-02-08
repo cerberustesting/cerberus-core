@@ -52,25 +52,19 @@
 #       - <next development version> is the next needed development version
 #       - <runcmds command path> is the path to the runcmds command line (usually <runcmds root>/runcmds.sh)
 
-# Create temporary directory
-mkdir -p tmp
-cd tmp
-
 # Release of the cerberus-source project
 rm -rf cerberus-source
 git clone git@github.com:cerberustesting/cerberus-source.git
 cd cerberus-source
 ${RUNCMDS_PATH} -e RELEASE_VERSION ${RELEASE_VERSION} -e NEXT_DEVELOPMENT_VERSION ${NEXT_DEVELOPMENT_VERSION} -s release.cmds
-cd ..
-rm -rf cerberus-source
 
 # Waiting for cerberus-source's artifact availability from Sourceforge
 while [[ `curl -s -o /dev/null -w "%{http_code}" https://sourceforge.net/projects/cerberus-source/files/Cerberus-${RELEASE_VERSION}.zip/download` != '302' ]]; do echo 'Artifact Cerberus-${RELEASE_VERSION}.zip is not yet ready to be downloaded from Sourceforge. Sleeping 10s and retry.' && sleep 10; done
 
 # Release of the cerberus-as-glassfish project
-cd docker/images/cerberus-as-glassfish
+cd cerberus-source/docker/images/cerberus-as-glassfish
 ${RUNCMDS_PATH} -e RELEASE_VERSION ${RELEASE_VERSION} -s release.cmds
-cd ../../../..
+cd ../../..
 rm -rf cerberus-source
 
 # Restore current directory to the initial one
