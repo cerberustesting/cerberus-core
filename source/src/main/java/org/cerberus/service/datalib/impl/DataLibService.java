@@ -122,19 +122,12 @@ public class DataLibService implements IDataLibService {
         MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS);
 
         // Length contains the nb of rows that the result must fetch. If defined at 0 we force at 1.
-        int nbRowsRequested = 1;
-        
-        // We cast from string to integer ((String)testcasecountryproperty field `length` -> (Integer)testdatalib field `rowlimit`)
-        // if we can't, testdatalib field `rowlimit` will be equal to 0
-        try {
-        	nbRowsRequested = Integer.parseInt(testCaseCountryProperty.getLength());
-        	if (nbRowsRequested < 1) {
-                nbRowsRequested = 1;
-            }
-        }catch(NumberFormatException e) {
-        	LOG.info(e.toString());
+        int nbRowsRequested = testCaseExecutionData.getLength();
+
+    	if (nbRowsRequested < 1) {
+            nbRowsRequested = 1;
         }
-        
+       
         /**
          * Gets the list of columns (subdata) to get from TestDataLibData.
          */
