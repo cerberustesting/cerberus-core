@@ -39,5 +39,5 @@ docker push cerberustesting/cerberus-as-glassfish:latest
 
 # Apply changes to SCM
 git add README.md ${RELEASE_VERSION} latest
-git commit -m 'chore: new cerberus-as-glassfish-${RELEASE_VERSION} version'
+git commit -m 'chore:docker new cerberus-as-glassfish-${RELEASE_VERSION} version'
 git push origin master
