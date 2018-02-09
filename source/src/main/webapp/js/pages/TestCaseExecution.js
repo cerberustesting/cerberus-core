@@ -386,7 +386,11 @@ function setConfigPanel(data) {
     configPanel.find("input#environmentData").val(data.environmentData);
     configPanel.find("input#status").val(data.status);
 
-    configPanel.find("input#end").val(new Date(data.end));
+    var d1 = new Date('1980-01-01');
+    var endExe = new Date(data.end);
+    if (endExe > d1) {
+        configPanel.find("input#end").val(new Date(data.end));
+    }
     configPanel.find("input#finished").val(data.finished);
     configPanel.find("input#id").val(data.id);
     configPanel.find("input#controlstatus2").val(data.controlStatus);
@@ -1439,9 +1443,9 @@ Action.prototype.generateHeader = function (id) {
             triggerActionExecution(this, id, "OK");
             $(this).parent().parent().find(buttonUpload).remove()
             $(this).parent().parent().find(".col-sm-10").removeClass("col-sm-10").addClass("col-sm-8")
-            
-            if($(this).parent().parent().find(".btn-upload").length == 0){
-            	$(this).parent().parent().append(buttonUpload)
+
+            if ($(this).parent().parent().find(".btn-upload").length == 0) {
+                $(this).parent().parent().append(buttonUpload)
             }
             buttonUpload.click(function (event) {
                 var indexStep = $("#nav-execution").find(".active").data("index");
@@ -1460,8 +1464,8 @@ Action.prototype.generateHeader = function (id) {
             triggerActionExecution(this, id, "FA");
             $(this).parent().parent().find(buttonUpload).remove()
             $(this).parent().parent().find(".col-sm-10").removeClass("col-sm-10").addClass("col-sm-8")
-            if($(this).parent().parent().find(".btn-upload").length == 0){
-            	$(this).parent().parent().append(buttonUpload)
+            if ($(this).parent().parent().find(".btn-upload").length == 0) {
+                $(this).parent().parent().append(buttonUpload)
             }
             buttonUpload.click(function (event) {
                 var indexStep = $("#nav-execution").find(".active").data("index");
@@ -2084,8 +2088,8 @@ Control.prototype.generateHeader = function (id) {
             triggerControlExecution(this, id, "OK");
             $(this).parent().parent().find(buttonUpload).remove()
             $(this).parent().parent().find(".col-xs-10").removeClass("col-xs-10").addClass("col-xs-8")
-            if($(this).parent().parent().find(".btn-upload").length == 0){
-            	$(this).parent().parent().append(buttonUpload)
+            if ($(this).parent().parent().find(".btn-upload").length == 0) {
+                $(this).parent().parent().append(buttonUpload)
             }
             $(buttonUpload).click(function (event) {
                 var indexStep = $("#nav-execution").find(".active").data("index");
@@ -2105,8 +2109,8 @@ Control.prototype.generateHeader = function (id) {
             triggerControlExecution(this, id, "KO");
             $(this).parent().parent().find(buttonUpload).remove()
             $(this).parent().parent().find(".col-xs-10").removeClass("col-xs-10").addClass("col-xs-8")
-            if($(this).parent().parent().find(".btn-upload").length == 0){
-            	$(this).parent().parent().append(buttonUpload)
+            if ($(this).parent().parent().find(".btn-upload").length == 0) {
+                $(this).parent().parent().append(buttonUpload)
             }
             $(buttonUpload).click(function (event) {
                 var indexStep = $("#nav-execution").find(".active").data("index");
@@ -2352,25 +2356,25 @@ Control.prototype.getJsonData = function () {
     return json;
 };
 
-function changeClickIfManual(element, isTheExecutionManual, i, container, idStep, fileList){
-	let z = i
-	if (isTheExecutionManual) {
-		$(element).find("img").off("click").click(function (e) {
-			var idex = $("#idlabel").text()
-			if ($(container).parent().parent().parent().hasClass("action")) {
-				var indexAction = $(this).parents("a").data('index')
-				var currentActionOrControl = getScriptInformationOfStep()[idStep]["actionArr"][indexAction]
-				openModalManualFile(true, currentActionOrControl, "EDIT", idex, fileList[z])
-			} else {
-				var indexAction = $(this).parents("a").parent().find(".action").data('index')
-				var indexControl = $(this).parents("a").data('index')
-				var currentActionOrControl = getScriptInformationOfStep()[idStep]["actionArr"][indexAction]["controlArr"][indexControl]
-				openModalManualFile(false, currentActionOrControl, "EDIT", idex, fileList[z])
-			}
-			e.preventDefault()
-			e.stopPropagation()
-		})
-	}
+function changeClickIfManual(element, isTheExecutionManual, i, container, idStep, fileList) {
+    let z = i
+    if (isTheExecutionManual) {
+        $(element).find("img").off("click").click(function (e) {
+            var idex = $("#idlabel").text()
+            if ($(container).parent().parent().parent().hasClass("action")) {
+                var indexAction = $(this).parents("a").data('index')
+                var currentActionOrControl = getScriptInformationOfStep()[idStep]["actionArr"][indexAction]
+                openModalManualFile(true, currentActionOrControl, "EDIT", idex, fileList[z])
+            } else {
+                var indexAction = $(this).parents("a").parent().find(".action").data('index')
+                var indexControl = $(this).parents("a").data('index')
+                var currentActionOrControl = getScriptInformationOfStep()[idStep]["actionArr"][indexAction]["controlArr"][indexControl]
+                openModalManualFile(false, currentActionOrControl, "EDIT", idex, fileList[z])
+            }
+            e.preventDefault()
+            e.stopPropagation()
+        })
+    }
 }
 
 
@@ -2389,11 +2393,11 @@ function addFileLink(fileList, container, manual, idStep) {
                         return false;
                     }));
             container.append(linkBox);
-            
-            changeClickIfManual(linkBox,isTheExecutionManual,i,container,idStep,fileList)
+
+            changeClickIfManual(linkBox, isTheExecutionManual, i, container, idStep, fileList)
 
         } else if ((fileList[i].fileType === "HTML") || (fileList[i].fileType === "JSON") || (fileList[i].fileType === "TXT") || (fileList[i].fileType === "XML")) {
-        	
+
             var j = i;
             var urlImagetxt = "ReadTestCaseExecutionMedia?filename=" + fileList[i].fileName + "&filetype=" + fileList[i].fileType + "&filedesc=" + fileList[i].fileDesc + "&auto=" + auto;
             ;
@@ -2430,30 +2434,30 @@ function addFileLink(fileList, container, manual, idStep) {
             }
 
             container.append(linkBoxtxt);
-            changeClickIfManual(linkBoxtxt,isTheExecutionManual,i,container,idStep,fileList);
-            
-        }else if((fileList[i].fileType === "BIN") || (fileList[i].fileType === "PDF")){
-        	
-        	var linkBoxtxt = null;
-        	
-        	if(fileList[i].fileType === "BIN"){
-        		linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px").append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-binaire.png").css("height", "30px").click(function (f) {
-               	 	showPicture(fileDesc, urlImage);
-               	 		return false;
-               	 	}))
-        	}else if(fileList[i].fileType === "PDF"){
-        		linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px").append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-pdf.svg").css("height", "30px").click(function (f) {
-               	 	showPicture(fileDesc, urlImage);
-               	 		return false;
-               	 	}))
-        	}
-       	 	
-       	 	container.append(linkBoxtxt);
-       	 	changeClickIfManual(linkBoxtxt,isTheExecutionManual,i,container,idStep,fileList)
+            changeClickIfManual(linkBoxtxt, isTheExecutionManual, i, container, idStep, fileList);
+
+        } else if ((fileList[i].fileType === "BIN") || (fileList[i].fileType === "PDF")) {
+
+            var linkBoxtxt = null;
+
+            if (fileList[i].fileType === "BIN") {
+                linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px").append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-binaire.png").css("height", "30px").click(function (f) {
+                    showPicture(fileDesc, urlImage);
+                    return false;
+                }))
+            } else if (fileList[i].fileType === "PDF") {
+                linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px").append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-pdf.svg").css("height", "30px").click(function (f) {
+                    showPicture(fileDesc, urlImage);
+                    return false;
+                }))
+            }
+
+            container.append(linkBoxtxt);
+            changeClickIfManual(linkBoxtxt, isTheExecutionManual, i, container, idStep, fileList)
         }
     }
-        
-    
+
+
 
     if (isTheExecutionManual && fileList.length != 0) {
         var buttonUpload = $($("<button>").addClass("btn btn-info btn-upload btn-inverse").attr("type", "button").text("UPLOAD"));
