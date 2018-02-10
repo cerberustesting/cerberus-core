@@ -3094,7 +3094,7 @@ function setPlaceholderAction(actionElement) {
      */
     var placeHoldersList = {"fr": [
             {"type": "Unknown", "object": null, "property": null},
-            {"type": "keypress", "object": "[opt] Chemin vers l'élement à cibler", "property": ""},
+            {"type": "keypress", "object": "Chemin vers l'élement à cibler", "property": "Touche à presser"},
             {"type": "hideKeyboard", "object": null, "property": null},
             {"type": "swipe", "object": "Action (UP DOWN LEFT RIGHT CUSTOM...)", "property": "Direction x;y;z;y"},
             {"type": "click", "object": "Chemin vers l'élement à cliquer", "property": null},
@@ -3114,7 +3114,7 @@ function setPlaceholderAction(actionElement) {
             {"type": "openApp", "object": "Nom ou chemin de l'application", "property": null},
             {"type": "closeApp", "object": "Nom ou chemin de l'application", "property": null},
             {"type": "select", "object": "Chemin vers l'élement", "property": "Chemin vers l'option"},
-            {"type": "type", "object": "Chemin vers l'élement", "property": "Nom de propriété"},
+            {"type": "type", "object": "Chemin vers l'élement", "property": "Texte à entrer"},
             {"type": "wait", "object": "Valeur(ms) ou élement", "property": null},
             {"type": "waitVanish", "object": "Element", "property": null},
             {"type": "callService", "object": "Nom du Service", "property": null},
@@ -3126,7 +3126,7 @@ function setPlaceholderAction(actionElement) {
             {"type": "getPageSource", "object": null, "property": null}
         ], "en": [
             {"type": "Unknown", "object": null, "property": null},
-            {"type": "keypress", "object": "[opt] Element path", "property": ""},
+            {"type": "keypress", "object": "Target element path", "property": "Key to press"},
             {"type": "hideKeyboard", "object": null, "property": null},
             {"type": "swipe", "object": "Action (UP DOWN LEFT RIGHT CUSTOM...)", "property": "Direction x;y;z;y"},
             {"type": "click", "object": "Element path", "property": null},
@@ -3146,7 +3146,7 @@ function setPlaceholderAction(actionElement) {
             {"type": "openApp", "object": "Application name or path", "property": null},
             {"type": "closeApp", "object": "Application name or path", "property": null},
             {"type": "select", "object": "Element path", "property": "Option path"},
-            {"type": "type", "object": "Element path", "property": "Property Name"},
+            {"type": "type", "object": "Element path", "property": "Text to type"},
             {"type": "wait", "object": "Time(ms) or Element", "property": null},
             {"type": "waitVanish", "object": "Element", "property": null},
             {"type": "callService", "object": "Service Name", "property": null},
