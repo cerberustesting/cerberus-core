@@ -32,11 +32,13 @@ $.when($.getScript("js/global/global.js")).then(function () {
             // executionId parameter is not feed so we probably want to see the queue status.
             $("#TestCaseButton").hide();
             $("#RefreshQueueButton").show();
-            $("#RefreshQueueButton").click(function () {
+            $("#refreshQueue").click(function () {
                 loadExecutionQueue(executionQueueId);
             });
+            $("#editQueue").click(function () {
+                openModalTestCaseExecutionQueue(executionQueueId, "EDIT");
+            });
 
-            "<button id='refreshQueue' class='btn btn-default'>Refresh</button>"
             loadExecutionQueue(executionQueueId);
             // Read TestCaseExecutionQueue
 
@@ -69,6 +71,7 @@ function loadExecutionQueue(executionQueueId) {
                 var tceq = data.contentTable;
                 var configPanel = $("#testCaseConfig");
                 configPanel.find("#idlabel").text("0");
+                $("[name='Separator']").text(" - ");
                 configPanel.find("#country").text(tceq.country);
                 configPanel.find("#environment").text(tceq.environment);
                 configPanel.find("#test").text(tceq.test);
@@ -77,6 +80,8 @@ function loadExecutionQueue(executionQueueId) {
                 configPanel.find("#controlstatus").text("QU (" + tceq.state + ")");
                 if (tceq.state === "QUEUED") {
                     configPanel.find("#tcDescription").html("Still <span style='color:red;'>" + tceq.nbEntryInQueueToGo + "</span> execution(s) in the Queue before execution start.");
+                } else {
+                    configPanel.find("#tcDescription").html("");
                 }
                 if (tceq.exeId > 0) {
                     var url = "./TestCaseExecution.jsp?executionId=" + tceq.exeId;
@@ -386,11 +391,7 @@ function setConfigPanel(data) {
     configPanel.find("input#environmentData").val(data.environmentData);
     configPanel.find("input#status").val(data.status);
 
-    var d1 = new Date('1980-01-01');
-    var endExe = new Date(data.end);
-    if (endExe > d1) {
-        configPanel.find("input#end").val(new Date(data.end));
-    }
+    configPanel.find("input#end").val(getDate(data.end));
     configPanel.find("input#finished").val(data.finished);
     configPanel.find("input#id").val(data.id);
     configPanel.find("input#controlstatus2").val(data.controlStatus);

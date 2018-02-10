@@ -426,7 +426,7 @@ function feedExecutionQueueModalData(exeQ, modalId, mode, hasPermissionsUpdate) 
         formEdit.find("#usrcreated").prop("value", exeQ.UsrCreated);
         formEdit.find("#datecreated").prop("value", exeQ.DateCreated);
         formEdit.find("#usrmodif").prop("value", exeQ.UsrModif);
-        formEdit.find("#datemodif").prop("value", exeQ.DateModif);
+        formEdit.find("#datemodif").prop("value", getDate(exeQ.DateModif));
         formEdit.find("#priority").prop("value", exeQ.priority);
         formEdit.find("#debugFlag").prop("value", exeQ.debugFlag);
     } else { // DUPLICATE or ADD

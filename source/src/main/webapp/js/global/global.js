@@ -154,7 +154,7 @@ function displayInvariantList(selectName, idName, forceReload, defaultValue, add
             $("[name='" + selectName + "']").val(defaultValue);
         }
         if (funcAfterLoad !== undefined) {
-                    console.info("toto");
+            console.info("toto");
             funcAfterLoad();
         }
     }
@@ -636,6 +636,7 @@ function getSelectTestBattery(forceReload, notAsync) {
  * when available, if not available, it will get it from the server and save
  * it on local cache.
  * The forceReload boolean can force the refresh of the list from the server.
+ * @param {String} system filter label from system
  * @param {boolean} forceReload true if we want to force the reload on cache from the server
  * @param {boolean} notAsync true if we dont want to have Async ajax
  */
@@ -2024,6 +2025,21 @@ function convToDate(timestamp) {
 }
 
 /**
+ * Method that return a String that contain the date. If date is 1970, the string return will be empty.
+ * @param {string} date
+ * @returns {string} date in string format
+ */
+function getDate(date) {
+    var d1 = new Date('1980-01-01');
+    var endExe = new Date(date);
+    if (endExe > d1) {
+        return date;
+    } else {
+        return "";
+    }
+}
+
+/**
  * Method used to restrict usage of some specific caracters.
  * @param {String} val value to test
  * @returns {boolean} true if is null, undefined of len >= 0
@@ -2252,6 +2268,7 @@ function showPicture(title, pictureUrl) {
     }));
     $('#showGenericModal').modal('show');
 }
+
 /**
  * Auxiliary function that opens the modal that allows user to view a textarea.
  * @param {type} title
@@ -2387,6 +2404,12 @@ function getSys() {
 
 /********************************SELECT2 COMBO*******************************************/
 
+/**
+ * Do a JSON encoded HTTP POST call
+ *
+ * @param {json} tag object that will be formated
+ * @returns {undefined} void
+ */
 function comboConfigTag_format(tag) {
     var markup = "<div class='select2-result-tag clearfix'>" +
             "<div class='select2-result-tag__title'>" + tag.tag + "</div>";

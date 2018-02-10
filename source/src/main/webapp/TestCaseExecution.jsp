@@ -76,7 +76,8 @@
                             </div>
                             <div class="col-lg-6" style="padding: 0px;">
                                 <div id="RefreshQueueButton">
-                                    <button id="editTag" class="btn btn-default">Refresh</button>
+                                    <button id="refreshQueue" class="btn btn-default">Refresh</button>
+                                    <button id="editQueue" class="btn btn-default">Edit Queue Entry</button>
                                 </div>
                                 <div id="TestCaseButton">
 
