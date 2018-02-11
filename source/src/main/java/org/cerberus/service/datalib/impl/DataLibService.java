@@ -122,12 +122,17 @@ public class DataLibService implements IDataLibService {
         MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS);
 
         // Length contains the nb of rows that the result must fetch. If defined at 0 we force at 1.
-        int nbRowsRequested = testCaseExecutionData.getLength();
-
-    	if (nbRowsRequested < 1) {
-            nbRowsRequested = 1;
+        
+        Integer nbRowsRequested = 0;
+        try {
+        	nbRowsRequested = Integer.parseInt(testCaseExecutionData.getLength());
+        	if (nbRowsRequested < 1) {
+                nbRowsRequested = 1;
+            }
+        }catch(NumberFormatException e) {
+        	LOG.error(e.toString());
         }
-       
+        
         /**
          * Gets the list of columns (subdata) to get from TestDataLibData.
          */
@@ -676,11 +681,8 @@ public class DataLibService implements IDataLibService {
                                             .replace("%ENTRYID%", lib.getTestDataLibID().toString()));
                                     result.setResultMessage(msg);
                                     return result;
-
                                 }
-
                             }
-
                         } catch (CerberusException ex) {
                             msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_CSV_URLKOANDDATABASECSVURLNOTEXIST);
                             msg.setDescription(msg.getDescription()

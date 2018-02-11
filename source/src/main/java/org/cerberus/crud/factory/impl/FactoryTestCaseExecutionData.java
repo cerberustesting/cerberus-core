@@ -37,7 +37,8 @@ public class FactoryTestCaseExecutionData implements IFactoryTestCaseExecutionDa
     @Override
     public TestCaseExecutionData create(long id, String property, int index, String description, String value, String type, String value1, String value2,
             String rC, String rMessage, long start, long end, long startLong, long endLong, MessageEvent message, int retrynb, int retryperiod,
-            String database, String value1Init, String value2Init, int Length, int rowLimit, String nature) {
+            String database, String value1Init, String value2Init, String lengthInit ,String length, int rowLimit, String nature,
+            String system, String environment, String country, String dataLib, String jsonResult) {
         TestCaseExecutionData testCaseExecutionData = new TestCaseExecutionData();
         testCaseExecutionData.setId(id);
         testCaseExecutionData.setProperty(property);
@@ -49,7 +50,8 @@ public class FactoryTestCaseExecutionData implements IFactoryTestCaseExecutionDa
         testCaseExecutionData.setValue2Init(value2Init);
         testCaseExecutionData.setValue1(value1);
         testCaseExecutionData.setValue2(value2);
-        testCaseExecutionData.setLength(Length);
+        testCaseExecutionData.setLength(length);
+        testCaseExecutionData.setLengthInit(lengthInit);
         testCaseExecutionData.setRowLimit(rowLimit);
         testCaseExecutionData.setNature(nature);
         testCaseExecutionData.setRetryNb(retrynb);
@@ -62,6 +64,11 @@ public class FactoryTestCaseExecutionData implements IFactoryTestCaseExecutionDa
         testCaseExecutionData.setrMessage(rMessage);
         testCaseExecutionData.setDescription(description);
         testCaseExecutionData.setPropertyResultMessage(message);
+        testCaseExecutionData.setSystem(system);
+        testCaseExecutionData.setEnvironment(environment);
+        testCaseExecutionData.setCountry(country);
+        testCaseExecutionData.setDataLib(dataLib);
+        testCaseExecutionData.setJsonResult(jsonResult);
         // List objects
         List<TestCaseExecutionFile> objectFileList = new ArrayList<TestCaseExecutionFile>();
         testCaseExecutionData.setFileList(objectFileList);

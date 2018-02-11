@@ -168,22 +168,11 @@ public class PropertyService implements IPropertyService {
             /**
              * First create testCaseExecutionData object
              */
-            
-            int eachTccpLength = 0;
-            
-            // We cast from string to integer ((String)testcasecountryproperty field `length` -> (Integer)testcaseexecutiondata field `length`)
-            // if we can't, testCaseExecutionData field `length` will be equal to 0
-            try {
-            	eachTccpLength = Integer.parseInt(eachTccp.getLength());
-            }catch(NumberFormatException e) {
-            	LOG.error(e.toString());
-            }
-            
             now = new Date().getTime();
             tcExeData = factoryTestCaseExecutionData.create(tCExecution.getId(), eachTccp.getProperty(), 1, eachTccp.getDescription(), null, eachTccp.getType(),
                     eachTccp.getValue1(), eachTccp.getValue2(), null, null, now, now, now, now, new MessageEvent(MessageEventEnum.PROPERTY_PENDING),
-                    eachTccp.getRetryNb(), eachTccp.getRetryPeriod(), eachTccp.getDatabase(), eachTccp.getValue1(), eachTccp.getValue2(), eachTccpLength,
-                    eachTccp.getRowLimit(), eachTccp.getNature());
+                    eachTccp.getRetryNb(), eachTccp.getRetryPeriod(), eachTccp.getDatabase(), eachTccp.getValue1(), eachTccp.getValue2(), eachTccp.getLength(),
+                    eachTccp.getLength(), eachTccp.getRowLimit(), eachTccp.getNature(), null, null, null, null, "");
             tcExeData.setTestCaseCountryProperties(eachTccp);
             tcExeData.settCExecution(tCExecution);
             if (LOG.isDebugEnabled()) {
@@ -222,7 +211,7 @@ public class PropertyService implements IPropertyService {
                             now = new Date().getTime();
                             TestCaseExecutionData tcedS = factoryTestCaseExecutionData.create(tcExeData.getId(), tcExeData.getProperty(), (i + 1),
                                     tcExeData.getDescription(), tcExeData.getDataLibRawData().get(i).get(""), tcExeData.getType(), "", "",
-                                    tcExeData.getRC(), "", now, now, now, now, null, 0, 0, "", "", "", 0, 0, "");
+                                    tcExeData.getRC(), "", now, now, now, now, null, 0, 0, "", "", "", "", "", 0, "", null, null, null, null, "");
                             testCaseExecutionDataService.convert(testCaseExecutionDataService.save(tcedS));
                         }
                     }
@@ -1229,7 +1218,6 @@ public class PropertyService implements IPropertyService {
                         LOG.debug("Property interupted due to decode 'SQL Script'.");
                         return testCaseExecutionData;
                     }
-
                 }
             } catch (CerberusEventException cex) {
                 LOG.error(cex.toString());
@@ -1241,21 +1229,32 @@ public class PropertyService implements IPropertyService {
             try {
             	answerDecode = variableService.decodeStringCompletly(testCaseCountryProperty.getLength(), tCExecution, testCaseStepActionExecution, false);
             	decodedLength = (String) answerDecode.getItem();
+            	if (!(answerDecode.isCodeStringEquals("OK"))) {
+                    testCaseExecutionData.setPropertyResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "length"));
+                    testCaseExecutionData.setStopExecution(answerDecode.getResultMessage().isStopTest());
+                    LOG.debug("Property interupted due to decode 'Length field'.");
+                    return testCaseExecutionData;
+                }
             } catch (CerberusEventException cex) {
                 LOG.error(cex.toString());
             }
 
-            int testCaseExecutionDataLength = 0;
-            
             // We cast from string to integer ((String)testcasecountryproperty field `length` -> (Integer)testcaseexecutiondata field `length`)
             // if we can't, testCaseExecutionData field `length` will be equal to 0
             // if we can, we set the value of testCaseExecutionData field `length` to the casted value
             if(decodedLength != null) {
             	try {
-            		testCaseExecutionDataLength = Integer.parseInt(decodedLength);
-            		testCaseExecutionData.setLength(testCaseExecutionDataLength);
+            		Integer.parseInt(decodedLength);
+            		testCaseExecutionData.setLength(decodedLength);
+            		
             	}catch(NumberFormatException e) {
             		LOG.error(e.toString());
+            		MessageEvent msg = new MessageEvent(MessageEventEnum.CASTING_OPERATION_FAILED);
+                    msg.setDescription(msg.getDescription().replace("%ERROR%", e.toString()));
+                    msg.setDescription(msg.getDescription().replace("%FIELD%", "field length"));
+            		testCaseExecutionData.setPropertyResultMessage(msg);
+                    testCaseExecutionData.setStopExecution(msg.isStopTest());
+                    return testCaseExecutionData;
             	}
             }
            
@@ -1265,7 +1264,7 @@ public class PropertyService implements IPropertyService {
             res = serviceAnswer.getResultMessage();
             result = (List<HashMap<String, String>>) serviceAnswer.getDataList(); //test data library returned by the service
 
-//            }
+            //            }
             if (result != null) {
                 // Keeping raw data to testCaseExecutionData object.
                 testCaseExecutionData.setDataLibRawData(result);

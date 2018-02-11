@@ -413,8 +413,9 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
         query.append("INSERT INTO testcaseexecutiondata (`id`, `property`, `index`, `description`, `value`, `type`, `value1`, `value2`, `rc`, ");
-        query.append("`rmessage`, `start`, `end`, `startlong`, `endlong`, `database`, `value1Init`, `value2Init`, `length`, `rowLimit`, `nature`, `retrynb`, `retryperiod`) ");
-        query.append("VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        query.append("`rmessage`, `start`, `end`, `startlong`, `endlong`, `database`, `value1Init`,`value2Init`,`lengthInit`,`length`, `rowLimit`, `nature`, `retrynb`, `retryperiod`, ");
+        query.append("`system`, `environment`, `country`, `dataLib`, `jsonResult`) ");
+        query.append("VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -450,11 +451,17 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
                 preStat.setString(i++, object.getDatabase());
                 preStat.setString(i++, object.getValue1Init());
                 preStat.setString(i++, object.getValue2Init());
-                preStat.setInt(i++, object.getLength());
+                preStat.setString(i++, object.getLengthInit());
+                preStat.setString(i++, object.getLength());
                 preStat.setInt(i++, object.getRowLimit());
                 preStat.setString(i++, object.getNature());
                 preStat.setInt(i++, object.getRetryNb());
                 preStat.setInt(i++, object.getRetryPeriod());
+                preStat.setString(i++, object.getSystem());
+                preStat.setString(i++, object.getEnvironment());
+                preStat.setString(i++, object.getCountry());
+                preStat.setString(i++, object.getDataLib());
+                preStat.setString(i++, object.getJsonResult());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -543,7 +550,8 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
 
         query.append("UPDATE testcaseexecutiondata SET DESCRIPTION = ?, VALUE = ?, TYPE = ?, VALUE1 = ?, VALUE2 = ?, rc = ?, rmessage = ?, start = ?, ");
         query.append("END = ?, startlong = ?, endlong = ?, `database` = ?, `value1Init` = ?, `value2Init` = ?, ");
-        query.append("`length` = ?, `rowLimit` = ?, `nature` = ?, `retrynb` = ?, `retryperiod` = ? ");
+        query.append("`lengthInit` = ?, `length` = ?, `rowLimit` = ?, `nature` = ?, `retrynb` = ?, `retryperiod` = ?, ");
+        query.append("`system` = ?, `environment` = ?, `country` = ?, `dataLib` = ?, `jsonResult` = ? ");
         query.append("WHERE id = ? AND property = ? AND `index` = ?");
 
         // Debug message on SQL.
@@ -577,7 +585,8 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
                 preStat.setString(i++, object.getDatabase());
                 preStat.setString(i++, object.getValue1Init());
                 preStat.setString(i++, object.getValue2Init());
-                preStat.setInt(i++, object.getLength());
+                preStat.setString(i++, object.getLengthInit());
+                preStat.setString(i++, object.getLength());
                 preStat.setInt(i++, object.getRowLimit());
                 preStat.setString(i++, object.getNature());
                 preStat.setInt(i++, object.getRetryNb());
@@ -585,6 +594,11 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
                 preStat.setLong(i++, object.getId());
                 preStat.setString(i++, object.getProperty());
                 preStat.setInt(i++, object.getIndex());
+                preStat.setString(i++, object.getSystem());
+                preStat.setString(i++, object.getEnvironment());
+                preStat.setString(i++, object.getCountry());
+                preStat.setString(i++, object.getDataLib());
+                preStat.setString(i++, object.getJsonResult());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -630,16 +644,23 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
         long end = resultSet.getTimestamp("exd.end").getTime();
         long startLong = resultSet.getLong("exd.startlong");
         long endLong = resultSet.getLong("exd.endlong");
-        int length = resultSet.getInt("exd.length");
+        String lengthInit = resultSet.getString("exd.lengthInit");
+        String length = resultSet.getString("exd.length");
         int rowLimit = resultSet.getInt("exd.rowlimit");
         String nature = resultSet.getString("exd.nature");
         String database = resultSet.getString("exd.database");
         int retryNb = resultSet.getInt("exd.RetryNb");
         int retryPeriod = resultSet.getInt("exd.RetryPeriod");
+        String system = resultSet.getString("exd.system");
+        String environment = resultSet.getString("exd.environment");
+        String country = resultSet.getString("exd.country");
+        String dataLib = resultSet.getString("exd.dataLib");
+        String jsonResult = resultSet.getString("exd.jsonResult");
 
         factoryTestCaseExecutionData = new FactoryTestCaseExecutionData();
         return factoryTestCaseExecutionData.create(id, property, index, description, value, type, value1, value2, returnCode, returnMessage,
-                start, end, startLong, endLong, null, retryNb, retryPeriod, database, value1Init, value2Init, length, rowLimit, nature);
+                start, end, startLong, endLong, null, retryNb, retryPeriod, database, value1Init, value2Init, lengthInit,length, rowLimit, nature,
+                system, environment, country, dataLib, jsonResult);
     }
 
 }
