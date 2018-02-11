@@ -460,7 +460,11 @@ function aoColumnsFunc(tableId) {
             "title": doc.getDocLabel("page_testcaseexecutionqueue", "id_col"),
             "sWidth": "40px",
             "mRender": function (data, type, oObj) {
-                return '<a href="TestCaseExecution.jsp?executionQueueId=' + oObj["id"] + '">' + oObj["id"] + '</a>';
+                if (oObj["exeId"] <= 0) {
+                    return '<a href="TestCaseExecution.jsp?executionQueueId=' + oObj["id"] + '">' + oObj["id"] + '</a>';
+                } else {
+                    return '<a href="TestCaseExecution.jsp?executionId=' + oObj["exeId"] + '">' + oObj["id"] + '</a>';
+                }
             }
         },
         {
