@@ -516,7 +516,7 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#usrcreated").prop("value", testCase.usrCreated);
         formEdit.find("#datecreated").prop("value", testCase.dateCreated);
         formEdit.find("#usrmodif").prop("value", testCase.usrModif);
-        formEdit.find("#datemodif").prop("value", testCase.dateModif);
+        formEdit.find("#datemodif").prop("value", getDate(testCase.dateModif));
         formEdit.find("#actProd").val(testCase.activePROD);
     } else { // DUPLICATE or ADD
         formEdit.find("#usrcreated").prop("value", "");

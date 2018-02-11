@@ -211,7 +211,8 @@ public enum MessageEventEnum {
     ACTION_FAILED_MOUSEOVERANDWAIT(262, "FA", "Mouse over '%ELEMENT%' but failed to wait '%TIME%' ms.", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_WAIT(263, "FA", "Failed to wait '%TIME%' ms due to Exception : %MESSAGE%", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_WAIT_INVALID_FORMAT(263, "FA", "Format of the timeout defined for this action is not numeric", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
-    ACTION_FAILED_KEYPRESS(264, "FA", "Object and/or Property are ‘null’. Both are mandatory in order to perform the action type.", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
+    ACTION_FAILED_KEYPRESS(264, "FA", "Element and KeyValue are both mandatory for %APPLICATIONTYPE% applications in order to perform the action.", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
+    ACTION_FAILED_KEYPRESS_MISSINGKEY(264, "FA", "KeyValue in value 2 is mandatory in order to perform the action.", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_KEYPRESS_ENV_ERROR(264, "FA", "Environment configurations don't allow you to perform the KeyPress operation.", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_KEYPRESS_NOT_AVAILABLE(264, "FA", "KeyPress failed! %KEY% is not available.", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_KEYPRESS_OTHER(264, "FA", "KeyPress failed for key '%KEY%' due to '%REASON%'.", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
@@ -219,7 +220,7 @@ public enum MessageEventEnum {
     ACTION_FAILED_OPENURL_TIMEOUT(265, "FA", "Failed to open '%URL%'. Timeout of %TIMEOUT% milliseconds exceeded.", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_OPENAPP(265, "FA", "Failed to openApp. Please check that action is set correctly. Application name or path cannot be empty.", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_CLOSEAPP(265, "FA", "Failed to openApp. Please check that action is set correctly. Application name or path cannot be empty.", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
-    ACTION_FAILED_SELECT(266, "FA", "Object and/or Property are ‘null’. Both are mandatory in order to perform the action type.", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
+    ACTION_FAILED_SELECT(266, "FA", "Element and Option are both mandatory in order to perform the action.", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_CLICK_NO_SUCH_ELEMENT(267, "FA", "Failed to click because could not find element '%ELEMENT%'!", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_DOUBLECLICK_NO_SUCH_ELEMENT(268, "FA", "Failed to double click because could not find element '%ELEMENT%'!", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_TYPE_NO_SUCH_ELEMENT(269, "FA", "Failed to type because could not find element '%ELEMENT%'!", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
@@ -425,7 +426,6 @@ public enum MessageEventEnum {
     DATA_OPERATION_VALIDATIONS_OK(002, MessageCodeEnum.GENERIC_CODE_SUCCESS.getCodeString(), "Data is valid!", false, false, false, MessageGeneralEnum.DATA_OPERATION_SUCCESS),
     DATA_OPERATION_VALIDATIONS_ERROR(905, MessageCodeEnum.GENERIC_CODE_ERROR.getCodeString(), "Data is invalid! Details: %DESCRIPTION%", false, false, false, MessageGeneralEnum.DATA_OPERATION_ERROR),
     FILE_ERROR(905, MessageCodeEnum.GENERIC_CODE_ERROR.getCodeString(), "Impossible to create the file! %MORE% reason: %DESCRIPTION%", false, false, false, MessageGeneralEnum.DATA_OPERATION_ERROR),
-
     // *********** GENERIC ***********
     GENERIC_OK(500, MessageCodeEnum.GENERIC_CODE_SUCCESS.getCodeString(), "Operation finished with success.", false, false, false, MessageGeneralEnum.GENERIC_SUCCESS),
     GENERIC_WARNING(500, MessageCodeEnum.GENERIC_CODE_WARNING.getCodeString(), "Operation finished with Warning :  %REASON%.", false, false, false, MessageGeneralEnum.GENERIC_WARNING),

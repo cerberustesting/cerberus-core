@@ -22,7 +22,7 @@
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
         initPage();
-        
+
         bindToggleCollapse();
 
         var urlTag = GetURLParameter('Tag');
@@ -37,12 +37,12 @@ $.when($.getScript("js/global/global.js")).then(function () {
                 filterCountryBrowserReport(urlTag);
             }
         });
-        
-        $(document).on("mouseover", "td.center", function(e){
-        	var id = $(e.currentTarget).attr("aria-describedby")
-        	$("#"+id).css("display","none")
+
+        $(document).on("mouseover", "td.center", function (e) {
+            var id = $(e.currentTarget).attr("aria-describedby")
+            $("#" + id).css("display", "none")
         })
-        
+
         splitFilterPreferences();
 
         $("#splitLabelFilter input").click(function () {
@@ -1013,10 +1013,10 @@ function createShortDescRow(row, data, index) {
     $(row).children('.center').attr('rowspan', '3');
     $(row).children('.priority').attr('rowspan', '3');
     $(row).children('.bugid').attr('rowspan', '3');
-    $(createdRow.child()).children('td').attr('colspan', '3').attr('class', 'shortDesc');
+    $(createdRow.child()).children('td').attr('colspan', '3').attr('class', 'shortDesc').attr('data-toggle', 'tooltip').attr('data-original-title', data.shortDesc);
     var labelValue = '';
     $.each(data.labels, function (i, e) {
-        labelValue += '<div style="float:left"><span class="label label-primary" style="background-color:' + e.color + '" data-toggle="tooltip" title="' + e.description + '">' + e.name + '</span></div> ';
+        labelValue += '<div style="float:left"><span class="label label-primary" style="background-color:' + e.color + '">' + e.name + '</span></div> ';
     });
     $($(createdRow.child())[1]).children('td').html(labelValue);
     createdRow.child.show();
@@ -1151,10 +1151,10 @@ function aoColumnsFunc(Columns) {
             "sWidth": "80px",
             "title": doc.getDocOnline("test", "Test"),
             "sClass": "bold",
-            "fnCreatedCell": function( row, data, dataIndex ) {
+            "fnCreatedCell": function (row, data, dataIndex) {
                 // Set the data-status attribute, and add a class
-                $( row ).attr('data-original-title', data)
-                $( row ).attr('data-toggle', "tooltip")
+                $(row).attr('data-original-title', data)
+                $(row).attr('data-toggle', "tooltip")
             }
         },
         {

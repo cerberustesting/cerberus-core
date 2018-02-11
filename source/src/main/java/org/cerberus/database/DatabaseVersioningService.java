@@ -9721,7 +9721,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('usergroup','GroupName','','en','Group Name','Authorities are managed by group. In order to be granted to a set of feature, you must belong to the corresponding group.<br>Every user can of course belong to as many group as necessary in order to get access to as many feature as required.<br>In order to get the full access to the system you must belong to every group.<br>Some groups are linked together on the test perimeter and integration perimeter.<br><br><b>Test perimeter :</b><br><br><code class=\\'doc-fixed\\'>TestRO</code>: Has read only access to the information related to test cases and also has access to execution reporting options.<br><br><code class=\\'doc-fixed\\'>Test</code>: Can modify non WORKING test cases but cannot delete test cases.<br><br><code class=\\'doc-fixed\\'>TestAdmin</code>: Can modify or delete any test case (including Pre Testing test cases). Can also create or delete a test.<br><br>The minimum group you need to belong is <code class=\\'doc-fixed\\'>TestRO</code> that will give you access in read only to all test data (including its execution reporting page).<br>If you want to be able to modify the testcases (except the WORKING ones), you need <code class=\\'doc-fixed\\'>Test</code> group on top of <code class=\\'doc-fixed\\'>TestRO</code> group.<br>If you want the full access to all testcase (including beeing able to delete any testcase), you will need <code class=\\'doc-fixed\\'>TestAdmin</code> on top of <code class=\\'doc-fixed\\'>TestRO</code> and <code class=\\'doc-fixed\\'>Test</code> group.<br><br><b>Test Data perimeter :</b><br><br><code class=\\'doc-fixed\\'>TestDataManager</code>: Can modify the test data..<br><br><b>Test Execution perimeter :</b><br><br><code class=\\'doc-fixed\\'>RunTest</code>: Can run both Manual and Automated test cases from GUI.<br><br><b>Integration perimeter :</b><br><br><code class=\\'doc-fixed\\'>IntegratorRO</code>: Has access to the integration status.<br><br><code class=\\'doc-fixed\\'>Integrator</code>: Can add an application. Can change parameters of the environments.<br><br><code class=\\'doc-fixed\\'>IntegratorNewChain</code>: Can register the end of the chain execution. Has read only access to the other informations on the same page.<br><br><code class=\\'doc-fixed\\'>IntegratorDeploy</code>: Can disable or enable environments and register new build / revision.<br><br>The minimum group you need to belong is <code class=\\'doc-fixed\\'>IntegratorRO</code> that will give you access in read only to all environment data.<br>If you want to be able to modify the environment data, you need <code class=\\'doc-fixed\\'>Integrator</code> group on top of <code class=\\'doc-fixed\\'>IntegratorRO</code> group.<br><code class=\\'doc-fixed\\'>IntegratorNewChain</code> and <code class=\\'doc-fixed\\'>IntegratorDeploy</code> are used on top of <code class=\\'doc-fixed\\'>Integrator</code> Group to be able to create a new chain on an environment or perform a deploy operation.<br><br><b>Administration perimeter :</b><br><br><code class=\\'doc-fixed\\'>Administrator</code>: Can create, modify or delete users. Has access to log Event and Database Maintenance. Can change Parameter values.','_user_management')");
         SQLS.append(",('usergroup','GroupName','','fr','Nom du groupe',NULL,'_management_des_utilisateurs')");
         SQLInstruction.add(SQLS.toString());
-        
+
         // New Invariant to activate campaign notification
         //-- ------------------------ 1282
         SQLS = new StringBuilder();
@@ -9734,7 +9734,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('INVARIANTPRIVATE', 'CAMPAIGNSTARTNOTIF', '750', '')");
         SQLS.append(",('INVARIANTPRIVATE', 'CAMPAIGNENDNOTIF', '800', '');");
         SQLInstruction.add(SQLS.toString());
-        
+
         // Enrich email notification.
         //-- ------------------------ 1283
         SQLS = new StringBuilder(); // adding table with CI result. 
@@ -9743,14 +9743,14 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(" , value=replace(value,'%TAGDURATION% min</td></tr></tbody></table>','%TAGDURATION% min</td></tr></tbody></table><table><thead><tr style=\"background-color:#cad3f1; font-style:bold\"><td>CI Result</td><td>CI Score</td></tr></thead><tbody><tr><td>%CIRESULT%</td><td>%CISCORE%</td></tr></tbody></table>') ");
         SQLS.append(" where param='cerberus_notification_tagexecutionend_body';");
         SQLInstruction.add(SQLS.toString());
-        
+
         // Add invariant filter type.
-        //-- ------------------------ 1284, 1285
+        //-- ------------------------ 1284-1285
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) ");
         SQLS.append(" VALUES ('INVARIANTPRIVATE','FILETYPE', '710','All type of file', 'file type')");
         SQLInstruction.add(SQLS.toString());
-        
+
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ");
         SQLS.append("('FILETYPE', 'PNG', '6600', '', ''),");
@@ -9759,24 +9759,35 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("('FILETYPE', 'JSON', '18500', '', ''),");
         SQLS.append("('FILETYPE', 'TXT', '22500', '', '')");
         SQLInstruction.add(SQLS.toString());
-        
-        // Add more invariant filter type.
+
         //-- ------------------------ 1286
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ");
         SQLS.append("('FILETYPE', 'PDF', '23500', '', ''),");
         SQLS.append("('FILETYPE', 'BIN', '24500', '', '')");
         SQLInstruction.add(SQLS.toString());
-        
+
         // Change datatype of testcasecountryproperties column `Length` to text
         //-- ------------------------ 1287
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE testcasecountryproperties ");
         SQLS.append("MODIFY COLUMN Length text");
         SQLInstruction.add(SQLS.toString());
+
+        // Clean keyPress value1 and value2 for IPA and APK applications.
+        //-- ------------------------ 1288
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testcasestepaction a1 SET value2=value1, value1='', last_modified = now() ");
+        SQLS.append("WHERE EXISTS ( select 1 from (");
+        SQLS.append("select a.test, a.testcase, a.step, a.sequence, a.value1, a.value2, a.last_modified from testcasestepaction a");
+        SQLS.append(" join testcase t on t.test=a.test and t.testcase=a.testcase");
+        SQLS.append(" join application ap on ap.application=t.application");
+        SQLS.append(" where ap.type in ('APK', 'IPA') and Action = 'keyPress'");
+        SQLS.append(") as t where t.test=a1.test and t.testcase=a1.testcase and t.step=a1.step and t.sequence=a1.sequence);");
+        SQLInstruction.add(SQLS.toString());
         
         // Modify table testcaseexecutiondata
-        //-- ------------------------ 1288
+        //-- ------------------------ 1289
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE testcaseexecutiondata ");
         SQLS.append("ADD COLUMN `System` varchar(45) NOT NULL DEFAULT ' ' AFTER `index`, ");
@@ -9787,7 +9798,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ADD COLUMN `DataLib` varchar(45) NOT NULL DEFAULT ' ' AFTER `JsonResult`, ");
         SQLS.append("MODIFY Length TEXT");
         SQLInstruction.add(SQLS.toString());
-       
+
         return SQLInstruction;
     }
 

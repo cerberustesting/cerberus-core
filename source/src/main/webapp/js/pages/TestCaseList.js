@@ -532,7 +532,7 @@ function aoColumnsFunc(countries, tableId) {
         {
             "data": "testCase",
             "sName": "tec.testCase",
-            "like":true,
+            "like": true,
             "title": doc.getDocOnline("testcase", "TestCase"),
             "sWidth": "82px",
             "sDefaultContent": ""
@@ -540,7 +540,7 @@ function aoColumnsFunc(countries, tableId) {
         {
             "data": "description",
             "sName": "tec.description",
-            "like":true,
+            "like": true,
             "title": doc.getDocOnline("testcase", "Description"),
             "sWidth": "300px",
             "sDefaultContent": ""
@@ -614,7 +614,7 @@ function aoColumnsFunc(countries, tableId) {
         },
         {
             "data": "function",
-            "like":true,
+            "like": true,
             "sName": "tec.function",
             "title": doc.getDocOnline("testcase", "Function"),
             "sWidth": "100px",
@@ -637,7 +637,7 @@ function aoColumnsFunc(countries, tableId) {
         {
             "data": "refOrigine",
             "sName": "tec.refOrigine",
-            "like":true,
+            "like": true,
             "title": doc.getDocOnline("testcase", "RefOrigine"),
             "sWidth": "80px",
             "sDefaultContent": ""
@@ -652,7 +652,7 @@ function aoColumnsFunc(countries, tableId) {
         {
             "data": "dateCreated",
             "sName": "tec.dateCreated",
-            "like":true,
+            "like": true,
             "title": doc.getDocOnline("transversal", "DateCreated"),
             "sWidth": "150px",
             "sDefaultContent": ""
@@ -666,11 +666,15 @@ function aoColumnsFunc(countries, tableId) {
         },
         {
             "data": "dateModif",
-            "like":true,
+            "like": true,
             "sName": "tec.dateModif",
             "title": doc.getDocOnline("transversal", "DateModif"),
             "sWidth": "150px",
-            "sDefaultContent": ""
+            "sDefaultContent": "",
+            "mRender": function (data, type, oObj) {
+                return getDate(oObj["dateModif"]);
+            }
+
         },
         {
             "data": "usrModif",

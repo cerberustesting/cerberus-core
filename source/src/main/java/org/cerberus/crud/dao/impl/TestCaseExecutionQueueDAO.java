@@ -564,7 +564,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
         } else {
             query.append(" limit ").append(start).append(" , ").append(amount);
         }
-        
+
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
@@ -669,7 +669,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
     public int getNbEntryToGo(long id, int prio) {
         AnswerItem<TestCaseExecutionQueue> ans = new AnswerItem<>();
         TestCaseExecutionQueue result = null;
-        final String query = "SELECT count(*)  FROM testcaseexecutionqueue WHERE State = 'QUEUED' and (ID < ? or Priority < ?);";
+        final String query = "SELECT count(*)  FROM testcaseexecutionqueue WHERE State = 'QUEUED' and (ID < ? and Priority <= ?);";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 

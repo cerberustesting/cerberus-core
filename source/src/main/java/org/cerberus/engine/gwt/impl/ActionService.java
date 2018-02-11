@@ -812,38 +812,45 @@ public class ActionService implements IActionService {
         }
     }
 
-    private MessageEvent doActionKeyPress(TestCaseExecution tCExecution, String object, String property) {
+    private MessageEvent doActionKeyPress(TestCaseExecution tCExecution, String value1, String value2) {
         try {
+            String appType = tCExecution.getApplicationObj().getType();
             /**
-             * Check object and property are not null
+             * Check object and property are not null For IPA and APK, only
+             * value2 (key to press) is mandatory For GUI and FAT, both
+             * parameters are mandatory
              */
-            if (object == null && property == null) {
-                return new MessageEvent(MessageEventEnum.ACTION_FAILED_KEYPRESS);
+            if (appType.equalsIgnoreCase(Application.TYPE_APK) || appType.equalsIgnoreCase(Application.TYPE_IPA)) {
+                if (StringUtil.isNullOrEmpty(value2)) {
+                    return new MessageEvent(MessageEventEnum.ACTION_FAILED_KEYPRESS_MISSINGKEY).resolveDescription("APPLICATIONTYPE", appType);
+                }
+            } else if (appType.equalsIgnoreCase(Application.TYPE_GUI) || appType.equalsIgnoreCase(Application.TYPE_FAT)) {
+                if (StringUtil.isNullOrEmpty(value1) || StringUtil.isNullOrEmpty(value2)) {
+                    return new MessageEvent(MessageEventEnum.ACTION_FAILED_KEYPRESS);
+                }
             }
             /**
              * Get Identifier (identifier, locator)
              */
-            Identifier identifier = identifierService.convertStringToIdentifier(object);
+            Identifier objectIdentifier = identifierService.convertStringToIdentifier(value1);
 
-            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
-                if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
-                    return sikuliService.doSikuliActionKeyPress(tCExecution.getSession(), identifier.getLocator(), property);
+            if (appType.equalsIgnoreCase(Application.TYPE_GUI)) {
+                if (objectIdentifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
+                    return sikuliService.doSikuliActionKeyPress(tCExecution.getSession(), objectIdentifier.getLocator(), value2);
                 } else {
-                    identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-                    return webdriverService.doSeleniumActionKeyPress(tCExecution.getSession(), identifier, property);
+                    identifierService.checkWebElementIdentifier(objectIdentifier.getIdentifier());
+                    return webdriverService.doSeleniumActionKeyPress(tCExecution.getSession(), objectIdentifier, value2);
                 }
-            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
-                identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-                return androidAppiumService.keyPress(tCExecution.getSession(), object);
-            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
-                identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-                return iosAppiumService.keyPress(tCExecution.getSession(), object);
-            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
-                return sikuliService.doSikuliActionKeyPress(tCExecution.getSession(), identifier.getLocator(), property);
+            } else if (appType.equalsIgnoreCase(Application.TYPE_APK)) {
+                return androidAppiumService.keyPress(tCExecution.getSession(), value2);
+            } else if (appType.equalsIgnoreCase(Application.TYPE_IPA)) {
+                return iosAppiumService.keyPress(tCExecution.getSession(), value2);
+            } else if (appType.equalsIgnoreCase(Application.TYPE_FAT)) {
+                return sikuliService.doSikuliActionKeyPress(tCExecution.getSession(), objectIdentifier.getLocator(), value2);
             } else {
                 return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION)
                         .resolveDescription("ACTION", "KeyPress")
-                        .resolveDescription("APPLICATIONTYPE", tCExecution.getApplicationObj().getType());
+                        .resolveDescription("APPLICATIONTYPE", appType);
             }
         } catch (CerberusEventException ex) {
             LOG.fatal("Error doing Action KeyPress :" + ex);
@@ -964,28 +971,28 @@ public class ActionService implements IActionService {
         }
     }
 
-    private MessageEvent doActionSelect(TestCaseExecution tCExecution, String object, String property) {
+    private MessageEvent doActionSelect(TestCaseExecution tCExecution, String value1, String value2) {
         MessageEvent message;
         try {
             /**
              * Check object and property are not null
              */
-            if (object == null && property == null) {
-                return new MessageEvent(MessageEventEnum.ACTION_FAILED_KEYPRESS);
+            if (StringUtil.isNullOrEmpty(value1) || StringUtil.isNullOrEmpty(value2)) {
+                return new MessageEvent(MessageEventEnum.ACTION_FAILED_SELECT);
             }
             /**
              * Get Identifier (identifier, locator)
              */
-            Identifier identifierObject = identifierService.convertStringToIdentifier(object);
-            Identifier identifierProperty = identifierService.convertStringToSelectIdentifier(property);
+            Identifier identifierObject = identifierService.convertStringToIdentifier(value1);
+            Identifier identifierValue = identifierService.convertStringToSelectIdentifier(value2);
 
             identifierService.checkWebElementIdentifier(identifierObject.getIdentifier());
-            identifierService.checkSelectOptionsIdentifier(identifierProperty.getIdentifier());
+            identifierService.checkSelectOptionsIdentifier(identifierValue.getIdentifier());
 
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
                     || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
                     || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
-                return webdriverService.doSeleniumActionSelect(tCExecution.getSession(), identifierObject, identifierProperty);
+                return webdriverService.doSeleniumActionSelect(tCExecution.getSession(), identifierObject, identifierValue);
             }
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             message.setDescription(message.getDescription().replace("%ACTION%", "Select"));
@@ -1209,6 +1216,8 @@ public class ActionService implements IActionService {
                     // We calculate the property here.
                     long now = new Date().getTime();
                     TestCaseExecutionData tcExeData;
+
+
                     tcExeData = factoryTestCaseExecutionData.create(tCExecution.getId(), tccp.getProperty(), 1, tccp.getDescription(), null, tccp.getType(),
                             tccp.getValue1(), tccp.getValue2(), null, null, now, now, now, now, new MessageEvent(MessageEventEnum.PROPERTY_PENDING),
                             tccp.getRetryNb(), tccp.getRetryPeriod(), tccp.getDatabase(), tccp.getValue1(), tccp.getValue2(), tccp.getLength(), tccp.getLength(),

@@ -438,7 +438,10 @@ function aoColumnsFuncTestDataLib(tableId) {
             "like":true,
             "data": "lastModified",
             "sWidth": "150px",
-            "title": doc.getDocOnline("testdatalib", "lastmodified")
+            "title": doc.getDocOnline("testdatalib", "lastmodified"),
+            "mRender": function (data, type, oObj) {
+                return getDate(oObj["lastModified"]);
+            }
         },
         {
             "sName": "tdl.LastModifier",

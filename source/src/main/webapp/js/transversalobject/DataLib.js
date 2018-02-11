@@ -501,7 +501,7 @@ function feedDataLibModalData(testDataLib, modalId, mode, hasPermissionsUpdate) 
 
         $('#editTestDataLibModal #created').prop("value", obj.created);
         $('#editTestDataLibModal #creator').prop("value", obj.creator);
-        $('#editTestDataLibModal #lastModified').prop("value", obj.lastModified);
+        $('#editTestDataLibModal #lastModified').prop("value", getDate(obj.lastModified));
         $('#editTestDataLibModal #lastModifier').prop("value", obj.lastModifier);
 
         openModalAppServiceFromHere();
