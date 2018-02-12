@@ -410,6 +410,7 @@ public enum MessageEventEnum {
     DECODE_SUCCESS(600, "OK", "Decode successful.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     DECODE_FAILED_VARIABLENOTDECODED(650, "FA", "Error on decoding %FIELD% because %NB% variable(s) is (are) unknown : (%VAR%). Please change the %FIELD% value with the correct syntax.", true, false, false, MessageGeneralEnum.EXECUTION_FA),
     DECODE_FAILED_GENERIC(650, "FA", "Error on decoding %FIELD% linked with a property calculation that went wrong : %ERROR%", true, false, false, MessageGeneralEnum.EXECUTION_FA),
+    CASTING_OPERATION_FAILED(660, "FA", "Error on casting %FIELD% from string to integer : %ERROR%", true, false, false, MessageGeneralEnum.EXECUTION_FA),
     // *********** DATA OPERATION ***********
     DATA_OPERATION_OK(500, MessageCodeEnum.GENERIC_CODE_SUCCESS.getCodeString(), "%ITEM% - %OPERATION% was finished with success!", false, false, false, MessageGeneralEnum.DATA_OPERATION_SUCCESS),
     DATA_OPERATION_WARNING_PARTIAL_RESULT(500, MessageCodeEnum.GENERIC_CODE_WARNING.getCodeString(), "Result may contain partial result. %DESCRIPTION%", false, false, false, MessageGeneralEnum.DATA_OPERATION_WARNING),

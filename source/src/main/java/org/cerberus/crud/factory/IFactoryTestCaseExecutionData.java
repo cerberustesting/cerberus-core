@@ -30,6 +30,7 @@ public interface IFactoryTestCaseExecutionData {
 
     TestCaseExecutionData create(long id, String property, int index, String description, String value, String type, String value1, String value2,
             String rC, String rMessage, long start, long end, long startLong, long endLong, MessageEvent message, int retrynb, int retryperiod,
-            String database, String value1Init, String value2Init, int Length, int rowLimit, String nature);
+            String database, String value1Init, String value2Init, String LengthInit ,String Length, int rowLimit, String nature,
+            String sytem, String environment, String country, String dataLib, String jsonResult);
 
 }

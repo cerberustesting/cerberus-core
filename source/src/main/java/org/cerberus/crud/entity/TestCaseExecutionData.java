@@ -46,7 +46,13 @@ public class TestCaseExecutionData {
     private String value2Init;
     private String value1;
     private String value2;
-    private int length;
+    private String lengthInit;
+    private String length;
+    private String system;
+    private String environment;
+    private String country;
+    private String dataLib;
+    private String jsonResult;
     private int rowLimit;
     private String nature;
     private int retryNb;
@@ -117,12 +123,60 @@ public class TestCaseExecutionData {
         this.value2Init = value2Init;
     }
     
-    public int getLength() {
+    public String getLengthInit() {
+        return lengthInit;
+    }
+    
+    public void setLengthInit(String lengthInit) {
+        this.lengthInit = lengthInit;
+    }
+    
+    public String getLength() {
         return length;
     }
     
-    public void setLength(int length) {
+    public void setLength(String length) {
         this.length = length;
+    }
+    
+    public String getSystem() {
+        return system;
+    }
+    
+    public void setSystem(String system) {
+        this.system = system;
+    }
+    
+    public String getEnvironment() {
+        return environment;
+    }
+    
+    public void setEnvironment(String environment) {
+        this.environment = environment;
+    }
+    
+    public String getCountry() {
+        return country;
+    }
+    
+    public void setCountry(String country) {
+        this.country = country;
+    }
+    
+    public String getDataLib() {
+        return dataLib;
+    }
+    
+    public void setDataLib(String dataLib) {
+        this.dataLib = dataLib;
+    }
+    
+    public String getJsonResult() {
+        return jsonResult;
+    }
+    
+    public void setJsonResult(String jsonResult) {
+        this.jsonResult = jsonResult;
     }
     
     public int getRowLimit() {

@@ -9760,7 +9760,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("('FILETYPE', 'TXT', '22500', '', '')");
         SQLInstruction.add(SQLS.toString());
 
-        // Add more invariant filter type.
         //-- ------------------------ 1286
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ");
@@ -9785,6 +9784,19 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(" join application ap on ap.application=t.application");
         SQLS.append(" where ap.type in ('APK', 'IPA') and Action = 'keyPress'");
         SQLS.append(") as t where t.test=a1.test and t.testcase=a1.testcase and t.step=a1.step and t.sequence=a1.sequence);");
+        SQLInstruction.add(SQLS.toString());
+        
+        // Modify table testcaseexecutiondata
+        //-- ------------------------ 1289
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE testcaseexecutiondata ");
+        SQLS.append("ADD COLUMN `System` varchar(45) NOT NULL DEFAULT ' ' AFTER `index`, ");
+        SQLS.append("ADD COLUMN `Environment` varchar(45) NOT NULL DEFAULT ' ' AFTER `System`, ");
+        SQLS.append("ADD COLUMN `Country` varchar(45) NOT NULL DEFAULT ' ' AFTER `Environment`, ");
+        SQLS.append("ADD COLUMN `LengthInit` text AFTER `Value2`, "); 
+        SQLS.append("ADD COLUMN `JsonResult` text AFTER `value`, ");
+        SQLS.append("ADD COLUMN `DataLib` varchar(45) NOT NULL DEFAULT ' ' AFTER `JsonResult`, ");
+        SQLS.append("MODIFY Length TEXT");
         SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;
