@@ -820,15 +820,15 @@ public class ActionService implements IActionService {
              * value2 (key to press) is mandatory For GUI and FAT, both
              * parameters are mandatory
              */
-            if (appType.equalsIgnoreCase(Application.TYPE_APK) || appType.equalsIgnoreCase(Application.TYPE_IPA)) {
-                if (StringUtil.isNullOrEmpty(value2)) {
-                    return new MessageEvent(MessageEventEnum.ACTION_FAILED_KEYPRESS_MISSINGKEY).resolveDescription("APPLICATIONTYPE", appType);
-                }
-            } else if (appType.equalsIgnoreCase(Application.TYPE_GUI) || appType.equalsIgnoreCase(Application.TYPE_FAT)) {
-                if (StringUtil.isNullOrEmpty(value1) || StringUtil.isNullOrEmpty(value2)) {
-                    return new MessageEvent(MessageEventEnum.ACTION_FAILED_KEYPRESS);
-                }
+//            if (appType.equalsIgnoreCase(Application.TYPE_APK) || appType.equalsIgnoreCase(Application.TYPE_IPA)) {
+            if (StringUtil.isNullOrEmpty(value2)) {
+                return new MessageEvent(MessageEventEnum.ACTION_FAILED_KEYPRESS_MISSINGKEY).resolveDescription("APPLICATIONTYPE", appType);
             }
+//            } else if (appType.equalsIgnoreCase(Application.TYPE_GUI) || appType.equalsIgnoreCase(Application.TYPE_FAT)) {
+//                if (StringUtil.isNullOrEmpty(value1) || StringUtil.isNullOrEmpty(value2)) {
+//                    return new MessageEvent(MessageEventEnum.ACTION_FAILED_KEYPRESS);
+//                }
+//            }
             /**
              * Get Identifier (identifier, locator)
              */
