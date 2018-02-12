@@ -44,7 +44,7 @@ function initPage() {
     });
 
     //configure and create the dataTable
-    var configurations = new TableConfigurationsServerSide("labelsTable", "ReadLabel?system1=" + getUser().defaultSystem, "contentTable", aoColumnsFunc("labelsTable"), [2, 'asc']);
+    var configurations = new TableConfigurationsServerSide("labelsTable", "ReadLabel?system=" + getUser().defaultSystem, "contentTable", aoColumnsFunc("labelsTable"), [2, 'asc']);
     createDataTableWithPermissions(configurations, renderOptionsForLabel, "#labelList", undefined, true);
 }
 

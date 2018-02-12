@@ -107,7 +107,7 @@ public class ReadLabel extends HttpServlet {
 
         try {
             JSONObject jsonResponse = new JSONObject();
-            if ((request.getParameter("id") == null) && (request.getParameter("system1") == null) && Strings.isNullOrEmpty(columnName) ) {
+            if ((request.getParameter("id") == null) && (request.getParameter("system") == null) && Strings.isNullOrEmpty(columnName) ) {
                 answer = findLabelList(null, appContext, userHasPermissions, request);
                 jsonResponse = (JSONObject) answer.getItem();
             } else {
@@ -115,12 +115,12 @@ public class ReadLabel extends HttpServlet {
                     Integer id = Integer.valueOf(policy.sanitize(request.getParameter("id")));
                     answer = findLabelByKey(id, appContext, userHasPermissions);
                     jsonResponse = (JSONObject) answer.getItem();
-                } else if (request.getParameter("system1") != null && !Strings.isNullOrEmpty(columnName)) {
-                    answer = findDistinctValuesOfColumn(request.getParameter("system1"),appContext, request, columnName);
+                } else if (request.getParameter("system") != null && !Strings.isNullOrEmpty(columnName)) {
+                    answer = findDistinctValuesOfColumn(request.getParameter("system"),appContext, request, columnName);
                     
                     jsonResponse = (JSONObject) answer.getItem();
-                } else if (request.getParameter("system1") != null) {
-                    String system = policy.sanitize(request.getParameter("system1"));
+                } else if (request.getParameter("system") != null) {
+                    String system = policy.sanitize(request.getParameter("system"));
                     answer = findLabelList(system, appContext, userHasPermissions, request);
                     jsonResponse = (JSONObject) answer.getItem();
                 }
