@@ -172,7 +172,7 @@ public class PropertyService implements IPropertyService {
             tcExeData = factoryTestCaseExecutionData.create(tCExecution.getId(), eachTccp.getProperty(), 1, eachTccp.getDescription(), null, eachTccp.getType(),
                     eachTccp.getValue1(), eachTccp.getValue2(), null, null, now, now, now, now, new MessageEvent(MessageEventEnum.PROPERTY_PENDING),
                     eachTccp.getRetryNb(), eachTccp.getRetryPeriod(), eachTccp.getDatabase(), eachTccp.getValue1(), eachTccp.getValue2(), eachTccp.getLength(),
-                    eachTccp.getLength(), eachTccp.getRowLimit(), eachTccp.getNature(), null, null, null, null, "");
+                    eachTccp.getLength(), eachTccp.getRowLimit(), eachTccp.getNature(), "", "", "", "", null);
             tcExeData.setTestCaseCountryProperties(eachTccp);
             tcExeData.settCExecution(tCExecution);
             if (LOG.isDebugEnabled()) {
@@ -211,7 +211,7 @@ public class PropertyService implements IPropertyService {
                             now = new Date().getTime();
                             TestCaseExecutionData tcedS = factoryTestCaseExecutionData.create(tcExeData.getId(), tcExeData.getProperty(), (i + 1),
                                     tcExeData.getDescription(), tcExeData.getDataLibRawData().get(i).get(""), tcExeData.getType(), "", "",
-                                    tcExeData.getRC(), "", now, now, now, now, null, 0, 0, "", "", "", "", "", 0, "", null, null, null, null, "");
+                                    tcExeData.getRC(), "", now, now, now, now, null, 0, 0, "", "", "", "", "", 0, "", "", "", "", "", null);
                             testCaseExecutionDataService.convert(testCaseExecutionDataService.save(tcedS));
                         }
                     }
