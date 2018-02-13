@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.TreeMap;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.AppService;
@@ -114,7 +116,7 @@ public class PropertyService implements IPropertyService {
     @Override
     public AnswerItem<String> decodeStringWithExistingProperties(String stringToDecode, TestCaseExecution tCExecution,
             TestCaseStepActionExecution testCaseStepActionExecution, boolean forceCalculation) throws CerberusEventException {
-
+    	
         MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS);
         AnswerItem<String> answer = new AnswerItem();
         answer.setResultMessage(msg);
@@ -172,7 +174,7 @@ public class PropertyService implements IPropertyService {
             tcExeData = factoryTestCaseExecutionData.create(tCExecution.getId(), eachTccp.getProperty(), 1, eachTccp.getDescription(), null, eachTccp.getType(),
                     eachTccp.getValue1(), eachTccp.getValue2(), null, null, now, now, now, now, new MessageEvent(MessageEventEnum.PROPERTY_PENDING),
                     eachTccp.getRetryNb(), eachTccp.getRetryPeriod(), eachTccp.getDatabase(), eachTccp.getValue1(), eachTccp.getValue2(), eachTccp.getLength(),
-                    eachTccp.getLength(), eachTccp.getRowLimit(), eachTccp.getNature(), "", "", "", "", null);
+                    eachTccp.getLength(), eachTccp.getRowLimit(), eachTccp.getNature(), tCExecution.getApplicationObj().getSystem(), tCExecution.getEnvironment(), tCExecution.getCountry(), "", null);
             tcExeData.setTestCaseCountryProperties(eachTccp);
             tcExeData.settCExecution(tCExecution);
             if (LOG.isDebugEnabled()) {
@@ -255,7 +257,7 @@ public class PropertyService implements IPropertyService {
      * @param tecd execution data for the property
      * @return the updated execution data for the property
      */
-    private TestCaseExecutionData getExecutionDataFromList(HashMap<String, TestCaseExecutionData> hashTemp1, TestCaseCountryProperties eachTccp, boolean forceCalculation, TestCaseExecutionData tecd) {
+    private TestCaseExecutionData getExecutionDataFromList(TreeMap<String, TestCaseExecutionData> hashTemp1, TestCaseCountryProperties eachTccp, boolean forceCalculation, TestCaseExecutionData tecd) {
         LOG.debug("Searching " + eachTccp.getProperty() + " Into list of " + hashTemp1.size());
         try {
 
@@ -1275,8 +1277,9 @@ public class PropertyService implements IPropertyService {
                     testCaseExecutionData.setValue(VALUE_NULL);
                 } else {
                     testCaseExecutionData.setValue(value);
+                    testCaseExecutionData.setJsonResult(result.toString());
                 }
-
+                
                 //Record result in filessytem.
                 recorderService.recordTestDataLibProperty(tCExecution.getId(), testCaseCountryProperty.getProperty(), 1, result);
 
