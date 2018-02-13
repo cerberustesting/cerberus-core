@@ -22,6 +22,8 @@ package org.cerberus.crud.entity;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
+import java.util.TreeMap;
+
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.cerberus.engine.entity.MessageGeneral;
@@ -113,7 +115,7 @@ public class TestCaseExecution {
     // Host the list of Steps that will be executed (both pre tests and main test)
     private List<TestCaseStepExecution> testCaseStepExecutionList;
     // Host the full list of data calculated during the execution.
-    private HashMap<String, TestCaseExecutionData> testCaseExecutionDataMap;
+    private TreeMap<String, TestCaseExecutionData> testCaseExecutionDataMap;
     // This is used to keep track of all property calculated within a step/action/control. It is reset each time we enter a step/action/control and the property name is added to the list each time it gets calculated. In case it was already asked for calculation, we stop the execution with FA message.
     private List<String> recursiveAlreadyCalculatedPropertiesList;
     private List<TestCaseCountryProperties> testCaseCountryPropertyList;
@@ -222,11 +224,11 @@ public class TestCaseExecution {
         this.recursiveAlreadyCalculatedPropertiesList = recursiveAlreadyCalculatedPropertiesList;
     }
 
-    public HashMap<String, TestCaseExecutionData> getTestCaseExecutionDataMap() {
+    public TreeMap<String, TestCaseExecutionData> getTestCaseExecutionDataMap() {
         return testCaseExecutionDataMap;
     }
 
-    public void setTestCaseExecutionDataMap(HashMap<String, TestCaseExecutionData> testCaseExecutionDataMap) {
+    public void setTestCaseExecutionDataMap(TreeMap<String, TestCaseExecutionData> testCaseExecutionDataMap) {
         this.testCaseExecutionDataMap = testCaseExecutionDataMap;
     }
     public static final String CONTROLSTATUS_NE = "NE";

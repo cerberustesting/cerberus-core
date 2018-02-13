@@ -21,9 +21,12 @@ package org.cerberus.crud.service.impl;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
+
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.ITestCaseExecutionDAO;
@@ -253,7 +256,7 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
                 testCaseExecution.getTestCaseExecutionDataMap().put(tced.getProperty(), tced);
             }
         }
-
+        
         // We frist add the 'Pres Testing' testcase execution steps.
         AnswerList preTestCaseSteps = testCaseStepExecutionService.readByVarious1WithDependency(executionId, "Pre Testing", null);
         testCaseExecution.setTestCaseStepExecutionList(preTestCaseSteps.getDataList());

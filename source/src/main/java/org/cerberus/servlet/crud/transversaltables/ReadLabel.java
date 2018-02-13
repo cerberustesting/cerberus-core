@@ -117,7 +117,6 @@ public class ReadLabel extends HttpServlet {
                     jsonResponse = (JSONObject) answer.getItem();
                 } else if (request.getParameter("system") != null && !Strings.isNullOrEmpty(columnName)) {
                     answer = findDistinctValuesOfColumn(request.getParameter("system"),appContext, request, columnName);
-                    
                     jsonResponse = (JSONObject) answer.getItem();
                 } else if (request.getParameter("system") != null) {
                     String system = policy.sanitize(request.getParameter("system"));
@@ -279,7 +278,6 @@ public class ReadLabel extends HttpServlet {
     private AnswerItem findDistinctValuesOfColumn(String system, ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
         AnswerItem answer = new AnswerItem();
         JSONObject object = new JSONObject();
-        AnswerList testCaseList = new AnswerList();
 
         labelService = appContext.getBean(ILabelService.class);
 
@@ -300,6 +298,8 @@ public class ReadLabel extends HttpServlet {
                 } 
             }
         }
+        
+        AnswerList testCaseList = labelService.readDistinctValuesByCriteria(system, searchParameter, individualSearch, columnName);
 
         object.put("distinctValues", testCaseList.getDataList());
 

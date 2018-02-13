@@ -222,7 +222,7 @@ function confirmRobotModalHandler(mode) {
     var data = convertSerialToJSONObject(formEdit.serialize());
     data.capabilities = JSON.stringify(capabilities);
 
-    var tcElement = formEdit.find("#robot");
+    var tcElement = formEdit.find("#robotName");
     if (isEmpty(data.robot)) {
         tcElement.parents("div.form-group").addClass("has-error");
         var localMessage = new Message("danger", "Please specify an robot name !");
@@ -371,12 +371,12 @@ function feedRobotModalData(robot, modalId, mode, hasPermissionsUpdate) {
 
     if (isEmpty(robot)) {
         formEdit.find("#robotid").prop("value", "");
-        formEdit.find("#robot").prop("value", "");
+        formEdit.find("#robotName").prop("value", "");
         formEdit.find("#active").val("Y");
         formEdit.find("#host").prop("value", "");
         formEdit.find("#port").prop("value", "");
         formEdit.find("#platform").val("");
-        formEdit.find("#browser").val("");
+        formEdit.find("#browserRobot").val("");
         formEdit.find("#version").prop("value", "");
         formEdit.find("#useragent").prop("value", "");
         formEdit.find("#screensize").prop("value", "");
@@ -390,12 +390,12 @@ function feedRobotModalData(robot, modalId, mode, hasPermissionsUpdate) {
         } else {
             formEdit.find("#robotid").prop("value", "");
         }
-        formEdit.find("#robot").prop("value", robot.robot);
+        formEdit.find("#robotName").prop("value", robot.robot);
         formEdit.find("#active").val(robot.active);
         formEdit.find("#host").prop("value", robot.host);
         formEdit.find("#port").prop("value", robot.port);
         formEdit.find("#platform").val(robot.platform);
-        formEdit.find("#browser").val(robot.browser);
+        formEdit.find("#browserRobot").val(robot.browser);
         formEdit.find("#version").prop("value", robot.version);
         formEdit.find("#useragent").prop("value", robot.userAgent);
         formEdit.find("#screensize").prop("value", robot.screenSize);
@@ -419,12 +419,12 @@ function feedRobotModalData(robot, modalId, mode, hasPermissionsUpdate) {
 
     //We desactivate or activate the access to the fields depending on if user has the credentials to edit.
     if (isEditable) { // If readonly, we readonly all fields
-        formEdit.find("#robot").prop("readonly", false);
+        formEdit.find("#robotName").prop("readonly", false);
         formEdit.find("#active").removeAttr("disabled");
         formEdit.find("#host").prop("readonly", false);
         formEdit.find("#port").prop("readonly", false);
         formEdit.find("#platform").removeAttr("disabled");
-        formEdit.find("#browser").removeAttr("disabled");
+        formEdit.find("#browserRobot").removeAttr("disabled");
         formEdit.find("#version").prop("readonly", false);
         formEdit.find("#useragent").prop("readonly", false);
         formEdit.find("#screensize").prop("readonly", false);
@@ -432,12 +432,12 @@ function feedRobotModalData(robot, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#hostPassword").prop("readonly", false);
         formEdit.find("#hostUsername").prop("readonly", false);
     } else {
-        formEdit.find("#robot").prop("readonly", "readonly");
+        formEdit.find("#robotName").prop("readonly", "readonly");
         formEdit.find("#active").prop("disabled", "disabled");
         formEdit.find("#host").prop("readonly", "readonly");
         formEdit.find("#port").prop("readonly", "readonly");
         formEdit.find("#platform").prop("disabled", "disabled");
-        formEdit.find("#browser").prop("disabled", "disabled");
+        formEdit.find("#browserRobot").prop("disabled", "disabled");
         formEdit.find("#version").prop("readonly", "readonly");
         formEdit.find("#useragent").prop("readonly", "readonly");
         formEdit.find("#screensize").prop("readonly", "readonly");

@@ -22,6 +22,7 @@ package org.cerberus.crud.factory.impl;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.TreeMap;
 
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.CountryEnvParam;
@@ -113,7 +114,7 @@ public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
         // List objects
         List<TestCaseExecutionFile> objectFileList = new ArrayList<TestCaseExecutionFile>();
         newTce.setFileList(objectFileList);
-        HashMap<String, TestCaseExecutionData> hashTemp1 = new HashMap<>();
+        TreeMap<String, TestCaseExecutionData> hashTemp1 = new TreeMap<>();
         newTce.setTestCaseExecutionDataMap(hashTemp1);
         newTce.setNbExecutions(1);
         return newTce;

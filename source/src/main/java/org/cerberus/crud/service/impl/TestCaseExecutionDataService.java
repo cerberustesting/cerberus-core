@@ -71,7 +71,7 @@ public class TestCaseExecutionDataService implements ITestCaseExecutionDataServi
 
     @Override
     public AnswerList<TestCaseExecutionData> readByIdWithDependency(long id) {
-        AnswerList data = this.readByIdByCriteria(id, 0, 0, "exd.id", "asc", null, null);
+        AnswerList data = this.readByIdByCriteria(id, 0, 0, "exd.property", "asc", null, null);
         AnswerList response = null;
         List<TestCaseExecutionData> tcsaceList = new ArrayList();
         for (Object mydata : data.getDataList()) {
