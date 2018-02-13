@@ -3094,7 +3094,7 @@ function setPlaceholderAction(actionElement) {
      */
     var placeHoldersList = {"fr": [
             {"type": "Unknown", "object": null, "property": null},
-            {"type": "keypress", "object": "Chemin vers l'élement à cibler", "property": "Touche à presser"},
+            {"type": "keypress", "object": "[opt] Chemin vers l'élement à cibler", "property": "Touche à presser"},
             {"type": "hideKeyboard", "object": null, "property": null},
             {"type": "swipe", "object": "Action (UP DOWN LEFT RIGHT CUSTOM...)", "property": "Direction x;y;z;y"},
             {"type": "click", "object": "Chemin vers l'élement à cliquer", "property": null},
@@ -3126,7 +3126,7 @@ function setPlaceholderAction(actionElement) {
             {"type": "getPageSource", "object": null, "property": null}
         ], "en": [
             {"type": "Unknown", "object": null, "property": null},
-            {"type": "keypress", "object": "Target element path", "property": "Key to press"},
+            {"type": "keypress", "object": "[opt] Target element path", "property": "Key to press"},
             {"type": "hideKeyboard", "object": null, "property": null},
             {"type": "swipe", "object": "Action (UP DOWN LEFT RIGHT CUSTOM...)", "property": "Direction x;y;z;y"},
             {"type": "click", "object": "Element path", "property": null},
