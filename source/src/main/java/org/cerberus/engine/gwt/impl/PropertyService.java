@@ -1262,6 +1262,7 @@ public class PropertyService implements IPropertyService {
            
             //we need to recalculate the result for the lib
             serviceAnswer = dataLibService.getFromDataLib(testDataLib, testCaseCountryProperty, tCExecution, testCaseExecutionData);
+            testCaseExecutionData.setDataLib(testDataLib.getName());
 
             res = serviceAnswer.getResultMessage();
             result = (List<HashMap<String, String>>) serviceAnswer.getDataList(); //test data library returned by the service
