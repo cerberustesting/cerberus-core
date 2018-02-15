@@ -35,7 +35,7 @@ import org.json.JSONArray;
  * @author bcivel
  */
 public class TestCaseExecutionData {
-    
+
     private long id;
     private String property;
     private int index;
@@ -76,21 +76,21 @@ public class TestCaseExecutionData {
     private List<HashMap<String, String>> dataLibRawData; // Have the raw data of all subdata when comming from testDataLibrary
 
     private static final Logger LOG = LogManager.getLogger(TestCaseExecutionData.class);
-    
+
     public List<TestCaseExecutionFile> getFileList() {
         return fileList;
     }
-    
+
     public void setFileList(List<TestCaseExecutionFile> fileList) {
         this.fileList = fileList;
     }
-    
+
     public void addFileList(TestCaseExecutionFile file) {
         if (file != null) {
             this.fileList.add(file);
         }
     }
-    
+
     public void addFileList(List<TestCaseExecutionFile> fileList) {
         if (fileList != null) {
             for (TestCaseExecutionFile testCaseExecutionFile : fileList) {
@@ -98,155 +98,155 @@ public class TestCaseExecutionData {
             }
         }
     }
-    
+
     public String getDatabase() {
         return database;
     }
-    
+
     public void setDatabase(String database) {
         this.database = database;
     }
-    
+
     public String getValue1Init() {
         return value1Init;
     }
-    
+
     public void setValue1Init(String value1Init) {
         this.value1Init = value1Init;
     }
-    
+
     public String getValue2Init() {
         return value2Init;
     }
-    
+
     public void setValue2Init(String value2Init) {
         this.value2Init = value2Init;
     }
-    
+
     public String getLengthInit() {
         return lengthInit;
     }
-    
+
     public void setLengthInit(String lengthInit) {
         this.lengthInit = lengthInit;
     }
-    
+
     public String getLength() {
         return length;
     }
-    
+
     public void setLength(String length) {
         this.length = length;
     }
-    
+
     public String getSystem() {
         return system;
     }
-    
+
     public void setSystem(String system) {
         this.system = system;
     }
-    
+
     public String getEnvironment() {
         return environment;
     }
-    
+
     public void setEnvironment(String environment) {
         this.environment = environment;
     }
-    
+
     public String getCountry() {
         return country;
     }
-    
+
     public void setCountry(String country) {
         this.country = country;
     }
-    
+
     public String getDataLib() {
         return dataLib;
     }
-    
+
     public void setDataLib(String dataLib) {
         this.dataLib = dataLib;
     }
-    
+
     public String getJsonResult() {
         return jsonResult;
     }
-    
+
     public void setJsonResult(String jsonResult) {
         this.jsonResult = jsonResult;
     }
-    
+
     public int getRowLimit() {
         return rowLimit;
     }
-    
+
     public void setRowLimit(int rowLimit) {
         this.rowLimit = rowLimit;
     }
-    
+
     public String getNature() {
         return nature;
     }
-    
+
     public void setNature(String nature) {
         this.nature = nature;
     }
-    
+
     public int getRetryNb() {
         return retryNb;
     }
-    
+
     public void setRetryNb(int retrynb) {
         this.retryNb = retrynb;
     }
-    
+
     public int getRetryPeriod() {
         return retryPeriod;
     }
-    
+
     public void setRetryPeriod(int retryperiod) {
         this.retryPeriod = retryperiod;
     }
-    
+
     public int getIndex() {
         return index;
     }
-    
+
     public void setIndex(int index) {
         this.index = index;
     }
-    
+
     public List<HashMap<String, String>> getDataLibRawData() {
         return dataLibRawData;
     }
-    
+
     public void setDataLibRawData(List<HashMap<String, String>> dataLibRawData) {
         this.dataLibRawData = dataLibRawData;
     }
-    
+
     public TestCaseCountryProperties getTestCaseCountryProperties() {
         return testCaseCountryProperties;
     }
-    
+
     public void setTestCaseCountryProperties(TestCaseCountryProperties testCaseCountryProperties) {
         this.testCaseCountryProperties = testCaseCountryProperties;
     }
-    
+
     public String getrMessage() {
         return rMessage;
     }
-    
+
     public void setrMessage(String rMessage) {
         this.rMessage = rMessage;
     }
-    
+
     public MessageEvent getPropertyResultMessage() {
         return propertyResultMessage;
     }
-    
+
     public void setPropertyResultMessage(MessageEvent propertyResultMessage) {
         this.propertyResultMessage = propertyResultMessage;
         if (propertyResultMessage != null) {
@@ -256,136 +256,136 @@ public class TestCaseExecutionData {
             this.stopExecution = propertyResultMessage.isStopTest();
         }
     }
-    
+
     public MessageGeneral getExecutionResultMessage() {
         return executionResultMessage;
     }
-    
+
     public void setExecutionResultMessage(MessageGeneral executionResultMessage) {
         this.executionResultMessage = executionResultMessage;
     }
-    
+
     public boolean isStopExecution() {
         return stopExecution;
     }
-    
+
     public void setStopExecution(boolean stopExecution) {
         this.stopExecution = stopExecution;
     }
-    
+
     public TestCaseExecution gettCExecution() {
         return tCExecution;
     }
-    
+
     public void settCExecution(TestCaseExecution tCExecution) {
         this.tCExecution = tCExecution;
     }
-    
+
     public long getEnd() {
         return end;
     }
-    
+
     public void setEnd(long end) {
         this.end = end;
     }
-    
+
     public long getEndLong() {
         return endLong;
     }
-    
+
     public void setEndLong(long endLong) {
         this.endLong = endLong;
     }
-    
+
     public long getId() {
         return id;
     }
-    
+
     public void setId(long id) {
         this.id = id;
     }
-    
+
     public String getValue1() {
         return value1;
     }
-    
+
     public void setValue1(String value1) {
         this.value1 = value1;
     }
-    
+
     public String getValue2() {
         return value2;
     }
-    
+
     public void setValue2(String value2) {
         this.value2 = value2;
     }
-    
+
     public String getProperty() {
         return property;
     }
-    
+
     public void setProperty(String property) {
         this.property = property;
     }
-    
+
     public String getDescription() {
         return description;
     }
-    
+
     public void setDescription(String description) {
         this.description = description;
     }
-    
+
     public String getRC() {
         return RC;
     }
-    
+
     public void setRC(String rc) {
         this.RC = rc;
     }
-    
+
     public long getStart() {
         return start;
     }
-    
+
     public void setStart(long start) {
         this.start = start;
     }
-    
+
     public long getStartLong() {
         return startLong;
     }
-    
+
     public void setStartLong(long startLong) {
         this.startLong = startLong;
     }
-    
+
     public String getType() {
         return type;
     }
-    
+
     public void setType(String type) {
         this.type = type;
     }
-    
+
     public String getValue() {
         return value;
     }
-    
+
     public void setValue(String value) {
         this.value = value;
     }
-    
+
     @Override
     public String toString() {
         return "TestCaseExecutionData{" + "id=" + id + ", property=" + property + ", value=" + value + ", type=" + type + ", value1=" + value1 + ", value2=" + value2 + ", RC=" + RC + ", rMessage=" + rMessage + ", start=" + start + ", end=" + end + ", startLong=" + startLong + ", endLong=" + endLong + ", propertyResultMessage=" + propertyResultMessage.toString() + ", executionResultMessage=" + executionResultMessage + ", stopExecution=" + stopExecution + '}';
     }
-    
+
     /**
-     * Convert the current TestCaseExecutionData into JSON format
-     * Note that if withChilds and withParents are both set to true, only the
-     * child will be included to avoid loop.
+     * Convert the current TestCaseExecutionData into JSON format Note that if
+     * withChilds and withParents are both set to true, only the child will be
+     * included to avoid loop.
      *
      * @param withChilds boolean that define if childs should be included
      * @param withParents boolean that define if parents should be included
@@ -421,7 +421,7 @@ public class TestCaseExecutionData {
             result.put("RC", this.getRC());
             result.put("rMessage", this.getrMessage());
             result.put("description", this.getDescription());
-            
+
             if (withChilds) {
                 JSONArray array = new JSONArray();
                 if (this.getFileList() != null) {
@@ -431,17 +431,19 @@ public class TestCaseExecutionData {
                 }
                 result.put("fileList", array);
             }
-            
-            if (withParents) {
+
+            if (withParents && this.gettCExecution() != null) {
                 result.put("testCaseExecution", this.gettCExecution().toJson(false));
             }
-            
+
         } catch (JSONException ex) {
-            LOG.error(ex.toString());
+            LOG.error(this.getId() + " - " + this.getProperty() + " - " + this.getIndex());
+            LOG.error(ex);
         } catch (Exception ex) {
-            LOG.error(ex.toString());
+            LOG.error(this.getId() + " - " + this.getProperty() + " - " + this.getIndex());
+            LOG.error(ex);
         }
         return result;
     }
-    
+
 }
