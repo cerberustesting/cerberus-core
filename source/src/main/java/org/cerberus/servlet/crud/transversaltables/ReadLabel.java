@@ -221,17 +221,18 @@ public class ReadLabel extends HttpServlet {
             for (Label label : (List<Label>) resp.getDataList()) {
                 JSONObject labelObject = convertLabelToJSONObject(label);
                 if (!"".equals(label.getParentLabel())) {
-                    labelObject.put("labelParentObject", convertLabelToJSONObject((Label) labelService.readByKey(Integer.valueOf(label.getParentLabel())).getItem()));
+                    AnswerItem parentLabel = labelService.readByKey(Integer.valueOf(label.getParentLabel()));
+                    if(parentLabel.getItem() != null) {
+                       labelObject.put("labelParentObject", convertLabelToJSONObject((Label) parentLabel.getItem()));
+                    }
                 }
                 jsonArray.put(labelObject);
             }
         }
-
         object.put("hasPermissions", userHasPermissions);
         object.put("contentTable", jsonArray);
         object.put("iTotalRecords", resp.getTotalRows());
         object.put("iTotalDisplayRecords", resp.getTotalRows());
-
         item.setItem(object);
         item.setResultMessage(resp.getResultMessage());
         return item;
