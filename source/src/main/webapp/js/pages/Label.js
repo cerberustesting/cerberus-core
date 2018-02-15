@@ -100,30 +100,35 @@ function generateLabelTree() {
             //if label has parent label
             if (data.contentTable[i].parentLabel !== "") {
                 //if parentLabel already created, find it and add a child
-                if (treeObj.hasOwnProperty(data.contentTable[i].labelParentObject.id)) {
-                    var existingParent = treeObj[data.contentTable[i].labelParentObject.id];
-                    if (existingParent.nodes === undefined) {
-                        existingParent.nodes = [ele];
-                    } else {
-                        existingParent.nodes.push(ele);
-                    }
-                    existingParent.tags = [existingParent.tags === undefined ? 1 : parseInt(existingParent.tags) + 1];
-                } else {
-                    //else create parent object and add child
-                    var parent = new Object();
-                    if (parent.nodes === undefined) {
-                        parent.nodes = [ele];
-                    } else {
-                        parent.nodes.push(ele);
-                    }
+            	
+            	if(data.contentTable[i].labelParentObject){
+            		if (treeObj.hasOwnProperty(data.contentTable[i].labelParentObject.id)) {
+                        var existingParent = treeObj[data.contentTable[i].labelParentObject.id];
+                        if (existingParent.nodes === undefined) {
+                            existingParent.nodes = [ele];
+                        } else {
+                            existingParent.nodes.push(ele);
+                        }
+                        existingParent.tags = [existingParent.tags === undefined ? 1 : parseInt(existingParent.tags) + 1];
+                    }else {
+                        //else create parent object and add child
+                        var parent = new Object();
+                        if (parent.nodes === undefined) {
+                            parent.nodes = [ele];
+                        } else {
+                            parent.nodes.push(ele);
+                        }
 
-                    parent.text = "<span class='label label-primary' style='background-color:" + data.contentTable[i].labelParentObject.color + "' data-toggle='tooltip' data-labelid='" + data.contentTable[i].labelParentObject.id + "' title='' data-original-title=''>" + data.contentTable[i].labelParentObject.label + "</span>";
-                    parent.text += "<span class='badge badge-pill badge-secondary'>" + data.contentTable[i].labelParentObject.reqType + "</span>";
-                    parent.text += "<span class='badge badge-pill badge-secondary'>" + data.contentTable[i].labelParentObject.reqStatus + "</span>";
-                    parent.text += "<span class='badge badge-pill badge-secondary'>" + data.contentTable[i].labelParentObject.reqCriticity + "</span>";
-                    parent.tags = [1];
-                    treeObj[data.contentTable[i].labelParentObject.id] = parent;
-                }
+                        parent.text = "<span class='label label-primary' style='background-color:" + data.contentTable[i].labelParentObject.color + "' data-toggle='tooltip' data-labelid='" + data.contentTable[i].labelParentObject.id + "' title='' data-original-title=''>" + data.contentTable[i].labelParentObject.label + "</span>";
+                        parent.text += "<span class='badge badge-pill badge-secondary'>" + data.contentTable[i].labelParentObject.reqType + "</span>";
+                        parent.text += "<span class='badge badge-pill badge-secondary'>" + data.contentTable[i].labelParentObject.reqStatus + "</span>";
+                        parent.text += "<span class='badge badge-pill badge-secondary'>" + data.contentTable[i].labelParentObject.reqCriticity + "</span>";
+                        parent.tags = [1];
+                        treeObj[data.contentTable[i].labelParentObject.id] = parent;
+                    }
+            	}
+            	
+                 
             } else {
                 //if no parent label, push the object if not already exists
                 if (!treeObj.hasOwnProperty(data.contentTable[i].id)) {
