@@ -1453,7 +1453,7 @@ Action.prototype.generateHeader = function (id) {
                 var indexAction = $(this).parents("a").data('index')
                 var currentActionOrControl = getScriptInformationOfStep()[indexStep]["actionArr"][indexAction]
                 var idex = $("#idlabel").text()
-                openModalManualFile(true, currentActionOrControl, "ADD", idex)
+                openModalFile(true, currentActionOrControl, "ADD", idex)
                 event.preventDefault()
                 event.stopPropagation()
             })
@@ -1473,7 +1473,7 @@ Action.prototype.generateHeader = function (id) {
                 var indexAction = $(this).parents("a").data('index')
                 var currentActionOrControl = getScriptInformationOfStep()[indexStep]["actionArr"][indexAction]
                 var idex = $("#idlabel").text()
-                openModalManualFile(true, currentActionOrControl, "ADD", idex)
+                openModalFile(true, currentActionOrControl, "ADD", idex)
                 event.preventDefault()
                 event.stopPropagation()
             })
@@ -2098,7 +2098,7 @@ Control.prototype.generateHeader = function (id) {
                 var indexControl = $(this).parents("a").data('index')
                 var currentActionOrControl = getScriptInformationOfStep()[indexStep]["actionArr"][indexAction]["controlArr"][indexControl]
                 var idex = $("#idlabel").text()
-                openModalManualFile(false, currentActionOrControl, "ADD", idex)
+                openModalFile(false, currentActionOrControl, "ADD", idex)
                 event.preventDefault()
                 event.stopPropagation()
             })
@@ -2119,7 +2119,7 @@ Control.prototype.generateHeader = function (id) {
                 var indexControl = $(this).parents("a").data('index')
                 var currentActionOrControl = getScriptInformationOfStep()[indexStep]["actionArr"][indexAction]["controlArr"][indexControl]
                 var idex = $("#idlabel").text()
-                openModalManualFile(false, currentActionOrControl, "ADD", idex)
+                openModalFile(false, currentActionOrControl, "ADD", idex)
                 event.preventDefault()
                 event.stopPropagation()
             })
@@ -2464,12 +2464,12 @@ function addFileLink(fileList, container, manual, idStep) {
             if ($(container).parent().parent().parent().hasClass("action")) {
                 var indexAction = $(this).parents("a").data('index')
                 var currentActionOrControl = getScriptInformationOfStep()[idStep]["actionArr"][indexAction]
-                openModalManualFile(true, currentActionOrControl, "ADD", idex)
+                openModalFile(true, currentActionOrControl, "ADD", idex)
             } else {
                 var indexAction = $(this).parents("a").parent().find(".action").data('index')
                 var indexControl = $(this).parents("a").data('index')
                 var currentActionOrControl = getScriptInformationOfStep()[idStep]["actionArr"][indexAction]["controlArr"][indexControl]
-                openModalManualFile(false, currentActionOrControl, "ADD", idex)
+                openModalFile(false, currentActionOrControl, "ADD", idex)
             }
             event.preventDefault()
             event.stopPropagation()
