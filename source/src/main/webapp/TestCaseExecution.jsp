@@ -30,7 +30,7 @@
         <script type="text/javascript" src="js/pages/TestCaseExecution.js"></script>
         <script type="text/javascript" src="js/transversalobject/TestCaseExecutionQueue.js"></script>
         <script type="text/javascript" src="js/transversalobject/TestCase.js"></script>
-        <script type="text/javascript" src="js/transversalobject/ManualFile.js"></script>
+        <script type="text/javascript" src="js/transversalobject/File.js"></script>
         <link rel="stylesheet" type="text/css" href="css/pages/TestCaseExecution.css">
         <link rel="stylesheet" type="text/css" href="dependencies/Bootstrap-inversebutton/inversebutton.css">
     </head>
@@ -42,7 +42,7 @@
             <%@ include file="include/global/messagesArea.html"%>
             <%@ include file="include/transversalobject/TestCaseExecutionQueue.html"%>
             <%@ include file="include/transversalobject/TestCase.html"%>
-            <%@ include file="include/transversalobject/ManualFile.html"%>
+            <%@ include file="include/transversalobject/File.html"%>
             <h1 class="page-title-line">Execution Detail</h1>
             <div class="panel panel-default" id="testCaseConfig">
                 <div>

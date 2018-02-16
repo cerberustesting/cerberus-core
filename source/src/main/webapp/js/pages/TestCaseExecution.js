@@ -2357,24 +2357,23 @@ Control.prototype.getJsonData = function () {
     return json;
 };
 
-function changeClickIfManual(element, isTheExecutionManual, i, container, idStep, fileList) {
-    let z = i
+function changeClickIfManual(isTheExecutionManual, container, idStep, file, event) {
     if (isTheExecutionManual) {
-        $(element).find("img").off("click").click(function (e) {
-            var idex = $("#idlabel").text()
-            if ($(container).parent().parent().parent().hasClass("action")) {
-                var indexAction = $(this).parents("a").data('index')
-                var currentActionOrControl = getScriptInformationOfStep()[idStep]["actionArr"][indexAction]
-                openModalManualFile(true, currentActionOrControl, "EDIT", idex, fileList[z])
-            } else {
-                var indexAction = $(this).parents("a").parent().find(".action").data('index')
-                var indexControl = $(this).parents("a").data('index')
-                var currentActionOrControl = getScriptInformationOfStep()[idStep]["actionArr"][indexAction]["controlArr"][indexControl]
-                openModalManualFile(false, currentActionOrControl, "EDIT", idex, fileList[z])
-            }
-            e.preventDefault()
-            e.stopPropagation()
-        })
+        var idex = $("#idlabel").text()
+        if ($(container).parent().parent().parent().hasClass("action")) {
+            var indexAction = $(this).parents("a").data('index')
+            var currentActionOrControl = getScriptInformationOfStep()[idStep]["actionArr"][indexAction]
+            openModalFile(true, currentActionOrControl, "EDIT", idex, file, !isTheExecutionManual)
+        } else {
+            var indexAction = $(this).parents("a").parent().find(".action").data('index')
+            var indexControl = $(this).parents("a").data('index')
+            var currentActionOrControl = getScriptInformationOfStep()[idStep]["actionArr"][indexAction]["controlArr"][indexControl]
+            openModalFile(false, currentActionOrControl, "EDIT", idex, file, !isTheExecutionManual)
+        }
+        event.preventDefault()
+        event.stopPropagation()
+    }else{
+    	openModalFile(null, null, "EDIT", null, file, !isTheExecutionManual )
     }
 }
 
@@ -2384,18 +2383,19 @@ function addFileLink(fileList, container, manual, idStep) {
     var auto = manual == true ? false : true;
     $(container).find($("div[name='mediaMiniature']")).remove();
     for (var i = 0; i < fileList.length; i++) {
+    	let index = i
         if ((fileList[i].fileType === "JPG") || (fileList[i].fileType === "PNG")) {
             var urlImage = "ReadTestCaseExecutionMedia?filename=" + fileList[i].fileName + "&filetype=" + fileList[i].fileType + "&filedesc=" + fileList[i].fileDesc + "&auto=" + auto;
             var fileDesc = fileList[i].fileDesc;
             var linkBox = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px")
                     .append(fileList[i].fileDesc).append($("<img>").attr("src", urlImage + "&h=30&w=60").css("max-height", "30px").css("max-width", "60px")
                     .click(function (e) {
-                        showPicture(fileDesc, urlImage);
+                    	changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], e)
                         return false;
                     }));
             container.append(linkBox);
 
-            changeClickIfManual(linkBox, isTheExecutionManual, i, container, idStep, fileList)
+            
 
         } else if ((fileList[i].fileType === "HTML") || (fileList[i].fileType === "JSON") || (fileList[i].fileType === "TXT") || (fileList[i].fileType === "XML")) {
 
@@ -2408,53 +2408,49 @@ function addFileLink(fileList, container, manual, idStep) {
                 var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px")
                         .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
                         .css("height", "30px").click(function (f) {
-                    showTextArea(fileList[0].fileDesc, "", "ReadTestCaseExecutionMedia?filename=" + fileList[0].fileName + "&filetype=" + fileList[0].fileType + "&filedesc=" + fileList[0].fileDesc + "&auto=" + auto);
+                    changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
                     return false;
                 }));
             } else if (i === 1) {
                 var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px")
                         .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
                         .css("height", "30px").click(function (f) {
-                    showTextArea(fileList[1].fileDesc, "", "ReadTestCaseExecutionMedia?filename=" + fileList[1].fileName + "&filetype=" + fileList[1].fileType + "&filedesc=" + fileList[1].fileDesc + "&auto=" + auto);
+                    changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
                     return false;
                 }));
             } else if (i === 2) {
                 var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px")
                         .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
                         .css("height", "30px").click(function (f) {
-                    showTextArea(fileList[2].fileDesc, "", "ReadTestCaseExecutionMedia?filename=" + fileList[2].fileName + "&filetype=" + fileList[2].fileType + "&filedesc=" + fileList[2].fileDesc);
+                    changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
                     return false;
                 }));
             } else if (i === 3) {
                 var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px")
                         .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
                         .css("height", "30px").click(function (f) {
-                    showTextArea(fileList[3].fileDesc, "", "ReadTestCaseExecutionMedia?filename=" + fileList[3].fileName + "&filetype=" + fileList[3].fileType + "&filedesc=" + fileList[3].fileDesc);
+                    changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
                     return false;
                 }));
             }
-
             container.append(linkBoxtxt);
-            changeClickIfManual(linkBoxtxt, isTheExecutionManual, i, container, idStep, fileList);
-
         } else if ((fileList[i].fileType === "BIN") || (fileList[i].fileType === "PDF")) {
 
             var linkBoxtxt = null;
 
             if (fileList[i].fileType === "BIN") {
                 linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px").append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-binaire.png").css("height", "30px").click(function (f) {
-                    showPicture(fileDesc, urlImage);
+                	changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
                     return false;
                 }))
             } else if (fileList[i].fileType === "PDF") {
                 linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px").append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-pdf.svg").css("height", "30px").click(function (f) {
-                    showPicture(fileDesc, urlImage);
+                	changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
                     return false;
                 }))
             }
 
             container.append(linkBoxtxt);
-            changeClickIfManual(linkBoxtxt, isTheExecutionManual, i, container, idStep, fileList)
         }
     }
 
