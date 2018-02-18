@@ -37,8 +37,8 @@ public class FactoryTestCaseExecutionData implements IFactoryTestCaseExecutionDa
     @Override
     public TestCaseExecutionData create(long id, String property, int index, String description, String value, String type, String value1, String value2,
             String rC, String rMessage, long start, long end, long startLong, long endLong, MessageEvent message, int retrynb, int retryperiod,
-            String database, String value1Init, String value2Init, String lengthInit ,String length, int rowLimit, String nature,
-            String system, String environment, String country, String dataLib, String jsonResult) {
+            String database, String value1Init, String value2Init, String lengthInit, String length, int rowLimit, String nature,
+            String system, String environment, String country, String dataLib, String jsonResult, String fromCache) {
         TestCaseExecutionData testCaseExecutionData = new TestCaseExecutionData();
         testCaseExecutionData.setId(id);
         testCaseExecutionData.setProperty(property);
@@ -69,6 +69,7 @@ public class FactoryTestCaseExecutionData implements IFactoryTestCaseExecutionDa
         testCaseExecutionData.setCountry(country);
         testCaseExecutionData.setDataLib(dataLib);
         testCaseExecutionData.setJsonResult(jsonResult);
+        testCaseExecutionData.setFromCache(fromCache);
         // List objects
         List<TestCaseExecutionFile> objectFileList = new ArrayList<TestCaseExecutionFile>();
         testCaseExecutionData.setFileList(objectFileList);

@@ -2033,7 +2033,7 @@ function getDate(date) {
     var d1 = new Date('1980-01-01');
     var endExe = new Date(date);
     if (endExe > d1) {
-        return date;
+        return endExe;
     } else {
         return "";
     }

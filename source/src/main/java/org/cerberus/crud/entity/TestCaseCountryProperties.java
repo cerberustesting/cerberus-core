@@ -39,6 +39,7 @@ public class TestCaseCountryProperties {
     private String length;
     private int rowLimit;
     private String nature;
+    private int cacheExpire;
     private int retryNb;
     private int retryPeriod;
 
@@ -77,7 +78,14 @@ public class TestCaseCountryProperties {
     public static final String NATURE_NOTINUSE = "NOTINUSE";
     // Others
     public static final int MAX_PROPERTY_LENGTH = 160;
-    
+
+    public int getCacheExpire() {
+        return cacheExpire;
+    }
+
+    public void setCacheExpire(int cacheExpire) {
+        this.cacheExpire = cacheExpire;
+    }
 
     public List<TestCaseCountry> getTccList() {
         return tccList;

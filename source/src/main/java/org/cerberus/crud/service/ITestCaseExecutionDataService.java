@@ -58,6 +58,17 @@ public interface ITestCaseExecutionDataService {
 
     /**
      *
+     * @param system
+     * @param environment
+     * @param country
+     * @param property
+     * @param cacheExpire
+     * @return
+     */
+    public AnswerItem<TestCaseExecutionData> readLastCacheEntry(String system, String environment, String country, String property, int cacheExpire);
+
+    /**
+     *
      * @param id
      * @return
      */

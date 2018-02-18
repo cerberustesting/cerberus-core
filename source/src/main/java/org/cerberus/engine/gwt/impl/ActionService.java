@@ -1217,11 +1217,10 @@ public class ActionService implements IActionService {
                     long now = new Date().getTime();
                     TestCaseExecutionData tcExeData;
 
-
                     tcExeData = factoryTestCaseExecutionData.create(tCExecution.getId(), tccp.getProperty(), 1, tccp.getDescription(), null, tccp.getType(),
                             tccp.getValue1(), tccp.getValue2(), null, null, now, now, now, now, new MessageEvent(MessageEventEnum.PROPERTY_PENDING),
                             tccp.getRetryNb(), tccp.getRetryPeriod(), tccp.getDatabase(), tccp.getValue1(), tccp.getValue2(), tccp.getLength(), tccp.getLength(),
-                            tccp.getRowLimit(), tccp.getNature(), "", "", "", "", "");
+                            tccp.getRowLimit(), tccp.getNature(), "", "", "", "", "", "N");
                     tcExeData.setTestCaseCountryProperties(tccp);
                     propertyService.calculateProperty(tcExeData, tCExecution, testCaseStepActionExecution, tccp, true);
                     // Property message goes to Action message.
@@ -1253,7 +1252,7 @@ public class ActionService implements IActionService {
                                 now = new Date().getTime();
                                 TestCaseExecutionData tcedS = factoryTestCaseExecutionData.create(tcExeData.getId(), tcExeData.getProperty(), (i + 1),
                                         tcExeData.getDescription(), tcExeData.getDataLibRawData().get(i).get(""), tcExeData.getType(), "", "",
-                                        tcExeData.getRC(), "", now, now, now, now, null, 0, 0, "", "", "", "","", 0, "", "", "", "", "", "");
+                                        tcExeData.getRC(), "", now, now, now, now, null, 0, 0, "", "", "", "", "", 0, "", "", "", "", "", "", "N");
                                 testCaseExecutionDataService.convert(testCaseExecutionDataService.save(tcedS));
                             }
                         }
