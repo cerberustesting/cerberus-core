@@ -20,34 +20,34 @@
 
 var imagePasteFromClipboard = undefined;//stock the picture if the user chose to upload it from his clipboard
 
-function openModalManualFile(action,manualFile,mode,idex,file){
+function openModalFile(action,manualFile,mode,idex,file,auto){
 	
 	if ($('#editManualFileModal').data("initLabel") === undefined){	
-		initModalManualFile(file, mode)
+		initModalFile(file, mode)
 		$('#editManualFileModal').data("initLabel", true);
 	}
 	
 	if (mode === "EDIT"){
-		editManualFileClick(file);
+		editFileClick(file,auto);
 	}else if (mode == "ADD"){
-		addManualFileClick(file);
+		addFileClick(file,auto);
 	}
 	
 	$("#editManualFileButton").off("click");
 	$("#editManualFileButton").click(function() {
-		confirmManualFileModalHandler(action,manualFile,"EDIT",idex,file);
+		confirmFileModalHandler(action,manualFile,"EDIT",idex,file);
 	});
 	$("#addManualFileButton").off("click");
 	$("#addManualFileButton").click(function() {
-		confirmManualFileModalHandler(action,manualFile,"ADD",idex,file);
+		confirmFileModalHandler(action,manualFile,"ADD",idex,file);
 	});
 	$("#deleteManualFileButton").off("click");
 	$("#deleteManualFileButton").click(function() {
-		confirmManualFileModalHandler(action,manualFile,"DELETE",idex,file);
+		confirmFileModalHandler(action,manualFile,"DELETE",idex,file);
 	});
 }
 
-function initModalManualFile(file, mode){
+function initModalFile(file, mode){
 	console.info("init");
 	var doc = new Doc();
 	$("[name='buttonClose']").html(
@@ -63,11 +63,11 @@ function initModalManualFile(file, mode){
     hidePasteMessageIfNotOnFirefox()
 }
 
-function editManualFileClick(manualFile){
+function editFileClick(manualFile,auto){
 	
 	clearResponseMessage($('#editManualFileModal'));
 	
-	$("#editEntryModalLabel").text("Edit Manual Execution File")
+	$("#editEntryModalLabel").text("Edit Execution File")
 
 	$('#editManualFileButton').attr('class', 'btn btn-primary');
 	$('#editManualFileButton').removeProp('hidden');
@@ -84,12 +84,12 @@ function editManualFileClick(manualFile){
 	$('#editManualFileModalForm select[name="idname"]').off("change");
 	$('#editManualFileModalForm input[name="value"]').off("change");
 
-	feedManualFileModal(manualFile,"editManualFileModal", "EDIT");
+	feedFileModal(manualFile,"editManualFileModal", "EDIT", auto);
 	listennerForInputTypeFile('#editManualFileModal')
 	pasteListennerForClipboardPicture('#editManualFileModal');
 }
 
-function addManualFileClick(manualFile){
+function addFileClick(manualFile,auto){
 	
 	clearResponseMessage($('#editManualFileModal'));
 	
@@ -111,12 +111,12 @@ function addManualFileClick(manualFile){
 	$('#editManualFileModalForm input[name="value"]').off("change");
 	
 	
-	feedManualFileModal(manualFile, "editManualFileModal", "ADD");
+	feedFileModal(manualFile, "editManualFileModal", "ADD", auto);
 	listennerForInputTypeFile('#editManualFileModal');
 	pasteListennerForClipboardPicture('#editManualFileModal');
 }
 
-function confirmManualFileModalHandler(action,manualFile, mode, idex, myFile) {
+function confirmFileModalHandler(action,manualFile, mode, idex, myFile, auto) {
 	clearResponseMessage($('#editManualFileModal'));
 	
 	var formEdit = $('#editManualFileModal #editManualFileModalForm');
@@ -188,14 +188,18 @@ function confirmManualFileModalHandler(action,manualFile, mode, idex, myFile) {
 	
 }
 
-function feedManualFileModal(manualFile, modalId, mode) {
+function feedFileModal(manualFile, modalId, mode, auto) {
 	clearResponseMessageMainPage();
 
 	var formEdit = $('#' + modalId);
 
 	if (mode === "EDIT") {
-		var hasPermissions = true;
-		feedManualFileModalData(manualFile, modalId, mode, hasPermissions);
+		if(auto){
+			var hasPermissions = false;
+		}else{
+			var hasPermissions = true;
+		}
+		feedFileModalData(manualFile, modalId, mode, hasPermissions, auto);
 		formEdit.modal('show');
 	} else {
 		var manualFile1 = {};
@@ -203,13 +207,13 @@ function feedManualFileModal(manualFile, modalId, mode) {
 		manualFile1.fileDesc = "";
 		manualFile1.fileName = "";
 		var hasPermissions = true;
-		feedManualFileModalData(manualFile1, modalId, mode, hasPermissions);
+		feedFileModalData(manualFile1, modalId, mode, hasPermissions, auto);
 		formEdit.modal('show');
 	}
 
 }
 
-function feedManualFileModalData(manualFile, modalId, mode, hasPermissionsUpdate) {
+function feedFileModalData(manualFile, modalId, mode, hasPermissionsUpdate, auto) {
 	var formEdit = $('#' + modalId);
 	var doc = new Doc();
 	var isEditable = (((hasPermissionsUpdate) && (mode === "EDIT"))
@@ -218,7 +222,7 @@ function feedManualFileModalData(manualFile, modalId, mode, hasPermissionsUpdate
 	// Data Feed.
 	if (mode === "EDIT") {
 		formEdit.find("#preview").empty()
-		var urlImage = "ReadTestCaseExecutionMedia?filename=" + manualFile.fileName + "&filetype=" + manualFile.fileType + "&filedesc=" + manualFile.fileDesc + "&auto=false";
+		var urlImage = "ReadTestCaseExecutionMedia?filename=" + manualFile.fileName + "&filetype=" + manualFile.fileType + "&filedesc=" + manualFile.fileDesc + "&auto="+auto;
 	    $("#seeManualFileButton").off("click").click(function(e){
 	    	window.open(urlImage+ "&r=true", "_blank");
 	    	e.preventDefault();
@@ -283,11 +287,13 @@ function feedManualFileModalData(manualFile, modalId, mode, hasPermissionsUpdate
 		formEdit.find("#desc").attr("disabled", false);
 		formEdit.find("#inputFile").attr("disabled", false);
 	} else {
-		formEdit.find("#type").prop("readonly", true);
+		formEdit.find("#type").attr("disabled", true);
 		formEdit.find("#desc").attr("disabled", true);
 		formEdit.find("#inputFile").attr("disabled", true);
 		$('#editManualFileButton').attr('class', '');
         $('#editManualFileButton').attr('hidden', 'hidden');
+        $('#deleteManualFileButton').attr('class', '');
+        $('#deleteManualFileButton').attr('hidden', 'hidden');
 	}
 }
 
