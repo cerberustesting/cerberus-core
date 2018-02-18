@@ -22,7 +22,6 @@ package org.cerberus.crud.service;
 import java.util.List;
 import java.util.Map;
 import org.cerberus.crud.entity.Campaign;
-import org.cerberus.crud.entity.CampaignContent;
 import org.cerberus.crud.entity.CampaignParameter;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
@@ -33,8 +32,6 @@ import org.cerberus.util.answer.AnswerList;
  * @author memiks
  */
 public interface ICampaignService {
-
-    List<CampaignContent> findCampaignContentsByCampaignName(String campaign) throws CerberusException;
 
     List<CampaignParameter> findCampaignParametersByCampaignName(String campaign) throws CerberusException;
 

@@ -28,7 +28,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.Campaign;
-import org.cerberus.crud.service.ICampaignContentService;
 import org.cerberus.crud.service.ICampaignService;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.impl.LogEventService;
@@ -51,15 +50,15 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class DeleteCampaign extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(DeleteCampaign.class);
-    
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     final void processRequest(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException, IOException, CerberusException, JSONException {
@@ -104,20 +103,17 @@ public class DeleteCampaign extends HttpServlet {
                 finalAnswer.setResultMessage(msg);
             } else {
                 Campaign camp = (Campaign) resp.getItem();
-                ICampaignContentService campaignContentService = appContext.getBean(ICampaignContentService.class);
-                finalAnswer = campaignContentService.deleteByCampaign(camp.getCampaign());
+                finalAnswer = campaignService.delete(camp);
+
                 if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                    finalAnswer = campaignService.delete(camp);
+                    /**
+                     * Adding Log entry.
+                     */
+                    ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                    logEventService.createForPrivateCalls("/DeleteCampaign", "DELETE", "Delete Campaign : " + key, request);
 
-                    if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                        /**
-                         * Adding Log entry.
-                         */
-                        ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                        logEventService.createForPrivateCalls("/DeleteCampaign", "DELETE", "Delete Campaign : " + key, request);
-
-                    }
                 }
+
             }
         }
 
@@ -132,14 +128,13 @@ public class DeleteCampaign extends HttpServlet {
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-
     /**
      * Handles the HTTP <code>GET</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -156,10 +151,10 @@ public class DeleteCampaign extends HttpServlet {
     /**
      * Handles the HTTP <code>POST</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

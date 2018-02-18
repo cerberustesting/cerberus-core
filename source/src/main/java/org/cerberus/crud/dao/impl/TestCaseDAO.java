@@ -355,23 +355,23 @@ public class TestCaseDAO implements ITestCaseDAO {
         }
         return result;
     }
-    
+
     @Override
     public AnswerList findTestCaseByService(String service) {
-    	AnswerList ansList = new AnswerList();
+        AnswerList ansList = new AnswerList();
         MessageEvent rs;
-    	List<TestListDTO> listOfTests = new ArrayList<TestListDTO>();
+        List<TestListDTO> listOfTests = new ArrayList<TestListDTO>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<TestCase> testCaseList = new ArrayList<TestCase>();
-        final String sql = " select count(*) as total, t.Test, tc.TestCase, t.Description as testDescription, tc.Description as testCaseDescription, tc.Application," + 
-        		"tc.TcActive as Active, tc.`Group`, tc.UsrCreated, tc.`Status` " + 
-        		" from testcase tc INNER JOIN test t ON t.test = tc.test " + 
-        		" INNER JOIN testcasestepaction tcsa ON tcsa.TestCase = tc.TestCase AND tcsa.Test = t.Test " + 
-        		" INNER JOIN appservice ser ON ser.Service = tcsa.Value1 " + 
-        		" WHERE ser.Service = ? " + 
-        		" group by tc.test, tc.TestCase";
-        
+        final String sql = " select count(*) as total, t.Test, tc.TestCase, t.Description as testDescription, tc.Description as testCaseDescription, tc.Application,"
+                + "tc.TcActive as Active, tc.`Group`, tc.UsrCreated, tc.`Status` "
+                + " from testcase tc INNER JOIN test t ON t.test = tc.test "
+                + " INNER JOIN testcasestepaction tcsa ON tcsa.TestCase = tc.TestCase AND tcsa.Test = t.Test "
+                + " INNER JOIN appservice ser ON ser.Service = tcsa.Value1 "
+                + " WHERE ser.Service = ? "
+                + " group by tc.test, tc.TestCase";
+
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(sql.toString());
@@ -458,24 +458,24 @@ public class TestCaseDAO implements ITestCaseDAO {
 
         return ansList;
     }
-    
+
     @Override
     public AnswerList findTestCaseByServiceByDataLib(String service) {
-    	AnswerList ansList = new AnswerList();
+        AnswerList ansList = new AnswerList();
         MessageEvent rs;
-    	List<TestListDTO> listOfTests = new ArrayList<TestListDTO>();
+        List<TestListDTO> listOfTests = new ArrayList<TestListDTO>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<TestCase> testCaseList = new ArrayList<TestCase>();
-               
-        final String sql = " select count(*) as total, t.Test, tc.TestCase, t.Description as testDescription, tc.Description as testCaseDescription, tc.Application," + 
-        		"tc.TcActive as Active, tc.`Group`, tc.UsrCreated, tc.`Status` " + 
-        		" from testcase tc INNER JOIN test t ON t.test = tc.test" + 
-        		" INNER JOIN testcasecountryproperties tccp ON tccp.Test = t.Test AND tccp.TestCase = tc.TestCase" + 
-        		" INNER JOIN testdatalib td ON td.Name = tccp.Value1 AND (tccp.Country = td.Country or td.country='') and tccp.test = t.test and tccp.testcase = tc.testcase" + 
-        		" INNER JOIN appservice ser on ser.Service = td.Service" + 
-        		" WHERE ser.Service = ?" + 
-        		" group by tc.test, tc.TestCase";
+
+        final String sql = " select count(*) as total, t.Test, tc.TestCase, t.Description as testDescription, tc.Description as testCaseDescription, tc.Application,"
+                + "tc.TcActive as Active, tc.`Group`, tc.UsrCreated, tc.`Status` "
+                + " from testcase tc INNER JOIN test t ON t.test = tc.test"
+                + " INNER JOIN testcasecountryproperties tccp ON tccp.Test = t.Test AND tccp.TestCase = tc.TestCase"
+                + " INNER JOIN testdatalib td ON td.Name = tccp.Value1 AND (tccp.Country = td.Country or td.country='') and tccp.test = t.test and tccp.testcase = tc.testcase"
+                + " INNER JOIN appservice ser on ser.Service = td.Service"
+                + " WHERE ser.Service = ?"
+                + " group by tc.test, tc.TestCase";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -519,7 +519,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                     }
 
                     listOfTests = new ArrayList<TestListDTO>(map.values());
-                    
+
                     if (listOfTests.isEmpty()) {
                         rs = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
                     } else {
@@ -971,7 +971,7 @@ public class TestCaseDAO implements ITestCaseDAO {
 
     @Override
     public AnswerList<List<TestCase>> readByVarious(String[] test, String[] idProject, String[] app, String[] creator, String[] implementer, String[] system,
-            String[] testBattery, String[] campaign, String[] labelid, String[] priority, String[] group, String[] status, int length) {
+            String[] campaign, String[] labelid, String[] priority, String[] group, String[] status, int length) {
         AnswerList answer = new AnswerList();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -981,10 +981,6 @@ public class TestCaseDAO implements ITestCaseDAO {
 
         query.append("SELECT * FROM testcase tec ");
         query.append("LEFT JOIN application app ON tec.application = app.application ");
-        if ((testBattery != null) || (campaign != null)) {
-            query.append("LEFT JOIN testbatterycontent tbc ON tec.test = tbc.test AND tec.testcase = tbc.testcase ");
-            query.append("LEFT JOIN campaigncontent cpc ON tbc.testbattery = cpc.testbattery ");
-        }
         if ((labelid != null) || (campaign != null)) {
             query.append("LEFT JOIN testcaselabel tel ON tec.test = tel.test AND tec.testcase = tel.testcase ");
             query.append("LEFT JOIN campaignlabel cpl ON cpl.labelId = tel.labelId ");
@@ -999,7 +995,6 @@ public class TestCaseDAO implements ITestCaseDAO {
         query.append(createInClauseFromList(group, "tec.group", "AND ", " "));
         query.append(createInClauseFromList(status, "tec.status", "AND ", " "));
         query.append(createInClauseFromList(system, "app.system", "AND ", " "));
-        query.append(createInClauseFromList(testBattery, "tbc.testbattery", "AND ", " "));
         query.append(createInClauseFromList(labelid, "tel.labelid", "AND ", " "));
         if (campaign != null) {
             query.append(createInClauseFromList(campaign, "cpc.campaign", "AND (", " "));
@@ -1284,63 +1279,58 @@ public class TestCaseDAO implements ITestCaseDAO {
 
     @Override
     public AnswerItem<List<TestCase>> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries, boolean withLabelOrBattery, String[] status, String[] system, String[] application, String[] priority, Integer maxReturn) {
-    	List<TestCase> list = null;
-    	AnswerItem answer = new AnswerItem();
-    	MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        List<TestCase> list = null;
+        AnswerItem answer = new AnswerItem();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        HashMap<String, String[]> tcParameters =  new HashMap<String, String[]>();
+        HashMap<String, String[]> tcParameters = new HashMap<String, String[]>();
         tcParameters.put("status", status);
         tcParameters.put("system", system);
         tcParameters.put("application", application);
         tcParameters.put("priority", priority);
         tcParameters.put("countries", countries);
-        
+
         StringBuilder query = new StringBuilder("SELECT tec.*, app.system FROM testcase tec ");
-        
-        if(withLabelOrBattery) {
-	        query.append("LEFT OUTER JOIN application app ON app.application = tec.application ")
-	                .append("INNER JOIN testcasecountry tcc ON tcc.Test = tec.Test and tcc.TestCase = tec.TestCase ")
-	                /**
-	                .append("LEFT JOIN testbatterycontent tbc ON tbc.Test = tec.Test and tbc.TestCase = tec.TestCase ")
-	                .append("LEFT JOIN campaigncontent cpc ON cpc.testbattery = tbc.testbattery ")
-	                 * disabled to due modification on database scheme (battery no longer exist)
-	                 */
-	                .append("LEFT JOIN testcaselabel tel ON tec.test = tel.test AND tec.testcase = tel.testcase ")
-	                .append("LEFT JOIN campaignlabel cpl ON cpl.labelId = tel.labelId ")
-	                .append("WHERE (cpl.campaign = ? )");
-        }else if(!withLabelOrBattery && (status != null || system != null || application != null || priority != null)) {
-        	query.append("LEFT OUTER JOIN application app ON app.application = tec.application ")
+
+        if (withLabelOrBattery) {
+            query.append("LEFT OUTER JOIN application app ON app.application = tec.application ")
+                    .append("INNER JOIN testcasecountry tcc ON tcc.Test = tec.Test and tcc.TestCase = tec.TestCase ")
+                    .append("LEFT JOIN testcaselabel tel ON tec.test = tel.test AND tec.testcase = tel.testcase ")
+                    .append("LEFT JOIN campaignlabel cpl ON cpl.labelId = tel.labelId ")
+                    .append("WHERE (cpl.campaign = ? )");
+        } else if (!withLabelOrBattery && (status != null || system != null || application != null || priority != null)) {
+            query.append("LEFT OUTER JOIN application app ON app.application = tec.application ")
                     .append("INNER JOIN testcasecountry tcc ON tcc.Test = tec.Test and tcc.TestCase = tec.TestCase ")
                     .append("WHERE 1=1");
-        }else {
-        	msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_VALIDATIONS_ERROR);
+        } else {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_VALIDATIONS_ERROR);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "You have a problem in your campaign definition"));
-        	answer.setResultMessage(msg);
-        	return answer;
+            answer.setResultMessage(msg);
+            return answer;
         }
-        
-        for(Entry<String, String[]> entry : tcParameters.entrySet()) {
+
+        for (Entry<String, String[]> entry : tcParameters.entrySet()) {
             String cle = entry.getKey();
             String[] valeur = entry.getValue();
-            if(valeur != null && valeur.length > 0) {
-            	if(!cle.equals("system") && !cle.equals("countries")) {
-            		query.append(" AND tec."+cle+" in (?");
-            	}else if(cle.equals("system")) {
-            		query.append(" AND app.system in (?"); 
-            	}else {
-            		query.append(" AND tcc.Country in (?");
-            	}
-            if(valeur.length > 1) {
-            	for (int i = 0; i < valeur.length - 1; i++) {
-                    query.append(",?");
+            if (valeur != null && valeur.length > 0) {
+                if (!cle.equals("system") && !cle.equals("countries")) {
+                    query.append(" AND tec." + cle + " in (?");
+                } else if (cle.equals("system")) {
+                    query.append(" AND app.system in (?");
+                } else {
+                    query.append(" AND tcc.Country in (?");
                 }
-            }
-        	query.append(")");
+                if (valeur.length > 1) {
+                    for (int i = 0; i < valeur.length - 1; i++) {
+                        query.append(",?");
+                    }
+                }
+                query.append(")");
             }
         }
-        
+
         query.append(" GROUP BY tec.test, tec.testcase LIMIT ?");
-        
+
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
@@ -1350,23 +1340,22 @@ public class TestCaseDAO implements ITestCaseDAO {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
                 int i = 1;
-                
-                if(withLabelOrBattery) {
-                	preStat.setString(i++, campaign);
-                    //preStat.setString(i++, campaign);
+
+                if (withLabelOrBattery) {
+                    preStat.setString(i++, campaign);
                 }
-                
-                for(Entry<String, String[]> entry : tcParameters.entrySet()) {
+
+                for (Entry<String, String[]> entry : tcParameters.entrySet()) {
                     String[] valeur = entry.getValue();
-                    if(valeur != null && valeur.length > 0) {
-                    	for (String c : valeur) {
+                    if (valeur != null && valeur.length > 0) {
+                        for (String c : valeur) {
                             preStat.setString(i++, c);
                         }
                     }
                 }
-                
+
                 preStat.setInt(i++, maxReturn);
-                
+
                 ResultSet resultSet = preStat.executeQuery();
                 list = new ArrayList<TestCase>();
                 try {
@@ -1389,7 +1378,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                 } catch (SQLException exception) {
                     LOG.error("Unable to execute query : " + exception.toString());
                 } finally {
-                	answer.setResultMessage(msg);
+                    answer.setResultMessage(msg);
                     resultSet.close();
                 }
             } catch (SQLException exception) {
@@ -1411,7 +1400,7 @@ public class TestCaseDAO implements ITestCaseDAO {
 
         return answer;
     }
-    
+
     @Override
     public List<TestCase> findTestCaseByTestSystem(String test, String system) {
         List<TestCase> list = null;
@@ -1463,15 +1452,10 @@ public class TestCaseDAO implements ITestCaseDAO {
     }
 
     @Override
-    public List<TestCase> findTestCaseByCriteria(String[] test, String[] project, String[] app, String[] active, String[] priority, String[] status, String[] group, String[] targetBuild, String[] targetRev, String[] creator, String[] implementer, String[] function, String[] campaign, String[] battery) {
+    public List<TestCase> findTestCaseByCriteria(String[] test, String[] project, String[] app, String[] active, String[] priority, String[] status, String[] group, String[] targetBuild, String[] targetRev, String[] creator, String[] implementer, String[] function, String[] campaign) {
         List<TestCase> list = null;
         StringBuilder sb = new StringBuilder();
-        sb.append("SELECT * FROM testcase tec join application app on tec.application=app.application ")
-                .append("left join testbatterycontent tbc ")
-                .append("on tbc.Test = tec.Test ")
-                .append("and tbc.TestCase = tec.TestCase ")
-                .append("left join campaigncontent cc ")
-                .append("on cc.testbattery = tbc.testbattery ");
+        sb.append("SELECT * FROM testcase tec join application app on tec.application=app.application ");
         sb.append(" WHERE 1=1 ");
         sb.append(SqlUtil.createWhereInClause(" AND tec.Test", test == null ? null : Arrays.asList(test), true));
         sb.append(SqlUtil.createWhereInClause(" AND tec.Project", project == null ? null : Arrays.asList(project), true));
@@ -1485,8 +1469,6 @@ public class TestCaseDAO implements ITestCaseDAO {
         sb.append(SqlUtil.createWhereInClause(" AND tec.creator", creator == null ? null : Arrays.asList(creator), true));
         sb.append(SqlUtil.createWhereInClause(" AND tec.implementer", implementer == null ? null : Arrays.asList(implementer), true));
         sb.append(SqlUtil.createWhereInClause(" AND tec.funtion", function == null ? null : Arrays.asList(function), true));
-        sb.append(SqlUtil.createWhereInClause(" AND cc.campaign", campaign == null ? null : Arrays.asList(campaign), true));
-        sb.append(SqlUtil.createWhereInClause(" AND tbc.testbattery", battery == null ? null : Arrays.asList(battery), true));
         sb.append(" GROUP BY tec.test, tec.testcase ");
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -1765,7 +1747,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         }
         query.append(searchSQL);
         query.append(" order by ").append(columnName).append(" asc");
-        
+
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());

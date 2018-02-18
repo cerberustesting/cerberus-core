@@ -585,50 +585,6 @@ function getSelectInvariant(idName, forceReload, notAsync, addValue) {
     return select;
 }
 
-/**
- * This method will return the combo list of TestBattery.
- * It will load the values from the sessionStorage cache of the browser
- * when available, if not available, it will get it from the server and save
- * it on local cache.
- * The forceReload boolean can force the refresh of the list from the server.
- * @param {boolean} forceReload true if we want to force the reload on cache from the server
- * @param {boolean} notAsync true if we dont want to have Async ajax
- */
-function getSelectTestBattery(forceReload, notAsync) {
-    var cacheEntryName = "TESTBATTERY";
-    if (forceReload) {
-        sessionStorage.removeItem(cacheEntryName);
-    }
-    var async = true;
-    if (notAsync) {
-        async = false;
-    }
-    var list = JSON.parse(sessionStorage.getItem(cacheEntryName));
-    var select = $("<select></select>").addClass("form-control input-sm");
-
-    if (list === null) {
-        $.ajax({
-            url: "ReadTestBattery",
-            async: async,
-            success: function (data) {
-                list = data.contentTable;
-                sessionStorage.setItem(cacheEntryName, JSON.stringify(data.contentTable));
-                for (var index = 0; index < list.length; index++) {
-                    var item = list[index].testbattery + " - " + list[index].description;
-                    select.append($("<option></option>").text(item).val(list[index].testbattery));
-                }
-            }
-        });
-    } else {
-        for (var index = 0; index < list.length; index++) {
-            var item = list[index].testbattery + " - " + list[index].description;
-
-            select.append($("<option></option>").text(item).val(list[index].testbattery));
-        }
-    }
-
-    return select;
-}
 
 /**
  * This method will return the combo list of Label.

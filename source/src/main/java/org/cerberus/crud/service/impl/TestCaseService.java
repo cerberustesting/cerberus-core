@@ -21,7 +21,6 @@ package org.cerberus.crud.service.impl;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +37,6 @@ import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.crud.entity.TestCaseStepAction;
 import org.cerberus.crud.entity.TestCaseStepActionControl;
 import org.cerberus.crud.factory.IFactoryTestCase;
-import org.cerberus.crud.service.ICampaignContentService;
 import org.cerberus.crud.service.ICampaignLabelService;
 import org.cerberus.crud.service.ICampaignParameterService;
 import org.cerberus.crud.service.IParameterService;
@@ -55,7 +53,6 @@ import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.service.datalib.impl.DataLibService;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
@@ -88,12 +85,9 @@ public class TestCaseService implements ITestCaseService {
     @Autowired
     private ICampaignLabelService campaignLabelService;
     @Autowired
-    private ICampaignContentService campaignContentService;
-    @Autowired
     private ICampaignParameterService campaignParameterService;
     @Autowired
     private IParameterService parameterService;
-    
 
     @Override
     public TestCase findTestCaseByKey(String test, String testCase) throws CerberusException {
@@ -196,8 +190,8 @@ public class TestCaseService implements ITestCaseService {
 
     @Override
     public AnswerList<List<TestCase>> readByVarious(String[] test, String[] idProject, String[] app, String[] creator, String[] implementer, String[] system,
-            String[] testBattery, String[] campaign, String[] labelid, String[] priority, String[] group, String[] status, int length) {
-        return testCaseDao.readByVarious(test, idProject, app, creator, implementer, system, testBattery, campaign, labelid, priority, group, status, length);
+            String[] campaign, String[] labelid, String[] priority, String[] group, String[] status, int length) {
+        return testCaseDao.readByVarious(test, idProject, app, creator, implementer, system, campaign, labelid, priority, group, status, length);
     }
 
     /**
@@ -267,7 +261,6 @@ public class TestCaseService implements ITestCaseService {
         String[] system = null;
         String[] application = null;
         String[] priority = null;
-        
 
         AnswerItem<Map<String, List<String>>> parameters = campaignParameterService.parseParametersByCampaign(campaign);
 
@@ -297,8 +290,11 @@ public class TestCaseService implements ITestCaseService {
         //boolean ifBattery = (battery.getTotalRows() > 0) ? true : false;
 
         Integer maxReturn = parameterService.getParameterIntegerByKey("cerberus_campaign_maxtestcase", "", 1000);
-        
-        if (ifLabel /**|| ifBattery**/) {
+
+        if (ifLabel /**
+                 * || ifBattery*
+                 */
+                ) {
             return this.testCaseDao.findTestCaseByCampaignNameAndCountries(campaign, countries, true, status, system, application, priority, maxReturn);
         } else {
             return this.testCaseDao.findTestCaseByCampaignNameAndCountries(campaign, countries, false, status, system, application, priority, maxReturn);
@@ -319,7 +315,7 @@ public class TestCaseService implements ITestCaseService {
 
     @Override
     public List<TestCase> findByCriteria(String[] test, String[] project, String[] app, String[] active, String[] priority, String[] status, String[] group, String[] targetBuild, String[] targetRev, String[] creator, String[] implementer, String[] function, String[] campaign, String[] battery) {
-        return testCaseDao.findTestCaseByCriteria(test, project, app, active, priority, status, group, targetBuild, targetRev, creator, implementer, function, campaign, battery);
+        return testCaseDao.findTestCaseByCriteria(test, project, app, active, priority, status, group, targetBuild, targetRev, creator, implementer, function, campaign);
     }
 
     @Override
@@ -331,41 +327,41 @@ public class TestCaseService implements ITestCaseService {
     public AnswerList findTestCasesThatUseTestDataLib(int testDataLibId, String name, String country) {
         return testCaseCountryPropertiesService.findTestCaseCountryPropertiesByValue1(testDataLibId, name, country, TestCaseCountryProperties.TYPE_GETFROMDATALIB);
     }
-    
-    public boolean containsTestCase(final List<TestCaseListDTO> list, final String number){
+
+    public boolean containsTestCase(final List<TestCaseListDTO> list, final String number) {
         return list.stream().filter(o -> o.getTestCaseNumber().equals(number)).findFirst().isPresent();
     }
-    
+
     @Override
     public AnswerList findTestCasesThatUseService(String service) {
-    	
-    	AnswerList testCaseByServiceByDataLib = testCaseDao.findTestCaseByServiceByDataLib(service);
-    	AnswerList testCaseByService = testCaseDao.findTestCaseByService(service);
-    	List<TestListDTO> listOfTestCaseByDataLib =  testCaseByServiceByDataLib.getDataList();
-    	List<TestListDTO> listOfTestCaseByService = testCaseByService.getDataList();
-    	List<TestListDTO> newTestCase = new ArrayList<TestListDTO>();
-    	
-    	if(!listOfTestCaseByDataLib.isEmpty()) {
-	    	for(TestListDTO datalibList : listOfTestCaseByDataLib) {
-	    		for(TestListDTO serviceList : listOfTestCaseByService) {
-	        		if(datalibList.getTest().equals(serviceList.getTest())) {
-	        			List<TestCaseListDTO> testCaseDataLibList = datalibList.getTestCaseList();
-	        			for(TestCaseListDTO testCaseService : serviceList.getTestCaseList()) {
-	        				if(!containsTestCase(testCaseDataLibList, testCaseService.getTestCaseNumber())) {
-	        					testCaseDataLibList.add(testCaseService);
-	        				}
-	        			}
-	        		}else {
-	        			newTestCase.add(serviceList);
-	        		}
-	        	}
-	    	}
-	    	listOfTestCaseByDataLib.addAll(newTestCase);
-	    	testCaseByServiceByDataLib.setDataList(listOfTestCaseByDataLib);
-	    	return testCaseByServiceByDataLib;
-    	}else {
-    		return testCaseByService;
-    	}
+
+        AnswerList testCaseByServiceByDataLib = testCaseDao.findTestCaseByServiceByDataLib(service);
+        AnswerList testCaseByService = testCaseDao.findTestCaseByService(service);
+        List<TestListDTO> listOfTestCaseByDataLib = testCaseByServiceByDataLib.getDataList();
+        List<TestListDTO> listOfTestCaseByService = testCaseByService.getDataList();
+        List<TestListDTO> newTestCase = new ArrayList<TestListDTO>();
+
+        if (!listOfTestCaseByDataLib.isEmpty()) {
+            for (TestListDTO datalibList : listOfTestCaseByDataLib) {
+                for (TestListDTO serviceList : listOfTestCaseByService) {
+                    if (datalibList.getTest().equals(serviceList.getTest())) {
+                        List<TestCaseListDTO> testCaseDataLibList = datalibList.getTestCaseList();
+                        for (TestCaseListDTO testCaseService : serviceList.getTestCaseList()) {
+                            if (!containsTestCase(testCaseDataLibList, testCaseService.getTestCaseNumber())) {
+                                testCaseDataLibList.add(testCaseService);
+                            }
+                        }
+                    } else {
+                        newTestCase.add(serviceList);
+                    }
+                }
+            }
+            listOfTestCaseByDataLib.addAll(newTestCase);
+            testCaseByServiceByDataLib.setDataList(listOfTestCaseByDataLib);
+            return testCaseByServiceByDataLib;
+        } else {
+            return testCaseByService;
+        }
     }
 
     @Override

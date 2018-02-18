@@ -9818,6 +9818,15 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ALTER TABLE `testcasecountryproperties` ADD COLUMN `CacheExpire` INT NULL DEFAULT 0 AFTER `Nature`;");
         SQLInstruction.add(SQLS.toString());
 
+        // Drop deprecated tables.
+        //-- ------------------------ 1293-1294
+        SQLS = new StringBuilder();
+        SQLS.append("DROP TABLE `abonnement`, `qualitynonconformities`, `qualitynonconformitiesimpact`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("DROP TABLE `testbatterycontent`, `campaigncontent`, `testbattery` ;");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 

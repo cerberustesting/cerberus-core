@@ -576,73 +576,6 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     }
 
     @Override
-    public List<TestCaseExecution> findExecutionsByCampaignNameAndTag(String campaign, String tag) throws CerberusException {
-        List<TestCaseExecution> campaignTestCaseExecutions = null;
-        boolean throwException = false;
-
-        final String query = new StringBuffer("select exe.*, app.* from ( ")
-                .append("select exe.* ")
-                .append("from testcaseexecution exe ")
-                .append("inner join testbatterycontent tbc ")
-                .append("on tbc.Test = exe.Test ")
-                .append("and tbc.TestCase = exe.TestCase ")
-                .append("inner join campaigncontent cc ")
-                .append("on cc.testbattery = tbc.testbattery ")
-                .append("where tag is not null ")
-                .append("and cc.campaign = ? ")
-                .append("and tag = ? ")
-                .append("order by test, testcase, ID desc) as exe, application app ")
-                .append("where exe.application = app.application ")
-                .append("group by exe.test, exe.testcase, exe.Environment, exe.Browser, exe.Country ").toString();
-
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                preStat.setString(1, campaign);
-                preStat.setString(2, tag);
-
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    if (!(resultSet.first())) {
-                        throwException = true;
-                    } else {
-                        campaignTestCaseExecutions = new ArrayList<TestCaseExecution>();
-                        do {
-                            campaignTestCaseExecutions.add(this.loadFromResultSet(resultSet));
-                        } while (resultSet.next());
-                    }
-                } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
-                } finally {
-                    if (!(resultSet == null)) {
-                        resultSet.close();
-                    }
-                }
-            } catch (Exception exception) {
-                LOG.warn("Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
-        } catch (Exception exception) {
-            LOG.warn("Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-            }
-        }
-        if (throwException) {
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA));
-        }
-
-        return campaignTestCaseExecutions;
-    }
-
-    @Override
     public TestCaseExecution findLastTestCaseExecutionNotPE(String test, String testCase) throws CerberusException {
         TestCaseExecution result = null;
         StringBuilder query = new StringBuilder();
@@ -1160,7 +1093,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             }
             query.append(" ) ");
         }
-        
+
         if (!StringUtil.isNullOrEmpty(sort)) {
             query.append(" order by ").append(sort);
         }
@@ -1896,8 +1829,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         query.append(columnName);
         query.append(" as distinctValues FROM testcaseexecution exe ");
         query.append("where exe.`start`> '").append(DateUtil.getMySQLTimestampTodayDeltaMinutes(-360000)).append("' ");
-        
-    	if (!StringUtil.isNullOrEmpty(searchParameter)) {
+
+        if (!StringUtil.isNullOrEmpty(searchParameter)) {
             query.append("and (exe.`id` like ? ");
             query.append(" or exe.`test` like ? ");
             query.append(" or exe.`testCase` like ? ");
@@ -1940,13 +1873,13 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
         }
-        
+
         try (Connection connection = databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(query.toString())) {
 
             int i = 1;
-            
-        	if (!Strings.isNullOrEmpty(searchParameter)) {
+
+            if (!Strings.isNullOrEmpty(searchParameter)) {
                 preStat.setString(i++, "%" + searchParameter + "%");
                 preStat.setString(i++, "%" + searchParameter + "%");
                 preStat.setString(i++, "%" + searchParameter + "%");

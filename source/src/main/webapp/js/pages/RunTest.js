@@ -204,7 +204,6 @@ function displayPageLabel() {
     $("#lbl_implementer").text(doc.getDocLabel("page_runtest", "implementer"));
     $("#lbl_group").text(doc.getDocLabel("page_runtest", "group"));
     $("#lbl_campaign").text(doc.getDocLabel("page_runtest", "campaign"));
-    $("#lbl_testBattery").text(doc.getDocLabel("page_runtest", "testbattery"));
     $("#lbl_priority").text(doc.getDocLabel("page_runtest", "priority"));
     $("#lbl_status").text(doc.getDocLabel("page_runtest", "status"));
     $("#lbl_targetRev").text(doc.getDocLabel("page_runtest", "targetrev"));
@@ -1166,7 +1165,6 @@ function loadTestCaseFilterData(system) {
             loadMultiSelect("ReadApplication", "", "application", ["application"], "application"),
             loadMultiSelect("ReadUserPublic", "", "creator", ["login"], "login"),
             loadMultiSelect("ReadUserPublic", "", "implementer", ["login"], "login"),
-            loadMultiSelect("ReadTestBattery", "", "testBattery", ["testbattery"], "testbattery"),
             loadMultiSelect("ReadCampaign", "", "campaign", ["campaign"], "campaign"),
             loadMultiSelect("ReadBuildRevisionInvariant", "level=1&system=" + system, "targetSprint", ["versionName"], "versionName"),
             loadMultiSelect("ReadBuildRevisionInvariant", "level=2&system=" + system, "targetRev", ["versionName"], "versionName"),

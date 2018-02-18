@@ -12,6 +12,8 @@
 *Warning to be considered before applying the version (deprecated features)*
 [square]
 * SQL #1289, #1290 and #1291 could be quite long on systems with a lot of executions.
+* The following tables have been removed : abonnement, qualitynonconformities, qualitynonconformitiesimpact, testbatterycontent, campaigncontent, testbattery.
+* Removed deprecated public servlet : GetCampaignExecutionsCommand.
 
 
 
