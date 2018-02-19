@@ -78,6 +78,10 @@ function loadExecutionQueue(executionQueueId) {
                 configPanel.find("#testcase").text(tceq.testCase);
                 configPanel.find("#exReturnMessage").text(tceq.comment);
                 configPanel.find("#controlstatus").text("QU (" + tceq.state + ")");
+                // Hide the rest of the screen that will not be feed.
+                $("#NavtabsScriptEdit").hide();
+                $("#testCaseDetails").hide();
+                $(".progress").hide();
                 if (tceq.state === "QUEUED") {
                     configPanel.find("#tcDescription").html("Still <span style='color:red;'>" + tceq.nbEntryInQueueToGo + "</span> execution(s) in the Queue before execution start.");
                 } else {
@@ -436,8 +440,8 @@ function removeColorClass(element) {
  */
 function showSaveTestCaseExecutionButton() {
     $("#saveTestCaseExecution").attr("disabled", false);
-
 }
+
 /*
  * 
  * set up click function if the button is visible ( visible if alt least one action or step or control have a controlStatus NE )
@@ -2372,8 +2376,8 @@ function changeClickIfManual(isTheExecutionManual, container, idStep, file, even
         }
         event.preventDefault()
         event.stopPropagation()
-    }else{
-    	openModalFile(null, null, "EDIT", null, file, !isTheExecutionManual )
+    } else {
+        openModalFile(null, null, "EDIT", null, file, !isTheExecutionManual)
     }
 }
 
@@ -2383,19 +2387,19 @@ function addFileLink(fileList, container, manual, idStep) {
     var auto = manual == true ? false : true;
     $(container).find($("div[name='mediaMiniature']")).remove();
     for (var i = 0; i < fileList.length; i++) {
-    	let index = i
+        let index = i
         if ((fileList[i].fileType === "JPG") || (fileList[i].fileType === "PNG")) {
             var urlImage = "ReadTestCaseExecutionMedia?filename=" + fileList[i].fileName + "&filetype=" + fileList[i].fileType + "&filedesc=" + fileList[i].fileDesc + "&auto=" + auto;
             var fileDesc = fileList[i].fileDesc;
             var linkBox = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px")
                     .append(fileList[i].fileDesc).append($("<img>").attr("src", urlImage + "&h=30&w=60").css("max-height", "30px").css("max-width", "60px")
                     .click(function (e) {
-                    	changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], e)
+                        changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], e)
                         return false;
                     }));
             container.append(linkBox);
 
-            
+
 
         } else if ((fileList[i].fileType === "HTML") || (fileList[i].fileType === "JSON") || (fileList[i].fileType === "TXT") || (fileList[i].fileType === "XML")) {
 
@@ -2440,12 +2444,12 @@ function addFileLink(fileList, container, manual, idStep) {
 
             if (fileList[i].fileType === "BIN") {
                 linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px").append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-binaire.png").css("height", "30px").click(function (f) {
-                	changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
+                    changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
                     return false;
                 }))
             } else if (fileList[i].fileType === "PDF") {
                 linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px").append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-pdf.svg").css("height", "30px").click(function (f) {
-                	changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
+                    changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
                     return false;
                 }))
             }
