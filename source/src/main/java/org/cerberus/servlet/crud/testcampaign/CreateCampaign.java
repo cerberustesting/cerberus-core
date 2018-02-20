@@ -29,14 +29,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.Campaign;
-import org.cerberus.crud.entity.CampaignContent;
 import org.cerberus.crud.entity.CampaignLabel;
 import org.cerberus.crud.entity.CampaignParameter;
 import org.cerberus.crud.factory.IFactoryCampaign;
-import org.cerberus.crud.factory.IFactoryCampaignContent;
 import org.cerberus.crud.factory.IFactoryCampaignLabel;
 import org.cerberus.crud.factory.IFactoryCampaignParameter;
-import org.cerberus.crud.service.ICampaignContentService;
 import org.cerberus.crud.service.ICampaignLabelService;
 import org.cerberus.crud.service.ICampaignParameterService;
 import org.cerberus.crud.service.ICampaignService;
@@ -61,7 +58,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class CreateCampaign extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(CreateCampaign.class);
-    
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -114,29 +111,6 @@ public class CreateCampaign extends HttpServlet {
                  */
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
                 logEventService.createForPrivateCalls("/CreateCampaign", "CREATE", "Create Campaign : " + camp.getCampaign(), request);
-
-                /**
-                if (battery != null) {
-                    JSONArray batteries = new JSONArray(battery);
-                    ICampaignContentService campaignContentService = appContext.getBean(ICampaignContentService.class);
-                    IFactoryCampaignContent factoryCampaignContent = appContext.getBean(IFactoryCampaignContent.class);
-                    ans = campaignContentService.deleteByCampaign(name);
-                    int i = 0;
-                    while (i < batteries.length() && ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                        JSONArray bat = batteries.getJSONArray(i);
-                        CampaignContent co = factoryCampaignContent.create(0, bat.getString(2), bat.getString(0));
-                        ans = campaignContentService.create(co);
-                        i++;
-                        if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                            /**
-                             * Adding Log entry.
-                             
-                            logEventService.createForPrivateCalls("/CreateCampaign", "CREATE", "Update Campaign Content : " + co.getCampaign() + ", " + co.getTestbattery(), request);
-                        }
-                    }
-                }
-    			
-    			**/
 
                 if (parameter != null) {
                     JSONArray parameters = new JSONArray(parameter);

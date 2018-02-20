@@ -60,7 +60,7 @@ import org.cerberus.crud.service.ITestCaseService;
 public class UpdateTestCaseProperties1 extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(UpdateTestCaseProperties1.class);
-    
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -71,7 +71,6 @@ public class UpdateTestCaseProperties1 extends HttpServlet {
      * @throws IOException if an I/O error occurs
      * @throws CerberusException
      */
-    
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, CerberusException, JSONException {
         JSONObject jsonResponse = new JSONObject();
@@ -94,7 +93,7 @@ public class UpdateTestCaseProperties1 extends HttpServlet {
         String test = request.getParameter("informationTest");
         String testCase = request.getParameter("informationTestCase");
         boolean duplicate = false;
-        
+
         /**
          * Checking all constrains before calling the services.
          */
@@ -162,7 +161,7 @@ public class UpdateTestCaseProperties1 extends HttpServlet {
          */
         jsonResponse.put("messageType", ans.getResultMessage().getMessage().getCodeString());
         jsonResponse.put("message", ans.getResultMessage().getDescription());
-        
+
         response.getWriter().print(jsonResponse);
         response.getWriter().flush();
     }
@@ -193,7 +192,7 @@ public class UpdateTestCaseProperties1 extends HttpServlet {
                 for (int j = 0; j < countries.length(); j++) {
                     String country = countries.getString(j);
 
-                    testCaseCountryProp.add(testCaseCountryPropertiesFactory.create(test, testCase, country, property, description, type, database, value, value2, length, rowLimit, nature, retryNb, retryPeriod));
+                    testCaseCountryProp.add(testCaseCountryPropertiesFactory.create(test, testCase, country, property, description, type, database, value, value2, length, rowLimit, nature, retryNb, retryPeriod, 0));
                 }
             }
         }

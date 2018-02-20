@@ -150,10 +150,6 @@
                                                 <select class="multiselectelement form-control" multiple="multiple" id="campaignFilter"></select>
                                             </div>
                                             <div class="form-group col-xs-2">
-                                                <label id="lbl_testBattery" for="testBatteryFilter">Test Battery</label>                                     
-                                                <select class="multiselectelement form-control" multiple="multiple" id="testBatteryFilter"></select>
-                                            </div>
-                                            <div class="form-group col-xs-2">
                                                 <i><label id="lbl_label" for="labelFilter">Label</label></i>
                                                 <select class="multiselectelement form-control" multiple="multiple" id="labelidFilter"></select>
                                             </div>

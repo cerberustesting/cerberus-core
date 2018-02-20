@@ -122,17 +122,16 @@ public class DataLibService implements IDataLibService {
         MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS);
 
         // Length contains the nb of rows that the result must fetch. If defined at 0 we force at 1.
-        
         Integer nbRowsRequested = 0;
         try {
-        	nbRowsRequested = Integer.parseInt(testCaseExecutionData.getLength());
-        	if (nbRowsRequested < 1) {
+            nbRowsRequested = Integer.parseInt(testCaseExecutionData.getLength());
+            if (nbRowsRequested < 1) {
                 nbRowsRequested = 1;
             }
-        }catch(NumberFormatException e) {
-        	LOG.error(e.toString());
+        } catch (NumberFormatException e) {
+            LOG.error(e.toString());
         }
-        
+
         /**
          * Gets the list of columns (subdata) to get from TestDataLibData.
          */
@@ -222,18 +221,8 @@ public class DataLibService implements IDataLibService {
         //Manage error message.
         if (result.getResultMessage().getCode() == MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_NATURE.getCode()) {
             msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_GLOBAL);
-            String resultString = "";
-            try {
-                JSONArray jsonResult = null;
-                jsonResult = convertToJSONObject((List<HashMap<String, String>>) result.getDataList());
-                resultString = jsonResult.toString();
-            } catch (JSONException ex) {
-                resultString = result.getDataList().toString();
-                LOG.warn(ex);
-            }
             msg.setDescription(msg.getDescription().replace("%DATAMESSAGE%", resultData.getMessageDescription())
-                    .replace("%FILTERNATUREMESSAGE%", result.getMessageDescription())
-                    .replace("%RESULT%", resultString));
+                    .replace("%FILTERNATUREMESSAGE%", result.getMessageDescription()));
             result.setResultMessage(msg);
 
         } else if (result.getResultMessage().getCode() == MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_GENERIC_NATURENOMORERECORD.getCode()) {
@@ -1088,6 +1077,7 @@ public class DataLibService implements IDataLibService {
         return result;
     }
 
+    @Override
     public JSONArray convertToJSONObject(List<HashMap<String, String>> object) throws JSONException {
         JSONArray jsonArray = new JSONArray();
         for (HashMap<String, String> row : object) {

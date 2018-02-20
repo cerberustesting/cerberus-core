@@ -74,7 +74,7 @@ import org.cerberus.crud.service.IUserGroupService;
 public class UpdateTestCaseWithDependencies extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(UpdateTestCaseWithDependencies.class);
-    
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -237,12 +237,12 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         for (TestCaseCountryProperties tccpDifference : tccpToUpdateOrInsertToIterate) {
             for (TestCaseCountryProperties tccpInDatabase : tccpFromDtb) {
                 if (tccpDifference.hasSameKey(tccpInDatabase)) {
-                	tccpService.updateTestCaseCountryProperties(tccpDifference);
-            		tccpToUpdateOrInsert.remove(tccpDifference);
+                    tccpService.updateTestCaseCountryProperties(tccpDifference);
+                    tccpToUpdateOrInsert.remove(tccpDifference);
                 }
             }
         }
-        
+
         tccpService.insertListTestCaseCountryProperties(tccpToUpdateOrInsert);
 
         /**
@@ -480,7 +480,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                 String type = getParameterIfExists(request, "properties_type_" + inc);
                 String value = getParameterIfExists(request, "properties_value1_" + inc);
                 String value2 = getParameterIfExists(request, "properties_value2_" + inc);
-                String length = ParameterParserUtil.parseStringParam(getParameterIfExists(request, "properties_length_" + inc), "0");  
+                String length = ParameterParserUtil.parseStringParam(getParameterIfExists(request, "properties_length_" + inc), "0");
                 int rowLimit = Integer.valueOf(getParameterIfExists(request, "properties_rowlimit_" + inc).equals("") ? "0" : getParameterIfExists(request, "properties_rowlimit_" + inc));
                 int retryNb = Integer.valueOf(getParameterIfExists(request, "properties_retrynb_" + inc).equals("") ? "0" : getParameterIfExists(request, "properties_retrynb_" + inc));
                 int retryPeriod = Integer.valueOf(getParameterIfExists(request, "properties_retryperiod_" + inc).equals("") ? "0" : getParameterIfExists(request, "properties_retryperiod_" + inc));
@@ -489,7 +489,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                 if (countries != null) {
                     for (String country : countries) {
                         if (delete == null && property != null && !property.equals("")) {
-                            testCaseCountryProp.add(testCaseCountryPropertiesFactory.create(test, testCase, country, property, description, type, database, value, value2, length, rowLimit, nature, retryNb, retryPeriod));
+                            testCaseCountryProp.add(testCaseCountryPropertiesFactory.create(test, testCase, country, property, description, type, database, value, value2, length, rowLimit, nature, retryNb, retryPeriod, 0));
                         }
                     }
                 }

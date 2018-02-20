@@ -60,6 +60,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class CreateNotDefinedProperty extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(CreateNotDefinedProperty.class);
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -127,7 +128,7 @@ public class CreateNotDefinedProperty extends HttpServlet {
                             "",
                             "0",
                             0,
-                            "STATIC", 0, 10000
+                            "STATIC", 0, 10000, 0
                     ));
                 }
 

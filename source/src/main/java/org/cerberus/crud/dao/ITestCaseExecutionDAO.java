@@ -100,14 +100,6 @@ public interface ITestCaseExecutionDAO {
      */
     TestCaseExecution findTCExecutionByKey(long id) throws CerberusException;
 
-    /**
-     * @param campaign the campaign name for the execution list
-     * @param tag the tag name of the execution list
-     * @return a list of testCaseExecution done on the campaign name and tag
-     * with tag name.
-     * @throws CerberusException when no executions can be found.
-     */
-    List<TestCaseExecution> findExecutionsByCampaignNameAndTag(String campaign, String tag) throws CerberusException;
 
     /**
      * @param withUUIDTag determine of we must retreive UUID tag or not

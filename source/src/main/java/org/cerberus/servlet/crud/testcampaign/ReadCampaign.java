@@ -35,11 +35,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.Campaign;
-import org.cerberus.crud.entity.CampaignContent;
 import org.cerberus.crud.entity.CampaignLabel;
 import org.cerberus.crud.entity.CampaignParameter;
 import org.cerberus.crud.entity.TestCase;
-import org.cerberus.crud.service.ICampaignContentService;
 import org.cerberus.crud.service.ICampaignLabelService;
 import org.cerberus.crud.service.ICampaignParameterService;
 import org.cerberus.crud.service.ICampaignService;
@@ -211,12 +209,6 @@ public class ReadCampaign extends HttpServlet {
         return result;
     }
 
-    private JSONObject convertCampaignContenttoJSONObject(CampaignContent campaign) throws JSONException {
-        Gson gson = new Gson();
-        JSONObject result = new JSONObject(gson.toJson(campaign));
-        return result;
-    }
-
     private JSONObject convertCampaignParametertoJSONObject(CampaignParameter campaign) throws JSONException {
         Gson gson = new Gson();
         JSONObject result = new JSONObject(gson.toJson(campaign));
@@ -247,19 +239,6 @@ public class ReadCampaign extends HttpServlet {
             p = (Campaign) answer.getItem();
             JSONObject response = convertCampaigntoJSONObject(p);
 
-            if (request.getParameter("battery") != null) {
-                ICampaignContentService campaignContentService = appContext.getBean(ICampaignContentService.class);
-                AnswerList resp = campaignContentService.readByCampaign(key);
-                if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-                    JSONArray a = new JSONArray();
-                    for (Object c : resp.getDataList()) {
-                        CampaignContent cc = (CampaignContent) c;
-                        JSONObject ccJSON = convertCampaignContenttoJSONObject(cc);
-                        a.put(ccJSON);
-                    }
-                    response.put("battery", a);
-                }
-            }
             if (request.getParameter("parameter") != null) {
                 ICampaignParameterService campaignParameterService = appContext.getBean(ICampaignParameterService.class);
                 AnswerList resp = campaignParameterService.readByCampaign(key);

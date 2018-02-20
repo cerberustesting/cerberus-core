@@ -102,7 +102,8 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                         String nature = resultSet.getString("nature");
                         int retryNb = resultSet.getInt("RetryNb");
                         int retryPeriod = resultSet.getInt("RetryPeriod");
-                        list.add(factoryTestCaseCountryProperties.create(test, testcase, country, property, description, type, database, value1, value2, length, rowLimit, nature, retryNb, retryPeriod));
+                        int cacheExpire = resultSet.getInt("CacheExpire");
+                        list.add(factoryTestCaseCountryProperties.create(test, testcase, country, property, description, type, database, value1, value2, length, rowLimit, nature, retryNb, retryPeriod, cacheExpire));
 
                     }
                 } catch (SQLException exception) {
@@ -128,7 +129,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
         }
         return list;
     }
-    
+
     @Override
     public List<TestCaseCountryProperties> findOnePropertyPerTestTestCase(String test, String testcase, String oneproperty) {
         List<TestCaseCountryProperties> list = null;
@@ -159,7 +160,8 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                         String nature = resultSet.getString("nature");
                         int retryNb = resultSet.getInt("RetryNb");
                         int retryPeriod = resultSet.getInt("RetryPeriod");
-                        list.add(factoryTestCaseCountryProperties.create(test, testcase, country, property, description, type, database, value1, value2, length, rowLimit, nature, retryNb, retryPeriod));
+                        int cacheExpire = resultSet.getInt("CacheExpire");
+                        list.add(factoryTestCaseCountryProperties.create(test, testcase, country, property, description, type, database, value1, value2, length, rowLimit, nature, retryNb, retryPeriod, cacheExpire));
 
                     }
                 } catch (SQLException exception) {
@@ -217,7 +219,8 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                         String nature = resultSet.getString("nature");
                         int retryNb = resultSet.getInt("RetryNb");
                         int retryPeriod = resultSet.getInt("RetryPeriod");
-                        listProperties.add(factoryTestCaseCountryProperties.create(test, testcase, country, property, description, type, database, value1, value2, length, rowLimit, nature, retryNb, retryPeriod));
+                        int cacheExpire = resultSet.getInt("CacheExpire");
+                        listProperties.add(factoryTestCaseCountryProperties.create(test, testcase, country, property, description, type, database, value1, value2, length, rowLimit, nature, retryNb, retryPeriod, cacheExpire));
 
                     }
                 } catch (SQLException exception) {
@@ -344,7 +347,8 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                         String nature = resultSet.getString("nature");
                         int retryNb = resultSet.getInt("RetryNb");
                         int retryPeriod = resultSet.getInt("RetryPeriod");
-                        list.add(factoryTestCaseCountryProperties.create(test, testcase, country, property, description, type, database, value1, value2, length, rowLimit, nature, retryNb, retryPeriod));
+                        int cacheExpire = resultSet.getInt("CacheExpire");
+                        list.add(factoryTestCaseCountryProperties.create(test, testcase, country, property, description, type, database, value1, value2, length, rowLimit, nature, retryNb, retryPeriod, cacheExpire));
                     }
                 } catch (SQLException exception) {
                     LOG.error("Unable to execute query : " + exception.toString());
@@ -398,7 +402,8 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                         String nature = resultSet.getString("nature");
                         int retryNb = resultSet.getInt("RetryNb");
                         int retryPeriod = resultSet.getInt("RetryPeriod");
-                        result = factoryTestCaseCountryProperties.create(test, testcase, country, property, description, type, database, value1, value2, length, rowLimit, nature, retryNb, retryPeriod);
+                        int cacheExpire = resultSet.getInt("CacheExpire");
+                        result = factoryTestCaseCountryProperties.create(test, testcase, country, property, description, type, database, value1, value2, length, rowLimit, nature, retryNb, retryPeriod, cacheExpire);
                     } else {
                         throwException = true;
                     }

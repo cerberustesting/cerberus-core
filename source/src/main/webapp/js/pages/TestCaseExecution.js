@@ -78,6 +78,10 @@ function loadExecutionQueue(executionQueueId) {
                 configPanel.find("#testcase").text(tceq.testCase);
                 configPanel.find("#exReturnMessage").text(tceq.comment);
                 configPanel.find("#controlstatus").text("QU (" + tceq.state + ")");
+                // Hide the rest of the screen that will not be feed.
+                $("#NavtabsScriptEdit").hide();
+                $("#testCaseDetails").hide();
+                $(".progress").hide();
                 if (tceq.state === "QUEUED") {
                     configPanel.find("#tcDescription").html("Still <span style='color:red;'>" + tceq.nbEntryInQueueToGo + "</span> execution(s) in the Queue before execution start.");
                 } else {
@@ -436,8 +440,8 @@ function removeColorClass(element) {
  */
 function showSaveTestCaseExecutionButton() {
     $("#saveTestCaseExecution").attr("disabled", false);
-
 }
+
 /*
  * 
  * set up click function if the button is visible ( visible if alt least one action or step or control have a controlStatus NE )
@@ -1453,7 +1457,7 @@ Action.prototype.generateHeader = function (id) {
                 var indexAction = $(this).parents("a").data('index')
                 var currentActionOrControl = getScriptInformationOfStep()[indexStep]["actionArr"][indexAction]
                 var idex = $("#idlabel").text()
-                openModalManualFile(true, currentActionOrControl, "ADD", idex)
+                openModalFile(true, currentActionOrControl, "ADD", idex)
                 event.preventDefault()
                 event.stopPropagation()
             })
@@ -1473,7 +1477,7 @@ Action.prototype.generateHeader = function (id) {
                 var indexAction = $(this).parents("a").data('index')
                 var currentActionOrControl = getScriptInformationOfStep()[indexStep]["actionArr"][indexAction]
                 var idex = $("#idlabel").text()
-                openModalManualFile(true, currentActionOrControl, "ADD", idex)
+                openModalFile(true, currentActionOrControl, "ADD", idex)
                 event.preventDefault()
                 event.stopPropagation()
             })
@@ -2098,7 +2102,7 @@ Control.prototype.generateHeader = function (id) {
                 var indexControl = $(this).parents("a").data('index')
                 var currentActionOrControl = getScriptInformationOfStep()[indexStep]["actionArr"][indexAction]["controlArr"][indexControl]
                 var idex = $("#idlabel").text()
-                openModalManualFile(false, currentActionOrControl, "ADD", idex)
+                openModalFile(false, currentActionOrControl, "ADD", idex)
                 event.preventDefault()
                 event.stopPropagation()
             })
@@ -2119,7 +2123,7 @@ Control.prototype.generateHeader = function (id) {
                 var indexControl = $(this).parents("a").data('index')
                 var currentActionOrControl = getScriptInformationOfStep()[indexStep]["actionArr"][indexAction]["controlArr"][indexControl]
                 var idex = $("#idlabel").text()
-                openModalManualFile(false, currentActionOrControl, "ADD", idex)
+                openModalFile(false, currentActionOrControl, "ADD", idex)
                 event.preventDefault()
                 event.stopPropagation()
             })
@@ -2357,24 +2361,23 @@ Control.prototype.getJsonData = function () {
     return json;
 };
 
-function changeClickIfManual(element, isTheExecutionManual, i, container, idStep, fileList) {
-    let z = i
+function changeClickIfManual(isTheExecutionManual, container, idStep, file, event) {
     if (isTheExecutionManual) {
-        $(element).find("img").off("click").click(function (e) {
-            var idex = $("#idlabel").text()
-            if ($(container).parent().parent().parent().hasClass("action")) {
-                var indexAction = $(this).parents("a").data('index')
-                var currentActionOrControl = getScriptInformationOfStep()[idStep]["actionArr"][indexAction]
-                openModalManualFile(true, currentActionOrControl, "EDIT", idex, fileList[z])
-            } else {
-                var indexAction = $(this).parents("a").parent().find(".action").data('index')
-                var indexControl = $(this).parents("a").data('index')
-                var currentActionOrControl = getScriptInformationOfStep()[idStep]["actionArr"][indexAction]["controlArr"][indexControl]
-                openModalManualFile(false, currentActionOrControl, "EDIT", idex, fileList[z])
-            }
-            e.preventDefault()
-            e.stopPropagation()
-        })
+        var idex = $("#idlabel").text()
+        if ($(container).parent().parent().parent().hasClass("action")) {
+            var indexAction = $(this).parents("a").data('index')
+            var currentActionOrControl = getScriptInformationOfStep()[idStep]["actionArr"][indexAction]
+            openModalFile(true, currentActionOrControl, "EDIT", idex, file, !isTheExecutionManual)
+        } else {
+            var indexAction = $(this).parents("a").parent().find(".action").data('index')
+            var indexControl = $(this).parents("a").data('index')
+            var currentActionOrControl = getScriptInformationOfStep()[idStep]["actionArr"][indexAction]["controlArr"][indexControl]
+            openModalFile(false, currentActionOrControl, "EDIT", idex, file, !isTheExecutionManual)
+        }
+        event.preventDefault()
+        event.stopPropagation()
+    } else {
+        openModalFile(null, null, "EDIT", null, file, !isTheExecutionManual)
     }
 }
 
@@ -2384,18 +2387,19 @@ function addFileLink(fileList, container, manual, idStep) {
     var auto = manual == true ? false : true;
     $(container).find($("div[name='mediaMiniature']")).remove();
     for (var i = 0; i < fileList.length; i++) {
+        let index = i
         if ((fileList[i].fileType === "JPG") || (fileList[i].fileType === "PNG")) {
             var urlImage = "ReadTestCaseExecutionMedia?filename=" + fileList[i].fileName + "&filetype=" + fileList[i].fileType + "&filedesc=" + fileList[i].fileDesc + "&auto=" + auto;
             var fileDesc = fileList[i].fileDesc;
             var linkBox = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px")
                     .append(fileList[i].fileDesc).append($("<img>").attr("src", urlImage + "&h=30&w=60").css("max-height", "30px").css("max-width", "60px")
                     .click(function (e) {
-                        showPicture(fileDesc, urlImage);
+                        changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], e)
                         return false;
                     }));
             container.append(linkBox);
 
-            changeClickIfManual(linkBox, isTheExecutionManual, i, container, idStep, fileList)
+
 
         } else if ((fileList[i].fileType === "HTML") || (fileList[i].fileType === "JSON") || (fileList[i].fileType === "TXT") || (fileList[i].fileType === "XML")) {
 
@@ -2408,53 +2412,49 @@ function addFileLink(fileList, container, manual, idStep) {
                 var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px")
                         .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
                         .css("height", "30px").click(function (f) {
-                    showTextArea(fileList[0].fileDesc, "", "ReadTestCaseExecutionMedia?filename=" + fileList[0].fileName + "&filetype=" + fileList[0].fileType + "&filedesc=" + fileList[0].fileDesc + "&auto=" + auto);
+                    changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
                     return false;
                 }));
             } else if (i === 1) {
                 var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px")
                         .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
                         .css("height", "30px").click(function (f) {
-                    showTextArea(fileList[1].fileDesc, "", "ReadTestCaseExecutionMedia?filename=" + fileList[1].fileName + "&filetype=" + fileList[1].fileType + "&filedesc=" + fileList[1].fileDesc + "&auto=" + auto);
+                    changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
                     return false;
                 }));
             } else if (i === 2) {
                 var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px")
                         .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
                         .css("height", "30px").click(function (f) {
-                    showTextArea(fileList[2].fileDesc, "", "ReadTestCaseExecutionMedia?filename=" + fileList[2].fileName + "&filetype=" + fileList[2].fileType + "&filedesc=" + fileList[2].fileDesc);
+                    changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
                     return false;
                 }));
             } else if (i === 3) {
                 var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px")
                         .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
                         .css("height", "30px").click(function (f) {
-                    showTextArea(fileList[3].fileDesc, "", "ReadTestCaseExecutionMedia?filename=" + fileList[3].fileName + "&filetype=" + fileList[3].fileType + "&filedesc=" + fileList[3].fileDesc);
+                    changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
                     return false;
                 }));
             }
-
             container.append(linkBoxtxt);
-            changeClickIfManual(linkBoxtxt, isTheExecutionManual, i, container, idStep, fileList);
-
         } else if ((fileList[i].fileType === "BIN") || (fileList[i].fileType === "PDF")) {
 
             var linkBoxtxt = null;
 
             if (fileList[i].fileType === "BIN") {
                 linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px").append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-binaire.png").css("height", "30px").click(function (f) {
-                    showPicture(fileDesc, urlImage);
+                    changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
                     return false;
                 }))
             } else if (fileList[i].fileType === "PDF") {
                 linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-xs-1").css("padding", "0px 7px 0px 7px").append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-pdf.svg").css("height", "30px").click(function (f) {
-                    showPicture(fileDesc, urlImage);
+                    changeClickIfManual(isTheExecutionManual, container, idStep, fileList[index], f)
                     return false;
                 }))
             }
 
             container.append(linkBoxtxt);
-            changeClickIfManual(linkBoxtxt, isTheExecutionManual, i, container, idStep, fileList)
         }
     }
 
@@ -2468,12 +2468,12 @@ function addFileLink(fileList, container, manual, idStep) {
             if ($(container).parent().parent().parent().hasClass("action")) {
                 var indexAction = $(this).parents("a").data('index')
                 var currentActionOrControl = getScriptInformationOfStep()[idStep]["actionArr"][indexAction]
-                openModalManualFile(true, currentActionOrControl, "ADD", idex)
+                openModalFile(true, currentActionOrControl, "ADD", idex)
             } else {
                 var indexAction = $(this).parents("a").parent().find(".action").data('index')
                 var indexControl = $(this).parents("a").data('index')
                 var currentActionOrControl = getScriptInformationOfStep()[idStep]["actionArr"][indexAction]["controlArr"][indexControl]
-                openModalManualFile(false, currentActionOrControl, "ADD", idex)
+                openModalFile(false, currentActionOrControl, "ADD", idex)
             }
             event.preventDefault()
             event.stopPropagation()

@@ -383,7 +383,7 @@ public class ReadTestCase extends HttpServlet {
         int length = ParameterParserUtil.parseIntegerParam(request.getParameter("length"), -1);
 
         testCaseService = appContext.getBean(ITestCaseService.class);
-        AnswerList answer = testCaseService.readByVarious(test, idProject, app, creator, implementer, system, testBattery, campaign, labelid, priority, group, status, length);
+        AnswerList answer = testCaseService.readByVarious(test, idProject, app, creator, implementer, system, campaign, labelid, priority, group, status, length);
 
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             for (TestCase tc : (List<TestCase>) answer.getDataList()) {
@@ -424,7 +424,7 @@ public class ReadTestCase extends HttpServlet {
             answer.setResultMessage(resp.getResultMessage());
             return answer;
         }else {
-        	AnswerList resp = testCaseService.readByVarious(null, null, null, null, null, null, null, campaignList, null, null, null, null, -1);
+        	AnswerList resp = testCaseService.readByVarious(null, null, null, null, null, null, campaignList, null, null, null, null, -1);
         	if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
                 for (Object c : resp.getDataList()) {
                     TestCase cc = (TestCase) c;
