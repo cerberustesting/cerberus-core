@@ -456,8 +456,8 @@ function loadReportList(data2, selectTag) {
         if (selectTag !== "") {
             if ($("#listTable_wrapper").hasClass("initialized")) {
                 $("#tableArea").empty();
-                $("#tableArea").html('<table id="listTable" class="table display" name="listTable">\n\
-                                            </table><div class="marginBottom20"></div>');
+                $("#tableArea").html('<form id="massActionForm" name="massActionForm"  title="" role="form"><table id="listTable" class="table display" name="listTable">\n\
+                                            </table></form><div class="marginBottom20"></div>');
             }
 
             var config = new TableConfigurationsClientSide("listTable", data2.tableContent, aoColumnsFunc(data2.tableColumns), [2, 'asc']);
@@ -1125,7 +1125,10 @@ function massAction_copyQueue() {
         $.when(jqxhr).then(function (data) {
             // unblock when remote call returns 
             if ((getAlertType(data.messageType) === "success") || (getAlertType(data.messageType) === "warning")) {
-                showMessage(data);
+                if (data.addedEntries === 1) {
+                    data.message = data.message + "<a href='TestCaseExecution.jsp?executionQueueId=" + data.testCaseExecutionQueueList[0].id + "'><button class='btn btn-primary' id='goToExecution'>Get to Execution</button></a>";
+                }
+                showMessageMainPage(getAlertType(data.messageType), data.message, false, 60000);
             } else {
                 showMessage(data);
             }

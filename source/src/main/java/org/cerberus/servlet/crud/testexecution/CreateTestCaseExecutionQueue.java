@@ -20,6 +20,8 @@
 package org.cerberus.servlet.crud.testexecution;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -44,6 +46,7 @@ import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerUtil;
 import org.cerberus.util.servlet.ServletUtil;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.owasp.html.PolicyFactory;
@@ -152,6 +155,7 @@ public class CreateTestCaseExecutionQueue extends HttpServlet {
         // Prepare the final answer.
         MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
         Answer finalAnswer = new Answer(msg1);
+        List<TestCaseExecutionQueue> insertedList = new ArrayList();
 
         for (String myId : myIds) {
 
@@ -211,6 +215,10 @@ public class CreateTestCaseExecutionQueue extends HttpServlet {
                         ansItem = executionQueueService.create(executionQueueData);
 
                         finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ansItem);
+                        if (ansItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                            TestCaseExecutionQueue addedExecution = (TestCaseExecutionQueue) ansItem.getItem();
+                            insertedList.add(addedExecution);
+                        }
 
                         if (myIds.length <= 1) {
                             if (ansItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
@@ -241,10 +249,18 @@ public class CreateTestCaseExecutionQueue extends HttpServlet {
          */
         jsonResponse.put("messageType", finalAnswer.getResultMessage().getMessage().getCodeString());
         jsonResponse.put("message", finalAnswer.getResultMessage().getDescription());
-        if (ansItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-            TestCaseExecutionQueue addedExecution = (TestCaseExecutionQueue) ansItem.getItem();
-            executionQueue.put("id", addedExecution.getId());
-            jsonResponse.put("testCaseExecutionQueue", executionQueue);
+        if (insertedList.isEmpty()) {
+            jsonResponse.put("addedEntries", 0);
+        } else {
+            JSONArray executionList = new JSONArray();
+
+            for (TestCaseExecutionQueue testCaseExecutionQueue : insertedList) {
+                JSONObject myExecution = new JSONObject();
+                myExecution.append("id", testCaseExecutionQueue.getId());
+                executionList.put(myExecution);
+            }
+            jsonResponse.put("testCaseExecutionQueueList", executionList);
+            jsonResponse.put("addedEntries", insertedList.size());
         }
 
         response.getWriter().print(jsonResponse);

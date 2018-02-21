@@ -6,7 +6,7 @@
 *Improvements / New features*
 [square]
 * [ENGINE] Datalib length can now be decoded in order to allow dynamic size of datalib.
-* [GUI] keypress action parameters are nos consistent between every application type. value2 always take key to enter whether application use Selenium, Appium or Sikuli
+* [GUI] keypress action parameters are now consistent between every application type. value2 always take key to enter whether application use Selenium, Appium or Sikuli
 * [GUI] Properties are now sorted by alphabetical order in test case execution page.
 
 *Warning to be considered before applying the version (deprecated features)*
