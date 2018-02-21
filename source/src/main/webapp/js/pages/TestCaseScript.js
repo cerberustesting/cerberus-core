@@ -2822,7 +2822,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 							<span class="glyphicon glyphicon-pencil"></span></button></span>');
                             $(e).parent().append(editEntry);
                         } else {
-                            var addEntry = '<span class="input-group-btn ' + $(e).val().replace(/[^\w\s]/gi, '') + '"><button id="editEntry" onclick="openModalAppService(\'' + $(e).val() + '\',\'ADD\'  ,\'TestCase\' );"\n\
+                            var addEntry = '<span class="input-group-btn ' + encodeURIComponent($(e).val()) + '"><button id="editEntry" onclick="openModalAppService(\'' + $(e).val() + '\',\'ADD\'  ,\'TestCase\' );"\n\
 							class="buttonObject btn btn-default input-sm " \n\
 							title="' + doc.getDocLabel("page_applicationObject", "button_create") + '" type="button">\n\
 							<span class="glyphicon glyphicon-plus"></span></button></span>';
@@ -3329,7 +3329,7 @@ function setPlaceholderProperty(propertyElement, property) {
         	
             if ($("#" + editor.container.id).parent().parent().find("[name='propertyType']").val() === "getFromDataLib") {
                 $("#" + editor.container.id).parent().find('.input-group').remove();
-                var escaped = editor.getValue().replace(/[^\w\s]/gi, '');
+                var escaped =  encodeURIComponent(editor.getValue());
                 if (!isEmpty(escaped)) {
                     $.ajax({
                         url: "ReadTestDataLib",
@@ -3470,7 +3470,8 @@ function CompleterForAllDataLib() {
     var staticWordCompleter = {
 
         getCompletions: function (editor, session, pos, prefix, callback) {
-            $.getJSON("ReadTestDataLib?name=" + editor.getValue().replace(/[^\w\s]/gi, '') + "&limit=15&like=Y", function (wordList) {
+        	var escaped =  encodeURIComponent(editor.getValue())
+            $.getJSON("ReadTestDataLib?name=" + escaped + "&limit=15&like=Y", function (wordList) {
                 callback(null, wordList.contentTable.map(function (ea) {
                     return {name: ea.name, value: ea.name, meta: "DataLib"}
                 }));
