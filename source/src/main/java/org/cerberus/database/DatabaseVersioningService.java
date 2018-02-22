@@ -9827,6 +9827,15 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("DROP TABLE `testbatterycontent`, `campaigncontent`, `testbattery` ;");
         SQLInstruction.add(SQLS.toString());
 
+        // Adjust colum size for login information on execution table..
+        //-- ------------------------ 1295
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcaseexecution` ");
+        SQLS.append("CHANGE COLUMN `Executor` `Executor` VARCHAR(255) NULL DEFAULT NULL ,");
+        SQLS.append("CHANGE COLUMN `UsrCreated` `UsrCreated` VARCHAR(255) NOT NULL DEFAULT '' ,");
+        SQLS.append("CHANGE COLUMN `UsrModif` `UsrModif` VARCHAR(255) NULL DEFAULT '' ;");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 

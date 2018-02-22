@@ -1,7 +1,8 @@
 *Bug fixes*
 [square]
 * [GUI] Fixed issue when modification of queue entry in QUEUED state was no longer possible.
-* [GUI] Fixed the nb of execution still to go counter on execution detail page when execution is still in the queue.
+* [GUI] Fixed the nb of execution 'still to go' counter on execution detail page when execution is still in the queue.
+* [ENGINE] Fixed Issue when user that have login larger than 10 digits cannot trigger any execution.
 
 *Improvements / New features*
 [square]
