@@ -997,8 +997,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         query.append(createInClauseFromList(system, "app.system", "AND ", " "));
         query.append(createInClauseFromList(labelid, "tel.labelid", "AND ", " "));
         if (campaign != null) {
-            query.append(createInClauseFromList(campaign, "cpc.campaign", "AND (", " "));
-            query.append(createInClauseFromList(campaign, "cpl.campaign", " OR ", ") "));
+            query.append(createInClauseFromList(campaign, "cpl.campaign", " AND (", ") "));
         }
         query.append("GROUP BY tec.test, tec.testcase ");
         if (length != -1) {

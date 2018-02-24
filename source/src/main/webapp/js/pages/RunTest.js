@@ -75,12 +75,20 @@ $.when($.getScript("js/global/global.js")).then(function () {
         $("#run").click(sendForm);
         $("#runList").click(sendForm);
 
+        // Run Campaign button click
         $("#runCampaign").click(function () {
             runCampaign();
         });
-
         $("#runCampaignUp").click(function () {
             runCampaign();
+        });
+
+        // Run Test Case button click
+        $("#runTestCase").click(function () {
+            runTestCase();
+        });
+        $("#runTestCaseUp").click(function () {
+            runTestCase();
         });
 
         $("#loadFiltersBtn").click(function () {
@@ -271,6 +279,10 @@ function selectionCampaign() {
         $("#runCampaign").show();
         $("#runCampaignUp").show();
 
+        // NEW
+        $("#runTestCase").hide();
+        $("#runTestCaseUp").hide();
+
         $("#filtersPanelContainer").hide();
         $("#campaignSelection").show();
         $("#testCaseList").empty();
@@ -330,6 +342,15 @@ function selectionManual(test, testcase, environment, country) {
         $("#runCampaign").hide();
         $("#runCampaignUp").hide();
         $("#filtersPanelContainer").show();
+
+        // NEW
+        $("#runTestCase").show();
+        $("#runTestCaseUp").show();
+        $("#resetbutton").hide();
+        $("#exeList").hide();
+        $("#potencialBlock").hide();
+        $("#run").hide();
+        $("#addQueueAndRunBis").hide();
 
         loadTestCaseFromFilter(test, testcase);
 
@@ -450,7 +471,7 @@ function loadCampaignContent(campaign) {
                             .data("item", data.contentTable[index]));
                 }
 
-                showMessage(data, $('#page-layout'));
+                showMessage(data, $('#page-layout'), true);
                 updatePotentialNumber();
                 hideLoader("#chooseTest");
             },
@@ -555,10 +576,21 @@ function runCampaign() {
         hideLoader('#page-layout');
         data.message = data.message.replace(/\n/g, '<br>');
         if (getAlertType(data.messageType) === "success") {
-            if (data.nbExe === 1) {
-                data.message = data.message + "<a href='TestCaseExecution.jsp?executionQueueId=" + data.queueList[0].queueId + "'><button class='btn btn-primary' id='goToExecution'>Get to Execution</button></a>";
+            if (data.nbErrorTCNotActive > 0) {
+                data.message = data.message + "<br>" + data.nbErrorTCNotActive + " Executions not added due to <b>Test Case not active</b>.";
             }
-            data.message = data.message + "<a href='ReportingExecutionByTag.jsp?Tag=" + data.tag + "'><button class='btn btn-primary' id='goToTagReport'>Report by Tag</button></a>"
+            if (data.nbErrorTCNotAllowedOnEnv > 0) {
+                data.message = data.message + "<br>" + data.nbErrorTCNotAllowedOnEnv + " Executions not added due to <b>Test Case not beeing allowed to run on the corresponding group of environment</b>.";
+            }
+            if (data.nbErrorEnvNotExistOrNotActive > 0) {
+                data.message = data.message + "<br>" + data.nbErrorEnvNotExistOrNotActive + " Executions not added due to <b>Environment/Country not active or don't exist</b>.";
+            }
+            if (data.nbExe === 1) {
+                data.message = data.message + "<br><a href='TestCaseExecution.jsp?executionQueueId=" + data.queueList[0].queueId + "'><button class='btn btn-primary' id='goToExecution'>Get to Execution</button></a>";
+            }
+            if (data.nbExe > 1) {
+                data.message = data.message + "<br><a href='ReportingExecutionByTag.jsp?Tag=" + data.tag + "'><button class='btn btn-primary' id='goToTagReport'>Report by Tag</button></a>"
+            }
             showMessageMainPage(getAlertType(data.messageType), data.message, false, 60000);
         } else {
             showMessageMainPage(getAlertType(data.messageType), data.message, false);
@@ -566,6 +598,110 @@ function runCampaign() {
     }).fail(handleErrorAjaxAfterTimeout);
 
 }
+
+function runTestCase() {
+
+    var doc = new Doc();
+
+    clearResponseMessageMainPage();
+
+    var browserSettings = $("#robotSettingsForm #browser").serialize();
+    var paramSerialized = "robot=" + $("#robotSettingsForm #robot").val();
+    paramSerialized += "&ss_ip=" + $("#robotSettingsForm #seleniumIP").val();
+    paramSerialized += "&ss_p=" + $("#robotSettingsForm #seleniumPort").val();
+    paramSerialized += "&tag=" + $("#executionSettingsForm #tag").val();
+    paramSerialized += "&screenshot=" + $("#executionSettingsForm #screenshot").val();
+    paramSerialized += "&verbose=" + $("#executionSettingsForm #verbose").val();
+    paramSerialized += "&timeout=" + $("#executionSettingsForm #timeout").val();
+    paramSerialized += "&pagesource=" + $("#executionSettingsForm #pageSource").val();
+    paramSerialized += "&seleniumlog=" + $("#executionSettingsForm #seleniumLog").val();
+    paramSerialized += "&manualexecution=" + $("#executionSettingsForm #manualExecution").val();
+    paramSerialized += "&retries=" + $("#executionSettingsForm #retries").val();
+    paramSerialized += "&priority=1000";
+    paramSerialized += "&outputformat=json";
+    if (!isEmpty(browserSettings)) {
+        paramSerialized += "&" + browserSettings;
+    }
+
+    var teststring = "";
+    var select = $("#testCaseList option:selected");
+    select.each(function () {
+        var item = $(this).data("item");
+        teststring += "&test=" + item.test + "&testcase=" + item.testCase;
+    });
+
+
+    var environmentstring = "";
+    var settings = $('input[name="envSettings"]:checked').val();
+    if (settings === "auto") {
+        var envListAuto = $("#envSettingsAuto select").val();
+        if (envListAuto !== null) {
+            for (var index = 0; index < envListAuto.length; index++) {
+                environmentstring += "&environment=" + envListAuto[index];
+            }
+        }
+    } else if (settings === "manual") {
+        environmentstring += "&manualurl=1";
+        environmentstring += "&myhost=" + $("#envSettingsMan #myhost").val();
+        environmentstring += "&mycontextroot=" + $("#envSettingsMan #mycontextroot").val();
+        environmentstring += "&myloginrelativeurl=" + $("#envSettingsMan #myloginrelativeurl").val();
+        environmentstring += "&myenvdata=" + $("#envSettingsMan #myenvdata").val();
+    }
+
+    var countriesstring = "";
+    $("#countryList .countrycb").each(function () {
+        if ($(this).prop("checked")) {
+//            countries.push($(this).prop("name"));
+            countriesstring += "&country=" + $(this).prop("name");
+        }
+    });
+
+
+    if (teststring === "") {
+        showMessageMainPage("danger", doc.getDocLabel("page_runtest", "select_one_testcase"), false);
+    } else if (environmentstring === "") {
+        showMessageMainPage("danger", doc.getDocLabel("page_runtest", "select_one_env"), false);
+    } else if (countriesstring === "") {
+        showMessageMainPage("danger", doc.getDocLabel("page_runtest", "select_one_country"), false);
+    } else {
+        console.info(teststring);
+        console.info(countriesstring);
+        console.info(environmentstring);
+    }
+
+    showLoader('#page-layout');
+
+    console.info(paramSerialized + teststring + countriesstring + environmentstring);
+
+    var jqxhr = $.post("AddToExecutionQueueV002", paramSerialized + teststring + countriesstring + environmentstring);
+    $.when(jqxhr).then(function (data) {
+        // unblock when remote call returns 
+        hideLoader('#page-layout');
+        data.message = data.message.replace(/\n/g, '<br>');
+        if (getAlertType(data.messageType) === "success") {
+            if (data.nbErrorTCNotActive > 0) {
+                data.message = data.message + "<br>" + data.nbErrorTCNotActive + " Executions not added due to <b>Test Case not active</b>.";
+            }
+            if (data.nbErrorTCNotAllowedOnEnv > 0) {
+                data.message = data.message + "<br>" + data.nbErrorTCNotAllowedOnEnv + " Executions not added due to <b>Test Case not beeing allowed to run on the corresponding group of environment</b>.";
+            }
+            if (data.nbErrorEnvNotExistOrNotActive > 0) {
+                data.message = data.message + "<br>" + data.nbErrorEnvNotExistOrNotActive + " Executions not added due to <b>Environment/Country not active or don't exist</b>.";
+            }
+            if (data.nbExe === 1) {
+                data.message = data.message + "<br><a href='TestCaseExecution.jsp?executionQueueId=" + data.queueList[0].queueId + "'><button class='btn btn-primary' id='goToExecution'>Get to Execution</button></a>";
+            }
+            if (data.nbExe > 1) {
+                data.message = data.message + "<br><a href='ReportingExecutionByTag.jsp?Tag=" + data.tag + "'><button class='btn btn-primary' id='goToTagReport'>Report by Tag</button></a>"
+            }
+            showMessageMainPage(getAlertType(data.messageType), data.message, false, 60000);
+        } else {
+            showMessageMainPage(getAlertType(data.messageType), data.message, false);
+        }
+    }).fail(handleErrorAjaxAfterTimeout);
+
+}
+
 
 function sendForm() {
 

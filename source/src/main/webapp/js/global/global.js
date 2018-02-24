@@ -818,9 +818,11 @@ function clearResponseMessageMainPage() {
  * Method that shows a message
  * @param {type} obj - object containing the message and the message type
  * @param {type} dialog - dialog where the message should be displayed; if null then the message
+ * @param {boolean} silentMode - if true, message is not displayed if OK (default is false).
+ * @param {integer} waitinMs - delay that the modal will stay visible in ms (default is automaticly calculated).
  * is displayed in the main page.
  */
-function showMessage(obj, dialog) {
+function showMessage(obj, dialog, silentMode, waitinMs) {
     var code = getAlertType(obj.messageType);
 
     if (code !== "success" && dialog !== undefined && dialog !== null) {
@@ -833,7 +835,7 @@ function showMessage(obj, dialog) {
         elementAlert.fadeIn();
     } else {
         //shows the message in the main page
-        showMessageMainPage(code, obj.message, false);
+        showMessageMainPage(code, obj.message, silentMode, waitinMs);
     }
 
     /*if(dialog !== null && obj.messageType==="success"){
