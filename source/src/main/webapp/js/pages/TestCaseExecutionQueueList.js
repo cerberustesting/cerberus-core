@@ -262,7 +262,10 @@ function massActionModalSaveHandler_copy() {
             $('#executionsTable').DataTable().draw();
             $("#selectAll").prop("checked", false);
             $('#massActionExeQModal').modal('hide');
-            showMessage(data);
+            if (data.addedEntries === 1) {
+                data.message = data.message + "<a href='TestCaseExecution.jsp?executionQueueId=" + data.testCaseExecutionQueueList[0].id + "'><button class='btn btn-primary' id='goToExecution'>Get to Execution</button></a>";
+            }
+            showMessageMainPage(getAlertType(data.messageType), data.message, false, 60000);
         } else {
             showMessage(data, $('#massActionExeQModal'));
         }

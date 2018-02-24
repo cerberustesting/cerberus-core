@@ -512,7 +512,7 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
                 preStat.setString(i++, ParameterParserUtil.securePassword(StringUtil.getLeftString(object.getValue1(), 65000), object.getProperty()));
                 preStat.setString(i++, ParameterParserUtil.securePassword(StringUtil.getLeftString(object.getValue2(), 65000), object.getProperty()));
                 preStat.setString(i++, object.getRC());
-                preStat.setString(i++, object.getrMessage());
+                preStat.setString(i++, StringUtil.getLeftString(object.getrMessage(), 65000));
                 preStat.setTimestamp(i++, new Timestamp(object.getStart()));
                 preStat.setTimestamp(i++, new Timestamp(object.getEnd()));
                 preStat.setString(i++, df.format(object.getStart()));
@@ -530,7 +530,7 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
                 preStat.setString(i++, object.getEnvironment());
                 preStat.setString(i++, object.getCountry());
                 preStat.setString(i++, object.getDataLib());
-                preStat.setString(i++, object.getJsonResult());
+                preStat.setString(i++, StringUtil.getLeftString(object.getJsonResult(), 65000));
                 preStat.setString(i++, object.getFromCache());
 
                 preStat.executeUpdate();
@@ -668,7 +668,7 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
                 preStat.setString(i++, object.getEnvironment());
                 preStat.setString(i++, object.getCountry());
                 preStat.setString(i++, object.getDataLib());
-                preStat.setString(i++, object.getJsonResult());
+                preStat.setString(i++, StringUtil.getLeftString(object.getJsonResult(), 65000));
                 preStat.setString(i++, object.getFromCache());
 
                 preStat.executeUpdate();
