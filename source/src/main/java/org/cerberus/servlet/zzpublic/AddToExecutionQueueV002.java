@@ -341,10 +341,11 @@ public class AddToExecutionQueueV002 extends HttpServlet {
         int nbtestcasenotactive = 0;
         int nbtestcaseenvgroupnotallowed = 0;
         int nbenvnotexist = 0;
+        boolean tagAlreadyAdded = false;
 
         int nbbrowser = 0;
         if (browsers.isEmpty()) {
-            nbbrowser = 0;
+            nbbrowser = 1;
         } else {
             nbbrowser = browsers.size();
         }
@@ -355,14 +356,7 @@ public class AddToExecutionQueueV002 extends HttpServlet {
         // Starting the request only if previous parameters exist.
         if (!error) {
 
-            // Create Tag when exist.
-            if (!StringUtil.isNullOrEmpty(tag)) {
-                // We create or update it.
-                ITagService tagService = appContext.getBean(ITagService.class);
-                tagService.createAuto(tag, campaign, user);
-            }
-
-            // Part 1: Getting all possible xecution from test cases + countries + environments + browsers which have been sent to this servlet.
+            // Part 1: Getting all possible Execution from test cases + countries + environments + browsers which have been sent to this servlet.
             Map<String, String> invariantEnv = invariantService.readToHashMapGp1StringByIdname("ENVIRONMENT", "");
             List<TestCaseExecutionQueue> toInserts = new ArrayList<TestCaseExecutionQueue>();
             try {
@@ -395,12 +389,21 @@ public class AddToExecutionQueueV002 extends HttpServlet {
                                         Application app = applicationService.convert(applicationService.readByKey(tc.getApplication()));
                                         if (envMap.containsKey(app.getSystem() + LOCAL_SEPARATOR + country.getCountry() + LOCAL_SEPARATOR + environment)) {
 
+                                            // Create Tag only if not already done and defined.
+                                            if (!StringUtil.isNullOrEmpty(tag) && !tagAlreadyAdded) {
+                                                // We create or update it.
+                                                ITagService tagService = appContext.getBean(ITagService.class);
+                                                tagService.createAuto(tag, campaign, user);
+                                                tagAlreadyAdded = true;
+                                            }
+
                                             if ((app != null) && (app.getType() != null) && app.getType().equalsIgnoreCase(Application.TYPE_GUI)) {
-                                                if (browsers == null) {
+                                                if (browsers == null || browsers.isEmpty()) {
                                                     browsers.add("");
                                                 }
                                                 for (String browser : browsers) {
                                                     try {
+                                                        LOG.debug("Insert Queue Entry.");
                                                         toInserts.add(inQueueFactoryService.create(test, testCase, country.getCountry(), environment, robot, robotIP, robotPort, browser, browserVersion,
                                                                 platform, screenSize, manualURL, manualHost, manualContextRoot, manualLoginRelativeURL, manualEnvData, tag, screenshot, verbose,
                                                                 timeout, pageSource, seleniumLog, 0, retries, manualExecution, priority, user, null, null, null));
@@ -413,6 +416,7 @@ public class AddToExecutionQueueV002 extends HttpServlet {
                                                 // Application does not support browser so we force an empty value.
                                                 LOG.debug("Forcing Browser to empty value. Application type=" + app.getType());
                                                 try {
+                                                    LOG.debug("Insert Queue Entry.");
                                                     toInserts.add(inQueueFactoryService.create(test, testCase, country.getCountry(), environment, robot, robotIP, robotPort, "", browserVersion,
                                                             platform, screenSize, manualURL, manualHost, manualContextRoot, manualLoginRelativeURL, manualEnvData, tag, screenshot, verbose,
                                                             timeout, pageSource, seleniumLog, 0, retries, manualExecution, priority, user, null, null, null));
