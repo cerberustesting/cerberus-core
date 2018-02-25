@@ -324,26 +324,37 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
                 + "start, END, startlong, endlong, returnCode, returnMessage, test, testcase, description) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.id : " + testCaseStepActionExecution.getId());
+            LOG.debug("SQL.param.test : " + testCaseStepActionExecution.getTest());
+            LOG.debug("SQL.param.testcase : " + testCaseStepActionExecution.getTestCase());
+            LOG.debug("SQL.param.step : " + testCaseStepActionExecution.getStep());
+            LOG.debug("SQL.param.index : " + testCaseStepActionExecution.getIndex());
+            LOG.debug("SQL.param.sequence : " + testCaseStepActionExecution.getSequence());
+        }
+
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
-                int i=1;
+                int i = 1;
                 preStat.setLong(i++, testCaseStepActionExecution.getId());
                 preStat.setInt(i++, testCaseStepActionExecution.getStep());
                 preStat.setInt(i++, testCaseStepActionExecution.getIndex());
                 preStat.setInt(i++, testCaseStepActionExecution.getSequence());
                 preStat.setInt(i++, testCaseStepActionExecution.getSort());
                 preStat.setString(i++, testCaseStepActionExecution.getConditionOper());
-                preStat.setString(i++, testCaseStepActionExecution.getConditionVal1Init());
-                preStat.setString(i++, testCaseStepActionExecution.getConditionVal2Init());
-                preStat.setString(i++, testCaseStepActionExecution.getConditionVal1());
-                preStat.setString(i++, testCaseStepActionExecution.getConditionVal2());
+                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionExecution.getConditionVal1Init(), 65000));
+                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionExecution.getConditionVal2Init(), 65000));
+                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionExecution.getConditionVal1(), 65000));
+                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionExecution.getConditionVal2(), 65000));
                 preStat.setString(i++, testCaseStepActionExecution.getAction());
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionExecution.getValue1Init(), 2500));
-                preStat.setString(i++, StringUtil.getLeftString(ParameterParserUtil.securePassword(testCaseStepActionExecution.getValue2Init(), testCaseStepActionExecution.getPropertyName()), 2500));
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionExecution.getValue1(), 2500));
-                preStat.setString(i++, StringUtil.getLeftString(ParameterParserUtil.securePassword(testCaseStepActionExecution.getValue2(), testCaseStepActionExecution.getPropertyName()), 2500));
+                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionExecution.getValue1Init(), 65000));
+                preStat.setString(i++, StringUtil.getLeftString(ParameterParserUtil.securePassword(testCaseStepActionExecution.getValue2Init(), testCaseStepActionExecution.getPropertyName()), 65000));
+                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionExecution.getValue1(), 65000));
+                preStat.setString(i++, StringUtil.getLeftString(ParameterParserUtil.securePassword(testCaseStepActionExecution.getValue2(), testCaseStepActionExecution.getPropertyName()), 65000));
                 preStat.setString(i++, testCaseStepActionExecution.getForceExeStatus());
                 if (testCaseStepActionExecution.getStart() != 0) {
                     preStat.setTimestamp(i++, new Timestamp(testCaseStepActionExecution.getStart()));
@@ -359,19 +370,19 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
                 preStat.setString(i++, df.format(testCaseStepActionExecution.getStart()));
                 preStat.setString(i++, df.format(testCaseStepActionExecution.getEnd()));
                 preStat.setString(i++, testCaseStepActionExecution.getReturnCode());
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionExecution.getReturnMessage(), 500));
+                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionExecution.getReturnMessage(), 65000));
                 preStat.setString(i++, testCaseStepActionExecution.getTest());
                 preStat.setString(i++, testCaseStepActionExecution.getTestCase());
                 preStat.setString(i++, testCaseStepActionExecution.getDescription());
                 preStat.executeUpdate();
 
             } catch (SQLException exception) {
-                LOG.warn("Unable to execute query : " + exception.toString());
+                LOG.error("Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            LOG.warn("Unable to execute query : " + exception.toString());
+            LOG.error("Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -391,14 +402,25 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
                 + ", value1Init = ?, Value2Init = ?, conditionOper = ?, conditionVal1 = ?, conditionVal2 = ?, conditionVal1Init = ?, conditionVal2Init = ?"
                 + " WHERE id = ? AND test = ? AND testcase = ? AND step = ? AND `index` = ? AND sequence = ? ;";
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.id : " + testCaseStepActionExecution.getId());
+            LOG.debug("SQL.param.test : " + testCaseStepActionExecution.getTest());
+            LOG.debug("SQL.param.testcase : " + testCaseStepActionExecution.getTestCase());
+            LOG.debug("SQL.param.step : " + testCaseStepActionExecution.getStep());
+            LOG.debug("SQL.param.index : " + testCaseStepActionExecution.getIndex());
+            LOG.debug("SQL.param.sequence : " + testCaseStepActionExecution.getSequence());
+        }
+
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
-                int i=1;
+                int i = 1;
                 preStat.setString(i++, testCaseStepActionExecution.getAction());
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionExecution.getValue1(), 2500));
-                preStat.setString(i++, StringUtil.getLeftString(ParameterParserUtil.securePassword(testCaseStepActionExecution.getValue2(), testCaseStepActionExecution.getPropertyName()), 2500));
+                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionExecution.getValue1(), 65000));
+                preStat.setString(i++, StringUtil.getLeftString(ParameterParserUtil.securePassword(testCaseStepActionExecution.getValue2(), testCaseStepActionExecution.getPropertyName()), 65000));
                 preStat.setString(i++, testCaseStepActionExecution.getForceExeStatus());
                 if (testCaseStepActionExecution.getStart() != 0) {
                     preStat.setTimestamp(i++, new Timestamp(testCaseStepActionExecution.getStart()));
@@ -414,16 +436,16 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
                 preStat.setString(i++, df.format(testCaseStepActionExecution.getStart()));
                 preStat.setString(i++, df.format(testCaseStepActionExecution.getEnd()));
                 preStat.setString(i++, testCaseStepActionExecution.getReturnCode());
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionExecution.getReturnMessage(), 500));
+                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionExecution.getReturnMessage(), 65000));
                 preStat.setString(i++, testCaseStepActionExecution.getDescription());
                 preStat.setInt(i++, testCaseStepActionExecution.getSort());
-                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionExecution.getValue1Init(), 2500));
-                preStat.setString(i++, StringUtil.getLeftString(ParameterParserUtil.securePassword(testCaseStepActionExecution.getValue2Init(), testCaseStepActionExecution.getPropertyName()), 2500));
+                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionExecution.getValue1Init(), 65000));
+                preStat.setString(i++, StringUtil.getLeftString(ParameterParserUtil.securePassword(testCaseStepActionExecution.getValue2Init(), testCaseStepActionExecution.getPropertyName()), 65000));
                 preStat.setString(i++, testCaseStepActionExecution.getConditionOper());
-                preStat.setString(i++, testCaseStepActionExecution.getConditionVal1());
-                preStat.setString(i++, testCaseStepActionExecution.getConditionVal2());
-                preStat.setString(i++, testCaseStepActionExecution.getConditionVal1Init());
-                preStat.setString(i++, testCaseStepActionExecution.getConditionVal2Init());
+                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionExecution.getConditionVal1(), 65000));
+                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionExecution.getConditionVal2(), 65000));
+                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionExecution.getConditionVal1Init(), 65000));
+                preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionExecution.getConditionVal2Init(), 65000));
                 preStat.setLong(i++, testCaseStepActionExecution.getId());
                 preStat.setString(i++, testCaseStepActionExecution.getTest());
                 preStat.setString(i++, testCaseStepActionExecution.getTestCase());
@@ -434,12 +456,12 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
                 preStat.executeUpdate();
 
             } catch (SQLException exception) {
-                LOG.warn("Unable to execute query : " + exception.toString());
+                LOG.error("Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            LOG.warn("Unable to execute query : " + exception.toString());
+            LOG.error("Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -478,8 +500,8 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
         long startlong = resultSet.getLong("exa.startlong");
         long endlong = resultSet.getLong("exa.endlong");
         String description = resultSet.getString("exa.description");
-        return factoryTestCaseStepActionExecution.create(id, test, testCase, step, index, seq, sort, returnCode, returnMessage
-                , conditionOper, conditionVal1Init, conditionVal2Init, conditionVal1, conditionVal2, action, value1Init, value2Init, value1, value2, forceExeStatus, start, end, startlong, endlong, null, description, null, null);
+        return factoryTestCaseStepActionExecution.create(id, test, testCase, step, index, seq, sort, returnCode, returnMessage,
+                 conditionOper, conditionVal1Init, conditionVal2Init, conditionVal1, conditionVal2, action, value1Init, value2Init, value1, value2, forceExeStatus, start, end, startlong, endlong, null, description, null, null);
 
     }
 

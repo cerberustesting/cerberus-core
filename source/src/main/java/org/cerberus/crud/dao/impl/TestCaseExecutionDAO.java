@@ -82,6 +82,12 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 + "conditionOper, conditionVal1Init, conditionVal2Init, conditionVal1, conditionVal2, manualExecution, UserAgent, queueId) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.id : " + tCExecution.getId());
+        }
+
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
@@ -110,10 +116,10 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 preStat.setString(i++, tCExecution.getExecutor());
                 preStat.setString(i++, tCExecution.getScreenSize());
                 preStat.setString(i++, tCExecution.getConditionOper());
-                preStat.setString(i++, tCExecution.getConditionVal1Init());
-                preStat.setString(i++, tCExecution.getConditionVal2Init());
-                preStat.setString(i++, tCExecution.getConditionVal1());
-                preStat.setString(i++, tCExecution.getConditionVal2());
+                preStat.setString(i++, StringUtil.getLeftString(tCExecution.getConditionVal1Init(), 65000));
+                preStat.setString(i++, StringUtil.getLeftString(tCExecution.getConditionVal2Init(), 65000));
+                preStat.setString(i++, StringUtil.getLeftString(tCExecution.getConditionVal1(), 65000));
+                preStat.setString(i++, StringUtil.getLeftString(tCExecution.getConditionVal2(), 65000));
                 preStat.setString(i++, tCExecution.getManualExecution());
                 preStat.setString(i++, tCExecution.getUserAgent());
                 preStat.setLong(i++, tCExecution.getQueueID());
@@ -164,6 +170,12 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 + ", browserFullVersion = ?, version = ?, platform = ?, executor = ?, screensize = ? "
                 + ", ConditionOper = ?, ConditionVal1Init = ?, ConditionVal2Init = ?, ConditionVal1 = ?, ConditionVal2 = ?, ManualExecution = ?, UserAgent = ?, queueId = ? WHERE id = ?";
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.id : " + tCExecution.getId());
+        }
+
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
@@ -199,10 +211,10 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 preStat.setString(i++, tCExecution.getExecutor());
                 preStat.setString(i++, tCExecution.getScreenSize());
                 preStat.setString(i++, tCExecution.getConditionOper());
-                preStat.setString(i++, tCExecution.getConditionVal1Init());
-                preStat.setString(i++, tCExecution.getConditionVal2Init());
-                preStat.setString(i++, tCExecution.getConditionVal1());
-                preStat.setString(i++, tCExecution.getConditionVal2());
+                preStat.setString(i++, StringUtil.getLeftString(tCExecution.getConditionVal1Init(), 65000));
+                preStat.setString(i++, StringUtil.getLeftString(tCExecution.getConditionVal2Init(), 65000));
+                preStat.setString(i++, StringUtil.getLeftString(tCExecution.getConditionVal1(), 65000));
+                preStat.setString(i++, StringUtil.getLeftString(tCExecution.getConditionVal2(), 65000));
                 preStat.setString(i++, tCExecution.getManualExecution());
                 preStat.setString(i++, tCExecution.getUserAgent());
                 preStat.setLong(i++, tCExecution.getQueueID());
