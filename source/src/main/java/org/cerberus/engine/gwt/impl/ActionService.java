@@ -199,6 +199,9 @@ public class ActionService implements IActionService {
                 case TestCaseStepAction.ACTION_CLICK:
                     res = this.doActionClick(tCExecution, value1, value2);
                     break;
+                case TestCaseStepAction.ACTION_EXECUTEJS:
+                    res = this.doActionExecuteJS(tCExecution, value1, value2);
+                    break;
                 case TestCaseStepAction.ACTION_MOUSELEFTBUTTONPRESS:
                     res = this.doActionMouseLeftButtonPress(tCExecution, value1, value2);
                     break;
@@ -393,6 +396,35 @@ public class ActionService implements IActionService {
         } catch (CerberusEventException ex) {
             LOG.fatal("Error doing Action Click :" + ex);
             return ex.getMessageError();
+        }
+    }
+
+    private MessageEvent doActionExecuteJS(TestCaseExecution tCExecution, String value1, String value2) {
+
+        MessageEvent message;
+        String script = value1;
+        String valueFromJS;
+        try {
+
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
+
+                valueFromJS = this.webdriverService.getValueFromJS(tCExecution.getSession(), script);
+                message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_EXECUTEJS);
+                message.setDescription(message.getDescription().replace("%SCRIPT%", script));
+                message.setDescription(message.getDescription().replace("%VALUE%", valueFromJS));
+                return message;
+
+            }
+            message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+            message.setDescription(message.getDescription().replace("%ACTION%", "executeJS"));
+            message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
+            return message;
+        } catch (Exception e) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTEJS);
+            String messageString = e.getMessage().split("\n")[0];
+            message.setDescription(message.getDescription().replace("%EXCEPTION%", messageString));
+            LOG.debug("Exception Running JS Script :" + messageString);
+            return message;
         }
     }
 

@@ -9836,6 +9836,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("CHANGE COLUMN `UsrModif` `UsrModif` VARCHAR(255) NULL DEFAULT '' ;");
         SQLInstruction.add(SQLS.toString());
 
+        // Add the "executeJS" action
+        //-- ------------------------ 1296
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('ACTION', 'executeJS', '6550', 'Execute Javascript', 'Execute JS');");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 
