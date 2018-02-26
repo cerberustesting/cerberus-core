@@ -199,6 +199,9 @@ public class ActionService implements IActionService {
                 case TestCaseStepAction.ACTION_CLICK:
                     res = this.doActionClick(tCExecution, value1, value2);
                     break;
+                case TestCaseStepAction.ACTION_EXECUTEJS:
+                    res = this.doActionExecuteJS(tCExecution, value1, value2);
+                    break;
                 case TestCaseStepAction.ACTION_MOUSELEFTBUTTONPRESS:
                     res = this.doActionMouseLeftButtonPress(tCExecution, value1, value2);
                     break;
@@ -393,6 +396,35 @@ public class ActionService implements IActionService {
         } catch (CerberusEventException ex) {
             LOG.fatal("Error doing Action Click :" + ex);
             return ex.getMessageError();
+        }
+    }
+
+    private MessageEvent doActionExecuteJS(TestCaseExecution tCExecution, String value1, String value2) {
+
+        MessageEvent message;
+        String script = value1;
+        String valueFromJS;
+        try {
+
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
+
+                valueFromJS = this.webdriverService.getValueFromJS(tCExecution.getSession(), script);
+                message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_EXECUTEJS);
+                message.setDescription(message.getDescription().replace("%SCRIPT%", script));
+                message.setDescription(message.getDescription().replace("%VALUE%", valueFromJS));
+                return message;
+
+            }
+            message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+            message.setDescription(message.getDescription().replace("%ACTION%", "executeJS"));
+            message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
+            return message;
+        } catch (Exception e) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTEJS);
+            String messageString = e.getMessage().split("\n")[0];
+            message.setDescription(message.getDescription().replace("%EXCEPTION%", messageString));
+            LOG.debug("Exception Running JS Script :" + messageString);
+            return message;
         }
     }
 
@@ -1217,11 +1249,10 @@ public class ActionService implements IActionService {
                     long now = new Date().getTime();
                     TestCaseExecutionData tcExeData;
 
-
                     tcExeData = factoryTestCaseExecutionData.create(tCExecution.getId(), tccp.getProperty(), 1, tccp.getDescription(), null, tccp.getType(),
                             tccp.getValue1(), tccp.getValue2(), null, null, now, now, now, now, new MessageEvent(MessageEventEnum.PROPERTY_PENDING),
                             tccp.getRetryNb(), tccp.getRetryPeriod(), tccp.getDatabase(), tccp.getValue1(), tccp.getValue2(), tccp.getLength(), tccp.getLength(),
-                            tccp.getRowLimit(), tccp.getNature(), "", "", "", "", "");
+                            tccp.getRowLimit(), tccp.getNature(), "", "", "", "", "", "N");
                     tcExeData.setTestCaseCountryProperties(tccp);
                     propertyService.calculateProperty(tcExeData, tCExecution, testCaseStepActionExecution, tccp, true);
                     // Property message goes to Action message.
@@ -1253,7 +1284,7 @@ public class ActionService implements IActionService {
                                 now = new Date().getTime();
                                 TestCaseExecutionData tcedS = factoryTestCaseExecutionData.create(tcExeData.getId(), tcExeData.getProperty(), (i + 1),
                                         tcExeData.getDescription(), tcExeData.getDataLibRawData().get(i).get(""), tcExeData.getType(), "", "",
-                                        tcExeData.getRC(), "", now, now, now, now, null, 0, 0, "", "", "", "","", 0, "", "", "", "", "", "");
+                                        tcExeData.getRC(), "", now, now, now, now, null, 0, 0, "", "", "", "", "", 0, "", "", "", "", "", "", "N");
                                 testCaseExecutionDataService.convert(testCaseExecutionDataService.save(tcedS));
                             }
                         }

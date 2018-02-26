@@ -156,7 +156,6 @@ public interface ITestCaseService {
      * @param creator
      * @param implementer
      * @param system
-     * @param testBattery
      * @param campaign
      * @param labelid
      * @param priority
@@ -166,7 +165,7 @@ public interface ITestCaseService {
      * @return
      */
     public AnswerList<List<TestCase>> readByVarious(String[] test, String[] idProject, String[] app, String[] creator, String[] implementer, String[] system,
-            String[] testBattery, String[] campaign, String[] labelid, String[] priority, String[] group, String[] status, int length);
+            String[] campaign, String[] labelid, String[] priority, String[] group, String[] status, int length);
 
     public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 

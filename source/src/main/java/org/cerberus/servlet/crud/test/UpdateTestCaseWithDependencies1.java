@@ -70,7 +70,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class UpdateTestCaseWithDependencies1 extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(UpdateTestCaseWithDependencies1.class);
-    
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -112,9 +112,9 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
         String testCase = jObj.getString("informationTestCase");
         JSONArray properties = jObj.getJSONArray("propArr");
         JSONArray stepArray = jObj.getJSONArray("stepArray");
-        
+
         boolean duplicate = false;
-        
+
         /**
          * Checking all constrains before calling the services.
          */
@@ -319,7 +319,7 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
                 for (int j = 0; j < countries.length(); j++) {
                     String country = countries.getString(j);
 
-                    testCaseCountryProp.add(testCaseCountryPropertiesFactory.create(test, testCase, country, property, description, type, database, value, value2, length, rowLimit, nature, retryNb, retryPeriod));
+                    testCaseCountryProp.add(testCaseCountryPropertiesFactory.create(test, testCase, country, property, description, type, database, value, value2, length, rowLimit, nature, retryNb, retryPeriod, 0));
                 }
             }
         }
@@ -330,7 +330,7 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
         List<TestCaseStep> testCaseStep = new ArrayList();
         ITestCaseStepService tcsService = appContext.getBean(ITestCaseStepService.class);
         IFactoryTestCaseStep testCaseStepFactory = appContext.getBean(IFactoryTestCaseStep.class);
-        
+
         for (int i = 0; i < stepArray.length(); i++) {
             JSONObject step = stepArray.getJSONObject(i);
 

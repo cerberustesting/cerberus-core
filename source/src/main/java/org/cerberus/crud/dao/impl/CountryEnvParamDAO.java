@@ -204,7 +204,11 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
         StringBuilder query = new StringBuilder();
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
         //were applied -- used for pagination p
-        query.append("SELECT * FROM countryenvparam WHERE system = ? AND active = 'Y'");
+        query.append("SELECT * FROM countryenvparam WHERE 1=1 ");
+        if (system != null) {
+            query.append("AND system = ? ");
+        }
+        query.append("AND active = 'Y'");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -214,7 +218,9 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
-                preStat.setString(1, system);
+                if (system != null) {
+                    preStat.setString(1, system);
+                }
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     //gets the data
@@ -986,9 +992,8 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
         query.append(columnName);
         query.append(" as distinctValues FROM countryenvparam cep");
 
-        
         searchSQL.append(" where 1=1 ");
-        
+
         if (!StringUtil.isNullOrEmpty(system)) {
             searchSQL.append(" and (`System` = ? )");
         }
@@ -1036,23 +1041,23 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
                 preStat.setString(i++, system);
             }
             if (!StringUtil.isNullOrEmpty(searchTerm)) {
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                }
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+            }
             for (String individualColumnSearchValue : individalColumnSearchValues) {
                 preStat.setString(i++, individualColumnSearchValue);
             }

@@ -22,11 +22,9 @@ package org.cerberus.crud.service.impl;
 import java.util.List;
 import java.util.Map;
 
-import org.cerberus.crud.dao.ICampaignContentDAO;
 import org.cerberus.crud.dao.ICampaignDAO;
 import org.cerberus.crud.dao.ICampaignParameterDAO;
 import org.cerberus.crud.entity.Campaign;
-import org.cerberus.crud.entity.CampaignContent;
 import org.cerberus.crud.entity.CampaignParameter;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.ICampaignService;
@@ -49,15 +47,7 @@ public class CampaignService implements ICampaignService {
     ICampaignDAO campaignDAO;
 
     @Autowired
-    ICampaignContentDAO campaignContentDAO;
-
-    @Autowired
     ICampaignParameterDAO campaignParameterDAO;
-
-    @Override
-    public List<CampaignContent> findCampaignContentsByCampaignName(String campaign) throws CerberusException {
-        return campaignContentDAO.findCampaignContentByCampaignName(campaign);
-    }
 
     @Override
     public List<CampaignParameter> findCampaignParametersByCampaignName(String campaign) throws CerberusException {

@@ -84,8 +84,8 @@ image:testcasemovestep1.png[testcaseusestep] image:testcasemovestep2.png[testcas
 | swipe | The action simulates a user pressing down on the screen, sliding to another position, and removing their finger from the screen. Swipe action can be used neither with unique parameter *[red]#UP#*,*[red]#DOWN#*,*[red]#LEFT#*,*[red]#RIGHT#*, or with combination of parameter *[red]#CUSTOM#* and *[red]#x1;y1;x2;y2#*, which are coordinates of origin point (x1;y1) and #relatives# coodinates of destination point (x2;y2) | swipe UP : will swipe from the 2/3 to the 1/3 of the screen. swipe CUSTOM 100;100;0;100 : will swipe from the point (100;100) to the point (100;200)
 | click | will allow you to click on an element inside the current page. 
 *[red]#Value1#*	Identifier and name of the element to click in the form of : identifier=html_reference. Example : id=html_reference | 
-| mouseButtonLeftPress |TBD | 
-| mouseButtonLeftRelease | TBD | 
+| mouseLeftButtonPress |TBD | 
+| mouseLeftButtonRelease | TBD | 
 | doubleClick |  will allow you to double click on an element inside the current page. 
 *[red]#Value1#*	Identifier and name of the element to click in the form of : identifier=html_reference. Example : id=html_reference | 
 | rightClick |  will allow you to right click on an element inside the current page. 
@@ -98,18 +98,20 @@ image:testcasemovestep1.png[testcaseusestep] image:testcasemovestep2.png[testcas
 | OpenUrlWithBase | TBD | 
 | OpenUrlLogin | TBD | 
 | OpenUrl | TBD | 
+| executeJS | TBD | 
+| openApp | TBD | 
+| closeApp | TBD | 
 | select | TBD | 
 | type | Write a data in a field. *[red]#Element path#* : the id of the field  *[red]#Property Name#* : the property containing the value to type (can be a property or text. | 
 | wait | Wait for a certain amount of time Feed a number (ms) or wait for element present feed an element (xpath) | 
-| CallSoapWithBase | TBD | 
-| CallSoap | To call a SOAP.  Feed one the following field *[red]#Soap Name (library)#* : Name of the SOAP stored in library  *[red]#Property Name#* : Name of the property if the SOAP is defined in property | 
+| waitVanish | TBD | 
+| callService | TBD | 
 | removeDifference | TBD | 
 | executeSqlUpdate |  will allow you to execute SQL update (insert,delete,update). Feed the *[red]#Database Name#* and the *[red]#Script#* to execute. Database has to be declared to your system and environment. | 
 | executeSqlStoredProcedure | will allow you to execute SQL stored procedure. Feed the *[red]#Database Name#* and the *[red]#Stored Procedure#* to execute. Database has to be declared to your system and environment. | 
-| CalculateProperty | will allow you to calculate a *[red]#Property#* defined in the property section of the test case.
+| calculateProperty | will allow you to calculate a *[red]#Property#* defined in the property section of the test case.
 [Optional] Feed *[red]#Value2#* with another property to affect to the previous *[red]#Property Name#* a new value. Useful to override the one defined from the property section during an execution. | 
 | doNothing | Just perform no action. No action will be executed and engine will go to the next action or control | 
-| skipAction | 	Skip this action. No action will be executed and engine will go to the next action. Controls associated to this action will be skipped too. | 
 
 |=== 
 

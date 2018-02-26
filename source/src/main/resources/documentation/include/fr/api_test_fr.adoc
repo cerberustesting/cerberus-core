@@ -13,12 +13,10 @@ v| /AddToExecutionQueue
 /AddToExecutionQueueV001
 **/AddToExecutionQueueV002**
 
-| /GetCampaignExecutionsCommand | TBD. | **/GetCampaignExecutionsCommand**
-
 | /GetTagExecutions | TBD. | **/GetTagExecutions**
 
 | /GetTestCases 
-| Retourne la liste des cas de test filtré par application. 
+| Retourne la liste des cas de test filtrée par application. 
 | **/GetTestCasesV000**
 
 | /GetNumberOfExecutions 
@@ -30,7 +28,8 @@ A utiliser à des fins de monitoring.
 | Used to provide various execution counters as well as a global OK or KO status based on the number and status of the execution done on a specific tag. 
 v| /ResultCI 
 /ResultCIV001 
-**/ResultCIV002**
+/ResultCIV002
+**/ResultCIV003**
 
 |=== 
 

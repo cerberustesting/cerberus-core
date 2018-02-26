@@ -376,7 +376,7 @@ function feedRobotModalData(robot, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#host").prop("value", "");
         formEdit.find("#port").prop("value", "");
         formEdit.find("#platform").val("");
-        formEdit.find("#browserRobot").val("");
+        formEdit.find("#browser").val("");
         formEdit.find("#version").prop("value", "");
         formEdit.find("#useragent").prop("value", "");
         formEdit.find("#screensize").prop("value", "");
@@ -395,7 +395,7 @@ function feedRobotModalData(robot, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#host").prop("value", robot.host);
         formEdit.find("#port").prop("value", robot.port);
         formEdit.find("#platform").val(robot.platform);
-        formEdit.find("#browserRobot").val(robot.browser);
+        formEdit.find("#browser").val(robot.browser);
         formEdit.find("#version").prop("value", robot.version);
         formEdit.find("#useragent").prop("value", robot.userAgent);
         formEdit.find("#screensize").prop("value", robot.screenSize);
@@ -424,7 +424,7 @@ function feedRobotModalData(robot, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#host").prop("readonly", false);
         formEdit.find("#port").prop("readonly", false);
         formEdit.find("#platform").removeAttr("disabled");
-        formEdit.find("#browserRobot").removeAttr("disabled");
+        formEdit.find("#browser").removeAttr("disabled");
         formEdit.find("#version").prop("readonly", false);
         formEdit.find("#useragent").prop("readonly", false);
         formEdit.find("#screensize").prop("readonly", false);
@@ -437,7 +437,7 @@ function feedRobotModalData(robot, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#host").prop("readonly", "readonly");
         formEdit.find("#port").prop("readonly", "readonly");
         formEdit.find("#platform").prop("disabled", "disabled");
-        formEdit.find("#browserRobot").prop("disabled", "disabled");
+        formEdit.find("#browser").prop("disabled", "disabled");
         formEdit.find("#version").prop("readonly", "readonly");
         formEdit.find("#useragent").prop("readonly", "readonly");
         formEdit.find("#screensize").prop("readonly", "readonly");

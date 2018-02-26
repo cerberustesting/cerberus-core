@@ -287,6 +287,75 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
     }
 
     @Override
+    public AnswerItem<TestCaseExecutionData> readLastCacheEntry(String system, String environment, String country, String property, int cacheExpire) {
+        AnswerItem ans = new AnswerItem();
+        TestCaseExecutionData result = null;
+        final String query = "select * from testcaseexecutiondata exd WHERE System=? and Environment=? and Country=? and FromCache='N' and Property=? and Start >= NOW()- INTERVAL ? SECOND and `index`=1 and jsonResult is not null and RC = 'OK' order by id desc;";
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.system : " + system);
+            LOG.debug("SQL.param.property : " + property);
+            LOG.debug("SQL.param.cacheExpire : " + String.valueOf(cacheExpire));
+        }
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                int i = 1;
+                preStat.setString(i++, system);
+                preStat.setString(i++, environment);
+                preStat.setString(i++, country);
+                preStat.setString(i++, property);
+                preStat.setInt(i++, cacheExpire);
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    if (resultSet.first()) {
+                        result = loadFromResultSet(resultSet);
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+                        ans.setItem(result);
+                    } else {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                    }
+                } catch (SQLException exception) {
+                    LOG.error("Unable to execute query : " + exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
+            }
+        }
+
+        //sets the message
+        ans.setResultMessage(msg);
+        return ans;
+    }
+
+    @Override
     public List<String> getPastValuesOfProperty(long id, String propName, String test, String testCase, String build, String environment, String country) {
         List<String> list = null;
         final String query = "SELECT distinct exd.`VALUE` FROM testcaseexecution exe "
@@ -414,8 +483,8 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
         StringBuilder query = new StringBuilder();
         query.append("INSERT INTO testcaseexecutiondata (`id`, `property`, `index`, `description`, `value`, `type`, `value1`, `value2`, `rc`, ");
         query.append("`rmessage`, `start`, `end`, `startlong`, `endlong`, `database`, `value1Init`,`value2Init`,`lengthInit`,`length`, `rowLimit`, `nature`, `retrynb`, `retryperiod`, ");
-        query.append("`system`, `environment`, `country`, `dataLib`, `jsonResult`) ");
-        query.append("VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        query.append("`system`, `environment`, `country`, `dataLib`, `jsonResult`, `FromCache`) ");
+        query.append("VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -443,7 +512,7 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
                 preStat.setString(i++, ParameterParserUtil.securePassword(StringUtil.getLeftString(object.getValue1(), 65000), object.getProperty()));
                 preStat.setString(i++, ParameterParserUtil.securePassword(StringUtil.getLeftString(object.getValue2(), 65000), object.getProperty()));
                 preStat.setString(i++, object.getRC());
-                preStat.setString(i++, object.getrMessage());
+                preStat.setString(i++, StringUtil.getLeftString(object.getrMessage(), 65000));
                 preStat.setTimestamp(i++, new Timestamp(object.getStart()));
                 preStat.setTimestamp(i++, new Timestamp(object.getEnd()));
                 preStat.setString(i++, df.format(object.getStart()));
@@ -461,7 +530,8 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
                 preStat.setString(i++, object.getEnvironment());
                 preStat.setString(i++, object.getCountry());
                 preStat.setString(i++, object.getDataLib());
-                preStat.setString(i++, object.getJsonResult());
+                preStat.setString(i++, StringUtil.getLeftString(object.getJsonResult(), 65000));
+                preStat.setString(i++, object.getFromCache());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -551,7 +621,7 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
         query.append("UPDATE testcaseexecutiondata SET DESCRIPTION = ?, VALUE = ?, TYPE = ?, VALUE1 = ?, VALUE2 = ?, rc = ?, rmessage = ?, start = ?, ");
         query.append("END = ?, startlong = ?, endlong = ?, `database` = ?, `value1Init` = ?, `value2Init` = ?, ");
         query.append("`lengthInit` = ?, `length` = ?, `rowLimit` = ?, `nature` = ?, `retrynb` = ?, `retryperiod` = ?, ");
-        query.append("`system` = ?, `environment` = ?, `country` = ?, `dataLib` = ?, `jsonResult` = ? ");
+        query.append("`system` = ?, `environment` = ?, `country` = ?, `dataLib` = ?, `jsonResult` = ? , `FromCache` = ? ");
         query.append("WHERE id = ? AND property = ? AND `index` = ?");
 
         // Debug message on SQL.
@@ -598,7 +668,8 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
                 preStat.setString(i++, object.getEnvironment());
                 preStat.setString(i++, object.getCountry());
                 preStat.setString(i++, object.getDataLib());
-                preStat.setString(i++, object.getJsonResult());
+                preStat.setString(i++, StringUtil.getLeftString(object.getJsonResult(), 65000));
+                preStat.setString(i++, object.getFromCache());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -656,11 +727,12 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
         String country = resultSet.getString("exd.country");
         String dataLib = resultSet.getString("exd.dataLib");
         String jsonResult = resultSet.getString("exd.jsonResult");
+        String fromCache = resultSet.getString("exd.FromCache");
 
         factoryTestCaseExecutionData = new FactoryTestCaseExecutionData();
         return factoryTestCaseExecutionData.create(id, property, index, description, value, type, value1, value2, returnCode, returnMessage,
-                start, end, startLong, endLong, null, retryNb, retryPeriod, database, value1Init, value2Init, lengthInit,length, rowLimit, nature,
-                system, environment, country, dataLib, jsonResult);
+                start, end, startLong, endLong, null, retryNb, retryPeriod, database, value1Init, value2Init, lengthInit, length, rowLimit, nature,
+                system, environment, country, dataLib, jsonResult, fromCache);
     }
 
 }

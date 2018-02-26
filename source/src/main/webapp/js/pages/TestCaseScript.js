@@ -213,7 +213,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
                             "ENV", "ENVGP",
                             "COUNTRY", "COUNTRYGP1", "COUNTRYGP2", "COUNTRYGP3", "COUNTRYGP4", "COUNTRYGP5", "COUNTRYGP6", "COUNTRYGP7", "COUNTRYGP8", "COUNTRYGP9",
                             "TEST",
-                            "TESTCASE","TESTCASEDESCRIPTION",
+                            "TESTCASE", "TESTCASEDESCRIPTION",
                             "SSIP", "SSPORT",
                             "TAG",
                             "EXECUTIONID",
@@ -2783,7 +2783,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 
         $(document).on('input', "div.step-action .content div.fieldRow:nth-child(2) input", function (e, state) {
             e = e.currentTarget
-            var doc = new Doc()       
+            var doc = new Doc()
 
             if ($(e).parent().parent().find("select").val() === "callService") {
 
@@ -2824,7 +2824,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 							<span class="glyphicon glyphicon-pencil"></span></button></span>');
                             $(e).parent().append(editEntry);
                         } else {
-                            var addEntry = '<span class="input-group-btn ' + $(e).val().replace(/[^\w\s]/gi, '') + '"><button id="editEntry" onclick="openModalAppService(\'' + $(e).val() + '\',\'ADD\'  ,\'TestCase\' );"\n\
+                            var addEntry = '<span class="input-group-btn ' + encodeURIComponent($(e).val()) + '"><button id="editEntry" onclick="openModalAppService(\'' + $(e).val() + '\',\'ADD\'  ,\'TestCase\' );"\n\
 							class="buttonObject btn btn-default input-sm " \n\
 							title="' + doc.getDocLabel("page_applicationObject", "button_create") + '" type="button">\n\
 							<span class="glyphicon glyphicon-plus"></span></button></span>';
@@ -2839,7 +2839,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
                 var data = loadGuiProperties()
 
                 if (state != "first") {
-                	$(e).parent().parent().parent().parent().find(".input-group-btn").remove()
+                    $(e).parent().parent().parent().parent().find(".input-group-btn").remove()
                     $(e).autocomplete('option', 'source', function (request, response) {
                         var MyArray = $.map(data, function (item) {
                             return {
@@ -2873,11 +2873,11 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
                 }
 
             } else {
-            	
-            	if(state != "first"){
-            		$(e).parent().find(".input-group-btn").remove()
-            	}
-            	
+
+                if (state != "first") {
+                    $(e).parent().find(".input-group-btn").remove()
+                }
+
                 var name = undefined;
                 var nameNotExist = undefined;
                 var objectNotExist = false;
@@ -2885,18 +2885,18 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
                 var doc = new Doc();
                 var checkObject = [];
                 var betweenPercent = $(e).val().match(new RegExp(/%[^%]*%/g));
-                
+
                 var data = loadGuiProperties()
 
                 if (betweenPercent != null && betweenPercent.length > 0) {
-                	
+
                     var i = betweenPercent.length - 1;
                     while (i >= 0) {
                         var findname = betweenPercent[i].match(/\.[^\.]*(\.|.$)/g);
-                        
-                        
+
+
                         if (betweenPercent[i].startsWith("%object.") && findname != null && findname.length > 0) {
-                        	
+
                             name = findname[0];
                             name = name.slice(1, name.length - 1);
 
@@ -2912,17 +2912,17 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
                                 objectNotExist = true;
                                 nameNotExist = name;
                                 typeNotExist = "applicationObject";
-                                
+
                                 $(e).parent().append(addEntry);
 
                             } else if (objectIntoTagToUseExist(TagsToUse[1], name)) {
-                            	
+
                                 var editEntry = '<span class="input-group-btn many ' + name + '"><button id="editEntry" onclick="openModalApplicationObject(\'' + tcInfo.application + '\', \'' + name + '\',\'EDIT\'  ,\'testCaseScript\' );"\n\
 								class="buttonObject btn btn-default input-sm " \n\
 								title="' + name + '" type="button">\n\
 								<span class="glyphicon glyphicon-pencil"></span></button></span>';
                                 $(e).parent().append(editEntry);
-                                
+
                             }
                         } else if (betweenPercent[i].startsWith("%property.") && findname != null && findname.length > 0) {
 
@@ -2936,7 +2936,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 								<span class="glyphicon glyphicon-eye-open"></span></button></span>');
 
                                 if (data[name]) {
-                                	let property  = name
+                                    let property = name
                                     viewEntry.find("button").on("click", function () {
                                         let firstRow = $('<p style="text-align:center" > Type : ' + data[property].type + '</p>');
                                         let secondRow = $('<p style="text-align:center"> Value : ' + data[property].value + '</p>');
@@ -2948,12 +2948,12 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
                                     });
                                     $(e).parent().append(viewEntry);
                                 }
-                            } 
+                            }
                         }
 
                         i--;
                     }
-                } 
+                }
             }
 
         })
@@ -3113,6 +3113,7 @@ function setPlaceholderAction(actionElement) {
             {"type": "openUrlWithBase", "object": "/URI à appeler", "property": null},
             {"type": "openUrlLogin", "object": null, "property": null},
             {"type": "openUrl", "object": "URL à appeler", "property": null},
+            {"type": "executeJS", "object": "JavaScript à executer", "property": null},
             {"type": "openApp", "object": "Nom ou chemin de l'application", "property": null},
             {"type": "closeApp", "object": "Nom ou chemin de l'application", "property": null},
             {"type": "select", "object": "Chemin vers l'élement", "property": "Chemin vers l'option"},
@@ -3145,6 +3146,7 @@ function setPlaceholderAction(actionElement) {
             {"type": "openUrlWithBase", "object": "/URI to call", "property": null},
             {"type": "openUrlLogin", "object": null, "property": null},
             {"type": "openUrl", "object": "URL to call", "property": null},
+            {"type": "executeJS", "object": "JavaScript to execute", "property": null},
             {"type": "openApp", "object": "Application name or path", "property": null},
             {"type": "closeApp", "object": "Application name or path", "property": null},
             {"type": "select", "object": "Element path", "property": "Option path"},
@@ -3328,10 +3330,10 @@ function setPlaceholderProperty(propertyElement, property) {
     $(propertyElement).find('select[name="propertyType"] option:selected').each(function (i, e) {
 
         function initChange() {
-        	
+
             if ($("#" + editor.container.id).parent().parent().find("[name='propertyType']").val() === "getFromDataLib") {
                 $("#" + editor.container.id).parent().find('.input-group').remove();
-                var escaped = editor.getValue().replace(/[^\w\s]/gi, '');
+                var escaped = encodeURIComponent(editor.getValue());
                 if (!isEmpty(escaped)) {
                     $.ajax({
                         url: "ReadTestDataLib",
@@ -3356,9 +3358,9 @@ function setPlaceholderProperty(propertyElement, property) {
                                     $("#" + editor.container.id).parent().append(editEntry);
 
                                     displayDataLibList(editor.container.id, undefined, data)
-                                    $("#" + editor.container.id).parent().find("button").attr('onclick', 'openModalDataLib(\'' +editor.container.id + "\','" + $("#" + editor.container.id).parent().find("select").val() + "\','EDIT'," + "'" + escaped + "')");
+                                    $("#" + editor.container.id).parent().find("button").attr('onclick', 'openModalDataLib(\'' + editor.container.id + "\','" + $("#" + editor.container.id).parent().find("select").val() + "\','EDIT'," + "'" + escaped + "')");
                                     $("#" + editor.container.id).parent().find("select").unbind("change").change(function () {
-                                        $("#" + editor.container.id).parent().find("button").attr('onclick', 'openModalDataLib(\''+editor.container.id+ "\','" + $("#" + editor.container.id).parent().find("select").val() + "\','EDIT'," + "'" + escaped + "')");
+                                        $("#" + editor.container.id).parent().find("button").attr('onclick', 'openModalDataLib(\'' + editor.container.id + "\','" + $("#" + editor.container.id).parent().find("select").val() + "\','EDIT'," + "'" + escaped + "')");
                                     })
 
                                 } else {
@@ -3370,14 +3372,14 @@ function setPlaceholderProperty(propertyElement, property) {
                                         $("#" + editor.container.id).parent().removeClass("col-sm-10").addClass("col-sm-8")
                                         $("#" + editor.container.id).parent().parent().append(editEntry);
                                         $("#" + editor.container.id).parent().parent().append(addEntry);
-                                        $("#" + editor.container.id).parent().parent().find("button:eq(0)").attr('onclick', 'openModalDataLib(\''+editor.container.id+ "\','" + service[0].testDataLibID + "\','EDIT'," + "'" + escaped + "')");
-                                        $("#" + editor.container.id).parent().parent().find("button:eq(1)").attr('onclick', 'openModalDataLib(\''+editor.container.id+ "\','" + escaped + "\','ADD'," + "'" + escaped + "')");
+                                        $("#" + editor.container.id).parent().parent().find("button:eq(0)").attr('onclick', 'openModalDataLib(\'' + editor.container.id + "\','" + service[0].testDataLibID + "\','EDIT'," + "'" + escaped + "')");
+                                        $("#" + editor.container.id).parent().parent().find("button:eq(1)").attr('onclick', 'openModalDataLib(\'' + editor.container.id + "\','" + escaped + "\','ADD'," + "'" + escaped + "')");
                                     } else {
-                                        var addEntry = $('<div class="col-btn col-sm-2" style="text-align:center"><label style="width:100%">Add the DataLib</label><button class="btn btn-secondary '+escaped+ '" type="button"><span class="glyphicon glyphicon-plus"></span></button></div>');
+                                        var addEntry = $('<div class="col-btn col-sm-2" style="text-align:center"><label style="width:100%">Add the DataLib</label><button class="btn btn-secondary ' + escaped + '" type="button"><span class="glyphicon glyphicon-plus"></span></button></div>');
                                         addEntry.find("button").attr("disabled", !canUpdate);
                                         $("#" + editor.container.id).parent().removeClass("col-sm-10").addClass("col-sm-8")
                                         $("#" + editor.container.id).parent().parent().append(addEntry);
-                                        $("#" + editor.container.id).parent().parent().find("button").attr('onclick', 'openModalDataLib(\''+editor.container.id+ "\','" + escaped + "\','ADD'," + "'" + escaped + "')");
+                                        $("#" + editor.container.id).parent().parent().find("button").attr('onclick', 'openModalDataLib(\'' + editor.container.id + "\','" + escaped + "\','ADD'," + "'" + escaped + "')");
                                     }
                                 }
                             }
@@ -3472,7 +3474,8 @@ function CompleterForAllDataLib() {
     var staticWordCompleter = {
 
         getCompletions: function (editor, session, pos, prefix, callback) {
-            $.getJSON("ReadTestDataLib?name=" + editor.getValue().replace(/[^\w\s]/gi, '') + "&limit=15&like=Y", function (wordList) {
+            var escaped = encodeURIComponent(editor.getValue())
+            $.getJSON("ReadTestDataLib?name=" + escaped + "&limit=15&like=Y", function (wordList) {
                 callback(null, wordList.contentTable.map(function (ea) {
                     return {name: ea.name, value: ea.name, meta: "DataLib"}
                 }));

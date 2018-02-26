@@ -204,10 +204,10 @@ function confirmExecutionQueueModalHandler(mode, queueAction, saveAction) {
                 oTable.fnDraw(true);
                 $('#editExecutionQueueModal').data("Saved", true);
                 $('#editExecutionQueueModal').modal('hide');
-                if (data.testCaseExecutionQueue) {
-                    data.message += "<a href='TestCaseExecution.jsp?executionQueueId=" + data.testCaseExecutionQueue.id + "'><button class='btn btn-primary' id='goToExecution'>Get to Execution</button></a>"
+                if (data.addedEntries === 1) {
+                    data.message = data.message + "<a href='TestCaseExecution.jsp?executionQueueId=" + data.testCaseExecutionQueueList[0].id + "'><button class='btn btn-primary' id='goToExecution'>Get to Execution</button></a>";
                 }
-                showMessageMainPage(getAlertType(data.messageType), data.message, false, 30000);
+                showMessageMainPage(getAlertType(data.messageType), data.message, false, 60000);
             } else {
                 showMessage(data, $('#editExecutionQueueModal'));
             }
@@ -258,7 +258,7 @@ function feedExecutionQueueModal(queueid, modalId, mode) {
                 // Feed the data to the screen and manage authorities.
                 var exeQ = data.contentTable;
                 var hasPermissions = data.hasPermissions;
-                
+
                 if (mode === "EDIT") {
                     // Cannot Cancel an execution that is already cancelled.
                     if (exeQ.state === "CANCELLED") {
@@ -337,7 +337,7 @@ function feedExecutionQueueModalData(exeQ, modalId, mode, hasPermissionsUpdate) 
     console.info(mode);
     console.info(hasPermissionsUpdate);
     console.info(exeQ.state);
-    
+
     formEdit.find("#test").empty();
     formEdit.find("#testCase").empty();
 

@@ -9786,7 +9786,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(") as t where t.test=a1.test and t.testcase=a1.testcase and t.step=a1.step and t.sequence=a1.sequence);");
         SQLInstruction.add(SQLS.toString());
 
-        // Modify table testcaseexecutiondata
+        // Modify table testcaseexecutiondata in order to support cache entry.
         //-- ------------------------ 1289
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE testcaseexecutiondata ");
@@ -9803,6 +9803,43 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         //-- ------------------------ 1290
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `testcasestepexecution`  CHANGE COLUMN `ReturnMessage` `ReturnMessage` TEXT ;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Modify table testcaseexecutiondata adding cache flag
+        //-- ------------------------ 1291
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcaseexecutiondata` ADD COLUMN `FromCache` VARCHAR(45) NULL DEFAULT 'N' AFTER `JsonResult`,");
+        SQLS.append(" ADD INDEX `IX_testcaseexecutiondata_03` (`System` ASC, `Environment` ASC, `Country` ASC, `FromCache` ASC, `Property` ASC, `Index` ASC, `Start` ASC);");
+        SQLInstruction.add(SQLS.toString());
+
+        // Modify table testdatalib adding cacheExpire
+        //-- ------------------------ 1292
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasecountryproperties` ADD COLUMN `CacheExpire` INT NULL DEFAULT 0 AFTER `Nature`;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Drop deprecated tables.
+        //-- ------------------------ 1293-1294
+        SQLS = new StringBuilder();
+        SQLS.append("DROP TABLE `abonnement`, `qualitynonconformities`, `qualitynonconformitiesimpact`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("DROP TABLE `testbatterycontent`, `campaigncontent`, `testbattery` ;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Adjust colum size for login information on execution table..
+        //-- ------------------------ 1295
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcaseexecution` ");
+        SQLS.append("CHANGE COLUMN `Executor` `Executor` VARCHAR(255) NULL DEFAULT NULL ,");
+        SQLS.append("CHANGE COLUMN `UsrCreated` `UsrCreated` VARCHAR(255) NOT NULL DEFAULT '' ,");
+        SQLS.append("CHANGE COLUMN `UsrModif` `UsrModif` VARCHAR(255) NULL DEFAULT '' ;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Add the "executeJS" action
+        //-- ------------------------ 1296
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('ACTION', 'executeJS', '6550', 'Execute Javascript', 'Execute JS');");
         SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;

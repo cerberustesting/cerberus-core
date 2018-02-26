@@ -60,6 +60,7 @@ public class TestCaseStepAction {
     public static final String ACTION_HIDEKEYBOARD = "hideKeyboard";
     public static final String ACTION_SWIPE = "swipe";
     public static final String ACTION_CLICK = "click";
+    public static final String ACTION_EXECUTEJS = "executeJS";
     public static final String ACTION_MOUSELEFTBUTTONPRESS = "mouseLeftButtonPress";
     public static final String ACTION_MOUSELEFTBUTTONRELEASE = "mouseLeftButtonRelease";
     public static final String ACTION_DOUBLECLICK = "doubleClick";

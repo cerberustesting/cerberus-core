@@ -1,14 +1,20 @@
 *Bug fixes*
 [square]
-* Allow to modify queue entry in QUEUED state.
+* [GUI] Fixed issue when modification of queue entry in QUEUED state was no longer possible.
+* [GUI] Fixed the nb of execution 'still to go' counter on execution detail page when execution is still in the queue.
+* [ENGINE] Fixed Issue when user that have login larger than 10 digits cannot trigger any execution.
 
 *Improvements / New features*
 [square]
 * [ENGINE] Datalib length can now be decoded in order to allow dynamic size of datalib.
+* [GUI] keypress action parameters are now consistent between every application type. value2 always take key to enter whether application use Selenium, Appium or Sikuli
+* [GUI] Properties are now sorted by alphabetical order in test case execution page.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
-* none
+* SQL #1289, #1290 and #1291 could be quite long on systems with a lot of executions.
+* The following tables have been removed : abonnement, qualitynonconformities, qualitynonconformitiesimpact, testbatterycontent, campaigncontent, testbattery.
+* Removed deprecated public servlet : GetCampaignExecutionsCommand.
 
 
 

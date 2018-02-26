@@ -13,8 +13,6 @@ v| /AddToExecutionQueue
 /AddToExecutionQueueV001
 **/AddToExecutionQueueV002**
 
-| /GetCampaignExecutionsCommand | TBD. | **/GetCampaignExecutionsCommand**
-
 | /GetTagExecutions | TBD. | **/GetTagExecutions**
 
 | /GetTestCases 

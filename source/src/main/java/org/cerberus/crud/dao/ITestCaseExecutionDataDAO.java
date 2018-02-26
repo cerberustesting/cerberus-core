@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.cerberus.crud.entity.TestCaseExecutionData;
-import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
@@ -60,6 +59,17 @@ public interface ITestCaseExecutionDataDAO {
      * @return
      */
     public AnswerList<TestCaseExecutionData> readByIdByCriteria(long id, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
+
+    /**
+     *
+     * @param system
+     * @param environment
+     * @param country
+     * @param property
+     * @param cacheExpire
+     * @return
+     */
+    public AnswerItem<TestCaseExecutionData> readLastCacheEntry(String system, String environment, String country, String property, int cacheExpire);
 
     /**
      * Get the list of values of past execution data on the property @propName

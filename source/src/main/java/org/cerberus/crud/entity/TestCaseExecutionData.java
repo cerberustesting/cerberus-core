@@ -53,6 +53,7 @@ public class TestCaseExecutionData {
     private String country;
     private String dataLib;
     private String jsonResult;
+    private String fromCache;
     private int rowLimit;
     private String nature;
     private int retryNb;
@@ -76,6 +77,14 @@ public class TestCaseExecutionData {
     private List<HashMap<String, String>> dataLibRawData; // Have the raw data of all subdata when comming from testDataLibrary
 
     private static final Logger LOG = LogManager.getLogger(TestCaseExecutionData.class);
+
+    public String getFromCache() {
+        return fromCache;
+    }
+
+    public void setFromCache(String fromCache) {
+        this.fromCache = fromCache;
+    }
 
     public List<TestCaseExecutionFile> getFileList() {
         return fileList;

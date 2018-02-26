@@ -25,6 +25,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.ServletException;
@@ -36,6 +37,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.CampaignParameter;
+import org.cerberus.crud.entity.CountryEnvParam;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseCountry;
 import org.cerberus.crud.entity.TestCaseExecutionQueue;
@@ -53,6 +55,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.cerberus.crud.factory.IFactoryTestCaseExecutionQueue;
 import org.cerberus.crud.service.IApplicationService;
+import org.cerberus.crud.service.ICountryEnvParamService;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.ITagService;
 import org.cerberus.crud.service.ITestCaseCountryService;
@@ -112,6 +115,7 @@ public class AddToExecutionQueueV002 extends HttpServlet {
     private static final String DEFAULT_VALUE_MANUAL_EXECUTION = "N";
     private static final int DEFAULT_VALUE_PRIORITY = 1000;
     private static final String DEFAULT_VALUE_OUTPUTFORMAT = "compact";
+    private static final String LOCAL_SEPARATOR = "_-_";
 
     private static final String LINE_SEPARATOR = "\n";
 
@@ -125,6 +129,7 @@ public class AddToExecutionQueueV002 extends HttpServlet {
     private ITestCaseService testCaseService;
     private ITestCaseCountryService testCaseCountryService;
     private ICampaignParameterService campaignParameterService;
+    private ICountryEnvParamService countryEnvParamService;
 
     /**
      * Process request for both GET and POST method.
@@ -157,6 +162,7 @@ public class AddToExecutionQueueV002 extends HttpServlet {
         applicationService = appContext.getBean(IApplicationService.class);
         testCaseCountryService = appContext.getBean(ITestCaseCountryService.class);
         campaignParameterService = appContext.getBean(ICampaignParameterService.class);
+        countryEnvParamService = appContext.getBean(ICountryEnvParamService.class);
 
         // Calling Servlet Transversal Util.
         ServletUtil.servletStart(request);
@@ -185,8 +191,8 @@ public class AddToExecutionQueueV002 extends HttpServlet {
         countries = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues(PARAMETER_COUNTRY), null, charset);
         List<String> environments;
         environments = ParameterParserUtil.parseListParamAndDecodeAndDeleteEmptyValue(request.getParameterValues(PARAMETER_ENVIRONMENT), null, charset);
-        List<String> browsers;
-        browsers = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues(PARAMETER_BROWSER), null, charset);
+        List<String> browsers = new ArrayList<>();;
+        browsers = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues(PARAMETER_BROWSER), browsers, charset);
 
         // Execution parameters.
         String tag = ParameterParserUtil.parseStringParam(request.getParameter(PARAMETER_TAG), "");
@@ -301,18 +307,15 @@ public class AddToExecutionQueueV002 extends HttpServlet {
                 }
             }
         }
+
         if (countries == null || countries.isEmpty()) {
             errorMessage.append("Error - No Country defined. You can either feed it with parameter '" + PARAMETER_COUNTRY + "' or add it into the campaign definition.\n");
             error = true;
         }
-        if (browsers == null || browsers.isEmpty()) {
+        if ((StringUtil.isNullOrEmpty(robot)) && (browsers == null || browsers.isEmpty())) {
             errorMessage.append("Error - No Browser defined. You can either feed it with parameter '" + PARAMETER_BROWSER + "' or add it into the campaign definition.\n");
             error = true;
         }
-//        if (selectedTests == null || selectedTests.isEmpty()) {
-//            errorMessage.append("Error - No TestCases defined. You can either feed it with parameter '" + PARAMETER_SELECTED_TEST + "' or add it into the campaign definition.");
-//            error = true;
-//        }
         if (selectTest == null || selectTest.isEmpty() || selectTestCase == null || selectTestCase.isEmpty()) {
             errorMessage.append("Error - No TestCases defined. You can either feed it with parameters '" + PARAMETER_TEST + "' and '" + PARAMETER_TESTCASE + "' or add it into the campaign definition.\n");
             error = true;
@@ -335,20 +338,34 @@ public class AddToExecutionQueueV002 extends HttpServlet {
         JSONArray jsonArray = new JSONArray();
         String user = request.getRemoteUser() == null ? "" : request.getRemoteUser();
 
+        int nbtestcasenotactive = 0;
+        int nbtestcaseenvgroupnotallowed = 0;
+        int nbenvnotexist = 0;
+        boolean tagAlreadyAdded = false;
+
+        int nbbrowser = 0;
+        if (browsers.isEmpty()) {
+            nbbrowser = 1;
+        } else {
+            nbbrowser = browsers.size();
+        }
+        int nbtescase = selectTest.size();
+        int nbenv = environments.size();
+        int nbcountries = countries.size();
+
         // Starting the request only if previous parameters exist.
         if (!error) {
 
-            // Create Tag when exist.
-            if (!StringUtil.isNullOrEmpty(tag)) {
-                // We create or update it.
-                ITagService tagService = appContext.getBean(ITagService.class);
-                tagService.createAuto(tag, campaign, user);
-            }
-
-            // Part 1: Getting all possible xecution from test cases + countries + environments + browsers which have been sent to this servlet.
+            // Part 1: Getting all possible Execution from test cases + countries + environments + browsers which have been sent to this servlet.
             Map<String, String> invariantEnv = invariantService.readToHashMapGp1StringByIdname("ENVIRONMENT", "");
             List<TestCaseExecutionQueue> toInserts = new ArrayList<TestCaseExecutionQueue>();
             try {
+                HashMap<String, CountryEnvParam> envMap = new HashMap<>();
+                LOG.debug("Loading all environments.");
+                for (CountryEnvParam envParam : countryEnvParamService.convert(countryEnvParamService.readActiveBySystem(null))) {
+                    envMap.put(envParam.getSystem() + LOCAL_SEPARATOR + envParam.getCountry() + LOCAL_SEPARATOR + envParam.getEnvironment(), envParam);
+                }
+
                 LOG.debug("Nb of TestCase : " + selectTest.size());
                 for (int i = 0; i < selectTest.size(); i++) {
 
@@ -370,10 +387,37 @@ public class AddToExecutionQueueV002 extends HttpServlet {
                                             || (envGp1.equals("DEV"))) {
                                         // Getting Application in order to check application type against browser.
                                         Application app = applicationService.convert(applicationService.readByKey(tc.getApplication()));
-                                        if ((app != null) && (app.getType() != null) && app.getType().equalsIgnoreCase(Application.TYPE_GUI)) {
-                                            for (String browser : browsers) {
+                                        if (envMap.containsKey(app.getSystem() + LOCAL_SEPARATOR + country.getCountry() + LOCAL_SEPARATOR + environment)) {
+
+                                            // Create Tag only if not already done and defined.
+                                            if (!StringUtil.isNullOrEmpty(tag) && !tagAlreadyAdded) {
+                                                // We create or update it.
+                                                ITagService tagService = appContext.getBean(ITagService.class);
+                                                tagService.createAuto(tag, campaign, user);
+                                                tagAlreadyAdded = true;
+                                            }
+
+                                            if ((app != null) && (app.getType() != null) && app.getType().equalsIgnoreCase(Application.TYPE_GUI)) {
+                                                if (browsers == null || browsers.isEmpty()) {
+                                                    browsers.add("");
+                                                }
+                                                for (String browser : browsers) {
+                                                    try {
+                                                        LOG.debug("Insert Queue Entry.");
+                                                        toInserts.add(inQueueFactoryService.create(test, testCase, country.getCountry(), environment, robot, robotIP, robotPort, browser, browserVersion,
+                                                                platform, screenSize, manualURL, manualHost, manualContextRoot, manualLoginRelativeURL, manualEnvData, tag, screenshot, verbose,
+                                                                timeout, pageSource, seleniumLog, 0, retries, manualExecution, priority, user, null, null, null));
+                                                    } catch (FactoryCreationException e) {
+                                                        LOG.error("Unable to insert record due to: " + e, e);
+                                                        LOG.error("test: " + test + "-" + testCase + "-" + country.getCountry() + "-" + environment + "-" + robot);
+                                                    }
+                                                }
+                                            } else {
+                                                // Application does not support browser so we force an empty value.
+                                                LOG.debug("Forcing Browser to empty value. Application type=" + app.getType());
                                                 try {
-                                                    toInserts.add(inQueueFactoryService.create(test, testCase, country.getCountry(), environment, robot, robotIP, robotPort, browser, browserVersion,
+                                                    LOG.debug("Insert Queue Entry.");
+                                                    toInserts.add(inQueueFactoryService.create(test, testCase, country.getCountry(), environment, robot, robotIP, robotPort, "", browserVersion,
                                                             platform, screenSize, manualURL, manualHost, manualContextRoot, manualLoginRelativeURL, manualEnvData, tag, screenshot, verbose,
                                                             timeout, pageSource, seleniumLog, 0, retries, manualExecution, priority, user, null, null, null));
                                                 } catch (FactoryCreationException e) {
@@ -382,19 +426,13 @@ public class AddToExecutionQueueV002 extends HttpServlet {
                                                 }
                                             }
                                         } else {
-                                            // Application does not support browser so we force an empty value.
-                                            LOG.debug("Forcing Browser to empty value. Application type=" + app.getType());
-                                            try {
-                                                toInserts.add(inQueueFactoryService.create(test, testCase, country.getCountry(), environment, robot, robotIP, robotPort, "", browserVersion,
-                                                        platform, screenSize, manualURL, manualHost, manualContextRoot, manualLoginRelativeURL, manualEnvData, tag, screenshot, verbose,
-                                                        timeout, pageSource, seleniumLog, 0, retries, manualExecution, priority, user, null, null, null));
-                                            } catch (FactoryCreationException e) {
-                                                LOG.error("Unable to insert record due to: " + e, e);
-                                                LOG.error("test: " + test + "-" + testCase + "-" + country.getCountry() + "-" + environment + "-" + robot);
-                                            }
+                                            LOG.debug("Env does not exist or is not active.");
+                                            nbenvnotexist = nbenvnotexist + nbbrowser;
                                         }
+
                                     } else {
                                         LOG.debug("Env group not active for testcase : " + environment);
+                                        nbtestcaseenvgroupnotallowed = nbtestcaseenvgroupnotallowed + nbbrowser;
                                     }
                                 }
                             } else {
@@ -403,6 +441,7 @@ public class AddToExecutionQueueV002 extends HttpServlet {
                         }
                     } else {
                         LOG.debug("TestCase not Active.");
+                        nbtestcasenotactive = nbtestcasenotactive + (nbcountries * nbenv * nbbrowser);
                     }
                 }
             } catch (CerberusException ex) {
@@ -454,7 +493,7 @@ public class AddToExecutionQueueV002 extends HttpServlet {
             errorMessage.append(nbExe);
             errorMessage.append(" execution(s) succesfully inserted to queue. ");
 
-            if (testcases.getResultMessage().getSource() == MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT) {
+            if (testcases != null && testcases.getResultMessage().getSource() == MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT) {
                 errorMessage.append(testcases.getResultMessage().getDescription());
             }
 
@@ -478,6 +517,9 @@ public class AddToExecutionQueueV002 extends HttpServlet {
                     jsonResponse.put("helpMessage", helpMessage);
                     jsonResponse.put("tag", tag);
                     jsonResponse.put("nbExe", nbExe);
+                    jsonResponse.put("nbErrorTCNotActive", nbtestcasenotactive);
+                    jsonResponse.put("nbErrorTCNotAllowedOnEnv", nbtestcaseenvgroupnotallowed);
+                    jsonResponse.put("nbErrorEnvNotExistOrNotActive", nbenvnotexist);
                     jsonResponse.put("queueList", jsonArray);
 
                     response.setContentType("application/json");

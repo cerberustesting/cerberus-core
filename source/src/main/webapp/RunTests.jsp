@@ -51,7 +51,7 @@
             <%@ include file="include/transversalobject/Robot.html"%>
             <h1 class="page-title-line">Run Test</h1>
             <div class="row">
-                <div class="col-lg-9">
+                <div class="col-lg-12">
 
                     <div class="panel panel-default" id="selectionPanel">
                         <div class="panel-heading">
@@ -72,13 +72,6 @@
                                             <button type="button" class="btn btn-primary" id="loadCampaignBtn">Load</button>
                                         </div>
                                     </div>
-                                    <!--                                    <div class="form-group col-sm-2">
-                                                                            <div class="input-group">
-                                                                                <div class="input-group-btn">
-                                                                                    <button type="button" class="btn btn-primary" id="loadCampaignBtn">Load</button>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>-->
                                 </form>
                             </div>
                         </div>
@@ -148,10 +141,6 @@
                                             <div class="form-group col-xs-2">
                                                 <label id="lbl_campaign" for="campaignFilter">Campaign</label>                                     
                                                 <select class="multiselectelement form-control" multiple="multiple" id="campaignFilter"></select>
-                                            </div>
-                                            <div class="form-group col-xs-2">
-                                                <label id="lbl_testBattery" for="testBatteryFilter">Test Battery</label>                                     
-                                                <select class="multiselectelement form-control" multiple="multiple" id="testBatteryFilter"></select>
                                             </div>
                                             <div class="form-group col-xs-2">
                                                 <i><label id="lbl_label" for="labelFilter">Label</label></i>
@@ -249,12 +238,15 @@
                             <div class="row" id="runCampaignUpBlock">
                                     <button type="button" class="btn btn-primary btn-lg btn-block" id="runCampaignUp">Run Campaign</button>
                             </div>
+                            <div class="row" id="runTestCaseUpBlock">
+                                    <button type="button" class="btn btn-primary btn-lg btn-block" id="runTestCaseUp">Run Test Case</button>
+                            </div>
                         </div>
                     </div>
 
                 </div>
 
-                <div class="col-lg-3" id="exeList">
+<!--                <div class="col-lg-3" id="exeList">
                     <li class="list-group-item list-group-item-danger" style="display: none;" id="notValid">
                         <span class="badge" id="notValidNumber" style="cursor: pointer;"></span>
                         <span>Some executions couldn't be added to the queue</span>
@@ -277,7 +269,7 @@
                     <div style="padding-bottom: 25px;">
                         <button type="button" class="btn btn-primary btn-lg btn-block" id="runList">Run</button>
                     </div>
-                </div>
+                </div>-->
 
             </div>
             <div class="row">
@@ -322,24 +314,6 @@
                                                 <select class="form-control input-sm" id="browser" name="browser" multiple></select>
                                             </div>
                                         </div>
-                                        <!--                                        <div class="form-group">
-                                                                                    <label for="version" class="col-sm-3 control-label">Version (Optional)</label>
-                                                                                    <div class="col-sm-9">
-                                                                                        <input type="text" class="form-control input-sm" id="version" name="BrowserVersion"/>
-                                                                                    </div>
-                                                                                </div>
-                                                                                <div class="form-group">
-                                                                                    <label for="platform" class="col-sm-3 control-label">Platform (Optional)</label>
-                                                                                    <div class="col-sm-9">
-                                                                                        <select class="form-control input-sm" id="platform" name="platform"></select>
-                                                                                    </div>
-                                                                                </div>
-                                                                                <div class="form-group">
-                                                                                    <label for="screenSize" class="col-sm-3 control-label bold">Screen Size</label>
-                                                                                    <div class="col-sm-9">
-                                                                                        <input type="text" class="form-control" name="screenSize" id="screenSize" aria-describedby="basic-addon1" maxlength="250"/>
-                                                                                    </div>
-                                                                                </div>-->
                                     </form>
                                     <div class="col-sm-offset-3 col-sm-9">
                                         <button class="btn btn-default btn-sm pull-right" id="saveRobotPreferences">Record my Robot Preferences</button>
@@ -453,6 +427,7 @@
                 <button type="button" class="btn btn-primary btn-lg btn-block" id="run">Run</button>
                 <button type="button" class="btn btn-primary btn-lg btn-block" id="addQueueAndRunBis"> Add selection to queue and Run</button>
                 <button type="button" class="btn btn-primary btn-lg btn-block" id="runCampaign">Run Campaign</button>
+                <button type="button" class="btn btn-primary btn-lg btn-block" id="runTestCase">Run Test Case</button>
             </div>
 
             <footer class="footer">
