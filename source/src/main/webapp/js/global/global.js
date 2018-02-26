@@ -2471,9 +2471,10 @@ function getComboConfigLabel(labelType) {
                     dataType: 'json',
                     delay: 250,
                     data: function (params) {
+                    	params.page = params.page || 1;
                         return {
                             sSearch: params.term, // search term
-                            iDisplayStartPage: params.page
+                            iDisplayStart: (params.page * 30)-30
                         };
                     },
                     processResults: function (data, params) {
