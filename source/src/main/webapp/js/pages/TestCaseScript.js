@@ -596,7 +596,6 @@ function setAllSort() {
                 if (!action.toDelete) {
                     // Set the action's sort
                     action.setSort(j + 1);
-
                     // Set the action's step
                     action.setStep(i + 1);
 
@@ -612,7 +611,7 @@ function setAllSort() {
                             control.setParentActionSort(j + 1);
                             control.setSort(k + 1);
                             control.setStep(i + 1);
-
+                            control.setControlSequence(k + i)
 
                             // Then push control into result array
                             controlArr.push(control.getJsonData());
@@ -628,7 +627,6 @@ function setAllSort() {
             stepArr.push(stepJson);
         }
     }
-
     return stepArr;
 }
 
@@ -1611,7 +1609,7 @@ function handleDragEnter(event) {
     var target = this.parentNode;
     var sourceData = $(source).data("item");
     var targetData = $(target).data("item");
-
+    
     if (sourceData instanceof Action && targetData instanceof Action) {
         if (isBefore(source.parentNode, target.parentNode)) {
             $(target).parent(".action-group").after(source.parentNode);
@@ -2450,6 +2448,10 @@ Control.prototype.setSequence = function (sequence) {
 
 Control.prototype.getControl = function () {
     return this.control;
+}
+
+Control.prototype.setControlSequence = function (controlSequence) {
+    this.controlSequence = controlSequence;
 }
 
 Control.prototype.setControl = function (control) {
