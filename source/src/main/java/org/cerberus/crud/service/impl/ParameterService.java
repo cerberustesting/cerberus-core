@@ -342,6 +342,7 @@ public class ParameterService implements IParameterService {
             case "cerberus_notification_newchain_cc":
             case "cerberus_notification_newchain_subject":
             case "cerberus_notification_newchain_to":
+            case "cerberus_loopstep_max":
                 return true;
             // any other parameters are not managed at system level.
             default:

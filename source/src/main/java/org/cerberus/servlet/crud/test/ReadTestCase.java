@@ -410,33 +410,25 @@ public class ReadTestCase extends HttpServlet {
 
         List<String> countries = parsedCampaignParameters.getItem().get(CampaignParameter.COUNTRY_PARAMETER);
         
+        AnswerItem<List<TestCase>> resp = null;
+        
         if(countries !=  null && !countries.isEmpty()) {
-        	AnswerItem<List<TestCase>> resp = testCaseService.findTestCaseByCampaignNameAndCountries(campaign, countries.toArray(new String[countries.size()]));
-            if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-                for (Object c : resp.getItem()) {
-                    TestCase cc = (TestCase) c;
-                    dataArray.put(convertToJSONObject(cc));
-                }
-            }
-
-            jsonResponse.put("contentTable", dataArray);
-            answer.setItem(jsonResponse);
-            answer.setResultMessage(resp.getResultMessage());
-            return answer;
+        	resp = testCaseService.findTestCaseByCampaignNameAndCountries(campaign, countries.toArray(new String[countries.size()]));
         }else {
-        	AnswerList resp = testCaseService.readByVarious(null, null, null, null, null, null, campaignList, null, null, null, null, -1);
-        	if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-                for (Object c : resp.getDataList()) {
-                    TestCase cc = (TestCase) c;
-                    dataArray.put(convertToJSONObject(cc));
-                }
+        	resp = testCaseService.findTestCaseByCampaignNameAndCountries(campaign, null);            
+        }
+        
+        if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
+            for (Object c : resp.getItem()) {
+                TestCase cc = (TestCase) c;
+                dataArray.put(convertToJSONObject(cc));
             }
+        }
 
-            jsonResponse.put("contentTable", dataArray);
-            answer.setItem(jsonResponse);
-            answer.setResultMessage(resp.getResultMessage());
-            return answer;
-        }  
+        jsonResponse.put("contentTable", dataArray);
+        answer.setItem(jsonResponse);
+        answer.setResultMessage(resp.getResultMessage());
+        return answer;
     }
 
     private AnswerItem findTestCaseWithStep(ApplicationContext appContext, HttpServletRequest request, String test, String testCase) throws JSONException {

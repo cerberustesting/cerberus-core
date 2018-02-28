@@ -305,6 +305,7 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
             boolean delete = propJson.getBoolean("toDelete");
             String property = propJson.getString("property");
             String description = propJson.getString("description");
+            int cacheExpire = propJson.getInt("cacheExpire");
             String type = propJson.getString("type");
             String value = propJson.getString("value1");
             String value2 = propJson.getString("value2");
@@ -319,7 +320,7 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
                 for (int j = 0; j < countries.length(); j++) {
                     String country = countries.getString(j);
 
-                    testCaseCountryProp.add(testCaseCountryPropertiesFactory.create(test, testCase, country, property, description, type, database, value, value2, length, rowLimit, nature, retryNb, retryPeriod, 0));
+                    testCaseCountryProp.add(testCaseCountryPropertiesFactory.create(test, testCase, country, property, description, type, database, value, value2, length, rowLimit, nature, retryNb, retryPeriod, cacheExpire));
                 }
             }
         }
