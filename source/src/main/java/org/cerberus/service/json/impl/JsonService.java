@@ -97,7 +97,10 @@ public class JsonService implements IJsonService {
          * Get the value
          */
         Object document = Configuration.defaultConfiguration().jsonProvider().parse(json);
-        String jsonPath = StringUtil.addPrefixIfNotAlready(attributeToFind, "$.");
+        String jsonPath = attributeToFind;
+        if (!attributeToFind.startsWith("$.") && !attributeToFind.startsWith("$[")) {
+            jsonPath = "$." + attributeToFind;
+        }
         LOG.debug("JSON PATH : " + jsonPath);
         try {
             /**
@@ -168,7 +171,10 @@ public class JsonService implements IJsonService {
          * Get the value
          */
         Object document = Configuration.defaultConfiguration().jsonProvider().parse(json);
-        String jsonPath = StringUtil.addPrefixIfNotAlready(attributeToFind, "$.");
+        String jsonPath = attributeToFind;
+        if (!attributeToFind.startsWith("$.") && !attributeToFind.startsWith("$[")) {
+            jsonPath = "$." + attributeToFind;
+        }
         LOG.debug("JSON PATH : " + jsonPath);
         try {
             /**
