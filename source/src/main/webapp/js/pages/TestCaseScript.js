@@ -789,6 +789,7 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
     var value2Input = $("<textarea name='propertyValue2' rows='1' placeholder='" + doc.getDocLabel("page_applicationObject", "Value") + "'></textarea>").addClass("form-control input-sm").val(property.value2);
     var lengthInput = $("<input placeholder='" + doc.getDocLabel("page_testcasescript", "length") + "'>").addClass("form-control input-sm").val(property.length);
     var rowLimitInput = $("<input placeholder='" + doc.getDocLabel("page_testcasescript", "row_limit") + "'>").addClass("form-control input-sm").val(property.rowLimit);
+    var cacheExpireInput = $("<input type='number' placeholder=''>").addClass("form-control input-sm").val(property.cacheExpire);
     var retryNbInput = $("<input placeholder='" + doc.getDocLabel("testcasecountryproperties", "RetryNb") + "'>").addClass("form-control input-sm").val(property.retryNb);
     var retryPeriodInput = $("<input placeholder='" + doc.getDocLabel("testcasecountryproperties", "RetryPeriod") + "'>").addClass("form-control input-sm").val(property.retryPeriod);
     var table = $("#propTable");
@@ -805,6 +806,8 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
     rowLimitInput.prop("readonly", !canUpdate);
     retryNbInput.prop("readonly", !canUpdate);
     retryPeriodInput.prop("readonly", !canUpdate);
+    cacheExpireInput.prop("readonly", !canUpdate);
+    
 
     var content = $("<div class='row property list-group-item'></div>");
     var props = $("<div class='col-sm-11' name='propertyLine' id='propertyLine" + property.property + "'></div>");
@@ -824,6 +827,8 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
     var value2 = $("<div class='col-sm-6 form-group' name='fieldValue2'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value2_field"))).append(value2Input);
     var length = $("<div class='col-sm-2 form-group' name='fieldLength'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "length_field"))).append(lengthInput);
     var rowLimit = $("<div class='col-sm-2 form-group' name='fieldRowLimit'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "rowlimit_field"))).append(rowLimitInput);
+    var cacheExpire = $("<div class='col-sm-2 form-group' name='fieldExpire'></div>").append($("<label></label>").text("cacheExpire")).append(cacheExpireInput);
+
     var nature = $("<div class='col-sm-2 form-group' name='fieldNature'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "nature_field"))).append(selectNature.val(property.nature));
     var retryNb = $("<div class='col-sm-2 form-group' name='fieldRetryNb'></div>").append($("<label></label>").text(doc.getDocLabel("testcasecountryproperties", "RetryNb"))).append(retryNbInput);
     var retryPeriod = $("<div class='col-sm-2 form-group' name='fieldRetryPeriod'></div>").append($("<label></label>").text(doc.getDocLabel("testcasecountryproperties", "RetryPeriod"))).append(retryPeriodInput);
@@ -942,6 +947,10 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
     rowLimitInput.change(function () {
         property.rowLimit = $(this).val();
     });
+    
+    cacheExpireInput.change(function () {
+        property.cacheExpire = parseInt($(this).val());
+    });
 
     selectNature.change(function () {
         property.nature = $(this).val();
@@ -976,6 +985,7 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
     row3.append(nature);
     row3.append(retryNb);
     row3.append(retryPeriod);
+    row3.append(cacheExpire);
     props.append(row3);
 
     right.append(moreBtn).append(deleteBtn);
@@ -1011,6 +1021,7 @@ function drawInheritedProperty(propList) {
         var value2Input = $("<textarea name='inheritPropertyValue2' rows='1' placeholder='" + doc.getDocLabel("page_applicationObject", "Value") + "' readonly='readonly'></textarea>").addClass("form-control input-sm").val(property.value2);
         var lengthInput = $("<input placeholder='" + doc.getDocLabel("page_testcasescript", "length") + "' readonly='readonly'>").addClass("form-control input-sm").val(property.length);
         var rowLimitInput = $("<input placeholder='" + doc.getDocLabel("page_testcasescript", "row_limit") + "' readonly='readonly'>").addClass("form-control input-sm").val(property.rowLimit);
+        var cacheExpireInput = $("<input placeholder='0' readonly='readonly'>").addClass("form-control input-sm").val(property.cacheExpire);
         var retryNbInput = $("<input placeholder='" + doc.getDocLabel("testcasecountryproperties", "RetryNb") + "' readonly='readonly'>").addClass("form-control input-sm").val(property.retryNb);
         var retryPeriodInput = $("<input placeholder='" + doc.getDocLabel("testcasecountryproperties", "RetryPeriod") + "' readonly='readonly'>").addClass("form-control input-sm").val(property.retryPeriod);
 
@@ -1033,6 +1044,7 @@ function drawInheritedProperty(propList) {
         var length = $("<div class='col-sm-2 form-group' name='fieldLength'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "length_field"))).append(lengthInput);
         var rowLimit = $("<div class='col-sm-2 form-group' name='fieldRowLimit'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "rowlimit_field"))).append(rowLimitInput);
         var nature = $("<div class='col-sm-2 form-group' name='fieldNature'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "nature_field"))).append(selectNature.val(property.nature));
+        var cacheExpire = $("<div class='col-sm-2 form-group' name='fieldExpire'></div>").append($("<label></label>").text("cacheExpire")).append(cacheExpireInput);
         var retryNb = $("<div class='col-sm-2 form-group' name='fieldRetryNb'></div>").append($("<label></label>").text(doc.getDocLabel("testcasecountryproperties", "RetryNb"))).append(retryNbInput);
         var retryPeriod = $("<div class='col-sm-2 form-group' name='fieldRetryPeriod'></div>").append($("<label></label>").text(doc.getDocLabel("testcasecountryproperties", "RetryPeriod"))).append(retryPeriodInput);
 
@@ -1073,6 +1085,7 @@ function drawInheritedProperty(propList) {
 
         row3.append(db);
         row3.append(length);
+        row3.append(cacheExpire);
         row3.append(rowLimit);
         row3.append(nature);
         row3.append(retryNb);
@@ -3293,35 +3306,35 @@ function setPlaceholderProperty(propertyElement, property) {
      */
 
     var placeHoldersList = {"fr": [
-            {"type": "text", "value1": "Value :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/cerberus", "value2": null, "database": null, "length": "[opt] Length :", "rowLimit": null, "nature": "Nature :", "retry": null, "period": null},
-            {"type": "executeSql", "value1": "SQL Query :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/sql", "value2": null, "database": "Database :", "length": null, "rowLimit": "Row Limit :", "nature": "Nature :", "retry": "Number of retry (if empty)", "period": "Retry period (ms)"},
-            {"type": "getFromDataLib", "value1": "DataLib name :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/cerberus", "value2": null, "database": null, "length": "[opt] Length :", "rowLimit": "Row Limit :", "nature": "Nature :", "retry": "Number of retry (if empty)", "period": "Retry period (ms)"},
-            {"type": "getFromHtml", "value1": "Element path :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/xquery", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "getFromHtmlVisible", "value1": "Element path :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/xquery", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "getFromJS", "value1": "Javascript command :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/javascript", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "getAttributeFromHtml", "value1": "Element path :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/xquery", "value2": "Attribute name :", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "getFromCookie", "value1": "Cookie name :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/cerberus", "value2": "Cookie attribute :", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "getFromXml", "value1": "Xpath :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/xquery", "value2": "[opt] XML or URL to XML file", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "getDifferencesFromXml", "value1": "value1", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/xquery", "value2": "value2", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "getFromJson", "value1": "JSONPath :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/json", "value2": "[opt] JSON or URL to JSON file", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "getFromGroovy", "value1": "Groovy command :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/groovy", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "executeSoapFromLib", "value1": "Service lib name :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/cerberus", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "executeSqlFromLib", "value1": "SQL Lib name", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/cerberus", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null}
+            {"type": "text", "value1": "Value :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/cerberus", "value2": null, "database": null, "length": "[opt] Length :", "cacheExpire": "[opt] cache Expire :", "rowLimit": null, "nature": "Nature :", "retry": null, "period": null},
+            {"type": "executeSql", "value1": "SQL Query :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/sql", "value2": null, "database": "Database :", "length": null, "cacheExpire": "[opt] cache Expire :", "rowLimit": "Row Limit :", "nature": "Nature :", "retry": "Number of retry (if empty)", "period": "Retry period (ms)"},
+            {"type": "getFromDataLib", "value1": "DataLib name :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/cerberus", "value2": null, "database": null, "length": "[opt] Length :", "cacheExpire": "[opt] cache Expire :", "rowLimit": "Row Limit :", "nature": "Nature :", "retry": "Number of retry (if empty)", "period": "Retry period (ms)"},
+            {"type": "getFromHtml", "value1": "Element path :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/xquery", "value2": null, "database": null, "length": null, "cacheExpire": "[opt] cache Expire :", "rowLimit": null, "nature": null, "retry": null, "period": null},
+            {"type": "getFromHtmlVisible", "value1": "Element path :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/xquery", "value2": null, "database": null, "length": null, "cacheExpire": "[opt] cache Expire :", "rowLimit": null, "nature": null, "retry": null, "period": null},
+            {"type": "getFromJS", "value1": "Javascript command :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/javascript", "value2": null, "database": null, "length": null, "cacheExpire": "[opt] cache Expire :", "rowLimit": null, "nature": null, "retry": null, "period": null},
+            {"type": "getAttributeFromHtml", "value1": "Element path :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/xquery", "value2": "Attribute name :", "database": null, "length": null, "cacheExpire": "[opt] cache Expire :", "rowLimit": null, "nature": null, "retry": null, "period": null},
+            {"type": "getFromCookie", "value1": "Cookie name :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/cerberus", "value2": "Cookie attribute :", "database": null, "length": null, "cacheExpire": "[opt] cache Expire :", "rowLimit": null, "nature": null, "retry": null, "period": null},
+            {"type": "getFromXml", "value1": "Xpath :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/xquery", "value2": "[opt] XML or URL to XML file", "database": null, "length": null, "cacheExpire": "[opt] cache Expire :", "rowLimit": null, "nature": null, "retry": null, "period": null},
+            {"type": "getDifferencesFromXml", "value1": "value1", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/xquery", "value2": "value2", "database": null, "length": null, "cacheExpire": "[opt] cache Expire :", "rowLimit": null, "nature": null, "retry": null, "period": null},
+            {"type": "getFromJson", "value1": "JSONPath :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/json", "value2": "[opt] JSON or URL to JSON file", "database": null, "length": null, "cacheExpire": "[opt] cache Expire :", "rowLimit": null, "nature": null, "retry": null, "period": null},
+            {"type": "getFromGroovy", "value1": "Groovy command :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/groovy", "value2": null, "database": null, "length": null, "cacheExpire": "[opt] cache Expire :", "rowLimit": null, "nature": null, "retry": null, "period": null},
+            {"type": "executeSoapFromLib", "value1": "Service lib name :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/cerberus", "value2": null, "database": null, "length": null, "cacheExpire": "[opt] cache Expire :", "rowLimit": null, "nature": null, "retry": null, "period": null},
+            {"type": "executeSqlFromLib", "value1": "SQL Lib name", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/cerberus", "value2": null, "database": null, "length": null, "cacheExpire": "[opt] cache Expire :", "rowLimit": null, "nature": null, "retry": null, "period": null}
         ], "en": [
-            {"type": "text", "value1": "Value :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/cerberus", "value2": null, "database": null, "length": "[opt] Length :", "rowLimit": null, "nature": "Nature :", "retry": null, "period": null},
-            {"type": "executeSql", "value1": "SQL Query :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/sql", "value2": null, "database": "Database :", "length": null, "rowLimit": "Row Limit :", "nature": "Nature :", "retry": "Number of retry (if empty)", "period": "Retry period (ms)"},
-            {"type": "getFromDataLib", "value1": "DataLib name :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/cerberus", "value2": null, "database": null, "length": "[opt] Length :", "rowLimit": "Row Limit :", "nature": "Nature :", "retry": "Number of retry (if empty)", "period": "Retry period (ms)"},
-            {"type": "getFromHtml", "value1": "Element path :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/xquery", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "getFromHtmlVisible", "value1": "Element path :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/xquery", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "getFromJS", "value1": "Javascript command :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/javascript", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "getAttributeFromHtml", "value1": "Element path :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/xquery", "value2": "Attribute name :", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "getFromCookie", "value1": "Cookie name :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/cerberus", "value2": "Cookie attribute :", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "getFromXml", "value1": "Xpath :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/xquery", "value2": "[opt] XML or URL to XML file", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "getDifferencesFromXml", "value1": "value1", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/xquery", "value2": "value2", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "getFromJson", "value1": "JSONPath :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/json", "value2": "[opt] JSON or URL to JSON file", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "getFromGroovy", "value1": "Groovy command :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/groovy", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "executeSoapFromLib", "value1": "Service lib name :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/cerberus", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "executeSqlFromLib", "value1": "SQL Lib name", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/cerberus", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null}
+            {"type": "text", "value1": "Value :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/cerberus", "value2": null, "database": null, "length": "[opt] Length :", "cacheExpire": "[opt] cache Expire :", "rowLimit": null, "nature": "Nature :", "retry": null, "period": null},
+            {"type": "executeSql", "value1": "SQL Query :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/sql", "value2": null, "database": "Database :", "length": null, "cacheExpire": "[opt] cache Expire :", "rowLimit": "Row Limit :", "nature": "Nature :", "retry": "Number of retry (if empty)", "period": "Retry period (ms)"},
+            {"type": "getFromDataLib", "value1": "DataLib name :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/cerberus", "value2": null, "database": null, "length": "[opt] Length :", "cacheExpire": "[opt] cache Expire :", "rowLimit": "Row Limit :", "nature": "Nature :", "retry": "Number of retry (if empty)", "period": "Retry period (ms)"},
+            {"type": "getFromHtml", "value1": "Element path :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/xquery", "value2": null, "database": null, "length": null, "cacheExpire": "[opt] cache Expire :", "rowLimit": null, "nature": null, "retry": null, "period": null},
+            {"type": "getFromHtmlVisible", "value1": "Element path :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/xquery", "value2": null, "database": null, "length": null, "cacheExpire": "[opt] cache Expire :", "rowLimit": null, "nature": null, "retry": null, "period": null},
+            {"type": "getFromJS", "value1": "Javascript command :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/javascript", "value2": null, "database": null, "length": null, "cacheExpire": "[opt] cache Expire :", "rowLimit": null, "nature": null, "retry": null, "period": null},
+            {"type": "getAttributeFromHtml", "value1": "Element path :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/xquery", "value2": "Attribute name :", "database": null, "length": null, "cacheExpire": "[opt] cache Expire :", "rowLimit": null, "nature": null, "retry": null, "period": null},
+            {"type": "getFromCookie", "value1": "Cookie name :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/cerberus", "value2": "Cookie attribute :", "database": null, "length": null, "cacheExpire": "[opt] cache Expire :", "rowLimit": null, "nature": null, "retry": null, "period": null},
+            {"type": "getFromXml", "value1": "Xpath :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/xquery", "value2": "[opt] XML or URL to XML file", "database": null, "length": null, "cacheExpire": "[opt] cache Expire :", "rowLimit": null, "nature": null, "retry": null, "period": null},
+            {"type": "getDifferencesFromXml", "value1": "value1", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/xquery", "value2": "value2", "database": null, "length": null, "cacheExpire": "[opt] cache Expire :", "rowLimit": null, "nature": null, "retry": null, "period": null},
+            {"type": "getFromJson", "value1": "JSONPath :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/json", "value2": "[opt] JSON or URL to JSON file", "database": null, "length": null, "cacheExpire": "[opt] cache Expire :", "rowLimit": null, "nature": null, "retry": null, "period": null},
+            {"type": "getFromGroovy", "value1": "Groovy command :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/groovy", "value2": null, "database": null, "length": null, "cacheExpire": "[opt] cache Expire :", "rowLimit": null, "nature": null, "retry": null, "period": null},
+            {"type": "executeSoapFromLib", "value1": "Service lib name :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/cerberus", "value2": null, "database": null, "length": null, "cacheExpire": "[opt] cache Expire :", "rowLimit": null, "nature": null, "retry": null, "period": null},
+            {"type": "executeSqlFromLib", "value1": "SQL Lib name", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/cerberus", "value2": null, "database": null, "length": null, "cacheExpire": "[opt] cache Expire :", "rowLimit": null, "nature": null, "retry": null, "period": null}
         ]};
 
     var user = getUser();
@@ -3447,6 +3460,12 @@ function setPlaceholderProperty(propertyElement, property) {
                     $(e).parents("div[name='propertyLine']").find("div[name='fieldNature'] label").html(placeHolders[i].nature);
                 } else {
                     $(e).parents("div[name='propertyLine']").find("div[name='fieldNature']").hide();
+                }
+                if (placeHolders[i].cacheExpire !== null) {
+                    $(e).parents("div[name='propertyLine']").find("div[name='fieldExpire']").show();
+                    $(e).parents("div[name='propertyLine']").find("div[name='fieldExpire'] label").html(placeHolders[i].cacheExpire);
+                } else {
+                    $(e).parents("div[name='propertyLine']").find("div[name='fieldExpire']").hide();
                 }
                 if (placeHolders[i].retry !== null) {
                     $(e).parents("div[name='propertyLine']").find("div[name='fieldRetryNb']").show();

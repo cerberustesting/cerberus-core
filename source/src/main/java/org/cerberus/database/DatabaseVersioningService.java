@@ -9848,6 +9848,14 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ");
         SQLS.append("  ('CAMPAIGN_TCCRITERIA', 'GROUP', 100 , '')");
         SQLInstruction.add(SQLS.toString());
+        
+        // Modify the size of column datalib on testcaseexecutiondata
+        //-- ------------------------ 1298
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE testcaseexecutiondata ");
+        SQLS.append("MODIFY COLUMN datalib VARCHAR(200)");
+        SQLInstruction.add(SQLS.toString());
+        
         return SQLInstruction;
     }
 
