@@ -44,7 +44,7 @@ public class CampaignParameter implements Serializable {
     public static final String APPLICATION_PARAMETER = "APPLICATION";
     public static final String SYSTEM_PARAMETER = "SYSTEM";
     public static final String PRIORITY_PARAMETER = "PRIORITY";
-    
+    public static final String GROUP_PARAMETER = "GROUP";
 
     private Integer campaignparameterID;
     private String parameter;
