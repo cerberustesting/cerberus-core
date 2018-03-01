@@ -321,6 +321,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
                                 value2: "",
                                 length: 0,
                                 rowLimit: 0,
+                                cacheExpire: 0,
                                 nature: "STATIC",
                                 retryNb: "",
                                 retryPeriod: "",
@@ -1174,9 +1175,9 @@ function loadProperties(test, testcase, testcaseinfo, propertyToFocus, canUpdate
                 array.sort(function (a, b) {
                     return compareStrings(a, b);
                 })
+                
 
-
-                resolve(array);
+                resolve(propertyListUnique);
 
             },
             error: showUnexpectedError
