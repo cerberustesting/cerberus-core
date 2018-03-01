@@ -9856,6 +9856,20 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("MODIFY COLUMN datalib VARCHAR(200)");
         SQLInstruction.add(SQLS.toString());
         
+        // Add Column testCaseVersion on testcase table
+        //-- ------------------------ 1298
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE testcase ");
+        SQLS.append("ADD COLUMN TestCaseVersion int(10) DEFAULT 0 AFTER `screensize`");
+        SQLInstruction.add(SQLS.toString());
+        
+        // Add Column testCaseVersion on testcaseexecution table
+        //-- ------------------------ 1299
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE testcaseexecution ");
+        SQLS.append("ADD COLUMN TestCaseVersion int(10) DEFAULT 0 AFTER `QueueID`");
+        SQLInstruction.add(SQLS.toString());
+        
         return SQLInstruction;
     }
 

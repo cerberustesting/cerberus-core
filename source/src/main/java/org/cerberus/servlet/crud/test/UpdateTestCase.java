@@ -155,6 +155,7 @@ public class UpdateTestCase extends HttpServlet {
 
                 } else {
                     tc = getTestCaseFromRequest(request, tc);
+                    tc.setTestCaseVersion(tc.getTestCaseVersion()+1);
 
                     // Update testcase
                     ans = testCaseService.update(keyTest, keyTestCase, tc);
@@ -165,7 +166,7 @@ public class UpdateTestCase extends HttpServlet {
                          * Update was successful. Adding Log entry.
                          */
                         ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                        logEventService.createForPrivateCalls("/UpdateTestCase", "UPDATE", "Update testcase : ['" + keyTest + "'|'" + keyTestCase + "']", request);
+                        logEventService.createForPrivateCalls("/UpdateTestCase", "UPDATE", "Update testcase : ['" + keyTest + "'|'" + keyTestCase + "'] " + "version : "+tc.getTestCaseVersion(), request);
 
                         // Update labels
                         if (request.getParameter("labelList") != null) {

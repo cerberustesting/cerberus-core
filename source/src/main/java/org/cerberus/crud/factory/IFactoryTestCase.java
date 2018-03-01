@@ -131,7 +131,7 @@ public interface IFactoryTestCase {
                  String activeQA, String activeUAT, String activePROD, int priority, String group, String status,
                  String description, String behavior, String howTo, String tcActive, String conditionOper, String conditionVal1, String conditionVal2, String fromBuild,
                  String fromRev, String toBuild, String toRev, String lastExecutionStatus, String bugID,
-                 String targetBuild, String targetRev, String comment,  String dateCreated, String userAgent, String screenSize, Timestamp dateModif);
+                 String targetBuild, String targetRev, String comment,  String dateCreated, String userAgent, String screenSize, Timestamp dateModif, int testCaseVersion);
 
     /**
      *
