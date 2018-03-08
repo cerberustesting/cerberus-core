@@ -51,7 +51,7 @@
             try {
                 String cerberusSupportEmail = myParameterService.getParameterStringByKey("cerberus_support_email", "", "");
                 String cerberusWelcomeMessage = myParameterService.getParameterStringByKey("cerberus_loginpage_welcomemessagehtml", "", "");
-                cerberusWelcomeMessage = cerberusWelcomeMessage.replace("%SUPPORTEMAIL", cerberusSupportEmail);
+                cerberusWelcomeMessage = cerberusWelcomeMessage.replace("%SUPPORTEMAIL%", cerberusSupportEmail);
                 String errorMessage = "";
                 String display = "";
                 String cerberusVersion = Infos.getInstance().getProjectVersion() + "-" + databaseVersionService.getSQLScript().size();

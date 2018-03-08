@@ -9841,14 +9841,14 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
         
         // Add Column testCaseVersion on testcase table
-        //-- ------------------------ 1298
+        //-- ------------------------ 1299
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE testcase ");
         SQLS.append("ADD COLUMN TestCaseVersion int(10) DEFAULT 0 AFTER `screensize`");
         SQLInstruction.add(SQLS.toString());
         
         // Add Column testCaseVersion on testcaseexecution table
-        //-- ------------------------ 1299
+        //-- ------------------------ 1300
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE testcaseexecution ");
         SQLS.append("ADD COLUMN TestCaseVersion int(10) DEFAULT 0 AFTER `QueueID`");
@@ -9856,7 +9856,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         
 
         // Adding robotDeclination on testcaseexecution table.
-        //-- ------------------------ 1299-1303
+        //-- ------------------------ 1301-1305
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `robot` ");
         SQLS.append("CHANGE COLUMN `host_user` `host_user` VARCHAR(255) NULL DEFAULT NULL AFTER `Port`,");

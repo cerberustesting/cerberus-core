@@ -1,6 +1,8 @@
 *Bug fixes*
 [square]
 * Allow jsonpath syntax  $[0].
+* Fixed a bug when using drag and drop of control from one action to another.
+* Allow to set parameter 'cerberus_loopstep_max' at system level.
 
 *Improvements / New features*
 [square]
@@ -8,10 +10,12 @@
 * Robot Declination can be defined at robot level. It will be displayed in reportByTag page inside the columns of the detail section (with Country and Environment). When no value, Robot Declination will take Robot name. Declination value can be statically defined but also dynamically defined with variables : %SCREENSIZE%, %BROWSER%, %BROWSERVERSION%, %PLATFORM%.
 * Port number is no longer mandatory on Robot screen and Run Test Page.
 * Selecting a Campaign on Run Test Page allow to change the default country, environment or robot list from campaign.
+* New criteria for testcase selection at campaign level : GROUP 
+* Cache management at property level. You can now activate cache at property level by defining a cacheExpire value in second at property level. Property result will be taken from a previous execution during that timeframe. That allow to reduce the number of calls to external systems to retrieve a data (create on the fly test data or retrieve a security token too often).
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
-* 
+* SQL 1300 1302 1303 and 1304 could be quite long on system with a lot of execution.
 
 
 
