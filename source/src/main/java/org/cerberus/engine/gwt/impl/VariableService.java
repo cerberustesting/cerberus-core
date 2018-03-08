@@ -269,13 +269,18 @@ public class VariableService implements IVariableService {
         stringToDecode = stringToDecode.replace("%system.EXESTORAGEURL%", recorderService.getStorageSubFolderURL(tCExecution.getId()));
         nowInMS = new Date().getTime();
         stringToDecode = stringToDecode.replace("%system.EXEELAPSEDMS%", String.valueOf(nowInMS - tCExecution.getStart()));
+        
+        
 
         /**
          * Trying to replace by system environment variables from Step Execution
          * .
          */
         if (tCExecution.getTestCaseStepExecutionList() != null) {
-
+        	
+        	stringToDecode = stringToDecode.replace("%system.CURRENTSTEPNUMBER%", String.valueOf(tCExecution.getTestCaseStepExecutionList().get(tCExecution.getTestCaseStepExecutionList().size() - 1).getStep()));
+        	stringToDecode = stringToDecode.replace("%SYS_CURRENTSTEPNUMBER%", String.valueOf(tCExecution.getTestCaseStepExecutionList().get(tCExecution.getTestCaseStepExecutionList().size() - 1).getStep()));
+        	
             // %SYS_CURRENTSTEP_INDEX%
             if (stringToDecode.contains("%SYS_CURRENTSTEP_")) {
                 TestCaseStepExecution currentStep = (TestCaseStepExecution) tCExecution.getTestCaseStepExecutionList().get(tCExecution.getTestCaseStepExecutionList().size() - 1);

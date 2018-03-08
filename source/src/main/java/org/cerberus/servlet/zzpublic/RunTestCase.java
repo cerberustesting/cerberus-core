@@ -312,6 +312,7 @@ public class RunTestCase extends HttpServlet {
             IFactoryTestCaseExecution factoryTCExecution = appContext.getBean(IFactoryTestCaseExecution.class);
             IFactoryTestCaseExecutionQueue factoryTCExecutionQueue = appContext.getBean(IFactoryTestCaseExecutionQueue.class);
             ITestCaseExecutionService tces = appContext.getBean(ITestCaseExecutionService.class);
+            ITestCaseService tcs = appContext.getBean(ITestCaseService.class);            
             TestCase tCase = factoryTCase.create(test, testCase);
 
             // Building Execution Object.
@@ -319,7 +320,7 @@ public class RunTestCase extends HttpServlet {
                     0, 0, "", "", "", null, ss_ip, null, ss_p, tag, verbose, screenshot, getPageSource, getSeleniumLog, synchroneous, timeout, outputFormat, null,
                     Infos.getInstance().getProjectNameAndVersion(), tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL, myEnvData, ss_ip, ss_p,
                     null, new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED), executor, numberOfRetries, screenSize, capabilities,
-                    "", "", "", "", "", manualExecution, userAgent, "", robotDecli);
+                    "", "", "", "", "", manualExecution, userAgent, 0, "", robotDecli);
             tCExecution.setSeleniumIPUser(ss_ip_user);
             tCExecution.setSeleniumIPPassword(ss_ip_pass);
 

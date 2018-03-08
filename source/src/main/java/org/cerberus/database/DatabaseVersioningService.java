@@ -46,31 +46,15 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
     @Override
     public String exeSQL(String SQLString) {
         LOG.info("Starting Execution of '" + SQLString + "'");
-        Statement preStat;
-        Connection connection = this.databaseSpring.connect();
-        try {
-            preStat = connection.createStatement();
-            try {
-                preStat.execute(SQLString);
-                LOG.info("'" + SQLString + "' Executed successfully.");
-            } catch (Exception exception1) {
-                LOG.error(exception1.toString());
-                return exception1.toString();
-            } finally {
-                preStat.close();
-            }
+        
+        try(Connection connection = this.databaseSpring.connect();
+        		Statement preStat = connection.createStatement();) {
+            preStat.execute(SQLString);
+            LOG.info("'" + SQLString + "' Executed successfully.");
         } catch (Exception exception1) {
             LOG.error(exception1.toString());
             return exception1.toString();
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-            }
-        }
+        } 
         return "OK";
     }
 
@@ -9855,6 +9839,21 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ALTER TABLE testcaseexecutiondata ");
         SQLS.append("MODIFY COLUMN datalib VARCHAR(200)");
         SQLInstruction.add(SQLS.toString());
+        
+        // Add Column testCaseVersion on testcase table
+        //-- ------------------------ 1298
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE testcase ");
+        SQLS.append("ADD COLUMN TestCaseVersion int(10) DEFAULT 0 AFTER `screensize`");
+        SQLInstruction.add(SQLS.toString());
+        
+        // Add Column testCaseVersion on testcaseexecution table
+        //-- ------------------------ 1299
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE testcaseexecution ");
+        SQLS.append("ADD COLUMN TestCaseVersion int(10) DEFAULT 0 AFTER `QueueID`");
+        SQLInstruction.add(SQLS.toString());
+        
 
         // Adding robotDeclination on testcaseexecution table.
         //-- ------------------------ 1299-1303

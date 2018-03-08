@@ -185,9 +185,8 @@ public class SQLService implements ISQLService {
         MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_GENERIC);
         msg.setDescription(msg.getDescription().replace("%JDBC%", "jdbc/" + connectionName));
 
-        Connection connection = this.databaseSpring.connect(connectionName);
-        try {
-            PreparedStatement preStat = connection.prepareStatement(sql);
+        try(Connection connection = this.databaseSpring.connect(connectionName);
+        		PreparedStatement preStat = connection.prepareStatement(sql);) {
             preStat.setQueryTimeout(defaultTimeOut);
             if (limit > 0 && limit < maxSecurityFetch) {
                 preStat.setMaxRows(limit);
@@ -248,15 +247,7 @@ public class SQLService implements ISQLService {
             msg.setDescription(msg.getDescription().replace("%JDBC%", "jdbc/" + connectionName));
             msg.setDescription(msg.getDescription().replace("%EX%", exception.toString()));
             throwEx = true;
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-            }
-        }
+        } 
         if (throwEx) {
             throw new CerberusEventException(msg);
         }
@@ -281,13 +272,10 @@ public class SQLService implements ISQLService {
                     if (connectionName.equals("cerberus" + System.getProperty("org.cerberus.environment"))) {
                         return new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_AGAINST_CERBERUS);
                     } else {
-
-                        Connection connection = this.databaseSpring.connect(connectionName);
-                        try {
-                            PreparedStatement preStat = connection.prepareStatement(sql);
+                        try(Connection connection = this.databaseSpring.connect(connectionName);
+                        		PreparedStatement preStat = connection.prepareStatement(sql);) {
                             Integer sqlTimeout = parameterService.getParameterIntegerByKey("cerberus_actionexecutesqlupdate_timeout", system, 60);
                             preStat.setQueryTimeout(sqlTimeout);
-
                             try {
                                 LOG.info("Sending to external Database (executeUpdate) : '" + connectionName + "' SQL '" + sql + "'");
                                 preStat.executeUpdate();
@@ -306,9 +294,7 @@ public class SQLService implements ISQLService {
                                 msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_ERROR);
                                 msg.setDescription(msg.getDescription().replace("%SQL%", sql));
                                 msg.setDescription(msg.getDescription().replace("%EX%", exception.toString()));
-                            } finally {
-                                preStat.close();
-                            }
+                            } 
                         } catch (SQLException exception) {
                             LOG.warn(exception.toString());
                             msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_ERROR);
@@ -319,14 +305,6 @@ public class SQLService implements ISQLService {
                             msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_CANNOTACCESSJDBC);
                             msg.setDescription(msg.getDescription().replace("%JDBC%", "jdbc/" + connectionName));
                             msg.setDescription(msg.getDescription().replace("%EX%", exception.toString()));
-                        } finally {
-                            try {
-                                if (connection != null) {
-                                    connection.close();
-                                }
-                            } catch (SQLException e) {
-                                LOG.warn(e.toString());
-                            }
                         }
                     }
                 } else {
@@ -367,10 +345,9 @@ public class SQLService implements ISQLService {
                     if (connectionName.contains("cerberus")) {
                         return new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_AGAINST_CERBERUS);
                     } else {
-
-                        Connection connection = this.databaseSpring.connect(connectionName);
-                        try {
-                            CallableStatement cs = connection.prepareCall(sql);
+                        try(Connection connection = this.databaseSpring.connect(connectionName);
+                        		CallableStatement cs = connection.prepareCall(sql);) {
+                            
                             Integer sqlTimeout = parameterService.getParameterIntegerByKey("cerberus_actionexecutesqlstoredprocedure_timeout", system, 60);
                             cs.setQueryTimeout(sqlTimeout);
                             try {
@@ -403,14 +380,6 @@ public class SQLService implements ISQLService {
                             msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_CANNOTACCESSJDBC);
                             msg.setDescription(msg.getDescription().replace("%JDBC%", "jdbc/" + connectionName));
                             msg.setDescription(msg.getDescription().replace("%EX%", exception.toString()));
-                        } finally {
-                            try {
-                                if (connection != null) {
-                                    connection.close();
-                                }
-                            } catch (SQLException e) {
-                                LOG.warn(e.toString());
-                            }
                         }
                     }
                 } else {
@@ -451,9 +420,9 @@ public class SQLService implements ISQLService {
         MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS);
         msg.setDescription(msg.getDescription().replace("%JDBC%", "jdbc/" + connectionName));
 
-        Connection connection = this.databaseSpring.connect(connectionName);
-        try {
-            PreparedStatement preStat = connection.prepareStatement(sql);
+        
+        try(Connection connection = this.databaseSpring.connect(connectionName);
+        		PreparedStatement preStat = connection.prepareStatement(sql);) {
             preStat.setQueryTimeout(defaultTimeOut);
             try {
                 LOG.info("Sending to external Database (queryDatabaseNColumns) : '" + connectionName + "' SQL '" + sql + "'");
@@ -530,11 +499,7 @@ public class SQLService implements ISQLService {
                 msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_ERROR);
                 msg.setDescription(msg.getDescription().replace("%SQL%", sql));
                 msg.setDescription(msg.getDescription().replace("%EX%", exception.toString()));
-            } finally {
-                if (preStat != null) {
-                    preStat.close();
-                }
-            }
+            } 
         } catch (SQLException exception) {
             LOG.warn(exception.toString());
             msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_ERROR);
@@ -546,14 +511,6 @@ public class SQLService implements ISQLService {
             msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_CANNOTACCESSJDBC);
             msg.setDescription(msg.getDescription().replace("%JDBC%", "jdbc/" + connectionName));
             msg.setDescription(msg.getDescription().replace("%EX%", exception.toString()));
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-            }
         }
         listResult.setResultMessage(msg);
         return listResult;

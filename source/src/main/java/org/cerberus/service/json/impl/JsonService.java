@@ -53,14 +53,23 @@ public class JsonService implements IJsonService {
     public String callUrlAndGetJsonResponse(String url) {
         String str = "";
         StringBuilder sb = new StringBuilder();
+        BufferedReader br = null;
         try {
             URL urlToCall = new URL(url);
-            BufferedReader br = new BufferedReader(new InputStreamReader(urlToCall.openStream()));
+            br = new BufferedReader(new InputStreamReader(urlToCall.openStream()));
             while (null != (str = br.readLine())) {
                 sb.append(str);
             }
         } catch (IOException ex) {
             LOG.warn("Error Getting Json File " + ex);
+        }finally {
+        	if(br != null) {
+        		try {
+					br.close();
+				} catch (IOException e) {
+					LOG.warn(e.toString());
+				}
+        	}
         }
         return sb.toString();
     }

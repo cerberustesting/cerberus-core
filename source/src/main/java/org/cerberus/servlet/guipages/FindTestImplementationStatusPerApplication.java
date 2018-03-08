@@ -134,11 +134,8 @@ public class FindTestImplementationStatusPerApplication extends HttpServlet {
             LOG.debug(" SQL1 : " + SQL.toString());
 
             PreparedStatement stmt_teststatus = connection.prepareStatement(SQL.toString());
-            try {
-
-                ResultSet rs_teststatus = stmt_teststatus.executeQuery();
-
-//                Integer tot = 0;
+            try(ResultSet rs_teststatus = stmt_teststatus.executeQuery();) {
+                //Integer tot = 0;
                 List<Integer> totLine;
                 totLine = new ArrayList<Integer>();
                 for (Invariant i : myInvariants) {

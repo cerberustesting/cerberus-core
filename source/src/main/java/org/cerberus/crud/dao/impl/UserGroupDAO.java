@@ -208,18 +208,21 @@ public class UserGroupDAO implements IUserGroupDAO {
             PreparedStatement preStat = connection.prepareStatement(Query.READ_BY_USER)) {
             // Prepare and execute query
             preStat.setString(1, login);
-            ResultSet resultSet = preStat.executeQuery();
+            try(ResultSet resultSet = preStat.executeQuery();){
+            	List<UserGroup> result = new ArrayList<>();
+                while (resultSet.next()) {
+                    result.add(loadUserGroupFromResultSet(resultSet));
+                }
+                ans.setDataList(result);
 
-            // Parse query
-            List<UserGroup> result = new ArrayList<>();
-            while (resultSet.next()) {
-                result.add(loadUserGroupFromResultSet(resultSet));
-            }
-            ans.setDataList(result);
-
-            // Set the final message
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
-                    .resolveDescription("OPERATION", "CREATE");
+                // Set the final message
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
+                        .resolveDescription("OPERATION", "CREATE");
+            }catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } 
         } catch (Exception e) {
             LOG.warn("Unable to read UserGroup: " + e.getMessage());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
@@ -227,7 +230,6 @@ public class UserGroupDAO implements IUserGroupDAO {
         } finally {
             ans.setResultMessage(msg);
         }
-
         return ans;
     }
 

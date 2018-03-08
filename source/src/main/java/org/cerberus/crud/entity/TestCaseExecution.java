@@ -78,6 +78,7 @@ public class TestCaseExecution {
     private Timestamp DateCreated;
     private String UsrModif;
     private Timestamp DateModif;
+    private int testCaseVersion;
 
     /**
      * From here are data outside database model.
@@ -836,6 +837,14 @@ public class TestCaseExecution {
     public void setCapabilities(List<RobotCapability> capabilities) {
         this.capabilities = capabilities;
     }
+    
+    public int getTestCaseVersion() {
+    	return this.testCaseVersion;
+    }
+    
+    public void setTestCaseVersion(int testCaseVersion) {
+    	this.testCaseVersion = testCaseVersion;
+    }
 
     /**
      * Convert the current TestCaseExecution into JSON format
@@ -883,6 +892,7 @@ public class TestCaseExecution {
             result.put("userAgent", this.getUserAgent());
             result.put("queueId", this.getQueueID());
             result.put("manualExecution", this.getManualExecution());
+            result.put("testCaseVersion", this.getTestCaseVersion());
 
             if (withChilds) {
                 // Looping on ** Step **

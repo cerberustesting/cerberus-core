@@ -104,16 +104,16 @@ public class RobotCapabilityDAO implements IRobotCapabilityDAO {
 
             // Prepare and execute query
             preStat.setString(1, robot);
-            ResultSet resultSet = preStat.executeQuery();
-
-            // Parse query
-            List<RobotCapability> result = new ArrayList<>();
-            while (resultSet.next()) {
-                result.add(loadFromResultSet(resultSet));
+            try(ResultSet resultSet = preStat.executeQuery();) {
+            	// Parse query
+                List<RobotCapability> result = new ArrayList<>();
+                while (resultSet.next()) {
+                    result.add(loadFromResultSet(resultSet));
+                }
+                ans.setDataList(result);
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
+                            .resolveDescription("OPERATION", "SELECT");
             }
-            ans.setDataList(result);
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
-                    .resolveDescription("OPERATION", "SELECT");
         } catch (Exception e) {
             LOG.warn("Unable to execute query : " + e.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",

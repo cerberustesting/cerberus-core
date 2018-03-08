@@ -51,7 +51,6 @@ public class MyVersionService implements IMyVersionService {
         String outPutResult = defaultValue;
         myVersion = this.findMyVersionByKey(key);
         if (myVersion == null) {
-            outPutResult = String.valueOf(myVersion.getValue());
             LOG.error("Error when trying to retreive myversion : '" + key + "'. Default value returned : '" + defaultValue);
         } else {
             LOG.debug("Success loading myVersion : '" + key + "'. Value returned : '" + outPutResult + "'");

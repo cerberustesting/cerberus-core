@@ -219,10 +219,10 @@ $.when($.getScript("js/global/global.js")).then(function () {
                             "EXECUTIONID",
                             "EXESTART", "EXEELAPSEDMS",
                             "EXESTORAGEURL",
-                            "STEP.n.n.RETURNCODE", "CURRENTSTEP_INDEX", "CURRENTSTEP_STARTISO", "CURRENTSTEP_ELAPSEDMS",
+                            "STEP.n.n.RETURNCODE", "CURRENTSTEP_INDEX", "CURRENTSTEP_STARTISO", "CURRENTSTEP_ELAPSEDMS", "CURRENTSTEPNUMBER",
                             "LASTSERVICE_HTTPCODE",
                             "TODAY-yyyy", "TODAY-MM", "TODAY-dd", "TODAY-doy", "TODAY-HH", "TODAY-mm", "TODAY-ss",
-                            "YESTERDAY-yyyy", "YESTERDAY-MM", "YESTERDAY-dd", "YESTERDAY-doy", "YESTERDAY-HH", "YESTERDAY-mm", "YESTERDAY-ss"
+                            "YESTERDAY-yyyy", "YESTERDAY-MM", "YESTERDAY-dd", "YESTERDAY-doy", "YESTERDAY-HH", "YESTERDAY-mm", "YESTERDAY-ss",
                         ];
                         var availableTags = [
                             "property",
@@ -321,6 +321,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
                                 value2: "",
                                 length: 0,
                                 rowLimit: 0,
+                                cacheExpire: 0,
                                 nature: "STATIC",
                                 retryNb: "",
                                 retryPeriod: "",
@@ -1174,9 +1175,9 @@ function loadProperties(test, testcase, testcaseinfo, propertyToFocus, canUpdate
                 array.sort(function (a, b) {
                     return compareStrings(a, b);
                 })
+                
 
-
-                resolve(array);
+                resolve(propertyListUnique);
 
             },
             error: showUnexpectedError
@@ -3583,7 +3584,7 @@ function createAllKeywordList(objectList, propertyList) {
         "EXECUTIONID",
         "EXESTART", "EXEELAPSEDMS",
         "EXESTORAGEURL",
-        "STEP.n.n.RETURNCODE", "CURRENTSTEP_INDEX", "CURRENTSTEP_STARTISO", "CURRENTSTEP_ELAPSEDMS",
+        "STEP.n.n.RETURNCODE", "CURRENTSTEP_INDEX", "CURRENTSTEP_STARTISO", "CURRENTSTEP_ELAPSEDMS", "CURRENTSTEPNUMBER",
         "LASTSERVICE_HTTPCODE",
         "TODAY-yyyy", "TODAY-MM", "TODAY-dd", "TODAY-doy", "TODAY-HH", "TODAY-mm", "TODAY-ss",
         "YESTERDAY-yyyy", "YESTERDAY-MM", "YESTERDAY-dd", "YESTERDAY-doy", "YESTERDAY-HH", "YESTERDAY-mm", "YESTERDAY-ss"

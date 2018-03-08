@@ -41,6 +41,7 @@ public class TestCase {
     private String description;
     private String behaviorOrValueExpected;
     private int priority;
+    private int testCaseVersion;
     private String status;
     private String tcActive;
     private String conditionOper;
@@ -426,6 +427,14 @@ public class TestCase {
     public void setDateModif(Timestamp dateModif) {
         this.dateModif = dateModif;
     }
+    
+    public int getTestCaseVersion() {
+        return testCaseVersion;
+    }
+
+    public void setTestCaseVersion(int testCaseVersion) {
+        this.testCaseVersion = testCaseVersion;
+    }
 
     public JSONObject toJson() {
         JSONObject result = new JSONObject();
@@ -466,6 +475,7 @@ public class TestCase {
             result.put("dateCreated", this.getDateCreated());
             result.put("usrModif", this.getUsrModif());
             result.put("dateModif", this.getDateModif());
+            result.put("testCaseVersion", this.getTestCaseVersion());
             JSONArray array = new JSONArray();
             if (this.getTestCaseStep() != null) {
                 for (Object testCaseStepList : this.getTestCaseStep()) {
