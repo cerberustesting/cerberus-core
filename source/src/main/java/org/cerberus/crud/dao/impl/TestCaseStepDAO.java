@@ -126,43 +126,26 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
         }
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                preStat.setString(1, countryCode);
-                preStat.setString(2, application);
-
-                ResultSet resultSet = preStat.executeQuery();
-                list = new ArrayList<String>();
-                try {
-                    while (resultSet.next()) {
-                        if (LOG.isDebugEnabled()) {
-                            LOG.debug("Found active Pretest : " + resultSet.getString("testcase"));
-                        }
-                        list.add(resultSet.getString("testcase"));
+        
+        try(Connection connection = this.databaseSpring.connect();
+    		PreparedStatement preStat = connection.prepareStatement(query);) {
+        
+            preStat.setString(1, countryCode);
+            preStat.setString(2, application);
+            list = new ArrayList<String>();
+            try(ResultSet resultSet = preStat.executeQuery();) {
+                while (resultSet.next()) {
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("Found active Pretest : " + resultSet.getString("testcase"));
                     }
-                } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
-                } finally {
-                    resultSet.close();
+                    list.add(resultSet.getString("testcase"));
                 }
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
+            } 
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn("Exception Closing the connection : " + e.toString());
-            }
-        }
+        } 
         return list;
     }
 
@@ -424,12 +407,16 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
                 final PreparedStatement statement = connection.prepareStatement("SELECT * FROM testcasestep WHERE usestep='Y' AND usesteptest = ?")) {
             statement.setString(1, test);
 
-            final ResultSet resultSet = statement.executeQuery();
-            final List<TestCaseStep> steps = new ArrayList<>();
-            while (resultSet.next()) {
-                steps.add(loadFromResultSet(resultSet));
+            try(ResultSet resultSet = statement.executeQuery();){
+            	final List<TestCaseStep> steps = new ArrayList<>();
+                while (resultSet.next()) {
+                    steps.add(loadFromResultSet(resultSet));
+                }
+                return steps;
+            }catch (SQLException e) {
+                LOG.error(e.getMessage(), e);
+                throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
             }
-            return steps;
         } catch (SQLException e) {
             LOG.error(e.getMessage(), e);
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));

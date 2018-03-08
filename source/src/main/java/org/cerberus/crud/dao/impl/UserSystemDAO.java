@@ -259,65 +259,41 @@ public class UserSystemDAO implements IUserSystemDAO {
     public void insertUserSystem(UserSystem userSystem) throws CerberusException {
         final String query = "INSERT INTO usersystem (`login`, `system`) VALUES (?, ?)";
 
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
+        
+        try(Connection connection = this.databaseSpring.connect();
+        		PreparedStatement preStat = connection.prepareStatement(query);) {
             try {
                 preStat.setString(1, userSystem.getLogin());
                 preStat.setString(2, userSystem.getSystem());
-
                 preStat.execute();
             } catch (SQLException exception) {
                 LOG.warn("Unable to execute query : " + exception.toString());
                 throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
-            } finally {
-                preStat.close();
             }
         } catch (SQLException exception) {
             LOG.warn("Unable to execute query : " + exception.toString());
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-                throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
-            }
-        }
+        } 
     }
 
     @Override
     public void deleteUserSystem(UserSystem userSystem) throws CerberusException {
         final String query = "DELETE FROM usersystem WHERE `login` = ? and `system` = ?";
 
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
+        
+        try(Connection connection = this.databaseSpring.connect();
+        		PreparedStatement preStat = connection.prepareStatement(query);) {
             try {
                 preStat.setString(1, userSystem.getLogin());
                 preStat.setString(2, userSystem.getSystem());
-
                 preStat.execute();
             } catch (SQLException exception) {
                 LOG.warn("Unable to execute query : " + exception.toString());
                 throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
-            } finally {
-                preStat.close();
             }
         } catch (SQLException exception) {
             LOG.warn("Unable to execute query : " + exception.toString());
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-                throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
-            }
         }
     }
 
@@ -335,18 +311,22 @@ public class UserSystemDAO implements IUserSystemDAO {
                 PreparedStatement preStat = connection.prepareStatement(Query.READ_BY_USER)) {
             // Prepare and execute query
             preStat.setString(1, login);
-            ResultSet resultSet = preStat.executeQuery();
+            try(ResultSet resultSet = preStat.executeQuery();){
+            	// Parse query
+                List<UserSystem> result = new ArrayList<>();
+                while (resultSet.next()) {
+                    result.add(loadUserSystemFromResultSet(resultSet));
+                }
+                ans.setDataList(result);
 
-            // Parse query
-            List<UserSystem> result = new ArrayList<>();
-            while (resultSet.next()) {
-                result.add(loadUserSystemFromResultSet(resultSet));
-            }
-            ans.setDataList(result);
-
-            // Set the final message
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
-                    .resolveDescription("OPERATION", "GET");
+                // Set the final message
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
+                        .resolveDescription("OPERATION", "GET");
+            }catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } 
         } catch (Exception e) {
             LOG.warn("Unable to read userSystem: " + e.getMessage());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",

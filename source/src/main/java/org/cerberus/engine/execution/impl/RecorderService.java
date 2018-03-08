@@ -400,9 +400,7 @@ public class RecorderService implements IRecorderService {
 
             File file = new File(recorder.getFullFilename());
 
-            FileOutputStream fileOutputStream;
-            try {
-                fileOutputStream = new FileOutputStream(file);
+            try(FileOutputStream fileOutputStream = new FileOutputStream(file);) {
                 fileOutputStream.write(this.webdriverService.getPageSource(testCaseExecution.getSession()).getBytes());
                 fileOutputStream.close();
 
@@ -556,10 +554,8 @@ public class RecorderService implements IRecorderService {
                     dir.mkdirs();
 
                     File file = new File(recorder.getFullFilename());
-
-                    FileOutputStream fileOutputStream;
-                    try {
-                        fileOutputStream = new FileOutputStream(file);
+                    
+                    try(FileOutputStream fileOutputStream = new FileOutputStream(file);) {
                         ByteArrayOutputStream baos = new ByteArrayOutputStream();
                         DataOutputStream out = new DataOutputStream(baos);
                         for (String element : this.webdriverService.getSeleniumLog(testCaseExecution.getSession())) {
@@ -627,9 +623,7 @@ public class RecorderService implements IRecorderService {
         if (!dir.exists()) {
             dir.mkdirs();
         }
-        FileOutputStream fileOutputStream;
-        try {
-            fileOutputStream = new FileOutputStream(dir.getAbsolutePath() + File.separator + fileName);
+        try(FileOutputStream fileOutputStream = new FileOutputStream(dir.getAbsolutePath() + File.separator + fileName);) {
             fileOutputStream.write(content.getBytes());
             fileOutputStream.close();
             LOG.debug("File saved : " + path + File.separator + fileName);

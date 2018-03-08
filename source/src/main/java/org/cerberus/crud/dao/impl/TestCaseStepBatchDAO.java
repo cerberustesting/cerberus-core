@@ -70,42 +70,26 @@ public class TestCaseStepBatchDAO implements ITestCaseStepBatchDAO {
         List<TestCaseStepBatch> list = null;
         final String query = "SELECT * FROM testcasestepbatch WHERE test = ? AND testcase = ? AND step = ?";
 
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                preStat.setString(1, test);
-                preStat.setString(2, testcase);
-                preStat.setInt(3, stepNumber);
-
-                ResultSet resultSet = preStat.executeQuery();
-                list = new ArrayList<TestCaseStepBatch>();
-                try {
-                    while (resultSet.next()) {
-                        String batch = resultSet.getString("Batch");
-                        list.add(factoryTestCaseStepBatch.create(test, testcase, stepNumber, batch));
-                    }
-                } catch (SQLException exception) {
-                    LOG.warn("Unable to execute query : "+exception.toString());
-                } finally {
-                    resultSet.close();
+        
+        try(Connection connection = this.databaseSpring.connect();
+        		PreparedStatement preStat = connection.prepareStatement(query);) {
+            
+        	preStat.setString(1, test);
+            preStat.setString(2, testcase);
+            preStat.setInt(3, stepNumber);
+            
+            list = new ArrayList<TestCaseStepBatch>();
+            try(ResultSet resultSet = preStat.executeQuery();) {
+                while (resultSet.next()) {
+                    String batch = resultSet.getString("Batch");
+                    list.add(factoryTestCaseStepBatch.create(test, testcase, stepNumber, batch));
                 }
             } catch (SQLException exception) {
                 LOG.warn("Unable to execute query : "+exception.toString());
-            } finally {
-                preStat.close();
-            }
+            } 
         } catch (SQLException exception) {
             LOG.warn("Unable to execute query : "+exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-            }
-        }
+        } 
         return list;
     }
 }

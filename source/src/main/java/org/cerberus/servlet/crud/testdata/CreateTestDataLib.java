@@ -208,8 +208,7 @@ public class CreateTestDataLib extends HttpServlet {
                 if (file != null && test.equals("1")) {
                     String firstLine = "";
                     String secondLine = "";
-                    try {
-                        BufferedReader reader = new BufferedReader(new FileReader(parameterService.getParameterStringByKey("cerberus_testdatalibCSV_path", "", null) + lib.getCsvUrl()));
+                    try(BufferedReader reader = new BufferedReader(new FileReader(parameterService.getParameterStringByKey("cerberus_testdatalibCSV_path", "", null) + lib.getCsvUrl()));) {
                         firstLine = reader.readLine();
                         secondLine = reader.readLine();
                         String[] firstLineSubData = (!dataLibWithUploadedFile.getSeparator().isEmpty()) ? firstLine.split(dataLibWithUploadedFile.getSeparator()) : firstLine.split(",");

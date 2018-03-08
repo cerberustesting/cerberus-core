@@ -292,29 +292,27 @@ public class SoapService implements ISoapService {
                 serviceSOAP.setProxyPort(proxyPort);
 
                 // Create the Proxy.
-                Socket socket = null;
                 SocketAddress sockaddr = new InetSocketAddress(proxyHost, proxyPort);
-                socket = new Socket();
-                socket.connect(sockaddr, 10000);
-                Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(socket.getInetAddress(), proxyPort));
+                try(Socket socket = new Socket();){
+                	socket.connect(sockaddr, 10000);
+                    Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(socket.getInetAddress(), proxyPort));
 
-                if (parameterService.getParameterBooleanByKey("cerberus_proxyauthentification_active", system, DEFAULT_PROXYAUTHENT_ACTIVATE)) {
+                    if (parameterService.getParameterBooleanByKey("cerberus_proxyauthentification_active", system, DEFAULT_PROXYAUTHENT_ACTIVATE)) {
 
-                    // Get the credentials from parameters.
-                    String proxyUser = parameterService.getParameterStringByKey("cerberus_proxyauthentification_user", system, DEFAULT_PROXYAUTHENT_USER);
-                    String proxyPass = parameterService.getParameterStringByKey("cerberus_proxyauthentification_password", system, DEFAULT_PROXYAUTHENT_PASSWORD);
+                        // Get the credentials from parameters.
+                        String proxyUser = parameterService.getParameterStringByKey("cerberus_proxyauthentification_user", system, DEFAULT_PROXYAUTHENT_USER);
+                        String proxyPass = parameterService.getParameterStringByKey("cerberus_proxyauthentification_password", system, DEFAULT_PROXYAUTHENT_PASSWORD);
+                        serviceSOAP.setProxyWithCredential(true);
+                        serviceSOAP.setProxyUser(proxyUser);
+                        // Define the credential to the proxy.
+                        initializeProxyAuthenticator(proxyUser, proxyPass);
 
-                    serviceSOAP.setProxyWithCredential(true);
-                    serviceSOAP.setProxyUser(proxyUser);
-
-                    // Define the credential to the proxy.
-                    initializeProxyAuthenticator(proxyUser, proxyPass);
-
+                    }
+                    // Call with Proxy.
+                    soapResponse = sendSOAPMessage(input, servicePath, proxy, timeOutMs);
+                }catch(Exception e) {
+                	LOG.warn(e.toString());
                 }
-
-                // Call with Proxy.
-                soapResponse = sendSOAPMessage(input, servicePath, proxy, timeOutMs);
-
             } else {
 
                 serviceSOAP.setProxy(false);

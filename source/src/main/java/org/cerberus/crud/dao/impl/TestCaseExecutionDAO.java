@@ -378,45 +378,26 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 .append("AND exe.country = ? AND exe.build = ? AND exe.revision = ? ")
                 .append("ORDER BY exe.id DESC").toString();
 
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
+        try(Connection connection = this.databaseSpring.connect();
+        		PreparedStatement preStat = connection.prepareStatement(query);) {
             preStat.setString(1, test);
             preStat.setString(2, testcase);
             preStat.setString(3, environment);
             preStat.setString(4, country);
             preStat.setString(5, build);
             preStat.setString(6, revision);
-
-            try {
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    if (resultSet.first()) {
-                        result = this.loadFromResultSet(resultSet);
-                    } else {
-                        throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
-                    }
-                } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
-                } finally {
-                    resultSet.close();
+            try(ResultSet resultSet = preStat.executeQuery();) {
+                if (resultSet.first()) {
+                    result = this.loadFromResultSet(resultSet);
+                } else {
+                    throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
                 }
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
+            } 
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-            }
-        }
+        } 
         return result;
     }
 
@@ -432,9 +413,9 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 .append("AND exe.ip LIKE ? AND exe.port LIKE ? AND exe.tag LIKE ? ")
                 .append("ORDER BY exe.id DESC").toString();
 
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
+        
+        try(Connection connection = this.databaseSpring.connect();
+        		PreparedStatement preStat = connection.prepareStatement(query);) {
             preStat.setString(1, test);
             preStat.setString(2, testCase);
             preStat.setString(3, ParameterParserUtil.wildcardIfEmpty(environment));
@@ -446,34 +427,16 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             preStat.setString(9, ParameterParserUtil.wildcardIfEmpty(ip));
             preStat.setString(10, ParameterParserUtil.wildcardIfEmpty(port));
             preStat.setString(11, ParameterParserUtil.wildcardIfEmpty(tag));
-
-            try {
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    if (resultSet.first()) {
-                        result = this.loadFromResultSet(resultSet);
-                    }
-                } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
-                } finally {
-                    resultSet.close();
+            try(ResultSet resultSet = preStat.executeQuery();) {
+                if (resultSet.first()) {
+                    result = this.loadFromResultSet(resultSet);
                 }
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
             }
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-            }
-        }
+        } 
         return result;
     }
 
@@ -489,58 +452,38 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 .append("AND exe.country LIKE ? AND exe.application LIKE ? AND exe.controlstatus LIKE ? ")
                 .append("AND exe.status LIKE ?").toString();
 
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                preStat.setString(1, dateLimit);
-                preStat.setString(2, test);
-                preStat.setString(3, testCase);
-                preStat.setString(4, environment);
-                preStat.setString(5, country);
-                preStat.setString(6, application);
-                preStat.setString(7, controlStatus);
-                preStat.setString(8, status);
+        
+        try(Connection connection = this.databaseSpring.connect();
+        		PreparedStatement preStat = connection.prepareStatement(query);) {
+        	preStat.setString(1, dateLimit);
+            preStat.setString(2, test);
+            preStat.setString(3, testCase);
+            preStat.setString(4, environment);
+            preStat.setString(5, country);
+            preStat.setString(6, application);
+            preStat.setString(7, controlStatus);
+            preStat.setString(8, status);
+                
+            try(ResultSet resultSet = preStat.executeQuery();) {
+                if (!(resultSet.first())) {
+                    throwException = true;
+                } else {
+                    myTestCaseExecutions = new ArrayList<TestCaseExecution>();
+                    do {
+                        Execution = this.loadWithDependenciesFromResultSet(resultSet);
 
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    if (!(resultSet.first())) {
-                        throwException = true;
-                    } else {
-                        myTestCaseExecutions = new ArrayList<TestCaseExecution>();
-                        do {
-                            Execution = this.loadWithDependenciesFromResultSet(resultSet);
-
-                            myTestCaseExecutions.add(Execution);
-                        } while (resultSet.next());
-                    }
-                } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
-                } finally {
-                    if (!(resultSet == null)) {
-                        resultSet.close();
-                    }
+                        myTestCaseExecutions.add(Execution);
+                    } while (resultSet.next());
                 }
-            } catch (Exception exception) {
+            } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
+            } 
         } catch (Exception exception) {
             LOG.error("Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-            }
-        }
+        } 
         if (throwException) {
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA));
         }
-
         return myTestCaseExecutions;
     }
 
@@ -553,39 +496,19 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
         }
-
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
+        try(Connection connection = this.databaseSpring.connect();
+        		PreparedStatement preStat = connection.prepareStatement(query);) {
             preStat.setLong(1, id);
-
-            try {
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    if (resultSet.first()) {
-                        result = this.loadTestCaseExecutionAndApplicationFromResultSet(resultSet);
-                    }
-                } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
-                } finally {
-                    resultSet.close();
+            try(ResultSet resultSet = preStat.executeQuery();) {
+                if (resultSet.first()) {
+                    result = this.loadTestCaseExecutionAndApplicationFromResultSet(resultSet);
                 }
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
+            } 
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-            }
-        }
+        } 
         return result;
     }
 
@@ -598,41 +521,24 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         query.append(" (SELECT MAX(ID) from `testcaseexecution` ");
         query.append("WHERE Test= ? and TestCase= ? and ControlStatus!='PE')");
 
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
+        try( Connection connection = this.databaseSpring.connect();
+        		PreparedStatement preStat = connection.prepareStatement(query.toString());) {
+            
             preStat.setString(1, test);
             preStat.setString(2, testCase);
             preStat.setString(3, test);
             preStat.setString(4, testCase);
 
-            try {
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    if (resultSet.first()) {
-                        result = loadFromResultSet(resultSet);
-                    }
-                } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
-                } finally {
-                    resultSet.close();
+            try(ResultSet resultSet = preStat.executeQuery();) {
+                if (resultSet.first()) {
+                    result = loadFromResultSet(resultSet);
                 }
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
+	        } catch (SQLException exception) {
+	            LOG.error("Unable to execute query : " + exception.toString());
+	        } 
+        }catch (SQLException exception) {
             LOG.error("Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-            }
-        }
+        } 
         return result;
     }
 
@@ -674,9 +580,9 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         }
         query.append("ORDER BY exe.id DESC");
 
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
+        
+        try(Connection connection = this.databaseSpring.connect();
+        		PreparedStatement preStat = connection.prepareStatement(query.toString());) {
             preStat.setString(1, test);
             preStat.setString(2, testCase);
             preStat.setString(3, country);
@@ -697,34 +603,16 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             if (!StringUtil.isNull(tag)) {
                 preStat.setString(i, tag);
             }
-
-            try {
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    if (resultSet.first()) {
-                        result = this.loadFromResultSet(resultSet);
-                    }
-                } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
-                } finally {
-                    resultSet.close();
+            try(ResultSet resultSet = preStat.executeQuery();) {
+                if (resultSet.first()) {
+                    result = this.loadFromResultSet(resultSet);
                 }
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
+            } 
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-            }
-        }
+        } 
         return result;
     }
 
@@ -1890,7 +1778,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         }
 
         try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+                PreparedStatement preStat = connection.prepareStatement(query.toString());
+        		Statement stm = connection.createStatement();) {
 
             int i = 1;
 
@@ -1926,33 +1815,38 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 preStat.setString(i++, individualColumnSearchValue);
             }
 
-            ResultSet resultSet = preStat.executeQuery();
+            try(ResultSet resultSet = preStat.executeQuery();
+            		ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");){
+            	while (resultSet.next()) {
+                    distinctValues.add(resultSet.getString("distinctValues") == null ? "" : resultSet.getString("distinctValues"));
+                }
 
-            while (resultSet.next()) {
-                distinctValues.add(resultSet.getString("distinctValues") == null ? "" : resultSet.getString("distinctValues"));
-            }
+                //get the total number of rows
+                
+                int nrTotalRows = 0;
 
-            //get the total number of rows
-            resultSet = preStat.executeQuery("SELECT FOUND_ROWS()");
-            int nrTotalRows = 0;
+                if (rowSet != null && rowSet.next()) {
+                    nrTotalRows = rowSet.getInt(1);
+                }
 
-            if (resultSet != null && resultSet.next()) {
-                nrTotalRows = resultSet.getInt(1);
-            }
-
-            if (distinctValues.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
-                LOG.error("Partial Result in the query.");
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                answer = new AnswerList(distinctValues, nrTotalRows);
-            } else if (distinctValues.size() <= 0) {
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                answer = new AnswerList(distinctValues, nrTotalRows);
-            } else {
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                answer = new AnswerList(distinctValues, nrTotalRows);
-            }
+                if (distinctValues.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
+                    LOG.error("Partial Result in the query.");
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
+                    answer = new AnswerList(distinctValues, nrTotalRows);
+                } else if (distinctValues.size() <= 0) {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                    answer = new AnswerList(distinctValues, nrTotalRows);
+                } else {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+                    answer = new AnswerList(distinctValues, nrTotalRows);
+                }
+            }catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } 
         } catch (Exception e) {
             LOG.warn("Unable to execute query : " + e.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
@@ -1961,11 +1855,9 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             // We always set the result message
             answer.setResultMessage(msg);
         }
-
         answer.setResultMessage(msg);
         answer.setDataList(distinctValues);
         return answer;
-
     }
 
 }

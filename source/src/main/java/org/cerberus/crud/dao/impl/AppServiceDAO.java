@@ -23,6 +23,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -372,8 +373,7 @@ public class AppServiceDAO implements IAppServiceDAO {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
                 preStat.setString(1, key);
-                ResultSet resultSet = preStat.executeQuery();
-                try {
+                try(ResultSet resultSet = preStat.executeQuery();) {
                     if (resultSet.first()) {
                         result = loadFromResultSet(resultSet);
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -437,104 +437,109 @@ public class AppServiceDAO implements IAppServiceDAO {
 
     @Override
     public AnswerList readDistinctValuesByCriteria(String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
-        AnswerList answer = new AnswerList();
-        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<String> distinctValues = new ArrayList<>();
-        StringBuilder searchSQL = new StringBuilder();
-        List<String> individalColumnSearchValues = new ArrayList<String>();
+    	AnswerList answer = new AnswerList();
+    	MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+    	msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+    	List<String> distinctValues = new ArrayList<>();
+    	StringBuilder searchSQL = new StringBuilder();
+    	List<String> individalColumnSearchValues = new ArrayList<String>();
+    	StringBuilder query = new StringBuilder();
 
-        StringBuilder query = new StringBuilder();
+    	query.append("SELECT distinct ");
+    	query.append(columnName);
+    	query.append(" as distinctValues FROM appservice srv");
+    	query.append(" where 1=1");
 
-        query.append("SELECT distinct ");
-        query.append(columnName);
-        query.append(" as distinctValues FROM appservice srv");
-        query.append(" where 1=1");
+    	if (!StringUtil.isNullOrEmpty(searchTerm)) {
+    		searchSQL.append(" and (srv.Service like ?");
+    		searchSQL.append(" or srv.Group like ?");
+    		searchSQL.append(" or srv.ServicePath like ?");
+    		searchSQL.append(" or srv.Operation like ?");
+    		searchSQL.append(" or srv.AttachementURL like ?");
+    		searchSQL.append(" or srv.Description like ?");
+    		searchSQL.append(" or srv.ServiceRequest like ?)");
+    	}
+    	if (individualSearch != null && !individualSearch.isEmpty()) {
+    		searchSQL.append(" and ( 1=1 ");
+    		for (Map.Entry<String, List<String>> entry : individualSearch.entrySet()) {
+    			searchSQL.append(" and ");
+    			searchSQL.append(SqlUtil.getInSQLClauseForPreparedStatement(entry.getKey(), entry.getValue()));
+    			individalColumnSearchValues.addAll(entry.getValue());
+    		}
+    		searchSQL.append(" )");
+    	}
 
-        if (!StringUtil.isNullOrEmpty(searchTerm)) {
-            searchSQL.append(" and (srv.Service like ?");
-            searchSQL.append(" or srv.Group like ?");
-            searchSQL.append(" or srv.ServicePath like ?");
-            searchSQL.append(" or srv.Operation like ?");
-            searchSQL.append(" or srv.AttachementURL like ?");
-            searchSQL.append(" or srv.Description like ?");
-            searchSQL.append(" or srv.ServiceRequest like ?)");
-        }
-        if (individualSearch != null && !individualSearch.isEmpty()) {
-            searchSQL.append(" and ( 1=1 ");
-            for (Map.Entry<String, List<String>> entry : individualSearch.entrySet()) {
-                searchSQL.append(" and ");
-                searchSQL.append(SqlUtil.getInSQLClauseForPreparedStatement(entry.getKey(), entry.getValue()));
-                individalColumnSearchValues.addAll(entry.getValue());
-            }
-            searchSQL.append(" )");
-        }
-        
-        query.append(searchSQL);
-        query.append(" group by ifnull(").append(columnName).append(",'')");
-        query.append(" order by ").append(columnName).append(" asc");
+    	query.append(searchSQL);
+    	query.append(" group by ifnull(").append(columnName).append(",'')");
+    	query.append(" order by ").append(columnName).append(" asc");
 
-        // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query.toString());
-        }
-        try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+    	// Debug message on SQL.
+    	if (LOG.isDebugEnabled()) {
+    		LOG.debug("SQL : " + query.toString());
+    	}
+    	try (Connection connection = databaseSpring.connect();
+    			PreparedStatement preStat = connection.prepareStatement(query.toString());
+    			Statement stm = connection.createStatement();) {
 
-            int i = 1;
-            if (!StringUtil.isNullOrEmpty(searchTerm)) {
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-            }
-            for (String individualColumnSearchValue : individalColumnSearchValues) {
-                preStat.setString(i++, individualColumnSearchValue);
-            }
+    		int i = 1;
+    		if (!StringUtil.isNullOrEmpty(searchTerm)) {
+    			preStat.setString(i++, "%" + searchTerm + "%");
+    			preStat.setString(i++, "%" + searchTerm + "%");
+    			preStat.setString(i++, "%" + searchTerm + "%");
+    			preStat.setString(i++, "%" + searchTerm + "%");
+    			preStat.setString(i++, "%" + searchTerm + "%");
+    			preStat.setString(i++, "%" + searchTerm + "%");
+    			preStat.setString(i++, "%" + searchTerm + "%");
+    		}
+    		for (String individualColumnSearchValue : individalColumnSearchValues) {
+    			preStat.setString(i++, individualColumnSearchValue);
+    		}
+    		
+    		try(ResultSet resultSet = preStat.executeQuery();
+    				ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+    			
+    			//gets the data
+        		while (resultSet.next()) {
+        			distinctValues.add(resultSet.getString("distinctValues") == null ? "" : resultSet.getString("distinctValues"));
+        		}
 
-            ResultSet resultSet = preStat.executeQuery();
+        		//get the total number of rows
 
-            //gets the data
-            while (resultSet.next()) {
-                distinctValues.add(resultSet.getString("distinctValues") == null ? "" : resultSet.getString("distinctValues"));
-            }
+        		int nrTotalRows = 0;
 
-            //get the total number of rows
-            resultSet = preStat.executeQuery("SELECT FOUND_ROWS()");
-            int nrTotalRows = 0;
+        		if (rowSet != null && rowSet.next()) {
+        			nrTotalRows = rowSet.getInt(1);
+        		}
 
-            if (resultSet != null && resultSet.next()) {
-                nrTotalRows = resultSet.getInt(1);
-            }
+        		if (distinctValues.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
+        			LOG.error("Partial Result in the query.");
+        			msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
+        			msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
+        			answer = new AnswerList(distinctValues, nrTotalRows);
+        		} else if (distinctValues.size() <= 0) {
+        			msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+        			answer = new AnswerList(distinctValues, nrTotalRows);
+        		} else {
+        			msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+        			msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+        			answer = new AnswerList(distinctValues, nrTotalRows);
+        		}
+    			
+    		}catch(SQLException e) {
+    			LOG.warn(e.toString());
+    		}
+    	} catch (Exception e) {
+    		LOG.warn("Unable to execute query : " + e.toString());
+    		msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+    				e.toString());
+    	} finally {
+    		// We always set the result message
+    		answer.setResultMessage(msg);
+    	}
 
-            if (distinctValues.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
-                LOG.error("Partial Result in the query.");
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                answer = new AnswerList(distinctValues, nrTotalRows);
-            } else if (distinctValues.size() <= 0) {
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                answer = new AnswerList(distinctValues, nrTotalRows);
-            } else {
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                answer = new AnswerList(distinctValues, nrTotalRows);
-            }
-        } catch (Exception e) {
-            LOG.warn("Unable to execute query : " + e.toString());
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
-                    e.toString());
-        } finally {
-            // We always set the result message
-            answer.setResultMessage(msg);
-        }
-
-        answer.setResultMessage(msg);
-        answer.setDataList(distinctValues);
-        return answer;
+    	answer.setResultMessage(msg);
+    	answer.setDataList(distinctValues);
+    	return answer;
     }
 
     @Override

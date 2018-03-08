@@ -137,46 +137,30 @@ public class CampaignParameterDAO implements ICampaignParameterDAO {
 
     @Override
     public CampaignParameter findCampaignParameterByKey(Integer campaignparameterID) throws CerberusException {
-        boolean throwEx = false;
-        final String query = "SELECT * FROM campaignparameter c WHERE c.campaignparameterID = ?";
+    	boolean throwEx = false;
+    	final String query = "SELECT * FROM campaignparameter c WHERE c.campaignparameterID = ?";
 
-        CampaignParameter campaignParameterResult = null;
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            preStat.setInt(1, campaignparameterID);
-            try {
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    if (resultSet.first()) {
-                        campaignParameterResult = this.loadFromResultSet(resultSet);
-                    }
-                } catch (SQLException exception) {
-                    LOG.warn("Unable to execute query : " + exception.toString());
-                } finally {
-                    resultSet.close();
-                }
-            } catch (SQLException exception) {
-                LOG.warn("Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            LOG.warn("Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-            }
-        }
-        if (throwEx) {
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
-        }
-        return campaignParameterResult;
-    }
+    	CampaignParameter campaignParameterResult = null;
+
+    	try(Connection connection = this.databaseSpring.connect();
+    			PreparedStatement preStat = connection.prepareStatement(query);) {
+    		preStat.setInt(1, campaignparameterID);
+    		try(ResultSet resultSet = preStat.executeQuery();) {
+    			if (resultSet.first()) {
+    				campaignParameterResult = this.loadFromResultSet(resultSet);
+    			}
+    		} catch (SQLException exception) {
+    			LOG.warn("Unable to execute query : " + exception.toString());
+    		} 
+    	} catch (SQLException exception) {
+    		LOG.warn("Unable to execute query : " + exception.toString());
+    	} 
+
+		if (throwEx) {
+			throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
+		}
+		return campaignParameterResult;
+}
 
     @Override
     public List<CampaignParameter> findCampaignParametersByCampaign(String campaign) throws CerberusException {
@@ -228,32 +212,16 @@ public class CampaignParameterDAO implements ICampaignParameterDAO {
     public boolean updateCampaignParameter(CampaignParameter campaignParameter) {
         final StringBuilder query = new StringBuilder("UPDATE `campaignparameter` SET campaign=?, `Parameter`=?, `Value`=? WHERE campaignparameterID=?");
 
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
+        try (Connection connection = this.databaseSpring.connect();
+        		PreparedStatement preStat = connection.prepareStatement(query.toString());){
             preStat.setString(1, campaignParameter.getCampaign());
             preStat.setString(2, campaignParameter.getParameter());
             preStat.setString(3, campaignParameter.getValue());
             preStat.setInt(4, campaignParameter.getCampaignparameterID());
-
-            try {
-                return (preStat.executeUpdate() == 1);
-            } catch (SQLException exception) {
-                LOG.warn("Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
+            return (preStat.executeUpdate() == 1);
         } catch (SQLException exception) {
             LOG.warn("Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-            }
-        }
+        } 
         return false;
     }
 
@@ -261,30 +229,15 @@ public class CampaignParameterDAO implements ICampaignParameterDAO {
     public boolean createCampaignParameter(CampaignParameter campaignParameter) {
         final StringBuilder query = new StringBuilder("INSERT INTO `campaignparameter` (`campaign`, `Parameter`, `Value`) VALUES (?, ?, ?);");
 
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
+        
+        try(Connection connection = this.databaseSpring.connect();
+        		PreparedStatement preStat = connection.prepareStatement(query.toString());) {
             preStat.setString(1, campaignParameter.getCampaign());
             preStat.setString(2, campaignParameter.getParameter());
             preStat.setString(3, campaignParameter.getValue());
-
-            try {
-                return (preStat.executeUpdate() == 1);
-            } catch (SQLException exception) {
-                LOG.warn("Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
+            return (preStat.executeUpdate() == 1);
         } catch (SQLException exception) {
             LOG.warn("Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-            }
         }
         return false;
     }
@@ -371,29 +324,13 @@ public class CampaignParameterDAO implements ICampaignParameterDAO {
     public boolean deleteCampaignParameter(CampaignParameter campaignParameter) {
         final StringBuilder query = new StringBuilder("DELETE FROM `campaignparameter` WHERE campaignparameterID=?");
 
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
+        try(Connection connection = this.databaseSpring.connect();
+        		PreparedStatement preStat = connection.prepareStatement(query.toString());) {
             preStat.setInt(1, campaignParameter.getCampaignparameterID());
-
-            try {
-                return (preStat.executeUpdate() == 1);
-            } catch (SQLException exception) {
-                LOG.warn("Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
+            return (preStat.executeUpdate() == 1);
         } catch (SQLException exception) {
             LOG.warn("Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-            }
-        }
+        } 
         return false;
     }
 

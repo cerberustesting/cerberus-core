@@ -85,19 +85,20 @@ public class ExportServiceFactory {
             createReportByTagExport(workbook);
         }
 
-        FileOutputStream outputStream;
-        try {
-            String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
-            outputStream = new FileOutputStream(this.fileName + "_" + timeStamp + type.getFileExtension());
-            try {
-                workbook.write(outputStream);
-                outputStream.close();
-                workbook.close();
-            } catch (IOException ex) {
-                LOG.warn(ex);
-            }
+        String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
+        
+        try(FileOutputStream outputStream = new FileOutputStream(this.fileName + "_" + timeStamp + type.getFileExtension())) {
+            workbook.write(outputStream);
         } catch (FileNotFoundException ex) {
             LOG.warn(ex);
+        }catch(IOException e) {
+        	LOG.warn(e.toString());
+        }finally {
+        	try {
+				workbook.close();
+			} catch (IOException e) {
+				LOG.warn(e.toString());
+			}
         }
 
         //each country will be a page in the xls file
@@ -114,19 +115,20 @@ public class ExportServiceFactory {
 
         if (exportOptions.contains("chart") || exportOptions.contains("list")) {
             //then we need to create the default colors for each cell
-            HSSFWorkbook hwb = new HSSFWorkbook();
-            HSSFPalette palette = hwb.getCustomPalette();
+            try(HSSFWorkbook hwb = new HSSFWorkbook();){
+            	HSSFPalette palette = hwb.getCustomPalette();
+            	CellStyle okStyle = workbook.createCellStyle();
 
-            CellStyle okStyle = workbook.createCellStyle();
+                // get the color which most closely matches the color you want to use
+                // code to get the style for the cell goes here
+                okStyle.setFillForegroundColor(palette.findSimilarColor(92, 184, 0).getIndex());
+                okStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
+                //okStyle.setFont();
 
-            // get the color which most closely matches the color you want to use
-            // code to get the style for the cell goes here
-            okStyle.setFillForegroundColor(palette.findSimilarColor(92, 184, 0).getIndex());
-            okStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
-            //okStyle.setFont();
-
-            stylesList.add(okStyle);
-
+                stylesList.add(okStyle);
+            }catch(IOException e) {
+            	LOG.warn(e.toString());
+            }
         }
         for (TestCaseExecution execution : (List<TestCaseExecution>) list) {
             //check if the country and application shows
@@ -287,102 +289,104 @@ public class ExportServiceFactory {
             /*temporary styles*/
             CellStyle styleBlue = workbook.createCellStyle();
             CellStyle styleGreen = workbook.createCellStyle();
-            HSSFWorkbook hwb = new HSSFWorkbook();
-            HSSFPalette palette = hwb.getCustomPalette();
-            // get the color which most closely matches the color you want to use
-            HSSFColor myColor = palette.findSimilarColor(66, 139, 202);
+            try(HSSFWorkbook hwb = new HSSFWorkbook()){
+            	HSSFPalette palette = hwb.getCustomPalette();
+                // get the color which most closely matches the color you want to use
+                HSSFColor myColor = palette.findSimilarColor(66, 139, 202);
 
-            // get the palette index of that color 
-            short palIndex = myColor.getIndex();
-            // code to get the style for the cell goes here
-            styleBlue.setFillForegroundColor(palIndex);
-            styleBlue.setFillPattern(CellStyle.SPARSE_DOTS);
+                // get the palette index of that color 
+                short palIndex = myColor.getIndex();
+                // code to get the style for the cell goes here
+                styleBlue.setFillForegroundColor(palIndex);
+                styleBlue.setFillPattern(CellStyle.SPARSE_DOTS);
 
-            HSSFColor myColorGreen = palette.findSimilarColor(92, 184, 0);
-            styleGreen.setFillForegroundColor(myColorGreen.getIndex());
-            styleGreen.setFillPattern(CellStyle.SPARSE_DOTS);
+                HSSFColor myColorGreen = palette.findSimilarColor(92, 184, 0);
+                styleGreen.setFillForegroundColor(myColorGreen.getIndex());
+                styleGreen.setFillPattern(CellStyle.SPARSE_DOTS);
 
-            int startRow = (rowCount + 2);
-            TreeMap<String, SummaryStatisticsDTO> sortedSummaryMap = new TreeMap<String, SummaryStatisticsDTO>(summaryMap);
-            for (String key : sortedSummaryMap.keySet()) {
-                row = sheet.createRow(++rowCount);
-                SummaryStatisticsDTO sumStats = summaryMap.get(key);
-                //application
-                row.createCell(0).setCellValue((String) sumStats.getApplication());
-                //country
-                row.createCell(1).setCellValue((String) sumStats.getCountry());
-                //environment
-                row.createCell(2).setCellValue((String) sumStats.getEnvironment());
+                int startRow = (rowCount + 2);
+                TreeMap<String, SummaryStatisticsDTO> sortedSummaryMap = new TreeMap<String, SummaryStatisticsDTO>(summaryMap);
+                for (String key : sortedSummaryMap.keySet()) {
+                    row = sheet.createRow(++rowCount);
+                    SummaryStatisticsDTO sumStats = summaryMap.get(key);
+                    //application
+                    row.createCell(0).setCellValue((String) sumStats.getApplication());
+                    //country
+                    row.createCell(1).setCellValue((String) sumStats.getCountry());
+                    //environment
+                    row.createCell(2).setCellValue((String) sumStats.getEnvironment());
 
-                //OK
-                row.createCell(3).setCellValue(sumStats.getOK());
-                //KO
-                row.createCell(4).setCellValue(sumStats.getKO());
-                //FA
-                row.createCell(5).setCellValue(sumStats.getFA());
-                //NA
-                row.createCell(6).setCellValue(sumStats.getNA());
-                //NE
-                row.createCell(7).setCellValue(sumStats.getNE());
-                //PE
-                row.createCell(8).setCellValue(sumStats.getPE());
-                //QU
-                row.createCell(9).setCellValue(sumStats.getQU());
-                //CA
-                row.createCell(10).setCellValue(sumStats.getCA());
-                int rowNumber = row.getRowNum() + 1;
-                //NOT OK
-                //row.createCell(11).setCellValue(sumStats.getNotOkTotal());
-                row.createCell(11).setCellFormula("SUM(E" + rowNumber + ":J" + rowNumber + ")");
-                //Total
-                row.createCell(12).setCellFormula("SUM(D" + rowNumber + ",K" + rowNumber + ")");
-                //row.createCell(12).setCellValue(sumStats.getTotal());
+                    //OK
+                    row.createCell(3).setCellValue(sumStats.getOK());
+                    //KO
+                    row.createCell(4).setCellValue(sumStats.getKO());
+                    //FA
+                    row.createCell(5).setCellValue(sumStats.getFA());
+                    //NA
+                    row.createCell(6).setCellValue(sumStats.getNA());
+                    //NE
+                    row.createCell(7).setCellValue(sumStats.getNE());
+                    //PE
+                    row.createCell(8).setCellValue(sumStats.getPE());
+                    //QU
+                    row.createCell(9).setCellValue(sumStats.getQU());
+                    //CA
+                    row.createCell(10).setCellValue(sumStats.getCA());
+                    int rowNumber = row.getRowNum() + 1;
+                    //NOT OK
+                    //row.createCell(11).setCellValue(sumStats.getNotOkTotal());
+                    row.createCell(11).setCellFormula("SUM(E" + rowNumber + ":J" + rowNumber + ")");
+                    //Total
+                    row.createCell(12).setCellFormula("SUM(D" + rowNumber + ",K" + rowNumber + ")");
+                    //row.createCell(12).setCellValue(sumStats.getTotal());
 
-                if (sumStats.getOK() == sumStats.getTotal()) {
-                    for (int i = 0; i < 13; i++) {
-                        row.getCell(i).setCellStyle(styleGreen);
+                    if (sumStats.getOK() == sumStats.getTotal()) {
+                        for (int i = 0; i < 13; i++) {
+                            row.getCell(i).setCellStyle(styleGreen);
+                        }
                     }
                 }
+                //TODO:FN percentages missing
+                //Total row
+                row = sheet.createRow(++rowCount);
+
+                row.createCell(0).setCellValue("Total");
+                row.createCell(1).setCellValue("");
+                row.createCell(2).setCellValue("");
+                //OK
+                row.createCell(3).setCellFormula("SUM(D" + startRow + ":D" + rowCount + ")");
+                //KO
+                row.createCell(4).setCellFormula("SUM(E" + startRow + ":E" + rowCount + ")");
+                //FA
+                row.createCell(5).setCellFormula("SUM(F" + startRow + ":F" + rowCount + ")");
+                //NA
+                row.createCell(6).setCellFormula("SUM(G" + startRow + ":G" + rowCount + ")");
+                //NE
+                row.createCell(7).setCellFormula("SUM(H" + startRow + ":H" + rowCount + ")");
+                //PE
+                row.createCell(8).setCellFormula("SUM(I" + startRow + ":I" + rowCount + ")");
+                //QU
+                row.createCell(9).setCellFormula("SUM(J" + startRow + ":I" + rowCount + ")");
+                //CA
+                row.createCell(10).setCellFormula("SUM(K" + startRow + ":J" + rowCount + ")");
+
+                int rowNumberTotal = row.getRowNum() + 1;
+                //NOT OK
+                row.createCell(11).setCellFormula("SUM(E" + rowNumberTotal + ":J" + rowNumberTotal + ")");
+                //Total
+                row.createCell(12).setCellFormula("SUM(D" + rowNumberTotal + ",K" + rowNumberTotal + ")");
+                for (int i = 0; i < 13; i++) {
+                    row.getCell(i).setCellStyle(styleBlue);
+                }
+
+                //add some empty rows
+                sheet.createRow(++rowCount).createCell(0).setCellValue("");
+                sheet.createRow(++rowCount).createCell(0).setCellValue("");
+                sheet.createRow(++rowCount).createCell(0).setCellValue("");
+                sheet.createRow(++rowCount).createCell(0).setCellValue("");
+            }catch(IOException e) {
+            	LOG.warn(e.toString());
             }
-            //TODO:FN percentages missing
-            //Total row
-            row = sheet.createRow(++rowCount);
-
-            row.createCell(0).setCellValue("Total");
-            row.createCell(1).setCellValue("");
-            row.createCell(2).setCellValue("");
-            //OK
-            row.createCell(3).setCellFormula("SUM(D" + startRow + ":D" + rowCount + ")");
-            //KO
-            row.createCell(4).setCellFormula("SUM(E" + startRow + ":E" + rowCount + ")");
-            //FA
-            row.createCell(5).setCellFormula("SUM(F" + startRow + ":F" + rowCount + ")");
-            //NA
-            row.createCell(6).setCellFormula("SUM(G" + startRow + ":G" + rowCount + ")");
-            //NE
-            row.createCell(7).setCellFormula("SUM(H" + startRow + ":H" + rowCount + ")");
-            //PE
-            row.createCell(8).setCellFormula("SUM(I" + startRow + ":I" + rowCount + ")");
-            //QU
-            row.createCell(9).setCellFormula("SUM(J" + startRow + ":I" + rowCount + ")");
-            //CA
-            row.createCell(10).setCellFormula("SUM(K" + startRow + ":J" + rowCount + ")");
-
-            int rowNumberTotal = row.getRowNum() + 1;
-            //NOT OK
-            row.createCell(11).setCellFormula("SUM(E" + rowNumberTotal + ":J" + rowNumberTotal + ")");
-            //Total
-            row.createCell(12).setCellFormula("SUM(D" + rowNumberTotal + ",K" + rowNumberTotal + ")");
-            for (int i = 0; i < 13; i++) {
-                row.getCell(i).setCellStyle(styleBlue);
-            }
-
-            //add some empty rows
-            sheet.createRow(++rowCount).createCell(0).setCellValue("");
-            sheet.createRow(++rowCount).createCell(0).setCellValue("");
-            sheet.createRow(++rowCount).createCell(0).setCellValue("");
-            sheet.createRow(++rowCount).createCell(0).setCellValue("");
-
         }
 
         if (exportOptions.contains("list")) {

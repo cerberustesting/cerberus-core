@@ -195,42 +195,25 @@ public class DocumentationDAO implements IDocumentationDAO {
     public String findLabelFromTableAndField(String docTable, String docField, String lang) {
         final String query = "SELECT DocLabel FROM documentation where DocTable = ? and docfield = ? and Lang = ? and length(docvalue)=0 and length(docdesc) > 1";
 
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
+        
+        try(Connection connection = this.databaseSpring.connect();
+        		PreparedStatement preStat = connection.prepareStatement(query);) {
+            
             preStat.setMaxRows(1);
-            try {
-                preStat.setString(1, docTable);
-                preStat.setString(2, docField);
-                preStat.setString(3, lang);
-
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    if (resultSet.first()) {
-                        return resultSet.getString("DocLabel");
-                    }
-                } catch (SQLException exception) {
-                    LOG.warn("Unable to execute query : "+exception.toString());
-                } finally {
-                    resultSet.close();
+            preStat.setString(1, docTable);
+            preStat.setString(2, docField);
+            preStat.setString(3, lang);
+                
+            try(ResultSet resultSet = preStat.executeQuery()) {
+                if (resultSet.first()) {
+                    return resultSet.getString("DocLabel");
                 }
             } catch (SQLException exception) {
                 LOG.warn("Unable to execute query : "+exception.toString());
-            } finally {
-                preStat.close();
             }
         } catch (SQLException exception) {
             LOG.warn("Unable to execute query : "+exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-            }
-        }
-
+        } 
         return null;
     }
 
@@ -241,42 +224,26 @@ public class DocumentationDAO implements IDocumentationDAO {
     public String findDescriptionFromTableFieldAndValue(String docTable, String docField, String docValue, String lang) {
         final String query = "SELECT DocDesc FROM documentation where DocTable = ? and DocField = ? and DocValue = ? and Lang = ? and length(docdesc) > 1";
 
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
+        
+        try(Connection connection = this.databaseSpring.connect();
+        		PreparedStatement preStat = connection.prepareStatement(query);) {
+            
             preStat.setMaxRows(1);
-            try {
-                preStat.setString(1, docTable);
-                preStat.setString(2, docField);
-                preStat.setString(3, docValue);
-                preStat.setString(4, lang);
+            preStat.setString(1, docTable);
+            preStat.setString(2, docField);
+            preStat.setString(3, docValue);
+            preStat.setString(4, lang);
 
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    if (resultSet.first()) {
-                        return resultSet.getString("DocDesc");
-                    }
-                } catch (SQLException exception) {
-                    LOG.warn("Unable to execute query : "+exception.toString());
-                } finally {
-                    resultSet.close();
+            try(ResultSet resultSet = preStat.executeQuery()){
+                if (resultSet.first()) {
+                    return resultSet.getString("DocDesc");
                 }
             } catch (SQLException exception) {
                 LOG.warn("Unable to execute query : "+exception.toString());
-            } finally {
-                preStat.close();
             }
         } catch (SQLException exception) {
             LOG.warn("Unable to execute query : "+exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-            }
-        }
+        } 
 
         return null;
     }

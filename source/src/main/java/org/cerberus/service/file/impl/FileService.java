@@ -21,6 +21,7 @@ package org.cerberus.service.file.impl;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
@@ -55,14 +56,13 @@ public class FileService implements IFileService {
          */
         result.setResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_CSV_GENERIC)
                 .resolveDescription("URL", urlToCSVFile));
+        
+        BufferedReader br = null;
 
         try {
             /**
              * Get CSV File and parse it line by line
              */
-
-            BufferedReader br;
-
             if (StringUtil.isURL(urlToCSVFile)) {
                 URL urlToCall = new URL(urlToCSVFile);
                 br = new BufferedReader(new InputStreamReader(urlToCall.openStream()));
@@ -114,6 +114,14 @@ public class FileService implements IFileService {
             LOG.warn("Error Getting CSV File " + exception);
             result.setResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_CSV_FILENOTFOUND)
                     .resolveDescription("URL", urlToCSVFile).resolveDescription("EX", exception.toString()));
+        }finally {
+        	if(br != null) {
+        		try {
+    				br.close();
+    			} catch (IOException e) {
+    				LOG.warn(e.toString());
+    			}
+        	}
         }
         return result;
     }

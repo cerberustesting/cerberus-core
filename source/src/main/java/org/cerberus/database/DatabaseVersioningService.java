@@ -46,31 +46,15 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
     @Override
     public String exeSQL(String SQLString) {
         LOG.info("Starting Execution of '" + SQLString + "'");
-        Statement preStat;
-        Connection connection = this.databaseSpring.connect();
-        try {
-            preStat = connection.createStatement();
-            try {
-                preStat.execute(SQLString);
-                LOG.info("'" + SQLString + "' Executed successfully.");
-            } catch (Exception exception1) {
-                LOG.error(exception1.toString());
-                return exception1.toString();
-            } finally {
-                preStat.close();
-            }
+        
+        try(Connection connection = this.databaseSpring.connect();
+        		Statement preStat = connection.createStatement();) {
+            preStat.execute(SQLString);
+            LOG.info("'" + SQLString + "' Executed successfully.");
         } catch (Exception exception1) {
             LOG.error(exception1.toString());
             return exception1.toString();
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-            }
-        }
+        } 
         return "OK";
     }
 

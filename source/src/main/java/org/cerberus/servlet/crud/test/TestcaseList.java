@@ -64,10 +64,8 @@ public class TestcaseList extends HttpServlet {
         PrintWriter out = response.getWriter();
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         DatabaseSpring db = appContext.getBean(DatabaseSpring.class);
-        Connection conn = db.connect();
         PreparedStatement stmt_testlist = null;
-        try {
-
+        try(Connection conn = db.connect();){
             String application = request.getParameter("application");
             String app = "";
             String test = request.getParameter("test");
@@ -85,36 +83,28 @@ public class TestcaseList extends HttpServlet {
             } else {
                 tes = "";
             }
-
             if (StringUtils.isNotBlank(url)) {
                 stmt_testlist = conn.prepareStatement("SELECT concat(?) AS list FROM testcase "
                         + " WHERE TcActive = 'Y'  AND `Group` = 'AUTOMATED' ? ? ORDER BY test,testcase");
                 stmt_testlist.setString(1, url);
                 stmt_testlist.setString(2, app);
                 stmt_testlist.setString(3, tes);
-                ResultSet rs_testlist = stmt_testlist.executeQuery();
-                int id = 0;
-
-                if (rs_testlist.first()) {
-                    do {
-
-                        out.println(rs_testlist.getString("list"));
-
-                    } while (rs_testlist.next());
-
+                try(ResultSet rs_testlist = stmt_testlist.executeQuery();){
+                	int id = 0;
+                    if (rs_testlist.first()) {
+                        do {
+                            out.println(rs_testlist.getString("list"));
+                        } while (rs_testlist.next());
+                    }
+                }catch (SQLException ex) {
+                    LOG.warn(ex.toString());
                 }
-                rs_testlist.close();
                 stmt_testlist.close();
             }
         } catch (Exception e) {
             out.println(e.getMessage());
         } finally {
             out.close();
-            try {
-                conn.close();
-            } catch (Exception ex) {
-                LOG.warn("Exception closing ResultSet: " + ex.toString());
-            }
             try {
                 if (stmt_testlist != null) {
                     stmt_testlist.close();
@@ -123,7 +113,6 @@ public class TestcaseList extends HttpServlet {
                 LOG.warn("Exception closing PreparedStatement: " + ex.toString());
             }
         }
-
     }
 
     // <editor-fold defaultstate="collapsed"
