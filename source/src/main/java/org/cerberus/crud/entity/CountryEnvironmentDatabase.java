@@ -121,7 +121,7 @@ public class CountryEnvironmentDatabase {
         hash = 29 * hash + (this.database != null ? this.database.hashCode() : 0);
         hash = 29 * hash + (this.connectionPoolName != null ? this.connectionPoolName.hashCode() : 0);
         hash = 29 * hash + (this.soapUrl != null ? this.soapUrl.hashCode() : 0);
-        hash = 29 * hash + (this.csvUrl != null ? this.soapUrl.hashCode() : 0);
+        hash = 29 * hash + (this.csvUrl != null ? this.csvUrl.hashCode() : 0);
         return hash;
     }
 
