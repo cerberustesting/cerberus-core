@@ -45,8 +45,6 @@ public class GeneratePerformanceString {
         StringBuilder data = new StringBuilder();
         List<String> dates = new ArrayList();
         StringBuilder datas = new StringBuilder();
-        ResultSet rs_executiondetail = null;
-        ResultSet rs_executiondetail2 = null;
         
         try(PreparedStatement stmt = conn.prepareStatement("select id, `Start` as startdate, "
                 + " UNIX_TIMESTAMP(End)-UNIX_TIMESTAMP(Start) as duration , substr(`start`,1, 16) as sub, "
@@ -68,69 +66,55 @@ public class GeneratePerformanceString {
             stmt.setString(2, testcase);
             stmt.setString(4, country);
             stmt.setString(3, "OK");
-
-            rs_executiondetail = stmt.executeQuery();
-            List<Float> maxList = new ArrayList();
-            if (rs_executiondetail.first()) {
-
-                do {
-                    maxList.add(rs_executiondetail.getFloat("duration"));
-                    data.append(rs_executiondetail.getString("sub"));
-                    dates.add(rs_executiondetail.getString("startdate"));
-                    data.append(",");
-                    data.append(rs_executiondetail.getString("duration"));
-                    data.append(",");
-                    data.append(rs_executiondetail.getString("id"));
-                    if (!rs_executiondetail.isLast()) {
-                        data.append("/p/");
-                    }
-
-                } while (rs_executiondetail.next());
-            }
-            
-            data.append("/k/");
-            
             String firstDate = Collections.min(dates);
-            
             stmt2.setString(1, test);
             stmt2.setString(2, testcase);
             stmt2.setString(4, country);
             stmt2.setString(3, "KO");
             stmt2.setString(5, firstDate);
 
-            rs_executiondetail2 = stmt2.executeQuery();
-            if (rs_executiondetail2.first()) {
-                do {
-                    maxList.add(rs_executiondetail2.getFloat("duration"));
-                    data.append(rs_executiondetail2.getString("sub"));
-                    data.append(",");
-                    data.append(rs_executiondetail2.getString("duration"));
-                    data.append(",");
-                    data.append(rs_executiondetail2.getString("id"));
-                    if (!rs_executiondetail2.isLast()) {
-                        data.append("/p/");
-                    }
+            try(ResultSet rs_executiondetail = stmt.executeQuery();
+            		ResultSet rs_executiondetail2 = stmt2.executeQuery();){
+            	List<Float> maxList = new ArrayList();
+                if (rs_executiondetail.first()) {
+                    do {
+                        maxList.add(rs_executiondetail.getFloat("duration"));
+                        data.append(rs_executiondetail.getString("sub"));
+                        dates.add(rs_executiondetail.getString("startdate"));
+                        data.append(",");
+                        data.append(rs_executiondetail.getString("duration"));
+                        data.append(",");
+                        data.append(rs_executiondetail.getString("id"));
+                        if (!rs_executiondetail.isLast()) {
+                            data.append("/p/");
+                        }
+                    } while (rs_executiondetail.next());
+                }
+                data.append("/k/");
+                if (rs_executiondetail2.first()) {
+                    do {
+                        maxList.add(rs_executiondetail2.getFloat("duration"));
+                        data.append(rs_executiondetail2.getString("sub"));
+                        data.append(",");
+                        data.append(rs_executiondetail2.getString("duration"));
+                        data.append(",");
+                        data.append(rs_executiondetail2.getString("id"));
+                        if (!rs_executiondetail2.isLast()) {
+                            data.append("/p/");
+                        }
 
-                } while (rs_executiondetail2.next());
+                    } while (rs_executiondetail2.next());
+                }
+                if (maxList.size()!=1){
+                datas.append(Collections.max(maxList));
+                datas.append("/d/");
+                datas.append(data);}
+            }catch(SQLException e) {
+            	LOG.warn(e.toString());
             }
-            if (maxList.size()!=1){
-            datas.append(Collections.max(maxList));
-            datas.append("/d/");
-            datas.append(data);}
         }catch(SQLException e) {
         	LOG.warn(e.toString());
-        }finally {
-        	if(rs_executiondetail != null) {
-        		rs_executiondetail.close();
-        	}
-        	if(rs_executiondetail2 != null) {
-        		rs_executiondetail2.close();
-        	}
         }
         return datas.toString();
     }
-    
-    
-    
-
 }

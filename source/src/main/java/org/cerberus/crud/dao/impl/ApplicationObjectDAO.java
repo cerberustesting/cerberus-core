@@ -355,90 +355,65 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
         }
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
-            try {
-                int i = 1;
-                if (!StringUtil.isNullOrEmpty(searchTerm)) {
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
+        
+        try(Connection connection = this.databaseSpring.connect();
+        		PreparedStatement preStat = connection.prepareStatement(query.toString());
+        		Statement stm = connection.createStatement();) {
+            
+            int i = 1;
+            if (!StringUtil.isNullOrEmpty(searchTerm)) {
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+            }
+            for (String individualColumnSearchValue : individalColumnSearchValues) {
+                preStat.setString(i++, individualColumnSearchValue);
+            }
+            
+            try(ResultSet resultSet = preStat.executeQuery();
+            		ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+                //gets the data
+                while (resultSet.next()) {
+                    objectList.add(this.loadFromResultSet(resultSet));
                 }
-                for (String individualColumnSearchValue : individalColumnSearchValues) {
-                    preStat.setString(i++, individualColumnSearchValue);
+
+                //get the total number of rows
+                int nrTotalRows = 0;
+
+                if (rowSet != null && rowSet.next()) {
+                    nrTotalRows = rowSet.getInt(1);
                 }
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    //gets the data
-                    while (resultSet.next()) {
-                        objectList.add(this.loadFromResultSet(resultSet));
-                    }
 
-                    //get the total number of rows
-                    resultSet = preStat.executeQuery("SELECT FOUND_ROWS()");
-                    int nrTotalRows = 0;
-
-                    if (resultSet != null && resultSet.next()) {
-                        nrTotalRows = resultSet.getInt(1);
-                    }
-
-                    if (objectList.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
-                        LOG.error("Partial Result in the query.");
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
-                        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                        response = new AnswerList(objectList, nrTotalRows);
-                    } else if (objectList.size() <= 0) {
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                        response = new AnswerList(objectList, nrTotalRows);
-                    } else {
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                        response = new AnswerList(objectList, nrTotalRows);
-                    }
-
-                } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-
-                } finally {
-                    if (resultSet != null) {
-                        resultSet.close();
-                    }
+                if (objectList.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
+                    LOG.error("Partial Result in the query.");
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
+                    response = new AnswerList(objectList, nrTotalRows);
+                } else if (objectList.size() <= 0) {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                    response = new AnswerList(objectList, nrTotalRows);
+                } else {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+                    response = new AnswerList(objectList, nrTotalRows);
                 }
 
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-            } finally {
-                if (preStat != null) {
-                    preStat.close();
-                }
-            }
 
+            } 
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : " + exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-        } finally {
-            try {
-                if (!this.databaseSpring.isOnTransaction()) {
-                    if (connection != null) {
-                        connection.close();
-                    }
-                }
-            } catch (SQLException exception) {
-                LOG.warn("Unable to close connection : " + exception.toString());
-            }
         }
-
         response.setResultMessage(msg);
         response.setDataList(objectList);
         return response;
