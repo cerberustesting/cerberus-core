@@ -72,9 +72,6 @@ $.when($.getScript("js/global/global.js")).then(function () {
             selectionCampaign();
         });
 
-        $("#run").click(sendForm);
-        $("#runList").click(sendForm);
-
         // Run Campaign button click
         $("#runCampaign").click(function () {
             runCampaign();
@@ -96,37 +93,15 @@ $.when($.getScript("js/global/global.js")).then(function () {
         });
 
         $("#loadCampaignBtn").click(function () {
-//            var campaign = $("#campaignSelect").val();
-//            loadCampaignContent(campaign);
-//            loadCampaignParameter(campaign);
             loadCampaign();
-        });
-
-        $("#resetbutton").click(function () {
-            $(".multiselectelement").each(function () {
-                $(this).multiselect('deselectAll', false);
-                $(this).multiselect('updateButtonText');
-            });
-        });
-
-        $("#addQueue").click(function () {
-            checkExecution(false);
-        });
-        $("#addQueueAndRun").click(function () {
-            checkExecution(true);
-        });
-        $("#addQueueAndRunBis").click(function () {
-            checkExecution(true);
         });
 
         $("#testcaseSelectAll").click(function () {
             $("#testCaseList option").prop("selected", true);
-            updatePotentialNumber();
         });
 
         $("#testcaseSelectNone").click(function () {
             $("#testCaseList option").prop("selected", false);
-            updatePotentialNumber();
         });
 
         $("#resetQueue").click(function (event) {
@@ -161,16 +136,11 @@ $.when($.getScript("js/global/global.js")).then(function () {
         });
 
 
-        $("#testCaseList").on("change", updatePotentialNumber);
-        $("#envSettingsAuto select").on("change", updatePotentialNumber);
-
         $("#countrySelectAll").on("click", function () {
             $("#countryList input").prop('checked', true);
-            updatePotentialNumber();
         });
         $("#countrySelectNone").on("click", function () {
             $("#countryList input").prop('checked', false);
-            updatePotentialNumber();
         });
 
         //open Run navbar Menu
@@ -226,18 +196,11 @@ function displayPageLabel() {
     $("#testcaseListLabel").text(doc.getDocLabel("page_runtest", "testcaseList"));
     $("#countryListLabel").text(doc.getDocLabel("page_runtest", "countryList"));
     $("#envListLabel").text(doc.getDocLabel("page_runtest", "envList"));
-    $("#potential span:nth-child(2)").text(doc.getDocLabel("page_runtest", "potential"));
-    $("#addQueue").text(doc.getDocLabel("page_runtest", "addtoqueue"));
-    $("#addQueueAndRun").text(doc.getDocLabel("page_runtest", "addtoqueueandrun"));
-    $("#addQueueAndRunBis").text(doc.getDocLabel("page_runtest", "addtoqueueandrun"));
     $("#RobotPanel .panel-heading").text(doc.getDocLabel("page_runtest", "robot_settings"));
     $("#RobotPanel label[for='robot']").text(doc.getDocLabel("page_runtest", "select_robot"));
     $("#RobotPanel label[for='seleniumIP']").text(doc.getDocLabel("page_runtest", "selenium_ip"));
     $("#RobotPanel label[for='seleniumPort']").text(doc.getDocLabel("page_runtest", "selenium_port"));
     $("#RobotPanel label[for='browser']").text(doc.getDocLabel("page_runtest", "browser"));
-    $("#RobotPanel label[for='version']").text(doc.getDocLabel("page_runtest", "version"));
-    $("#RobotPanel label[for='platform']").text(doc.getDocLabel("page_runtest", "platform"));
-    $("#RobotPanel label[for='screenSize']").text(doc.getDocLabel("page_runtest", "screensize"));
     $("#saveRobotPreferences").text(doc.getDocLabel("page_runtest", "saverobotpref"));
     $("#executionPanel .panel-heading").text(doc.getDocLabel("page_runtest", "execution_settings"));
     $("#executionPanel label[for='tag']").text(doc.getDocLabel("page_runtest", "tag"));
@@ -245,16 +208,10 @@ function displayPageLabel() {
     $("#executionPanel label[for='screenshot']").text(doc.getDocLabel("page_runtest", "screenshot"));
     $("#executionPanel label[for='pageSource']").text(doc.getDocLabel("page_runtest", "pagesource"));
     $("#executionPanel label[for='seleniumLog']").text(doc.getDocLabel("page_runtest", "seleniumlog"));
-    $("#executionPanel label[for='synchroneous']").text(doc.getDocLabel("page_runtest", "synchroneous"));
     $("#executionPanel label[for='timeout']").text(doc.getDocLabel("page_runtest", "timeout"));
     $("#executionPanel label[for='retries']").text(doc.getDocLabel("page_runtest", "retries"));
     $("#executionPanel label[for='manualExecution']").text(doc.getDocLabel("page_runtest", "manual_execution"));
     $("#saveExecutionParams").text(doc.getDocLabel("page_runtest", "save_execution_params"));
-    $("#notValid span:nth-child(2)").text(doc.getDocLabel("page_runtest", "notValid"));
-    $("#valid span:nth-child(2)").text(doc.getDocLabel("page_runtest", "valid"));
-    $("#resetQueue").text(doc.getDocLabel("page_runtest", "reset_queue"));
-    $("#resetQueue").next().text(doc.getDocLabel("page_runtest", "queue"));
-    $("#run").text(doc.getDocLabel("page_runtest", "run"));
 }
 
 function selectionCampaign() {
@@ -272,10 +229,6 @@ function selectionCampaign() {
         $("#countrySelectAll").prop("disabled", true);
         $("#countrySelectNone").prop("disabled", true);
 
-        $("#exeList").hide();
-        $("#potencialBlock").hide();
-        $("#run").hide();
-        $("#addQueueAndRunBis").hide();
         $("#runCampaign").show();
         $("#runCampaignUp").show();
 
@@ -288,7 +241,7 @@ function selectionCampaign() {
         $("#testCaseList").empty();
         $("#envSettingsAuto select").empty();
         displayUniqueEnvList("environment", "");
-//    updatePotentialNumber();
+
         $('#selectionPanel').data("LoadedMode", "campaign");
 
         loadCampaign();
@@ -334,11 +287,6 @@ function selectionManual(test, testcase, environment, country) {
 
         $("#campaignSelection").hide();
         $("#filters").show();
-        $("#resetbutton").show();
-        $("#exeList").show();
-        $("#potencialBlock").show();
-        $("#run").show();
-        $("#addQueueAndRunBis").show();
         $("#runCampaign").hide();
         $("#runCampaignUp").hide();
         $("#filtersPanelContainer").show();
@@ -346,15 +294,9 @@ function selectionManual(test, testcase, environment, country) {
         // NEW
         $("#runTestCase").show();
         $("#runTestCaseUp").show();
-        $("#resetbutton").hide();
-        $("#exeList").hide();
-        $("#potencialBlock").hide();
-        $("#run").hide();
-        $("#addQueueAndRunBis").hide();
 
         loadTestCaseFromFilter(test, testcase);
 
-        updatePotentialNumber();
         $('#selectionPanel').data("LoadedMode", "manual");
 
     }
@@ -413,7 +355,6 @@ function loadTestCaseFromFilter(defTest, defTestcase) {
             hideLoader("#chooseTest");
             if ((defTest !== null) && (defTest !== undefined)) { // if test is defined we select the value in the select list.
                 $('#testCaseList').find('option[value="' + defTest + '-' + defTestcase + '"]').prop("selected", true);
-                updatePotentialNumber();
             }
         }
     });
@@ -437,13 +378,10 @@ function appendCountryList(defCountry) {
                                 <input class="countrycb" type="checkbox" ' + myChecked + ' name="' + country + '"/>' + country + '\
                                 </label>');
         }
-        $("#countryList input.countrycb").each(function () {
-            $(this).on("change", updatePotentialNumber);
-        });
     });
 }
 
-/** UTILITY FUNCTIONS FOR CAMPAIGN LAUNCHING **/
+// UTILITY FUNCTIONS FOR CAMPAIGN LAUNCHING
 
 function loadCampaignContent(campaign) {
     clearResponseMessageMainPage();
@@ -472,7 +410,6 @@ function loadCampaignContent(campaign) {
                 }
 
                 showMessage(data, $('#page-layout'), true);
-                updatePotentialNumber();
                 hideLoader("#chooseTest");
             },
             error: showUnexpectedError
@@ -488,7 +425,7 @@ function loadCampaignParameter(campaign) {
         datatype: "json",
         async: true,
         success: function (data) {
-            var browser = [];
+            var robot = [];
             var env = [];
             var countries = [];
 
@@ -496,8 +433,8 @@ function loadCampaignParameter(campaign) {
                 var type = data.contentTable[index].parameter;
                 var value = data.contentTable[index].value;
 
-                if (type === "BROWSER") {
-                    browser.push(value);
+                if (type === "ROBOT") {
+                    robot.push(value);
                 } else if (type === "ENVIRONMENT") {
                     env.push(value);
                 } else if (type === "COUNTRY") {
@@ -505,53 +442,52 @@ function loadCampaignParameter(campaign) {
                 }
             }
 
-            $("#envSettingsAuto select").prop("disabled", "disabled").val(env);
-
+            // Environments
+            $("#envSettingsAuto select").val(env);
             $("input[name='envSettings'][value='auto']").click();
-            $("input[name='envSettings']").prop("disabled", true);
 
+            // Country
             $("#countryList input.countrycb").each(function () {
                 var country = $(this).prop("name");
 
-                $(this).prop("disabled", "disabled");
                 if (countries.indexOf(country) !== -1) {
                     $(this).prop("checked", true);
                 } else {
                     $(this).prop("checked", false);
                 }
             });
+
+            // Robot
+            $("#robot option").each(function () {
+                var selected = false;
+                for (var index = 0; index < robot.length; index++) {
+
+                    if (robot[index] === $(this).val()) {
+                        $("#robot").find('option[value="' + $(this).val() + '"]').prop("selected", true);
+                        selected = true;
+                    }
+                    if (!selected) {
+                        $("#robot").find('option[value="' + $(this).val() + '"]').prop("selected", false);
+
+                    }
+                }
+
+
+            });
+            loadRobotInfo(robot);
+
         }
     });
 }
 
 /** FORM SENDING UTILITY FUNCTIONS (VALID FOR SERVLET ADDTOEXECUTIONQUEUE) **/
 
-function checkForms() {
-    var type;
-    var message;
-    var doc = new Doc();
-
-    if ($("#queue li").length === 0) {
-        type = getAlertType("KO");
-        message = doc.getDocLabel("page_runtest", "empty_queue"); //Execution queue is empty !
-        showMessageMainPage(type, message, false);
-        return false;
-    } else if ($("#queue li").length > 1 && $("#tag").val() === "") { // More than 1 excution and no Tag specified.
-        type = getAlertType("KO");
-        message = doc.getDocLabel("page_runtest", "more_than_one_execution_requested"); //More than 1 execution has been requested. It will be executed in batch mode so please, indicate a tag (to find it back)
-        showMessageMainPage(type, message, false);
-        return false;
-    }
-    return true;
-}
-
 function runCampaign() {
 
     clearResponseMessageMainPage();
 
-    var browserSettings = $("#robotSettingsForm #browser").serialize();
     var paramSerialized = "campaign=" + $("#campaignSelect").val();
-    paramSerialized += "&robot=" + $("#robotSettingsForm #robot").val();
+    paramSerialized += "&browser=" + $("#robotSettingsForm #browser").val();
     paramSerialized += "&ss_ip=" + $("#robotSettingsForm #seleniumIP").val();
     paramSerialized += "&ss_p=" + $("#robotSettingsForm #seleniumPort").val();
     paramSerialized += "&tag=" + $("#executionSettingsForm #tag").val();
@@ -564,13 +500,40 @@ function runCampaign() {
     paramSerialized += "&retries=" + $("#executionSettingsForm #retries").val();
     paramSerialized += "&priority=1000";
     paramSerialized += "&outputformat=json";
-    if (!isEmpty(browserSettings)) {
-        paramSerialized += "&" + browserSettings;
+
+    var environmentstring = "";
+    var settings = $('input[name="envSettings"]:checked').val();
+    if (settings === "auto") {
+        var envListAuto = $("#envSettingsAuto select").val();
+        if (envListAuto !== null) {
+            for (var index = 0; index < envListAuto.length; index++) {
+                environmentstring += "&environment=" + envListAuto[index];
+            }
+        }
+    } else if (settings === "manual") {
+        environmentstring += "&manualurl=1";
+        environmentstring += "&myhost=" + $("#envSettingsMan #myhost").val();
+        environmentstring += "&mycontextroot=" + $("#envSettingsMan #mycontextroot").val();
+        environmentstring += "&myloginrelativeurl=" + $("#envSettingsMan #myloginrelativeurl").val();
+        environmentstring += "&myenvdata=" + $("#envSettingsMan #myenvdata").val();
+    }
+
+    var countriesstring = "";
+    $("#countryList .countrycb").each(function () {
+        if ($(this).prop("checked")) {
+            countriesstring += "&country=" + $(this).prop("name");
+        }
+    });
+
+    var robotsstring = "";
+    var robotSettings = $("#robotSettingsForm #robot").serialize();
+    if (!isEmpty(robotSettings)) {
+        robotsstring += "&" + robotSettings;
     }
 
     showLoader('#page-layout');
 
-    var jqxhr = $.post("AddToExecutionQueueV002", paramSerialized, "json");
+    var jqxhr = $.post("AddToExecutionQueueV003", paramSerialized + environmentstring + countriesstring + robotsstring, "json");
     $.when(jqxhr).then(function (data) {
         // unblock when remote call returns 
         hideLoader('#page-layout');
@@ -605,8 +568,7 @@ function runTestCase() {
 
     clearResponseMessageMainPage();
 
-    var browserSettings = $("#robotSettingsForm #browser").serialize();
-    var paramSerialized = "robot=" + $("#robotSettingsForm #robot").val();
+    var paramSerialized = "browser=" + $("#robotSettingsForm #browser").val();
     paramSerialized += "&ss_ip=" + $("#robotSettingsForm #seleniumIP").val();
     paramSerialized += "&ss_p=" + $("#robotSettingsForm #seleniumPort").val();
     paramSerialized += "&tag=" + $("#executionSettingsForm #tag").val();
@@ -619,9 +581,6 @@ function runTestCase() {
     paramSerialized += "&retries=" + $("#executionSettingsForm #retries").val();
     paramSerialized += "&priority=1000";
     paramSerialized += "&outputformat=json";
-    if (!isEmpty(browserSettings)) {
-        paramSerialized += "&" + browserSettings;
-    }
 
     var teststring = "";
     var select = $("#testCaseList option:selected");
@@ -651,11 +610,15 @@ function runTestCase() {
     var countriesstring = "";
     $("#countryList .countrycb").each(function () {
         if ($(this).prop("checked")) {
-//            countries.push($(this).prop("name"));
             countriesstring += "&country=" + $(this).prop("name");
         }
     });
 
+    var robotsstring = "";
+    var robotSettings = $("#robotSettingsForm #robot").serialize();
+    if (!isEmpty(robotSettings)) {
+        robotsstring += "&" + robotSettings;
+    }
 
     if (teststring === "") {
         showMessageMainPage("danger", doc.getDocLabel("page_runtest", "select_one_testcase"), false);
@@ -671,9 +634,7 @@ function runTestCase() {
 
     showLoader('#page-layout');
 
-    console.info(paramSerialized + teststring + countriesstring + environmentstring);
-
-    var jqxhr = $.post("AddToExecutionQueueV002", paramSerialized + teststring + countriesstring + environmentstring);
+    var jqxhr = $.post("AddToExecutionQueueV003", paramSerialized + teststring + environmentstring + countriesstring + robotsstring);
     $.when(jqxhr).then(function (data) {
         // unblock when remote call returns 
         hideLoader('#page-layout');
@@ -703,251 +664,8 @@ function runTestCase() {
 }
 
 
-function sendForm() {
 
-    if ($("#queue li").length > 1) { // We have more than 1 execution in the queue.
-        if ($("#tag").val() === "") { // We force the Tag if it is not defined yet.
-            var utc = new Date();
-            var tag = getUser().login + "-" + utc.toJSON().slice(0, 13) + utc.toJSON().slice(14, 16) + utc.toJSON().slice(17, 19)
-            $("#tag").prop("value", tag);
-        }
-    }
-
-    if (checkForms()) {
-        var data = {};
-        var executionList = $("#queue li");
-        var executionArray = [];
-        var browsers = $("#robotSettingsForm #browser").val() ? $("#robotSettingsForm #browser").val() : [];
-        var robotSettings = convertSerialToJSONObject($("#robotSettingsForm").serialize());
-        var execSettings = convertSerialToJSONObject($("#executionSettingsForm").serialize());
-
-        executionList.each(function () {
-            var data = $(this).data("item");
-            executionArray.push(data);
-        });
-
-        if (executionArray.length === 1) {
-
-            //Call RunTestCase
-            setSingleExecutionDataForm(executionArray);
-            $("#RunTestCase").submit();
-
-        } else if (executionArray.length > 1) {
-
-            for (var key in robotSettings) {
-                data[key] = robotSettings[key];
-            }
-            for (var key in execSettings) {
-                data[key] = execSettings[key];
-            }
-
-            if ($('input[name="envSettings"]:checked').val() === "manual") {
-                data.ManualHost = $("#robotSettingsForm #myhost").val();
-                data.ManualContextRoot = $("#robotSettingsForm #mycontextroot").val();
-                data.ManualLoginRelativeURL = $("#robotSettingsForm #myloginrelativeurl").val();
-                data.ManualEnvData = $("#robotSettingsForm #myenvdata").val();
-            }
-
-            data.browsers = JSON.stringify(browsers);
-            data.toAddList = JSON.stringify(executionArray);
-            data.push = true;
-
-            $.ajax({
-                url: "GetExecutionQueue",
-                method: "POST",
-                data: data,
-                async: true,
-                success: function (data) {
-                    if (data.redirect) {
-                        window.location.assign(data.redirect);
-                    }
-                },
-                error: showUnexpectedError
-            });
-        }
-    }
-}
-
-function setSingleExecutionDataForm(executionArray) {
-    var browser = $("#robotSettingsForm #browser").val() ? $("#robotSettingsForm #browser").val() : [""];
-    var settings = $('input[name="envSettings"]:checked').val();
-
-    if (settings === "auto") {
-        $("#manualURLATQ").val("false");
-        $("#envATQ").val(executionArray[0].env);
-    } else {
-        $("#manualURLATQ").val("true");
-    }
-
-    $("#testATQ").val(executionArray[0].test);
-    $("#testcaseATQ").val(executionArray[0].testcase);
-    $("#countryATQ").val(executionArray[0].country);
-    $("#browserATQ").val(browser[0]);
-    $("#myhostATQ").val($("#myhost").val());
-    $("#mycontextrootATQ").val($("#mycontextroot").val());
-    $("#myloginrelativeurlATQ").val($("#myloginrelativeurl").val());
-    $("#myenvdataATQ").val($("#myenvdata").val());
-    $("#screenshotATQ").val($("#screenshot").val());
-    $("#verboseATQ").val($("#verbose").val());
-    $("#timeoutATQ").val($("#timeout").val());
-    $("#synchroneousATQ").val($("#synchroneous").val());
-    $("#pageSourceATQ").val($("#pageSource").val());
-    $("#seleniumLogATQ").val($("#seleniumLog").val());
-    $("#manualExecutionATQ").val($("#manualExecution").val());
-    $("#retriesATQ").val($("#retries").val());
-    $("#screenSizeATQ").val($("#robotSettingsForm #screenSize").val());
-    $("#manualRobotATQ").val($("#robotSettings #robot").val());
-    $("#ss_ipATQ").val($("#robotSettingsForm #seleniumIP").val());
-    $("#ss_pATQ").val($("#robotSettingsForm #seleniumPort").val());
-    $("#versionATQ").val($("#robotSettingsForm #version").val());
-    $("#platformATQ").val($("#robotSettingsForm #platform").val());
-    $("#tagATQ").val($("#tag").val());
-}
-
-/** UTILITY FUNCTIONS FOR QUEUE **/
-
-function deleteRow(row) {
-    row.parent('li').remove();
-}
-
-function getCountries() {
-    var countries = [];
-
-    $("#countryList .countrycb").each(function () {
-        if ($(this).prop("checked")) {
-            countries.push($(this).prop("name"));
-        }
-    });
-
-    return countries;
-}
-
-function getEnvironment() {
-    var envList = [];
-    var settings = $('input[name="envSettings"]:checked').val();
-
-    if (settings === "auto") {
-        var envListAuto = $("#envSettingsAuto select").val();
-
-        if (envListAuto !== null) {
-            for (var index = 0; index < envListAuto.length; index++) {
-                envList.push(envListAuto[index]);
-            }
-        }
-    } else if (settings === "manual") {
-        envList.push("MANUAL");
-    }
-
-    return envList;
-}
-
-function notValidHandler(list) {
-    if (list.length !== 0) {
-        var queue = $("#notValidList");
-
-        for (var index = 0; index < list.length; index++) {
-            var execution = list[index];
-
-            queue.append($('<li></li>').addClass("list-group-item").append($("<div></div>").text(execution.test + " - " + execution.testcase + " - " +
-                    execution.env + " - " + execution.country)).append($("<div></div>").text(execution.message).addClass("error-msg")).data("item", execution));
-
-        }
-
-        updateNotValidNumber();
-        $("#notValid").show();
-    }
-}
-
-function updateNotValidNumber() {
-    $("#notValidNumber").text($("#notValidList li").length);
-}
-
-function updateValidNumber() {
-    $("#validNumber").text($("#queue li").length);
-}
-
-function updatePotentialNumber() {
-    var testCaseSelected = $("#testCaseList option:selected").length;
-    var envSelected = $("#envSettingsAuto select option:selected").length;
-    var countrySelected = getCountries().length;
-    var result = testCaseSelected * envSelected * countrySelected;
-
-    $("#potentialNumber").text(result);
-}
-
-function addToQueue(executionList) {
-    var notValidList = [];
-    var queue = $("#queue");
-    var removeBtn = $("<span></span>").addClass("glyphicon glyphicon-remove delete").click(function () {
-        deleteRow($(this));
-        updateValidNumber();
-    });
-
-    for (var index = 0; index < executionList.length; index++) {
-        var execution = executionList[index];
-
-        if (execution.isValid) {
-            queue.append($('<li></li>').addClass("list-group-item").text(execution.test + " - " + execution.testcase + " - " +
-                    execution.env + " - " + execution.country)
-                    .prepend(removeBtn.clone(true)).data("item", execution));
-        } else {
-            notValidList.push(execution);
-        }
-    }
-    updateValidNumber();
-
-    notValidHandler(notValidList);
-}
-
-function checkExecution(triggerRun) {
-    var doc = new Doc();
-    var select = $("#testCaseList option:selected");
-    var environment = getEnvironment();
-    var countries = getCountries();
-    var browser = $("#robotSettingsForm #browser").val() ? $("#robotSettingsForm #browser").val() : [];
-    var testcase = [];
-
-    select.each(function () {
-        var item = $(this).data("item");
-
-        testcase.push({"test": item.test,
-            "testcase": item.testCase,
-            "application": item.application,
-            "runQA": item.runQA,
-            "runUAT": item.runUAT,
-            "runPROD": item.runPROD});
-    });
-
-    if (testcase.length === 0) {
-        showMessageMainPage("danger", doc.getDocLabel("page_runtest", "select_one_testcase"), false);
-    } else if (environment.length === 0) {
-        showMessageMainPage("danger", doc.getDocLabel("page_runtest", "select_one_env"), false);
-    } else if (countries.length === 0) {
-        showMessageMainPage("danger", doc.getDocLabel("page_runtest", "select_one_country"), false);
-    } else {
-        showLoader("#queuePanel");
-        $.ajax({
-            url: "GetExecutionQueue",
-            method: "POST",
-            data: {"check": true,
-                "push": false,
-                "testcase": JSON.stringify(testcase),
-                "environment": JSON.stringify(environment),
-                "countries": JSON.stringify(countries),
-                "browsers": JSON.stringify(browser)},
-            success: function (data) {
-                hideLoader("#queuePanel");
-                addToQueue(data.contentTable);
-                if (triggerRun) {
-                    sendForm();
-                }
-            },
-            error: showUnexpectedError
-        });
-    }
-}
-
-/** UTILITY FUNCTIONS FOR FILTERS **/
+/** UTILITY FUNCTIONS FOR TESTCASE FILTERS **/
 
 function appendCampaignList() {
     var jqxhr = $.getJSON("ReadCampaign");
@@ -1060,7 +778,6 @@ function loadSelect(idName, selectName, forceReload, defaultValue) {
 
     var cacheEntryName = idName + "INVARIANT";
     if (forceReload) {
-//        console.debug("Purge " + cacheEntryName);
         sessionStorage.removeItem(cacheEntryName);
     }
     var list = JSON.parse(sessionStorage.getItem(cacheEntryName));
@@ -1136,53 +853,58 @@ function appendRobotList() {
 
 function loadRobotInfo(robot) {
 
-    if (robot !== "") {
-        // We can edit Robot.
-        $("#robotEdit").removeClass("disabled");
-        $('#robotEdit').unbind("click");
-        $("#robotEdit").click(function (e) {
-            openModalRobot_FromRunTest(robot, "EDIT");
-        });
-
-        $.ajax({
-            url: "ReadRobot",
-            method: "GET",
-            data: {robot: robot},
-            dataType: "json",
-            async: true,
-            success: function (data) {
-                disableRobotFields();
-                $("#robotSettings #seleniumIP").val(data.contentTable.host);
-                $("#robotSettings #seleniumPort").val(data.contentTable.port);
-                $("#robotSettings #browser").val(data.contentTable.browser);
-                $("#robotSettings #version").val(data.contentTable.version);
-                $("#robotSettings #platform").val(data.contentTable.platform);
-                $("#robotSettings #screenSize").val(data.contentTable.screenSize);
-            }
-        });
-    } else {
-        var pref = JSON.parse(localStorage.getItem("robotSettings"));
-        enableRobotFields();
-        // No need to edit Robot.
+    if (robot.length > 1) {
+        disableRobotFields();
+        $("#robotSettings #seleniumIP").val("");
+        $("#robotSettings #seleniumPort").val("");
+        $("#robotSettings #browser").val("");
         $("#robotEdit").addClass("disabled");
         $('#robotEdit').unbind("click");
+        $("#saveRobotPreferences").addClass("disabled");
 
-        if (pref !== null && pref.robot === "") {
-            $("#robotSettings #robot").val(pref.robot);
-            $("#robotSettings #seleniumIP").val(pref.ss_ip);
-            $("#robotSettings #seleniumPort").val(pref.ss_p);
-            $("#robotSettings #browser").val(pref.browser);
-            $("#robotSettings #version").val(pref.BrowserVersion);
-            $("#robotSettings #platform").val(pref.platform);
-            $("#robotSettings #screenSize").val(pref.screenSize);
+    } else {
+        if (robot[0] !== "") {
+            // We can edit Robot.
+            $("#robotEdit").removeClass("disabled");
+            $('#robotEdit').unbind("click");
+            $("#robotEdit").click(function (e) {
+                openModalRobot_FromRunTest(robot[0], "EDIT");
+            });
+            $("#saveRobotPreferences").addClass("disabled");
+
+            $.ajax({
+                url: "ReadRobot",
+                method: "GET",
+                data: {robot: robot[0]},
+                dataType: "json",
+                async: true,
+                success: function (data) {
+                    disableRobotFields();
+                    $("#robotSettings #seleniumIP").val(data.contentTable.host);
+                    $("#robotSettings #seleniumPort").val(data.contentTable.port);
+                    $("#robotSettings #browser").val(data.contentTable.browser);
+                }
+            });
         } else {
-            $("#robotSettings #seleniumIP").val("");
-            $("#robotSettings #seleniumPort").val("");
-            $("#robotSettings #browser").val([]);
-            $("#robotSettings #version").val("");
-            $("#robotSettings #platform").val("");
-            $("#robotSettings #screenSize").val("");
+            var pref = JSON.parse(localStorage.getItem("robotSettings"));
+            enableRobotFields();
+            // No need to edit Robot.
+            $("#robotEdit").addClass("disabled");
+            $('#robotEdit').unbind("click");
+            $("#saveRobotPreferences").removeClass("disabled");
+
+            if (pref !== undefined && pref.robot === "") {
+                $("#robotSettings #robot").val(pref.robot);
+                $("#robotSettings #seleniumIP").val(pref.ss_ip);
+                $("#robotSettings #seleniumPort").val(pref.ss_p);
+                $("#robotSettings #browser").val(pref.browser);
+            } else {
+                $("#robotSettings #seleniumIP").val("");
+                $("#robotSettings #seleniumPort").val("");
+                $("#robotSettings #browser").val("");
+            }
         }
+
     }
 }
 

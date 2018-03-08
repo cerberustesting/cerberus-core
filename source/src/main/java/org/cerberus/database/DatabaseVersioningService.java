@@ -9841,21 +9841,49 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('ACTION', 'executeJS', '6550', 'Execute Javascript', 'Execute JS');");
         SQLInstruction.add(SQLS.toString());
-        
+
         // ADD private invariant CAMPAIGN_TCCRITERIA : "GROUP"
         //-- ------------------------ 1297
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ");
         SQLS.append("  ('CAMPAIGN_TCCRITERIA', 'GROUP', 100 , '')");
         SQLInstruction.add(SQLS.toString());
-        
+
         // Modify the size of column datalib on testcaseexecutiondata
         //-- ------------------------ 1298
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE testcaseexecutiondata ");
         SQLS.append("MODIFY COLUMN datalib VARCHAR(200)");
         SQLInstruction.add(SQLS.toString());
-        
+
+        // Adding robotDeclination on testcaseexecution table.
+        //-- ------------------------ 1299-1303
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `robot` ");
+        SQLS.append("CHANGE COLUMN `host_user` `host_user` VARCHAR(255) NULL DEFAULT NULL AFTER `Port`,");
+        SQLS.append("CHANGE COLUMN `host_password` `host_password` VARCHAR(255) NULL DEFAULT NULL AFTER `host_user`,");
+        SQLS.append("ADD COLUMN `robotdecli` VARCHAR(100) NOT NULL DEFAULT '' AFTER `screensize`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcaseexecution` ");
+        SQLS.append("ADD COLUMN `System` VARCHAR(45) NOT NULL DEFAULT '' AFTER `ID`,");
+        SQLS.append("ADD COLUMN `RobotDecli` VARCHAR(100) NOT NULL DEFAULT '' AFTER `Country`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testcaseexecution SET robotdecli=browser;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcaseexecution` ");
+        SQLS.append("DROP INDEX `IX_testcaseexecution_04` ,");
+        SQLS.append("ADD INDEX `IX_testcaseexecution_04` (`Test` ASC, `TestCase` ASC, `Country` ASC, `RobotDecli` ASC, `Start` ASC, `ControlStatus` ASC),");
+        SQLS.append("DROP INDEX `IX_testcaseexecution_05` ,");
+        SQLS.append("ADD INDEX `IX_testcaseexecution_05` (`System` ASC),");
+        SQLS.append("DROP INDEX `IX_testcaseexecution_06` ;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('CAMPAIGN_PARAMETER', 'ROBOT', '40', 'Robot used for execution.', 'Robot');");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 

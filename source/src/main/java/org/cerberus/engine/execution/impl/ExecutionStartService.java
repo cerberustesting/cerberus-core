@@ -193,6 +193,11 @@ public class ExecutionStartService implements IExecutionStartService {
         LOG.debug("Application Information Loaded - " + tCExecution.getApplicationObj().getApplication() + " - " + tCExecution.getApplicationObj().getDescription());
 
         /**
+         * Init System from Application.
+         */
+        tCExecution.setSystem(tCExecution.getApplicationObj().getSystem());
+
+        /**
          * Load Country information and Set it to the TestCaseExecution object.
          */
         LOG.debug("Loading Country Information");
@@ -389,12 +394,6 @@ public class ExecutionStartService implements IExecutionStartService {
                 if (tCExecution.getIp().equalsIgnoreCase("")) {
                     MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_EMPTYORBADIP);
                     mes.setDescription(mes.getDescription().replace("%IP%", tCExecution.getIp()));
-                    LOG.debug(mes.getDescription());
-                    throw new CerberusException(mes);
-                }
-                if (tCExecution.getPort().equalsIgnoreCase("")) {
-                    MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_EMPTYORBADPORT);
-                    mes.setDescription(mes.getDescription().replace("%PORT%", tCExecution.getPort()));
                     LOG.debug(mes.getDescription());
                     throw new CerberusException(mes);
                 }

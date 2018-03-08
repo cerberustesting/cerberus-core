@@ -235,8 +235,8 @@
                                     Country
                                 </label>
                                 <label class="checkbox-inline">
-                                    <input type="checkbox" name="browser" checked/>
-                                    Browser
+                                    <input type="checkbox" name="robotDecli" checked/>
+                                    Robot Decli
                                 </label>
                                 <label class="checkbox-inline">
                                     <input type="checkbox" name="app" checked/>

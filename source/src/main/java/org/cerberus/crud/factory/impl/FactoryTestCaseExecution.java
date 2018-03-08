@@ -20,21 +20,19 @@
 package org.cerberus.crud.factory.impl;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
-
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.CountryEnvParam;
 import org.cerberus.crud.entity.CountryEnvironmentParameters;
-import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.crud.entity.RobotCapability;
-import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCase;
+import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionData;
 import org.cerberus.crud.entity.TestCaseExecutionFile;
 import org.cerberus.crud.entity.TestCaseStepExecution;
 import org.cerberus.crud.factory.IFactoryTestCaseExecution;
+import org.cerberus.engine.entity.MessageGeneral;
 import org.springframework.stereotype.Service;
 
 /**
@@ -51,7 +49,7 @@ public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
             CountryEnvironmentParameters countryEnvironmentParameters, boolean manualURL, String myHost, String myContextRoot, String myLoginRelativeURL, String myEnvData,
             String seleniumIP, String seleniumPort, List<TestCaseStepExecution> testCaseStepExecution, MessageGeneral resultMessage, String executor,
             int numberOfRetries, String screenSize, List<RobotCapability> capabilities,
-            String conditionOper, String conditionVal1Init, String conditionVal2Init, String conditionVal1, String conditionVal2, String manualExecution, String userAgent) {
+            String conditionOper, String conditionVal1Init, String conditionVal2Init, String conditionVal1, String conditionVal2, String manualExecution, String userAgent, String system, String robotDecli) {
         TestCaseExecution newTce = new TestCaseExecution();
         newTce.setApplicationObj(applicationObj);
         newTce.setApplication(application);
@@ -111,8 +109,10 @@ public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
         newTce.setManualExecution(manualExecution);
         newTce.setUserAgent(userAgent);
         newTce.setDescription(description);
+        newTce.setRobotDecli(robotDecli);
+        newTce.setSystem(system);
         // List objects
-        List<TestCaseExecutionFile> objectFileList = new ArrayList<TestCaseExecutionFile>();
+        List<TestCaseExecutionFile> objectFileList = new ArrayList<>();
         newTce.setFileList(objectFileList);
         TreeMap<String, TestCaseExecutionData> hashTemp1 = new TreeMap<>();
         newTce.setTestCaseExecutionDataMap(hashTemp1);

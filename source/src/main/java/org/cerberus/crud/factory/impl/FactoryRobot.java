@@ -32,16 +32,16 @@ import org.springframework.stereotype.Service;
 @Service
 public class FactoryRobot implements IFactoryRobot {
 
-
     @Override
-    public Robot create(Integer robotID, String robot, String host, String port, String platform ,
-                        String browser, String version, String active, String description, String userAgent, String screenSize, String hostUser, String hostPassword) {
-        Robot r =  create(robotID, robot, host, port, platform, browser, version, active, description, userAgent, screenSize, hostUser, hostPassword, new ArrayList<RobotCapability>());
+    public Robot create(Integer robotID, String robot, String host, String port, String platform,
+            String browser, String version, String active, String description, String userAgent, String screenSize, String hostUser, String hostPassword, String robotDecli) {
+        Robot r = create(robotID, robot, host, port, platform, browser, version, active, description, userAgent, screenSize, hostUser, hostPassword, new ArrayList<>(), robotDecli);
         return r;
     }
 
     @Override
-    public Robot create(Integer robotID, String robot, String host, String port, String platform, String browser, String version, String active, String description, String userAgent, String screenSize, String hostUser, String hostPassword, List<RobotCapability> capabilities) {
+    public Robot create(Integer robotID, String robot, String host, String port, String platform, String browser, String version, String active, String description, String userAgent,
+             String screenSize, String hostUser, String hostPassword, List<RobotCapability> capabilities, String robotDecli) {
         Robot newRobot = new Robot();
         newRobot.setRobotID(robotID);
         newRobot.setRobot(robot);
@@ -57,8 +57,8 @@ public class FactoryRobot implements IFactoryRobot {
         newRobot.setScreenSize(screenSize);
         newRobot.setHostUser(hostUser);
         newRobot.setHostPassword(hostPassword);
+        newRobot.setRobotDecli(robotDecli);
         return newRobot;
     }
 
-    
 }

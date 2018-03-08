@@ -61,7 +61,7 @@ import org.apache.logging.log4j.Logger;
 public class UpdateApplicationObject extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(UpdateApplicationObject.class);
-    
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -100,7 +100,7 @@ public class UpdateApplicationObject extends HttpServlet {
                 FileItem fileItem = it.next();
                 boolean isFormField = fileItem.isFormField();
                 if (isFormField) {
-                    fileData.put(fileItem.getFieldName(), ParameterParserUtil.parseStringParamAndDecode(fileItem.getString("UTF-8"), null, charset));
+                    fileData.put(fileItem.getFieldName(), fileItem.getString("UTF-8"));
                 } else {
                     file = fileItem;
                 }
@@ -114,9 +114,9 @@ public class UpdateApplicationObject extends HttpServlet {
          */
         // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
         // Parameter that needs to be secured --> We SECURE+DECODE them
-        String application = fileData.get("application");
-        String object = fileData.get("object");
-        String value = fileData.get("value");
+        String application = ParameterParserUtil.parseStringParamAndDecode(fileData.get("application"), null, charset);
+        String object = ParameterParserUtil.parseStringParamAndDecode(fileData.get("object"), null, charset);
+        String value = ParameterParserUtil.parseStringParam(fileData.get("value"), null);
 
         String usrmodif = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getRemoteUser(), "", charset);
         String datemodif = new Timestamp(new java.util.Date().getTime()).toString();

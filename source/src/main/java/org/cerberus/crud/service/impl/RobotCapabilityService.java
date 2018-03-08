@@ -53,7 +53,7 @@ public class RobotCapabilityService implements IRobotCapabilityService {
         if (robot == null) {
             return new AnswerList<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_VALIDATIONS_ERROR).resolveDescription("DESCRIPTION", "null robot"));
         }
-        
+
         // Ready by robot
         return robotCapabilityDAO.readByRobot(robot);
     }
@@ -64,7 +64,7 @@ public class RobotCapabilityService implements IRobotCapabilityService {
         if (capability == null) {
             return new Answer(new MessageEvent(MessageEventEnum.DATA_OPERATION_VALIDATIONS_ERROR).resolveDescription("DESCRIPTION", "null capability"));
         }
-        
+
         // Create capability
         return robotCapabilityDAO.create(capability);
     }
@@ -75,7 +75,7 @@ public class RobotCapabilityService implements IRobotCapabilityService {
         if (capabilities == null) {
             return new Answer(new MessageEvent(MessageEventEnum.DATA_OPERATION_VALIDATIONS_ERROR).resolveDescription("DESCRIPTION", "null capabilities"));
         }
-        
+
         // Create capabilities
         Answer finalAnswer = new Answer(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
         for (RobotCapability capability : capabilities) {
@@ -90,7 +90,7 @@ public class RobotCapabilityService implements IRobotCapabilityService {
         if (capability == null) {
             return new Answer(new MessageEvent(MessageEventEnum.DATA_OPERATION_VALIDATIONS_ERROR).resolveDescription("DESCRIPTION", "null capability"));
         }
-       
+
         // Update capability
         return robotCapabilityDAO.update(capability);
     }
@@ -101,7 +101,7 @@ public class RobotCapabilityService implements IRobotCapabilityService {
         if (capabilities == null) {
             return new Answer(new MessageEvent(MessageEventEnum.DATA_OPERATION_VALIDATIONS_ERROR).resolveDescription("DESCRIPTION", "null capabilities"));
         }
-        
+
         // Update capabilities
         Answer finalAnswer = new Answer(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
         for (RobotCapability capability : capabilities) {
@@ -116,7 +116,7 @@ public class RobotCapabilityService implements IRobotCapabilityService {
         if (capability == null) {
             return new Answer(new MessageEvent(MessageEventEnum.DATA_OPERATION_VALIDATIONS_ERROR).resolveDescription("DESCRIPTION", "null capability"));
         }
-        
+
         // Delete capability
         return robotCapabilityDAO.delete(capability);
     }
@@ -127,7 +127,7 @@ public class RobotCapabilityService implements IRobotCapabilityService {
         if (capabilities == null) {
             return new Answer(new MessageEvent(MessageEventEnum.DATA_OPERATION_VALIDATIONS_ERROR).resolveDescription("DESCRIPTION", "null capabilities"));
         }
-        
+
         // Delete capabilities
         Answer finalAnswer = new Answer(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
         for (RobotCapability capability : capabilities) {
@@ -142,7 +142,7 @@ public class RobotCapabilityService implements IRobotCapabilityService {
         if (robot == null || newCapabilities == null) {
             return new Answer(new MessageEvent(MessageEventEnum.DATA_OPERATION_VALIDATIONS_ERROR).resolveDescription("DESCRIPTION", "null robot or capabilities"));
         }
-        
+
         // Get the existing capabilities
         AnswerList<RobotCapability> existingCapabilities = readByRobot(robot);
         if (!existingCapabilities.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {

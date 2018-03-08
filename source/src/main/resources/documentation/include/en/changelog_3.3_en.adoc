@@ -1,0 +1,17 @@
+*Bug fixes*
+[square]
+* Allow jsonpath syntax  $[0].
+
+*Improvements / New features*
+[square]
+* List of Robot can now be specified inside a campaign (instead of browser). That allow to run a campaign easily on multiple configuration (Browsers, BrowserVersions, Screensizes, Devices, ...)
+* Robot Declination can be defined at robot level. It will be displayed in reportByTag page inside the columns of the detail section (with Country and Environment). When no value, Robot Declination will take Robot name. Declination value can be statically defined but also dynamically defined with variables : %SCREENSIZE%, %BROWSER%, %BROWSERVERSION%, %PLATFORM%.
+* Port number is no longer mandatory on Robot screen and Run Test Page.
+* Selecting a Campaign on Run Test Page allow to change the default country, environment or robot list from campaign.
+
+*Warning to be considered before applying the version (deprecated features)*
+[square]
+* 
+
+
+

@@ -20,12 +20,10 @@
 package org.cerberus.crud.entity;
 
 import java.sql.Timestamp;
-import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
-
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.engine.entity.Selenium;
 import org.cerberus.engine.entity.Session;
@@ -41,6 +39,7 @@ public class TestCaseExecution {
     private static final Logger LOG = LogManager.getLogger(TestCaseExecution.class);
 
     private long id;
+    private String system;
     private String test;
     private String testCase;
     private String description;
@@ -49,6 +48,7 @@ public class TestCaseExecution {
     private String environment;
     private String environmentData;
     private String country;
+    private String robotDecli;
     private String browser;
     private String version;
     private String platform;
@@ -143,6 +143,22 @@ public class TestCaseExecution {
     public static final String CONTROLSTATUS_CA = "CA";
     public static final String CONTROLSTATUS_FA = "FA";
     public static final String CONTROLSTATUS_QU = "QU";
+
+    public String getSystem() {
+        return system;
+    }
+
+    public void setSystem(String system) {
+        this.system = system;
+    }
+
+    public String getRobotDecli() {
+        return robotDecli;
+    }
+
+    public void setRobotDecli(String robotDecli) {
+        this.robotDecli = robotDecli;
+    }
 
     public Integer getNbExecutions() {
         return nbExecutions;

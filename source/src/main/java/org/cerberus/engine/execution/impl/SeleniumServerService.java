@@ -171,10 +171,10 @@ public class SeleniumServerService implements ISeleniumServerService {
              * SetUp Proxy
              */
             String hubUrl = StringUtil.cleanHostURL(
-                                     SeleniumServerService.getBaseUrl(StringUtil.formatURLCredential(
-                                             tCExecution.getSession().getHostUser(),
-                                             tCExecution.getSession().getHostPassword()) + session.getHost(),
-                                            session.getPort())) + "/wd/hub";
+                    SeleniumServerService.getBaseUrl(StringUtil.formatURLCredential(
+                            tCExecution.getSession().getHostUser(),
+                            tCExecution.getSession().getHostPassword()) + session.getHost(),
+                            session.getPort())) + "/wd/hub";
             LOG.debug(logPrefix + "Hub URL :" + hubUrl);
             URL url = new URL(hubUrl);
             HttpCommandExecutor executor = null;
@@ -307,6 +307,7 @@ public class SeleniumServerService implements ISeleniumServerService {
                     LOG.debug("Selenium resolution Activated : " + screenWidth + "*" + screenLength);
                 }
                 tCExecution.setScreenSize(getScreenSize(driver));
+                tCExecution.setRobotDecli(tCExecution.getRobotDecli().replace("%SCREENSIZE%", tCExecution.getScreenSize()));
 
                 String userAgent = (String) ((JavascriptExecutor) driver).executeScript("return navigator.userAgent;");
                 tCExecution.setUserAgent(userAgent);
@@ -315,22 +316,22 @@ public class SeleniumServerService implements ISeleniumServerService {
             tCExecution.getSession().setStarted(true);
 
         } catch (CerberusException exception) {
-            LOG.error(logPrefix + exception.toString(),exception);
+            LOG.error(logPrefix + exception.toString(), exception);
             throw new CerberusException(exception.getMessageError());
         } catch (MalformedURLException exception) {
-            LOG.error(logPrefix + exception.toString(),exception);
+            LOG.error(logPrefix + exception.toString(), exception);
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_URL_MALFORMED);
             mes.setDescription(mes.getDescription().replace("%URL%", tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort()));
             throw new CerberusException(mes);
         } catch (UnreachableBrowserException exception) {
-            LOG.error(logPrefix + exception.toString(),exception);
+            LOG.error(logPrefix + exception.toString(), exception);
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_COULDNOTCONNECT);
             mes.setDescription(mes.getDescription().replace("%SSIP%", tCExecution.getSeleniumIP()));
             mes.setDescription(mes.getDescription().replace("%SSPORT%", tCExecution.getSeleniumPort()));
             mes.setDescription(mes.getDescription().replace("%ERROR%", exception.toString()));
             throw new CerberusException(mes);
         } catch (Exception exception) {
-            LOG.error(logPrefix + exception.toString(),exception);
+            LOG.error(logPrefix + exception.toString(), exception);
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
             mes.setDescription(mes.getDescription().replace("%MES%", exception.toString()));
             throw new CerberusException(mes);
@@ -348,10 +349,14 @@ public class SeleniumServerService implements ISeleniumServerService {
         /**
          * Instanciate DesiredCapabilities
          */
+
         DesiredCapabilities caps = new DesiredCapabilities();
-        if (!StringUtil.isNullOrEmpty(tCExecution.getBrowser())) {
-            caps = this.setCapabilityBrowser(caps, tCExecution.getBrowser(), tCExecution);
+        // In case browser is not defined at that level, we force it to firefox.
+        if (StringUtil.isNullOrEmpty(tCExecution.getBrowser())) {
+            tCExecution.setBrowser("firefox");
         }
+        caps = this.setCapabilityBrowser(caps, tCExecution.getBrowser(), tCExecution);
+
         /**
          * Feed DesiredCapabilities with values get from Robot
          */
@@ -534,9 +539,7 @@ public class SeleniumServerService implements ISeleniumServerService {
             int port = ce.getAddressOfRemoteServer().getPort();
             HttpHost host = new HttpHost(hostName, port);
 
-
             HttpClient client = HttpClientBuilder.create().setRedirectStrategy(new LaxRedirectStrategy()).build();
-
 
             URL sessionURL = new URL(SeleniumServerService.getBaseUrl(session.getHost(), session.getPort()) + "/grid/api/testsession?session=" + sessionId);
 
@@ -577,18 +580,17 @@ public class SeleniumServerService implements ISeleniumServerService {
         return driver.manage().window().getSize().width + "*" + driver.manage().window().getSize().height;
     }
 
-
     private static String getBaseUrl(String host, String port) {
-        String baseurl="";
+        String baseurl = "";
 
-        if(!StringUtil.isNullOrEmpty(host) && (host.contains("https://") || host.contains("http://")) ) {
-            baseurl=host;
+        if (!StringUtil.isNullOrEmpty(host) && (host.contains("https://") || host.contains("http://"))) {
+            baseurl = host;
         } else {
-            baseurl="http://" + host;
+            baseurl = "http://" + host;
         }
 
-        if(!StringUtil.isNullOrEmpty(port) && Integer.valueOf(port) > 0) {
-            baseurl+=":" + port;
+        if (!StringUtil.isNullOrEmpty(port) && Integer.valueOf(port) > 0) {
+            baseurl += ":" + port;
         }
 
         return baseurl;

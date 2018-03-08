@@ -138,12 +138,6 @@ public class UpdateRobot extends HttpServlet {
                     .replace("%OPERATION%", "Update")
                     .replace("%REASON%", "Robot host is missing."));
             ans.setResultMessage(msg);
-        } else if (StringUtil.isNullOrEmpty(port)) {
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-            msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot")
-                    .replace("%OPERATION%", "Update")
-                    .replace("%REASON%", "Robot port is missing."));
-            ans.setResultMessage(msg);
         } else if (StringUtil.isNullOrEmpty(platform)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot")

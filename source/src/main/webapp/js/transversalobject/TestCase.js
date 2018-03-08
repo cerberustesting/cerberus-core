@@ -349,7 +349,7 @@ function confirmTestCaseModalHandler(mode) {
     }
 
     // Getting Data from Label List
-    var table2 = $("input[name=labelid]:checked");
+    var table2 = $("#editTestCaseModal input[name=labelid]:checked");
     var table_label = [];
     for (var i = 0; i < table2.length; i++) {
         var newLabel1 = {

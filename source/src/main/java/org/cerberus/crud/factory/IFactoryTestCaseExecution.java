@@ -20,15 +20,14 @@
 package org.cerberus.crud.factory;
 
 import java.util.List;
-
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.CountryEnvParam;
 import org.cerberus.crud.entity.CountryEnvironmentParameters;
-import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.crud.entity.RobotCapability;
-import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCase;
+import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseStepExecution;
+import org.cerberus.engine.entity.MessageGeneral;
 
 /**
  * @author bcivel
@@ -91,6 +90,8 @@ public interface IFactoryTestCaseExecution {
      * @param conditionVal2
      * @param manualExecution
      * @param userAgent
+     * @param system
+     * @param robotDecli
      * @return
      */
     TestCaseExecution create(long id, String test, String testCase, String description, String build, String revision, String environment,
@@ -100,5 +101,5 @@ public interface IFactoryTestCaseExecution {
             CountryEnvironmentParameters countryEnvironmentParameters, boolean manualURL, String myHost, String myContextRoot, String myLoginRelativeURL, String myEnvData,
             String seleniumIP, String seleniumPort, List<TestCaseStepExecution> testCaseStepExecution, MessageGeneral resultMessage, 
             String executor, int numberOfRetries, String screenSize, List<RobotCapability> capabilities,
-            String conditionOper, String conditionVal1Init, String conditionVal2Init, String conditionVal1, String conditionVal2, String manualExecution, String userAgent);
+            String conditionOper, String conditionVal1Init, String conditionVal2Init, String conditionVal1, String conditionVal2, String manualExecution, String userAgent, String system, String robotDecli);
 }

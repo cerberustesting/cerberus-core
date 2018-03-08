@@ -47,7 +47,7 @@ public class MyVersionDAO implements IMyVersionDAO {
     @Autowired
     private IFactoryMyversion factoryMyversion;
 
-    private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(AppServiceDAO.class);
+    private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(MyVersionDAO.class);
 
     @Override
     public MyVersion findMyVersionByKey(String key) {
