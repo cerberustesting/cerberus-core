@@ -38,6 +38,7 @@ public class CampaignParameter implements Serializable {
     private static final long serialVersionUID = 1L;
 
     public static final String BROWSER_PARAMETER = "BROWSER";
+    public static final String ROBOT_PARAMETER = "ROBOT";
     public static final String COUNTRY_PARAMETER = "COUNTRY";
     public static final String ENVIRONMENT_PARAMETER = "ENVIRONMENT";
     public static final String STATUS_PARAMETER = "STATUS";

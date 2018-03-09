@@ -42,7 +42,7 @@ public interface ISeleniumServerService {
      * Stop the server if started
      *
      * @param session
-     * @return true if server succassfully closed
+     * @return true if server successfully closed
      */
     boolean stopServer(Session session);
 

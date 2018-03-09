@@ -630,6 +630,11 @@
         <servlet-class>org.cerberus.servlet.zzpublic.AddToExecutionQueueV002</servlet-class>
     </servlet>
     <servlet>
+        <description>Add a test case to the execution queue.</description>
+        <servlet-name>AddToExecutionQueueV003</servlet-name>
+        <servlet-class>org.cerberus.servlet.zzpublic.AddToExecutionQueueV003</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>GetExecutionQueue</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.testexecution.GetExecutionQueue</servlet-class>
     </servlet>
@@ -1384,6 +1389,10 @@
         <url-pattern>/AddToExecutionQueueV002</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>AddToExecutionQueueV003</servlet-name>
+        <url-pattern>/AddToExecutionQueueV003</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>GetExecutionQueue</servlet-name>
         <url-pattern>/GetExecutionQueue</url-pattern>
     </servlet-mapping>
@@ -2028,6 +2037,7 @@
             <url-pattern>/AddToExecutionQueue</url-pattern>
             <url-pattern>/AddToExecutionQueueV001</url-pattern>
             <url-pattern>/AddToExecutionQueueV002</url-pattern>
+            <url-pattern>/AddToExecutionQueueV003</url-pattern>
             <url-pattern>/ReadApplicationObjectImage</url-pattern>
             <url-pattern>/GetTestCasesV000</url-pattern>
             <url-pattern>/DummyRESTCall</url-pattern>

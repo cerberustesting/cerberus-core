@@ -33,6 +33,7 @@ import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
@@ -241,6 +242,14 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
         String environment = testCaseExecutionInQueue.getEnvironment();
         String country = testCaseExecutionInQueue.getCountry();
         String browser = testCaseExecutionInQueue.getBrowser();
+        String robotDecli = testCaseExecutionInQueue.getRobot();
+        if (StringUtil.isNullOrEmpty(robotDecli)) {
+            if (!StringUtil.isNullOrEmpty(browser)) {
+                robotDecli = browser;
+            } else {
+                robotDecli = "";
+            }
+        }
         String version = testCaseExecutionInQueue.getBrowserVersion();
         String platform = testCaseExecutionInQueue.getPlatform();
         long start = testCaseExecutionInQueue.getRequestDate() != null ? testCaseExecutionInQueue.getRequestDate().getTime() : 0;
@@ -276,7 +285,7 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
         TestCaseExecution result = factoryTestCaseExecution.create(0, test, testCase, description, null, null, environment, country, browser, version, platform,
                 browser, start, end, controlStatus, controlMessage, application, applicationObj, ip, "", port, tag, verbose, screenshot, pageSource,
                 seleniumLog, synchroneous, timeout, outputFormat, "", "", tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL,
-                myEnvData, seleniumIP, seleniumPort, null, null, null, retry, "", null, "", "", "", "", "", manualExecution, "",0);
+                myEnvData, seleniumIP, seleniumPort, null, null, null, retry, "", null, "", "", "", "", "", manualExecution, "",0, "", robotDecli);
         result.setQueueID(testCaseExecutionInQueue.getId());
         result.setQueueState(testCaseExecutionInQueue.getState().name());
         result.setId(testCaseExecutionInQueue.getExeId());

@@ -280,7 +280,10 @@ function editEntryClick(param) {
 
         for (var i = 0; i < obj.parameter.length; i++)
         {
-            if ((obj.parameter[i].parameter == "BROWSER") || (obj.parameter[i].parameter == "COUNTRY") || (obj.parameter[i].parameter == "ENVIRONMENT")) {
+            if ((obj.parameter[i].parameter === "BROWSER")
+                    || (obj.parameter[i].parameter === "COUNTRY")
+                    || (obj.parameter[i].parameter === "ENVIRONMENT")
+                    || (obj.parameter[i].parameter === "ROBOT")) {
                 parameters.push(obj.parameter[i])
             } else {
                 criterias.push(obj.parameter[i])
@@ -404,7 +407,7 @@ function editEntryModalSaveHandler() {
 
     // Get the header data from the form.
     //var data = convertSerialToJSONObject(formEdit.serialize());
-    
+
     showLoaderInModal('#editTestcampaignModal');
     $.ajax({
         url: "UpdateCampaign",
@@ -667,13 +670,19 @@ function getSys() {
 
 function updateSelectParameter(id) {
     var val = $("#" + id + '_wrapper #parameterTestSelect').find(":selected").val();
-    var data = getSelectInvariant(val, false, true);
+    var data = []
+
+    if (val === "ROBOT") {
+        data = getSelectRobot(true, true);
+    } else {
+        data = getSelectInvariant(val, false, true);
+    }
+
     $("#" + id + "_wrapper #parameterTestSelect2").empty();
     var optionList = "";
     for (var i = 0; i < data.find("option").length; i++) {
         if (!(findValueTableDataByCol(id, 2, val) && findValueTableDataByCol(id, 3, data.find("option")[i].value)))
-            optionList +=
-                    "<option value='" + data.find("option")[i].value + "'>" + data.find("option")[i].value + "</option>";
+            optionList += "<option value='" + data.find("option")[i].value + "'>" + data.find("option")[i].text + "</option>";
     }
     $("#" + id + "_wrapper #parameterTestSelect2").append(optionList);
     if ($("#" + id + '_wrapper #parameterTestSelect2 option').size() <= 0) {

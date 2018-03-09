@@ -351,7 +351,7 @@ function buildBar(obj) {
     if (params[1].checked)
         key += obj.country + " ";
     if (params[2].checked)
-        key += obj.browser + " ";
+        key += obj.robotDecli + " ";
     if (params[3].checked)
         key += obj.application;
     if (key === "")//if no spliter if selected
@@ -867,7 +867,7 @@ function createRow(row, isTotalRow) {
         if (params[1].checked)
             $tr.append($('<td>').text(row.country).css("text-align", "center"));
         if (params[2].checked)
-            $tr.append($('<td>').text(row.browser).css("text-align", "center"));
+            $tr.append($('<td>').text(row.robotDecli).css("text-align", "center"));
         if (params[3].checked)
             $tr.append($('<td>').text(row.application).css("text-align", "center"));
     } else {
@@ -1031,7 +1031,7 @@ function generateTooltip(data) {
     }
     htmlRes += '<div><span class=\'bold\'>Country : </span>' + data.Country + '</div>' +
             '<div><span class=\'bold\'>Environment : </span>' + data.Environment + '</div>' +
-            '<div><span class=\'bold\'>Browser : </span>' + data.Browser + '</div>' +
+            '<div><span class=\'bold\'>Browser : </span>' + data.RobotDecli + '</div>' +
             '<div><span class=\'bold\'>Start : </span>' + new Date(data.Start) + '</div>' +
             '<div><span class=\'bold\'>End : </span>' + new Date(data.End) + '</div>' +
             '<div>' + data.ControlMessage + '</div>';
@@ -1189,7 +1189,7 @@ function aoColumnsFunc(Columns) {
         }
     ];
     for (var i = 0; i < colNb; i++) {
-        var title = Columns[i].environment + " " + Columns[i].country + " " + Columns[i].browser;
+        var title = Columns[i].environment + " " + Columns[i].country + " " + Columns[i].robotDecli;
 
         var col = {
             "title": title,

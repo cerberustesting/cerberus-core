@@ -354,3 +354,9 @@ include::include/en/{file-to-include}[]
 
 link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
 
+== 3.3
+:file-to-include: changelog_3.3_en.adoc
+include::include/en/{file-to-include}[]
+
+link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+

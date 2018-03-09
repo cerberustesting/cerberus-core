@@ -40,11 +40,34 @@ public interface IFactoryRobot {
      * @param active Robot active
      * @param description description of the Robot
      * @param userAgent userAgent to Use
+     * @param screenSize
+     * @param host_user
+     * @param host_password
+     * @param capabilities
+     * @param robotDecli
      * @return 
      */
     Robot create(Integer robotID, String robot, String host, String port, String platform ,
-                 String browser, String version, String active, String description, String userAgent, String screenSize, String host_user, String host_password, List<RobotCapability> capabilities);
+                 String browser, String version, String active, String description, String userAgent, String screenSize, String host_user, String host_password, List<RobotCapability> capabilities, String robotDecli);
 
+    /**
+     *
+     * @param robotID
+     * @param robot
+     * @param host
+     * @param port
+     * @param platform
+     * @param browser
+     * @param version
+     * @param active
+     * @param description
+     * @param userAgent
+     * @param screenSize
+     * @param host_user
+     * @param host_password
+     * @param robotDecli
+     * @return
+     */
     Robot create(Integer robotID, String robot, String host, String port, String platform ,
-                 String browser, String version, String active, String description, String userAgent, String screenSize, String host_user, String host_password);
+                 String browser, String version, String active, String description, String userAgent, String screenSize, String host_user, String host_password, String robotDecli);
 }

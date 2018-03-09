@@ -152,7 +152,6 @@
                                             </div>
                                             <div class="form-group col-xs-2">
                                                 <button type="button" class="btn btn-primary" id="loadFiltersBtn">Search</button>
-                                                <button type="button" class="btn btn-default" id="resetbutton">Reset Filters</button>
                                             </div>
                                         </div>
                                     </form>
@@ -225,16 +224,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="row" id="potencialBlock">
-                                <li class="list-group-item list-group-item-info col-lg-offset-3 col-lg-6" id="potential" style="margin-top: 25px;">
-                                    <span class="badge" id="potentialNumber">0</span>
-                                    <span>Potential additions to the queue</span>
-                                </li>
-                                <div class="col-lg-offset-3 col-lg-6 text-center" style="margin-top: 25px;">
-                                    <button type="button" class="btn btn-primary" id="addQueue"> Add selection to queue </button>
-                                    <button type="button" class="btn btn-primary" id="addQueueAndRun"> Add selection to queue and Run</button>
-                                </div>
-                            </div>
                             <div class="row" id="runCampaignUpBlock">
                                     <button type="button" class="btn btn-primary btn-lg btn-block" id="runCampaignUp">Run Campaign</button>
                             </div>
@@ -245,31 +234,6 @@
                     </div>
 
                 </div>
-
-<!--                <div class="col-lg-3" id="exeList">
-                    <li class="list-group-item list-group-item-danger" style="display: none;" id="notValid">
-                        <span class="badge" id="notValidNumber" style="cursor: pointer;"></span>
-                        <span>Some executions couldn't be added to the queue</span>
-                    </li>
-                    <li class="list-group-item list-group-item-success" id="valid">
-                        <span class="badge" id="validNumber">0</span>
-                        <span>Executions in queue</span>
-                    </li>
-                    <div class="panel panel-default">
-                        <div class="panel-heading card" data-toggle="collapse" data-target="#queuePanel">
-                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
-                            <button class="btn btn-default btn-xs pull-right" id="resetQueue">Reset Queue</button>
-                            <span>Queue</span>
-                        </div>
-
-                        <div class="panel-body collapse in" id="queuePanel">
-                            <ul class="list-group" id="queue" style="max-height: 500px; min-height: 100px; overflow: hidden; overflow-y: scroll;border: 1px solid #CCC; border-radius: 4px;"></ul>
-                        </div>
-                    </div>
-                    <div style="padding-bottom: 25px;">
-                        <button type="button" class="btn btn-primary btn-lg btn-block" id="runList">Run</button>
-                    </div>
-                </div>-->
 
             </div>
             <div class="row">
@@ -287,7 +251,7 @@
                                         <div class="form-group">
                                             <label for="robot" class="col-sm-3 control-label bold">Select Robot Config</label>
                                             <div class="col-sm-6">
-                                                <select class="form-control input-sm" id="robot" name="robot"></select>
+                                                <select class="form-control input-sm" id="robot" name="robot" multiple></select>
                                                 <button type="button" id="robotEdit" class="glyphicon glyphicon-edit btn" title="Edit Robot"></button>
                                                 <button type="button" id="robotCreate" class="glyphicon glyphicon-plus-sign btn" title="Create a new Robot"></button>
                                             </div>
@@ -311,7 +275,7 @@
                                         <div class="form-group">
                                             <label for="browser" class="col-sm-3 control-label bold">Browser</label>
                                             <div class="col-sm-9">
-                                                <select class="form-control input-sm" id="browser" name="browser" multiple></select>
+                                                <select class="form-control input-sm" id="browser" name="browser"></select>
                                             </div>
                                         </div>
                                     </form>
@@ -424,8 +388,6 @@
                 </div>
             </div>
             <div style="padding-bottom: 15px;padding-top: 15px;">
-                <button type="button" class="btn btn-primary btn-lg btn-block" id="run">Run</button>
-                <button type="button" class="btn btn-primary btn-lg btn-block" id="addQueueAndRunBis"> Add selection to queue and Run</button>
                 <button type="button" class="btn btn-primary btn-lg btn-block" id="runCampaign">Run Campaign</button>
                 <button type="button" class="btn btn-primary btn-lg btn-block" id="runTestCase">Run Test Case</button>
             </div>

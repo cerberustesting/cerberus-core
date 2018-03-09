@@ -224,8 +224,12 @@ public class ExecutionRunService implements IExecutionRunService {
                 tCExecution.setBrowser("");
                 tCExecution.setVersion("");
                 tCExecution.setPlatform("");
+                tCExecution.setRobotDecli("");
                 LOG.debug(logPrefix + "No Selenium capabitities loaded because application not GUI : " + tCExecution.getApplicationObj().getType());
             }
+            tCExecution.setRobotDecli(tCExecution.getRobotDecli().replace("%BROWSER%", tCExecution.getBrowser()));
+            tCExecution.setRobotDecli(tCExecution.getRobotDecli().replace("%BROWSERVERSION%", tCExecution.getVersion()));
+            tCExecution.setRobotDecli(tCExecution.getRobotDecli().replace("%PLATFORM%", tCExecution.getPlatform()));
 
             /**
              * Load PreTestCase information and set PreTCase to the

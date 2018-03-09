@@ -182,7 +182,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         result.put("Start", testCaseExecution.getStart());
         result.put("End", testCaseExecution.getEnd());
         result.put("Country", JavaScriptUtils.javaScriptEscape(testCaseExecution.getCountry()));
-        result.put("Browser", JavaScriptUtils.javaScriptEscape(testCaseExecution.getBrowser()));
+        result.put("RobotDecli", JavaScriptUtils.javaScriptEscape(testCaseExecution.getRobotDecli()));
         result.put("ControlStatus", JavaScriptUtils.javaScriptEscape(testCaseExecution.getControlStatus()));
         result.put("ControlMessage", JavaScriptUtils.javaScriptEscape(testCaseExecution.getControlMessage()));
         result.put("Status", JavaScriptUtils.javaScriptEscape(testCaseExecution.getStatus()));
@@ -278,7 +278,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                 if (statusFilter.get(controlStatus).equals("on") && countryFilter.get(testCaseExecution.getCountry()).equals("on")) {
 
                     JSONObject executionJSON = testCaseExecutionToJSONObject(testCaseExecution);
-                    String execKey = testCaseExecution.getEnvironment() + " " + testCaseExecution.getCountry() + " " + testCaseExecution.getBrowser();
+                    String execKey = testCaseExecution.getEnvironment() + " " + testCaseExecution.getCountry() + " " + testCaseExecution.getRobotDecli();
                     String testCaseKey = testCaseExecution.getTest() + "_" + testCaseExecution.getTestCase();
                     JSONObject execTab = new JSONObject();
                     JSONObject ttcObject = new JSONObject();
@@ -349,8 +349,8 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                     JSONObject column = new JSONObject();
                     column.put("country", testCaseExecution.getCountry());
                     column.put("environment", testCaseExecution.getEnvironment());
-                    column.put("browser", testCaseExecution.getBrowser());
-                    columnMap.put(testCaseExecution.getBrowser() + "_" + testCaseExecution.getCountry() + "_" + testCaseExecution.getEnvironment(), column);
+                    column.put("robotDecli", testCaseExecution.getRobotDecli());
+                    columnMap.put(testCaseExecution.getRobotDecli() + "_" + testCaseExecution.getCountry() + "_" + testCaseExecution.getEnvironment(), column);
 
                 }
                 Map<String, JSONObject> treeMap = new TreeMap<String, JSONObject>(columnMap);
@@ -438,7 +438,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         JSONObject jsonResult = new JSONObject();
         boolean env = request.getParameter("env") != null || !splitStats;
         boolean country = request.getParameter("country") != null || !splitStats;
-        boolean browser = request.getParameter("browser") != null || !splitStats;
+        boolean robotDecli = request.getParameter("robotDecli") != null || !splitStats;
         boolean app = request.getParameter("app") != null || !splitStats;
 
         HashMap<String, SummaryStatisticsDTO> statMap = new HashMap<String, SummaryStatisticsDTO>();
@@ -452,21 +452,21 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                 key.append("_");
                 key.append((country) ? testCaseExecution.getCountry() : "");
                 key.append("_");
-                key.append((browser) ? testCaseExecution.getBrowser() : "");
+                key.append((robotDecli) ? testCaseExecution.getRobotDecli() : "");
                 key.append("_");
                 key.append((app) ? testCaseExecution.getApplication() : "");
 
                 SummaryStatisticsDTO stat = new SummaryStatisticsDTO();
                 stat.setEnvironment(testCaseExecution.getEnvironment());
                 stat.setCountry(testCaseExecution.getCountry());
-                stat.setBrowser(testCaseExecution.getBrowser());
+                stat.setRobotDecli(testCaseExecution.getRobotDecli());
                 stat.setApplication(testCaseExecution.getApplication());
 
                 statMap.put(key.toString(), stat);
             }
         }
 
-        jsonResult.put("contentTable", getStatByEnvCountryBrowser(testCaseExecutions, statMap, env, country, browser, app, statusFilter, countryFilter, splitStats));
+        jsonResult.put("contentTable", getStatByEnvCountryRobotDecli(testCaseExecutions, statMap, env, country, robotDecli, app, statusFilter, countryFilter, splitStats));
 
         return jsonResult;
     }
@@ -542,7 +542,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         return jsonResult;
     }
 
-    private JSONObject getStatByEnvCountryBrowser(List<TestCaseExecution> testCaseExecutions, HashMap<String, SummaryStatisticsDTO> statMap, boolean env, boolean country, boolean browser, boolean app, JSONObject statusFilter, JSONObject countryFilter, boolean splitStats) throws JSONException {
+    private JSONObject getStatByEnvCountryRobotDecli(List<TestCaseExecution> testCaseExecutions, HashMap<String, SummaryStatisticsDTO> statMap, boolean env, boolean country, boolean robotDecli, boolean app, JSONObject statusFilter, JSONObject countryFilter, boolean splitStats) throws JSONException {
         SummaryStatisticsDTO total = new SummaryStatisticsDTO();
         total.setEnvironment("Total");
 
@@ -556,7 +556,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                 key.append("_");
                 key.append((country) ? testCaseExecution.getCountry() : "");
                 key.append("_");
-                key.append((browser) ? testCaseExecution.getBrowser() : "");
+                key.append((robotDecli) ? testCaseExecution.getRobotDecli() : "");
                 key.append("_");
                 key.append((app) ? testCaseExecution.getApplication() : "");
 

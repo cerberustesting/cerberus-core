@@ -115,6 +115,7 @@ public class RunTestCase extends HttpServlet {
         String ss_ip_pass = ""; // Selenium Password (optional)
         String ss_p = ""; // Selenium Port
         String browser = "";
+        String robotDecli = "";
         String version = "";
         String platform = "";
         String robot = "";
@@ -242,6 +243,10 @@ public class RunTestCase extends HttpServlet {
                 ss_ip_pass = robObj.getHostPassword();
                 ss_p = ParameterParserUtil.parseStringParam(String.valueOf(robObj.getPort()), ss_p);
                 browser = ParameterParserUtil.parseStringParam(robObj.getBrowser(), browser);
+                robotDecli = ParameterParserUtil.parseStringParam(robObj.getRobotDecli(), "");
+                if (StringUtil.isNullOrEmpty(robotDecli)) {
+                    robotDecli = robObj.getRobot();
+                }
                 version = ParameterParserUtil.parseStringParam(robObj.getVersion(), version);
                 platform = ParameterParserUtil.parseStringParam(robObj.getPlatform(), platform);
                 active = robObj.getActive();
@@ -252,6 +257,8 @@ public class RunTestCase extends HttpServlet {
                 errorMessage += "Error - Robot [" + robot + "] does not exist. ";
                 error = true;
             }
+        } else {
+            robotDecli = browser;
         }
         // We cannot execute a testcase on a desactivated Robot.
         if (active.equals("N")) {
@@ -307,21 +314,13 @@ public class RunTestCase extends HttpServlet {
             ITestCaseExecutionService tces = appContext.getBean(ITestCaseExecutionService.class);
             ITestCaseService tcs = appContext.getBean(ITestCaseService.class);            
             TestCase tCase = factoryTCase.create(test, testCase);
-            int testCaseVersion = 0;
-            
-            try {
-            	testCaseVersion = tcs.findTestCaseByKey(test, testCase).getTestCaseVersion();
-            }catch(CerberusException e) {
-            	LOG.info(e);
-            }
-            
 
             // Building Execution Object.
             TestCaseExecution tCExecution = factoryTCExecution.create(0, test, testCase, null, null, null, environment, country, browser, version, platform, "",
                     0, 0, "", "", "", null, ss_ip, null, ss_p, tag, verbose, screenshot, getPageSource, getSeleniumLog, synchroneous, timeout, outputFormat, null,
                     Infos.getInstance().getProjectNameAndVersion(), tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL, myEnvData, ss_ip, ss_p,
                     null, new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED), executor, numberOfRetries, screenSize, capabilities,
-                    "", "", "", "", "", manualExecution, userAgent, testCaseVersion);
+                    "", "", "", "", "", manualExecution, userAgent, 0, "", robotDecli);
             tCExecution.setSeleniumIPUser(ss_ip_user);
             tCExecution.setSeleniumIPPassword(ss_ip_pass);
 
@@ -523,7 +522,6 @@ public class RunTestCase extends HttpServlet {
                         + MessageGeneralEnum.EXECUTION_FA_SERVLETVALIDATONS.getCode()
                         + " " + MessageGeneralEnum.EXECUTION_FA_SERVLETVALIDATONS.getDescription() + " " + errorMessage;
                 out.println(errorMessageFinal);
-//            out.println(helpMessage);
             }
         }
 

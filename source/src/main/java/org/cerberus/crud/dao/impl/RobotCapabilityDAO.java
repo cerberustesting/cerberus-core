@@ -98,8 +98,10 @@ public class RobotCapabilityDAO implements IRobotCapabilityDAO {
         AnswerList<RobotCapability> ans = new AnswerList<>();
         MessageEvent msg = null;
 
+        LOG.debug(Query.READ_BY_ROBOT);
         try (Connection connection = databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(Query.READ_BY_ROBOT)) {
+
             // Prepare and execute query
             preStat.setString(1, robot);
             try(ResultSet resultSet = preStat.executeQuery();) {
@@ -129,6 +131,8 @@ public class RobotCapabilityDAO implements IRobotCapabilityDAO {
         Answer ans = new Answer();
         MessageEvent msg = null;
 
+        LOG.debug(Query.CREATE);
+
         try (Connection connection = databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(Query.CREATE)) {
             // Prepare and execute query
@@ -156,6 +160,8 @@ public class RobotCapabilityDAO implements IRobotCapabilityDAO {
         Answer ans = new Answer();
         MessageEvent msg = null;
 
+        LOG.debug(Query.UPDATE);
+
         try (Connection connection = databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(Query.UPDATE)) {
             // Prepare and execute query
@@ -182,6 +188,8 @@ public class RobotCapabilityDAO implements IRobotCapabilityDAO {
     public Answer delete(RobotCapability capability) {
         Answer ans = new Answer();
         MessageEvent msg = null;
+
+        LOG.debug(Query.DELETE);
 
         try (Connection connection = databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(Query.DELETE)) {

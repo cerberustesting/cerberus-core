@@ -195,7 +195,7 @@ public class GetReportData extends HttpServlet {
                 SummaryStatisticsDTO stat = new SummaryStatisticsDTO();
                 stat.setEnvironment(column.getEnvironment());
                 stat.setCountry(column.getCountry());
-                stat.setBrowser(column.getBrowser());
+                stat.setRobotDecli(column.getBrowser());
                 stat.setApplication(column.getApplication());
 
                 statMap.put(column.getEnvironment() + "_" + column.getCountry() + "_" + column.getBrowser() + "_" + column.getApplication(),

@@ -50,8 +50,6 @@ import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import javax.xml.transform.Result;
-
 /**
  *
  * @author bcivel
@@ -83,21 +81,20 @@ public class RobotDAO implements IRobotDAO {
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
         }
-        try (        Connection connection = this.databaseSpring.connect();
-                     PreparedStatement preStat = connection.prepareStatement(query);
-        ){
-                preStat.setInt(1, robotid);
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query);) {
+            preStat.setInt(1, robotid);
 
-                try(ResultSet resultSet = preStat.executeQuery()) {
-                    if (resultSet.first()) {
-                        result = loadFromResultSet(resultSet);
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                        ans.setItem(result);
-                    } else {
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                    }
+            try (ResultSet resultSet = preStat.executeQuery()) {
+                if (resultSet.first()) {
+                    result = loadFromResultSet(resultSet);
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+                    ans.setItem(result);
+                } else {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
                 }
+            }
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : " + exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -163,6 +160,7 @@ public class RobotDAO implements IRobotDAO {
             searchSQL.append(" or `browser` like ?");
             searchSQL.append(" or `useragent` like ?");
             searchSQL.append(" or `screensize` like ?");
+            searchSQL.append(" or `robotdecli` like ?");
             searchSQL.append(" or `version` like ?)");
         }
         if (individualSearch != null && !individualSearch.isEmpty()) {
@@ -196,6 +194,7 @@ public class RobotDAO implements IRobotDAO {
             try {
                 int i = 1;
                 if (!Strings.isNullOrEmpty(searchTerm)) {
+                    preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
@@ -284,9 +283,9 @@ public class RobotDAO implements IRobotDAO {
     public Answer create(Robot robot) {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO robot (`robot`, `host`, `port`, `platform`,`browser`, `version`,`active` , `description`, `useragent`, `screensize`, `host_user`, `host_password`) ");
+        query.append("INSERT INTO robot (`robot`, `host`, `port`, `platform`,`browser`, `version`,`active` , `description`, `useragent`, `screensize`, `host_user`, `host_password`, `robotdecli`) ");
 
-        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?)");
+        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -296,18 +295,20 @@ public class RobotDAO implements IRobotDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
-                preStat.setString(1, robot.getRobot());
-                preStat.setString(2, robot.getHost());
-                preStat.setString(3, robot.getPort());
-                preStat.setString(4, robot.getPlatform());
-                preStat.setString(5, robot.getBrowser());
-                preStat.setString(6, robot.getVersion());
-                preStat.setString(7, robot.getActive());
-                preStat.setString(8, robot.getDescription());
-                preStat.setString(9, robot.getUserAgent());
-                preStat.setString(10, robot.getScreenSize());
-                preStat.setString(11, StringUtil.isNullOrEmpty(robot.getHostUser())?null:robot.getHostUser());
-                preStat.setString(12, StringUtil.isNullOrEmpty(robot.getHostPassword())?null:robot.getHostPassword());
+                int i = 1;
+                preStat.setString(i++, robot.getRobot());
+                preStat.setString(i++, robot.getHost());
+                preStat.setString(i++, robot.getPort());
+                preStat.setString(i++, robot.getPlatform());
+                preStat.setString(i++, robot.getBrowser());
+                preStat.setString(i++, robot.getVersion());
+                preStat.setString(i++, robot.getActive());
+                preStat.setString(i++, robot.getDescription());
+                preStat.setString(i++, robot.getUserAgent());
+                preStat.setString(i++, robot.getScreenSize());
+                preStat.setString(i++, StringUtil.isNullOrEmpty(robot.getHostUser()) ? null : robot.getHostUser());
+                preStat.setString(i++, StringUtil.isNullOrEmpty(robot.getHostPassword()) ? null : robot.getHostPassword());
+                preStat.setString(i++, robot.getRobotDecli());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -388,12 +389,11 @@ public class RobotDAO implements IRobotDAO {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
         query.append("UPDATE robot SET robot= ? , host = ? , port = ? ,");
-        query.append("platform = ?, browser = ? , version = ?, active=?, description = ?, useragent = ?, screensize = ?");
-
-        if(robot.getHostUser() != null) {
+        query.append("platform = ?, browser = ? , version = ?, active=?, description = ?, useragent = ?, screensize = ?, robotdecli = ?");
+        if (robot.getHostUser() != null) {
             query.append(", host_user = ?");
         }
-        if(robot.getHostPassword() != null) {
+        if (robot.getHostPassword() != null) {
             query.append(", host_password = ?");
         }
         query.append("WHERE robotID = ?");
@@ -406,7 +406,7 @@ public class RobotDAO implements IRobotDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
-                int cpt=1;
+                int cpt = 1;
                 preStat.setString(cpt++, robot.getRobot());
                 preStat.setString(cpt++, robot.getHost());
                 preStat.setString(cpt++, robot.getPort());
@@ -417,14 +417,13 @@ public class RobotDAO implements IRobotDAO {
                 preStat.setString(cpt++, robot.getDescription());
                 preStat.setString(cpt++, robot.getUserAgent());
                 preStat.setString(cpt++, robot.getScreenSize());
-
-                if(robot.getHostUser() != null) {
+                preStat.setString(cpt++, robot.getRobotDecli());
+                if (robot.getHostUser() != null) {
                     preStat.setString(cpt++, robot.getHostUser());
                 }
-                if(robot.getHostPassword() != null) {
+                if (robot.getHostPassword() != null) {
                     preStat.setString(cpt++, robot.getHostPassword());
                 }
-
                 preStat.setInt(cpt++, robot.getRobotID());
 
                 preStat.executeUpdate();
@@ -468,10 +467,11 @@ public class RobotDAO implements IRobotDAO {
         String screenSize = ParameterParserUtil.parseStringParam(rs.getString("screensize"), "");
         String user = ParameterParserUtil.parseStringParam(rs.getString("host_user"), "");
         String password = ParameterParserUtil.parseStringParam(rs.getString("host_password"), "");
+        String robotDecli = ParameterParserUtil.parseStringParam(rs.getString("robotdecli"), "");
 
         //TODO remove when working in test with mockito and autowired
         factoryRobot = new FactoryRobot();
-        return factoryRobot.create(robotID, robot, host, port, platform, browser, version, active, description, userAgent, screenSize, user, password);
+        return factoryRobot.create(robotID, robot, host, port, platform, browser, version, active, description, userAgent, screenSize, user, password, robotDecli);
     }
 
     @Override
@@ -500,6 +500,7 @@ public class RobotDAO implements IRobotDAO {
             searchSQL.append(" or `browser` like ?");
             searchSQL.append(" or `useragent` like ?");
             searchSQL.append(" or `screensize` like ?");
+            searchSQL.append(" or `robotdecli` like ?");
             searchSQL.append(" or `version` like ?)");
         }
         if (individualSearch != null && !individualSearch.isEmpty()) {
@@ -524,6 +525,7 @@ public class RobotDAO implements IRobotDAO {
 
             int i = 1;
             if (!Strings.isNullOrEmpty(searchTerm)) {
+                preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");

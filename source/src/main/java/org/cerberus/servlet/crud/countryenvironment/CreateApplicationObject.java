@@ -58,7 +58,6 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-
 /**
  *
  * @author bcivel
@@ -67,7 +66,7 @@ import org.apache.logging.log4j.Logger;
 public class CreateApplicationObject extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(CreateApplicationObject.class);
-    
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -108,7 +107,7 @@ public class CreateApplicationObject extends HttpServlet {
                 FileItem fileItem = it.next();
                 boolean isFormField = fileItem.isFormField();
                 if (isFormField) {
-                    fileData.put(fileItem.getFieldName(), ParameterParserUtil.parseStringParamAndDecode(fileItem.getString("UTF-8"), null, charset));
+                    fileData.put(fileItem.getFieldName(), fileItem.getString("UTF-8"));
                 } else {
                     file = fileItem;
                 }
@@ -116,15 +115,15 @@ public class CreateApplicationObject extends HttpServlet {
         } catch (FileUploadException e) {
             e.printStackTrace();
         }
-        
+
         /**
          * Parsing and securing all required parameters.
          */
         // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
         // Parameter that needs to be secured --> We SECURE+DECODE them
-        String application = fileData.get("application");
-        String object = fileData.get("object");
-        String value = fileData.get("value");
+        String application = ParameterParserUtil.parseStringParamAndDecode(fileData.get("application"), null, charset);
+        String object = ParameterParserUtil.parseStringParamAndDecode(fileData.get("object"), null, charset);
+        String value = ParameterParserUtil.parseStringParam(fileData.get("value"), null);
 
         String usrcreated = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getRemoteUser(), "", charset);
         String datecreated = new Timestamp(new java.util.Date().getTime()).toString();
@@ -141,7 +140,7 @@ public class CreateApplicationObject extends HttpServlet {
                     .replace("%OPERATION%", "Create")
                     .replace("%REASON%", "Application name is missing!"));
             ans.setResultMessage(msg);
-        } else if(StringUtil.isNullOrEmpty(object)){
+        } else if (StringUtil.isNullOrEmpty(object)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "ApplicationObject")
                     .replace("%OPERATION%", "Create")
@@ -155,11 +154,11 @@ public class CreateApplicationObject extends HttpServlet {
             IApplicationObjectService applicationobjectService = appContext.getBean(IApplicationObjectService.class);
             IFactoryApplicationObject factoryApplicationobject = appContext.getBean(IFactoryApplicationObject.class);
             String fileName = "";
-            if(file != null) {
+            if (file != null) {
                 fileName = file.getName();
             }
 
-            ApplicationObject applicationData = factoryApplicationobject.create(-1,application,object,value,fileName,usrcreated,datecreated,usrmodif,datemodif);
+            ApplicationObject applicationData = factoryApplicationobject.create(-1, application, object, value, fileName, usrcreated, datecreated, usrmodif, datemodif);
             ans = applicationobjectService.create(applicationData);
 
             if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
@@ -169,9 +168,9 @@ public class CreateApplicationObject extends HttpServlet {
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
                 logEventService.createForPrivateCalls("/CreateApplicationObject", "CREATE", "Create Application Object: ['" + application + "','" + object + "']", request);
 
-            if (file != null) {
-                    AnswerItem an = applicationobjectService.readByKey(application,object);
-                    if(an.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && an.getItem() != null) {
+                if (file != null) {
+                    AnswerItem an = applicationobjectService.readByKey(application, object);
+                    if (an.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && an.getItem() != null) {
                         applicationData = (ApplicationObject) an.getItem();
                         ans = applicationobjectService.uploadFile(applicationData.getID(), file);
                         if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {

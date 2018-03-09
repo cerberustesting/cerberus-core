@@ -585,6 +585,58 @@ function getSelectInvariant(idName, forceReload, notAsync, addValue) {
     return select;
 }
 
+/**
+ * This method will return the combo list of Robot.
+ * It will load the values from the sessionStorage cache of the browser
+ * when available, if not available, it will get it from the server and save
+ * it on local cache.
+ * The forceReload boolean can force the refresh of the list from the server.
+ * @param {boolean} forceReload true if we want to force the reload on cache from the server
+ * @param {boolean} notAsync true if we dont want to have Async ajax
+ */
+function getSelectRobot(forceReload, notAsync) {
+    var cacheEntryName = "ROBOTLIST";
+    if (forceReload) {
+        sessionStorage.removeItem(cacheEntryName);
+    }
+    var async = true;
+    if (notAsync) {
+        async = false;
+    }
+    var list = JSON.parse(sessionStorage.getItem(cacheEntryName));
+    var select = $("<select></select>").addClass("form-control input-sm");
+
+    if (list === null) {
+        $.ajax({
+            url: "ReadRobot",
+            async: async,
+            success: function (data) {
+                list = data.contentTable;
+//                console.info(list);
+//                console.info(list.length);
+                sessionStorage.setItem(cacheEntryName, JSON.stringify(data));
+                for (var index = 0; index < list.length; index++) {
+//                    console.info(list[index].robot);
+                    var item = list[index].robot;
+                    var text = list[index].robot + " [" + list[index].host + "]";
+
+                    select.append($("<option></option>").text(text).val(item));
+//                    console.info(item + " - " + text)
+                }
+            }
+        });
+    } else {
+        for (var index = 0; index < list.length; index++) {
+            var item = list[index].value;
+            var text = list[index].robot + " [" + list[index].host + "]";
+
+            select.append($("<option></option>").text(text).val(item));
+        }
+    }
+
+    return select;
+}
+
 
 /**
  * This method will return the combo list of Label.
@@ -2471,10 +2523,10 @@ function getComboConfigLabel(labelType) {
                     dataType: 'json',
                     delay: 250,
                     data: function (params) {
-                    	params.page = params.page || 1;
+                        params.page = params.page || 1;
                         return {
                             sSearch: params.term, // search term
-                            iDisplayStart: (params.page * 30)-30
+                            iDisplayStart: (params.page * 30) - 30
                         };
                     },
                     processResults: function (data, params) {

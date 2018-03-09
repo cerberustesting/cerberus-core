@@ -143,6 +143,7 @@ public class ExecutionStartService implements IExecutionStartService {
                 tCExecution.setConditionVal1Init(tCase.getConditionVal1());
                 tCExecution.setConditionVal2(tCase.getConditionVal2());
                 tCExecution.setConditionVal2Init(tCase.getConditionVal2());
+                tCExecution.setTestCaseVersion(tCase.getTestCaseVersion());
             } else {
                 throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
             }
@@ -191,6 +192,11 @@ public class ExecutionStartService implements IExecutionStartService {
             throw new CerberusException(mes);
         }
         LOG.debug("Application Information Loaded - " + tCExecution.getApplicationObj().getApplication() + " - " + tCExecution.getApplicationObj().getDescription());
+
+        /**
+         * Init System from Application.
+         */
+        tCExecution.setSystem(tCExecution.getApplicationObj().getSystem());
 
         /**
          * Load Country information and Set it to the TestCaseExecution object.
@@ -389,12 +395,6 @@ public class ExecutionStartService implements IExecutionStartService {
                 if (tCExecution.getIp().equalsIgnoreCase("")) {
                     MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_EMPTYORBADIP);
                     mes.setDescription(mes.getDescription().replace("%IP%", tCExecution.getIp()));
-                    LOG.debug(mes.getDescription());
-                    throw new CerberusException(mes);
-                }
-                if (tCExecution.getPort().equalsIgnoreCase("")) {
-                    MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_EMPTYORBADPORT);
-                    mes.setDescription(mes.getDescription().replace("%PORT%", tCExecution.getPort()));
                     LOG.debug(mes.getDescription());
                     throw new CerberusException(mes);
                 }

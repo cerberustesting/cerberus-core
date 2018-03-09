@@ -106,7 +106,7 @@ public class RobotService implements IRobotService {
 
         // Second, delete its capabilities
         AnswerUtil.agregateAnswer(finalAnswer, robotCapabilityService.delete(robot.getCapabilities()));
-        
+
         // Finally return aggregated answer
         return finalAnswer;
     }
@@ -209,7 +209,7 @@ public class RobotService implements IRobotService {
 
     @Override
     public AnswerList<List<String>> readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
-        return robotDao.readDistinctValuesByCriteria(searchParameter,individualSearch,columnName);
+        return robotDao.readDistinctValuesByCriteria(searchParameter, individualSearch, columnName);
     }
 
 }
