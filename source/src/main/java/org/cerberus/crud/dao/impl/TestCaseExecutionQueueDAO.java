@@ -1451,89 +1451,74 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
             LOG.debug("SQL.param.comment : " + object.getComment());
             LOG.debug("SQL.param.state : " + object.getState());
         }
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
-            try {
-                int i = 1;
-                preStat.setString(i++, object.getTest());
-                preStat.setString(i++, object.getTestCase());
-                preStat.setString(i++, object.getCountry());
-                preStat.setString(i++, object.getEnvironment());
-                preStat.setString(i++, object.getRobot());
-                preStat.setString(i++, object.getRobotIP());
-                preStat.setString(i++, object.getRobotPort());
-                preStat.setString(i++, object.getBrowser());
-                preStat.setString(i++, object.getBrowserVersion());
-                preStat.setString(i++, object.getPlatform());
-                preStat.setString(i++, object.getScreenSize());
-                preStat.setInt(i++, object.getManualURL());
-                preStat.setString(i++, object.getManualHost());
-                preStat.setString(i++, object.getManualContextRoot());
-                preStat.setString(i++, object.getManualLoginRelativeURL());
-                preStat.setString(i++, object.getManualEnvData());
-                preStat.setString(i++, object.getTag());
-                preStat.setInt(i++, object.getScreenshot());
-                preStat.setInt(i++, object.getVerbose());
-                preStat.setString(i++, object.getTimeout());
-                preStat.setInt(i++, object.getPageSource());
-                preStat.setInt(i++, object.getSeleniumLog());
-                preStat.setInt(i++, object.getRetries());
-                preStat.setString(i++, object.getManualExecution());
-                String user = object.getUsrCreated() == null ? "" : object.getUsrCreated();
-                preStat.setString(i++, user);
-                if (object.getState() == null) {
-                    preStat.setString(i++, object.getState().WAITING.name());
-                } else {
-                    preStat.setString(i++, object.getState().name());
+        
+        try(Connection connection = this.databaseSpring.connect();
+        		PreparedStatement preStat = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);) {
+            
+            int i = 1;
+            preStat.setString(i++, object.getTest());
+            preStat.setString(i++, object.getTestCase());
+            preStat.setString(i++, object.getCountry());
+            preStat.setString(i++, object.getEnvironment());
+            preStat.setString(i++, object.getRobot());
+            preStat.setString(i++, object.getRobotIP());
+            preStat.setString(i++, object.getRobotPort());
+            preStat.setString(i++, object.getBrowser());
+            preStat.setString(i++, object.getBrowserVersion());
+            preStat.setString(i++, object.getPlatform());
+            preStat.setString(i++, object.getScreenSize());
+            preStat.setInt(i++, object.getManualURL());
+            preStat.setString(i++, object.getManualHost());
+            preStat.setString(i++, object.getManualContextRoot());
+            preStat.setString(i++, object.getManualLoginRelativeURL());
+            preStat.setString(i++, object.getManualEnvData());
+            preStat.setString(i++, object.getTag());
+            preStat.setInt(i++, object.getScreenshot());
+            preStat.setInt(i++, object.getVerbose());
+            preStat.setString(i++, object.getTimeout());
+            preStat.setInt(i++, object.getPageSource());
+            preStat.setInt(i++, object.getSeleniumLog());
+            preStat.setInt(i++, object.getRetries());
+            preStat.setString(i++, object.getManualExecution());
+            String user = object.getUsrCreated() == null ? "" : object.getUsrCreated();
+            preStat.setString(i++, user);
+            if (object.getState() == null) {
+                preStat.setString(i++, object.getState().WAITING.name());
+            } else {
+                preStat.setString(i++, object.getState().name());
+            }
+            preStat.setString(i++, object.getComment());
+            preStat.setString(i++, object.getDebugFlag());
+            preStat.setInt(i++, object.getPriority());
+
+            preStat.executeUpdate();
+
+            try (ResultSet resultSet = preStat.getGeneratedKeys()) {
+                if (resultSet.first()) {
+                    newObject.setId(resultSet.getInt(1));
                 }
-                preStat.setString(i++, object.getComment());
-                preStat.setString(i++, object.getDebugFlag());
-                preStat.setInt(i++, object.getPriority());
-
-                preStat.executeUpdate();
-
-                try (ResultSet resultSet = preStat.getGeneratedKeys()) {
-                    if (resultSet.first()) {
-                        newObject.setId(resultSet.getInt(1));
-                    }
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT"));
-                } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-                }
-
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                 msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT"));
-
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
-
-                if (exception.getSQLState().equals(SQL_DUPLICATED_CODE)) { //23000 is the sql state for duplicate entries
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_DUPLICATE);
-                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT").replace("%REASON%", exception.toString()));
-                } else {
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-                }
-            } finally {
-                preStat.close();
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
             }
+
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT"));
+
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : " + exception.toString());
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException exception) {
-                LOG.error("Unable to close connection : " + exception.toString());
+
+            if (exception.getSQLState().equals(SQL_DUPLICATED_CODE)) { //23000 is the sql state for duplicate entries
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_DUPLICATE);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT").replace("%REASON%", exception.toString()));
+            } else {
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
             }
-        }
+        } 
         return new AnswerItem(newObject, msg);
     }
 
