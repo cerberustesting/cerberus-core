@@ -481,9 +481,9 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                 String value = getParameterIfExists(request, "properties_value1_" + inc);
                 String value2 = getParameterIfExists(request, "properties_value2_" + inc);
                 String length = ParameterParserUtil.parseStringParam(getParameterIfExists(request, "properties_length_" + inc), "0");
-                int rowLimit = Integer.valueOf(getParameterIfExists(request, "properties_rowlimit_" + inc).equals("") ? "0" : getParameterIfExists(request, "properties_rowlimit_" + inc));
-                int retryNb = Integer.valueOf(getParameterIfExists(request, "properties_retrynb_" + inc).equals("") ? "0" : getParameterIfExists(request, "properties_retrynb_" + inc));
-                int retryPeriod = Integer.valueOf(getParameterIfExists(request, "properties_retryperiod_" + inc).equals("") ? "0" : getParameterIfExists(request, "properties_retryperiod_" + inc));
+                int rowLimit = getParameterIfExists(request, "properties_rowlimit_" + inc).equals("") ? 0 : Integer.parseInt(getParameterIfExists(request, "properties_rowlimit_" + inc));
+                int retryNb = getParameterIfExists(request, "properties_retrynb_" + inc).equals("") ? 0 : Integer.parseInt(getParameterIfExists(request, "properties_retrynb_" + inc));
+                int retryPeriod = getParameterIfExists(request, "properties_retryperiod_" + inc).equals("") ? 0 : Integer.parseInt(getParameterIfExists(request, "properties_retryperiod_" + inc));
                 String nature = getParameterIfExists(request, "properties_nature_" + inc);
                 String database = getParameterIfExists(request, "properties_dtb_" + inc);
                 if (countries != null) {
@@ -507,9 +507,9 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             for (String inc : testcase_step_increment) {
                 String delete = getParameterIfExists(request, "step_delete_" + inc);
                 String stepInUse = getParameterIfExists(request, "step_InUseInOtherTestCase_" + inc);
-                int step = Integer.valueOf(getParameterIfExists(request, "step_technical_number_" + inc) == null ? "0" : getParameterIfExists(request, "step_technical_number_" + inc));
-                int sort = Integer.valueOf(getParameterIfExists(request, "step_number_" + inc) == null ? "0" : getParameterIfExists(request, "step_number_" + inc));
-                int initialStep = Integer.valueOf(getParameterIfExists(request, "initial_step_number_" + inc) == null ? "0" : getParameterIfExists(request, "initial_step_number_" + inc));
+                int step = getParameterIfExists(request, "step_technical_number_" + inc) == null ? 0 : Integer.parseInt(getParameterIfExists(request, "step_technical_number_" + inc));
+                int sort = getParameterIfExists(request, "step_number_" + inc) == null ? 0 : Integer.parseInt(getParameterIfExists(request, "step_number_" + inc));
+                int initialStep = getParameterIfExists(request, "initial_step_number_" + inc) == null ? 0 : Integer.parseInt(getParameterIfExists(request, "initial_step_number_" + inc));
                 String loop = getParameterIfExists(request, "step_loop_" + inc);
                 String conditionOper = getParameterIfExists(request, "step_conditionoper_" + inc);
                 String conditionVal1 = getParameterIfExists(request, "step_conditionval1_" + inc);
@@ -521,7 +521,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                 String useStepTest = getParameterIfExists(request, "step_useStepTest_" + inc) == null ? "" : getParameterIfExists(request, "step_useStepTest_" + inc);
                 String useStepTestCase = getParameterIfExists(request, "step_useStepTestCase_" + inc) == null ? "" : getParameterIfExists(request, "step_useStepTestCase_" + inc);
                 String stepValue = getParameterIfExists(request, "step_useStepStep_" + inc);
-                int useStepStep = Integer.valueOf(stepValue == null || stepValue.equals("") ? "-1" : getParameterIfExists(request, "step_useStepStep_" + inc));
+                int useStepStep = stepValue == null || stepValue.equals("") ? -1 : Integer.parseInt(getParameterIfExists(request, "step_useStepStep_" + inc));
                 String inLibrary = getParameterIfExists(request, "step_inLibrary_" + inc);
                 /* If delete, don't add it to the list of steps */
                 if (delete == null) {
@@ -654,13 +654,16 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         if (stepAction_increment != null) {
             for (String inc : stepAction_increment) {
                 String delete = getParameterIfExists(request, "action_delete_" + stepInc + "_" + inc);
-                int sequence = Integer.valueOf(getParameterIfExists(request, "action_technical_sequence_" + stepInc + "_" + inc) == null ? "0" : getParameterIfExists(request, "action_technical_sequence_" + stepInc + "_" + inc));
-                int sort = Integer.valueOf(getParameterIfExists(request, "action_sequence_" + stepInc + "_" + inc) == null ? "0" : getParameterIfExists(request, "action_sequence_" + stepInc + "_" + inc));
+                int sequence = getParameterIfExists(request, "action_technical_sequence_" + stepInc + "_" + inc) == null ? 0 : Integer.parseInt(getParameterIfExists(request, "action_technical_sequence_" + stepInc + "_" + inc));
+                int sort = getParameterIfExists(request, "action_sequence_" + stepInc + "_" + inc) == null ? 0 : Integer.parseInt(getParameterIfExists(request, "action_sequence_" + stepInc + "_" + inc));
                 String conditionOper = getParameterIfExists(request, "action_conditionoper_" + stepInc + "_" + inc);
                 String conditionVal1 = getParameterIfExists(request, "action_conditionval1_" + stepInc + "_" + inc);
                 String conditionVal2 = getParameterIfExists(request, "action_conditionval2_" + stepInc + "_" + inc);
                 String action = getParameterIfExists(request, "action_action_" + stepInc + "_" + inc);
-                String object = getParameterIfExists(request, "action_object_" + stepInc + "_" + inc).replaceAll("\"", "\\\"");
+                String object = getParameterIfExists(request, "action_object_" + stepInc + "_" + inc);
+                if(object != null){
+                	object = object.replaceAll("\"", "\\\"");
+                }
                 String property = getParameterIfExists(request, "action_property_" + stepInc + "_" + inc);
                 String forceExeStatus = getParameterIfExists(request, "action_forceexestatus_" + stepInc + "_" + inc);
                 String description = getParameterIfExists(request, "action_description_" + stepInc + "_" + inc);
@@ -682,14 +685,18 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         if (stepActionControl_increment != null) {
             for (String inc : stepActionControl_increment) {
                 String delete = getParameterIfExists(request, "control_delete_" + stepInc + "_" + actionInc + "_" + inc);
-                int controlsequence = Integer.valueOf(getParameterIfExists(request, "control_technical_control_" + stepInc + "_" + actionInc + "_" + inc) == null ? "0" : getParameterIfExists(request, "control_technical_control_" + stepInc + "_" + actionInc + "_" + inc));
-                int sort = Integer.valueOf(getParameterIfExists(request, "control_controlsequence_" + stepInc + "_" + actionInc + "_" + inc) == null ? "0" : getParameterIfExists(request, "control_controlsequence_" + stepInc + "_" + actionInc + "_" + inc));
+                int controlsequence = getParameterIfExists(request, "control_technical_control_" + stepInc + "_" + actionInc + "_" + inc) == null ? 0 : Integer.parseInt(getParameterIfExists(request, "control_technical_control_" + stepInc + "_" + actionInc + "_" + inc));
+                int sort = getParameterIfExists(request, "control_controlsequence_" + stepInc + "_" + actionInc + "_" + inc) == null ? 0 : Integer.parseInt(getParameterIfExists(request, "control_controlsequence_" + stepInc + "_" + actionInc + "_" + inc));
                 String conditionOper = getParameterIfExists(request, "control_conditionoper_" + stepInc + "_" + actionInc + "_" + inc);
-                String conditionVal1 = getParameterIfExists(request, "control_conditionval1_" + stepInc + "_" + actionInc + "_" + inc).replaceAll("\"", "\\\"");
-                String conditionVal2 = getParameterIfExists(request, "control_conditionval2_" + stepInc + "_" + actionInc + "_" + inc).replaceAll("\"", "\\\"");
+                String conditionVal1 = getParameterIfExists(request, "control_conditionval1_" + stepInc + "_" + actionInc + "_" + inc);
+                conditionVal1 = conditionVal1 != null ? conditionVal1.replaceAll("\"", "\\\"") : null;
+                String conditionVal2 = getParameterIfExists(request, "control_conditionval2_" + stepInc + "_" + actionInc + "_" + inc);
+                conditionVal2 = conditionVal2 != null ? conditionVal2.replaceAll("\"", "\\\"") : null;
                 String control = getParameterIfExists(request, "control_control_" + stepInc + "_" + actionInc + "_" + inc);
-                String value1 = getParameterIfExists(request, "control_value1_" + stepInc + "_" + actionInc + "_" + inc).replaceAll("\"", "\\\"");
-                String value2 = getParameterIfExists(request, "control_value2_" + stepInc + "_" + actionInc + "_" + inc).replaceAll("\"", "\\\"");
+                String value1 = getParameterIfExists(request, "control_value1_" + stepInc + "_" + actionInc + "_" + inc);
+                value1 = value1 != null ? value1.replaceAll("\"", "\\\"") : null;
+                String value2 = getParameterIfExists(request, "control_value2_" + stepInc + "_" + actionInc + "_" + inc);
+                value2 = value2 != null ? value2.replaceAll("\"", "\\\"") : null;
                 String fatal = getParameterIfExists(request, "control_fatal_" + stepInc + "_" + actionInc + "_" + inc);
                 String description = getParameterIfExists(request, "control_description_" + stepInc + "_" + actionInc + "_" + inc);
                 String screenshot = getParameterIfExists(request, "control_screenshot_" + stepInc + "_" + actionInc + "_" + inc);
