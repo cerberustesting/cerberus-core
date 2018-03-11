@@ -269,7 +269,7 @@ public class DuplicateTestCase extends HttpServlet {
                             .replace("%OPERATION%", "Duplicate"));
                     ans.setResultMessage(msg);
                     /**
-                     * Update was succesfull. Adding Log entry.
+                     * Update was successful. Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
                     logEventService.createForPrivateCalls("/DuplicateTestCase", "CREATE", "Create testcase : ['" + test + "'|'" + testCase + "']", request);

@@ -233,7 +233,11 @@ function displayPageLabel(doc) {
     $("#testCaseDetails label[for='screenSize']").text(doc.getDocLabel("page_executiondetail", "screensize"));
     $("#testCaseDetails label[for='userAgent']").text(doc.getDocLabel("page_executiondetail", "userAgent"));
     $("#testCaseDetails label[for='tag']").text(doc.getDocLabel("page_executiondetail", "tag"));
-    $("#testCaseDetails label[for='verbose']").text(doc.getDocLabel("page_executiondetail", "verbose"));
+    $("#testCaseDetails label[for='exetest']").text(doc.getDocLabel("test", "Test"));
+    $("#testCaseDetails label[for='exetestcase']").text(doc.getDocLabel("testcase", "TestCase"));
+    $("#testCaseDetails label[for='testcaseversion']").text(doc.getDocLabel("testcase", "TestCaseVersion"));
+    $("#testCaseDetails label[for='system']").text(doc.getDocLabel("invariant", "SYSTEM"));
+    $("#testCaseDetails label[for='robotdecli']").text(doc.getDocLabel("robot", "robotdecli"));
     $("#testCaseDetails label[for='build']").text(doc.getDocLabel("page_executiondetail", "build"));
     $("#testCaseDetails label[for='version']").text(doc.getDocLabel("page_executiondetail", "version"));
     $("#steps h3").text(doc.getDocLabel("page_executiondetail", "steps"));
@@ -399,7 +403,7 @@ function setConfigPanel(data) {
     configPanel.find("input#finished").val(data.finished);
     configPanel.find("input#id").val(data.id);
     configPanel.find("input#controlstatus2").val(data.controlStatus);
-    configPanel.find("input#controlmessage").val(data.controlMessage);
+    configPanel.find("textarea#controlmessage").val(data.controlMessage);
     configPanel.find("input#ip").val(data.ip);
     configPanel.find("input#port").val(data.port);
     configPanel.find("input#platform").val(data.platform);
@@ -411,7 +415,11 @@ function setConfigPanel(data) {
     configPanel.find("input#start").val(new Date(data.start));
     configPanel.find("input#tag").val(data.tag);
     configPanel.find("input#url").val(data.url);
-    configPanel.find("input#verbose").val(data.verbose);
+    configPanel.find("input#exetest").val(data.test);
+    configPanel.find("input#exetestcase").val(data.testcase);
+    configPanel.find("input#testcaseversion").val(data.testCaseVersion);
+    configPanel.find("input#system").val(data.system);
+    configPanel.find("input#robotdecli").val(data.robotDecli);
     configPanel.find("input#version").val(data.version);
 
     configPanel.find("input#conditionOperTC").val(data.conditionOper);

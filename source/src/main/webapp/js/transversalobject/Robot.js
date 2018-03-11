@@ -76,7 +76,8 @@ function initModalRobot() {
     $("#editRobotModal [name='editValueHeader']").html(doc.getDocOnline("robot", "capabilityValue"));
     $("#editRobotModal [name='hostPassword']").html(doc.getDocOnline("robot", "hostPassword"));
     $("#editRobotModal [name='hostUserName']").html(doc.getDocOnline("robot", "hostUserName"));
-
+    $("#editRobotModal [name='robotdecliField']").html(doc.getDocOnline("robot", "robotdecli"));
+    
     displayInvariantList("robotActive", "ROBOTACTIVE", false);
     displayInvariantList("robotBrowser", "BROWSER", false, undefined, "");
     displayInvariantList("robotPlatform", "PLATFORM", false, undefined, "");
@@ -234,10 +235,10 @@ function confirmRobotModalHandler(mode) {
 
 
     // we send to the server
-    if(data.hostUsername !== hostUserBeforeUpdate || data.hostPassword != HOST_PASSWORD_DEFAULT) {
+    if(data.hostUsername !== hostUserBeforeUpdate || data.hostPassword !== HOST_PASSWORD_DEFAULT) {
         data.hostUsernameToSend=data.hostUsername;
 
-        if(data.hostPassword == HOST_PASSWORD_DEFAULT) {
+        if(data.hostPassword === HOST_PASSWORD_DEFAULT) {
             $("#hostPassword").parent().addClass("has-error");
             var localMessage = new Message("danger", "Please specify the new host password !");
             showMessage(localMessage, $('#editRobotModal'));
@@ -267,6 +268,7 @@ function confirmRobotModalHandler(mode) {
             version: data.version,
             useragent: data.useragent,
             screensize: data.screensize,
+            robotDecli: data.robotdecli,
             description: data.description,
             capabilities: data.capabilities},
         success: function (dataMessage) {
@@ -336,6 +338,7 @@ function feedRobotModal(robot, modalId, mode) {
         robotObj1.version = "";
         robotObj1.userAgent = "";
         robotObj1.screenSize = "";
+        robotObj1.robotDecli = "";
         robotObj1.description = "";
         var hasPermissions = true;
         feedRobotModalData(robotObj1, modalId, mode, hasPermissions);
@@ -380,6 +383,7 @@ function feedRobotModalData(robot, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#version").prop("value", "");
         formEdit.find("#useragent").prop("value", "");
         formEdit.find("#screensize").prop("value", "");
+        formEdit.find("#robotdecli").prop("value", "");
         formEdit.find("#Description").prop("value", "");
         formEdit.find("#hostUsername").prop("value", "");
         formEdit.find("#hostPassword").prop("value", "");
@@ -399,10 +403,11 @@ function feedRobotModalData(robot, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#version").prop("value", robot.version);
         formEdit.find("#useragent").prop("value", robot.userAgent);
         formEdit.find("#screensize").prop("value", robot.screenSize);
+        formEdit.find("#robotdecli").prop("value", robot.robotDecli);
         formEdit.find("#Description").prop("value", robot.description);
-        formEdit.find("#hostUsername").prop("value", (robot.hostUser == undefined) ? "" : robot.hostUser);
+        formEdit.find("#hostUsername").prop("value", (robot.hostUser === undefined) ? "" : robot.hostUser);
         hostUserBeforeUpdate=robot.hostUser;
-        if(robot.hostUser != undefined && robot.hostUser != "") {
+        if(robot.hostUser !== undefined && robot.hostUser !== "") {
             formEdit.find("#hostPassword").prop("value", HOST_PASSWORD_DEFAULT); // don't set the reel password
         } else {
             formEdit.find("#hostPassword").prop("value", "");
@@ -428,6 +433,7 @@ function feedRobotModalData(robot, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#version").prop("readonly", false);
         formEdit.find("#useragent").prop("readonly", false);
         formEdit.find("#screensize").prop("readonly", false);
+        formEdit.find("#robotdecli").prop("readonly", false);
         formEdit.find("#Description").prop("readonly", false);
         formEdit.find("#hostPassword").prop("readonly", false);
         formEdit.find("#hostUsername").prop("readonly", false);
@@ -441,6 +447,7 @@ function feedRobotModalData(robot, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#version").prop("readonly", "readonly");
         formEdit.find("#useragent").prop("readonly", "readonly");
         formEdit.find("#screensize").prop("readonly", "readonly");
+        formEdit.find("#robotdecli").prop("readonly", "readonly");
         formEdit.find("#Description").prop("readonly", "readonly");
         formEdit.find("#hostPassword").prop("readonly", "readonly");
         formEdit.find("#hostUsername").prop("readonly", "readonly");

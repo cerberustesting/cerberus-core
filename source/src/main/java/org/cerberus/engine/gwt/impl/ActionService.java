@@ -187,20 +187,8 @@ public class ActionService implements IActionService {
 
         try {
             switch (testCaseStepActionExecution.getAction()) {
-                case TestCaseStepAction.ACTION_KEYPRESS:
-                    res = this.doActionKeyPress(tCExecution, value1, value2);
-                    break;
-                case TestCaseStepAction.ACTION_HIDEKEYBOARD:
-                    res = this.doActionHideKeyboard(tCExecution);
-                    break;
-                case TestCaseStepAction.ACTION_SWIPE:
-                    res = this.doActionSwipe(tCExecution, value1, value2);
-                    break;
                 case TestCaseStepAction.ACTION_CLICK:
                     res = this.doActionClick(tCExecution, value1, value2);
-                    break;
-                case TestCaseStepAction.ACTION_EXECUTEJS:
-                    res = this.doActionExecuteJS(tCExecution, value1, value2);
                     break;
                 case TestCaseStepAction.ACTION_MOUSELEFTBUTTONPRESS:
                     res = this.doActionMouseLeftButtonPress(tCExecution, value1, value2);
@@ -214,6 +202,9 @@ public class ActionService implements IActionService {
                 case TestCaseStepAction.ACTION_RIGHTCLICK:
                     res = this.doActionRightClick(tCExecution, value1, value2);
                     break;
+                case TestCaseStepAction.ACTION_MOUSEOVER:
+                    res = this.doActionMouseOver(tCExecution, value1, value2);
+                    break;
                 case TestCaseStepAction.ACTION_FOCUSTOIFRAME:
                     res = this.doActionFocusToIframe(tCExecution, value1, value2);
                     break;
@@ -226,12 +217,6 @@ public class ActionService implements IActionService {
                 case TestCaseStepAction.ACTION_MANAGEDIALOG:
                     res = this.doActionManageDialog(tCExecution, value1, value2);
                     break;
-                case TestCaseStepAction.ACTION_MOUSEOVER:
-                    res = this.doActionMouseOver(tCExecution, value1, value2);
-                    break;
-                case TestCaseStepAction.ACTION_MOUSEOVERANDWAIT:
-                    res = this.doActionMouseOverAndWait(tCExecution, value1, value2);
-                    break;
                 case TestCaseStepAction.ACTION_OPENURLWITHBASE:
                     res = this.doActionOpenURL(tCExecution, value1, value2, true);
                     break;
@@ -242,6 +227,9 @@ public class ActionService implements IActionService {
                 case TestCaseStepAction.ACTION_OPENURL:
                     res = this.doActionOpenURL(tCExecution, value1, value2, false);
                     break;
+                case TestCaseStepAction.ACTION_EXECUTEJS:
+                    res = this.doActionExecuteJS(tCExecution, value1, value2);
+                    break;
                 case TestCaseStepAction.ACTION_OPENAPP:
                     res = this.doActionOpenApp(tCExecution, value1);
                     break;
@@ -251,8 +239,17 @@ public class ActionService implements IActionService {
                 case TestCaseStepAction.ACTION_SELECT:
                     res = this.doActionSelect(tCExecution, value1, value2);
                     break;
+                case TestCaseStepAction.ACTION_KEYPRESS:
+                    res = this.doActionKeyPress(tCExecution, value1, value2);
+                    break;
                 case TestCaseStepAction.ACTION_TYPE:
                     res = this.doActionType(tCExecution, value1, value2, propertyName);
+                    break;
+                case TestCaseStepAction.ACTION_HIDEKEYBOARD:
+                    res = this.doActionHideKeyboard(tCExecution);
+                    break;
+                case TestCaseStepAction.ACTION_SWIPE:
+                    res = this.doActionSwipe(tCExecution, value1, value2);
                     break;
                 case TestCaseStepAction.ACTION_WAIT:
                     res = this.doActionWait(tCExecution, value1, value2);
@@ -262,9 +259,6 @@ public class ActionService implements IActionService {
                     break;
                 case TestCaseStepAction.ACTION_CALLSERVICE:
                     res = this.doActionCallService(testCaseStepActionExecution, value1);
-                    break;
-                case TestCaseStepAction.ACTION_REMOVEDIFFERENCE:
-                    res = this.doActionRemoveDifference(testCaseStepActionExecution, value1, value2);
                     break;
                 case TestCaseStepAction.ACTION_EXECUTESQLUPDATE:
                     res = this.doActionExecuteSQLUpdate(tCExecution, value1, value2);
@@ -277,6 +271,19 @@ public class ActionService implements IActionService {
                     break;
                 case TestCaseStepAction.ACTION_DONOTHING:
                     res = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
+                    break;
+                // DEPRECATED ACTIONS FROM HERE.
+                case TestCaseStepAction.ACTION_MOUSEOVERANDWAIT:
+                    res = this.doActionMouseOverAndWait(tCExecution, value1, value2);
+                    res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
+                    logEventService.createForPrivateCalls("ENGINE", "mouseOverAndWait", MESSAGE_DEPRECATED + " Deprecated Action triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "|" + testCaseStepActionExecution.getTestCase() + "']");
+                    LOG.warn(MESSAGE_DEPRECATED + " Deprecated Action mouseOverAndWait triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "'|'" + testCaseStepActionExecution.getTestCase() + "']");
+                    break;
+                case TestCaseStepAction.ACTION_REMOVEDIFFERENCE:
+                    res = this.doActionRemoveDifference(testCaseStepActionExecution, value1, value2);
+                    res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
+                    logEventService.createForPrivateCalls("ENGINE", "removeDifference", MESSAGE_DEPRECATED + " Deprecated Action triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "|" + testCaseStepActionExecution.getTestCase() + "']");
+                    LOG.warn(MESSAGE_DEPRECATED + " Deprecated Action removeDifference triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "'|'" + testCaseStepActionExecution.getTestCase() + "']");
                     break;
                 case TestCaseStepAction.ACTION_GETPAGESOURCE:
                     res = this.doActionGetPageSource(testCaseStepActionExecution);

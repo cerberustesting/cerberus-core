@@ -254,64 +254,31 @@
                             <div class="row">
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                        <label for="controlstatus2">Control Status</label>
-                                        <input type="text" class="form-control" id="controlstatus2" placeholder="Control Status" readonly>
+                                        <label for="id">ID</label>
+                                        <input type="text" class="form-control" id="id" placeholder="ID" readonly>
                                     </div>
                                 </div>
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                        <label for="id">ID</label>
-                                        <input type="text" class="form-control" id="id" placeholder="ID" readonly>
+                                        <label for="controlstatus2">Control Status</label>
+                                        <input type="text" class="form-control" id="controlstatus2" placeholder="Control Status" readonly>
                                     </div>
                                 </div>
                                 <div class="col-sm-8">
                                     <div class="form-group">
                                         <label for="controlmessage">Control Message</label>
-                                        <input type="text" class="form-control" id="controlmessage" placeholder="Control Message" readonly>
+                                        <textarea class="form-control" id="controlmessage" readonly></textarea> 
                                     </div>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-sm-3">
-                                    <div class="form-group">
-                                        <label for="start">Start</label>
-                                        <input type="text" class="form-control" id="start" placeholder="Start" readonly>
-                                    </div>
-                                </div>
-                                <div class="col-sm-3">
-                                    <div class="form-group">
-                                        <label for="end">End</label>
-                                        <input type="text" class="form-control" id="end" placeholder="End" readonly>
-                                    </div>
-                                </div>
-                                <div class="col-sm-3">
-                                    <div class="form-group">
-                                        <label for="executor">Executor</label>
-                                        <input type="text" class="form-control" id="executor" placeholder="Executor" readonly>
-                                    </div>
-                                </div>
-                                <div class="col-sm-3">
-                                    <div class="form-group">
-                                        <label for="status">Status</label>
-                                        <input type="text" class="form-control" id="status" placeholder="Status" readonly>
-                                    </div>
-                                </div> 
-                            </div>
-                            <div class="row">
-                                <div class="col-sm-4">
-                                    <div class="form-group">
-                                        <label for="cerberusversion">Cerberus Version</label>
-                                        <input type="text" class="form-control" id="cerberusversion" placeholder="Cerberus Version" readonly>
-                                    </div>
-                                </div>
                                 <div class="col-sm-4">
                                     <div class="form-group">
                                         <label>Bug ID</label>
                                         <div id="bugID"></div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="row">
+
                                 <div class="col-sm-8">
                                     <div class="form-group">
                                         <label for="tag">Tag</label>
@@ -323,7 +290,62 @@
                                             </span>
                                         </div>
                                     </div>
+                                </div>                            </div>
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label for="start">Start</label>
+                                        <input type="text" class="form-control" id="start" placeholder="Start" readonly>
+                                    </div>
                                 </div>
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label for="end">End</label>
+                                        <input type="text" class="form-control" id="end" placeholder="End" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="form-group">
+                                        <label for="executor">Executor</label>
+                                        <input type="text" class="form-control" id="executor" placeholder="Executor" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="form-group">
+                                        <label for="cerberusversion">Cerberus Version</label>
+                                        <input type="text" class="form-control" id="cerberusversion" placeholder="Cerberus Version" readonly>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label for="exetest">Test</label>
+                                        <input type="text" class="form-control" id="exetest"  readonly>
+                                    </div>
+                                </div> 
+                                <div class="col-sm-3">
+                                    <div class="form-group">
+                                        <label for="exetestcase">TestCase</label>
+                                        <input type="text" class="form-control" id="exetestcase" readonly>
+                                    </div>
+                                </div> 
+                                <div class="col-sm-2">
+                                    <div class="form-group">
+                                        <label for="testcaseversion">Version</label>
+                                        <input type="text" class="form-control" id="testcaseversion" readonly>
+                                    </div>
+                                </div> 
+                                <div class="col-sm-3">
+                                    <div class="form-group">
+                                        <label for="status">Status</label>
+                                        <input type="text" class="form-control" id="status" readonly>
+                                    </div>
+                                </div> 
+                            </div>
+
+                            <div class="row">
                             </div>
 
                             <div class="row">
@@ -409,7 +431,7 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-sm-3">
+                                <div class="col-sm-6">
                                     <div class="form-group">
                                         <label for="userAgent">User Agent</label>
                                         <input type="text" class="form-control" id="userAgent" placeholder="userAgent" readonly>
@@ -423,8 +445,8 @@
                                 </div>
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label for="verbose">Verbose</label>
-                                        <input type="text" class="form-control" id="verbose" placeholder="Verbose" readonly>
+                                        <label for="robotdecli">Robot Declination</label>
+                                        <input type="text" class="form-control" id="robotdecli" readonly>
                                     </div>
                                 </div>
                             </div>
@@ -435,6 +457,12 @@
                         </div>
                         <div class="center marginTop25 tab-pane fade" id="tabEnv">
                             <div class="row">
+                                <div class="col-sm-2">
+                                    <div class="form-group">
+                                        <label for="system">System</label>
+                                        <input type="text" class="form-control" id="system" readonly>
+                                    </div>
+                                </div>
                                 <div class="col-sm-3">
                                     <div class="form-group">
                                         <label for="application">Application</label>

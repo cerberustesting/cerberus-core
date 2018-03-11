@@ -55,7 +55,7 @@ public class TestCaseCountryProperties {
      */
     public static final String TYPE_TEXT = "text";
     public static final String TYPE_GETFROMDATALIB = "getFromDataLib";
-    public static final String TYPE_EXECUTESQL = "executeSql";
+    public static final String TYPE_GETFROMSQL = "getFromSql";
     public static final String TYPE_GETFROMHTML = "getFromHtml";
     public static final String TYPE_GETFROMHTMLVISIBLE = "getFromHtmlVisible";
     public static final String TYPE_GETFROMJS = "getFromJS";

@@ -108,6 +108,7 @@ function initModalTestCase() {
     $("[name='lbl_usrcreated']").html(doc.getDocOnline("transversal", "UsrCreated"));
     $("[name='lbl_datemodif']").html(doc.getDocOnline("transversal", "DateModif"));
     $("[name='lbl_usrmodif']").html(doc.getDocOnline("transversal", "UsrModif"));
+    $("[name='testcaseversionField']").html(doc.getDocOnline("testcase", "TestCaseVersion"));
 
     displayInvariantList("group", "GROUP", false);
     displayInvariantList("status", "TCSTATUS", false);
@@ -590,6 +591,7 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#conditionVal1").prop("value", testCase.conditionVal1);
         formEdit.find("#conditionVal2").prop("value", testCase.conditionVal2);
         formEdit.find("#comment").prop("value", testCase.comment);
+        formEdit.find("#testcaseversion").prop("value", testCase.testCaseVersion);
     }
 
     // Authorities

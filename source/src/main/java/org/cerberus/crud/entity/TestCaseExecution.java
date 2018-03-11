@@ -893,6 +893,8 @@ public class TestCaseExecution {
             result.put("queueId", this.getQueueID());
             result.put("manualExecution", this.getManualExecution());
             result.put("testCaseVersion", this.getTestCaseVersion());
+            result.put("system", this.getSystem());
+            result.put("robotDecli", this.getRobotDecli());
 
             if (withChilds) {
                 // Looping on ** Step **

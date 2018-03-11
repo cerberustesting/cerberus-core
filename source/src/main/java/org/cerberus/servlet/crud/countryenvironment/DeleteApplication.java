@@ -119,7 +119,7 @@ public class DeleteApplication extends HttpServlet {
 
                 if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                     /**
-                     * Delete was succesfull. Adding Log entry.
+                     * Delete was successful. Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
                     logEventService.createForPrivateCalls("/DeleteApplication", "DELETE", "Delete Application : ['" + key + "']", request);
