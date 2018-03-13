@@ -506,6 +506,30 @@ function feedTestCaseModal(test, testCase, modalId, mode) {
 function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, defaultTest) {
     var formEdit = $('#' + modalId);
     var doc = new Doc();
+    
+    var observer = new MutationObserver(function (mutations, me) {
+    	var behaviorOrValueExpected = tinyMCE.get('behaviorOrValueExpected');
+    	var howTo = tinyMCE.get('howTo')
+		if(howTo != null && behaviorOrValueExpected != null){
+			if(isEmpty(testCase)){
+				tinyMCE.get('behaviorOrValueExpected').setContent("");
+				tinyMCE.get('howTo').setContent("");
+			}
+    		else{
+    			tinyMCE.get('behaviorOrValueExpected').setContent(testCase.behaviorOrValueExpected);
+				tinyMCE.get('howTo').setContent(testCase.behaviorOrValueExpected);
+    		}
+			
+			me.disconnect()
+		}
+	    return;
+    });
+
+	// start observing
+	observer.observe(document, {
+	  childList: true,
+	  subtree: true
+	});
 
     // Data Feed.
     if (mode === "EDIT") {
@@ -551,10 +575,6 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#userAgent").prop("value", "");
         formEdit.find("#screenSize").prop("value", "");
         formEdit.find("#shortDesc").prop("value", "");
-        if (tinyMCE.get('behaviorOrValueExpected') != null)
-            tinyMCE.get('behaviorOrValueExpected').setContent("");
-        if (tinyMCE.get('howTo') != null)
-            tinyMCE.get('howTo').setContent("");
         formEdit.find("#active").prop("value", "Y");
         formEdit.find("#bugId").prop("value", "");
         formEdit.find("#conditionOper").prop("value", "always");
@@ -580,10 +600,6 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#userAgent").prop("value", testCase.userAgent);
         formEdit.find("#screenSize").prop("value", testCase.screenSize);
         formEdit.find("#shortDesc").prop("value", testCase.description);
-        if (tinyMCE.get('behaviorOrValueExpected') != null)
-            tinyMCE.get('behaviorOrValueExpected').setContent(testCase.behaviorOrValueExpected);
-        if (tinyMCE.get('howTo') != null)
-            tinyMCE.get('howTo').setContent(testCase.howTo);
         formEdit.find("#active").prop("value", testCase.tcActive);
         formEdit.find("#bugId").prop("value", testCase.bugID);
         formEdit.find("#conditionOper").prop("value", testCase.conditionOper);
