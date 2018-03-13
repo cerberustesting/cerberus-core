@@ -673,8 +673,8 @@ public class PropertyService implements IPropertyService {
                             testCaseExecutionData = this.property_getFromDataLib(testCaseExecutionData, tCExecution, testCaseStepActionExecution, testCaseCountryProperty, forceRecalculation);
                             break;
 
-                        case TestCaseCountryProperties.TYPE_EXECUTESQL:
-                            testCaseExecutionData = this.property_executeSql(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
+                        case TestCaseCountryProperties.TYPE_GETFROMSQL:
+                            testCaseExecutionData = this.property_getFromSql(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
                             break;
 
                         case TestCaseCountryProperties.TYPE_GETFROMHTML:
@@ -829,11 +829,11 @@ public class PropertyService implements IPropertyService {
                     new Date().getTime());
             return testCaseExecutionData;
         }
-        testCaseExecutionData = this.property_executeSql(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceCalculation);
+        testCaseExecutionData = this.property_getFromSql(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceCalculation);
         return testCaseExecutionData;
     }
 
-    private TestCaseExecutionData property_executeSql(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty, boolean forceCalculation) {
+    private TestCaseExecutionData property_getFromSql(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty, boolean forceCalculation) {
         return sQLService.calculateOnDatabase(testCaseExecutionData, testCaseCountryProperty, tCExecution);
     }
 

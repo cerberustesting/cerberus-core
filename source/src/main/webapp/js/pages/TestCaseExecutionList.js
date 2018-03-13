@@ -174,6 +174,20 @@ function aoColumnsFunc() {
             "sDefaultContent": ""
         },
         {
+            "data": "testCaseVersion",
+            "sName": "exe.testCaseVersion",
+            "title": doc.getDocOnline("testcase", "TestCaseVersion"),
+            "sWidth": "50px",
+            "sDefaultContent": ""
+        },
+        {
+            "data": "status",
+            "sName": "exe.status",
+            "title": doc.getDocOnline("page_executiondetail", "status"),
+            "sWidth": "70px",
+            "sDefaultContent": ""
+        },
+        {
             "data": "country",
             "sName": "exe.country",
             "title": doc.getDocOnline("page_executiondetail", "country"),
@@ -319,13 +333,6 @@ function aoColumnsFunc() {
             "data": "verbose",
             "sName": "exe.verbose",
             "title": doc.getDocOnline("page_executiondetail", "verbose"),
-            "sWidth": "70px",
-            "sDefaultContent": ""
-        },
-        {
-            "data": "status",
-            "sName": "exe.status",
-            "title": doc.getDocOnline("page_executiondetail", "status"),
             "sWidth": "70px",
             "sDefaultContent": ""
         },

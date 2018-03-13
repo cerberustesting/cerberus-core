@@ -665,6 +665,13 @@ function aoColumnsFunc(countries, tableId) {
             "sDefaultContent": ""
         },
         {
+            "data": "testCaseVersion",
+            "sName": "tec.testCaseVersion",
+            "title": doc.getDocOnline("testcase", "TestCaseVersion"),
+            "sWidth": "50px",
+            "sDefaultContent": ""
+        },
+        {
             "data": "dateModif",
             "like": true,
             "sName": "tec.dateModif",

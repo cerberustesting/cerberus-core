@@ -56,36 +56,38 @@ public class TestCaseStepAction {
      * Invariant ACTION String.
      */
     public static final String ACTION_UNKNOWN = "Unknown";
-    public static final String ACTION_KEYPRESS = "keypress";
-    public static final String ACTION_HIDEKEYBOARD = "hideKeyboard";
-    public static final String ACTION_SWIPE = "swipe";
     public static final String ACTION_CLICK = "click";
-    public static final String ACTION_EXECUTEJS = "executeJS";
     public static final String ACTION_MOUSELEFTBUTTONPRESS = "mouseLeftButtonPress";
     public static final String ACTION_MOUSELEFTBUTTONRELEASE = "mouseLeftButtonRelease";
     public static final String ACTION_DOUBLECLICK = "doubleClick";
     public static final String ACTION_RIGHTCLICK = "rightClick";
+    public static final String ACTION_MOUSEOVER = "mouseOver";
     public static final String ACTION_FOCUSTOIFRAME = "focusToIframe";
     public static final String ACTION_FOCUSDEFAULTIFRAME = "focusDefaultIframe";
     public static final String ACTION_SWITCHTOWINDOW = "switchToWindow";
     public static final String ACTION_MANAGEDIALOG = "manageDialog";
-    public static final String ACTION_MOUSEOVER = "mouseOver";
-    public static final String ACTION_MOUSEOVERANDWAIT = "mouseOverAndWait";
     public static final String ACTION_OPENURLWITHBASE = "openUrlWithBase";
     public static final String ACTION_OPENURLLOGIN = "openUrlLogin";
     public static final String ACTION_OPENURL = "openUrl";
+    public static final String ACTION_EXECUTEJS = "executeJS";
     public static final String ACTION_OPENAPP = "openApp";
     public static final String ACTION_CLOSEAPP = "closeApp";
     public static final String ACTION_SELECT = "select";
+    public static final String ACTION_KEYPRESS = "keypress";
     public static final String ACTION_TYPE = "type";
+    public static final String ACTION_HIDEKEYBOARD = "hideKeyboard";
+    public static final String ACTION_SWIPE = "swipe";
     public static final String ACTION_WAIT = "wait";
     public static final String ACTION_WAITVANISH = "waitVanish";
     public static final String ACTION_CALLSERVICE = "callService";
-    public static final String ACTION_REMOVEDIFFERENCE = "removeDifference";
     public static final String ACTION_EXECUTESQLUPDATE = "executeSqlUpdate";
     public static final String ACTION_EXECUTESQLSTOREPROCEDURE = "executeSqlStoredProcedure";
     public static final String ACTION_CALCULATEPROPERTY = "calculateProperty";
     public static final String ACTION_DONOTHING = "doNothing";
+    @Deprecated
+    public static final String ACTION_REMOVEDIFFERENCE = "removeDifference";
+    @Deprecated
+    public static final String ACTION_MOUSEOVERANDWAIT = "mouseOverAndWait";
     @Deprecated
     public static final String ACTION_GETPAGESOURCE = "getPageSource";
     @Deprecated

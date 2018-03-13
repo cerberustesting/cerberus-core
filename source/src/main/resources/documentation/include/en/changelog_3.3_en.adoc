@@ -12,10 +12,14 @@
 * Selecting a Campaign on Run Test Page allow to change the default country, environment or robot list from campaign.
 * New criteria for testcase selection at campaign level : GROUP 
 * Cache management at property level. You can now activate cache at property level by defining a cacheExpire value in second at property level. Property result will be taken from a previous execution during that timeframe. That allow to reduce the number of calls to external systems to retrieve a data (create on the fly test data or retrieve a security token too often).
+* Renamed property type 'executeSql' to 'getFromSql'
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
 * SQL 1300 1302 1303 and 1304 could be quite long on system with a lot of execution.
+* Actions Marked as DEPRECATED : 'removeDifference' and 'mouseOverAndWait' (Stop using them as they will soon disappear).
+* Deprecated action has been removed : 'getPageSource'. --> Use 'getPageSource' Control for the same result.
+* Deprecated property has been removed : 'executeSoapFromLib' and 'executeSqlFromLib'. Use getFromDataLib for the same result.
 
 
 

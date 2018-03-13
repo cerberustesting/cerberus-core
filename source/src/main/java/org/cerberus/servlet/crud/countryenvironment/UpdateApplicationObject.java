@@ -179,7 +179,7 @@ public class UpdateApplicationObject extends HttpServlet {
 
                 if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                     /**
-                     * Update was succesfull. Adding Log entry.
+                     * Update was successful. Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
                     logEventService.createForPrivateCalls("/UpdateApplication", "UPDATE", "Updated Application : ['" + application + "']", request);

@@ -11,8 +11,8 @@
                 <!--edit form-->
                 <form id="editRobotModalForm" name="editRobotModalForm"  title="Edit Robot" role="form">
                     <div class="container-fluid center">
-                         <!-- messages area-->
-                         <div id="DialogMessagesArea">
+                        <!-- messages area-->
+                        <div id="DialogMessagesArea">
                             <div class="alert" id="DialogMessagesAlert"  style="display:none;">
                                 <strong><span class="alert-description" id="DialogAlertDescription"></span></strong>
                                 <button type="button" class="close" data-hide="alert"  aria-hidden="true">
@@ -20,21 +20,21 @@
                                 </button>
                             </div>
                         </div>
-                                <div class="row">
-                                    <div class="form-group col-sm-3">
-                                        <label for="robotid" name="robotField">Robot</label>
-                                        <input type="text" class="form-control" name="robotid" id="robotid" aria-describedby="basic-addon1" readonly>
-                                    </div>
-                                    <div class="form-group col-sm-6">
-                                        <label for="robot" name="robotField">Robot</label>
-                                        <input type="text" class="form-control" name="robot" id="robotName" aria-describedby="basic-addon1" maxlength="50">
-                                    </div>
-                                    <div class="form-group col-sm-3">
-                                        <label for="active" name="activeField">Active</label>
-                                        <select class="form-control"  id="active" name="robotActive">
-                                        </select>
-                                    </div>
-                                </div>
+                        <div class="row">
+                            <div class="form-group col-sm-3">
+                                <label for="robotid" name="robotField">Robot</label>
+                                <input type="text" class="form-control" name="robotid" id="robotid" aria-describedby="basic-addon1" readonly>
+                            </div>
+                            <div class="form-group col-sm-6">
+                                <label for="robot" name="robotField">Robot</label>
+                                <input type="text" class="form-control" name="robot" id="robotName" aria-describedby="basic-addon1" maxlength="50">
+                            </div>
+                            <div class="form-group col-sm-3">
+                                <label for="active" name="activeField">Active</label>
+                                <select class="form-control"  id="active" name="robotActive">
+                                </select>
+                            </div>
+                        </div>
                         <!-- tabs definition-->
                         <ul id="tabsEdit" class="nav nav-tabs" data-tabs="tabs">
                             <li class="active"><a data-toggle="tab" href="#tabsEdit-1" id="editTab1Text" name="tabDefinition">Definition</a></li>
@@ -99,9 +99,14 @@
                                     </div>
                                     <div class="row">
                                         <div class="form-group col-sm-12">
+                                            <label for="robotdecli" name="robotdecliField">Declination</label>
+                                            <input type="text" class="form-control" name="robotdecli" id="robotdecli" aria-describedby="basic-addon1" maxlength="100">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group col-sm-12">
                                             <label for="Description" name="descriptionField">Description</label>
-                                            <textarea id="Description" name="description"
-                                                      class="form-control" maxlength="250"></textarea>
+                                            <textarea id="Description" name="description" class="form-control" maxlength="250"></textarea>
                                         </div>
                                     </div>
                                 </div>

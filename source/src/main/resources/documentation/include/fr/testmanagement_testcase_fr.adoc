@@ -80,9 +80,6 @@ image:testcasemovestep1.png[testcaseusestep] image:testcasemovestep2.png[testcas
 
 | *Action* | *Description* | *Example* 
 | Unknown | Unknown action. Default Action when creating a new action | 
-| keypress | will allow you to press any key in the current web page. *[red]#Value1#* : Location of the element from which press the key. *[red]#Value2#* : Keycode of the key to press Example : ENTER |
-| hidekeyboard | Hide the currently visible keyboard | 
-| swipe | TBD | 
 | click | will allow you to click on an element inside the current page. 
 *[red]#Value1#*	Identifier and name of the element to click in the form of : identifier=html_reference. Example : id=html_reference | 
 | mouseButtonLeftPress |TBD | 
@@ -91,26 +88,31 @@ image:testcasemovestep1.png[testcaseusestep] image:testcasemovestep2.png[testcas
 *[red]#Value1#*	Identifier and name of the element to click in the form of : identifier=html_reference. Example : id=html_reference | 
 | rightClick |  will allow you to right click on an element inside the current page. 
 *[red]#Value1#*	Identifier and name of the element to click in the form of : identifier=html_reference. Example : id=html_reference | 
+| mouseOver | Mouse cursor over an object *[red]#Element path#* : the id of the element | 
 | focustoIframe | TBD | 
 | focustoDefaultIframe | TBD | 
 | switchToWindow | When the Test case need to switch to another window (like popup dialog) this action is used. Just specify the title or the URL of the other window to switch to this window. | title=titleOfThisNewWindow or url=http://url_of_this_new_window
 | manageDialog | TBD | 
-| mouseOver | Mouse cursor over an object *[red]#Element path#* : the id of the element | 
 | OpenUrlWithBase | TBD | 
 | OpenUrlLogin | TBD | 
 | OpenUrl | TBD | 
+| executeJS | TBD | 
+| openApp | TBD | 
+| closeApp | TBD | 
 | select | TBD | 
+| keypress | will allow you to press any key in the current web page. *[red]#Value1#* : Location of the element from which press the key. *[red]#Value2#* : Keycode of the key to press Example : ENTER |
 | type | Write a data in a field. *[red]#Element path#* : the id of the field  *[red]#Property Name#* : the property containing the value to type (can be a property or text. | 
+| hidekeyboard | Hide the currently visible keyboard | 
+| swipe | TBD | 
 | wait | Wait for a certain amount of time Feed a number (ms) or wait for element present feed an element (xpath) | 
-| CallSoapWithBase | TBD | 
-| CallSoap | To call a SOAP.  Feed one the following field *[red]#Soap Name (library)#* : Name of the SOAP stored in library  *[red]#Property Name#* : Name of the property if the SOAP is defined in property | 
-| removeDifference | TBD | 
+| waitVanish | TBD | 
+| callService | TBD | 
 | executeSqlUpdate |  will allow you to execute SQL update (insert,delete,update). Feed the *[red]#Database Name#* and the *[red]#Script#* to execute. Database has to be declared to your system and environment. | 
 | executeSqlStoredProcedure | will allow you to execute SQL stored procedure. Feed the *[red]#Database Name#* and the *[red]#Stored Procedure#* to execute. Database has to be declared to your system and environment. | 
 | CalculateProperty | will allow you to calculate a *[red]#Property#* defined in the property section of the test case.
 [Optional] Feed *[red]#Value2#* with another property to affect to the previous *[red]#Property Name#* a new value. Useful to override the one defined from the property section during an execution. | 
 | doNothing | Just perform no action. No action will be executed and engine will go to the next action or control | 
-| skipAction | 	Skip this action. No action will be executed and engine will go to the next action. Controls associated to this action will be skipped too. | 
+| removeDifference | DEPRECATED | 
 
 |=== 
 
@@ -120,7 +122,6 @@ image:testcasemovestep1.png[testcaseusestep] image:testcasemovestep2.png[testcas
 | *Control* | *Description* |  *Example* 
 | Unknown |  Default control when creating a new control | 
 | getPageSource | TBD | 
-| skipControl | 	Skip the control. | 
 | takeScreenshot | Take a screenshot | 
 | verifyElementClickable | *[green]#OK#* if *[red]#Element#* is clickable. | 
 | verifyElementDifferent | TBD | 
