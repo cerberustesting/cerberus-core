@@ -1408,7 +1408,7 @@ function createStepList(data, stepList, stepIndex, canUpdate, hasPermissionsStep
     if (stepIndex !== undefined) {
         var find = false;
         for (var i = 0; i < stepList.length; i++) {
-            if (stepList[i].sort === stepIndex) {
+            if (stepList[i].sort == stepIndex) {
                 find = true;
                 $(stepList[i].html[0]).click();
             }
