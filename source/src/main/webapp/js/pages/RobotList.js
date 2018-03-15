@@ -40,6 +40,11 @@ function initPage() {
     var configurations = new TableConfigurationsServerSide("robotsTable", "ReadRobot", "contentTable", aoColumnsFunc("robotsTable"), [1, 'asc']);
 
     createDataTableWithPermissions(configurations, renderOptionsForRobot, "#robotList", undefined, true);
+    
+    $('[data-toggle="popover"]').popover({
+        'placement': 'auto',
+        'container': 'body'}
+    );
 }
 
 function displayPageLabel() {

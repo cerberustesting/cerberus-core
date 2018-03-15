@@ -121,6 +121,11 @@ function initModalTestCase() {
     displayInvariantList("activeUAT", "TCACTIVE", false);
     displayInvariantList("activeProd", "TCACTIVE", false);
     appendProjectList();
+    
+    $('[data-toggle="popover"]').popover({
+        'placement': 'auto',
+        'container': 'body'}
+    );
 
     var availableUserAgent = getInvariantArray("USERAGENT", false);
     $('#editTestCaseModal').find("#userAgent").autocomplete({

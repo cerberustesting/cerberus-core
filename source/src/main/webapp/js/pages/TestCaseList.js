@@ -22,11 +22,6 @@
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
         initPage();
-
-        $('[data-toggle="popover"]').popover({
-            'placement': 'auto',
-            'container': 'body'}
-        );
     });
 });
 
@@ -120,6 +115,11 @@ function loadTable(selectTest, sortColumn) {
 
         // Mass action 
         $("#selectAll").click(selectAll);
+        
+        $('[data-toggle="popover"]').popover({
+            'placement': 'auto',
+            'container': 'body'}
+        );
 
         return table;
 
