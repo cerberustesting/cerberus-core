@@ -22,6 +22,11 @@
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
         initPage();
+
+        $('[data-toggle="popover"]').popover({
+            'placement': 'auto',
+            'container': 'body'}
+        );
     });
 });
 
@@ -115,11 +120,6 @@ function loadTable(selectTest, sortColumn) {
 
         // Mass action 
         $("#selectAll").click(selectAll);
-        
-        $('[data-toggle="popover"]').popover({
-            'placement': 'auto',
-            'container': 'body'}
-        );
 
         return table;
 
@@ -141,12 +141,13 @@ function renderOptionsForTestCaseList(data) {
             $('#testCaseList #createTestCaseButton').click(data, function () {
                 // Getting the Test from the 1st row of the testcase table.
                 if ($("#testCaseTable td.sorting_1")[0] !== undefined) {
-                    var firstRowTest = $("#testCaseTable td.sorting_1")[0].textContent;
+                    var firstRowTest = $("#testCaseTable td.sorting_1")[0].textContent; 
 //                    addTestCaseClick(firstRowTest);
                     openModalTestCase(firstRowTest, undefined, "ADD");
                 } else {
+                	var testQueryString = GetURLParameter("test",undefined);
 //                    addTestCaseClick();
-                    openModalTestCase(undefined, undefined, "ADD");
+                    openModalTestCase(testQueryString, undefined, "ADD");
                 }
             });
             $('#testCaseList #createBrpMassButton').click(massActionClick);
