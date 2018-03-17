@@ -27,7 +27,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
 
         var executionId = GetURLParameter("executionId");
         var executionQueueId = GetURLParameter("executionQueueId");
-
+         
         if (isEmpty(executionId)) {
             // executionId parameter is not feed so we probably want to see the queue status.
             $("#TestCaseButton").hide();
@@ -57,6 +57,16 @@ $.when($.getScript("js/global/global.js")).then(function () {
     });
 });
 
+// Add the testCase to the page title (<head>)
+function updatePageTitle(testcase, doc){
+	if (typeof testcase !== 'undefined') {
+		if (testcase != null ) {
+			if (doc === undefined){var doc = new Doc();}
+			$("#pageTitle").text(doc.getDocLabel("page_executiondetail", "title") + " - " + testcase);
+		}
+	}
+}
+
 
 function loadExecutionQueue(executionQueueId) {
 
@@ -69,6 +79,10 @@ function loadExecutionQueue(executionQueueId) {
         success: function (data) {
             if (data.messageType === "OK") {
                 var tceq = data.contentTable;
+                
+                var tc = tceq.testCase;   
+                updatePageTitle(tc);
+                
                 var configPanel = $("#testCaseConfig");
                 configPanel.find("#idlabel").text("0");
                 $("[name='Separator']").text(" - ");
@@ -110,6 +124,9 @@ function loadExecutionInformation(executionId, stepList, sockets) {
         async: true,
         success: function (data) {
             var tce = data.testCaseExecution;
+            
+            var tc=tce.testcase;
+            updatePageTitle(tc);
 
             //store in a global var if the manualExecution is set to yes to double check with the control status
             if (tce.manualExecution === "Y")
@@ -159,7 +176,7 @@ function loadExecutionInformation(executionId, stepList, sockets) {
 }
 
 function initPage(id) {
-
+	
     var height = $("nav.navbar.navbar-inverse.navbar-static-top").outerHeight(true) + $("div.alert.alert-warning").outerHeight(true) + $(".page-title-line").outerHeight(true) - 10;
 
     var wrap = $(window);
@@ -206,8 +223,8 @@ function initPage(id) {
 }
 
 function displayPageLabel(doc) {
-
-    $("#pageTitle").text(doc.getDocLabel("page_executiondetail", "title"));
+	
+    //$("#pageTitle").text(doc.getDocLabel("page_executiondetail", "title"));
     $(".alert.alert-warning span").text(doc.getDocLabel("page_global", "beta_message"));
     $(".alert.alert-warning button").text(doc.getDocLabel("page_global", "old_page"));
     $("#more").text(doc.getDocLabel("page_executiondetail", "more_detail"));
