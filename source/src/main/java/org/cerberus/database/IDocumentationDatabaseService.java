@@ -28,21 +28,21 @@ public interface IDocumentationDatabaseService {
 
     /**
      * @param SQLString String that contains the SQL that will be executed
-     *                  against the Cerberus database.
+     * against the Cerberus database.
      * @return "OK" if the SQL executed correctly and a string with the error
-     *         when not executed.
+     * when not executed.
      */
     String exeSQL(String SQLString);
-    
+
     /**
-     * This method call exeSQL with documentation script
-     * right after DocumentationDatabaseService singleton is created
+     * This method call exeSQL with documentation script right after
+     * DocumentationDatabaseService singleton is created
      */
     void init();
 
     /**
-     * @return an array of string that contain all the SQL instructions to refresh
-     * documentation table
+     * @return an array of string that contain all the SQL instructions to
+     * refresh documentation table
      */
     ArrayList<String> getSqlDocumentation();
 }

@@ -18,6 +18,7 @@
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.cerberus.database;
+
 import java.sql.Connection;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -28,47 +29,53 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * 
- * @author ryltar
- * this is a singleton.
- * 1 per instance
+ *
+ * @author ryltar this is a singleton. 1 per instance
  */
 @Component
 public class DocumentationDatabaseService implements IDocumentationDatabaseService {
 
-	@Override
-	@PostConstruct
-	public void init() {
-		LOG.info("Starting to Refresh documentation table");
-		for(String currentRequest : this.getSqlDocumentation()) {
-			this.exeSQL(currentRequest);
-		}
-	}
-	
-	private static final Logger LOG = LogManager.getLogger(DocumentationDatabaseService.class);
+    @Override
+    @PostConstruct
+    public void init() {
+        LOG.info("Starting to Refresh documentation table");
+        for (String currentRequest : this.getSqlDocumentation()) {
+            this.exeSQL(currentRequest);
+        }
+    }
+
+    private static final Logger LOG = LogManager.getLogger(DocumentationDatabaseService.class);
 
     @Autowired
     private DatabaseSpring databaseSpring;
 
     @Override
     public String exeSQL(String SQLString) {
-        LOG.info("Starting Execution of '" + SQLString + "'");
+        String SQLStringLog = "";
+        if (SQLString != null) {
+            if (SQLString.length() > 51) {
+                SQLStringLog = SQLString.substring(0, 50) + "...'";
+            } else {
+                SQLStringLog = SQLString;
+            }
+        }
+        LOG.info("Starting Execution of '" + SQLStringLog + "'");
         try (Connection connection = this.databaseSpring.connect();
                 Statement preStat = connection.createStatement();) {
             preStat.execute(SQLString);
-            LOG.info("'" + SQLString + "' Executed successfully.");
+            LOG.info("'" + SQLStringLog + "' Executed successfully.");
         } catch (Exception exception1) {
             LOG.error(exception1.toString());
             return exception1.toString();
         }
         return "Documentation table successfully refreshed";
     }
-	
+
     @Override
-	public ArrayList<String> getSqlDocumentation(){
-		StringBuilder b;
-		ArrayList<String> a;
-		a = new ArrayList<>();
+    public ArrayList<String> getSqlDocumentation() {
+        StringBuilder b;
+        ArrayList<String> a;
+        a = new ArrayList<>();
         a.add("DELETE FROM `documentation`;");
         b = new StringBuilder();
         b.append("INSERT INTO `documentation` VALUES ('application','Application','','en','Application','','_application_attributes')");
@@ -2213,5 +2220,5 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('usergroup','GroupName','','fr','Nom du groupe',NULL,'_manargement_des_utilisateurs')");
         a.add(b.toString());
         return a;
-	}
+    }
 }
