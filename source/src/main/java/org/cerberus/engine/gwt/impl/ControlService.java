@@ -606,8 +606,10 @@ public class ControlService implements IControlService {
                 } catch (WebDriverException exception) {
                     return parseWebDriverException(exception);
                 }
+
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
                 return sikuliService.doSikuliVerifyElementNotPresent(tCExecution.getSession(), identifier.getLocator());
+
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_SRV)) {
 
                 if (tCExecution.getLastServiceCalled() != null) {

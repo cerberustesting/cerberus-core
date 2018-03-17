@@ -109,6 +109,7 @@ public class TestCaseStepAction {
      */
     public static final String CONDITIONOPER_ALWAYS = "always";
     public static final String CONDITIONOPER_IFELEMENTPRESENT = "ifElementPresent";
+    public static final String CONDITIONOPER_IFELEMENTNOTPRESENT = "ifElementNotPresent";
     public static final String CONDITIONOPER_IFPROPERTYEXIST = "ifPropertyExist";
     public static final String CONDITIONOPER_IFNUMERICEQUAL = "ifNumericEqual";
     public static final String CONDITIONOPER_IFNUMERICDIFFERENT = "ifNumericDifferent";

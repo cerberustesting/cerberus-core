@@ -7514,15 +7514,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 
         // Modify table testdatalib adding cacheExpire
         // 1292
-        b = new StringBuilder("ALTER TABLE `testcasecountryproperties` ADD COLUMN `CacheExpire` INT NULL DEFAULT 0 AFTER `Nature`;");
-        a.add(b.toString());
+        a.add("ALTER TABLE `testcasecountryproperties` ADD COLUMN `CacheExpire` INT NULL DEFAULT 0 AFTER `Nature`;");
 
         // Drop deprecated tables.
         // 1293-1294
-        b = new StringBuilder("DROP TABLE `abonnement`, `qualitynonconformities`, `qualitynonconformitiesimpact`;");
-        a.add(b.toString());
-        b = new StringBuilder("DROP TABLE `testbatterycontent`, `campaigncontent`, `testbattery`;");
-        a.add(b.toString());
+        a.add("DROP TABLE `abonnement`, `qualitynonconformities`, `qualitynonconformitiesimpact`;");
+        a.add("DROP TABLE `testbatterycontent`, `campaigncontent`, `testbattery`;");
 
         // Adjust colum size for login information on execution table..
         // 1295
@@ -7535,9 +7532,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 
         // Add the "executeJS" action
         // 1296
-        b = new StringBuilder();
-        b.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('ACTION', 'executeJS', '6550', 'Execute Javascript', 'Execute JS');");
-        a.add(b.toString());
+        a.add("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('ACTION', 'executeJS', '6550', 'Execute Javascript', 'Execute JS');");
 
         // ADD private invariant CAMPAIGN_TCCRITERIA : "GROUP"
         // 1297
@@ -7602,7 +7597,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // 1308-1309
         a.add("select 1 from DUAL;");
         a.add("select 1 from DUAL;");
-        
+
         // Cleaned Actions.
         // 1310-1312
         a.add("DELETE FROM invariant where idname='ACTION' and value in ('getPageSource');");
@@ -7613,7 +7608,15 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // 1313-1314
         a.add("UPDATE `invariant` SET `value`='getFromSql' WHERE `idname`='PROPERTYTYPE' and`value`='executeSql';");
         a.add("UPDATE testcasecountryproperties set type = 'getFromSql' where type = 'executeSql';");
-        
+
+        // Adding new Element not present Condition.
+        // 1315
+        b = new StringBuilder();
+        b.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ");
+        b.append("('ACTIONCONDITIONOPER', 'ifElementNotPresent', 260, 'Only execute if Element is not present.')");
+        b.append(",('STEPCONDITIONOPER', 'ifElementNotPresent', 260, 'Only execute if Element is not present.')");
+        b.append(",('CONTROLCONDITIONOPER', 'ifElementNotPresent', 260, 'Only execute if Element is not present.')");
+        a.add(b.toString());
 
         return a;
     }
