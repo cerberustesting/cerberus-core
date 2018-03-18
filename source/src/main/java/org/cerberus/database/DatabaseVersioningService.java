@@ -7618,6 +7618,13 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append(",('CONTROLCONDITIONOPER', 'ifElementNotPresent', 260, 'Only execute if Element is not present.')");
         a.add(b.toString());
 
+        // Removed cascade delete between Service and Datalib and between application and service.
+        // 1316-1319
+        a.add("ALTER TABLE `appservice` DROP FOREIGN KEY `FK_appservice_01`;");
+        a.add("ALTER TABLE `appservice` ADD CONSTRAINT `FK_appservice_01` FOREIGN KEY (`Application`) REFERENCES `application` (`Application`) ON DELETE SET NULL ON UPDATE CASCADE;");
+        a.add("ALTER TABLE `testdatalib` DROP FOREIGN KEY `FK_testdatalib_01`;");
+        a.add("ALTER TABLE `testdatalib` ADD CONSTRAINT `FK_testdatalib_01` FOREIGN KEY (`Service`) REFERENCES `appservice` (`Service`) ON DELETE SET NULL ON UPDATE CASCADE;");
+
         return a;
     }
 

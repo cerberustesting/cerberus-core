@@ -3,17 +3,19 @@
 * Allow jsonpath syntax  $[0].
 * Fixed a bug when using drag and drop of control from one action to another.
 * Allow to set parameter 'cerberus_loopstep_max' at system level.
+* No longuer cascade delete a datalib when associated service is deleted #1635.
+* No longuer cascade delete a service when associated application is deleted.
 
 *Improvements / New features*
 [square]
-* List of Robot can now be specified inside a campaign (instead of browser). That allow to run a campaign easily on multiple configuration (Browsers, BrowserVersions, Screensizes, Devices, ...)
+* List of Robot can now be specified inside a campaign (instead of browser). That allow to run a campaign easily on multiple configuration (Browsers, BrowserVersions, Screensizes, Devices, ...).
 * Robot Declination can be defined at robot level. It will be displayed in reportByTag page inside the columns of the detail section (with Country and Environment). When no value, Robot Declination will take Robot name. Declination value can be statically defined but also dynamically defined with variables : %SCREENSIZE%, %BROWSER%, %BROWSERVERSION%, %PLATFORM%.
 * Port number is no longer mandatory on Robot screen and Run Test Page.
 * Selecting a Campaign on Run Test Page allow to change the default country, environment or robot list from campaign.
-* New criteria for testcase selection at campaign level : GROUP 
+* New criteria for testcase selection at campaign level : GROUP.
 * Cache management at property level. You can now activate cache at property level by defining a cacheExpire value in second at property level. Property result will be taken from a previous execution during that timeframe. That allow to reduce the number of calls to external systems to retrieve a data (create on the fly test data or retrieve a security token too often).
-* Renamed property type 'executeSql' to 'getFromSql'
-* New 'ifElementNotPresent' condition on step, action and control. #1660
+* Renamed property type 'executeSql' to 'getFromSql'.
+* New 'ifElementNotPresent' condition on step, action and control. #1660.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
@@ -21,7 +23,4 @@
 * Actions Marked as DEPRECATED : 'removeDifference' and 'mouseOverAndWait' (Stop using them as they will soon disappear).
 * Deprecated action has been removed : 'getPageSource'. --> Use 'getPageSource' Control for the same result.
 * Deprecated property has been removed : 'executeSoapFromLib' and 'executeSqlFromLib'. Use getFromDataLib for the same result.
-* No longuer used invariant were removed from database : 'MNTACTIVE','NCONFSTATUS','PROBLEMCATEGORY','PROPERTYBAM','RESPONSABILITY','ROOTCAUSECATEGORY','SEVERITY'
-
-
-
+* No longuer used invariant were removed from database : 'MNTACTIVE','NCONFSTATUS','PROBLEMCATEGORY','PROPERTYBAM','RESPONSABILITY','ROOTCAUSECATEGORY','SEVERITY'.
