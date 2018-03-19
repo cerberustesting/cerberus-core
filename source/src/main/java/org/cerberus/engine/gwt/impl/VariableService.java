@@ -278,8 +278,8 @@ public class VariableService implements IVariableService {
          */
         if (tCExecution.getTestCaseStepExecutionList() != null) {
         	
-        	stringToDecode = stringToDecode.replace("%system.CURRENTSTEPNUMBER%", String.valueOf(tCExecution.getTestCaseStepExecutionList().get(tCExecution.getTestCaseStepExecutionList().size() - 1).getStep()));
-        	stringToDecode = stringToDecode.replace("%SYS_CURRENTSTEPNUMBER%", String.valueOf(tCExecution.getTestCaseStepExecutionList().get(tCExecution.getTestCaseStepExecutionList().size() - 1).getStep()));
+        	stringToDecode = stringToDecode.replace("%system.CURRENTSTEP_SORT%", String.valueOf(tCExecution.getTestCaseStepExecutionList().get(tCExecution.getTestCaseStepExecutionList().size() - 1).getSort()));
+        	stringToDecode = stringToDecode.replace("%SYS_CURRENTSTEP_SORT%", String.valueOf(tCExecution.getTestCaseStepExecutionList().get(tCExecution.getTestCaseStepExecutionList().size() - 1).getSort()));
         	
             // %SYS_CURRENTSTEP_INDEX%
             if (stringToDecode.contains("%SYS_CURRENTSTEP_")) {
