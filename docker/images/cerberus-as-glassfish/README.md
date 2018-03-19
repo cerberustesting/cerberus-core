@@ -73,6 +73,8 @@ Environment variable                    | Definition                            
 `DATABASE_USER`                         | Cerberus database user                    | `cerberus`
 `DATABASE_PASSWORD`                     | Cerberus database password                | `toto`
 `GLASSFISH_HTTP_THREADPOOL_MAX_SIZE`    | Glassfish HTTP thread pool maximum size   | `500`
+`GLASSFISH_DOMAIN`                      | Glassfish domain name (cerberus by default | `500`
+`GLASSFISH_ADMIN_PASSWORD`              | Glassfish admin password                  | `500`
 
 ## Exposed ports
 
@@ -128,6 +130,12 @@ To apply this runtime configuration to Cerberus instance, then:
 5. Save changes
 
 From the [1.1.6](https://github.com/cerberustesting/cerberus-docker/blob/master/images/cerberus-as-glassfish/1.1.6/Dockerfile) version, `cerberus_picture_path` and `cerberus_picture_url` parameters have been respectively renamed `cerberus_mediastorage_path` and `cerberus_mediastorage_path`.
+
+### Glassfish data
+You can share this volume to persist Glassfish seetings : 
+*  <local_path>/screenshots:/usr/local/glassfish4/glassfish/domains/<domain_name>
+*  <local_path>/lib:/usr/local/glassfish4/glassfish/lib
+
 
 ## License
 

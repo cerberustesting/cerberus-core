@@ -26,7 +26,8 @@ set -e
 ASADMIN="asadmin --user ${GLASSFISH_ADMIN_USER} --passwordfile /tmp/glassfish_admin_password.txt"
 
 # Initialization marker file
-INIT_MARKER_FILE=${GLASSFISH_HOME}/.cerberus
+INIT_MARKER_FILE=${GLASSFISH_HOME}/glassfish/domains/${GLASSFISH_DOMAIN}/.cerberus
+INIT_MARKER_DEPLOY=${GLASSFISH_HOME}/glassfish/domains/${GLASSFISH_DOMAIN}/.cerberus.deploy
 
 # Deploy the installed Cerberus instance
 function deploy() {
@@ -34,6 +35,7 @@ function deploy() {
     ${ASADMIN} start-domain ${GLASSFISH_DOMAIN}
     ${ASADMIN} deploy --target server --contextroot ${CERBERUS_NAME} --availabilityenabled=true /tmp/${CERBERUS_PACKAGE_NAME}/${CERBERUS_PACKAGE_NAME}.war
     ${ASADMIN} stop-domain ${GLASSFISH_DOMAIN}
+    touch ${INIT_MARKER_DEPLOY}
 echo "* Starting Cerberus Glassfish deployment... Done."
 }
 
@@ -41,13 +43,22 @@ echo "* Starting Cerberus Glassfish deployment... Done."
 function setup() {
     echo "* Starting Cerberus Glassfish setup..."
 
+    # Create the screenshot directory
+    mkdir -p ${CERBERUS_PICTURES_PATH}
+    chmod u+wx ${CERBERUS_PICTURES_PATH}
+
     # Copy the MySQL Java connector to Glassfish global libraries folder
     cp ${MYSQL_JAVA_CONNECTOR_LIB_PATH} ${GLASSFISH_HOME}/glassfish/lib
 
     # Set the admin password
     local ASADMIN_DEFAULT=asadmin
     ${ASADMIN_DEFAULT} start-domain ${GLASSFISH_DOMAIN}
-    ${ASADMIN_DEFAULT} --user ${GLASSFISH_ADMIN_USER} --passwordfile /tmp/glassfish_admin_set_password.txt change-admin-password --domain_name ${GLASSFISH_DOMAIN}
+
+    echo "AS_ADMIN_PASSWORD=admin" > /tmp/glassfishpwd
+    echo "AS_ADMIN_NEWPASSWORD=${GLASSFISH_ADMIN_PASSWORD}" >> /tmp/glassfishpwd
+    ${ASADMIN_DEFAULT} --user ${GLASSFISH_ADMIN_USER} --passwordfile /tmp/glassfishpwd change-admin-password --domain_name ${GLASSFISH_DOMAIN}
+    rm /tmp/glassfishpwd
+    echo "AS_ADMIN_PASSWORD=${GLASSFISH_ADMIN_PASSWORD}" > /tmp/glassfishpwd
 
     # Configure Glassfish to the Cerberus needs
     ${ASADMIN} restart-domain ${GLASSFISH_DOMAIN}
@@ -67,9 +78,20 @@ function setup() {
 
 # Main entry point
 function main() {
+    if [ ! -f ${GLASSFISH_HOME}/glassfish/domains/${GLASSFISH_DOMAIN}/config/domain.xml ]; then
+        echo "AS_ADMIN_PASSWORD=" > /tmp/glassfishpwd
+        ${ASADMIN} create-domain --adminport 4848 ${GLASSFISH_DOMAIN}
+    fi
     # Check if setup has already been done, and if not, then execute it
     if [ ! -f ${INIT_MARKER_FILE} ]; then
         setup
+    else
+        echo "* Glassfish domain already deployed. Skip installation."
+    fi
+
+    echo "AS_ADMIN_PASSWORD=${GLASSFISH_ADMIN_PASSWORD}" > /tmp/glassfishpwd
+
+    if [ ! -f ${INIT_MARKER_DEPLOY} ]; then
         deploy
     else
         echo "* Cerberus is already deployed to the Glassfish instance. Skip installation."
@@ -80,4 +102,4 @@ function main() {
 main
 
 # Finally continue execution
-exec "$@"
+${ASADMIN} start-domain --verbose ${GLASSFISH_DOMAIN}

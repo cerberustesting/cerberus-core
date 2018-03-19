@@ -54,7 +54,7 @@
 
 # Release of the cerberus-source project
 rm -rf cerberus-source
-git clone git@github.com:cerberustesting/cerberus-source.git
+git clone https://github.com/cerberustesting/cerberus-source.git
 cd cerberus-source
 ${RUNCMDS_PATH} -e RELEASE_VERSION ${RELEASE_VERSION} -e NEXT_DEVELOPMENT_VERSION ${NEXT_DEVELOPMENT_VERSION} -s release.cmds
 

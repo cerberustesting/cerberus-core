@@ -15,7 +15,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Cerberus. If not, see <http://www.gnu.org/licenses/>.
-FROM glassfish:4.1
+FROM oracle/glassfish:5.0-web
 MAINTAINER cerberustesting
 
 # Database related environment variables
@@ -31,17 +31,22 @@ ENV GLASSFISH_HTTP_THREADPOOL_MAX_SIZE 500
 # Should not be overridden by user
 ENV CERBERUS_NAME Cerberus
 ENV CERBERUS_VERSION 3.2
-ENV CERBERUS_PICTURES_PATH ${GLASSFISH_HOME}/glassfish/domains/domain1/docroot/CerberusPictures
+ENV GLASSFISH_DOMAIN domain1
+ENV GLASSFISH_ADMIN_PASSWORD admin
+ENV CERBERUS_PICTURES_PATH ${GLASSFISH_HOME}/glassfish/domains/${GLASSFISH_DOMAIN}/docroot/CerberusPictures
 ENV CERBERUS_PACKAGE_NAME ${CERBERUS_NAME}-${CERBERUS_VERSION}
 ENV GLASSFISH_ADMIN_USER admin
-ENV GLASSFISH_DOMAIN domain1
 ENV MYSQL_JAVA_CONNECTOR_VERSION 5.1.20
 ENV MYSQL_JAVA_CONNECTOR_NAME mysql-connector-java-${MYSQL_JAVA_CONNECTOR_VERSION}
 ENV MYSQL_JAVA_CONNECTOR_LIB_PATH /tmp/${MYSQL_JAVA_CONNECTOR_NAME}/${MYSQL_JAVA_CONNECTOR_NAME}-bin.jar
 
 # https://github.com/cerberustesting/cerberus-source/releases/download/cerberus-testing-2.0.0/Cerberus-2.0.0.zip
 
-RUN apt-get update && apt-get install dos2unix
+# Oracle do not install JDK on Glassfish...
+RUN yum install -y java-1.8.0-openjdk-devel-1.8.0.151-5.b12.el7_4 unzip && yum clean all && rm -rf /var/cache/yum
+
+# For windows user
+RUN yum install -y dos2unix
 
 # Get and extract the Cerberus package
 # Use RUN instead of ADD to avoid re-download (see https://github.com/docker/docker/issues/15717)
@@ -53,10 +58,6 @@ RUN curl -L -o /tmp/${CERBERUS_PACKAGE_NAME}.zip https://sourceforge.net/project
 RUN curl -L -o /tmp/${MYSQL_JAVA_CONNECTOR_NAME}.zip https://downloads.mysql.com/archives/get/file/${MYSQL_JAVA_CONNECTOR_NAME}.zip && \
     unzip -q -d /tmp /tmp/${MYSQL_JAVA_CONNECTOR_NAME}.zip
 
-# Create the screenshot directory
-RUN mkdir ${CERBERUS_PICTURES_PATH} && \
-    chmod u+wx ${CERBERUS_PICTURES_PATH}
-
 # Glassfish credentials files
 COPY glassfish_admin_set_password.txt /tmp/glassfish_admin_set_password.txt
 COPY glassfish_admin_password.txt /tmp/glassfish_admin_password.txt
@@ -65,6 +66,3 @@ COPY glassfish_admin_password.txt /tmp/glassfish_admin_password.txt
 COPY entrypoint.sh /entrypoint.sh
 RUN dos2unix /entrypoint.sh && chmod u+x /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
-
-# Start Glassfish instance with the verbose option to remain in the foreground so that docker can track it
-CMD asadmin --user ${GLASSFISH_ADMIN_USER} --passwordfile /tmp/glassfish_admin_password.txt start-domain --verbose ${GLASSFISH_DOMAIN}

@@ -46,18 +46,22 @@ services:
       - "13306:3306"
     volumes:
       - ./localdata/mysql-db:/var/lib/mysql
+      - /etc/localtime:/etc/localtime:ro
+    restart: always
   cerberus-as-glassfish:
     image: cerberustesting/cerberus-as-glassfish:latest
     environment:
       - DATABASE_HOST=cerberus-db-mysql
       - DATABASE_PORT=3306
+      - GLASSFISH_DOMAIN=cerberus
     ports:
       - "18080:8080"
       - "14848:4848"
     volumes:
-      - ./localdata/screenshots:/usr/local/glassfish4/glassfish/domains/domain1/docroot/CerberusPictures
-      - ./localdata/logs:/usr/local/glassfish4/glassfish/domains/domain1/logs
-      - ./localdata/lib:/usr/local/glassfish4/glassfish/lib
+      - ./localdata/glassfish/cerberus:/usr/local/glassfish4/glassfish/domains/cerberus
+      - ./localdata/glassfish/lib:/usr/local/glassfish4/glassfish/lib
+      - /etc/localtime:/etc/localtime:ro
+    restart: always
     depends_on:
       - cerberus-db-mysql
     links:
