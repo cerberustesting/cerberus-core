@@ -37,13 +37,13 @@ Note, from the [1.1.9](https://github.com/cerberustesting/cerberus-docker/blob/m
 
 This image can simply be run by using the following command:
 
-    docker run -d -P cerberus/cerberus-as-glassfish:latest
+    docker run -d -P cerberustesting/cerberus-as-glassfish:latest
 
 Note the use of the `-d` and `-P` arguments to let image be run as deamon and open ports outside container which is the common use.
 
 To run image by connecting to a MySQL Cerberus database located at `<database_host>:<database_port>` you could run (assume we are using default values for name, username, and password):
 
-    docker run -d -P -e DATABASE_HOST='<database_host>' -e DATABASE_PORT='<database_port>' cerberus/cerberus-as-glassfish:latest
+    docker run -d -P -e DATABASE_HOST='<database_host>' -e DATABASE_PORT='<database_port>' cerberustesting/cerberus-as-glassfish:latest
 
 ### Configure the running Cerberus instance
 
@@ -87,7 +87,7 @@ Exposed port            | Definition
 
 Assume you want to reach to the Cerberus instance, then you would run:
 
-    docker run -d -p 18080:8080 -p 14848:4848 cerberus/cerberus-as-glassfish:latest
+    docker run -d -p 18080:8080 -p 14848:4848 cerberustesting/cerberus-as-glassfish:latest
 
 And you could access to the Cerberus instance by reaching the following URL:
 
