@@ -61,8 +61,9 @@ public final class ServletUtil {
                     default:
                 }
                 LOG.debug("Servlet " + request.getServletPath() + " - Waiting : " + timeToWait);
+                LOG.debug("Servlet Query String " + request.getQueryString());
                 Thread.sleep(timeToWait);
-                
+
             } catch (InterruptedException ex) {
                 LOG.error(ex);
             }
