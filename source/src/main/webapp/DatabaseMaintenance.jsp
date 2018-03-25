@@ -114,10 +114,10 @@
                             ButtonText = "Initialize Database";
                         }
 
-                        out.print("<div class=\"row\"><div class=\"form-group col-xs-2\">");
+                        out.print("<div class=\"row\"><div class=\"form-group col-xs-6\">");
                         out.print("<label for=\"databaseVersion\" name=\"databaseVersion\">Database Version</label>");
                         out.print("<input type=\"text\" class=\"form-control\" name=\"databaseVersion\" aria-describedby=\"basic-addon1\" value=\"" + DtbVersion.getValue() + "\" readonly></div>");
-                        out.print("<div class=\"form-group col-xs-2\">");
+                        out.print("<div class=\"form-group col-xs-6\">");
                         out.print("<label for=\"targetVersion\" name=\"targetVersion\">Target Database Version</label>");
                         out.print("<input type=\"text\" class=\"form-control\" name=\"targetDatabaseVersion\" aria-describedby=\"basic-addon1\" value=\"" + SQLInstruction.size() + "\" readonly></div></div>");
                         out.print("<input id=\"buttonApplyDatabase\" class=\"btn btn-warning btn-lg\" type=\"submit\" disabled=\"disabled\" value=\"" + ButtonText + "\" onClick=\"ExecApply.submit(); this.disabled=true; this.value='Processing...'; \">");

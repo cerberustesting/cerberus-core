@@ -3,8 +3,9 @@
 * Allow jsonpath syntax  $[0].
 * Fixed a bug when using drag and drop of control from one action to another.
 * Allow to set parameter 'cerberus_loopstep_max' at system level.
-* No longuer cascade delete a datalib when associated service is deleted #1635.
+* No longuer cascade delete a datalib when associated service is deleted. #1635
 * No longuer cascade delete a service when associated application is deleted.
+* Fixed java.lang.ArrayIndexOutOfBoundsException Error when using a condition with variable on testcase header. #1650
 
 *Improvements / New features*
 [square]
@@ -16,6 +17,8 @@
 * Cache management at property level. You can now activate cache at property level by defining a cacheExpire value in second at property level. Property result will be taken from a previous execution during that timeframe. That allow to reduce the number of calls to external systems to retrieve a data (create on the fly test data or retrieve a security token too often).
 * Renamed property type 'executeSql' to 'getFromSql'.
 * New 'ifElementNotPresent' condition on step, action and control. #1660.
+* From Execution page if execution is still in queue, page is automatically refreshed every 5 seconds and until execution start. #1653
+* New buttons on RunTestCase page in order to submit and automatically redirect to the result page (either Execution Detail or Report By Tag Page depending on how many execution were triggered). #1653
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

@@ -74,18 +74,32 @@ $.when($.getScript("js/global/global.js")).then(function () {
 
         // Run Campaign button click
         $("#runCampaign").click(function () {
-            runCampaign();
+            runCampaign(false);
         });
         $("#runCampaignUp").click(function () {
-            runCampaign();
+            runCampaign(false);
+        });
+        // Run Campaign button click
+        $("#runCampaignAndSee").click(function () {
+            runCampaign(true);
+        });
+        $("#runCampaignAndSeeUp").click(function () {
+            runCampaign(true);
         });
 
         // Run Test Case button click
         $("#runTestCase").click(function () {
-            runTestCase();
+            runTestCase(false);
         });
         $("#runTestCaseUp").click(function () {
-            runTestCase();
+            runTestCase(false);
+        });
+        // Run Test Case button click
+        $("#runTestCaseAndSee").click(function () {
+            runTestCase(true);
+        });
+        $("#runTestCaseAndSeeUp").click(function () {
+            runTestCase(true);
         });
 
         $("#loadFiltersBtn").click(function () {
@@ -226,15 +240,13 @@ function selectionCampaign() {
 
         $("#testcaseSelectAll").prop("disabled", true);
         $("#testcaseSelectNone").prop("disabled", true);
-        $("#countrySelectAll").prop("disabled", true);
-        $("#countrySelectNone").prop("disabled", true);
 
-        $("#runCampaign").show();
-        $("#runCampaignUp").show();
+        $("#runCampaignBlock").show();
+        $("#runCampaignUpBlock").show();
 
         // NEW
-        $("#runTestCase").hide();
-        $("#runTestCaseUp").hide();
+        $("#runTestCaseBlock").hide();
+        $("#runTestCaseUpBlock").hide();
 
         $("#filtersPanelContainer").hide();
         $("#campaignSelection").show();
@@ -282,18 +294,16 @@ function selectionManual(test, testcase, environment, country) {
 
         $("#testcaseSelectAll").prop("disabled", false);
         $("#testcaseSelectNone").prop("disabled", false);
-        $("#countrySelectAll").prop("disabled", false);
-        $("#countrySelectNone").prop("disabled", false);
 
         $("#campaignSelection").hide();
         $("#filters").show();
-        $("#runCampaign").hide();
-        $("#runCampaignUp").hide();
+        $("#runCampaignBlock").hide();
+        $("#runCampaignUpBlock").hide();
         $("#filtersPanelContainer").show();
 
         // NEW
-        $("#runTestCase").show();
-        $("#runTestCaseUp").show();
+        $("#runTestCaseBlock").show();
+        $("#runTestCaseUpBlock").show();
 
         loadTestCaseFromFilter(test, testcase);
 
@@ -482,7 +492,7 @@ function loadCampaignParameter(campaign) {
 
 /** FORM SENDING UTILITY FUNCTIONS (VALID FOR SERVLET ADDTOEXECUTIONQUEUE) **/
 
-function runCampaign() {
+function runCampaign(doRedirect) {
 
     clearResponseMessageMainPage();
 
@@ -555,6 +565,12 @@ function runCampaign() {
                 data.message = data.message + "<br><a href='ReportingExecutionByTag.jsp?Tag=" + data.tag + "'><button class='btn btn-primary' id='goToTagReport'>Report by Tag</button></a>"
             }
             showMessageMainPage(getAlertType(data.messageType), data.message, false, 60000);
+            if ((data.nbExe === 1) && doRedirect) {
+                window.location.href = "TestCaseExecution.jsp?executionQueueId=" + data.queueList[0].queueId;
+            }
+            if ((data.nbExe > 1) && doRedirect) {
+                window.location.href = "ReportingExecutionByTag.jsp?Tag=" + data.tag;
+            }
         } else {
             showMessageMainPage(getAlertType(data.messageType), data.message, false);
         }
@@ -562,7 +578,7 @@ function runCampaign() {
 
 }
 
-function runTestCase() {
+function runTestCase(doRedirect) {
 
     var doc = new Doc();
 
@@ -626,10 +642,6 @@ function runTestCase() {
         showMessageMainPage("danger", doc.getDocLabel("page_runtest", "select_one_env"), false);
     } else if (countriesstring === "") {
         showMessageMainPage("danger", doc.getDocLabel("page_runtest", "select_one_country"), false);
-    } else {
-        console.info(teststring);
-        console.info(countriesstring);
-        console.info(environmentstring);
     }
 
     showLoader('#page-layout');
@@ -656,6 +668,13 @@ function runTestCase() {
                 data.message = data.message + "<br><a href='ReportingExecutionByTag.jsp?Tag=" + data.tag + "'><button class='btn btn-primary' id='goToTagReport'>Report by Tag</button></a>"
             }
             showMessageMainPage(getAlertType(data.messageType), data.message, false, 60000);
+            if ((data.nbExe === 1) && doRedirect) {
+                window.location.href = "TestCaseExecution.jsp?executionQueueId=" + data.queueList[0].queueId;
+            }
+            if ((data.nbExe > 1) && doRedirect) {
+                window.location.href = "ReportingExecutionByTag.jsp?Tag=" + data.tag;
+            }
+
         } else {
             showMessageMainPage(getAlertType(data.messageType), data.message, false);
         }
