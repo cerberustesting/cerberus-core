@@ -238,7 +238,8 @@ function confirmAppServiceModalHandler(mode,page) {
   	                        Tags[i].array.push(temp);
   	                    }
   	                }
-  	                $("."+temp).parent().find("input").trigger("input");
+  	                
+  	                $("."+temp).parent().find("input").trigger("input", ['first']);
   	            }else{
   	            	var oTable = $("#soapLibrarysTable").dataTable();
   	                oTable.fnDraw(true);

@@ -145,57 +145,29 @@ public class InvariantDAO implements IInvariantDAO {
             LOG.debug("SQL.param.idName : " + idName);
         }
 
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                preStat.setString(1, idName);
-
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-
-                    while (resultSet.next()) {
-                        result.add(this.loadFromResultSet(resultSet));
-                    }
-                    if (result.isEmpty()) {
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                    } else {
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                    }
-
-                } catch (SQLException exception) {
-                    LOG.warn("Unable to execute query : " + exception.toString());
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-                    result.clear();
-                } finally {
-                    if (resultSet != null) {
-                        resultSet.close();
-                    }
+        try(Connection connection = this.databaseSpring.connect();
+        		PreparedStatement preStat = connection.prepareStatement(query);) {
+        	preStat.setString(1, idName);
+            try(ResultSet resultSet = preStat.executeQuery();) {
+                while (resultSet.next()) {
+                    result.add(this.loadFromResultSet(resultSet));
                 }
+                if (result.isEmpty()) {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                } else {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                }
+
             } catch (SQLException exception) {
                 LOG.warn("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-            } finally {
-                if (preStat != null) {
-                    preStat.close();
-                }
-            }
+            } 
         } catch (SQLException exception) {
             LOG.warn("Unable to execute query : " + exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-            }
-        }
-
+        } 
         answer.setTotalRows(result.size());
         answer.setDataList(result);
         answer.setResultMessage(msg);

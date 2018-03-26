@@ -219,7 +219,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
                             "EXECUTIONID",
                             "EXESTART", "EXEELAPSEDMS",
                             "EXESTORAGEURL",
-                            "STEP.n.n.RETURNCODE", "CURRENTSTEP_INDEX", "CURRENTSTEP_STARTISO", "CURRENTSTEP_ELAPSEDMS", "CURRENTSTEPNUMBER",
+                            "STEP.n.n.RETURNCODE", "CURRENTSTEP_INDEX", "CURRENTSTEP_STARTISO", "CURRENTSTEP_ELAPSEDMS", "CURRENTSTEP_SORT",
                             "LASTSERVICE_HTTPCODE",
                             "TODAY-yyyy", "TODAY-MM", "TODAY-dd", "TODAY-doy", "TODAY-HH", "TODAY-mm", "TODAY-ss",
                             "YESTERDAY-yyyy", "YESTERDAY-MM", "YESTERDAY-dd", "YESTERDAY-doy", "YESTERDAY-HH", "YESTERDAY-mm", "YESTERDAY-ss",
@@ -2792,7 +2792,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
             }
         })
 
-        $(document).on('input', "div.step-action .content div.fieldRow:nth-child(2) input", function (e, state) {
+        $(document).on('input', "div.step-action .content div.fieldRow:nth-child(2) input:visible", function (e, state) {
             e = e.currentTarget;
             var doc = new Doc();
 
@@ -2814,7 +2814,6 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
                                             value: item.service
                                         };
                                     });
-
                                     response($.ui.autocomplete.filter(MyArray, request.term));
                                 }
                             })
@@ -2867,8 +2866,6 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 						title="' + doc.getDocLabel("page_applicationObject", "button_edit") + '" type="button">\n\
 				<span class="glyphicon glyphicon-eye-open"></span></button></span>');
 
-
-
                 if (data[$(e).val()]) {
 
                     viewEntry.find("button").off("click").on("click", function () {
@@ -2882,7 +2879,6 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 
                     $(e).parent().append(viewEntry);
                 }
-
             } else {
 
                 if (state !== "first") {
@@ -2904,7 +2900,6 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
                     var i = betweenPercent.length - 1;
                     while (i >= 0) {
                         var findname = betweenPercent[i].match(/\.[^\.]*(\.|.$)/g);
-
 
                         if (betweenPercent[i].startsWith("%object.") && findname !== null && findname.length > 0) {
 
@@ -2966,9 +2961,8 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
                     }
                 }
             }
-
         })
-        $("div.step-action .content div.fieldRow:nth-child(2) input").trigger("input", ['first'])
+        $("div.step-action .content div.fieldRow:nth-child(2) input:visible").trigger("input", ['first'])
     }
 
 })();
@@ -3579,7 +3573,7 @@ function createAllKeywordList(objectList, propertyList) {
         "EXECUTIONID",
         "EXESTART", "EXEELAPSEDMS",
         "EXESTORAGEURL",
-        "STEP.n.n.RETURNCODE", "CURRENTSTEP_INDEX", "CURRENTSTEP_STARTISO", "CURRENTSTEP_ELAPSEDMS", "CURRENTSTEPNUMBER",
+        "STEP.n.n.RETURNCODE", "CURRENTSTEP_INDEX", "CURRENTSTEP_STARTISO", "CURRENTSTEP_ELAPSEDMS", "CURRENTSTEP_SORT",
         "LASTSERVICE_HTTPCODE",
         "TODAY-yyyy", "TODAY-MM", "TODAY-dd", "TODAY-doy", "TODAY-HH", "TODAY-mm", "TODAY-ss",
         "YESTERDAY-yyyy", "YESTERDAY-MM", "YESTERDAY-dd", "YESTERDAY-doy", "YESTERDAY-HH", "YESTERDAY-mm", "YESTERDAY-ss"
