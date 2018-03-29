@@ -107,7 +107,7 @@ Cerberus server logs can be persisted by using the following command:
 
     docker run [...] -v /your/local/cerberus/server/logs/directory:/usr/local/glassfish4/glassfish/domains/domain1/logs cerberus/cerberus-as-glassfish:latest
 
-Where `/your/local/cerberus/screenshots/directory` is the directory to store the Cerberus execution screenshots out of your Docker host.
+Where `/your/local/cerberus/server/logs/directory` is the directory to store the Glassfish logs out of your Docker host.
 
 ### Cerberus screenshots
 
