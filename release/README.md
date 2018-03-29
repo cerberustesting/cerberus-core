@@ -14,16 +14,56 @@ Finally, each `.cmds` file contains a documentation header part to describe how 
 
 ### step by step
 
-Clone runcmds.sh somewhere on your computer :
+Go to your cerberus/source/src/main/webapp folder and modify the file DatabaseMaintenance.jsp. The variable `Integer SQLLimit` must be set to the current version of database + 1 :
+
+ * `cd <path_to_cerberusclone>/source/src/main/webapp`
+ * `vim DatabaseMaintenance.jsp (modify the file)`
+ * `git commit -m "change database version to <database_version>`
+ * `git push origin master`
+ 
+ Where:
+  - <database_version> is the current database version
+
+You need to be able to push cerberus on sourceforge
+To do that, fill your Maven's settings file with the following information:
+
+    <profiles>
+        <profile>
+            <id>default</id>
+            <properties>
+                <cerberus.sourceforge.username>USERNAME,cerberus-source</cerberus.sourceforge.username>
+                <cerberus.sourceforge.password>PASSWORD</cerberus.sourceforge.password>
+            </properties>
+        </profile>
+    </profiles>
+
+    <activeProfiles>
+        <activeProfile>default</activeProfile>
+    </activeProfiles>
+
+Where:
+ - USERNAME is your Cerberus' Sourceforge username
+ - PASSWORD is your Cerberus' Sourceforge password
+    
+Note that user Maven's settings file is usually located at ~/.m2/settings.xml
+
+You need to be logged in to docker registry to perform the docker's release
 `
-git clone https://github.com/abourdon/runcmds
+    docker login -p <password> -u <username>
 `
+
+Where:
+ - <password> is your docker hub password
+ - <username> is your docker hub username
+ 
+**/!\ you need to have the right on cerberus repository for sourceforge and docker hub**
+ 
+Clone runcmds.sh somewhere on your computer : `git clone https://github.com/abourdon/runcmds`
 
 Go to your cerberus/release folder
 `
     cd <path_to_cerberusclone>/release/
 `
-
 
 And run the release cmd :
 `
