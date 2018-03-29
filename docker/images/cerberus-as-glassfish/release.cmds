@@ -27,7 +27,7 @@
 # Prepare the release version
 awk '/ENV CERBERUS_VERSION/ {$0="ENV CERBERUS_VERSION ${RELEASE_VERSION}"} {print}' latest/Dockerfile > latest/Dockerfile.back && mv latest/Dockerfile.back latest/Dockerfile
 cp -R latest ${RELEASE_VERSION}
-awk '/Use the latest Cerberus version/{print; print "${RELEASE_VERSION}   | Use the ${RELEASE_VERSION} Cerberus version     | [${RELEASE_VERSION}/Dockerfile](https://github.com/cerberustesting/cerberus-docker/blob/master/images/cerberus-as-glassfish/${RELEASE_VERSION}/Dockerfile)"; next}1' README.md > README.md.back && mv README.md.back README.md
+awk '/Use the latest Cerberus version/{print; print "${RELEASE_VERSION}   | Use the ${RELEASE_VERSION} Cerberus version     | [${RELEASE_VERSION}/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/${RELEASE_VERSION}/Dockerfile)"; next}1' README.md > README.md.back && mv README.md.back README.md
 
 # Create Docker image
 docker build -t cerberustesting/cerberus-as-glassfish:${RELEASE_VERSION} ${RELEASE_VERSION}
