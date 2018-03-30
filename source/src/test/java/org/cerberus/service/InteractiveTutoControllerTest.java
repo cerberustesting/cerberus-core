@@ -41,6 +41,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -87,6 +89,10 @@ public class InteractiveTutoControllerTest {
     private PreparedStatement statement;
     @Mock
     private ResultSet resultSet;
+    @Mock
+    private HttpServletRequest request;
+    @Mock
+    private HttpSession session;
 
     @Autowired
     private DatabaseSpring databaseSpring;
@@ -105,6 +111,8 @@ public class InteractiveTutoControllerTest {
         when(databaseSpring.connect()).thenReturn(connection);
         when(connection.prepareStatement(anyString())).thenReturn(statement);
         when(statement.executeQuery()).thenReturn(resultSet);
+        when(request.getSession()).thenReturn(session);
+        when(request.getSession().getAttribute("MyLang")).thenReturn("fr");
 
     }
 
@@ -135,7 +143,9 @@ public class InteractiveTutoControllerTest {
                 thenReturn(TYPE_INTERACTIVE_TUTO_STEP_1).
                 thenReturn(TYPE_INTERACTIVE_TUTO_STEP_2);
 
-        InteractiveTutoDTO res = interactiveTutoController.getInteractiveTuto(ID_INTERACTIVE_TUTO_1,null).getBody();
+        when(resultSet.getInt("level")).thenReturn(1);
+
+        InteractiveTutoDTO res = interactiveTutoController.getInteractiveTuto(ID_INTERACTIVE_TUTO_1,request).getBody();
 
         Assert.assertNotNull(res);
         Assert.assertEquals(res.getId(), ID_INTERACTIVE_TUTO_1);
@@ -161,7 +171,7 @@ public class InteractiveTutoControllerTest {
     @Test
     public void getInteractiveTutoNoResultTest() throws Exception{
         when(resultSet.first()).thenReturn(false);
-        InteractiveTutoDTO res = interactiveTutoController.getInteractiveTuto(ID_INTERACTIVE_TUTO_1,null).getBody();
+        InteractiveTutoDTO res = interactiveTutoController.getInteractiveTuto(ID_INTERACTIVE_TUTO_1,request).getBody();
 
         Assert.assertNull(res);
 
