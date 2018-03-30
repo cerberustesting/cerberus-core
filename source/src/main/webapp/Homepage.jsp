@@ -42,6 +42,8 @@
     <body>
         <%@ include file="include/global/header.html"%>
         <%@ include file="include/pages/homepage/tagSettingsModal.html" %>
+        <%@ include file="include/utils/modal-confirmation.html"%>
+
         <%
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
 

@@ -19,20 +19,102 @@
  */
 
 $(document).ready(function () {
+    $("#openInteractiveTutoModal").off("click");
+    $("#openInteractiveTutoModal").click(function () {
+        // remove all into the modal
+        $("#interactiveTutoList").html("");
+
+        $.get('api/interactiveTuto/list',
+            function (data, status) {
+                if(status==='success') {
+                    data.forEach(function (data) {
+                        createNewButtonOnTutoShowroom(data.id, data.title, data.description, data.role, data.level);
+                    });
+                } else {
+                    console.error('api/interactiveTuto/list respond with error' + status);
+                }
+            });
+
+        $('#interactiveTutoModal').modal();
+    });
 
     if(getUrlParameter("tutorielId") !== undefined) {
         let tutorielId = getUrlParameter("tutorielId");
-        console.log(tutorielId);
         let startStep = getUrlParameter("startStep");
-        interractiveTutorial(startStep);
+        interractiveTutorial(tutorielId, startStep);
     }
 
 });
 
-function interractiveTutorial(startStep=1) {console.log("coucou");
-    let cerberusTuto = new CerberusTuto("firstStepAdmin");
+function createNewButtonOnTutoShowroom(id, title, description, role, level) {
 
-    // Page d'accueil
+    if($('#'+role).length === 0) { // verify if element exit
+        $("#interactiveTutoList").append("<div id="+role+"><h3>"+role+"</h3></div>");
+    }
+
+    let levelstr = "easy";
+    let badgecolor="success";
+    if(level==2)  { levelstr = "medium"; badgecolor="warning";}
+    if(level==3)  { levelstr = "hard"; badgecolor="danger";}
+
+    // populate the modal
+    $('#'+role).append(
+        "<div class='row' style='margin-top:5px;'>" +
+        "   <div class='col-xs-5'>" +
+        "       <button id='tuto"+id+"' type=\"button\" class=\"btn btn-default col-xs-12\" data-dismiss=\"modal\" " + "name=\"buttonClose\">"+title+"</button>" +
+        "   </div>" +
+        "   <div class='col-xs-1 label label-"+badgecolor+"' style='margin-top: 8px;font-size:100%'>"+levelstr+"</div>" +
+        "   <div class=\"col-xs-6\">" +
+        "       <span class='col-xs-12' style='margin-top: 8px;padding:0pxs'>"+description+"" + "</span>" +
+        "   </div>" +
+        "</div>");
+
+    $('#tuto'+id).click(function() {
+        interractiveTutorial(id);
+    })
+
+}
+
+var currentInteractiveTuto;
+
+function interractiveTutorial(id, startStep=1) {
+
+    $.get('api/interactiveTuto/get', {
+        id : id
+    }, function (data, status) {
+        if(status!='success') {
+            console.error('api/interactiveTuto/get respond with error' + status);
+            return;
+        }
+        let cerberusTuto = new CerberusTuto(data.id);
+        currentInteractiveTuto=cerberusTuto;
+        if(data.steps == null || data.steps.length <= 0) {
+            cerberusTuto.addGeneralMessage("Tutoriel is being written  ...");
+        } else {
+            data.steps.forEach(function (step) {
+                switch (step.type) {
+                    case 'GENERAL' :
+                        cerberusTuto.addGeneralMessage(step.text);
+                        break;
+                    case 'CHANGE_PAGE_AFTER_CLICK' :
+                        cerberusTuto.addMessageAndChangePageAfterClick(step.selectorJquery, step.text, step.attr1);
+                        break;
+                    default :
+                        cerberusTuto.addMessage(step.selectorJquery, step.text);
+                        break;
+                }
+            });
+        }
+
+        cerberusTuto.start(startStep);
+    });
+}
+
+
+function firstConnexion() {
+    let cerberusTuto = new CerberusTuto(0);
+
+
     cerberusTuto.addGeneralMessage("Bienvenue dans Cerberus ! Je vois que c'est ta première connexion, veux tu que je te guide dans tes premiers pas ?");
     cerberusTuto.addGeneralMessage("Bienvenue sur la page d'accueil de cerberus ! <b>Sur cette page d’accueil, tu trouveras des informations sur</b>" +
         "<ul>" +
@@ -55,36 +137,8 @@ function interractiveTutorial(startStep=1) {console.log("coucou");
         " represente une plateforme de test, ex : INTEGRATION ou PREPRODUCTION." +
         " Rendez-vous dans le menu <b>Integration/Environment</b>", "#menuEnvironments");
 
-    // page environement
-    cerberusTuto.addMessage("#createEnvButton", "Clique sur <b>Creer un environement</b>");
-    cerberusTuto.addMessage("#system", "Selectionne le système que tu viens de creer");
-    cerberusTuto.addMessage("#country", "Selectionne le pays - TODO recuperer l'aide du pays");
-    cerberusTuto.addMessage("#environment", "Selectionne l'environnement sur lequel tu veux faire tourner le système");
-    cerberusTuto.addMessage("#description", "Ajoute une description de l'environnement");
-    cerberusTuto.addMessage("#addEnvButton", "Et valide l'environement");
-    cerberusTuto.addMessageAndChangePageAfterClick("#sidebar", "Prochaine étape : vérifier qu'un type de déploiement existe. Rendez vous dans <b>Application/Type de deploiement</b>", "#menuDeployType");
-
-    // type de deploiement
-    cerberusTuto.addMessage("#createDeployTypeButton", "Creer un nouveau type de deploiement");
-    cerberusTuto.addMessage("#deployType", "Renseigne le nom du type de deploiement");
-    cerberusTuto.addMessage("#Description", "Decrit le type de deploiement");
-    cerberusTuto.addMessage("#addEntryButton", "Et sauvegarde le type de deploiment");
-    cerberusTuto.addMessageAndChangePageAfterClick("#sidebar", "Dernière étape : créer une application. Rendez vous dans <b>Application/Application</b>", "a#menuApplications");
-
-
-    // page application
-    cerberusTuto.addMessage("#createApplicationButton", "Clique sur <b>Creer une application</b>");
-    cerberusTuto.addMessage("#application", "Entre le nom de l'application que tu veux tester");
-    cerberusTuto.addMessage("#description", "Entre une description");
-    cerberusTuto.addMessage("#type", "Entre le type d'application (web, mobile, client riche etc...)");
-    cerberusTuto.addMessage("#system", "Selectionne le système");
-    cerberusTuto.addMessage("#deploytype", "Selectionne le type de deploiement prevu pour l'application");
-    cerberusTuto.addMessage("#addApplicationButton", "Et valide l'application !");
-
-    cerberusTuto.addGeneralMessage("Bravo! Tu es prêt à creer tes premiers cas de test sur l'application que tu viens de créer. >>> Passer au tuto suivant");
-
-
     cerberusTuto.start(startStep);
+
 }
 
 class CerberusTuto {
@@ -93,22 +147,28 @@ class CerberusTuto {
         this.tutorialId=tutorialId;
         this.listMessage = new Array();
         this.cpt=1;
+        this.working=false;
+        this.startStep=0;
     }
 
     addGeneralMessage(messageStr) {
         let message = {
             intro : messageStr,
-            step : this.cpt
+            step : this.cpt,
+            type : 'general'
         };
         this.listMessage.push(message);
+
         this.cpt++;
     }
 
     addMessage(jqueryId, messageStr) {
         let message = {
             element : jqueryId,
+            elementStr : jqueryId,
             intro : messageStr,
             step : this.cpt,
+            type : 'default'
         };
 
 
@@ -118,73 +178,204 @@ class CerberusTuto {
 
     addMessageAndChangePageAfterClick(jqueryId, messageStr, idLink) {
         this.addMessage(jqueryId, messageStr);
+        this.listMessage[this.listMessage.length-1].type='changeAfterClick';
+        this.listMessage[this.listMessage.length-1].idLink=idLink;
+    }
 
-        if($(idLink) === undefined && $(idLink).attr("href") === undefined) {
-            console.log("Element " + idLink + " is undefined or is not a link");
-        } else {
-            let symboleAdd = $(idLink).attr("href").includes("?") ? "&" : "?";
-            $(idLink).attr("href", $(idLink).attr("href") + symboleAdd + "tutorielId=" + this.tutorialId + "&startStep="+this.cpt);
-        }
+    isWorking() {
+        return this.working;
+    }
+
+    getUrlParamter() {
+        return "tutorielId=" + this.getTutorialId() + "&startStep=" + this.intro.getNextStep();
+    }
+
+    getTutorialId() {
+        return this.tutorialId;
+    }
+
+    getCurrentStep() {
+        return parseInt(this.currentStep) +  parseInt(this.startStep);
+    }
+    getNextStep() {
+        return this.getCurrentStep()  +  parseInt(this.startStep)  + 1;
+    }
+    isLastStep() {
+        return this.currentStep == this.intro._options.length-1;
     }
 
     start(startStep=1) {
         if(startStep<=0)startStep=0;
-
+        this.startStep=startStep;
+        this.currentStep=startStep;
         this.intro = introJs();
         this.listMessageToUse = this.listMessage.slice(startStep-1);
         this.intro.setOptions({steps:this.listMessageToUse});
 
-        this.intro.onchange(this.goToNextStepAfterClick);
+        let _this=this;
+
+        // correct a bug into introJs. If element use "nth-child" selector,  we have to
+        // initialize and find it manually it before a change
+        this.intro.onbeforechange(function (targetElement) {
+
+            if(this._options.steps[this._currentStep].element != undefined && this._options.steps[this._currentStep].element.indexOf("nth-child") !== -1 ||
+                this._introItems[this._currentStep].element === document.querySelector(".introjsFloatingElement") && typeof( this._introItems[this._currentStep].elementStr) === 'string') {
+                let elmt = $(this._options.steps[this._currentStep].elementStr);
+                if(elmt != undefined) {
+                    this._introItems[this._currentStep].position = null;
+                    this._introItems[this._currentStep].element = document.querySelector(this._options.steps[this._currentStep].element);
+                }
+            }
+        });
+
+        this.intro.onbeforeexit(function() {
+            if(modalConfirmationIsVisible()) {
+                hideModalConfirmationIsVisible();
+                return true;
+            }
+
+            if(!_this.isLastStep()) {
+                showModalConfirmation(function () {
+                    console.log("ok");
+                    _this.intro.exit(true);
+                    this.working = false;
+                }, function () {
+                    console.log("non");
+                }, "Warning", "Voulez-vous vraiment quitter le tutoriel ? ");
+                return false;
+            }
+
+            return true;
+        });
+
+
+        this.intro.onchange(function (targetElement) {
+            let intro = this;
+            _this.currentStep = intro._currentStep;
+            var clickOnNextStep = function (targetElement) {
+                if (intro != undefined && intro._options.steps[intro._currentStep + 1] != undefined && intro._options.steps[intro._currentStep + 1].element != undefined) {
+                    waitForElementToDisplay(intro._options.steps[intro._currentStep + 1].element, 100, function () {
+                        intro.nextStep();
+                    });
+                } else if (intro != undefined) {
+                    intro.nextStep();
+                }
+            }
+
+            if ($(targetElement).is("button")) { // if current element is a button
+                $(targetElement).unbind("click.clickOnNextStep");
+                $(targetElement).bind("click.clickOnNextStep", clickOnNextStep);
+            } else { // else, for each button into the element
+                $(targetElement).find("button").each(function (index, value) {
+                    $(value).unbind("click.clickOnNextStep");
+                    $(value).bind("click.clickOnNextStep", clickOnNextStep);
+                });
+
+                //  ecouter les autre bouton qui appariasserait pour ajouter l'action clikc
+                $(document).on('DOMNodeInserted', function (e) {
+                    $(e.target).find("button").unbind("click.clickOnNextStep");
+                    $(e.target).find("button").bind("click.clickOnNextStep", clickOnNextStep);
+                });
+
+            }
+
+            // add the step and tutorial number on link to follow the tutorial throw web pages
+            let message = _this.listMessage[intro._currentStep+parseInt(startStep)-1];
+            // if we want change page after the click, we have to added
+            if(message.type==='changeAfterClick') {
+                if ($(message.idLink) === undefined) {
+                    console.log("Element " + message.idLink + " is undefined");
+                } else {
+                    let typeObj = $(message.idLink).prop('nodeName');
+
+                    // by default, we add action on dom
+                    if (typeObj != undefined) {
+                        prepareChangeAfterClick(typeObj, message,_this);
+                    }
+
+                    $(message.element).on('DOMNodeInserted', function (e) {
+                        let typeObj = $(e.target).find(message.idLink).prop('nodeName');
+                        if (typeObj != undefined) {
+                            prepareChangeAfterClick(typeObj, message, _this);
+                        }
+                    });
+                }
+            }
+
+        });
 
         this.intro.onafterchange(function(targetElement) {
             var intro=this;
 
-            // Bug introjs with modal bootstrat, we move introjs directly into the modal to cerrect it (bug with fix position)
+            // Bug introjs with modal bootstrat, we move introjs directly into the modal to correct it (bug with fix position)
             // by default introjs element on body
             $('.introjs-overlay, .introjs-helperLayer, .introjs-tooltipReferenceLayer').appendTo("body");
-            waitForElementToDisplay(intro._options.steps[intro._currentStep + 1].element, 100, function () {
-                if($("div.modal.introjs-fixParent").length==1) {
-                    $('.introjs-overlay, .introjs-helperLayer, .introjs-tooltipReferenceLayer').appendTo("div.modal.introjs-fixParent");
-                    $('.introjs-overlay').css("position","absolute");
-                    $('.introjs-overlay').css("height", $(document).height() + "px");
-                }
-                $('.introjs-helperLayer, .introjs-tooltipReferenceLayer').removeClass("introjs-fixedTooltip");
-            });
+            if(intro._options.steps[intro._currentStep ] !== undefined && intro._options.steps[intro._currentStep ].element !== undefined) {
+                waitForElementToDisplay(intro._options.steps[intro._currentStep].element, 100, function () {
+                    if ($("div.modal.introjs-fixParent").length == 1) {
+                        $('.introjs-overlay, .introjs-helperLayer, .introjs-tooltipReferenceLayer').appendTo("div.modal.introjs-fixParent");
+                        $('.introjs-overlay').css("position", "absolute");
+                        $('.introjs-overlay').css("height", $(document).height() + "px");
+                    }
+                    $('.introjs-helperLayer, .introjs-tooltipReferenceLayer').removeClass("introjs-fixedTooltip");
+                });
+            }
         });
-        var _this = this;
+
         // wait for the first element
         if(this.listMessage[startStep-1] != undefined && this.listMessage[startStep-1].element != undefined) {
             waitForElementToDisplay(this.listMessage[startStep - 1].element, 100, function() {
                 _this.intro.start();
+                _this.working=true;
             });
         } else {
             this.intro.start();
+            this.working=true;
         }
     }
 
-
-    goToNextStepAfterClick(targetElement) {
-        let intro = this;
-
-        var clickOnNextStep = function () {
-            if (intro != undefined) {
-                waitForElementToDisplay(intro._options.steps[intro._currentStep + 1].element, 100, function () {
-                    intro.nextStep();
-                });
-            }
-        }
-
-        if ($(targetElement).is("button")) { // if current element is a button
-            $(targetElement).click(clickOnNextStep);
-        } else { // else, for each button into the element
-            $(targetElement).find("button").each(function (index, value) {
-                $(value).click(clickOnNextStep);
-            });
-        }
-    }
 }
 
 
+
+function prepareChangeAfterClick(typeObj, message, _this) {
+    switch (typeObj.toLowerCase()) {
+        case "button" :
+        case "form" : // cas du form sans action, ne marchera pas avec un action
+            let url = window.location.href;
+
+            // get part after ?
+            let getterParams = url.substr(url.indexOf("?") + 1, url.length - 1).split("&");
+
+            // construct new url
+            let newurl = "?";
+            getterParams.forEach(function (param) {
+                let paramTab = param.split("=");
+                switch (paramTab[0]) {
+                    case 'tutorielId' :
+                        newurl += "&tutorielId=" + _this.tutorialId;
+                        break;
+                    case 'startStep' :
+                        newurl += "&startStep=" + (message.step + 1);
+                        break;
+                    default :
+                        newurl += "&" + param;
+                        break;
+                }
+            });
+
+            window.history.pushState(null, "", newurl);
+
+            break;
+        case "a" :
+
+            $(message.idLink).each(function (index, data) {
+                let symboleAdd = $(data).attr("href").includes("?") ? "&" : "?";
+                $(data).attr("href", $(data).attr("href") + symboleAdd + "tutorielId=" + _this.tutorialId + "&startStep=" + (message.step + 1));
+            });
+            break;
+    }
+}
 
 
 function getUrlParameter(sParam) {

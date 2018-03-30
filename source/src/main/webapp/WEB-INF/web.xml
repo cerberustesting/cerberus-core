@@ -804,6 +804,16 @@
         <servlet-name>UpdateTestCaseExecutionQueue</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.testexecution.UpdateTestCaseExecutionQueue</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>springrest</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>springrest</servlet-name>
+        <url-pattern>/api/*</url-pattern>
+    </servlet-mapping>
+
     <servlet-mapping>
         <servlet-name>ReadCerberusDetailInformation</servlet-name>
         <url-pattern>/ReadCerberusDetailInformation</url-pattern>
