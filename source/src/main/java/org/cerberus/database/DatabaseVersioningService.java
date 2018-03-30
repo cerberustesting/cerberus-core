@@ -47,7 +47,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         LOG.info("Starting Execution of '" + SQLString + "'");
 
         try (Connection connection = this.databaseSpring.connect();
-                Statement preStat = connection.createStatement();) {
+             Statement preStat = connection.createStatement();) {
             preStat.execute(SQLString);
             LOG.info("'" + SQLString + "' Executed successfully.");
         } catch (Exception exception1) {
@@ -62,7 +62,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // Getting the Full script to update the database.
         ArrayList<String> SQLList;
         SQLList = this.getSQLScript();
-        // Get version from the database 
+        // Get version from the database
         MyVersion MVersion;
         MVersion = MyversionService.findMyVersionByKey("database");
         // compare both to see if version is uptodate.
@@ -96,11 +96,11 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         //    - Beware of big tables that may result a timeout on the GUI side.
         // - Limit the number of SQL required in this class.
         //    - When inserting some data in table, group them inside the same SQL
-        // - Never introduce an SQL between 2 SQL. 
-        //    - it messup the seq of SQL to execute in all users that moved to 
+        // - Never introduce an SQL between 2 SQL.
+        //    - it messup the seq of SQL to execute in all users that moved to
         //      earlier version
-        // - Only modify the SQL to fix an SQL issue but not to change a 
-        //   structure or enrich some data on an existing SQL. You need to 
+        // - Only modify the SQL to fix an SQL issue but not to change a
+        //   structure or enrich some data on an existing SQL. You need to
         //   create a new one to secure that it gets executed in all env.
         // ***********************************************
         // ***********************************************
@@ -1119,7 +1119,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add(b.toString());
         a.add(new StringBuilder("SELECT 1 FROM dual;").toString());
 
-//-- dropping tag table 
+//-- dropping tag table
 //--------------------------
         b = new StringBuilder();
         b.append("DROP TABLE `tag`;");
@@ -1607,7 +1607,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append("ALTER TABLE `testcasestepactionexecution` ADD CONSTRAINT `FK_testcasestepactionexecution_01` FOREIGN KEY (`ID` , `Test` , `TestCase` , `Step` ) REFERENCES `testcasestepexecution` (`ID` , `Test` , `TestCase` , `Step` ) ON DELETE CASCADE ON UPDATE CASCADE;");
         a.add(b.toString());
 
-//-- Resizing Screenshot filename to biggest possible value. 
+//-- Resizing Screenshot filename to biggest possible value.
 //
         b = new StringBuilder();
         b.append("ALTER TABLE `testcasestepactioncontrolexecution` CHANGE COLUMN `ScreenshotFilename` `ScreenshotFilename` VARCHAR(150) NULL DEFAULT NULL  ;");
@@ -1616,7 +1616,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append("ALTER TABLE `testcasestepactionexecution` CHANGE COLUMN `ScreenshotFilename` `ScreenshotFilename` VARCHAR(150) NULL DEFAULT NULL  ;");
         a.add(b.toString());
 
-//-- Correcting verifyurl to verifyURL and verifytitle to VerifyTitle in controls. 
+//-- Correcting verifyurl to verifyURL and verifytitle to VerifyTitle in controls.
 //
         b = new StringBuilder();
         b.append("UPDATE testcasestepactioncontrol SET type='verifyUrl' where type='verifyurl';");
@@ -1631,7 +1631,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append("UPDATE invariant SET value='verifyTitle', description ='verifyTitle' where value='verifytitle' and idname='CONTROL';");
         a.add(b.toString());
 
-//-- Making controls standard. 
+//-- Making controls standard.
 //
         b = new StringBuilder();
         b.append("UPDATE invariant SET value = 'verifyPropertyEqual', description = 'verifyPropertyEqual' where value='PropertyIsEqualTo' and idname='CONTROL';");
@@ -1667,13 +1667,13 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append("UPDATE `invariant` SET `value`='firefox' WHERE `id`='37' and`sort`='1';");
         a.add(b.toString());
 
-//-- New parameter used by netexport. 
+//-- New parameter used by netexport.
 //
         b = new StringBuilder();
         b.append("INSERT INTO `parameter` (`param`, `value`, `description`) VALUES ('cerberus_url', 'http://localhost:8080/Cerberus', 'URL to Cerberus used in order to call back cerberus from NetExport plugin. This parameter is mandatory for saving the firebug detail information back to cerberus. ex : http://host:port/contextroot');");
         a.add(b.toString());
 
-//-- Making controls standard. 
+//-- Making controls standard.
 //
         b = new StringBuilder();
         b.append("UPDATE invariant SET value = 'verifyStringEqual', description = 'verifyStringEqual' where value='verifyPropertyEqual' and idname='CONTROL';");
@@ -1700,7 +1700,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append("UPDATE testcasestepactioncontrol SET type='verifyIntegerMinor' where type='verifyPropertyMinor';");
         a.add(b.toString());
 
-//-- Making Properties standard. 
+//-- Making Properties standard.
 //
         b = new StringBuilder();
         b.append("UPDATE invariant SET value = 'executeSql', sort=20 where value='SQL' and idname='PROPERTYTYPE';");
@@ -1733,7 +1733,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `id`, `description`) VALUES ('PROPERTYNATURE', 'NOTINUSE', 4, 20, 'Not In Use');");
         a.add(b.toString());
 
-//-- New Control. 
+//-- New Control.
 //
         b = new StringBuilder();
         b.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `id`, `description`) VALUES ('CONTROL', 'verifyTextNotPresent', 51, 13, 'verifyTextNotPresent');");
@@ -2610,7 +2610,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append(" ('CONTROL', 'verifyStringContains', 14, 13, 'verifyStringContains', NULL, NULL, NULL);");
         a.add(b.toString());
 
-// Renamed value to value1 and added value2 in testcasecountryproperties and testcaseexecutiondata tables      
+// Renamed value to value1 and added value2 in testcasecountryproperties and testcaseexecutiondata tables
         b = new StringBuilder();
         b.append("ALTER TABLE `testcasecountryproperties` CHANGE COLUMN `Value` `Value1` VARCHAR(2500) NULL DEFAULT '' ,");
         b.append("ADD COLUMN `Value2` VARCHAR(2500) NULL DEFAULT '' AFTER `Value1`;");
@@ -2939,14 +2939,14 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add(b.toString());
 
 //Change IP on countryEnvironmentParameters accordingly to other tables (user, testcaseexecution and robot).
-// 463        
+// 463
         b = new StringBuilder();
         b.append("ALTER TABLE `countryenvironmentparameters` ");
         b.append("CHANGE COLUMN `IP` `IP` VARCHAR(150) NOT NULL DEFAULT '';");
         a.add(b.toString());
 
 //Add Invariant for campaign parameters.
-// 464 
+// 464
         b = new StringBuilder();
         b.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`, `gp1`) VALUES ");
         b.append("('CAMPAIGN_PARAMETER', 'BROWSER', '10', 'Browser use to execute campaign', 'Browser', 'INVARIANTPRIVATE'),");
@@ -2956,14 +2956,14 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add(b.toString());
 
 //Add Invariant for new control verify element in element.
-// 465 
+// 465
         b = new StringBuilder();
         b.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`, `gp1`, `gp2`, `gp3`) VALUES ");
         b.append("('CONTROL', 'verifyElementInElement', 32, 'verifyElementInElement', '', NULL, NULL, NULL);");
         a.add(b.toString());
 
 //Add Documentation for new control verify element in element.
-// 466 
+// 466
         b = new StringBuilder();
         b.append("SELECT 1 FROM dual;");
         a.add(b.toString());
@@ -3022,34 +3022,34 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add(b.toString());
 
 //Alter table countryenvparam to put default value empty instead of NULL
-// 479       
+// 479
         b = new StringBuilder();
         b.append("ALTER TABLE `campaignparameter` DROP INDEX `IX_campaignparameter_01` , ");
         b.append("ADD UNIQUE INDEX `IX_campaignparameter_01` (`campaign` ASC, `Parameter` ASC, `Value` ASC);");
         a.add(b.toString());
 
 //Add invariant action openURL
-// 480       
+// 480
         b = new StringBuilder();
         b.append("INSERT INTO `invariant` ");
         b.append(" VALUES ('ACTION', 'openUrl', '65', 'openUrl', '', NULL,NULL,NULL);");
         a.add(b.toString());
 
 //Add documentation related to action openURL
-// 481       
+// 481
         b = new StringBuilder();
         b.append("SELECT 1 FROM dual;");
         a.add(b.toString());
 
 //Add function column in testcase table
-// 482      
+// 482
         b = new StringBuilder();
         b.append("ALTER TABLE `testcase` ");
         b.append("ADD COLUMN `function` VARCHAR(500) NULL DEFAULT '' AFTER `activePROD`;");
         a.add(b.toString());
 
 //Add documentation for function column in testcase table
-// 483      
+// 483
         b = new StringBuilder();
         b.append("SELECT 1 FROM dual;");
         a.add(b.toString());
@@ -3066,13 +3066,13 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add(b.toString());
 
 //Add documentation for timeout and synchroneous field
-// 486      
+// 486
         b = new StringBuilder();
         b.append("SELECT 1 FROM dual;");
         a.add(b.toString());
 
 //Add invariant synchroneous
-// 487      
+// 487
         b = new StringBuilder();
         b.append("INSERT INTO `invariant` VALUES ");
         b.append(" ('SYNCHRONEOUS', 'N', '2', 'Redirect to the execution before the end of the execution', '', NULL, NULL, NULL),");
@@ -3080,25 +3080,25 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add(b.toString());
 
 //Add invariant private synchroneous
-// 488       
+// 488
         b = new StringBuilder();
         b.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('INVARIANTPRIVATE', 'SYNCHRONEOUS', '430', '', '');");
         a.add(b.toString());
 
 //Add invariant action callSoapWithBase
-// 489       
+// 489
         b = new StringBuilder();
         b.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('ACTION', 'callSoapWithBase', '190', 'callSoapWithBase', '');");
         a.add(b.toString());
 
 //Add invariant CONTROL verifyXmlTreeStructure
-// 490       
+// 490
         b = new StringBuilder();
         b.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('CONTROL', 'verifyXmlTreeStructure', '90', 'verifyXmlTreeStructure', '');");
         a.add(b.toString());
 
 //Add invariant action mouseDownMouseUp
-// 491       
+// 491
         b = new StringBuilder();
         b.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('ACTION', 'mouseDownMouseUp', '200', 'mouseDownMouseUp', '');");
         a.add(b.toString());
@@ -3110,7 +3110,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add(b.toString());
 
 //Add use step columns in testcasestep
-// 493       
+// 493
         b = new StringBuilder();
         b.append("ALTER TABLE `testcasestep` ");
         b.append("ADD COLUMN `useStep` VARCHAR(1) NULL DEFAULT 'N' AFTER `Description`, ");
@@ -3120,7 +3120,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add(b.toString());
 
 //Add control isElementClickable and isElementNotClickable
-// 494       
+// 494
         b = new StringBuilder();
         b.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ");
         b.append(" ('CONTROL','verifyElementClickable',35,'isElementClickable',''),");
@@ -3128,13 +3128,13 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add(b.toString());
 
 //Add documentation isElementClickable , isElementNotClickable, callSoapWithBase
-// 495       
+// 495
         b = new StringBuilder();
         b.append("SELECT 1 FROM dual;");
         a.add(b.toString());
 
 //Remove mouseUpMouseDown
-// 496       
+// 496
         b = new StringBuilder();
         b.append("DELETE FROM `invariant` WHERE `idname`='ACTION' and `value`='mouseDownMouseUp';");
         a.add(b.toString());
@@ -3146,19 +3146,19 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add(b.toString());
 
 //Add action getPageSource
-// 498       
+// 498
         b = new StringBuilder();
         b.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('ACTION', 'getPageSource', '210', 'getPageSource', '');");
         a.add(b.toString());
 
 //Add documentation getPageSource
-// 499      
+// 499
         b = new StringBuilder();
         b.append("SELECT 1 FROM dual;");
         a.add(b.toString());
 
 //Add invariant callSoap and getFromXml
-// 500      
+// 500
         b = new StringBuilder();
         b.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ");
         b.append(" ('ACTION', 'callSoap', '189', 'callSoap', ''),");
@@ -3166,32 +3166,32 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add(b.toString());
 
 //Add documentation getFromXml
-// 501      
+// 501
         b = new StringBuilder();
         b.append("SELECT 1 FROM dual;");
         a.add(b.toString());
 
 //Add documentation getFromCookie
-// 502      
+// 502
         b = new StringBuilder();
         b.append("SELECT 1 FROM dual;");
         a.add(b.toString());
 
 //Add invariant getFromCookie
-// 503      
+// 503
         b = new StringBuilder();
         b.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ");
         b.append(" ('PROPERTYTYPE', 'getFromCookie', '60', 'getFromCookie', '');");
         a.add(b.toString());
 
 //Add documentation seleniumLog and pageSource
-// 504      
+// 504
         b = new StringBuilder();
         b.append("SELECT 1 FROM dual;");
         a.add(b.toString());
 
 //Add invariant seleniumLog and pageSource
-// 505      
+// 505
         b = new StringBuilder();
         b.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ");
         b.append(" ('INVARIANTPRIVATE', 'PAGESOURCE', '440', '', ''),");
@@ -3205,34 +3205,34 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add(b.toString());
 
 //Add PageSource filename on testcasestepactionexecution table
-// 506      
+// 506
         b = new StringBuilder();
         b.append("ALTER TABLE `testcasestepactionexecution` ");
         b.append("ADD COLUMN `PageSourceFileName` VARCHAR(150) NULL DEFAULT NULL AFTER `ScreenshotFilename`;");
         a.add(b.toString());
 
 //Add PageSource filename on testcasestepactioncontrolexecution table
-// 507      
+// 507
         b = new StringBuilder();
         b.append("ALTER TABLE `testcasestepactioncontrolexecution` ");
         b.append("ADD COLUMN `PageSourceFilename` VARCHAR(150) NULL DEFAULT NULL AFTER `ScreenshotFilename`;");
         a.add(b.toString());
 
 //Add Selenium Log in documentation
-// 508      
+// 508
         b = new StringBuilder();
         b.append("SELECT 1 FROM dual;");
         a.add(b.toString());
 
-//Default value 0 for use step 
-// 509      
+//Default value 0 for use step
+// 509
         b = new StringBuilder();
         b.append("ALTER TABLE `testcasestep` ");
         b.append("CHANGE COLUMN `useStepStep` `useStepStep` INT(10) NOT NULL DEFAULT '0' ;");
         a.add(b.toString());
 
-//Create table usersystem 
-// 510   
+//Create table usersystem
+// 510
         b = new StringBuilder();
         b.append("CREATE TABLE `usersystem` (");
         b.append("`Login` VARCHAR(10) NOT NULL,");
@@ -3240,15 +3240,15 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append("PRIMARY KEY (`Login`, `System`))  ENGINE=InnoDB DEFAULT CHARSET=utf8;");
         a.add(b.toString());
 
-//Create table usersystem 
-// 511   
+//Create table usersystem
+// 511
         b = new StringBuilder();
         b.append("insert into usersystem ");
         b.append("select u.login, i.value from user u, invariant i where i.idname='SYSTEM';");
         a.add(b.toString());
 
-//Default value in sort on application table 
-// 512   
+//Default value in sort on application table
+// 512
         b = new StringBuilder();
         b.append("ALTER TABLE `application` ");
         b.append("CHANGE COLUMN `sort` `sort` INT(11) NOT NULL DEFAULT 10 ;");
@@ -3547,7 +3547,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add(b.toString());
 
 // Add invariant ManualExecution
-// 548    	
+// 548
         b = new StringBuilder();
         b.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ");
         b.append("('INVARIANTPRIVATE', 'MANUALEXECUTION', '470', '', ''),");
@@ -3556,7 +3556,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add(b.toString());
 
 // Add Start index on execution table in order to speedup purge process.
-// 549 552    	
+// 549 552
         b = new StringBuilder();
         b.append("ALTER TABLE `testcasestepactioncontrolexecution` ADD INDEX `IX_testcasestepactioncontrolexecution_01` (`Start` ASC);");
         a.add(b.toString());
@@ -3625,7 +3625,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add(b.toString());
 
 // Add last_updaed column.
-//  561 >> 567                
+//  561 >> 567
         b = new StringBuilder();
         b.append("ALTER TABLE `test` ");
         b.append("ADD COLUMN `last_modified` TIMESTAMP NULL DEFAULT 0;");
@@ -3656,7 +3656,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add(b.toString());
 
 // Add ScreenshotFilename column on testcasestepaction and testcasestepactioncontrol tables.
-//  568 >> 569                
+//  568 >> 569
         b = new StringBuilder();
         b.append("ALTER TABLE `testcasestepaction` ");
         b.append("ADD COLUMN `ScreenshotFileName` VARCHAR(150) NULL DEFAULT NULL AFTER `Description`;");
@@ -3667,32 +3667,32 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add(b.toString());
 
 // Add propertytype getFromJson in Invariant table.
-//  570 
+//  570
         b = new StringBuilder();
         b.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) ");
         b.append(" VALUES ('PROPERTYTYPE', 'getFromJson', '70', 'Getting value from a Json file', '');");
         a.add(b.toString());
 
 // Add documentation for getFromJson property.
-//  571 
+//  571
         b = new StringBuilder();
         b.append("SELECT 1 FROM dual;");
         a.add(b.toString());
 
 // Add Solr_url parameter.
-//  572 
+//  572
         b = new StringBuilder();
         b.append("INSERT INTO `parameter` (`system`, `param`,`value`, `description`) VALUES ('', 'solr_url','', 'URL of Solr search Engine used on Search Testcase Page. Value is empty if no Solr implementation is available');");
         a.add(b.toString());
 
 // Add Thread Pool Size parameter.
-//  573                
+//  573
         b = new StringBuilder();
         b.append("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ('', 'cerberus_execution_threadpool_size', '10', 'Number of Simultaneous execution handled by Cerberus');");
         a.add(b.toString());
 
 // Add Column Comment,Retries and manualExecution in TestCaseExecutionQueue table.
-//  574                
+//  574
         b = new StringBuilder();
         b.append("ALTER TABLE `testcaseexecutionqueue` ");
         b.append("ADD COLUMN `comment` VARCHAR(250) NULL DEFAULT NULL AFTER `proceeded`, ");
@@ -3701,19 +3701,19 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add(b.toString());
 
 // Add Column Comment in TestCaseExecutionQueue table.
-//  575                
+//  575
         b = new StringBuilder();
         b.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('OUTPUTFORMAT', 'redirectToReport', '4', 'Go to ReportByTag page', '');");
         a.add(b.toString());
 
 // Add Column Comment in TestCaseExecutionQueue table.
-//  576               
+//  576
         b = new StringBuilder();
         b.append("SELECT 1 FROM dual;");
         a.add(b.toString());
 
 // Add Column Comment in TestCaseExecutionQueue table.
-//  577               
+//  577
         b = new StringBuilder();
         b.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ");
         b.append("('INVARIANTPRIVATE', 'RETRIES', '470', '', ''), ");
@@ -3724,7 +3724,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add(b.toString());
 
 // Add Column UserAgent in Robot Table.
-//  578               
+//  578
         b = new StringBuilder();
         b.append("ALTER TABLE `robot` ");
         b.append("ADD COLUMN `useragent` VARCHAR(250) NOT NULL DEFAULT '' AFTER `active`;");
@@ -3744,7 +3744,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add(b.toString());
 
 // Add new property type that is able to retrieve data values from a property that is specified in the library
-//  582-583               
+//  582-583
         b = new StringBuilder();
         b.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) ");
         b.append(" VALUES ('PROPERTYTYPE', 'getFromDataLib', '75', 'Determines the data value associated with a library entry', 'Data value'); ");
@@ -4122,7 +4122,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ('', 'cerberus_screenshot_max_size', '1048576', 'Max size in bytes for a screenshot take while test case execution');");
         a.add(b.toString());
 
-        // New documentation entries for TestCaseList 
+        // New documentation entries for TestCaseList
         // 646
         b = new StringBuilder();
         b.append("SELECT 1 FROM dual;");
@@ -4185,7 +4185,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append("SELECT 1 FROM dual;");
         a.add(b.toString());
 
-        // Documentation for the test data library 
+        // Documentation for the test data library
         // 658
         b = new StringBuilder();
         b.append("SELECT 1 FROM dual;");
@@ -4878,7 +4878,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // 810
         b = new StringBuilder();
         b.append("ALTER TABLE `testcaseexecution` ");
-        b.append(" ADD INDEX `IX_testcaseexecution_09` (`Country` ASC, `Environment` ASC, `ControlStatus` ASC), "); // Used for NOTINUSE   
+        b.append(" ADD INDEX `IX_testcaseexecution_09` (`Country` ASC, `Environment` ASC, `ControlStatus` ASC), "); // Used for NOTINUSE
         b.append(" ADD INDEX `IX_testcaseexecution_10` (`Test` ASC, `TestCase` ASC, `Environment` ASC, `Country` ASC, `Build` ASC) ;"); // Used for RANDOMNEW
         a.add(b.toString());
 
@@ -4919,7 +4919,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add(b.toString());
 
         // Add Sort column to test case step related tables (#569)
-        // 816 - 827 
+        // 816 - 827
         b = new StringBuilder();
         b.append("ALTER TABLE `testcasestep` ADD COLUMN `Sort` INT(10) UNSIGNED AFTER `Step`;");
         a.add(b.toString());
@@ -6728,7 +6728,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 
         // New design Login page
         // 1160
-        b = new StringBuilder(); // replace color yellow by no color 
+        b = new StringBuilder(); // replace color yellow by no color
         b.append("UPDATE `parameter` SET value=replace(value,'style=\"color: yellow\"','') where param='cerberus_support_email';");
         a.add(b.toString());
 
@@ -7437,7 +7437,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 
         // Enrich email notification.
         // 1283
-        b = new StringBuilder(); // adding table with CI result. 
+        b = new StringBuilder(); // adding table with CI result.
         b.append("UPDATE `parameter` SET ");
         b.append(" description='Cerberus End of tag execution notification email body. %TAG%, %URLTAGREPORT%, %CAMPAIGN%, %TAGDURATION%, %TAGSTART%, %TAGEND%, %CIRESULT%, %CISCORE%, %TAGGLOBALSTATUS% and %TAGTCDETAIL% can be used as variables.'");
         b.append(" , value=replace(value,'%TAGDURATION% min</td></tr></tbody></table>','%TAGDURATION% min</td></tr></tbody></table><table><thead><tr style=\"background-color:#cad3f1; font-style:bold\"><td>CI Result</td><td>CI Score</td></tr></thead><tbody><tr><td>%CIRESULT%</td><td>%CISCORE%</td></tr></tbody></table>') ");
@@ -7625,7 +7625,155 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add("ALTER TABLE `testdatalib` DROP FOREIGN KEY `FK_testdatalib_01`;");
         a.add("ALTER TABLE `testdatalib` ADD CONSTRAINT `FK_testdatalib_01` FOREIGN KEY (`Service`) REFERENCES `appservice` (`Service`) ON DELETE SET NULL ON UPDATE CASCADE;");
 
+        // ADD Interactive tutorial table
+        //-- ------------------------ 12??-12??
+
+        b = new StringBuilder();
+        b.append("CREATE TABLE `interactive_tuto` ( ");
+        b.append("id int primary key,");
+        b.append("titleTranslationLabel varchar(61) not null,");
+        b.append("translationLabel varchar(61) not null,");
+        b.append("role varchar(31) not null,");
+        b.append("ord int not null,");
+        b.append("level int not null"); // 1 easy, 2 intermediate, 3 hard
+        b.append(")");
+        a.add(b.toString());
+
+        b = new StringBuilder();
+        b.append("CREATE TABLE `interactive_tuto_step` ( ");
+        b.append("id int AUTO_INCREMENT,");
+        b.append("id_interactive_tuto int not null,");
+        b.append("selector varchar(255),");
+        b.append("step_order int,");
+        b.append("type varchar(31) not null,");
+        b.append("attr1 varchar(125),");
+        b.append("FOREIGN KEY (id_interactive_tuto) REFERENCES interactive_tuto(id),");
+        b.append("primary key (id)");
+        b.append(")");
+        a.add(b.toString());
+
+        b = new StringBuilder();
+        b.append("INSERT INTO `interactive_tuto` (`id`, `titleTranslationLabel`, `translationLabel`, `role`, `ord`, `level`) VALUES \n");
+        b.append("  (1, 'firstStepAdmin', 'firstStepAdmin.detail', 'Administrator', 0, 1),\n");
+        b.append("  (2, 'firstStepImplementer', 'firstStepImplementer.detail','Test', 100, 1),\n");
+        b.append("  (3, 'webImplementationBeginner', 'webImplementationBeginner.detail','Test', 100, 1),\n");
+        b.append("  (4, 'webImplementationIntermediate', 'webImplementationIntermediate.detail','Test', 102, 2),\n");
+        b.append("  (5, 'webImplementationExpert', 'webImplementationExpert.detail','Test', 104,3)");
+
+        a.add(b.toString());
+
+        b = new StringBuilder();
+        b.append("ALTER TABLE `documentation` MODIFY COLUMN DocLabel varchar(800)");
+        a.add(b.toString());
+
+
+        // ADD Interactive tutorial for admin
+        // general page
+        b = new StringBuilder();
+        b.append("INSERT INTO `interactive_tuto_step` (`id_interactive_tuto`, `step_order`, `selector`,  `type`, `attr1`) VALUES \n");
+        b.append("  (1, 30,  '#sidebar',                 'changePageAfterClick', '#menuInvariants' ), \n ");
+
+
+        // Page invariant, creer un system,
+        b.append("  (1, 35, '#createInvariantButton',    'default',              null               ), \n ");
+        b.append("  (1, 40, '#idname',                   'default',              null               ), \n ");
+        b.append("  (1, 45, '#value',                    'default',              null               ), \n ");
+        b.append("  (1, 50, '#addInvariantButton',       'default',              null               ), \n ");
+        b.append("  (1, 55, '#sidebar',                  'changePageAfterClick', '#menuDeployType'), \n ");
+
+        // type de deploiement, null, \n
+        b.append("  (1, 57, '#formSystem',               'changePageAfterClick', '#SysFilter'        ) \n, ");
+        b.append("  (1, 60, '#createDeployTypeButton',   'default',              null                ) \n, ");
+        b.append("  (1, 65,'#deployType',                'default',              null                ) \n, ");
+        b.append("  (1, 70,'#Description',               'default',              null                ) \n, ");
+        b.append("  (1, 75,'#addEntryButton',            'default',              null                ) \n, ");
+        b.append("  (1, 80,'#sidebar',                   'changePageAfterClick', '#menuEnvironments') \n, ");
+
+        // page environement, null, \n
+        b.append("  (1, 85, '#createEnvButton',          'default',              null               ), \n ");
+        b.append("  (1, 90, '#system',                   'default',              null               ), \n ");
+        b.append("  (1, 95, '#country',                  'default',              null               ), \n ");
+        b.append("  (1, 100, '#environment',              'default',              null              ), \n ");
+        b.append("  (1, 105, '#description',              'default',              null              ), \n ");
+        b.append("  (1, 110, '#addEnvButton',             'default',              null              ), \n ");
+        b.append("  (1, 115, '#sidebar',                  'changePageAfterClick', 'a#menuApplications' ), \n ");
+
+        // page application, null,
+        b.append("  (1, 120,'#createApplicationButton',  'default',              null              ), \n");
+        b.append("  (1, 125,'#application',              'default',              null              ), \n");
+        b.append("  (1, 130,'#description',              'default',              null              ), \n");
+        b.append("  (1, 135,'#type',                     'default',              null              ), \n");
+        b.append("  (1, 140,'#system',                   'default',              null              ), \n");
+        b.append("  (1, 145,'#deploytype',               'default',              null              ), \n");
+        b.append("  (1, 150,'#addApplicationButton',     'default',              null              ), \n");
+        b.append("  (1, 155,'.dataTables_scroll',        'default',              null              ), \n");
+        b.append("  (1, 160,'#tab2Text',                 'default',              null              ), \n");
+        b.append("  (1, 165,'#addEnvironment',           'default',              null              ), \n");
+        b.append("  (1, 170,'#EnvironmentTable',         'default',              null              ), \n");
+        b.append("  (1, 175,'#editApplicationButton',    'default',              null              ), \n");
+        b.append("  (1, 180, null,                       'general',              null              ); \n");
+
+        a.add(b.toString());
+
+        //
+        b = new StringBuilder();
+        b.append(" INSERT INTO `interactive_tuto_step` (`id_interactive_tuto`, `step_order`, `selector`,  `type`, `attr1`) VALUES ");
+        b.append(" (2, 0,   null,                        'general',               null              ), \n");
+        b.append(" (2, 5, '#sidebar',                    'changePageAfterClick', '#menuEditTest'    ), \n");
+        b.append(" (2, 10,'#createTestButton',           'default',               null              ), \n");
+        b.append(" (2, 15,'#addEntryModal #test',        'default',               null              ), \n");
+        b.append(" (2, 25,'#addEntryButton',             'default',               null              ), \n");
+        b.append(" (2, 30,'.dataTables_scroll',          'changePageAfterClick', 'a#testCaseLink'   ), \n");
+        b.append(" (2, 35,'#createTestCaseButton',       'default',            null                 ), \n");
+        b.append(" (2, 40,'#test',                     'default',          null                     ), \n");
+        b.append(" (2, 45,'#shortDesc',                'default',          null                     ), \n");
+        b.append(" (2, 50,'#application',              'default',          null                     ), \n");
+        b.append(" (2, 55,'#addTestCaseButton',          'default',          null                   ), \n");
+        b.append(" (2, 60,'.dataTables_scroll',          'changePageAfterClick',    'a#testCaseLink'), \n");
+        b.append(" (2, 65,'#testCaseTitle',             'default',          null                    ), \n");
+        b.append(" (2, 70,'#tabsScriptEdit',        'default',          null                        ), \n");
+        b.append(" (2, 72,'#addStep',                  'default',                null               ), \n");
+        b.append(" (2, 75,'#description',               'default',                null              ), \n");
+        b.append(" (2, 80,'#addStepConfirm',         'default',                null                 ), \n");
+        b.append(" (2, 85,'#addActionBottom',            'default',                null             ), \n");
+        b.append(" (2, 90,'#actionContainer .step-action:nth-child(1)', 'default',    null          ), \n");
+        b.append(" (2, 95,'#actionContainer .step-action:nth-child(1) .boutonGroup', 'default',null ), \n");
+        b.append(" (2, 100,'#actionContainer .step-action:nth-child(2)', 'default',null             ), \n");
+        b.append(" (2, 102,'#saveScript',               'changePageAfterClick',   '#saveScript'     ), \n");
+        b.append(" (2, 110,'#saveScript',               'default',                null              ); \n");
+        a.add(b.toString());
+
+        b = new StringBuilder();
+        b.append("INSERT INTO `interactive_tuto` (`id`, `titleTranslationLabel`, `translationLabel`, `role`, `ord`, `level`) VALUES \n");
+        b.append("  (6, 'runTestManually', 'runTestManually.detail', 'RunTest', 200, 1) ");
+        a.add(b.toString());
+
+        b = new StringBuilder();
+        b.append(" INSERT INTO `interactive_tuto_step` (`id_interactive_tuto`, `step_order`, `selector`,  `type`, `attr1`) VALUES ");
+        b.append(" (6, 0,   '#sidebar',                  'changePageAfterClick',   '#menuRobot'     ), \n ");
+        b.append(" (6, 5,   null,                      'general',             null                  ), \n ");
+        b.append(" (6, 10,  '#createRobotButton',      'default',             null                  ), \n ");
+        b.append(" (6, 15,  '#robotName',                   'default',             null                 ), \n ");
+        b.append(" (6, 20,  '#host',                'default',             null                     ), \n ");
+        b.append(" (6, 25,  '#port',                'default',             null                     ), \n ");
+        b.append(" (6, 30,  '#platform',             'default',             null                    ), \n ");
+        b.append(" (6, 35,  '#browser',              'default',             null                    ), \n ");
+        b.append(" (6, 40,  '#addRobotButton',         'default',             null                  ), \n ");
+        b.append(" (6, 45,  '#sidebar',              'changePageAfterClick',   '#menuRunTestCase'   ), \n ");
+        b.append(" (6, 50,  '#testCaseList',          'default',                null                ), \n ");
+        b.append(" (6, 55,  '#envSettingsAuto',        'default',                null               ), \n ");
+        b.append(" (6, 60,  '#countryList',           'default',                null                ), \n ");
+        b.append(" (6, 65,  '#synchroneous',          'default',                null                ), \n ");
+        b.append(" (6, 70,  '#saveExecutionParams',    'default',                null               ), \n ");
+        b.append(" (6, 72,  '#RobotPanel #robot',                  'default',   null                ), \n ");
+        b.append(" (6, 74,  '#saveRobotPreferences',   'default',                null               ), \n ");
+        b.append(" (6, 75,  '#runTestCaseUpBlock #runTestCaseUp',        'default',                null                ), \n ");
+        b.append(" (6, 80,  null,                     'general',                null                ); \n ");
+        a.add(b.toString());
+
+
         return a;
     }
 
 }
+

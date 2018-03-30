@@ -43,7 +43,7 @@
         <spring.version>5.0.0.RELEASE</spring.version>
         <commons-email.version>1.5</commons-email.version>
         <javaee-web-api>8.0</javaee-web-api>
-        <junit.version>4.9</junit.version>
+        <junit.version>4.12</junit.version>
         <mysql-connector-java.version>5.1.20</mysql-connector-java.version>
         <json.version>20080701</json.version>
         <selenium.version>3.6.0</selenium.version>
@@ -82,7 +82,7 @@
         <maven-assembly-plugin.version>3.1.0</maven-assembly-plugin.version>
         <javaee-endorsed-api.version>7.0</javaee-endorsed-api.version>
         <ant-jsch.version>1.10.1</ant-jsch.version>
-        <jackson.version>2.8.5</jackson.version>
+        <jackson.version>2.9.2</jackson.version>
         <asciidoctor-maven-plugin.version>1.5.6</asciidoctor-maven-plugin.version>
         <license-maven-plugin.version>3.0</license-maven-plugin.version>
         
@@ -124,6 +124,11 @@
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
             <artifactId>spring-jdbc</artifactId>
             <version>${spring.version}</version>
         </dependency>
@@ -131,6 +136,7 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
             <version>${spring.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>

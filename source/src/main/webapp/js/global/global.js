@@ -1076,6 +1076,14 @@ function showModalConfirmation(handlerClickOk, handlerClickNo, title, message, h
     $('#confirmationModal').modal('show');
 }
 
+function modalConfirmationIsVisible() {
+    return $('#confirmationModal').is(":visible");
+}
+
+function hideModalConfirmationIsVisible() {
+    return $('#confirmationModal').modal('hide');
+}
+
 /**
  * Method that cleans the confirmation modal after being closed.
  */

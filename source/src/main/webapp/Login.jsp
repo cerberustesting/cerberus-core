@@ -40,7 +40,9 @@
         <title>Login</title>
     </head>
     <body style="background-color: #fff">
-        <script type="text/javascript">
+    s <%@ include file="include/utils/modal-confirmation.html"%>
+
+    <script type="text/javascript">
             envTuning("<%=System.getProperty("org.cerberus.environment")%>");
         </script>
 

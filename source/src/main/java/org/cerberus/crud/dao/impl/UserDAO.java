@@ -84,17 +84,17 @@ public class UserDAO implements IUserDAO {
                         result = this.loadFromResultSet(resultSet);
                     }
                 } catch (SQLException exception) {
-                    LOG.warn("Unable to execute query : " + exception.toString());
+                    LOG.warn("Unable to execute query : " + exception.toString(), exception);
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                LOG.warn("Unable to execute query : " + exception.toString());
+                LOG.warn("Unable to execute query : " + exception.toString(), exception);
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            LOG.warn("Unable to execute query : " + exception.toString());
+            LOG.warn("Unable to execute query : " + exception.toString(), exception);
         } finally {
             try {
                 if (connection != null) {

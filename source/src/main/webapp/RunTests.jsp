@@ -37,6 +37,8 @@
     </head>
     <body>
         <%@ include file="include/global/header.html"%>
+        <%@ include file="include/utils/modal-confirmation.html"%>
+
         <div class="container-fluid center" id="page-layout">
             <div id="DialogMessagesArea">
                 <div class="alert" id="DialogMessagesAlert"  style="display:none;">
