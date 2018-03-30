@@ -12,7 +12,7 @@ It runs also a [Selenium Grid](http://www.seleniumhq.org/docs/07_selenium_grid.j
 
 ### Get started
 
- 1. [Download the default Docker composition](https://raw.githubusercontent.com/cerberustesting/cerberus-docker/master/compositions/cerberus-glassfish-mysql/default.yml)
+ 1. [Download the default Docker composition](https://raw.githubusercontent.com/cerberustesting/cerberus-source/master/docker/compositions/cerberus-glassfish-mysql/default.yml)
 
  2. Execute at the root path
 	
@@ -29,7 +29,7 @@ It runs also a [Selenium Grid](http://www.seleniumhq.org/docs/07_selenium_grid.j
    * User `admin`, password `admin`
    * User `cerberus`, password `cerberus`
    
- 7. Set runtime configuration, as explained from the version-related [`cerberus-as-glassfish` README](https://github.com/cerberustesting/cerberus-docker/tree/master/images/cerberus-as-glassfish/README.md).
+ 7. Set runtime configuration, as explained from the version-related [`cerberus-as-glassfish` README](https://github.com/cerberustesting/cerberus-source/tree/master/docker/images/cerberus-as-glassfish/README.md).
 
 _Note: It is not yet possible to change a user's password, except by modifying its value directly in the database._
 

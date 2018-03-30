@@ -11,8 +11,8 @@ Assume you already have [Docker](https://docs.docker.com)  and [Docker compose
 ## Go deeper
 
 You can go deeper into the documentation by looking at
- - [Cerberus Docker compositions](https://github.com/cerberustesting/cerberus-docker/tree/master/compositions)
- - [Cerberus Docker images](https://github.com/cerberustesting/cerberus-docker/tree/master/images)
+ - [Cerberus Docker compositions](https://github.com/cerberustesting/cerberus-source/tree/master/docker/compositions)
+ - [Cerberus Docker images](https://github.com/cerberustesting/cerberus-source/tree/master/docker/images)
 
 
 ## License

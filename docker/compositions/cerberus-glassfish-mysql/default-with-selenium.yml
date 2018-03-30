@@ -21,8 +21,8 @@
 # Run also a Selenium hub with two nodes with respectively the Mozilla Firefox and Google Chrome Web browsers.
 #
 # How to run:
-#   - $ git clone https://github.com/cerberustesting/cerberus-docker.git
-#   - $ cd cerberus-docker/compositions/cerberus-glassfish-mysql
+#   - $ git clone https://github.com/cerberustesting/cerberus-source.git
+#   - $ cd cerberus-source/docker/compositions/cerberus-glassfish-mysql
 #   - $ docker-compose up
 #   - Waiting for images startup
 #   - Open your favorite browser and go to <docker_host>:18080/Cerberus, where <docker_host> is your Docker host

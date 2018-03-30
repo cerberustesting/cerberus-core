@@ -10,29 +10,27 @@ Hereafter list of available tags:
 
 Tag     | Description                        | Source
 --------|------------------------------------|-------------------------------
-latest  | Use the latest Cerberus version    | [latest/Dockerfile](https://github.com/cerberustesting/cerberus-docker/blob/master/images/cerberus-as-glassfish/latest/Dockerfile)
-3.3   | Use the 3.3 Cerberus version     | [3.3/Dockerfile](https://github.com/cerberustesting/cerberus-docker/blob/master/images/cerberus-as-glassfish/3.3/Dockerfile)
-3.3   | Use the 3.3 Cerberus version     | [3.3/Dockerfile](https://github.com/cerberustesting/cerberus-docker/blob/master/images/cerberus-as-glassfish/3.3/Dockerfile)
-3.3   | Use the 3.3 Cerberus version     | [3.3/Dockerfile](https://github.com/cerberustesting/cerberus-docker/blob/master/images/cerberus-as-glassfish/3.3/Dockerfile)
-3.2   | Use the 3.2 Cerberus version     | [3.2/Dockerfile](https://github.com/cerberustesting/cerberus-docker/blob/master/images/cerberus-as-glassfish/3.2/Dockerfile)
-3.1.0   | Use the 3.1.0 Cerberus version     | [3.1.0/Dockerfile](https://github.com/cerberustesting/cerberus-docker/blob/master/images/cerberus-as-glassfish/3.1.0/Dockerfile)
-1.1.12   | Use the 1.1.12 Cerberus version     | [1.1.12/Dockerfile](https://github.com/cerberustesting/cerberus-docker/blob/master/images/cerberus-as-glassfish/1.1.12/Dockerfile)
-1.1.10   | Use the 1.1.10   Cerberus version   | [1.1.10/Dockerfile](https://github.com/cerberustesting/cerberus-docker/blob/master/images/cerberus-as-glassfish/1.1.10/Dockerfile)
-1.1.9   | Use the 1.1.9   Cerberus version   | [1.1.9/Dockerfile](https://github.com/cerberustesting/cerberus-docker/blob/master/images/cerberus-as-glassfish/1.1.9/Dockerfile)
-1.1.8   | Use the 1.1.8   Cerberus version   | [1.1.8/Dockerfile](https://github.com/cerberustesting/cerberus-docker/blob/master/images/cerberus-as-glassfish/1.1.8/Dockerfile)
-1.1.7   | Use the 1.1.7   Cerberus version   | [1.1.7/Dockerfile](https://github.com/cerberustesting/cerberus-docker/blob/master/images/cerberus-as-glassfish/1.1.7/Dockerfile)
-1.1.6   | Use the 1.1.6   Cerberus version   | [1.1.6/Dockerfile](https://github.com/cerberustesting/cerberus-docker/blob/master/images/cerberus-as-glassfish/1.1.6/Dockerfile)
-1.1.5   | Use the 1.1.5   Cerberus version   | [1.1.5/Dockerfile](https://github.com/cerberustesting/cerberus-docker/blob/master/images/cerberus-as-glassfish/1.1.5/Dockerfile)
-1.1.4   | Use the 1.1.4   Cerberus version   | [1.1.4/Dockerfile](https://github.com/cerberustesting/cerberus-docker/blob/master/images/cerberus-as-glassfish/1.1.4/Dockerfile)
-1.1.3.1 | Use the 1.1.3.1 Cerberus version   | [1.1.3.1/Dockerfile](https://github.com/cerberustesting/cerberus-docker/blob/master/images/cerberus-as-glassfish/1.1.3.1/Dockerfile)
-1.1.3   | Use the 1.1.3 Cerberus version     | [1.1.3/Dockerfile](https://github.com/cerberustesting/cerberus-docker/blob/master/images/cerberus-as-glassfish/1.1.3/Dockerfile)
+latest  | Use the latest Cerberus version    | [latest/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/latest/Dockerfile)
+3.3   | Use the 3.3 Cerberus version     | [3.3/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/3.3/Dockerfile)
+3.2   | Use the 3.2 Cerberus version     | [3.2/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/3.2/Dockerfile)
+3.1.0   | Use the 3.1.0 Cerberus version     | [3.1.0/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/3.1.0/Dockerfile)
+1.1.12   | Use the 1.1.12 Cerberus version     | [1.1.12/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/1.1.12/Dockerfile)
+1.1.10   | Use the 1.1.10   Cerberus version   | [1.1.10/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/1.1.10/Dockerfile)
+1.1.9   | Use the 1.1.9   Cerberus version   | [1.1.9/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/1.1.9/Dockerfile)
+1.1.8   | Use the 1.1.8   Cerberus version   | [1.1.8/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/1.1.8/Dockerfile)
+1.1.7   | Use the 1.1.7   Cerberus version   | [1.1.7/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/1.1.7/Dockerfile)
+1.1.6   | Use the 1.1.6   Cerberus version   | [1.1.6/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/1.1.6/Dockerfile)
+1.1.5   | Use the 1.1.5   Cerberus version   | [1.1.5/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/1.1.5/Dockerfile)
+1.1.4   | Use the 1.1.4   Cerberus version   | [1.1.4/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/1.1.4/Dockerfile)
+1.1.3.1 | Use the 1.1.3.1 Cerberus version   | [1.1.3.1/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/1.1.3.1/Dockerfile)
+1.1.3   | Use the 1.1.3 Cerberus version     | [1.1.3/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/1.1.3/Dockerfile)
 
 ## Prerequisites
 
-This image needs to be linked to a Cerberus database image, as [`cerberus-db-mysql`](https://github.com/cerberustesting/cerberus-docker/tree/master/images/cerberus-db-mysql).
+This image needs to be linked to a Cerberus database image, as [`cerberus-db-mysql`](https://github.com/cerberustesting/cerberus-source/tree/master/docker/images/cerberus-db-mysql).
 See the `DATABASE_*` environment variables bellow for more details.
 
-Note, from the [1.1.9](https://github.com/cerberustesting/cerberus-docker/blob/master/images/cerberus-as-glassfish/1.1.9/Dockerfile) version, the `cerberus-as-glassfish` is only compatible with the [MySQL](http://www.mysql.com/) dialect, so only usable by linking to the [`cerberus-db-mysql`](https://github.com/cerberustesting/cerberus-docker/tree/master/images/cerberus-db-mysql) Cerberus database image.
+Note, from the [1.1.9](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/1.1.9/Dockerfile) version, the `cerberus-as-glassfish` is only compatible with the [MySQL](http://www.mysql.com/) dialect, so only usable by linking to the [`cerberus-db-mysql`](https://github.com/cerberustesting/cerberus-source/tree/master/docker/images/cerberus-db-mysql) Cerberus database image.
 
 ## How to run this image
 
@@ -110,11 +108,11 @@ Cerberus server logs can be persisted by using the following command:
 
     docker run [...] -v /your/local/cerberus/server/logs/directory:/usr/local/glassfish4/glassfish/domains/domain1/logs cerberus/cerberus-as-glassfish:latest
 
-Where `/your/local/cerberus/screenshots/directory` is the directory to store the Cerberus execution screenshots out of your Docker host.
+Where `/your/local/cerberus/server/logs/directory` is the directory to store the Glassfish logs out of your Docker host.
 
 ### Cerberus screenshots
 
-From the [1.1.5](https://github.com/cerberustesting/cerberus-docker/blob/master/images/cerberus-as-glassfish/1.1.5/Dockerfile) version, the new `/usr/local/glassfish4/glassfish/domains/domain1/docroot/CerberusPictures` directory is created to store Cerberus execution screenshots.
+From the [1.1.5](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/1.1.5/Dockerfile) version, the new `/usr/local/glassfish4/glassfish/domains/domain1/docroot/CerberusPictures` directory is created to store Cerberus execution screenshots.
 Don't forget to map it to an existing folder out of your Docker host in order to make them persistent. Example:
 
     docker run [...] -v /your/local/cerberus/screenshots/directory:/usr/local/glassfish4/glassfish/domains/domain1/docroot/CerberusPictures cerberus/cerberus-as-glassfish:latest
@@ -132,7 +130,7 @@ To apply this runtime configuration to Cerberus instance, then:
 4. Set to the Cerberus base URL value (`<docker_host>:18080/CerberusPictures/` by default, note the important trailing `/`)
 5. Save changes
 
-From the [1.1.6](https://github.com/cerberustesting/cerberus-docker/blob/master/images/cerberus-as-glassfish/1.1.6/Dockerfile) version, `cerberus_picture_path` and `cerberus_picture_url` parameters have been respectively renamed `cerberus_mediastorage_path` and `cerberus_mediastorage_path`.
+From the [1.1.6](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/1.1.6/Dockerfile) version, `cerberus_picture_path` and `cerberus_picture_url` parameters have been respectively renamed `cerberus_mediastorage_path` and `cerberus_mediastorage_path`.
 
 ### Glassfish data
 You can share this volume to persist Glassfish seetings : 

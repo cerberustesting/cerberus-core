@@ -85,7 +85,7 @@ Hereafter the list of available release processes:
 
 File                            | Description                        
 --------------------------------|---------------------------------------------------------------------
-[common.cmds](./common.cmds)    | Release all necessary Cerberus project modules for a common release which are [cerberus-source](https://github.com/cerberustesting/cerberus-source) and [cerberus-as-glassfish](https://github.com/cerberustesting/cerberus-docker/tree/master/images/cerberus-as-glassfish).
+[common.cmds](./common.cmds)    | Release all necessary Cerberus project modules for a common release which are [cerberus-source](https://github.com/cerberustesting/cerberus-source) and [cerberus-as-glassfish](https://github.com/cerberustesting/cerberus-source/tree/master/docker/images/cerberus-as-glassfish).
   
 ## License
 

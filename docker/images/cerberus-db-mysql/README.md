@@ -10,8 +10,8 @@ Hereafter list of available tags:
 
 Tag     | Description                                   | Source
 --------|-----------------------------------------------|-------------------------------
-latest  | Use the latest compatible MySQL version       | [latest/Dockerfile](https://github.com/cerberustesting/cerberus-docker/blob/master/images/cerberus-db-mysql/5.6/Dockerfile)
-5.6     | Use the 5.6 MySQL version                     | [5.6/Dockerfile](https://github.com/cerberustesting/cerberus-docker/blob/master/images/cerberus-db-mysql/5.6/Dockerfile)
+latest  | Use the latest compatible MySQL version       | [latest/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-db-mysql/5.6/Dockerfile)
+5.6     | Use the 5.6 MySQL version                     | [5.6/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-db-mysql/5.6/Dockerfile)
 
 ## How to run this image
 
