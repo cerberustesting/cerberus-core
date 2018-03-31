@@ -133,7 +133,7 @@
                                 <label id="changelogLabel">Changelog</label>
                                 <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                             </div>
-                            <div class="panel-body collapse in" id="Changelog33">
+                            <div class="panel-body collapse in" id="Changelog34">
                                 <iframe id="documentationFrame" style="width:100%" frameborder="0" scrolling="yes"/>
                                 </iframe>
                             </div>

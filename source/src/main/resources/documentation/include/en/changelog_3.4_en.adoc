@@ -1,0 +1,11 @@
+*Bug fixes*
+[square]
+* 
+
+*Improvements / New features*
+[square]
+* 
+
+*Warning to be considered before applying the version (deprecated features)*
+[square]
+* Following documentation table structure change, you will have to restart Glassfish instance AFTER the database upgrade script. You will get 'missing' messages until restart has been performed.

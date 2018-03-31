@@ -21,6 +21,8 @@ package org.cerberus.crud.service.impl;
 
 import java.io.IOException; 
 import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -59,11 +61,11 @@ public class ImportFileService implements IImportFileService{
             try {
                 
                 //InputStream data = new BufferedInputStream(filecontent);
+                Charset charset = StandardCharsets.UTF_8;
                 
-                
-                String textContent = IOUtils.toString(filecontent);
-                
-                Source source = new StreamSource(IOUtils.toInputStream(textContent));
+                String textContent = IOUtils.toString(filecontent, charset);
+
+                Source source = new StreamSource(IOUtils.toInputStream(textContent, charset));
                 SchemaFactory factory=SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
                  
                 
@@ -75,7 +77,7 @@ public class ImportFileService implements IImportFileService{
                 validator.validate(source);
                 //document is valid, then proceed to load the data
                  
-                answer.setItem(parseXMLFile(IOUtils.toInputStream(textContent), handlerType));                           
+                answer.setItem(parseXMLFile(IOUtils.toInputStream(textContent, charset), handlerType));                           
                             
             } catch (SAXException ex) {
                 LOG.warn("Unable to parse XML: " + ex.toString());

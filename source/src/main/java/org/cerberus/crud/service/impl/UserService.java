@@ -22,7 +22,6 @@ package org.cerberus.crud.service.impl;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.RandomStringUtils;
 import org.cerberus.crud.dao.IUserDAO;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.MessageGeneral;
@@ -33,6 +32,7 @@ import org.cerberus.crud.service.IUserSystemService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
@@ -265,7 +265,7 @@ public class UserService implements IUserService {
         /**
          * Generate new Password and set the RestPasswordRequest user.
          */
-        String newPassGenerated = RandomStringUtils.randomAlphanumeric(10);
+        String newPassGenerated = StringUtil.getRandomString(40, "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
         user.setResetPasswordToken(newPassGenerated);
 
         /**

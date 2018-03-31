@@ -60,7 +60,10 @@ public class EmailService implements IEmailService {
         email.setFrom(cerberusEmail.getFrom());
         email.setSubject(cerberusEmail.getSubject());
         email.setHtmlMsg(cerberusEmail.getBody());
-        email.setTLS(cerberusEmail.isSetTls());
+        if (cerberusEmail.isSetTls()) {
+            email = (HtmlEmail) email.setStartTLSEnabled(true);
+        }
+//        email.setTLS(cerberusEmail.isSetTls());
         email.setDebug(true);
 
         if (!StringUtils.isNullOrEmpty(cerberusEmail.getUserName()) || !StringUtils.isNullOrEmpty(cerberusEmail.getPassword())) {

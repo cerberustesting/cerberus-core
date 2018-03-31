@@ -32,25 +32,35 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.cerberus.crud.entity.*;
-import org.cerberus.crud.service.*;
+import org.cerberus.crud.entity.Robot;
+import org.cerberus.crud.entity.RobotCapability;
+import org.cerberus.crud.entity.TestCase;
+import org.cerberus.crud.entity.TestCaseCountry;
+import org.cerberus.crud.entity.TestCaseExecution;
+import org.cerberus.crud.entity.TestCaseExecutionQueue;
+import org.cerberus.crud.factory.IFactoryTestCase;
+import org.cerberus.crud.factory.IFactoryTestCaseExecution;
+import org.cerberus.crud.factory.IFactoryTestCaseExecutionQueue;
+import org.cerberus.crud.service.ILogEventService;
+import org.cerberus.crud.service.IParameterService;
+import org.cerberus.crud.service.IRobotService;
+import org.cerberus.crud.service.ITagService;
+import org.cerberus.crud.service.ITestCaseCountryService;
+import org.cerberus.crud.service.ITestCaseExecutionService;
+import org.cerberus.crud.service.ITestCaseService;
 import org.cerberus.engine.entity.ExecutionUUID;
 import org.cerberus.engine.entity.MessageGeneral;
-import org.cerberus.crud.factory.IFactoryTestCaseExecution;
+import org.cerberus.engine.execution.IRunTestCaseService;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.engine.execution.IRunTestCaseService;
+import org.cerberus.exception.FactoryCreationException;
 import org.cerberus.util.DateUtil;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.version.Infos;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-import org.cerberus.crud.factory.IFactoryTestCase;
-import org.cerberus.crud.factory.IFactoryTestCaseExecutionQueue;
-import org.cerberus.exception.FactoryCreationException;
 
 /**
  * {Insert class description here}
@@ -186,7 +196,7 @@ public class RunTestCase extends HttpServlet {
                 + "- mycontextroot : Context root of the application to test (only used when manualURL is feed). [" + myContextRoot + "]\n"
                 + "- myloginrelativeurl : Relative login URL of the application (only used when manualURL is feed). [" + myLoginRelativeURL + "]\n"
                 + "- myenvdata : Environment where to get the test data when a manualURL is defined. (only used when manualURL is feed) [" + myEnvData + "]\n"
-                + "- Tag : Tag that will be stored on the execution. [" + StringEscapeUtils.escapeHtml4(tag) + "]\n"
+                + "- Tag : Tag that will be stored on the execution. [" + tag + "]\n"
                 + "- outputformat : Format of the output of the execution. [" + outputFormat + "]\n"
                 + "- screenshot : Activate or not the screenshots. [" + screenshot + "]\n"
                 + "- verbose : Verbose level of the execution. [" + verbose + "]\n"

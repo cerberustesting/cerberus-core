@@ -198,7 +198,10 @@ public class SeleniumServerService implements ISeleniumServerService {
                     credsProvider.setCredentials(new AuthScope(proxyHost, proxyPort), new UsernamePasswordCredentials(proxyUser, proxyPassword));
 
                     if (url.getUserInfo() != null && !url.getUserInfo().isEmpty()) {
-                        credsProvider.setCredentials(new AuthScope(url.getHost(), (url.getPort() > 0 ? url.getPort() : url.getDefaultPort())), new UsernamePasswordCredentials(url.getUserInfo()));
+                        credsProvider.setCredentials(
+                                new AuthScope(url.getHost(), (url.getPort() > 0 ? url.getPort() : url.getDefaultPort())),
+                                new UsernamePasswordCredentials(tCExecution.getSession().getHostUser(), tCExecution.getSession().getHostPassword())
+                        );
                     }
 
                     builder.setDefaultCredentialsProvider(credsProvider);
@@ -462,9 +465,6 @@ public class SeleniumServerService implements ISeleniumServerService {
 
             } else if (browser.contains("iphone")) {
                 capabilities = DesiredCapabilities.iphone();
-
-            } else if (browser.contains("opera")) {
-                capabilities = DesiredCapabilities.opera();
 
             } else if (browser.contains("safari")) {
                 capabilities = DesiredCapabilities.safari();

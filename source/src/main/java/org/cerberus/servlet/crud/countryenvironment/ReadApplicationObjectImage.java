@@ -25,7 +25,9 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.SimpleTimeZone;
 import javax.imageio.ImageIO;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -73,38 +75,41 @@ public class ReadApplicationObjectImage extends HttpServlet {
         String application = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("application"), "", charset);
         String object = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("object"), "", charset);
 
-
         int width = (!StringUtils.isEmpty(request.getParameter("w"))) ? Integer.valueOf(request.getParameter("w")) : -1;
         int height = (!StringUtils.isEmpty(request.getParameter("h"))) ? Integer.valueOf(request.getParameter("h")) : -1;
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         IApplicationObjectService applicationObjectService = appContext.getBean(IApplicationObjectService.class);
 
-        BufferedImage image = applicationObjectService.readImageByKey(application,object);
+        BufferedImage image = applicationObjectService.readImageByKey(application, object);
         BufferedImage b;
-        if(image != null) {
+        if (image != null) {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             /**
              * If width and height not defined, get image in real size
              */
-            if (width ==-1 && height==-1) {
+            if (width == -1 && height == -1) {
                 b = image;
-            } else { 
-            ResampleOp rop = new ResampleOp(DimensionConstrain.createMaxDimension(width, height, true));
-            rop.setNumberOfThreads(4);
-            b = rop.filter(image, null);
+            } else {
+                ResampleOp rop = new ResampleOp(DimensionConstrain.createMaxDimension(width, height, true));
+                rop.setNumberOfThreads(4);
+                b = rop.filter(image, null);
             }
             ImageIO.write(b, "png", baos);
 //        byte[] bytesOut = baos.toByteArray();
-        }else{
+        } else {
             // create a buffered image
             ByteArrayInputStream bis = new ByteArrayInputStream(imageBytes);
             b = ImageIO.read(bis);
             bis.close();
         }
 
-        response.setHeader("Last-Modified", DateUtils.addDays(Calendar.getInstance().getTime(), 2 * 360).toGMTString());
-        response.setHeader("Expires", DateUtils.addDays(Calendar.getInstance().getTime(), 2 * 360).toGMTString());
+        SimpleDateFormat sdf = new SimpleDateFormat();
+        sdf.setTimeZone(new SimpleTimeZone(0, "GMT"));
+        sdf.applyPattern("dd MMM yyyy HH:mm:ss z");
+
+        response.setHeader("Last-Modified", sdf.format(DateUtils.addDays(Calendar.getInstance().getTime(), 2 * 360)));
+        response.setHeader("Expires", sdf.format(DateUtils.addDays(Calendar.getInstance().getTime(), 2 * 360)));
 
         ImageIO.write(b, "png", response.getOutputStream());
     }

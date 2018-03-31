@@ -46,7 +46,7 @@ import javax.xml.soap.SOAPConnectionFactory;
 import javax.xml.soap.SOAPConstants;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.AppService;
@@ -137,7 +137,7 @@ public class SoapService implements ISoapService {
             input.addAttachmentPart(attachPart);
         } catch (MalformedURLException ex) {
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.SOAPLIB_MALFORMED_URL));
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.SOAPLIB_MALFORMED_URL));
         }
 
@@ -225,7 +225,7 @@ public class SoapService implements ISoapService {
 
         // If header is null we create the list empty.
         if (header == null) {
-            header = new ArrayList<AppServiceHeader>();
+            header = new ArrayList<>();
         }
         // We feed the header with token + Standard SOAP header.
         if (token != null) {

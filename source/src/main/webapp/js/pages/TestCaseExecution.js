@@ -33,15 +33,13 @@ $.when($.getScript("js/global/global.js")).then(function () {
             $("#TestCaseButton").hide();
             $("#RefreshQueueButton").show();
             $("#refreshQueue").click(function () {
-                loadExecutionQueue(executionQueueId);
+                loadExecutionQueue(executionQueueId, false);
             });
             $("#editQueue").click(function () {
                 openModalTestCaseExecutionQueue(executionQueueId, "EDIT");
             });
 
-            setTimeout(function () {
-                loadExecutionQueue(executionQueueId);
-            }, 5000);
+            loadExecutionQueue(executionQueueId, true);
 
         } else {
             $("#TestCaseButton").show();
@@ -71,7 +69,7 @@ function updatePageTitle(testcase, doc) {
 }
 
 
-function loadExecutionQueue(executionQueueId) {
+function loadExecutionQueue(executionQueueId, bTriggerAgain) {
 
     $.ajax({
         url: "ReadTestCaseExecutionQueue",
@@ -100,7 +98,23 @@ function loadExecutionQueue(executionQueueId) {
                 $("#testCaseDetails").hide();
                 $(".progress").hide();
                 if (tceq.state === "QUEUED") {
-                    configPanel.find("#tcDescription").html("Still <span style='color:red;'>" + tceq.nbEntryInQueueToGo + "</span> execution(s) in the Queue before execution start.");
+                    var curDate = new Date();
+                    configPanel.find("#tcDescription").html("Still <span style='color:red;'>" + tceq.nbEntryInQueueToGo + "</span> execution(s) in the Queue before execution start. <br><span class='glyphicon glyphicon-refresh spin text-info'></span> Last refresh : " + curDate);
+                    if (bTriggerAgain) {
+                        setTimeout(function () {
+                            loadExecutionQueue(executionQueueId, true);
+                        }, 5000);
+                    }
+
+                } else if (tceq.state === "STARTING") {
+                    var curDate = new Date();
+                    configPanel.find("#tcDescription").html("<span class='glyphicon glyphicon-refresh spin text-info'></span> Last refresh : " + curDate);
+                    if (bTriggerAgain) {
+                        setTimeout(function () {
+                            loadExecutionQueue(executionQueueId, true);
+                        }, 5000);
+                    }
+                    
                 } else {
                     configPanel.find("#tcDescription").html("");
                 }

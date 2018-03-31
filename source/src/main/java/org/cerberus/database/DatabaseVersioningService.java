@@ -7626,8 +7626,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add("ALTER TABLE `testdatalib` ADD CONSTRAINT `FK_testdatalib_01` FOREIGN KEY (`Service`) REFERENCES `appservice` (`Service`) ON DELETE SET NULL ON UPDATE CASCADE;");
 
         // ADD Interactive tutorial table
-        //-- ------------------------ 12??-12??
-
+        // 1320-1322
         b = new StringBuilder();
         b.append("CREATE TABLE `interactive_tuto` ( ");
         b.append("id int primary key,");
@@ -7638,7 +7637,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append("level int not null"); // 1 easy, 2 intermediate, 3 hard
         b.append(")");
         a.add(b.toString());
-
         b = new StringBuilder();
         b.append("CREATE TABLE `interactive_tuto_step` ( ");
         b.append("id int AUTO_INCREMENT,");
@@ -7651,125 +7649,18 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append("primary key (id)");
         b.append(")");
         a.add(b.toString());
+        a.add("select 1 from DUAL;");
+        
+        // Alter Documentation table.
+        // 1323
+        a.add("ALTER TABLE `documentation` MODIFY COLUMN DocLabel varchar(800)");
 
-        b = new StringBuilder();
-        b.append("INSERT INTO `interactive_tuto` (`id`, `titleTranslationLabel`, `translationLabel`, `role`, `ord`, `level`) VALUES \n");
-        b.append("  (1, 'firstStepAdmin', 'firstStepAdmin.detail', 'Administrator', 0, 1),\n");
-        b.append("  (2, 'firstStepImplementer', 'firstStepImplementer.detail','Test', 100, 1),\n");
-        b.append("  (3, 'webImplementationBeginner', 'webImplementationBeginner.detail','Test', 100, 1),\n");
-        b.append("  (4, 'webImplementationIntermediate', 'webImplementationIntermediate.detail','Test', 102, 2),\n");
-        b.append("  (5, 'webImplementationExpert', 'webImplementationExpert.detail','Test', 104,3)");
-
-        a.add(b.toString());
-
-        b = new StringBuilder();
-        b.append("ALTER TABLE `documentation` MODIFY COLUMN DocLabel varchar(800)");
-        a.add(b.toString());
-
-
-        // ADD Interactive tutorial for admin
-        // general page
-        b = new StringBuilder();
-        b.append("INSERT INTO `interactive_tuto_step` (`id_interactive_tuto`, `step_order`, `selector`,  `type`, `attr1`) VALUES \n");
-        b.append("  (1, 30,  '#sidebar',                 'changePageAfterClick', '#menuInvariants' ), \n ");
-
-
-        // Page invariant, creer un system,
-        b.append("  (1, 35, '#createInvariantButton',    'default',              null               ), \n ");
-        b.append("  (1, 40, '#idname',                   'default',              null               ), \n ");
-        b.append("  (1, 45, '#value',                    'default',              null               ), \n ");
-        b.append("  (1, 50, '#addInvariantButton',       'default',              null               ), \n ");
-        b.append("  (1, 55, '#sidebar',                  'changePageAfterClick', '#menuDeployType'), \n ");
-
-        // type de deploiement, null, \n
-        b.append("  (1, 57, '#formSystem',               'changePageAfterClick', '#SysFilter'        ) \n, ");
-        b.append("  (1, 60, '#createDeployTypeButton',   'default',              null                ) \n, ");
-        b.append("  (1, 65,'#deployType',                'default',              null                ) \n, ");
-        b.append("  (1, 70,'#Description',               'default',              null                ) \n, ");
-        b.append("  (1, 75,'#addEntryButton',            'default',              null                ) \n, ");
-        b.append("  (1, 80,'#sidebar',                   'changePageAfterClick', '#menuEnvironments') \n, ");
-
-        // page environement, null, \n
-        b.append("  (1, 85, '#createEnvButton',          'default',              null               ), \n ");
-        b.append("  (1, 90, '#system',                   'default',              null               ), \n ");
-        b.append("  (1, 95, '#country',                  'default',              null               ), \n ");
-        b.append("  (1, 100, '#environment',              'default',              null              ), \n ");
-        b.append("  (1, 105, '#description',              'default',              null              ), \n ");
-        b.append("  (1, 110, '#addEnvButton',             'default',              null              ), \n ");
-        b.append("  (1, 115, '#sidebar',                  'changePageAfterClick', 'a#menuApplications' ), \n ");
-
-        // page application, null,
-        b.append("  (1, 120,'#createApplicationButton',  'default',              null              ), \n");
-        b.append("  (1, 125,'#application',              'default',              null              ), \n");
-        b.append("  (1, 130,'#description',              'default',              null              ), \n");
-        b.append("  (1, 135,'#type',                     'default',              null              ), \n");
-        b.append("  (1, 140,'#system',                   'default',              null              ), \n");
-        b.append("  (1, 145,'#deploytype',               'default',              null              ), \n");
-        b.append("  (1, 150,'#addApplicationButton',     'default',              null              ), \n");
-        b.append("  (1, 155,'.dataTables_scroll',        'default',              null              ), \n");
-        b.append("  (1, 160,'#tab2Text',                 'default',              null              ), \n");
-        b.append("  (1, 165,'#addEnvironment',           'default',              null              ), \n");
-        b.append("  (1, 170,'#EnvironmentTable',         'default',              null              ), \n");
-        b.append("  (1, 175,'#editApplicationButton',    'default',              null              ), \n");
-        b.append("  (1, 180, null,                       'general',              null              ); \n");
-
-        a.add(b.toString());
-
-        //
-        b = new StringBuilder();
-        b.append(" INSERT INTO `interactive_tuto_step` (`id_interactive_tuto`, `step_order`, `selector`,  `type`, `attr1`) VALUES ");
-        b.append(" (2, 0,   null,                        'general',               null              ), \n");
-        b.append(" (2, 5, '#sidebar',                    'changePageAfterClick', '#menuEditTest'    ), \n");
-        b.append(" (2, 10,'#createTestButton',           'default',               null              ), \n");
-        b.append(" (2, 15,'#addEntryModal #test',        'default',               null              ), \n");
-        b.append(" (2, 25,'#addEntryButton',             'default',               null              ), \n");
-        b.append(" (2, 30,'.dataTables_scroll',          'changePageAfterClick', 'a#testCaseLink'   ), \n");
-        b.append(" (2, 35,'#createTestCaseButton',       'default',            null                 ), \n");
-        b.append(" (2, 40,'#test',                     'default',          null                     ), \n");
-        b.append(" (2, 45,'#shortDesc',                'default',          null                     ), \n");
-        b.append(" (2, 50,'#application',              'default',          null                     ), \n");
-        b.append(" (2, 55,'#addTestCaseButton',          'default',          null                   ), \n");
-        b.append(" (2, 60,'.dataTables_scroll',          'changePageAfterClick',    'a#testCaseLink'), \n");
-        b.append(" (2, 65,'#testCaseTitle',             'default',          null                    ), \n");
-        b.append(" (2, 70,'#tabsScriptEdit',        'default',          null                        ), \n");
-        b.append(" (2, 72,'#addStep',                  'default',                null               ), \n");
-        b.append(" (2, 75,'#description',               'default',                null              ), \n");
-        b.append(" (2, 80,'#addStepConfirm',         'default',                null                 ), \n");
-        b.append(" (2, 85,'#addActionBottom',            'default',                null             ), \n");
-        b.append(" (2, 90,'#actionContainer .step-action:nth-child(1)', 'default',    null          ), \n");
-        b.append(" (2, 95,'#actionContainer .step-action:nth-child(1) .boutonGroup', 'default',null ), \n");
-        b.append(" (2, 100,'#actionContainer .step-action:nth-child(2)', 'default',null             ), \n");
-        b.append(" (2, 102,'#saveScript',               'changePageAfterClick',   '#saveScript'     ), \n");
-        b.append(" (2, 110,'#saveScript',               'default',                null              ); \n");
-        a.add(b.toString());
-
-        b = new StringBuilder();
-        b.append("INSERT INTO `interactive_tuto` (`id`, `titleTranslationLabel`, `translationLabel`, `role`, `ord`, `level`) VALUES \n");
-        b.append("  (6, 'runTestManually', 'runTestManually.detail', 'RunTest', 200, 1) ");
-        a.add(b.toString());
-
-        b = new StringBuilder();
-        b.append(" INSERT INTO `interactive_tuto_step` (`id_interactive_tuto`, `step_order`, `selector`,  `type`, `attr1`) VALUES ");
-        b.append(" (6, 0,   '#sidebar',                  'changePageAfterClick',   '#menuRobot'     ), \n ");
-        b.append(" (6, 5,   null,                      'general',             null                  ), \n ");
-        b.append(" (6, 10,  '#createRobotButton',      'default',             null                  ), \n ");
-        b.append(" (6, 15,  '#robotName',                   'default',             null                 ), \n ");
-        b.append(" (6, 20,  '#host',                'default',             null                     ), \n ");
-        b.append(" (6, 25,  '#port',                'default',             null                     ), \n ");
-        b.append(" (6, 30,  '#platform',             'default',             null                    ), \n ");
-        b.append(" (6, 35,  '#browser',              'default',             null                    ), \n ");
-        b.append(" (6, 40,  '#addRobotButton',         'default',             null                  ), \n ");
-        b.append(" (6, 45,  '#sidebar',              'changePageAfterClick',   '#menuRunTestCase'   ), \n ");
-        b.append(" (6, 50,  '#testCaseList',          'default',                null                ), \n ");
-        b.append(" (6, 55,  '#envSettingsAuto',        'default',                null               ), \n ");
-        b.append(" (6, 60,  '#countryList',           'default',                null                ), \n ");
-        b.append(" (6, 65,  '#synchroneous',          'default',                null                ), \n ");
-        b.append(" (6, 70,  '#saveExecutionParams',    'default',                null               ), \n ");
-        b.append(" (6, 72,  '#RobotPanel #robot',                  'default',   null                ), \n ");
-        b.append(" (6, 74,  '#saveRobotPreferences',   'default',                null               ), \n ");
-        b.append(" (6, 75,  '#runTestCaseUpBlock #runTestCaseUp',        'default',                null                ), \n ");
-        b.append(" (6, 80,  null,                     'general',                null                ); \n ");
-        a.add(b.toString());
+        // Nothing.
+        // 1324-1327
+        a.add("select 1 from DUAL;");
+        a.add("select 1 from DUAL;");
+        a.add("select 1 from DUAL;");
+        a.add("select 1 from DUAL;");
 
 
         return a;

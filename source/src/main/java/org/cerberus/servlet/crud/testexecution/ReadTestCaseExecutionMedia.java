@@ -22,35 +22,37 @@ package org.cerberus.servlet.crud.testexecution;
 import com.google.common.io.Files;
 import com.mortennobel.imagescaling.DimensionConstrain;
 import com.mortennobel.imagescaling.ResampleOp;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.DateUtils;
-import org.cerberus.engine.entity.MessageEvent;
-import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.exception.CerberusException;
-import org.cerberus.util.ParameterParserUtil;
-import org.cerberus.util.StringUtil;
-import org.cerberus.util.answer.AnswerList;
-import org.springframework.context.ApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
-
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import javax.imageio.ImageIO;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.awt.image.BufferedImage;
-import java.io.*;
-import java.util.*;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.TestCaseExecutionFile;
 import org.cerberus.crud.factory.IFactoryTestCaseExecutionFile;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ITestCaseExecutionFileService;
+import org.cerberus.engine.entity.MessageEvent;
+import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.exception.CerberusException;
+import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.StringUtil;
+import org.cerberus.util.answer.AnswerList;
 import org.cerberus.util.servlet.ServletUtil;
 import org.jfree.util.Log;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  *
@@ -261,8 +263,12 @@ public class ReadTestCaseExecutionMedia extends HttpServlet {
 
         }
 
-        response.setHeader("Last-Modified", DateUtils.addDays(Calendar.getInstance().getTime(), 2 * 360).toGMTString());
-        response.setHeader("Expires", DateUtils.addDays(Calendar.getInstance().getTime(), 2 * 360).toGMTString());
+        SimpleDateFormat sdf = new SimpleDateFormat();
+        sdf.setTimeZone(new SimpleTimeZone(0, "GMT"));
+        sdf.applyPattern("dd MMM yyyy HH:mm:ss z");
+
+        response.setHeader("Last-Modified", sdf.format(DateUtils.addDays(Calendar.getInstance().getTime(), 2 * 360)));
+        response.setHeader("Expires", sdf.format(DateUtils.addDays(Calendar.getInstance().getTime(), 2 * 360)));
         response.setHeader("Type", "PNG");
         response.setHeader("Description", tc.getFileDesc());
 
@@ -291,7 +297,8 @@ public class ReadTestCaseExecutionMedia extends HttpServlet {
 
         LOG.debug("Accessing File : " + filePath + tc.getFileName());
         try (FileInputStream inputStream = new FileInputStream(filePath + tc.getFileName())) {
-            everything = IOUtils.toString(inputStream);
+            Charset charset = StandardCharsets.UTF_8;
+            everything = IOUtils.toString(inputStream, charset);
             response.getWriter().print(everything);
         } catch (FileNotFoundException e) {
 
@@ -299,22 +306,35 @@ public class ReadTestCaseExecutionMedia extends HttpServlet {
 
         }
 
-        response.setHeader("Last-Modified", DateUtils.addDays(Calendar.getInstance().getTime(), 2 * 360).toGMTString());
-        response.setHeader("Expires", DateUtils.addDays(Calendar.getInstance().getTime(), 2 * 360).toGMTString());
+        SimpleDateFormat sdf = new SimpleDateFormat();
+        sdf.setTimeZone(new SimpleTimeZone(0, "GMT"));
+        sdf.applyPattern("dd MMM yyyy HH:mm:ss z");
+
+        response.setHeader("Last-Modified", sdf.format(DateUtils.addDays(Calendar.getInstance().getTime(), 2 * 360)));
+        response.setHeader("Expires", sdf.format(DateUtils.addDays(Calendar.getInstance().getTime(), 2 * 360)));
         response.setHeader("Type", tc.getFileType());
         response.setHeader("Description", tc.getFileDesc());
     }
 
     private void returnText(HttpServletRequest request, HttpServletResponse response, TestCaseExecutionFile tc, String filePath) {
-        response.setHeader("Last-Modified", DateUtils.addDays(Calendar.getInstance().getTime(), 2 * 360).toGMTString());
-        response.setHeader("Expires", DateUtils.addDays(Calendar.getInstance().getTime(), 2 * 360).toGMTString());
+
+        SimpleDateFormat sdf = new SimpleDateFormat();
+        sdf.setTimeZone(new SimpleTimeZone(0, "GMT"));
+        sdf.applyPattern("dd MMM yyyy HH:mm:ss z");
+
+        response.setHeader("Last-Modified", sdf.format(DateUtils.addDays(Calendar.getInstance().getTime(), 2 * 360)));
+        response.setHeader("Expires", sdf.format(DateUtils.addDays(Calendar.getInstance().getTime(), 2 * 360)));
         response.setHeader("Type", tc.getFileType());
         response.setHeader("Description", tc.getFileDesc());
     }
 
     private void returnNotSupported(HttpServletRequest request, HttpServletResponse response, TestCaseExecutionFile tc, String filePath) {
-        response.setHeader("Last-Modified", DateUtils.addDays(Calendar.getInstance().getTime(), 2 * 360).toGMTString());
-        response.setHeader("Expires", DateUtils.addDays(Calendar.getInstance().getTime(), 2 * 360).toGMTString());
+        SimpleDateFormat sdf = new SimpleDateFormat();
+        sdf.setTimeZone(new SimpleTimeZone(0, "GMT"));
+        sdf.applyPattern("dd MMM yyyy HH:mm:ss z");
+
+        response.setHeader("Last-Modified", sdf.format(DateUtils.addDays(Calendar.getInstance().getTime(), 2 * 360)));
+        response.setHeader("Expires", sdf.format(DateUtils.addDays(Calendar.getInstance().getTime(), 2 * 360)));
         response.setHeader("Type", tc.getFileType());
     }
 
