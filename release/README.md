@@ -12,7 +12,7 @@ A `.cmds` file gathers all necessary commands to be executed in order to apply a
  
 Finally, each `.cmds` file contains a documentation header part to describe how to use it.
 
-### step by step
+### Step 1 : Database Version update
 
 Go to your cerberus/source/src/main/webapp folder and modify the file DatabaseMaintenance.jsp. The variable `Integer SQLLimit` must be set to the current version of database + 1 :
 
@@ -23,6 +23,8 @@ Go to your cerberus/source/src/main/webapp folder and modify the file DatabaseMa
  
  Where:
   - <database_version> is the current database version
+
+### Step 2 : Maven config update for SourceForge upload
 
 You need to be able to push cerberus on sourceforge
 To do that, fill your Maven's settings file with the following information:
@@ -47,6 +49,8 @@ Where:
     
 Note that user Maven's settings file is usually located at ~/.m2/settings.xml
 
+### Step 3 : Docker Login
+
 You need to be logged in to docker registry to perform the docker's release
 `
     docker login -p <password> -u <username>
@@ -57,8 +61,12 @@ Where:
  - <username> is your docker hub username
  
 **/!\ you need to have the right on cerberus repository for sourceforge and docker hub**
- 
+
+### Step 4 : Get runcmds.sh Utility
+
 Clone runcmds.sh somewhere on your computer : `git clone https://github.com/abourdon/runcmds`
+
+### Step 5 : Run the script that perform the release
 
 Go to your cerberus/release folder
 `
@@ -77,6 +85,51 @@ And run the release cmd :
 `common.cmds` will clone a cerberus on release/cerberus-testing, change some version on bin/*.sh script and make a `mvn release`.
 After that, common.cmds will wait new version of cerberus is available on sourceforge, and create new docker version.
 
+### Step 6 : Create a new changelog entry file and make is displayed in homepage for next developpement version
+
+ * `cd <path_to_cerberusclone>/source/source/src/main/resources/documentation/include/en/`
+ * `cp changelog_template_en.adoc changelog_xnew.ynew_en.adoc`
+ * `cd <path_to_cerberusclone>/source/source/src/main/webapp/js/pages/`
+ * `vim Homepage.js`
+
+change
+
+`
+        $("#documentationFrame").attr("src", "./documentation/changelog_xold.yold_en.html");
+`
+
+to
+`
+        $("#documentationFrame").attr("src", "./documentation/changelog_xnew.ynew_en.html");
+`
+
+and
+
+`
+        $("#changelogLabel").html("Changelog xold.yold");
+`
+
+to
+`
+        $("#changelogLabel").html("Changelog xnew.ynew");
+`
+ 
+ 
+ * `cd <path_to_cerberusclone>/source/source/src/main/webapp/`
+ * `vim Homepage.jsp`
+ 
+change
+
+`
+                            <div class="panel-body collapse in" id="Changelogxoldyold">
+`
+
+to
+`
+                            <div class="panel-body collapse in" id="Changelogxnewynew">
+`
+ * `git commit -m "Added New Changelog`
+ * `git push origin master`
 
 
 ## List of available release processes
