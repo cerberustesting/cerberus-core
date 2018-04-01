@@ -19,6 +19,7 @@
     along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="org.cerberus.database.DocumentationDatabaseService"%>
 <%@page import="org.apache.logging.log4j.LogManager"%>
 <%@page import="org.apache.logging.log4j.Logger"%>
 <%@page import="org.springframework.context.ApplicationContext"%>
@@ -63,22 +64,7 @@
                 // this is used in order to execute only 1 instruction at a time as it make take a lot of time to process.
                 boolean SQLExecuted = false;
                 // SQL that has version equal to SQLLimit will not be executed automatically.
-                //Integer SQLLimit = 331; // 0.9.0 Version LEVEL.
-                //Integer SQLLimit = 454; // 0.9.1 Version LEVEL.
-                //Integer SQLLimit = 509; // 1.0.0 Version LEVEL.
-                //Integer SQLLimit = 651; // 1.1.2 Version LEVEL.
-                //Integer SQLLimit = 740; // 1.1.3 Version LEVEL.
-                //Integer SQLLimit = 784; // 1.1.4 Version LEVEL.
-                //Integer SQLLimit = 928; // 1.1.6 Version LEVEL.
-                //Integer SQLLimit = 979; // 1.1.9 Version LEVEL.
-                //Integer SQLLimit = 1048; // 1.1.10 Version LEVEL.
-                //Integer SQLLimit = 1116; // 1.1.11 Version LEVEL.
-                //Integer SQLLimit = 1145; // 1.1.12 Version LEVEL.
-                //Integer SQLLimit = 1181; // 1.1.13 Version LEVEL.
-                //Integer SQLLimit = 1222; // 1.1.14 Version LEVEL.
-                //Integer SQLLimit = 1270; // 2.0.0 Version LEVEL.
-                //Integer SQLLimit = 1286; // 3.0.0 Version LEVEL.
-                Integer SQLLimit = 1320; // 3.0.0 Version LEVEL.
+                Integer SQLLimit = 1320; // 3.3.0 Version LEVEL.
                 IFactoryMyversion factoryMyversion;
 
                 try {
@@ -217,6 +203,11 @@
                     out.print("<h3>Get to the <a href='.'>homepage.</a></h3><br>");
                     out.print("<h4>Show all SQL <a href=\"DatabaseMaintenance.jsp?ShowAll\">here</a>.</h4>");
                     out.print("</div>");
+                    // We force the reload of the Documentation Database.
+                    if ((NewVersion > 100) && (request.getParameter("GO") != null)) {
+                        DocumentationDatabaseService documentationService = appContext.getBean(DocumentationDatabaseService.class);
+                        documentationService.init();
+                    }
             %>
             <script>
                 // Database Script is now finished. 
