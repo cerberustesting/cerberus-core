@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.cerberus.crud.entity.AppService;
+import org.cerberus.crud.entity.AppServiceContent;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -35,8 +36,7 @@ import org.cerberus.util.answer.AnswerList;
 public interface IAppServiceService {
 
     /**
-     * Get the {@link AppService} List with the
-     * given Criteria
+     * Get the {@link AppService} List with the given Criteria
      *
      * @param name the name of the service
      * @param limit the number of {@link AppService} to get
@@ -139,5 +139,14 @@ public interface IAppServiceService {
      * @return
      */
     String guessContentType(AppService service, String defaultValue);
+
+    /**
+     * This method convert the list of active content service (key/value) to
+     * query string (ex : key1=value1&key2=value2&key3=value3
+     *
+     * @param serviceContent
+     * @return
+     */
+    String convertContentListToQueryString(List<AppServiceContent> serviceContent);
 
 }

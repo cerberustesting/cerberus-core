@@ -61,8 +61,8 @@ public class AppServiceService implements IAppServiceService {
     }
 
     @Override
-    public AnswerList readByLikeName(String name, int limit){
-        return appServiceDao.findAppServiceByLikeName(name,limit);
+    public AnswerList readByLikeName(String name, int limit) {
+        return appServiceDao.findAppServiceByLikeName(name, limit);
     }
 
     @Override
@@ -79,19 +79,15 @@ public class AppServiceService implements IAppServiceService {
     public AnswerItem readByKeyWithDependency(String key, String activedetail) {
         AnswerItem answerAppService = this.readByKey(key);
         AppService appService = (AppService) answerAppService.getItem();
-        try{
+        try {
             AnswerList content = appServiceContentService.readByVarious(key, activedetail);
             appService.setContentList((List<AppServiceContent>) content.getDataList());
             AnswerList header = appServiceHeaderService.readByVarious(key, activedetail);
             appService.setHeaderList((List<AppServiceHeader>) header.getDataList());
             answerAppService.setItem(appService);
-        }catch(Exception e){
-
+        } catch (Exception e) {
+            LOG.error(e);
         }
-
-
-
-
         return answerAppService;
     }
 
@@ -166,6 +162,25 @@ public class AppServiceService implements IAppServiceService {
         if (StringUtil.isNullOrEmpty(result)) {
             result = AppService.RESPONSEHTTPBODYCONTENTTYPE_TXT;
         }
+        return result;
+    }
+
+    @Override
+    public String convertContentListToQueryString(List<AppServiceContent> serviceContent) {
+        String result = "";
+        if (serviceContent == null || serviceContent.isEmpty()) {
+            return result;
+        }
+
+        for (AppServiceContent object : serviceContent) {
+            if (object.getActive().equalsIgnoreCase("Y")) {
+                result += object.getKey();
+                result += "=";
+                result += object.getValue();
+                result += "&";
+            }
+        }
+        result = StringUtil.removeLastChar(result, 1);
         return result;
     }
 

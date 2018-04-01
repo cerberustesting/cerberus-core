@@ -167,7 +167,7 @@ public class RestService implements IRestService {
         // If token is defined, we add 'cerberus-token' on the http header.
         if (token != null) {
             headerList
-            .add(factoryAppServiceHeader.create(null, "cerberus-token", token, "Y", 0, "", "", null, "", null));
+                    .add(factoryAppServiceHeader.create(null, "cerberus-token", token, "Y", 0, "", "", null, "", null));
         }
 
         CloseableHttpClient httpclient;
@@ -227,235 +227,241 @@ public class RestService implements IRestService {
             AppService responseHttp = null;
 
             switch (method) {
-            case AppService.METHOD_HTTPGET:
+                case AppService.METHOD_HTTPGET:
 
-                LOG.info("Start preparing the REST Call (GET). " + servicePath + " - " + requestString);
+                    LOG.info("Start preparing the REST Call (GET). " + servicePath + " - " + requestString);
 
-                servicePath = StringUtil.addQueryString(servicePath, requestString);
-                serviceREST.setServicePath(servicePath);
-                HttpGet httpGet = new HttpGet(servicePath);
+                    // Adding query string from requestString
+                    servicePath = StringUtil.addQueryString(servicePath, requestString);
 
-                // Timeout setup.
-                httpGet.setConfig(requestConfig);
+                    // Adding query string from contentList
+                    String newRequestString = AppServiceService.convertContentListToQueryString(contentList);
+                    servicePath = StringUtil.addQueryString(servicePath, newRequestString);
 
-                // Header.
-                for (AppServiceHeader contentHeader : headerList) {
-                    httpGet.addHeader(contentHeader.getKey(), contentHeader.getValue());
-                }
-                serviceREST.setHeaderList(headerList);
+                    serviceREST.setServicePath(servicePath);
+                    HttpGet httpGet = new HttpGet(servicePath);
 
-                // Saving the service before the call Just in case it goes wrong (ex : timeout).
-                result.setItem(serviceREST);
+                    // Timeout setup.
+                    httpGet.setConfig(requestConfig);
 
-                LOG.info("Executing request " + httpGet.getRequestLine());
-                responseHttp = executeHTTPCall(httpclient, httpGet);
-
-                if (responseHttp != null) {
-                    serviceREST.setResponseHTTPBody(responseHttp.getResponseHTTPBody());
-                    serviceREST.setResponseHTTPCode(responseHttp.getResponseHTTPCode());
-                    serviceREST.setResponseHTTPVersion(responseHttp.getResponseHTTPVersion());
-                    serviceREST.setResponseHeaderList(responseHttp.getResponseHeaderList());
-                }
-
-                break;
-            case AppService.METHOD_HTTPPOST:
-
-                LOG.info("Start preparing the REST Call (POST). " + servicePath);
-
-                serviceREST.setServicePath(servicePath);
-                HttpPost httpPost = new HttpPost(servicePath);
-
-                // Timeout setup.
-                httpPost.setConfig(requestConfig);
-
-                // Content
-                if (!(StringUtil.isNullOrEmpty(requestString))) {
-                    // If requestString is defined, we POST it.
-                    InputStream stream = new ByteArrayInputStream(requestString.getBytes(StandardCharsets.UTF_8));
-                    InputStreamEntity reqEntity = new InputStreamEntity(stream);
-                    reqEntity.setChunked(true);
-                    httpPost.setEntity(reqEntity);
-                    serviceREST.setServiceRequest(requestString);
-                } else {
-                    // If requestString is not defined, we POST the list of key/value request.
-                    List<NameValuePair> nvps = new ArrayList<NameValuePair>();
-                    for (AppServiceContent contentVal : contentList) {
-                        nvps.add(new BasicNameValuePair(contentVal.getKey(), contentVal.getValue()));
+                    // Header.
+                    for (AppServiceHeader contentHeader : headerList) {
+                        httpGet.addHeader(contentHeader.getKey(), contentHeader.getValue());
                     }
-                    httpPost.setEntity(new UrlEncodedFormEntity(nvps));
-                    serviceREST.setContentList(contentList);
-                }
+                    serviceREST.setHeaderList(headerList);
 
-                // Header.
-                for (AppServiceHeader contentHeader : headerList) {
-                    httpPost.addHeader(contentHeader.getKey(), contentHeader.getValue());
-                }
-                serviceREST.setHeaderList(headerList);
+                    // Saving the service before the call Just in case it goes wrong (ex : timeout).
+                    result.setItem(serviceREST);
 
-                // Saving the service before the call Just in case it goes wrong (ex : timeout).
-                result.setItem(serviceREST);
+                    LOG.info("Executing request " + httpGet.getRequestLine());
+                    responseHttp = executeHTTPCall(httpclient, httpGet);
 
-                LOG.info("Executing request " + httpPost.getRequestLine());
-                responseHttp = executeHTTPCall(httpclient, httpPost);
-
-                if (responseHttp != null) {
-                    serviceREST.setResponseHTTPBody(responseHttp.getResponseHTTPBody());
-                    serviceREST.setResponseHTTPCode(responseHttp.getResponseHTTPCode());
-                    serviceREST.setResponseHTTPVersion(responseHttp.getResponseHTTPVersion());
-                    serviceREST.setResponseHeaderList(responseHttp.getResponseHeaderList());
-                } else {
-                    message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
-                    message.setDescription(message.getDescription().replace("%SERVICE%", servicePath));
-                    message.setDescription(message.getDescription().replace("%DESCRIPTION%",
-                            "Any issue was found when calling the service. Coud be a reached timeout during the call (."
-                                    + timeOutMs + ")"));
-                    result.setResultMessage(message);
-                    return result;
-
-                }
-                break;
-
-            case AppService.METHOD_HTTPDELETE:
-                LOG.info("Start preparing the REST Call (DELETE). " + servicePath);
-                servicePath = StringUtil.addQueryString(servicePath, requestString);
-                serviceREST.setServicePath(servicePath);
-                HttpDelete httpDelete = new HttpDelete(servicePath);
-
-                // Timeout setup.
-                httpDelete.setConfig(requestConfig);
-
-                // Header.
-                for (AppServiceHeader contentHeader : headerList) {
-                    httpDelete.addHeader(contentHeader.getKey(), contentHeader.getValue());
-                }
-                serviceREST.setHeaderList(headerList);
-
-                // Saving the service before the call Just in case it goes wrong (ex : timeout).
-                result.setItem(serviceREST);
-
-                LOG.info("Executing request " + httpDelete.getRequestLine());
-                responseHttp = executeHTTPCall(httpclient, httpDelete);
-
-                if (responseHttp != null) {
-                    serviceREST.setResponseHTTPBody(responseHttp.getResponseHTTPBody());
-                    serviceREST.setResponseHTTPCode(responseHttp.getResponseHTTPCode());
-                    serviceREST.setResponseHTTPVersion(responseHttp.getResponseHTTPVersion());
-                    serviceREST.setResponseHeaderList(responseHttp.getResponseHeaderList());
-                }
-
-                break;
-
-            case AppService.METHOD_HTTPPUT:
-                LOG.info("Start preparing the REST Call (PUT). " + servicePath);
-
-                serviceREST.setServicePath(servicePath);
-                HttpPut httpPut = new HttpPut(servicePath);
-
-                // Timeout setup.
-                httpPut.setConfig(requestConfig);
-
-                // Content
-                if (!(StringUtil.isNullOrEmpty(requestString))) {
-                    // If requestString is defined, we POST it.
-                    InputStream stream = new ByteArrayInputStream(requestString.getBytes(StandardCharsets.UTF_8));
-                    InputStreamEntity reqEntity = new InputStreamEntity(stream);
-                    reqEntity.setChunked(true);
-                    httpPut.setEntity(reqEntity);
-                    serviceREST.setServiceRequest(requestString);
-                } else {
-                    // If requestString is not defined, we PUT the list of key/value request.
-                    List<NameValuePair> nvps = new ArrayList<NameValuePair>();
-                    for (AppServiceContent contentVal : contentList) {
-                        nvps.add(new BasicNameValuePair(contentVal.getKey(), contentVal.getValue()));
+                    if (responseHttp != null) {
+                        serviceREST.setResponseHTTPBody(responseHttp.getResponseHTTPBody());
+                        serviceREST.setResponseHTTPCode(responseHttp.getResponseHTTPCode());
+                        serviceREST.setResponseHTTPVersion(responseHttp.getResponseHTTPVersion());
+                        serviceREST.setResponseHeaderList(responseHttp.getResponseHeaderList());
                     }
-                    httpPut.setEntity(new UrlEncodedFormEntity(nvps));
-                    serviceREST.setContentList(contentList);
-                }
 
-                // Header.
-                for (AppServiceHeader contentHeader : headerList) {
-                    httpPut.addHeader(contentHeader.getKey(), contentHeader.getValue());
-                }
-                serviceREST.setHeaderList(headerList);
+                    break;
+                case AppService.METHOD_HTTPPOST:
 
-                // Saving the service before the call Just in case it goes wrong (ex : timeout).
-                result.setItem(serviceREST);
+                    LOG.info("Start preparing the REST Call (POST). " + servicePath);
 
-                LOG.info("Executing request " + httpPut.getRequestLine());
-                responseHttp = executeHTTPCall(httpclient, httpPut);
+                    serviceREST.setServicePath(servicePath);
+                    HttpPost httpPost = new HttpPost(servicePath);
 
-                if (responseHttp != null) {
-                    serviceREST.setResponseHTTPBody(responseHttp.getResponseHTTPBody());
-                    serviceREST.setResponseHTTPCode(responseHttp.getResponseHTTPCode());
-                    serviceREST.setResponseHTTPVersion(responseHttp.getResponseHTTPVersion());
-                    serviceREST.setResponseHeaderList(responseHttp.getResponseHeaderList());
-                } else {
-                    message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
-                    message.setDescription(message.getDescription().replace("%SERVICE%", servicePath));
-                    message.setDescription(message.getDescription().replace("%DESCRIPTION%",
-                            "Any issue was found when calling the service. Coud be a reached timeout during the call (."
-                                    + timeOutMs + ")"));
-                    result.setResultMessage(message);
-                    return result;
+                    // Timeout setup.
+                    httpPost.setConfig(requestConfig);
 
-                }
-                break;
-
-            case AppService.METHOD_HTTPPATCH:
-                LOG.info("Start preparing the REST Call (PUT). " + servicePath);
-
-                serviceREST.setServicePath(servicePath);
-                HttpPatch httpPatch = new HttpPatch(servicePath);
-
-                // Timeout setup.
-                httpPatch.setConfig(requestConfig);
-
-                // Content
-                if (!(StringUtil.isNullOrEmpty(requestString))) {
-                    // If requestString is defined, we POST it.
-                    InputStream stream = new ByteArrayInputStream(requestString.getBytes(StandardCharsets.UTF_8));
-                    InputStreamEntity reqEntity = new InputStreamEntity(stream);
-                    reqEntity.setChunked(true);
-                    httpPatch.setEntity(reqEntity);
-                    serviceREST.setServiceRequest(requestString);
-                } else {
-                    // If requestString is not defined, we PUT the list of key/value request.
-                    List<NameValuePair> nvps = new ArrayList<NameValuePair>();
-                    for (AppServiceContent contentVal : contentList) {
-                        nvps.add(new BasicNameValuePair(contentVal.getKey(), contentVal.getValue()));
+                    // Content
+                    if (!(StringUtil.isNullOrEmpty(requestString))) {
+                        // If requestString is defined, we POST it.
+                        InputStream stream = new ByteArrayInputStream(requestString.getBytes(StandardCharsets.UTF_8));
+                        InputStreamEntity reqEntity = new InputStreamEntity(stream);
+                        reqEntity.setChunked(true);
+                        httpPost.setEntity(reqEntity);
+                        serviceREST.setServiceRequest(requestString);
+                    } else {
+                        // If requestString is not defined, we POST the list of key/value request.
+                        List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+                        for (AppServiceContent contentVal : contentList) {
+                            nvps.add(new BasicNameValuePair(contentVal.getKey(), contentVal.getValue()));
+                        }
+                        httpPost.setEntity(new UrlEncodedFormEntity(nvps));
+                        serviceREST.setContentList(contentList);
                     }
-                    httpPatch.setEntity(new UrlEncodedFormEntity(nvps));
-                    serviceREST.setContentList(contentList);
-                }
 
-                // Header.
-                for (AppServiceHeader contentHeader : headerList) {
-                    httpPatch.addHeader(contentHeader.getKey(), contentHeader.getValue());
-                }
-                serviceREST.setHeaderList(headerList);
+                    // Header.
+                    for (AppServiceHeader contentHeader : headerList) {
+                        httpPost.addHeader(contentHeader.getKey(), contentHeader.getValue());
+                    }
+                    serviceREST.setHeaderList(headerList);
 
-                // Saving the service before the call Just in case it goes wrong (ex : timeout).
-                result.setItem(serviceREST);
+                    // Saving the service before the call Just in case it goes wrong (ex : timeout).
+                    result.setItem(serviceREST);
 
-                LOG.info("Executing request " + httpPatch.getRequestLine());
-                responseHttp = executeHTTPCall(httpclient, httpPatch);
+                    LOG.info("Executing request " + httpPost.getRequestLine());
+                    responseHttp = executeHTTPCall(httpclient, httpPost);
 
-                if (responseHttp != null) {
-                    serviceREST.setResponseHTTPBody(responseHttp.getResponseHTTPBody());
-                    serviceREST.setResponseHTTPCode(responseHttp.getResponseHTTPCode());
-                    serviceREST.setResponseHTTPVersion(responseHttp.getResponseHTTPVersion());
-                    serviceREST.setResponseHeaderList(responseHttp.getResponseHeaderList());
-                } else {
-                    message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
-                    message.setDescription(message.getDescription().replace("%SERVICE%", servicePath));
-                    message.setDescription(message.getDescription().replace("%DESCRIPTION%",
-                            "Any issue was found when calling the service. Coud be a reached timeout during the call (."
-                                    + timeOutMs + ")"));
-                    result.setResultMessage(message);
-                    return result;
+                    if (responseHttp != null) {
+                        serviceREST.setResponseHTTPBody(responseHttp.getResponseHTTPBody());
+                        serviceREST.setResponseHTTPCode(responseHttp.getResponseHTTPCode());
+                        serviceREST.setResponseHTTPVersion(responseHttp.getResponseHTTPVersion());
+                        serviceREST.setResponseHeaderList(responseHttp.getResponseHeaderList());
+                    } else {
+                        message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
+                        message.setDescription(message.getDescription().replace("%SERVICE%", servicePath));
+                        message.setDescription(message.getDescription().replace("%DESCRIPTION%",
+                                "Any issue was found when calling the service. Coud be a reached timeout during the call (."
+                                + timeOutMs + ")"));
+                        result.setResultMessage(message);
+                        return result;
 
-                }
-                break;
+                    }
+                    break;
+
+                case AppService.METHOD_HTTPDELETE:
+                    LOG.info("Start preparing the REST Call (DELETE). " + servicePath);
+                    servicePath = StringUtil.addQueryString(servicePath, requestString);
+                    serviceREST.setServicePath(servicePath);
+                    HttpDelete httpDelete = new HttpDelete(servicePath);
+
+                    // Timeout setup.
+                    httpDelete.setConfig(requestConfig);
+
+                    // Header.
+                    for (AppServiceHeader contentHeader : headerList) {
+                        httpDelete.addHeader(contentHeader.getKey(), contentHeader.getValue());
+                    }
+                    serviceREST.setHeaderList(headerList);
+
+                    // Saving the service before the call Just in case it goes wrong (ex : timeout).
+                    result.setItem(serviceREST);
+
+                    LOG.info("Executing request " + httpDelete.getRequestLine());
+                    responseHttp = executeHTTPCall(httpclient, httpDelete);
+
+                    if (responseHttp != null) {
+                        serviceREST.setResponseHTTPBody(responseHttp.getResponseHTTPBody());
+                        serviceREST.setResponseHTTPCode(responseHttp.getResponseHTTPCode());
+                        serviceREST.setResponseHTTPVersion(responseHttp.getResponseHTTPVersion());
+                        serviceREST.setResponseHeaderList(responseHttp.getResponseHeaderList());
+                    }
+
+                    break;
+
+                case AppService.METHOD_HTTPPUT:
+                    LOG.info("Start preparing the REST Call (PUT). " + servicePath);
+
+                    serviceREST.setServicePath(servicePath);
+                    HttpPut httpPut = new HttpPut(servicePath);
+
+                    // Timeout setup.
+                    httpPut.setConfig(requestConfig);
+
+                    // Content
+                    if (!(StringUtil.isNullOrEmpty(requestString))) {
+                        // If requestString is defined, we POST it.
+                        InputStream stream = new ByteArrayInputStream(requestString.getBytes(StandardCharsets.UTF_8));
+                        InputStreamEntity reqEntity = new InputStreamEntity(stream);
+                        reqEntity.setChunked(true);
+                        httpPut.setEntity(reqEntity);
+                        serviceREST.setServiceRequest(requestString);
+                    } else {
+                        // If requestString is not defined, we PUT the list of key/value request.
+                        List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+                        for (AppServiceContent contentVal : contentList) {
+                            nvps.add(new BasicNameValuePair(contentVal.getKey(), contentVal.getValue()));
+                        }
+                        httpPut.setEntity(new UrlEncodedFormEntity(nvps));
+                        serviceREST.setContentList(contentList);
+                    }
+
+                    // Header.
+                    for (AppServiceHeader contentHeader : headerList) {
+                        httpPut.addHeader(contentHeader.getKey(), contentHeader.getValue());
+                    }
+                    serviceREST.setHeaderList(headerList);
+
+                    // Saving the service before the call Just in case it goes wrong (ex : timeout).
+                    result.setItem(serviceREST);
+
+                    LOG.info("Executing request " + httpPut.getRequestLine());
+                    responseHttp = executeHTTPCall(httpclient, httpPut);
+
+                    if (responseHttp != null) {
+                        serviceREST.setResponseHTTPBody(responseHttp.getResponseHTTPBody());
+                        serviceREST.setResponseHTTPCode(responseHttp.getResponseHTTPCode());
+                        serviceREST.setResponseHTTPVersion(responseHttp.getResponseHTTPVersion());
+                        serviceREST.setResponseHeaderList(responseHttp.getResponseHeaderList());
+                    } else {
+                        message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
+                        message.setDescription(message.getDescription().replace("%SERVICE%", servicePath));
+                        message.setDescription(message.getDescription().replace("%DESCRIPTION%",
+                                "Any issue was found when calling the service. Coud be a reached timeout during the call (."
+                                + timeOutMs + ")"));
+                        result.setResultMessage(message);
+                        return result;
+
+                    }
+                    break;
+
+                case AppService.METHOD_HTTPPATCH:
+                    LOG.info("Start preparing the REST Call (PUT). " + servicePath);
+
+                    serviceREST.setServicePath(servicePath);
+                    HttpPatch httpPatch = new HttpPatch(servicePath);
+
+                    // Timeout setup.
+                    httpPatch.setConfig(requestConfig);
+
+                    // Content
+                    if (!(StringUtil.isNullOrEmpty(requestString))) {
+                        // If requestString is defined, we POST it.
+                        InputStream stream = new ByteArrayInputStream(requestString.getBytes(StandardCharsets.UTF_8));
+                        InputStreamEntity reqEntity = new InputStreamEntity(stream);
+                        reqEntity.setChunked(true);
+                        httpPatch.setEntity(reqEntity);
+                        serviceREST.setServiceRequest(requestString);
+                    } else {
+                        // If requestString is not defined, we PUT the list of key/value request.
+                        List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+                        for (AppServiceContent contentVal : contentList) {
+                            nvps.add(new BasicNameValuePair(contentVal.getKey(), contentVal.getValue()));
+                        }
+                        httpPatch.setEntity(new UrlEncodedFormEntity(nvps));
+                        serviceREST.setContentList(contentList);
+                    }
+
+                    // Header.
+                    for (AppServiceHeader contentHeader : headerList) {
+                        httpPatch.addHeader(contentHeader.getKey(), contentHeader.getValue());
+                    }
+                    serviceREST.setHeaderList(headerList);
+
+                    // Saving the service before the call Just in case it goes wrong (ex : timeout).
+                    result.setItem(serviceREST);
+
+                    LOG.info("Executing request " + httpPatch.getRequestLine());
+                    responseHttp = executeHTTPCall(httpclient, httpPatch);
+
+                    if (responseHttp != null) {
+                        serviceREST.setResponseHTTPBody(responseHttp.getResponseHTTPBody());
+                        serviceREST.setResponseHTTPCode(responseHttp.getResponseHTTPCode());
+                        serviceREST.setResponseHTTPVersion(responseHttp.getResponseHTTPVersion());
+                        serviceREST.setResponseHeaderList(responseHttp.getResponseHeaderList());
+                    } else {
+                        message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
+                        message.setDescription(message.getDescription().replace("%SERVICE%", servicePath));
+                        message.setDescription(message.getDescription().replace("%DESCRIPTION%",
+                                "Any issue was found when calling the service. Coud be a reached timeout during the call (."
+                                + timeOutMs + ")"));
+                        result.setResultMessage(message);
+                        return result;
+
+                    }
+                    break;
 
             }
 

@@ -384,6 +384,9 @@ public final class StringUtil {
 
     public static String addQueryString(String URL, String queryString) {
         String result = "";
+        if (isNullOrEmpty(queryString)) {
+            return URL;
+        }
         URL = URL.trim();
         if (URL.endsWith("?")) {
             result = URL + queryString;
