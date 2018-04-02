@@ -21,19 +21,23 @@ package org.cerberus.servlet.integration;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-
+import java.nio.charset.Charset;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.http.HttpHeaders;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.service.ILogEventService;
-
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.impl.ParameterService;
-import org.cerberus.util.HTTPSession;
 import org.cerberus.version.Infos;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -48,6 +52,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class JenkinsDeploy extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(JenkinsDeploy.class);
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -61,7 +66,6 @@ public class JenkinsDeploy extends HttpServlet {
             throws ServletException, IOException {
     }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
      *
@@ -84,9 +88,6 @@ public class JenkinsDeploy extends HttpServlet {
             String user = parameterService.findParameterByKey("cerberus_jenkinsadmin_user", "").getValue();
             String pass = parameterService.findParameterByKey("cerberus_jenkinsadmin_password", "").getValue();
 
-            HTTPSession session = new HTTPSession();
-            session.startSession(user, pass);
-
             String url = parameterService.findParameterByKey("cerberus_jenkinsdeploy_url", "").getValue();
             String final_url;
             final_url = url.replace("%APPLI%", request.getParameter("application"));
@@ -97,19 +98,31 @@ public class JenkinsDeploy extends HttpServlet {
             final_url = final_url.replace("%REPOSITORYURL%", request.getParameter("repositoryurl"));
 
             //send request to Jenkins
-            Integer responseCode = session.getURL(final_url);
-            session.closeSession();
-            if ((responseCode != 200) && (responseCode != 201)) {
-                out.print("ERROR Contacting Jenkins HTTP Response " + responseCode);
+            HttpClient client = HttpClientBuilder.create().build();
+
+            HttpGet requesthttp = new HttpGet(final_url);
+            String auth = user + ":" + pass;
+            byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(Charset.forName("ISO-8859-1")));
+            String authHeader = "Basic " + new String(encodedAuth);
+            requesthttp.setHeader(HttpHeaders.AUTHORIZATION, authHeader);
+
+            HttpResponse responsehttp = client.execute(requesthttp);
+
+            int statusCode = responsehttp.getStatusLine().getStatusCode();
+
+            if ((statusCode != 200) && (statusCode != 201)) {
+                out.print("ERROR Contacting Jenkins HTTP Response " + statusCode);
+                out.print("Sent request : " + final_url);
+
             } else {
                 /**
                  * Jenkins was called successfuly. Adding Log entry.
                  */
                 ILogEventService logEventService = appContext.getBean(ILogEventService.class);
                 logEventService.createForPrivateCalls("/JenkinsDeploy", "DEPLOY", "JenkinsDeploy Triggered : ['" + final_url + "']", request);
-                out.print("Sent request : " + url);
-            }
+                out.print("Sent request : " + final_url);
 
+            }
         } catch (Exception ex) {
             LOG.warn(Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", ex);
         }
@@ -137,5 +150,5 @@ public class JenkinsDeploy extends HttpServlet {
     @Override
     public String getServletInfo() {
         return "Short description";
-    }// </editor-fold>
+    }
 }

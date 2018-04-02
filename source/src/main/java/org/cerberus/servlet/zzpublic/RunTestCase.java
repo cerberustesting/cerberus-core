@@ -58,6 +58,7 @@ import org.cerberus.exception.FactoryCreationException;
 import org.cerberus.util.DateUtil;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
+import org.cerberus.util.servlet.ServletUtil;
 import org.cerberus.version.Infos;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -112,6 +113,9 @@ public class RunTestCase extends HttpServlet {
         PrintWriter out = response.getWriter();
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+        
+        // Calling Servlet Transversal Util.
+        ServletUtil.servletStart(request);
 
         /**
          * Adding Log entry.

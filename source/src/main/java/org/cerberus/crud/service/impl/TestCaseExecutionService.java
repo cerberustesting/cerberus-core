@@ -186,13 +186,11 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
         return testCaseExecutionDao.readByTag(tag);
     }
 
-    @Deprecated
     @Override
     public AnswerList readDistinctEnvCoutnryBrowserByTag(String tag) {
         return testCaseExecutionDao.readDistinctEnvCoutnryBrowserByTag(tag);
     }
 
-    @Deprecated
     @Override
     public AnswerList readDistinctColumnByTag(String tag, boolean env, boolean country, boolean browser, boolean app) {
         return testCaseExecutionDao.readDistinctColumnByTag(tag, env, country, browser, app);

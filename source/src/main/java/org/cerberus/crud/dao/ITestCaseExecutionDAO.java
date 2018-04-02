@@ -177,7 +177,6 @@ public interface ITestCaseExecutionDAO {
      * @param tag
      * @return
      */
-    @Deprecated
     public AnswerList readDistinctEnvCoutnryBrowserByTag(String tag);
 
     /**
@@ -189,7 +188,6 @@ public interface ITestCaseExecutionDAO {
      * @param app
      * @return
      */
-    @Deprecated
     public AnswerList readDistinctColumnByTag(String tag, boolean env, boolean country, boolean browser, boolean app);
 
     /**
