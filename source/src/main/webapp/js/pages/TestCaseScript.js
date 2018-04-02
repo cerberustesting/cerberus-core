@@ -3513,7 +3513,6 @@ function CompleterForAllDataLib() {
                     return {name: ea.name, value: ea.name, meta: "DataLib"}
                 }));
             })
-
         }
 
     }
@@ -3641,24 +3640,10 @@ function addCommandForCustomAutoCompletePopup(editor, allKeyword, commandName) {
         name: commandName,
         exec: function () {
             var cursorPositionY = editor.getCursorPosition().row;
-            var editorValueAtTheLine = editor.session.getLine(cursorPositionY);// value
-            // on
-            // the
-            // line
-            // the
-            // cursor
-            // is
-            // currently
-            // in
-            var numberOfPercentCaractereAtLine = (editorValueAtTheLine.match(/\%/g) || []).length;// start
-            // autocomplete
-            // when
-            // there
-            // is
-            // an
-            // odd
-            // number
-            // of %
+            var editorValueAtTheLine = editor.session.getLine(cursorPositionY);
+            // value on the line the cursor is currently in
+            var numberOfPercentCaractereAtLine = (editorValueAtTheLine.match(/\%/g) || []).length;
+            // start autocomplete when there is an odd number of %
 
             if (numberOfPercentCaractereAtLine != 0 && numberOfPercentCaractereAtLine % 2 == 1) {
                 var cursorPositionX = editor.getCursorPosition().column;
@@ -3847,11 +3832,8 @@ function addCommandToDetectKeywordIssue(editor, allKeyword, commandName) {
                                     issueWithKeyword = "warning";
                                 } else {
                                     if (getPossibleMotherKeyword(secondKeyword, allKeyword).indexOf(startKeyword) == -1)
-                                        issueWithKeyword = "warning";// keyword
-                                    // exist
-                                    // but
-                                    // not
-                                    // correct
+                                        issueWithKeyword = "warning";
+                                    // keyword exist but not correct
                                 }
                             } else if (startKeyword == "object" && keywordsListCurrentlyCheck.length == 3) {
 
@@ -3859,11 +3841,8 @@ function addCommandToDetectKeywordIssue(editor, allKeyword, commandName) {
                                     issueWithKeyword = "warning";
                                 } else {
                                     if (getPossibleMotherKeyword(secondKeyword, allKeyword).indexOf(startKeyword) == -1)
-                                        issueWithKeyword = "warning";// keyword
-                                    // exist
-                                    // but
-                                    // not
-                                    // correct
+                                        issueWithKeyword = "warning";
+                                    // keyword exist but not correct
                                 }
                                 var thirdKeyword = keywordsListCurrentlyCheck[2];
                                 var availableObjectProperties = [

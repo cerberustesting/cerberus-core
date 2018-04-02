@@ -55,28 +55,27 @@ public class InteractiveTutoDAO implements IInterractiveTutoDAO {
     @Override
     public InteractiveTuto getInteractiveTutorial(int id, boolean withStep, String lang) {
 
-        final String query = "SELECT it.id, docTitle.docLabel as title, it.titleTranslationLabel,  doc.docLabel as description, it.translationLabel,  it.role, it.ord, it.level " +
-                            "FROM interactive_tuto it  " +
-                            "left outer JOIN documentation doc on doc.doctable='interactiveTuto' and doc.docfield=it.translationLabel and doc.lang=? " +
-                            "left outer JOIN documentation docTitle on docTitle.doctable='interactiveTuto' and docTitle.docfield=it.titleTranslationLabel and docTitle.lang=? " +
-                            "WHERE it.id = ?";
+        final String query = "SELECT it.id, docTitle.docLabel as title, it.titleTranslationLabel,  doc.docLabel as description, it.translationLabel,  it.role, it.ord, it.level "
+                + "FROM interactive_tuto it  "
+                + "left outer JOIN documentation doc on doc.doctable='interactiveTuto' and doc.docfield=it.translationLabel and doc.lang=? "
+                + "left outer JOIN documentation docTitle on docTitle.doctable='interactiveTuto' and docTitle.docfield=it.titleTranslationLabel and docTitle.lang=? "
+                + "WHERE it.id = ?";
 
         InteractiveTuto tuto = null;
         try (
                 Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query);
-        ) {
+                PreparedStatement preStat = connection.prepareStatement(query);) {
             preStat.setString(1, lang);
             preStat.setString(2, lang);
             preStat.setInt(3, id);
 
             try (ResultSet resultSet = preStat.executeQuery()) {
                 if (resultSet.first()) {
-                    tuto = getInteractiveTutoFromResultset(resultSet,withStep, lang);
+                    tuto = getInteractiveTutoFromResultset(resultSet, withStep, lang);
                 }
             }
         } catch (SQLException exception) {
-            LOG.warn("Unable to execute query : "+exception.toString(), exception);
+            LOG.warn("Unable to execute query : " + exception.toString(), exception);
         } finally {
             this.databaseSpring.closeConnection();
         }
@@ -84,34 +83,35 @@ public class InteractiveTutoDAO implements IInterractiveTutoDAO {
     }
 
     public List<InteractiveTutoStep> getListStep(int idInteractiveTuto, String lang) {
-        final String query = "SELECT its.id, its.selector, doc.docLabel as description,  its.type, its.attr1 " +
-                "FROM interactive_tuto_step its " +
-                "left outer JOIN documentation doc on doc.doctable='interactiveTutoStep' and doc.docfield=concat(its.id_interactive_tuto,'.step.',its.step_order)  and doc.lang=? " +
-                "WHERE its.id_interactive_tuto = ? " +
-                "order by step_order";
+        final String query = "SELECT its.id, its.selector, doc.docLabel as description,  its.type, its.attr1 "
+                + "FROM interactive_tuto_step its "
+                + "left outer JOIN documentation doc on doc.doctable='interactiveTutoStep' and doc.docfield=concat(its.id_interactive_tuto,'.step.',its.step_order)  and doc.lang=? "
+                + "WHERE its.id_interactive_tuto = ? "
+                + "order by step_order";
 
         List<InteractiveTutoStep> tuto = new LinkedList<>();
 
         try (
                 Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query);
-        ) {
+                PreparedStatement preStat = connection.prepareStatement(query);) {
             preStat.setString(1, lang);
             preStat.setInt(2, idInteractiveTuto);
-            try(ResultSet resultSet = preStat.executeQuery()) {
+            try (ResultSet resultSet = preStat.executeQuery()) {
                 while (resultSet.next()) {
                     int idStep = resultSet.getInt("id");
                     String selector = resultSet.getString("selector");
                     String description = resultSet.getString("description");
-                    if(description == null || description.equals("null")) description = "no traduction for this language";
+                    if (description == null || description.equals("null")) {
+                        description = "no translation for this language";
+                    }
                     String type = resultSet.getString("type");
                     String attr1 = resultSet.getString("attr1");
 
-                    tuto.add(factoryITStep.create(idStep, selector, description, InteractiveTutoStepType.getEnum(type),attr1));
+                    tuto.add(factoryITStep.create(idStep, selector, description, InteractiveTutoStepType.getEnum(type), attr1));
                 }
             }
         } catch (SQLException exception) {
-            LOG.warn("Unable to execute query : "+exception.toString(), exception);
+            LOG.warn("Unable to execute query : " + exception.toString(), exception);
         } finally {
             this.databaseSpring.closeConnection();
         }
@@ -119,30 +119,28 @@ public class InteractiveTutoDAO implements IInterractiveTutoDAO {
         return tuto;
     }
 
-
     @Override
     public List<InteractiveTuto> getListInteractiveTutorial(boolean withStep, String lang) {
-        final String query = "SELECT id, docTitle.docLabel as title, it.titleTranslationLabel, doc.docLabel as description, it.translationLabel, role, ord, level " +
-                            "FROM interactive_tuto it " +
-                            "left outer JOIN documentation doc on doc.doctable='interactiveTuto' and doc.docfield=it.translationLabel and doc.lang=? " +
-                            "left outer JOIN documentation docTitle on docTitle.doctable='interactiveTuto' and docTitle.docfield=it.titleTranslationLabel and docTitle.lang=? ";
+        final String query = "SELECT id, docTitle.docLabel as title, it.titleTranslationLabel, doc.docLabel as description, it.translationLabel, role, ord, level "
+                + "FROM interactive_tuto it "
+                + "left outer JOIN documentation doc on doc.doctable='interactiveTuto' and doc.docfield=it.translationLabel and doc.lang=? "
+                + "left outer JOIN documentation docTitle on docTitle.doctable='interactiveTuto' and docTitle.docfield=it.titleTranslationLabel and docTitle.lang=? ";
 
         List<InteractiveTuto> res = new LinkedList<>();
 
         try (
                 Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query);
-        ) {
+                PreparedStatement preStat = connection.prepareStatement(query);) {
             preStat.setString(1, lang);
             preStat.setString(2, lang);
 
-            try(ResultSet resultSet = preStat.executeQuery()) {
+            try (ResultSet resultSet = preStat.executeQuery()) {
                 while (resultSet.next()) {
                     res.add(getInteractiveTutoFromResultset(resultSet, withStep, lang));
                 }
             }
         } catch (SQLException exception) {
-            LOG.warn("Unable to execute query : "+exception.toString(), exception);
+            LOG.warn("Unable to execute query : " + exception.toString(), exception);
         } finally {
             this.databaseSpring.closeConnection();
         }
@@ -153,18 +151,23 @@ public class InteractiveTutoDAO implements IInterractiveTutoDAO {
     private InteractiveTuto getInteractiveTutoFromResultset(ResultSet rs, boolean withStep, String lang) throws SQLException {
         int idTuto = rs.getInt("id");
         String title = rs.getString("title");
-        if(title == null || title.equals("null")) title = "?" + rs.getString("titleTranslationLabel") + "?";
+        if (title == null || title.equals("null")) {
+            title = "?" + rs.getString("titleTranslationLabel") + "?";
+        }
 
         String description = rs.getString("description");
-        if(description == null || description.equals("null")) description = "?" + rs.getString("translationLabel") + "?";
+        if (description == null || description.equals("null")) {
+            description = "?" + rs.getString("translationLabel") + "?";
+        }
 
         String role = rs.getString("role");
         int order = rs.getInt("ord");
         int level = rs.getInt("level");
         InteractiveTuto tuto = factoryIT.create(idTuto, title, description, role, order, level);
 
-        if (withStep)
+        if (withStep) {
             tuto.setSteps(getListStep(idTuto, lang));
+        }
 
         return tuto;
     }

@@ -38,39 +38,49 @@
         <env>local</env>
 
         <!-- Version management -->
-        <powermock.version>1.5.2</powermock.version>
-        <javax.servlet-api.version>4.0.0</javax.servlet-api.version>
+        <!-- Spring Version -->
         <spring.version>5.0.0.RELEASE</spring.version>
-        <commons-email.version>1.5</commons-email.version>
-        <commons-text.version>1.3</commons-text.version>
-        <javaee-web-api>8.0</javaee-web-api>
-        <junit.version>4.12</junit.version>
-        <mysql-connector-java.version>5.1.20</mysql-connector-java.version>
+        <!-- JSON Lib Version -->
         <json.version>20080701</json.version>
-        <selenium.version>3.6.0</selenium.version>
-        <owasp-java-html-sanitizer.version>r239</owasp-java-html-sanitizer.version>
-        <log4j.version>2.9.1</log4j.version>
+        <gson.version>2.8.0</gson.version>
+        <jackson.version>2.9.2</jackson.version>
         <jackson-core-asl.version>1.7.1</jackson-core-asl.version>
+        <jackson-mapper-asl.version>1.7.1</jackson-mapper-asl.version>
+        <!-- Groovy Version -->
+        <groovy.version>2.4.7</groovy.version>
+        <groovy-sandbox.version>1.10</groovy-sandbox.version>
+        <!-- Appium/Selenium scope Version -->
+        <appium.version>5.0.4</appium.version>
+        <selenium.version>3.6.0</selenium.version>
+        <!-- Log4J Version -->
+        <log4j.version>2.9.1</log4j.version>
+        <!-- jsonpath -->
+        <jsonxpath.version>2.4.0</jsonxpath.version>
+        <!-- Compile scope -->
+        <javaee-web-api>8.0</javaee-web-api>
+        <javax.servlet-api.version>4.0.0</javax.servlet-api.version>
+        <javax.websocket-api>1.1</javax.websocket-api>
+        <guava.version>23.0</guava.version>
+        <xmlunit.version>1.5</xmlunit.version>
+        <mysql-connector-java.version>5.1.20</mysql-connector-java.version>
+        <owasp-java-html-sanitizer.version>r239</owasp-java-html-sanitizer.version>
         <jcommon.version>1.0.16</jcommon.version>
         <commons-fileupload.version>1.3.3</commons-fileupload.version>
         <commons-io.version>2.5</commons-io.version>
-        <mockito-all.version>1.9.5</mockito-all.version>
         <commons-net.version>3.6</commons-net.version>
-        <jackson-mapper-asl.version>1.7.1</jackson-mapper-asl.version>
         <java-image-scaling.version>0.8.5</java-image-scaling.version>
-        <guava.version>23.0</guava.version>
-        <xmlunit.version>1.5</xmlunit.version>
-        <elfinder-servlet.version>1.2.0</elfinder-servlet.version>
-        <websocket.version>1.1</websocket.version>
-        <gson.version>2.8.0</gson.version>
-        <jsonxpath.version>2.4.0</jsonxpath.version>
+        <commons-email.version>1.5</commons-email.version>
+        <commons-text.version>1.3</commons-text.version>
         <poi.version>3.13</poi.version>
-        <appium.version>5.0.4</appium.version>
-        <groovy.version>2.4.7</groovy.version>
-        <groovy-sandbox.version>1.10</groovy-sandbox.version>
         <asciidoctor.version>1.5.6</asciidoctor.version>
         <apache.tika>1.16</apache.tika>
         <fluent-hc.version>4.5.3</fluent-hc.version>
+        
+        <!-- Test scope -->
+        <junit.version>4.12</junit.version>
+        <powermock.version>1.5.2</powermock.version>
+        <mockito-all.version>1.9.5</mockito-all.version>
+        
         <!-- Maven plugin version -->
         <maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
         <maven-surefire-plugin.version>2.20.1</maven-surefire-plugin.version>
@@ -83,7 +93,6 @@
         <maven-assembly-plugin.version>3.1.0</maven-assembly-plugin.version>
         <javaee-endorsed-api.version>7.0</javaee-endorsed-api.version>
         <ant-jsch.version>1.10.1</ant-jsch.version>
-        <jackson.version>2.9.2</jackson.version>
         <asciidoctor-maven-plugin.version>1.5.6</asciidoctor-maven-plugin.version>
         <license-maven-plugin.version>3.0</license-maven-plugin.version>
         
@@ -92,22 +101,7 @@
     </properties>
 
     <dependencies>
-        <!-- Compile scope -->
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>${gson.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.codehaus.groovy</groupId>
-            <artifactId>groovy</artifactId>
-            <version>${groovy.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>${javax.servlet-api.version}</version>
-        </dependency>
+        <!-- Spring -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-beans</artifactId>
@@ -139,26 +133,44 @@
             <version>${spring.version}</version>
             <scope>test</scope>
         </dependency>
+        <!-- JSON Lib -->
         <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>${guava.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>xmlunit</groupId>
-            <artifactId>xmlunit</artifactId>
-            <version>${xmlunit.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>${mysql-connector-java.version}</version>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>${gson.version}</version>
         </dependency>
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
             <version>${json.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-core-asl</artifactId>
+            <version>${jackson-core-asl.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-mapper-asl</artifactId>
+            <version>${jackson-mapper-asl.version}</version>
+        </dependency>
+        <!-- Groovy -->
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy</artifactId>
+            <version>${groovy.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.kohsuke</groupId>
+            <artifactId>groovy-sandbox</artifactId>
+            <version>${groovy-sandbox.version}</version>
+        </dependency>
+        <!-- Appium/Selenium scope -->
         <dependency>
             <groupId>io.appium</groupId>
             <artifactId>java-client</artifactId>
@@ -183,20 +195,65 @@
             <artifactId>selenium-java</artifactId>
             <version>${selenium.version}</version>
         </dependency>
+        <!-- Log4J -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>${log4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-web</artifactId>
+            <version>${log4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>${log4j.version}</version>
+        </dependency>
+        <!-- jsonpath -->
+        <dependency>
+            <groupId>com.jayway.jsonpath</groupId>
+            <artifactId>json-path</artifactId>
+            <version>${jsonxpath.version}</version>
+        </dependency>
+        <!-- Compile scope -->
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-web-api</artifactId>
+            <version>${javaee-web-api}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>${javax.servlet-api.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.websocket</groupId>
+            <artifactId>javax.websocket-api</artifactId>
+            <version>${javax.websocket-api}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>xmlunit</groupId>
+            <artifactId>xmlunit</artifactId>
+            <version>${xmlunit.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>${mysql-connector-java.version}</version>
+        </dependency>
         <dependency>
             <groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
             <artifactId>owasp-java-html-sanitizer</artifactId>
             <version>${owasp-java-html-sanitizer.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-core-asl</artifactId>
-            <version>${jackson-core-asl.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-mapper-asl</artifactId>
-            <version>${jackson-mapper-asl.version}</version>
         </dependency>
         <dependency>
             <groupId>jfree</groupId>
@@ -232,26 +289,6 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-text</artifactId>
             <version>${commons-text.version}</version>
-        </dependency>        
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>${log4j.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-web</artifactId>
-            <version>${log4j.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-api</artifactId>
-            <version>${log4j.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.jayway.jsonpath</groupId>
-            <artifactId>json-path</artifactId>
-            <version>${jsonxpath.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.poi</groupId>
@@ -262,11 +299,6 @@
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
             <version>${poi.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.kohsuke</groupId>
-            <artifactId>groovy-sandbox</artifactId>
-            <version>${groovy-sandbox.version}</version>
         </dependency>
         <dependency>
             <groupId>org.asciidoctor</groupId>
@@ -282,25 +314,6 @@
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>fluent-hc</artifactId>
             <version>${fluent-hc.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-
-        <!-- Provided scope -->
-        <dependency>
-            <groupId>javax</groupId>
-            <artifactId>javaee-web-api</artifactId>
-            <version>${javaee-web-api}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>javax.websocket</groupId>
-            <artifactId>javax.websocket-api</artifactId>
-            <version>${websocket.version}</version>
-            <scope>provided</scope>
         </dependency>
 
         <!-- Test scope -->

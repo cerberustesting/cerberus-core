@@ -21,17 +21,14 @@ package org.cerberus.service.xmlunit.impl;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.logging.Level;
 import java.util.regex.Pattern;
-
 import javax.annotation.PostConstruct;
-
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-import org.cerberus.service.xmlunit.IXmlUnitService;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.service.xmlunit.AInputTranslator;
 import org.cerberus.service.xmlunit.Differences;
 import org.cerberus.service.xmlunit.DifferencesException;
+import org.cerberus.service.xmlunit.IXmlUnitService;
 import org.cerberus.service.xmlunit.InputTranslator;
 import org.cerberus.service.xmlunit.InputTranslatorException;
 import org.cerberus.service.xmlunit.InputTranslatorManager;
