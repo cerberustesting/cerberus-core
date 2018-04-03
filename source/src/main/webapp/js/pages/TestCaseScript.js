@@ -80,8 +80,6 @@ $.when($.getScript("js/global/global.js")).then(function () {
         var property = GetURLParameter("property");
         var tabactive = GetURLParameter("tabactive");
 
-        $("#runOld").parent().attr("href", "./TestCase.jsp?Test=" + test + "&TestCase=" + testcase + "&Load=Load");
-
         displayHeaderLabel(doc);
         displayGlobalLabel(doc);
         displayFooter(doc);
@@ -109,7 +107,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
                     $(".testTestCase #test").append("<option value='" + data.contentTable[i].test + "'>" + data.contentTable[i].test + " - " + data.contentTable[i].description + "</option>");
                 }
 
-                if (test != null) {
+                if (test !== null) {
                     $(".testTestCase #test option[value='" + test + "']").prop('selected', true);
                 }
                 $(".testTestCase #test").bind("change", function (event) {
@@ -119,7 +117,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
             }
         });
 
-        if (test != null) {
+        if (test !== null) {
             $.ajax({
                 url: "ReadTestCase?test=" + test,
                 async: true,
@@ -149,7 +147,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
                 }
             });
         }
-        if (test != null && testcase != null) {
+        if (test !== null && testcase !== null) {
             // Edit TestCase open the TestCase Modal
             $("#editTcInfo").click(function () {
                 openModalTestCase(test, testcase, "EDIT");
@@ -167,10 +165,6 @@ $.when($.getScript("js/global/global.js")).then(function () {
 
                     }
                 });
-            });
-
-            $("#deleteTestCase").click(function () {
-                removeTestCaseClick(test, testcase);
             });
 
             $("#TestCaseButton").show();
@@ -198,7 +192,6 @@ $.when($.getScript("js/global/global.js")).then(function () {
 
                     var propertiesPromise = loadProperties(test, testcase, data.info, property, data.hasPermissionsUpdate);
                     var objectsPromise = loadApplicationObject(data);
-                    var servicesPromise = loadServices()// here we add the code
 
                     Promise.all([propertiesPromise, objectsPromise]).then(function (data2) {
                         var properties = data2[0];
@@ -265,22 +258,20 @@ $.when($.getScript("js/global/global.js")).then(function () {
                                 addAfter: "%",
                                 isCreatable: false
                             },
-//							{
-//								array: availableServices,
-//								regex: null,
-//								addBefore: "",
-//								addAfter: ".",
-//								isCreatable: false
-//							},
-
+                            //                            {
+//                                array: availableServices,
+//                                regex: null,
+//                                addBefore: "",
+//                                addAfter: ".",
+//                                isCreatable: false
+//                            },
                             {
                                 array: availableTags,
                                 regex: "%",
                                 addBefore: "",
                                 addAfter: ".",
                                 isCreatable: false
-                            }
-
+                            },
                         ];
 
                         autocompleteAllFields(Tags, data.info, test, testcase);
@@ -335,13 +326,14 @@ $.when($.getScript("js/global/global.js")).then(function () {
                                 value2: "",
                                 length: 0,
                                 rowLimit: 0,
+                                cacheExpire: 0,
                                 nature: "STATIC",
                                 retryNb: "",
                                 retryPeriod: "",
                                 toDelete: false
                             };
 
-                            var prop = drawProperty(newProperty, testcaseinfo, true);
+                            var prop = drawProperty(newProperty, testcaseinfo, true, document.getElementsByClassName("property").length);
                             setPlaceholderProperty(prop[0], prop[1]);
 
                             $(prop[0]).find("#propName").focus();
@@ -404,6 +396,8 @@ $.when($.getScript("js/global/global.js")).then(function () {
             $("#addAction").click(function () {
                 addActionAndFocus()
             });
+
+            // CONTEXT SAVE MENU
             $("#saveScript").click(saveScript);
             $("#saveScriptAs").click(function () {
                 openModalTestCase(test, testcase, "DUPLICATE");
@@ -417,10 +411,14 @@ $.when($.getScript("js/global/global.js")).then(function () {
                     }
                 });
             });
+            $("#deleteTestCase").click(function () {
+                removeTestCaseClick(test, testcase);
+            });
 
-            $("#runTestCase").attr("href", "RunTests.jsp?test=" + test + "&testcase=" + testcase);
-            $("#seeLastExec").parent().attr("href", "./TestCaseExecutionList.jsp?test=" + test + "&testcase=" + testcase);
+            // CONTEXT GOTO & RUN MENU
             $("#seeLogs").parent().attr("href", "./LogEvent.jsp?Test=" + test + "&TestCase=" + testcase);
+            $("#seeTest").parent().attr("href", "./TestCaseList.jsp?test=" + test);
+            $("#runTestCase").parent().attr("href", "./RunTests.jsp?test=" + test + "&testcase=" + testcase);
 
             $.ajax({
                 url: "ReadTestCaseExecution",
@@ -428,11 +426,23 @@ $.when($.getScript("js/global/global.js")).then(function () {
                 dataType: "json",
                 success: function (data) {
                     if (!jQuery.isEmptyObject(data.contentTable)) {
-                        $("#rerunTestCase").attr("onclick", "document.location.href='./RunTests.jsp?test=" + test + "&testcase=" + testcase + "&country=" + data.contentTable.country + "&environment=" + data.contentTable.env + "'");
-                        $("#runTestCase").attr("title", "Last Execution was " + data.contentTable.controlStatus + " in " + data.contentTable.env + " in " + data.contentTable.country + " on " + data.contentTable.end)
+                        $("#seeLastExecUniq").parent().attr("href", "./TestCaseExecution.jsp?executionId=" + data.contentTable.id);
+                        $("#seeLastExec").parent().attr("href", "./TestCaseExecutionList.jsp?test=" + test + "&testcase=" + testcase);
+                        $("#rerunTestCase").attr("title", "Last Execution was " + data.contentTable.controlStatus + " in " + data.contentTable.env + " in " + data.contentTable.country + " on " + data.contentTable.end)
+                        $("#rerunTestCase").parent().attr("href", "./RunTests.jsp?test=" + test + "&testcase=" + testcase + "&country=" + data.contentTable.country + "&environment=" + data.contentTable.env);
+                        $("#rerunFromQueue").attr("title", "Last Execution was " + data.contentTable.controlStatus + " in " + data.contentTable.env + " in " + data.contentTable.country + " on " + data.contentTable.end)
+                        if (data.contentTable.queueId > 0) {
+                            $("#rerunFromQueue").click(function () {
+                                openModalTestCaseExecutionQueue(data.contentTable.queueId, "DUPLICATE");
+                            });
+                        } else {
+                            $("#rerunFromQueue").attr("disabled", true);
+                        }
                     } else {
-                        $("#rerunTestCase").attr("disabled", true);
+                        $("#seeLastExecUniq").attr("disabled", true);
                         $("#seeLastExec").attr("disabled", true);
+                        $("#rerunTestCase").attr("disabled", true);
+                        $("#rerunFromQueue").attr("disabled", true);
                     }
                 },
                 error: showUnexpectedError
@@ -448,17 +458,6 @@ $.when($.getScript("js/global/global.js")).then(function () {
                 // $(".affix-top").width($("#divPanelDefault").width());
             });
 
-
-// wrap.resize(function (e) {
-// if ($("#testCaseTitle").width() != $("#testCaseTitle").parent().width() - 30)
-// {
-// $("#testCaseTitle").width($("#testCaseTitle").parent().width() - 30);
-// $("#list-wrapper").width($("#nav-execution").width());
-// }
-// $('.action [data-toggle="tooltip"], .control
-// [data-toggle="tooltip"]').tooltip('show');
-// })
-
             if (tabactive !== null) {
                 $("a[name='" + tabactive + "']").click();
             }
@@ -467,8 +466,9 @@ $.when($.getScript("js/global/global.js")).then(function () {
         closeEveryNavbarMenu();
 
         $('[data-toggle="popover"]').popover({
-            'placement': 'auto',
-            'container': 'body'}
+                'placement': 'auto',
+                'container': 'body'
+            }
         );
 
         // open Run navbar Menu
@@ -481,14 +481,22 @@ function displayPageLabel(doc) {
     $("#nav-execution #list-wrapper #stepListWrapper h3").html(doc.getDocLabel("page_testcasescript", "steps_title"));
     $("#nav-execution #list-wrapper #tcButton h3").html(doc.getDocLabel("page_global", "columnAction"));
     $("#nav-execution #list-wrapper #deleteButton h3").html(doc.getDocLabel("page_global", "columnAction") + " " + doc.getDocLabel("page_header", "menuTestCase"));
-    $("#deleteTestCase").html("<span class='glyphicon glyphicon-trash'></span> " + doc.getDocLabel("page_testcaselist", "btn_delete"));
-    $("#saveScript").html("<span class='glyphicon glyphicon-floppy-disk'></span> " + doc.getDocLabel("page_testcasescript", "save_script"));
-    $("#editTcInfo").html("<span class='glyphicon glyphicon-pencil'></span> " + doc.getDocLabel("page_testcasescript", "edit_testcase"));
+
+    // CONTEXT MENU
+    $("#btnGroupDrop1").html(doc.getDocLabel("page_testcasescript", "goto") + " <span class='caret'></span>");
+    $("#seeLastExecUniq").html("<span class='glyphicon glyphicon-saved'></span> " + doc.getDocLabel("page_testcasescript", "see_lastexecuniq"));
+    $("#seeLastExec").html("<span class='glyphicon glyphicon-list'></span> " + doc.getDocLabel("page_testcasescript", "see_lastexec"));
+    $("#seeTest").html("<span class='glyphicon glyphicon-list'></span> " + doc.getDocLabel("page_testcasescript", "see_test"));
+    $("#seeLogs").html("<span class='glyphicon glyphicon-list'></span> " + doc.getDocLabel("page_testcasescript", "see_logs"));
+    $("#btnGroupDrop2").html(doc.getDocLabel("page_testcasescript", "run") + " <span class='caret'></span>");
     $("#runTestCase").html("<span class='glyphicon glyphicon-play'></span> " + doc.getDocLabel("page_testcasescript", "run_testcase"));
     $("#rerunTestCase").html("<span class='glyphicon glyphicon-forward'></span> " + doc.getDocLabel("page_testcasescript", "rerun_testcase"));
-    $("#seeLastExec").html("<span class='glyphicon glyphicon-backward'></span> " + doc.getDocLabel("page_testcasescript", "see_lastexec"));
-    $("#seeLogs").html("<span class='glyphicon glyphicon-book'></span> " + doc.getDocLabel("page_testcasescript", "see_logs"));
-    $("#runOld").html("<span class='glyphicon glyphicon-bookmark'></span> " + doc.getDocLabel("page_testcasescript", "run_old"));
+    $("#rerunFromQueue").html("<span class='glyphicon glyphicon-forward'></span> " + doc.getDocLabel("page_testcasescript", "rerunqueue_testcase"));
+    $("#editTcInfo").html("<span class='glyphicon glyphicon-pencil'></span> " + doc.getDocLabel("page_testcasescript", "edit_testcase"));
+    $("#saveScript").html("<span class='glyphicon glyphicon-floppy-disk'></span> " + doc.getDocLabel("page_testcasescript", "save_script"));
+    $("#saveScriptAs").html("<span class='glyphicon glyphicon-floppy-disk'></span> " + doc.getDocLabel("page_testcasescript", "saveas_script"));
+    $("#deleteTestCase").html("<span class='glyphicon glyphicon-trash'></span> " + doc.getDocLabel("page_testcasescript", "delete"));
+
     $("#addStep").html(doc.getDocLabel("page_testcasescript", "add_step"));
     $("#manageProp").html(doc.getDocLabel("page_testcasescript", "manage_prop"));
     $("#addActionBottomBtn button").html(doc.getDocLabel("page_testcasescript", "add_action"));
@@ -570,6 +578,7 @@ function addActionAndFocus(action) {
 function getTestCase(test, testcase, step) {
     window.location.href = "./TestCaseScript.jsp?test=" + test + "&testcase=" + testcase + "&step=" + step;
 }
+
 function setAllSort() {
     var stepList = $("#stepList li");
     var stepArr = [];
@@ -611,7 +620,7 @@ function setAllSort() {
                             control.setParentActionSort(j + 1);
                             control.setSort(k + 1);
                             control.setStep(i + 1);
-
+                            control.setControlSequence(k + i)
 
                             // Then push control into result array
                             controlArr.push(control.getJsonData());
@@ -654,7 +663,7 @@ function saveScript(property) {
     }
 
 
-    if (property != undefined) {
+    if (property !== undefined) {
         for (i in propArr) {
             if (propArr[i].property === property) {
                 propArr[i].toDelete = true
@@ -696,7 +705,6 @@ function saveScript(property) {
                     tutorialParameters = "&tutorielId=" + tutorielId + "&startStep=" + startStep;
                 }
 
-
                 var url_sort = "";
                 if (!(isEmpty(stepData))) {
                     url_sort = "&step=" + stepData.sort;
@@ -710,7 +718,6 @@ function saveScript(property) {
             error: showUnexpectedError
         });
     };
-
 
 
     if (propertyWithoutCountry) {
@@ -764,7 +771,7 @@ function drawPropertyList(property, index) {
     $(htmlElement).find("a").append(deleteBtn);
     deleteBtn.click(function (ev) {
 
-        if (allDelete != true) {
+        if (allDelete !== true) {
             $("div.list-group-item").each(function () {
                 if ($(this).find("#propName").val() === property) {
                     if (!$(this).hasClass("list-group-item-danger")) {
@@ -799,6 +806,7 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
     var value2Input = $("<textarea name='propertyValue2' rows='1' placeholder='" + doc.getDocLabel("page_applicationObject", "Value") + "'></textarea>").addClass("form-control input-sm").val(property.value2);
     var lengthInput = $("<input placeholder='" + doc.getDocLabel("page_testcasescript", "length") + "'>").addClass("form-control input-sm").val(property.length);
     var rowLimitInput = $("<input placeholder='" + doc.getDocLabel("page_testcasescript", "row_limit") + "'>").addClass("form-control input-sm").val(property.rowLimit);
+    var cacheExpireInput = $("<input type='number' placeholder=''>").addClass("form-control input-sm").val(property.cacheExpire);
     var retryNbInput = $("<input placeholder='" + doc.getDocLabel("testcasecountryproperties", "RetryNb") + "'>").addClass("form-control input-sm").val(property.retryNb);
     var retryPeriodInput = $("<input placeholder='" + doc.getDocLabel("testcasecountryproperties", "RetryPeriod") + "'>").addClass("form-control input-sm").val(property.retryPeriod);
     var table = $("#propTable");
@@ -815,6 +823,8 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
     rowLimitInput.prop("readonly", !canUpdate);
     retryNbInput.prop("readonly", !canUpdate);
     retryPeriodInput.prop("readonly", !canUpdate);
+    cacheExpireInput.prop("readonly", !canUpdate);
+
 
     var content = $("<div class='row property list-group-item'></div>");
     var props = $("<div class='col-sm-11' name='propertyLine' id='propertyLine" + property.property + "'></div>");
@@ -834,6 +844,8 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
     var value2 = $("<div class='col-sm-6 form-group' name='fieldValue2'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value2_field"))).append(value2Input);
     var length = $("<div class='col-sm-2 form-group' name='fieldLength'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "length_field"))).append(lengthInput);
     var rowLimit = $("<div class='col-sm-2 form-group' name='fieldRowLimit'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "rowlimit_field"))).append(rowLimitInput);
+    var cacheExpire = $("<div class='col-sm-2 form-group' name='fieldExpire'></div>").append($("<label></label>").text("cacheExpire")).append(cacheExpireInput);
+
     var nature = $("<div class='col-sm-2 form-group' name='fieldNature'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "nature_field"))).append(selectNature.val(property.nature));
     var retryNb = $("<div class='col-sm-2 form-group' name='fieldRetryNb'></div>").append($("<label></label>").text(doc.getDocLabel("testcasecountryproperties", "RetryNb"))).append(retryNbInput);
     var retryPeriod = $("<div class='col-sm-2 form-group' name='fieldRetryPeriod'></div>").append($("<label></label>").text(doc.getDocLabel("testcasecountryproperties", "RetryPeriod"))).append(retryPeriodInput);
@@ -864,21 +876,21 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
         $(table).find("div.list-group-item").each(function () {
             if ($(this).find("#propName").val() === property.property) {
                 if ($(this).hasClass("list-group-item-danger")) {
-                    if (stopAllDelete != true) {
+                    if (stopAllDelete !== true) {
                         allDelete = true;
                     }
-                    if (stopNothing != true) {
+                    if (stopNothing !== true) {
                         nothing = false
                         stopNothing = true;
                     }
 
                 } else {
-                    if (stopAllDelete != true) {
+                    if (stopAllDelete !== true) {
                         allDelete = false;
                         stopAllDelete = true;
                     }
 
-                    if (stopNothing != true) {
+                    if (stopNothing !== true) {
                         nothing = true;
                     }
                 }
@@ -897,7 +909,7 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
         var propertyName = property.property;
 
         // go though every link and look for the right one
-        if (linkToProperty != null) {
+        if (linkToProperty !== null) {
             if (allDelete === true && nothing === false) {
                 linkToProperty.css("background-color", "#c94350");
             } else if (nothing === true) {
@@ -953,6 +965,10 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
         property.rowLimit = $(this).val();
     });
 
+    cacheExpireInput.change(function () {
+        property.cacheExpire = parseInt($(this).val());
+    });
+
     selectNature.change(function () {
         property.nature = $(this).val();
     });
@@ -986,6 +1002,7 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
     row3.append(nature);
     row3.append(retryNb);
     row3.append(retryPeriod);
+    row3.append(cacheExpire);
     props.append(row3);
 
     right.append(moreBtn).append(deleteBtn);
@@ -1021,6 +1038,7 @@ function drawInheritedProperty(propList) {
         var value2Input = $("<textarea name='inheritPropertyValue2' rows='1' placeholder='" + doc.getDocLabel("page_applicationObject", "Value") + "' readonly='readonly'></textarea>").addClass("form-control input-sm").val(property.value2);
         var lengthInput = $("<input placeholder='" + doc.getDocLabel("page_testcasescript", "length") + "' readonly='readonly'>").addClass("form-control input-sm").val(property.length);
         var rowLimitInput = $("<input placeholder='" + doc.getDocLabel("page_testcasescript", "row_limit") + "' readonly='readonly'>").addClass("form-control input-sm").val(property.rowLimit);
+        var cacheExpireInput = $("<input placeholder='0' readonly='readonly'>").addClass("form-control input-sm").val(property.cacheExpire);
         var retryNbInput = $("<input placeholder='" + doc.getDocLabel("testcasecountryproperties", "RetryNb") + "' readonly='readonly'>").addClass("form-control input-sm").val(property.retryNb);
         var retryPeriodInput = $("<input placeholder='" + doc.getDocLabel("testcasecountryproperties", "RetryPeriod") + "' readonly='readonly'>").addClass("form-control input-sm").val(property.retryPeriod);
 
@@ -1043,6 +1061,7 @@ function drawInheritedProperty(propList) {
         var length = $("<div class='col-sm-2 form-group' name='fieldLength'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "length_field"))).append(lengthInput);
         var rowLimit = $("<div class='col-sm-2 form-group' name='fieldRowLimit'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "rowlimit_field"))).append(rowLimitInput);
         var nature = $("<div class='col-sm-2 form-group' name='fieldNature'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "nature_field"))).append(selectNature.val(property.nature));
+        var cacheExpire = $("<div class='col-sm-2 form-group' name='fieldExpire'></div>").append($("<label></label>").text("cacheExpire")).append(cacheExpireInput);
         var retryNb = $("<div class='col-sm-2 form-group' name='fieldRetryNb'></div>").append($("<label></label>").text(doc.getDocLabel("testcasecountryproperties", "RetryNb"))).append(retryNbInput);
         var retryPeriod = $("<div class='col-sm-2 form-group' name='fieldRetryPeriod'></div>").append($("<label></label>").text(doc.getDocLabel("testcasecountryproperties", "RetryPeriod"))).append(retryPeriodInput);
 
@@ -1083,6 +1102,7 @@ function drawInheritedProperty(propList) {
 
         row3.append(db);
         row3.append(length);
+        row3.append(cacheExpire);
         row3.append(rowLimit);
         row3.append(nature);
         row3.append(retryNb);
@@ -1174,7 +1194,7 @@ function loadProperties(test, testcase, testcaseinfo, propertyToFocus, canUpdate
                 })
 
 
-                resolve(array);
+                resolve(propertyListUnique);
 
             },
             error: showUnexpectedError
@@ -1188,7 +1208,7 @@ function sortProperties(identifier) {
     list.sort(function (a, b) {
 
         var aProp = $(a).find("#masterProp").data("property").property.toLowerCase(),
-                bProp = $(b).find("#masterProp").data("property").property.toLowerCase();
+            bProp = $(b).find("#masterProp").data("property").property.toLowerCase();
 
         if (aProp > bProp) {
             return 1;
@@ -1236,13 +1256,10 @@ function getTestCaseCountry(countryList, countryToCheck, isDisabled) {
         }
 
         div.append($("<label></label>").addClass("checkbox-inline")
-                .append(input)
-                .append(country));
+            .append(input)
+            .append(country));
 
         cpt++;
-// if (cpt % 10 === 0) {
-// div = $("<div></div>").addClass("checkbox");
-// }
         html.push(div);
     });
 
@@ -1257,7 +1274,7 @@ function changeLib() {
     setModif(true);
     var stepHtml = $("#stepList li.active");
     var stepData = stepHtml.data("item");
-    if (stepData.inLibrary == "Y") {
+    if (stepData.inLibrary === "Y") {
         stepData.inLibrary = "N";
         $(this).removeClass("btn-dark");
     } else {
@@ -1268,7 +1285,7 @@ function changeLib() {
 
 function generateImportInfoId(stepInfo) {
     var hash = 0;
-    if (stepInfo.description.length == 0)
+    if (stepInfo.description.length === 0)
         return hash;
     for (i = 0; i < stepInfo.description.length; i++) {
         char = stepInfo.description.charCodeAt(i);
@@ -1279,6 +1296,7 @@ function generateImportInfoId(stepInfo) {
 }
 
 var importInfoIdx = 0;
+
 function showImportStepDetail(element) {
 
     var stepInfo = $(element).data("stepInfo");
@@ -1294,15 +1312,15 @@ function showImportStepDetail(element) {
         var importInfoId = generateImportInfoId(stepInfo);
 
         var importInfo =
-                '<div id="' + importInfoId + '" class="row">' +
-                '   <div class="col-sm-5"><span class="badge">' + importInfoIdx + ' </span>&nbsp;' + stepInfo.description + '</div>' +
-                '   <div name="importInfo" class="col-sm-5"></div>' +
-                '   <div class="col-sm-2">' +
-                '    <label class="checkbox-inline">' +
-                '        <input type="checkbox" name="useStep" checked> Use Step' +
-                '    </label>' +
-                '   </div>' +
-                '</div>';
+            '<div id="' + importInfoId + '" class="row">' +
+            '   <div class="col-sm-5"><span class="badge">' + importInfoIdx + ' </span>&nbsp;' + stepInfo.description + '</div>' +
+            '   <div name="importInfo" class="col-sm-5"></div>' +
+            '   <div class="col-sm-2">' +
+            '    <label class="checkbox-inline">' +
+            '        <input type="checkbox" name="useStep" checked> Use Step' +
+            '    </label>' +
+            '   </div>' +
+            '</div>';
 
         $("#importDetail").append(importInfo);
         $("#" + importInfoId).find("[name='importInfo']").text("Imported from " + stepInfo.test + " - " + stepInfo.testCase + " - " + stepInfo.sort + ")").data("stepInfo", stepInfo);
@@ -1312,8 +1330,9 @@ function showImportStepDetail(element) {
         $("#importDetail").show();
     }
 }
+
 function initStep() {
-    return   {
+    return {
         "inLibrary": "N",
         "objType": "step",
         "useStepTest": "",
@@ -1343,7 +1362,7 @@ function addStep(event) {
         setModif(true);
 
 
-        if ($("[name='importInfo']").length == 0) { // added a new step
+        if ($("[name='importInfo']").length === 0) { // added a new step
             var step = initStep();
             step.description = $("#addStepModal #description").val();
 
@@ -1405,7 +1424,7 @@ function createStepList(data, stepList, stepIndex, canUpdate, hasPermissionsStep
         stepList.push(stepObj);
     }
 
-    if (stepIndex != undefined) {
+    if (stepIndex !== undefined) {
         var find = false;
         for (var i = 0; i < stepList.length; i++) {
             if (stepList[i].sort == stepIndex) {
@@ -1435,9 +1454,9 @@ var getModif, setModif, initModification;
     };
     setModif = function (val) {
         isModif = val;
-        if (isModif == true && $("#saveScript").hasClass("btn-default")) {
+        if (isModif === true && $("#saveScript").hasClass("btn-default")) {
             $("#saveScript").removeClass("btn-default").addClass("btn-primary");
-        } else if (isModif == false && $("#saveScript").hasClass("btn-primary")) {
+        } else if (isModif === false && $("#saveScript").hasClass("btn-primary")) {
             $("#saveScript").removeClass("btn-primary").addClass("btn-default");
         }
 
@@ -1468,10 +1487,10 @@ function loadLibraryStep(search) {
             for (var index = 0; index < data.testCaseStepList.length; index++) {
                 var step = data.testCaseStepList[index];
 
-                if (search == undefined || search == "" || step.description.toLowerCase().indexOf(search_lower) > -1 || step.testCase.toLowerCase().indexOf(search_lower) > -1 || step.test.toLowerCase().indexOf(search_lower) > -1) {
+                if (search === undefined || search === "" || step.description.toLowerCase().indexOf(search_lower) > -1 || step.testCase.toLowerCase().indexOf(search_lower) > -1 || step.test.toLowerCase().indexOf(search_lower) > -1) {
                     if (!test.hasOwnProperty(step.test)) {
                         $("#lib").append($("<a></a>").addClass("list-group-item").attr("data-toggle", "collapse").attr("href", "[data-test='" + step.test + "']")
-                                .text(step.test).prepend($("<span></span>").addClass("glyphicon glyphicon-chevron-right")));
+                            .text(step.test).prepend($("<span></span>").addClass("glyphicon glyphicon-chevron-right")));
 
                         var listGr = $("<div></div>").addClass("list-group collapse").attr("data-test", step.test);
                         $("#lib").append(listGr);
@@ -1481,7 +1500,7 @@ function loadLibraryStep(search) {
                     if ((!test[step.test].testCase.hasOwnProperty(step.testCase))) {
                         var listGrp = test[step.test].content;
                         listGrp.append($("<a></a>").addClass("list-group-item sub-item").attr("data-toggle", "collapse").attr("href", "[data-test='" + step.test + "'][data-testCase='" + step.testCase + "']")
-                                .text(step.testCase + " - " + step.tcdesc).prepend($("<span></span>").addClass("glyphicon glyphicon-chevron-right")));
+                            .text(step.testCase + " - " + step.tcdesc).prepend($("<span></span>").addClass("glyphicon glyphicon-chevron-right")));
 
                         var listCaseGr = $("<div></div>").addClass("list-group collapse in").attr("data-test", step.test).attr("data-testCase", step.testCase);
                         listGrp.append(listCaseGr);
@@ -1496,14 +1515,14 @@ function loadLibraryStep(search) {
                 }
             }
 
-            if (search != undefined && search != "") {
+            if (search !== undefined && search !== "") {
                 $('#lib').find("div").toggleClass('in');
             }
 
             $('#addStepModal > .list-group-item').unbind("click").on('click', function () {
                 $('.glyphicon', this)
-                        .toggleClass('glyphicon-chevron-right')
-                        .toggleClass('glyphicon-chevron-down');
+                    .toggleClass('glyphicon-chevron-right')
+                    .toggleClass('glyphicon-chevron-down');
             });
 
             $("#addStepModal #search").unbind("input").on("input", function (e) {
@@ -1566,13 +1585,13 @@ function showStepUsesLibraryInConfirmationModal(object) {
     showModalConfirmation(function () {
         $('#confirmationModal').modal('hide');
     }, undefined, doc.getDocLabel("page_global", "warning"),
-            doc.getDocLabel("page_testcasescript", "cant_detach_library") +
-            "<br/>" +
-            "<div id='otherStepThatUseIt' style='width:100%;'>" +
-            "<div style='width:30px; margin-left: auto; margin-right: auto;'>" +
-            "<span class='glyphicon glyphicon-refresh spin'></span>" +
-            "</div>" +
-            "</div>", "", "", "", "");
+        doc.getDocLabel("page_testcasescript", "cant_detach_library") +
+        "<br/>" +
+        "<div id='otherStepThatUseIt' style='width:100%;'>" +
+        "<div style='width:30px; margin-left: auto; margin-right: auto;'>" +
+        "<span class='glyphicon glyphicon-refresh spin'></span>" +
+        "</div>" +
+        "</div>", "", "", "", "");
 }
 
 
@@ -1628,7 +1647,7 @@ function handleDragEnter(event) {
             $(target).parent(".action-group").before(source.parentNode);
         }
     } else if (sourceData instanceof Control &&
-            (targetData instanceof Action || targetData instanceof Control)) {
+        (targetData instanceof Action || targetData instanceof Control)) {
         if (isBefore(source, target) || targetData instanceof Action) {
             $(target).after(source);
         } else {
@@ -1756,7 +1775,7 @@ function Step(json, stepList, canUpdate, hasPermissionsStepLibrary) {
 Step.prototype.draw = function () {
     var htmlElement = this.html;
     var drag = $("<div></div>").addClass("col-sm-1 drag-step").css("padding-left", "5px").css("padding-right", "5px").prop("draggable", true)
-            .append($("<span></span>").addClass("fa fa-ellipsis-v"));
+        .append($("<span></span>").addClass("fa fa-ellipsis-v"));
 
 
     var schema = $("<div style='margin-left:10px' class='col-lg-2 alert alert-info'><div>" + this.sort + " - " + this.description + "</div></div>")
@@ -1787,7 +1806,6 @@ Step.prototype.draw = function () {
 
     $("#stepList").append(htmlElement);
     $("#actionContainer").append(this.stepActionContainer);
-
 
 
     this.refreshSort();
@@ -2142,7 +2160,7 @@ Action.prototype.draw = function (afterAction) {
     setPlaceholderAction(htmlElement);
     listenEnterKeypressWhenFocusingOnDescription(htmlElement);
 
-    if (afterAction == undefined) {
+    if (afterAction === undefined) {
         this.parentStep.stepActionContainer.append(htmlElement);
     } else {
         afterAction.html.after(htmlElement);
@@ -2233,40 +2251,10 @@ Action.prototype.generateContent = function () {
     actionList.val(this.action);
     actionList.off("change").on("change", function () {
         obj.action = actionList.val();
-        if (obj.action === "callService" || obj.action === "calculateProperty") {
-
-            $(actionList).parent().parent().find("input").autocomplete({
-                minLength: 1,
-                messages: {
-                    noResults: '',
-                    results: function () {
-                    }
-                },
-
-                select: function (event, ui) {
-                    var selectedObj = ui.item;
-                    $(event.target).val(selectedObj.value.replace("%", ''));
-                    $(event.target).trigger('input');
-                    $(event.target).autocomplete("close")
-                },
-
-                close: function (event, ui) {
-                    val = $(this).val();
-                    return false;
-                }
-
-            }).data("ui-autocomplete")._renderItem = function (ul, item) {
-                return $("<li>")
-                        .data("ui-autocomplete-item", item)
-                        .append("<a>" + item.label + "</a>")
-                        .appendTo(ul);
-            };
-        } else {
-            autocompleteVariable($(actionList).parent().parent().find("input"), Tags);
-        }
 
         setPlaceholderAction($(this).parents(".action"));
         $(actionList).parent().parent().find(".input-group-btn").remove();
+        $(actionList).parent().parent().find("input").trigger("input", ["first"])
 
     });
 
@@ -2305,9 +2293,9 @@ Action.prototype.generateContent = function () {
     secondRow.append($("<div></div>").addClass("col-lg-2 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "action_field"))).append(actionList));
     secondRow.append($("<div></div>").addClass("col-lg-5").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value1_field"))).append(objectField));
     /*
-     * if(secondRow.find("col-lg-6").find("label").text() === "Chemin vers
-     * l'élement" ){ console.log(".append(choiceField)") }
-     */
+	 * if(secondRow.find("col-lg-6").find("label").text() === "Chemin vers
+	 * l'élement" ){ console.log(".append(choiceField)") }
+	 */
     secondRow.append($("<div></div>").addClass("col-lg-5 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value2_field"))).append(propertyField));
     thirdRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_operation_field"))).append(actionconditionoper));
     thirdRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_parameter_field"))).append(actionconditionval1));
@@ -2315,7 +2303,6 @@ Action.prototype.generateContent = function () {
     thirdRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "force_execution_field"))).append(forceExeStatusList));
 
     actionconditionoper.trigger("change");
-    actionList.trigger("change");
 
     if ((this.parentStep.useStep === "Y") || (!obj.hasPermissionsUpdate)) {
         descField.prop("readonly", true);
@@ -2492,6 +2479,10 @@ Control.prototype.getControl = function () {
     return this.control;
 }
 
+Control.prototype.setControlSequence = function (controlSequence) {
+    this.controlSequence = controlSequence;
+}
+
 Control.prototype.setControl = function (control) {
     this.control = control;
 };
@@ -2651,7 +2642,7 @@ Control.prototype.getJsonData = function () {
 /**
  * Call Add Action and focus to next description when focusing on description
  * and clicking on enter
- * 
+ *
  * @returns {undefined}
  */
 function listenEnterKeypressWhenFocusingOnDescription(element) {
@@ -2704,18 +2695,18 @@ function addControlAndFocus(oldAction, control) {
 
 /**
  * Find into tag array if object exist
- * 
+ *
  * @param tagToUse
  * @param label
  *            string to search
- * 
+ *
  * @return a boolean : true if exist, false if not exist
  */
 function objectIntoTagToUseExist(tagToUse, label) {
     for (var i = 0; i < tagToUse.array.length; i++) {
         var data = tagToUse.array[i];
 
-        if (data == undefined) {
+        if (data === undefined) {
             continue;
         }
 
@@ -2810,9 +2801,9 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 
                 }).data("ui-autocomplete")._renderItem = function (ul, item) {
                     return $("<li>")
-                            .data("ui-autocomplete-item", item)
-                            .append("<a>" + item.label + "</a>")
-                            .appendTo(ul);
+                        .data("ui-autocomplete-item", item)
+                        .append("<a>" + item.label + "</a>")
+                        .appendTo(ul);
                 };
             } else {
                 autocompleteVariable($(this), Tags);
@@ -2825,28 +2816,29 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 
             if ($(e).parent().parent().find("select").val() === "callService") {
 
+                if (state !== "first") {
+                    // prevent multiple autocomplete handler on $(e)
+                    $(e).autocomplete('option', 'source', function (request, response) {
+                        if (state === "first") {
+                            $(e).autocomplete("close");
+                        } else {
+                            $.ajax({
+                                url: "ReadAppService?service=" + $(e).val() + "&limit=15",
+                                dataType: "json",
+                                success: function (data) {
+                                    var MyArray = $.map(data.contentTable, function (item) {
+                                        return {
+                                            label: item.service,
+                                            value: item.service
+                                        };
+                                    });
 
-                // prevent multiple autocomplete handler on $(e)
-                $(e).autocomplete('option', 'source', function (request, response) {
-                    if (state === "first") {
-                        $(e).autocomplete("close");
-                    }
-                    $.ajax({
-                        url: "ReadAppService?service=" + $(e).val() + "&limit=15",
-                        dataType: "json",
-                        success: function (data) {
-                            var MyArray = $.map(data.contentTable, function (item) {
-                                return {
-                                    label: item.service,
-                                    value: item.service
-                                };
-                            });
-
-                            response($.ui.autocomplete.filter(MyArray, request.term));
+                                    response($.ui.autocomplete.filter(MyArray, request.term));
+                                }
+                            })
                         }
                     })
                 }
-                )
 
                 $.ajax({
                     url: "ReadAppService?service=" + $(e).val(),
@@ -2861,7 +2853,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 							<span class="glyphicon glyphicon-pencil"></span></button></span>');
                             $(e).parent().append(editEntry);
                         } else {
-                            var addEntry = '<span class="input-group-btn ' + $(e).val().replace(/[^\w\s]/gi, '') + '"><button id="editEntry" onclick="openModalAppService(\'' + $(e).val() + '\',\'ADD\'  ,\'TestCase\' );"\n\
+                            var addEntry = '<span class="input-group-btn ' + encodeURIComponent($(e).val()) + '"><button id="editEntry" onclick="openModalAppService(\'' + $(e).val() + '\',\'ADD\'  ,\'TestCase\' );"\n\
 							class="buttonObject btn btn-default input-sm " \n\
 							title="' + doc.getDocLabel("page_applicationObject", "button_create") + '" type="button">\n\
 							<span class="glyphicon glyphicon-plus"></span></button></span>';
@@ -2875,34 +2867,27 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 
                 var data = loadGuiProperties()
 
-                $(e).autocomplete('option', 'source', function (request, response) {
-                    if (state === "first") {
-                        $(e).autocomplete("close");
-                    }
-                    var MyArray = $.map(data, function (item) {
-                        return {
-                            label: item.name,
-                            value: item.name
-                        };
-                    });
-                    response($.ui.autocomplete.filter(MyArray, request.term));
-                })
+                if (state !== "first") {
+                    $(e).parent().parent().parent().parent().find(".input-group-btn").remove()
+                    $(e).autocomplete('option', 'source', function (request, response) {
+                        var MyArray = $.map(data, function (item) {
+                            return {
+                                label: item.name,
+                                value: item.name
+                            };
+                        });
+                        response($.ui.autocomplete.filter(MyArray, request.term));
+                    })
+                }
 
                 var viewEntry = $('<span class="input-group-btn ' + $(e).val() + '"><button id="editEntry" data-toggle="modal" data-target="#modalProperty" "\n\
 						class="buttonObject btn btn-default input-sm " \n\
 						title="' + doc.getDocLabel("page_applicationObject", "button_edit") + '" type="button">\n\
 				<span class="glyphicon glyphicon-eye-open"></span></button></span>');
 
-
-
-                try {
-                    $(e).parent().find("." + $(e).parent().data("LastName")).remove();
-                } catch (e) {
-                    $(e).parent().find(".input-group-btn").remove();
-                }
                 if (data[$(e).val()]) {
 
-                    viewEntry.find("button").on("click", function () {
+                    viewEntry.find("button").off("click").on("click", function () {
                         let firstRow = $('<p style="text-align:center" > Type : ' + data[$(e).val()].type + '</p>');
                         let secondRow = $('<p style="text-align:center"> Value : ' + data[$(e).val()].value + '</p>');
                         $("#modalProperty").find("#firstRowProperty").find("p").remove();
@@ -2912,10 +2897,12 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
                     });
 
                     $(e).parent().append(viewEntry);
-                    $(e).parent().data("LastName", $(e).val());
                 }
-
             } else {
+
+                if (state !== "first") {
+                    $(e).parent().find(".input-group-btn").remove()
+                }
 
                 var name = undefined;
                 var nameNotExist = undefined;
@@ -2925,13 +2912,15 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
                 var checkObject = [];
                 var betweenPercent = $(e).val().match(new RegExp(/%[^%]*%/g));
 
-                if (betweenPercent != null && betweenPercent.length > 0) {
+                var data = loadGuiProperties()
+
+                if (betweenPercent !== null && betweenPercent.length > 0) {
+
                     var i = betweenPercent.length - 1;
                     while (i >= 0) {
                         var findname = betweenPercent[i].match(/\.[^\.]*(\.|.$)/g);
 
-
-                        if (betweenPercent[i].startsWith("%object.") && findname != null && findname.length > 0) {
+                        if (betweenPercent[i].startsWith("%object.") && findname !== null && findname.length > 0) {
 
                             name = findname[0];
                             name = name.slice(1, name.length - 1);
@@ -2940,58 +2929,62 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 
                             if (!objectIntoTagToUseExist(TagsToUse[1], name)) {
 
-                                var addEntry = $('<span class="input-group-btn ' + name + '"><button id="editEntry" onclick="openModalApplicationObject(\'' + tcInfo.application + '\', \'' + name + '\',\'ADD\'  ,\'testCaseScript\' );"\n\
+                                var addEntry = $('<span class="input-group-btn many ' + name + '"><button id="editEntry" onclick="openModalApplicationObject(\'' + tcInfo.application + '\', \'' + name + '\',\'ADD\'  ,\'testCaseScript\' );"\n\
 										class="buttonObject btn btn-default input-sm " \n\
-										title="' + doc.getDocLabel("page_applicationObject", "button_create") + '" type="button">\n\
+										title="' + name + '" type="button">\n\
 								<span class="glyphicon glyphicon-plus"></span></button></span>');
 
                                 objectNotExist = true;
                                 nameNotExist = name;
                                 typeNotExist = "applicationObject";
 
-                                try {
-                                    $(e).parent().find("." + $(e).parent().data("LastName")).remove();
-                                } catch (f) {
-                                    $(e).parent().find(".input-group-btn").remove();
-                                }
-
                                 $(e).parent().append(addEntry);
-                                $(e).parent().data("LastName", name);
 
                             } else if (objectIntoTagToUseExist(TagsToUse[1], name)) {
 
-                                var editEntry = '<span class="input-group-btn ' + name + '"><button id="editEntry" onclick="openModalApplicationObject(\'' + tcInfo.application + '\', \'' + name + '\',\'EDIT\'  ,\'testCaseScript\' );"\n\
+                                var editEntry = '<span class="input-group-btn many ' + name + '"><button id="editEntry" onclick="openModalApplicationObject(\'' + tcInfo.application + '\', \'' + name + '\',\'EDIT\'  ,\'testCaseScript\' );"\n\
 								class="buttonObject btn btn-default input-sm " \n\
-								title="' + doc.getDocLabel("page_applicationObject", "button_edit") + '" type="button">\n\
+								title="' + name + '" type="button">\n\
 								<span class="glyphicon glyphicon-pencil"></span></button></span>';
-
-                                try {
-                                    $(e).parent().find("." + $(e).parent().data("LastName")).remove();
-                                } catch (e) {
-                                    $(e).parent().find(".input-group-btn").remove();
-                                }
-
                                 $(e).parent().append(editEntry);
-                                $(e).parent().data("LastName", name);
 
                             }
-                        } else if (betweenPercent[i].startsWith("%property.") && findname != null && findname.length > 0) {
+                        } else if (betweenPercent[i].startsWith("%property.") && findname !== null && findname.length > 0) {
 
+                            name = findname[0];
+                            name = name.slice(1, name.length - 1);
+
+                            if (objectIntoTagToUseExist(TagsToUse[2], name)) {
+                                var viewEntry = $('<span class="input-group-btn many ' + name + '"><button id="editEntry" data-toggle="modal" data-target="#modalProperty" "\n\
+										class="buttonObject btn btn-default input-sm " \n\
+										title="' + name + '" type="button">\n\
+								<span class="glyphicon glyphicon-eye-open"></span></button></span>');
+
+                                if (data[name]) {
+                                    let property = name
+                                    viewEntry.find("button").on("click", function () {
+                                        let firstRow = $('<p style="text-align:center" > Type : ' + data[property].type + '</p>');
+                                        let secondRow = $('<p style="text-align:center"> Value : ' + data[property].value + '</p>');
+                                        $("#modalProperty").find("#firstRowProperty").find("p").remove();
+                                        $("#modalProperty").find("#secondRowProperty").find("p").remove();
+                                        $("#modalProperty").find("#firstRowProperty").append(firstRow);
+                                        $("#modalProperty").find("#secondRowProperty").append(secondRow);
+                                        $("#modalProperty").find(".modal-title").html(property);
+                                    });
+                                    $(e).parent().append(viewEntry);
+                                }
+                            }
                         }
 
                         i--;
                     }
-                } else {
-                    $(e).parent().find(".input-group-btn").remove();
                 }
             }
 
         })
-
-        $("div.step-action .content div.fieldRow:nth-child(2) input:visible").trigger('input', ['first'])
+        $("div.step-action .content div.fieldRow:nth-child(2) input:visible").trigger("input", ['first'])
     }
 })();
-
 
 
 function removeTestCaseClick(test, testCase) {
@@ -3026,7 +3019,7 @@ editPropertiesModalClick = function (test, testcase, info, propertyToAdd, proper
     loadProperties(test, testcase, info, propertyToFocus, canUpdate).then(function () {
         autocompleteAllFields();
     });
-    if (propertyToAdd != undefined && propertyToAdd != null) {
+    if (propertyToAdd !== undefined && propertyToAdd !== null) {
         // Building full list of country from testcase.
         var myCountry = [];
         $.each(info.countryList, function (index) {
@@ -3094,7 +3087,7 @@ function editPropertiesModalSaveHandler() {
                 }
 
                 for (var i = 0; i < Tags.length; i++) {
-                    if (Tags[i].regex == "%property\\.") {
+                    if (Tags[i].regex === "%property\\.") {
                         Tags[i].array = array;
                     }
                 }
@@ -3126,71 +3119,81 @@ function setPlaceholderAction(actionElement) {
     /**
      * Todo : GetFromDatabase
      */
-    var placeHoldersList = {"fr": [
+    var placeHoldersList = {
+        "fr": [
             {"type": "Unknown", "object": null, "property": null},
-            {"type": "keypress", "object": "[opt] Chemin vers l'élement à cibler", "property": ""},
-            {"type": "hideKeyboard", "object": null, "property": null},
-            {"type": "swipe", "object": "Action (UP DOWN LEFT RIGHT CUSTOM...)", "property": "Direction x;y;z;y"},
             {"type": "click", "object": "Chemin vers l'élement à cliquer", "property": null},
             {"type": "mouseLeftButtonPress", "object": "Chemin vers l'élement à cibler", "property": null},
             {"type": "mouseLeftButtonRelease", "object": "Chemin vers l'élement", "property": null},
             {"type": "doubleClick", "object": "Chemin vers l'élement à double-cliquer", "property": null},
             {"type": "rightClick", "object": "Chemin vers l'élement à clicker avec le bouton droit", "property": null},
+            {"type": "mouseOver", "object": "Chemin vers l'élement", "property": null},
             {"type": "focusToIframe", "object": "Chemin vers l'élement de l'iFrame à cibler", "property": null},
             {"type": "focusDefaultIframe", "object": null, "property": null},
             {"type": "switchToWindow", "object": "Titre ou url de la fenêtre", "property": null},
             {"type": "manageDialog", "object": "ok ou cancel", "property": null},
-            {"type": "mouseOver", "object": "Chemin vers l'élement", "property": null},
-            {"type": "mouseOverAndWait", "object": "Action Depreciée", "property": "Action Depreciée"},
-            {"type": "openUrlWithBase", "object": "/URI à appeler", "property": null},
+            {"type": "openUrlWithBase", "object": "URI à appeler (ex : /index.html)", "property": null},
             {"type": "openUrlLogin", "object": null, "property": null},
-            {"type": "openUrl", "object": "URL à appeler", "property": null},
+            {"type": "openUrl", "object": "URL à appeler (ex : http://www.domain.com)", "property": null},
+            {"type": "executeJS", "object": "JavaScript à executer", "property": null},
             {"type": "openApp", "object": "Nom ou chemin de l'application", "property": null},
             {"type": "closeApp", "object": "Nom ou chemin de l'application", "property": null},
             {"type": "select", "object": "Chemin vers l'élement", "property": "Chemin vers l'option"},
-            {"type": "type", "object": "Chemin vers l'élement", "property": "Nom de propriété"},
+            {"type": "keypress", "object": "[opt] Chemin vers l'élement à cibler", "property": "Touche à presser"},
+            {"type": "type", "object": "Chemin vers l'élement", "property": "Texte à entrer"},
+            {"type": "hideKeyboard", "object": null, "property": null},
+            {"type": "swipe", "object": "Action (UP DOWN LEFT RIGHT CUSTOM...)", "property": "Direction x;y;z;y"},
             {"type": "wait", "object": "Valeur(ms) ou élement", "property": null},
             {"type": "waitVanish", "object": "Element", "property": null},
             {"type": "callService", "object": "Nom du Service", "property": null},
-            {"type": "removeDifference", "object": "Action Depreciée", "property": "Action Depreciée"},
             {"type": "executeSqlUpdate", "object": "Nom de Base de donnée", "property": "Script à executer"},
-            {"type": "executeSqlStoredProcedure", "object": "Nom de Base de donnée", "property": "Procedure Stoquée à executer"},
-            {"type": "calculateProperty", "object": "Nom d'une Proprieté", "property": "[opt] Nom d'une autre propriété"},
+            {
+                "type": "executeSqlStoredProcedure",
+                "object": "Nom de Base de donnée",
+                "property": "Procedure Stoquée à executer"
+            },
+            {
+                "type": "calculateProperty",
+                "object": "Nom d'une Proprieté",
+                "property": "[opt] Nom d'une autre propriété"
+            },
             {"type": "doNothing", "object": null, "property": null},
-            {"type": "getPageSource", "object": null, "property": null}
+            {"type": "mouseOverAndWait", "object": "Action Depreciée", "property": "Action Depreciée"},
+            {"type": "removeDifference", "object": "Action Depreciée", "property": "Action Depreciée"}
         ], "en": [
             {"type": "Unknown", "object": null, "property": null},
-            {"type": "keypress", "object": "[opt] Element path", "property": ""},
-            {"type": "hideKeyboard", "object": null, "property": null},
-            {"type": "swipe", "object": "Action (UP DOWN LEFT RIGHT CUSTOM...)", "property": "Direction x;y;z;y"},
             {"type": "click", "object": "Element path", "property": null},
             {"type": "mouseLeftButtonPress", "object": "Element path", "property": null},
             {"type": "mouseLeftButtonRelease", "object": "Element path", "property": null},
             {"type": "doubleClick", "object": "Element path", "property": null},
             {"type": "rightClick", "object": "Element path", "property": null},
+            {"type": "mouseOver", "object": "Element path", "property": null},
             {"type": "focusToIframe", "object": "Element path of the target iFrame", "property": null},
             {"type": "focusDefaultIframe", "object": null, "property": null},
             {"type": "switchToWindow", "object": "Window title or url", "property": null},
             {"type": "manageDialog", "object": "ok or cancel", "property": null},
-            {"type": "mouseOver", "object": "Element path", "property": null},
-            {"type": "mouseOverAndWait", "object": "Deprecated", "property": "Deprecated"},
-            {"type": "openUrlWithBase", "object": "/URI to call", "property": null},
+            {"type": "openUrlWithBase", "object": "URI to call  (ex : /index.html)", "property": null},
             {"type": "openUrlLogin", "object": null, "property": null},
-            {"type": "openUrl", "object": "URL to call", "property": null},
+            {"type": "openUrl", "object": "URL to call (ex : http://www.domain.com)", "property": null},
+            {"type": "executeJS", "object": "JavaScript to execute", "property": null},
             {"type": "openApp", "object": "Application name or path", "property": null},
             {"type": "closeApp", "object": "Application name or path", "property": null},
             {"type": "select", "object": "Element path", "property": "Option path"},
-            {"type": "type", "object": "Element path", "property": "Property Name"},
-            {"type": "wait", "object": "Time(ms) or Element", "property": null},
+            {"type": "keypress", "object": "[opt] Target element path", "property": "Key to press"},
+            {"type": "type", "object": "Element path", "property": "Text to type"},
+            {"type": "hideKeyboard", "object": null, "property": null},
+            {"type": "swipe", "object": "Action (UP DOWN LEFT RIGHT CUSTOM...)", "property": "Direction x;y;z;y"},
+            {"type": "wait", "object": "Duration(ms) or Element", "property": null},
             {"type": "waitVanish", "object": "Element", "property": null},
             {"type": "callService", "object": "Service Name", "property": null},
-            {"type": "removeDifference", "object": "Deprecated", "property": "Deprecated"},
             {"type": "executeSqlUpdate", "object": "Database Name", "property": "Script"},
             {"type": "executeSqlStoredProcedure", "object": "Database Name", "property": "Stored Procedure"},
             {"type": "calculateProperty", "object": "Property Name", "property": "[opt] Name of an other property"},
             {"type": "doNothing", "object": null, "property": null},
-            {"type": "getPageSource", "object": null, "property": null}
-        ]};
+            {"type": "mouseOverAndWait", "object": "[Deprecated]", "property": "[Deprecated]"},
+            {"type": "removeDifference", "object": "[Deprecated]", "property": "[Deprecated]"}
+        ]
+    };
 
     var user = getUser();
     var placeHolders = placeHoldersList[user.language];
@@ -3219,28 +3222,109 @@ function setPlaceholderControl(controlElement) {
     /**
      * Todo : GetFromDatabase
      */
-    var placeHoldersList = {"fr": [
+    var placeHoldersList = {
+        "fr": [
             {"type": "Unknown", "controlValue": null, "controlProp": null, "fatal": null},
             {"type": "verifyStringEqual", "controlValue": "String2", "controlProp": "String1", "fatal": ""},
             {"type": "verifyStringDifferent", "controlValue": "String2", "controlProp": "String1", "fatal": ""},
-            {"type": "verifyStringGreater", "controlValue": "String2 ex : AAA", "controlProp": "String1 ex: ZZZ", "fatal": ""},
-            {"type": "verifyStringMinor", "controlValue": "String2 ex : ZZZ", "controlProp": "String1 ex: AAA", "fatal": ""},
-            {"type": "verifyStringContains", "controlValue": "String2 ex : toto", "controlProp": "String1 ex : ot", "fatal": ""},
+            {
+                "type": "verifyStringGreater",
+                "controlValue": "String2 (ex : AAA)",
+                "controlProp": "String1 (ex: ZZZ)",
+                "fatal": ""
+            },
+            {
+                "type": "verifyStringMinor",
+                "controlValue": "String2 (ex : ZZZ)",
+                "controlProp": "String1 (ex: AAA)",
+                "fatal": ""
+            },
+            {
+                "type": "verifyStringContains",
+                "controlValue": "String2 (ex : toto)",
+                "controlProp": "String1 (ex : ot)",
+                "fatal": ""
+            },
             {"type": "verifyNumericEquals", "controlValue": "Integer2", "controlProp": "Integer1", "fatal": ""},
             {"type": "verifyNumericDifferent", "controlValue": "Integer2", "controlProp": "Integer1", "fatal": ""},
-            {"type": "verifyNumericGreater", "controlValue": "Integer2 ex : 10", "controlProp": "Integer1 ex : 20", "fatal": ""},
-            {"type": "verifyNumericGreaterOrEqual", "controlValue": "Integer2 ex : 10", "controlProp": "Integer1 ex : 20", "fatal": ""},
-            {"type": "verifyNumericMinor", "controlValue": "Integer2 ex : 20", "controlProp": "Integer1 ex : 10", "fatal": ""},
-            {"type": "verifyNumericMinorOrEqual", "controlValue": "Integer2 ex : 20", "controlProp": "Integer1 ex : 10", "fatal": ""},
-            {"type": "verifyElementPresent", "controlValue": null, "controlProp": "Element ex : data-cerberus=fieldToto", "fatal": ""},
-            {"type": "verifyElementNotPresent", "controlValue": null, "controlProp": "Element ex : data-cerberus=fieldToto", "fatal": ""},
-            {"type": "verifyElementVisible", "controlValue": null, "controlProp": "Element ex : data-cerberus=fieldToto", "fatal": ""},
-            {"type": "verifyElementNotVisible", "controlValue": null, "controlProp": "Element ex : data-cerberus=fieldToto", "fatal": ""},
-            {"type": "verifyElementEquals", "controlValue": "Expected element", "controlProp": "XPath of the element", "fatal": ""},
-            {"type": "verifyElementDifferent", "controlValue": "Not Expected element", "controlProp": "XPath of the element", "fatal": ""},
-            {"type": "verifyElementInElement", "controlValue": "Sub Element", "controlProp": "Master Element", "fatal": ""},
-            {"type": "verifyElementClickable", "controlValue": null, "controlProp": "Element ex : data-cerberus=fieldToto", "fatal": ""},
-            {"type": "verifyElementNotClickable", "controlValue": null, "controlProp": "Element ex : data-cerberus=fieldToto", "fatal": ""},
+            {
+                "type": "verifyNumericGreater",
+                "controlValue": "Integer2 (ex : 10)",
+                "controlProp": "Integer1 (ex : 20)",
+                "fatal": ""
+            },
+            {
+                "type": "verifyNumericGreaterOrEqual",
+                "controlValue": "Integer2 (ex : 10)",
+                "controlProp": "Integer1 (ex : 20)",
+                "fatal": ""
+            },
+            {
+                "type": "verifyNumericMinor",
+                "controlValue": "Integer2 (ex : 20)",
+                "controlProp": "Integer1 (ex : 10)",
+                "fatal": ""
+            },
+            {
+                "type": "verifyNumericMinorOrEqual",
+                "controlValue": "Integer2 (ex : 20)",
+                "controlProp": "Integer1 (ex : 10)",
+                "fatal": ""
+            },
+            {
+                "type": "verifyElementPresent",
+                "controlValue": null,
+                "controlProp": "Element (ex : data-cerberus=fieldToto)",
+                "fatal": ""
+            },
+            {
+                "type": "verifyElementNotPresent",
+                "controlValue": null,
+                "controlProp": "Element (ex : data-cerberus=fieldToto)",
+                "fatal": ""
+            },
+            {
+                "type": "verifyElementVisible",
+                "controlValue": null,
+                "controlProp": "Element (ex : data-cerberus=fieldToto)",
+                "fatal": ""
+            },
+            {
+                "type": "verifyElementNotVisible",
+                "controlValue": null,
+                "controlProp": "Element (ex : data-cerberus=fieldToto)",
+                "fatal": ""
+            },
+            {
+                "type": "verifyElementEquals",
+                "controlValue": "Expected element",
+                "controlProp": "XPath of the element",
+                "fatal": ""
+            },
+            {
+                "type": "verifyElementDifferent",
+                "controlValue": "Not Expected element",
+                "controlProp": "XPath of the element",
+                "fatal": ""
+            },
+            {
+                "type": "verifyElementInElement",
+                "controlValue": "Sub Element",
+                "controlProp": "Master Element",
+                "fatal": ""
+            },
+            {
+                "type": "verifyElementClickable",
+                "controlValue": null,
+                "controlProp": "Element (ex : data-cerberus=fieldToto)",
+                "fatal": ""
+            },
+            {
+                "type": "verifyElementNotClickable",
+                "controlValue": null,
+                "controlProp": "Element (ex : data-cerberus=fieldToto)",
+                "fatal": ""
+            },
             {"type": "verifyTextInElement", "controlValue": "Text", "controlProp": "Element", "fatal": ""},
             {"type": "verifyTextNotInElement", "controlValue": "Text", "controlProp": "Element", "fatal": ""},
             {"type": "verifyRegexInElement", "controlValue": "Regex", "controlProp": "Element", "fatal": ""},
@@ -3256,24 +3340,104 @@ function setPlaceholderControl(controlElement) {
             {"type": "Unknown", "controlValue": null, "controlProp": null, "fatal": null},
             {"type": "verifyStringEqual", "controlValue": "String2", "controlProp": "String1", "fatal": ""},
             {"type": "verifyStringDifferent", "controlValue": "String2", "controlProp": "String1", "fatal": ""},
-            {"type": "verifyStringGreater", "controlValue": "String2 ex : AAA", "controlProp": "String1 ex: ZZZ", "fatal": ""},
-            {"type": "verifyStringMinor", "controlValue": "String2 ex : ZZZ", "controlProp": "String1 ex: AAA", "fatal": ""},
-            {"type": "verifyStringContains", "controlValue": "String2 ex : toto", "controlProp": "String1 ex : ot", "fatal": ""},
+            {
+                "type": "verifyStringGreater",
+                "controlValue": "String2 (ex : AAA)",
+                "controlProp": "String1 (ex: ZZZ)",
+                "fatal": ""
+            },
+            {
+                "type": "verifyStringMinor",
+                "controlValue": "String2 (ex : ZZZ)",
+                "controlProp": "String1 (ex: AAA)",
+                "fatal": ""
+            },
+            {
+                "type": "verifyStringContains",
+                "controlValue": "String2 (ex : toto)",
+                "controlProp": "String1 (ex : ot)",
+                "fatal": ""
+            },
             {"type": "verifyNumericEquals", "controlValue": "Integer2", "controlProp": "Integer1", "fatal": ""},
             {"type": "verifyNumericDifferent", "controlValue": "Integer2", "controlProp": "Integer1", "fatal": ""},
-            {"type": "verifyNumericGreater", "controlValue": "Integer2 ex : 10", "controlProp": "Integer1 ex : 20", "fatal": ""},
-            {"type": "verifyNumericGreaterOrEqual", "controlValue": "Integer2 ex : 10", "controlProp": "Integer1 ex : 20", "fatal": ""},
-            {"type": "verifyNumericMinor", "controlValue": "Integer2 ex : 20", "controlProp": "Integer1 ex : 10", "fatal": ""},
-            {"type": "verifyNumericMinorOrEqual", "controlValue": "Integer2 ex : 20", "controlProp": "Integer1 ex : 10", "fatal": ""},
-            {"type": "verifyElementPresent", "controlValue": null, "controlProp": "Element ex : data-cerberus=fieldToto", "fatal": ""},
-            {"type": "verifyElementNotPresent", "controlValue": null, "controlProp": "Element ex : data-cerberus=fieldToto", "fatal": ""},
-            {"type": "verifyElementVisible", "controlValue": null, "controlProp": "Element ex : data-cerberus=fieldToto", "fatal": ""},
-            {"type": "verifyElementNotVisible", "controlValue": null, "controlProp": "Element ex : data-cerberus=fieldToto", "fatal": ""},
-            {"type": "verifyElementEquals", "controlValue": "Expected element", "controlProp": "XPath of the element", "fatal": ""},
-            {"type": "verifyElementDifferent", "controlValue": "Not Expected element", "controlProp": "XPath of the element", "fatal": ""},
-            {"type": "verifyElementInElement", "controlValue": "Sub Element", "controlProp": "Master Element", "fatal": ""},
-            {"type": "verifyElementClickable", "controlValue": null, "controlProp": "Element ex : data-cerberus=fieldToto", "fatal": ""},
-            {"type": "verifyElementNotClickable", "controlValue": null, "controlProp": "Element ex : data-cerberus=fieldToto", "fatal": ""},
+            {
+                "type": "verifyNumericGreater",
+                "controlValue": "Integer2 (ex : 10)",
+                "controlProp": "Integer1 (ex : 20)",
+                "fatal": ""
+            },
+            {
+                "type": "verifyNumericGreaterOrEqual",
+                "controlValue": "Integer2 (ex : 10)",
+                "controlProp": "Integer1 (ex : 20)",
+                "fatal": ""
+            },
+            {
+                "type": "verifyNumericMinor",
+                "controlValue": "Integer2 (ex : 20)",
+                "controlProp": "Integer1 (ex : 10)",
+                "fatal": ""
+            },
+            {
+                "type": "verifyNumericMinorOrEqual",
+                "controlValue": "Integer2 (ex : 20)",
+                "controlProp": "Integer1 (ex : 10)",
+                "fatal": ""
+            },
+            {
+                "type": "verifyElementPresent",
+                "controlValue": null,
+                "controlProp": "Element (ex : data-cerberus=fieldToto)",
+                "fatal": ""
+            },
+            {
+                "type": "verifyElementNotPresent",
+                "controlValue": null,
+                "controlProp": "Element (ex : data-cerberus=fieldToto)",
+                "fatal": ""
+            },
+            {
+                "type": "verifyElementVisible",
+                "controlValue": null,
+                "controlProp": "Element (ex : data-cerberus=fieldToto)",
+                "fatal": ""
+            },
+            {
+                "type": "verifyElementNotVisible",
+                "controlValue": null,
+                "controlProp": "Element (ex : data-cerberus=fieldToto)",
+                "fatal": ""
+            },
+            {
+                "type": "verifyElementEquals",
+                "controlValue": "Expected element",
+                "controlProp": "XPath of the element",
+                "fatal": ""
+            },
+            {
+                "type": "verifyElementDifferent",
+                "controlValue": "Not Expected element",
+                "controlProp": "XPath of the element",
+                "fatal": ""
+            },
+            {
+                "type": "verifyElementInElement",
+                "controlValue": "Sub Element",
+                "controlProp": "Master Element",
+                "fatal": ""
+            },
+            {
+                "type": "verifyElementClickable",
+                "controlValue": null,
+                "controlProp": "Element (ex : data-cerberus=fieldToto)",
+                "fatal": ""
+            },
+            {
+                "type": "verifyElementNotClickable",
+                "controlValue": null,
+                "controlProp": "Element (ex : data-cerberus=fieldToto)",
+                "fatal": ""
+            },
             {"type": "verifyTextInElement", "controlValue": "Text", "controlProp": "Element", "fatal": ""},
             {"type": "verifyTextNotInElement", "controlValue": "Text", "controlProp": "Element", "fatal": ""},
             {"type": "verifyRegexInElement", "controlValue": "Regex", "controlProp": "Element", "fatal": ""},
@@ -3285,7 +3449,8 @@ function setPlaceholderControl(controlElement) {
             {"type": "verifyXmlTreeStructure", "controlValue": "Tree", "controlProp": "XPath", "fatal": ""},
             {"type": "takeScreenshot", "controlValue": null, "controlProp": null, "fatal": null},
             {"type": "getPageSource", "controlValue": null, "controlProp": null, "fatal": null}
-        ]};
+        ]
+    };
 
     var user = getUser();
     var placeHolders = placeHoldersList[user.language];
@@ -3322,37 +3487,403 @@ function setPlaceholderProperty(propertyElement, property) {
      * Todo : GetFromDatabase Translate for FR
      */
 
-    var placeHoldersList = {"fr": [
-            {"type": "text", "value1": "Value :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/cerberus", "value2": null, "database": null, "length": "[opt] Length :", "rowLimit": null, "nature": "Nature :", "retry": null, "period": null},
-            {"type": "executeSql", "value1": "SQL Query :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/sql", "value2": null, "database": "Database :", "length": null, "rowLimit": "Row Limit :", "nature": "Nature :", "retry": "Number of retry (if empty)", "period": "Retry period (ms)"},
-            {"type": "getFromDataLib", "value1": "DataLib name :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/cerberus", "value2": null, "database": null, "length": "[opt] Length :", "rowLimit": "Row Limit :", "nature": "Nature :", "retry": "Number of retry (if empty)", "period": "Retry period (ms)"},
-            {"type": "getFromHtml", "value1": "Element path :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/xquery", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "getFromHtmlVisible", "value1": "Element path :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/xquery", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "getFromJS", "value1": "Javascript command :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/javascript", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "getAttributeFromHtml", "value1": "Element path :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/xquery", "value2": "Attribute name :", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "getFromCookie", "value1": "Cookie name :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/cerberus", "value2": "Cookie attribute :", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "getFromXml", "value1": "Xpath :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/xquery", "value2": "[opt] XML or URL to XML file", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "getDifferencesFromXml", "value1": "value1", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/xquery", "value2": "value2", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "getFromJson", "value1": "JSONPath :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/json", "value2": "[opt] JSON or URL to JSON file", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "getFromGroovy", "value1": "Groovy command :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/groovy", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "executeSoapFromLib", "value1": "Service lib name :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/cerberus", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "executeSqlFromLib", "value1": "SQL Lib name", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/cerberus", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null}
+    var placeHoldersList = {
+        "fr": [
+            {
+                "type": "text",
+                "value1": "Value",
+                "value1Class": "col-sm-10",
+                "value1EditorMode": "ace/mode/cerberus",
+                "value2": null,
+                "database": null,
+                "length": "[opt] Length",
+                "cacheExpire": "[opt] cache Expire (s)",
+                "rowLimit": null,
+                "nature": "Nature",
+                "retry": null,
+                "period": null
+            },
+            {
+                "type": "getFromSql",
+                "value1": "SQL Query",
+                "value1Class": "col-sm-8",
+                "value1EditorMode": "ace/mode/sql",
+                "value2": null,
+                "database": "Database",
+                "length": null,
+                "cacheExpire": "[opt] cache Expire (s)",
+                "rowLimit": "Row Limit",
+                "nature": "Nature",
+                "retry": "Number of retry (until non-empty result)",
+                "period": "Retry period (ms)"
+            },
+            {
+                "type": "getFromDataLib",
+                "value1": "DataLib name",
+                "value1Class": "col-sm-10",
+                "value1EditorMode": "ace/mode/cerberus",
+                "value2": null,
+                "database": null,
+                "length": "[opt] Length",
+                "cacheExpire": "[opt] cache Expire (s)",
+                "rowLimit": "Row Limit",
+                "nature": "Nature",
+                "retry": "Number of retry (until non-empty result)",
+                "period": "Retry period (ms)"
+            },
+            {
+                "type": "getFromHtml",
+                "value1": "Element path",
+                "value1Class": "col-sm-10",
+                "value1EditorMode": "ace/mode/xquery",
+                "value2": null,
+                "database": null,
+                "length": null,
+                "cacheExpire": "[opt] cache Expire (s)",
+                "rowLimit": null,
+                "nature": null,
+                "retry": null,
+                "period": null
+            },
+            {
+                "type": "getFromHtmlVisible",
+                "value1": "Element path",
+                "value1Class": "col-sm-10",
+                "value1EditorMode": "ace/mode/xquery",
+                "value2": null,
+                "database": null,
+                "length": null,
+                "cacheExpire": "[opt] cache Expire (s)",
+                "rowLimit": null,
+                "nature": null,
+                "retry": null,
+                "period": null
+            },
+            {
+                "type": "getFromJS",
+                "value1": "Javascript command",
+                "value1Class": "col-sm-10",
+                "value1EditorMode": "ace/mode/javascript",
+                "value2": null,
+                "database": null,
+                "length": null,
+                "cacheExpire": "[opt] cache Expire (s)",
+                "rowLimit": null,
+                "nature": null,
+                "retry": null,
+                "period": null
+            },
+            {
+                "type": "getAttributeFromHtml",
+                "value1": "Element path",
+                "value1Class": "col-sm-8",
+                "value1EditorMode": "ace/mode/xquery",
+                "value2": "Attribute name",
+                "database": null,
+                "length": null,
+                "cacheExpire": "[opt] cache Expire (s)",
+                "rowLimit": null,
+                "nature": null,
+                "retry": null,
+                "period": null
+            },
+            {
+                "type": "getFromCookie",
+                "value1": "Cookie name",
+                "value1Class": "col-sm-8",
+                "value1EditorMode": "ace/mode/cerberus",
+                "value2": "Cookie attribute",
+                "database": null,
+                "length": null,
+                "cacheExpire": "[opt] cache Expire (s)",
+                "rowLimit": null,
+                "nature": null,
+                "retry": null,
+                "period": null
+            },
+            {
+                "type": "getFromXml",
+                "value1": "Xpath",
+                "value1Class": "col-sm-8",
+                "value1EditorMode": "ace/mode/xquery",
+                "value2": "[opt] XML or URL to XML file",
+                "database": null,
+                "length": null,
+                "cacheExpire": "[opt] cache Expire (s)",
+                "rowLimit": null,
+                "nature": null,
+                "retry": null,
+                "period": null
+            },
+            {
+                "type": "getDifferencesFromXml",
+                "value1": "value1",
+                "value1Class": "col-sm-8",
+                "value1EditorMode": "ace/mode/xquery",
+                "value2": "value2",
+                "database": null,
+                "length": null,
+                "cacheExpire": "[opt] cache Expire (s)",
+                "rowLimit": null,
+                "nature": null,
+                "retry": null,
+                "period": null
+            },
+            {
+                "type": "getFromJson",
+                "value1": "JSONPath",
+                "value1Class": "col-sm-8",
+                "value1EditorMode": "ace/mode/json",
+                "value2": "[opt] JSON or URL to JSON file",
+                "database": null,
+                "length": null,
+                "cacheExpire": "[opt] cache Expire (s)",
+                "rowLimit": null,
+                "nature": null,
+                "retry": null,
+                "period": null
+            },
+            {
+                "type": "getFromGroovy",
+                "value1": "Groovy command",
+                "value1Class": "col-sm-8",
+                "value1EditorMode": "ace/mode/groovy",
+                "value2": null,
+                "database": null,
+                "length": null,
+                "cacheExpire": "[opt] cache Expire (s)",
+                "rowLimit": null,
+                "nature": null,
+                "retry": null,
+                "period": null
+            },
+            {
+                "type": "executeSoapFromLib",
+                "value1": "Service lib name",
+                "value1Class": "col-sm-8",
+                "value1EditorMode": "ace/mode/cerberus",
+                "value2": null,
+                "database": null,
+                "length": null,
+                "cacheExpire": "[opt] cache Expire (s)",
+                "rowLimit": null,
+                "nature": null,
+                "retry": null,
+                "period": null
+            },
+            {
+                "type": "executeSqlFromLib",
+                "value1": "SQL Lib name",
+                "value1Class": "col-sm-8",
+                "value1EditorMode": "ace/mode/cerberus",
+                "value2": null,
+                "database": null,
+                "length": null,
+                "cacheExpire": "[opt] cache Expire (s)",
+                "rowLimit": null,
+                "nature": null,
+                "retry": null,
+                "period": null
+            }
         ], "en": [
-            {"type": "text", "value1": "Value :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/cerberus", "value2": null, "database": null, "length": "[opt] Length :", "rowLimit": null, "nature": "Nature :", "retry": null, "period": null},
-            {"type": "executeSql", "value1": "SQL Query :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/sql", "value2": null, "database": "Database :", "length": null, "rowLimit": "Row Limit :", "nature": "Nature :", "retry": "Number of retry (if empty)", "period": "Retry period (ms)"},
-            {"type": "getFromDataLib", "value1": "DataLib name :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/cerberus", "value2": null, "database": null, "length": "[opt] Length :", "rowLimit": "Row Limit :", "nature": "Nature :", "retry": "Number of retry (if empty)", "period": "Retry period (ms)"},
-            {"type": "getFromHtml", "value1": "Element path :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/xquery", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "getFromHtmlVisible", "value1": "Element path :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/xquery", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "getFromJS", "value1": "Javascript command :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/javascript", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "getAttributeFromHtml", "value1": "Element path :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/xquery", "value2": "Attribute name :", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "getFromCookie", "value1": "Cookie name :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/cerberus", "value2": "Cookie attribute :", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "getFromXml", "value1": "Xpath :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/xquery", "value2": "[opt] XML or URL to XML file", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "getDifferencesFromXml", "value1": "value1", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/xquery", "value2": "value2", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "getFromJson", "value1": "JSONPath :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/json", "value2": "[opt] JSON or URL to JSON file", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "getFromGroovy", "value1": "Groovy command :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/groovy", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "executeSoapFromLib", "value1": "Service lib name :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/cerberus", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "executeSqlFromLib", "value1": "SQL Lib name", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/cerberus", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null}
-        ]};
+            {
+                "type": "text",
+                "value1": "Value",
+                "value1Class": "col-sm-10",
+                "value1EditorMode": "ace/mode/cerberus",
+                "value2": null,
+                "database": null,
+                "length": "[opt] Length",
+                "cacheExpire": "[opt] cache Expire (s)",
+                "rowLimit": null,
+                "nature": "Nature",
+                "retry": null,
+                "period": null
+            },
+            {
+                "type": "getFromSql",
+                "value1": "SQL Query",
+                "value1Class": "col-sm-8",
+                "value1EditorMode": "ace/mode/sql",
+                "value2": null,
+                "database": "Database",
+                "length": null,
+                "cacheExpire": "[opt] cache Expire (s)",
+                "rowLimit": "Row Limit",
+                "nature": "Nature",
+                "retry": "Number of retry (until non-empty result)",
+                "period": "Retry period (ms)"
+            },
+            {
+                "type": "getFromDataLib",
+                "value1": "DataLib name",
+                "value1Class": "col-sm-10",
+                "value1EditorMode": "ace/mode/cerberus",
+                "value2": null,
+                "database": null,
+                "length": "[opt] Length",
+                "cacheExpire": "[opt] cache Expire (s)",
+                "rowLimit": "Row Limit",
+                "nature": "Nature",
+                "retry": "Number of retry (until non-empty result)",
+                "period": "Retry period (ms)"
+            },
+            {
+                "type": "getFromHtml",
+                "value1": "Element path",
+                "value1Class": "col-sm-10",
+                "value1EditorMode": "ace/mode/xquery",
+                "value2": null,
+                "database": null,
+                "length": null,
+                "cacheExpire": "[opt] cache Expire (s)",
+                "rowLimit": null,
+                "nature": null,
+                "retry": null,
+                "period": null
+            },
+            {
+                "type": "getFromHtmlVisible",
+                "value1": "Element path",
+                "value1Class": "col-sm-10",
+                "value1EditorMode": "ace/mode/xquery",
+                "value2": null,
+                "database": null,
+                "length": null,
+                "cacheExpire": "[opt] cache Expire (s)",
+                "rowLimit": null,
+                "nature": null,
+                "retry": null,
+                "period": null
+            },
+            {
+                "type": "getFromJS",
+                "value1": "Javascript command",
+                "value1Class": "col-sm-10",
+                "value1EditorMode": "ace/mode/javascript",
+                "value2": null,
+                "database": null,
+                "length": null,
+                "cacheExpire": "[opt] cache Expire (s)",
+                "rowLimit": null,
+                "nature": null,
+                "retry": null,
+                "period": null
+            },
+            {
+                "type": "getAttributeFromHtml",
+                "value1": "Element path",
+                "value1Class": "col-sm-8",
+                "value1EditorMode": "ace/mode/xquery",
+                "value2": "Attribute name",
+                "database": null,
+                "length": null,
+                "cacheExpire": "[opt] cache Expire (s)",
+                "rowLimit": null,
+                "nature": null,
+                "retry": null,
+                "period": null
+            },
+            {
+                "type": "getFromCookie",
+                "value1": "Cookie name",
+                "value1Class": "col-sm-8",
+                "value1EditorMode": "ace/mode/cerberus",
+                "value2": "Cookie attribute",
+                "database": null,
+                "length": null,
+                "cacheExpire": "[opt] cache Expire (s)",
+                "rowLimit": null,
+                "nature": null,
+                "retry": null,
+                "period": null
+            },
+            {
+                "type": "getFromXml",
+                "value1": "Xpath",
+                "value1Class": "col-sm-8",
+                "value1EditorMode": "ace/mode/xquery",
+                "value2": "[opt] XML or URL to XML file",
+                "database": null,
+                "length": null,
+                "cacheExpire": "[opt] cache Expire (s)",
+                "rowLimit": null,
+                "nature": null,
+                "retry": null,
+                "period": null
+            },
+            {
+                "type": "getDifferencesFromXml",
+                "value1": "value1",
+                "value1Class": "col-sm-8",
+                "value1EditorMode": "ace/mode/xquery",
+                "value2": "value2",
+                "database": null,
+                "length": null,
+                "cacheExpire": "[opt] cache Expire (s)",
+                "rowLimit": null,
+                "nature": null,
+                "retry": null,
+                "period": null
+            },
+            {
+                "type": "getFromJson",
+                "value1": "JSONPath",
+                "value1Class": "col-sm-8",
+                "value1EditorMode": "ace/mode/json",
+                "value2": "[opt] JSON or URL to JSON file",
+                "database": null,
+                "length": null,
+                "cacheExpire": "[opt] cache Expire (s)",
+                "rowLimit": null,
+                "nature": null,
+                "retry": null,
+                "period": null
+            },
+            {
+                "type": "getFromGroovy",
+                "value1": "Groovy command",
+                "value1Class": "col-sm-8",
+                "value1EditorMode": "ace/mode/groovy",
+                "value2": null,
+                "database": null,
+                "length": null,
+                "cacheExpire": "[opt] cache Expire (s)",
+                "rowLimit": null,
+                "nature": null,
+                "retry": null,
+                "period": null
+            },
+            {
+                "type": "executeSoapFromLib",
+                "value1": "Service lib name",
+                "value1Class": "col-sm-8",
+                "value1EditorMode": "ace/mode/cerberus",
+                "value2": null,
+                "database": null,
+                "length": null,
+                "cacheExpire": "[opt] cache Expire (s)",
+                "rowLimit": null,
+                "nature": null,
+                "retry": null,
+                "period": null
+            },
+            {
+                "type": "executeSqlFromLib",
+                "value1": "SQL Lib name",
+                "value1Class": "col-sm-8",
+                "value1EditorMode": "ace/mode/cerberus",
+                "value2": null,
+                "database": null,
+                "length": null,
+                "cacheExpire": "[opt] cache Expire (s)",
+                "rowLimit": null,
+                "nature": null,
+                "retry": null,
+                "period": null
+            }
+        ]
+    };
 
     var user = getUser();
     var placeHolders = placeHoldersList[user.language];
@@ -3364,12 +3895,12 @@ function setPlaceholderProperty(propertyElement, property) {
 
             if ($("#" + editor.container.id).parent().parent().find("[name='propertyType']").val() === "getFromDataLib") {
                 $("#" + editor.container.id).parent().find('.input-group').remove();
-                var escaped = editor.getValue().replace(/[^\w\s]/gi, '');
+                var escaped = encodeURIComponent(editor.getValue());
                 if (!isEmpty(escaped)) {
                     $.ajax({
                         url: "ReadTestDataLib",
                         data: {
-                            name: editor.getValue(),
+                            name: escaped,
                             limit: 15,
                             like: "N"
                         },
@@ -3388,11 +3919,10 @@ function setPlaceholderProperty(propertyElement, property) {
                                     var editEntry = $('<div class="input-group col-sm-5 col-sm-offset-3"><label>Choose one data library</label><select class="datalib  form-control"></select><span class="input-group-btn"  style="vertical-align:bottom"><button class="btn btn-secondary" type="button"><span class="glyphicon glyphicon-pencil"></span></button></span></div>');
                                     $("#" + editor.container.id).parent().append(editEntry);
 
-                                    displayDataLibList(editor.container.id, undefined, escaped).then(function () {
-                                        $("#" + editor.container.id).parent().find("button").attr('onclick', 'openModalDataLib(' + $("#" + editor.container.id).parent().find("select").val() + ",'EDIT'," + "'" + escaped + "')");
-                                    });
+                                    displayDataLibList(editor.container.id, undefined, data)
+                                    $("#" + editor.container.id).parent().find("button").attr('onclick', 'openModalDataLib(\'' + editor.container.id + "\','" + $("#" + editor.container.id).parent().find("select").val() + "\','EDIT'," + "'" + escaped + "')");
                                     $("#" + editor.container.id).parent().find("select").unbind("change").change(function () {
-                                        $("#" + editor.container.id).parent().find("button").attr('onclick', 'openModalDataLib(' + $("#" + editor.container.id).parent().find("select").val() + ",'EDIT'," + "'" + escaped + "')");
+                                        $("#" + editor.container.id).parent().find("button").attr('onclick', 'openModalDataLib(\'' + editor.container.id + "\','" + $("#" + editor.container.id).parent().find("select").val() + "\','EDIT'," + "'" + escaped + "')");
                                     })
 
 
@@ -3405,14 +3935,14 @@ function setPlaceholderProperty(propertyElement, property) {
                                         $("#" + editor.container.id).parent().removeClass("col-sm-10").addClass("col-sm-8")
                                         $("#" + editor.container.id).parent().parent().append(editEntry);
                                         $("#" + editor.container.id).parent().parent().append(addEntry);
-                                        $("#" + editor.container.id).parent().parent().find("button:eq(0)").attr('onclick', 'openModalDataLib(\'' + service[0].testDataLibID + "\','EDIT'," + "'" + escaped + "')");
-                                        $("#" + editor.container.id).parent().parent().find("button:eq(1)").attr('onclick', 'openModalDataLib(\'' + escaped + "\','ADD'," + "'" + escaped + "')");
+                                        $("#" + editor.container.id).parent().parent().find("button:eq(0)").attr('onclick', 'openModalDataLib(\'' + editor.container.id + "\','" + service[0].testDataLibID + "\','EDIT'," + "'" + escaped + "')");
+                                        $("#" + editor.container.id).parent().parent().find("button:eq(1)").attr('onclick', 'openModalDataLib(\'' + editor.container.id + "\','" + escaped + "\','ADD'," + "'" + escaped + "')");
                                     } else {
-                                        var addEntry = $('<div class="col-btn col-sm-2" style="text-align:center"><label style="width:100%">Add the DataLib</label><button class="btn btn-secondary" type="button"><span class="glyphicon glyphicon-plus"></span></button></div>');
+                                        var addEntry = $('<div class="col-btn col-sm-2" style="text-align:center"><label style="width:100%">Add the DataLib</label><button class="btn btn-secondary ' + escaped + '" type="button"><span class="glyphicon glyphicon-plus"></span></button></div>');
                                         addEntry.find("button").attr("disabled", !canUpdate);
                                         $("#" + editor.container.id).parent().removeClass("col-sm-10").addClass("col-sm-8")
                                         $("#" + editor.container.id).parent().parent().append(addEntry);
-                                        $("#" + editor.container.id).parent().parent().find("button").attr('onclick', 'openModalDataLib(\'' + escaped + "\','ADD'," + "'" + escaped + "')");
+                                        $("#" + editor.container.id).parent().parent().find("button").attr('onclick', 'openModalDataLib(\'' + editor.container.id + "\','" + escaped + "\','ADD'," + "'" + escaped + "')");
                                     }
                                 }
                             }
@@ -3481,6 +4011,12 @@ function setPlaceholderProperty(propertyElement, property) {
                 } else {
                     $(e).parents("div[name='propertyLine']").find("div[name='fieldNature']").hide();
                 }
+                if (placeHolders[i].cacheExpire !== null) {
+                    $(e).parents("div[name='propertyLine']").find("div[name='fieldExpire']").show();
+                    $(e).parents("div[name='propertyLine']").find("div[name='fieldExpire'] label").html(placeHolders[i].cacheExpire);
+                } else {
+                    $(e).parents("div[name='propertyLine']").find("div[name='fieldExpire']").hide();
+                }
                 if (placeHolders[i].retry !== null) {
                     $(e).parents("div[name='propertyLine']").find("div[name='fieldRetryNb']").show();
                     $(e).parents("div[name='propertyLine']").find("div[name='fieldRetryNb'] label").html(placeHolders[i].retry);
@@ -3508,11 +4044,13 @@ function CompleterForAllDataLib() {
     var staticWordCompleter = {
 
         getCompletions: function (editor, session, pos, prefix, callback) {
-            $.getJSON("ReadTestDataLib?name=" + editor.getValue() + "&limit=15&like=Y", function (wordList) {
+            var escaped = encodeURIComponent(editor.getValue())
+            $.getJSON("ReadTestDataLib?name=" + escaped + "&limit=15&like=Y", function (wordList) {
                 callback(null, wordList.contentTable.map(function (ea) {
                     return {name: ea.name, value: ea.name, meta: "DataLib"}
                 }));
             })
+
         }
 
     }
@@ -3522,8 +4060,8 @@ function CompleterForAllDataLib() {
 }
 
 
-
 var oldCompleters = null;
+
 /*
  * main function of ace editor
  */
@@ -3541,7 +4079,10 @@ function configureAceEditor(editor, mode, property) {
 
             if (property.type === "getFromDataLib") {
                 CompleterForAllDataLib();
-                editor.setOptions({maxLines: 15, enableBasicAutocompletion: false, enableLiveAutocompletion: true});
+                $("pre").off("input").on("input", function (e) {
+                    editor.execCommand("startAutocomplete")
+                })
+                editor.setOptions({maxLines: 15, enableBasicAutocompletion: true, enableLiveAutocompletion: false});
             } else {
                 editor.setOptions({maxLines: 15, enableBasicAutocompletion: true, enableLiveAutocompletion: false});
 
@@ -3582,6 +4123,7 @@ function configureAceEditor(editor, mode, property) {
     var count = editor.getSession().getLength();
     editor.gotoLine(count, editor.getSession().getLine(count - 1).length);
 }
+
 /*
  * create an array of the current keyword with the keyword that precede them
  */
@@ -3630,6 +4172,7 @@ function createAllKeywordList(objectList, propertyList) {
     }
     return allKeyword;
 }
+
 /*
  * add an ace command to display autocomplete popup
  */
@@ -3645,7 +4188,7 @@ function addCommandForCustomAutoCompletePopup(editor, allKeyword, commandName) {
             var numberOfPercentCaractereAtLine = (editorValueAtTheLine.match(/\%/g) || []).length;
             // start autocomplete when there is an odd number of %
 
-            if (numberOfPercentCaractereAtLine != 0 && numberOfPercentCaractereAtLine % 2 == 1) {
+            if (numberOfPercentCaractereAtLine !== 0 && numberOfPercentCaractereAtLine % 2 === 1) {
                 var cursorPositionX = editor.getCursorPosition().column;
                 var subStringCursorOn = editorValueAtTheLine.slice(editorValueAtTheLine.lastIndexOf('%', cursorPositionX) + 1, cursorPositionX);
                 // Create an array of all the word separated by "." contain
@@ -3660,7 +4203,7 @@ function addCommandForCustomAutoCompletePopup(editor, allKeyword, commandName) {
 
                     var keywordInputByUserExist;
                     // Just after a "." or a blank line
-                    if (keywordInputList[idKeywordToCheck] == "") {
+                    if (keywordInputList[idKeywordToCheck] === "") {
                         keywordInputByUserExist = true;// blank is a valid
                         // keyword
                         keywordInputList.pop();// remove blank caractere
@@ -3670,7 +4213,7 @@ function addCommandForCustomAutoCompletePopup(editor, allKeyword, commandName) {
                     }
                     // if at least on keyword between the "%" by default
                     // autocompletion is diable
-                    if (keywordInputByUserExist == false)
+                    if (keywordInputByUserExist === false)
                         allKeywordCorrect = false;
 
                 }
@@ -3680,38 +4223,38 @@ function addCommandForCustomAutoCompletePopup(editor, allKeyword, commandName) {
                 if (allKeywordCorrect) {
                     var idNextKeyword = getNextKeywordId(currentKeyword, allKeyword, keywordInputList);
                     // add the special caractere
-                    if (potentiallyNeddApoint && currentKeyword != undefined && idNextKeyword != -1) {
+                    if (potentiallyNeddApoint && currentKeyword !== undefined && idNextKeyword !== -1) {
                         editor.session.insert(editor.getCursorPosition(), ".");
                     }
-                    if (currentKeyword != undefined && idNextKeyword == -1) {
+                    if (currentKeyword !== undefined && idNextKeyword === -1) {
                         editor.session.insert(editor.getCursorPosition(), "%");
                     }
                     // change the autocompletionList
 
-                    if (currentKeyword == undefined) {
+                    if (currentKeyword === undefined) {
                         changeAceCompletionList(allKeyword[0]["listKeyword"], "", editor);
                         editor.execCommand("startAutocomplete");
                     }
-                    if (idNextKeyword != -1 && currentKeyword != undefined) {
+                    if (idNextKeyword !== -1 && currentKeyword !== undefined) {
                         changeAceCompletionList(allKeyword[idNextKeyword]["listKeyword"], allKeyword[idNextKeyword]["motherKeyword"], editor);
                         editor.execCommand("startAutocomplete");
                     }
                 }
                 // The user tryed to add an new object set autocompletion for
                 // this specifique part
-                if (!allKeywordCorrect && keywordInputList[0] == "object" && keywordInputList.length < 4) {
+                if (!allKeywordCorrect && keywordInputList[0] === "object" && keywordInputList.length < 4) {
                     var availableObjectProperties = [
                         "value",
                         "picturepath",
                         "pictureurl"
                     ];
                     // if the user want to defined a new object
-                    if (keywordInputList.length == 2 && potentiallyNeddApoint == false) {
+                    if (keywordInputList.length === 2 && potentiallyNeddApoint === false) {
                         changeAceCompletionList(availableObjectProperties, keywordInputList[1], editor);
                         editor.execCommand("startAutocomplete");
                     }
                     // add '%' when an availableObjectProperties was selected
-                    if (keywordInputList.length == 3 && availableObjectProperties.indexOf(keywordInputList[2]) != -1) {
+                    if (keywordInputList.length === 3 && availableObjectProperties.indexOf(keywordInputList[2]) !== -1) {
                         editor.session.insert(editor.getCursorPosition(), "%");
                     }
                 }
@@ -3720,6 +4263,7 @@ function addCommandForCustomAutoCompletePopup(editor, allKeyword, commandName) {
     });
 
 }
+
 /*
  * check if the keywordInputByUser and the keyword designated by the
  * idKeywordToCheck share the same motherKeyword (resolve issue with duplicate)
@@ -3728,10 +4272,10 @@ function checkIfTheKeywordIsCorrect(allKeyword, keywordInputByUser, idKeywordToC
 
     for (var y in allKeyword) {
         for (var n in allKeyword[y]["listKeyword"]) {
-            if (allKeyword[y]["listKeyword"][n] == keywordInputByUser[idKeywordToCheck]) {
+            if (allKeyword[y]["listKeyword"][n] === keywordInputByUser[idKeywordToCheck]) {
                 // check if the keyword matching posses the same mother keyword
                 var listMotherKeywordPossible = getPossibleMotherKeyword(allKeyword[y]["listKeyword"][n], allKeyword);
-                if (!(idKeywordToCheck >= 1 && listMotherKeywordPossible[0] != null && getPossibleMotherKeyword(allKeyword[y]["listKeyword"][n], allKeyword).indexOf(keywordInputByUser[idKeywordToCheck - 1]) == -1)) {
+                if (!(idKeywordToCheck >= 1 && listMotherKeywordPossible[0] !== null && getPossibleMotherKeyword(allKeyword[y]["listKeyword"][n], allKeyword).indexOf(keywordInputByUser[idKeywordToCheck - 1]) === -1)) {
                     return true;
                 }
             }
@@ -3739,6 +4283,7 @@ function checkIfTheKeywordIsCorrect(allKeyword, keywordInputByUser, idKeywordToC
     }
     return false;
 }
+
 /*
  * Get the list of all the previous keyword possible for this keyword
  */
@@ -3746,36 +4291,38 @@ function getPossibleMotherKeyword(keyword, allKeyword) {
     var idmotherKeyword = [];
     for (i in allKeyword) {
         for (y in allKeyword[i]["listKeyword"]) {
-            if (allKeyword[i]["listKeyword"][y] == keyword) {
+            if (allKeyword[i]["listKeyword"][y] === keyword) {
                 idmotherKeyword.push(allKeyword[i]["motherKeyword"]);
             }
         }
     }
-    if (idmotherKeyword.length == 0)
+    if (idmotherKeyword.length === 0)
         return -1;
     else
         return idmotherKeyword;
 }
+
 /*
  * Get the id of the next list of keyword by finding which one has keyword as a
  * motherKeyword
  */
 function getNextKeywordId(keyword, allKeyword, keywordInputList) {
     // resolve issue with duplicate
-    if (keywordInputList[0] != "object" && keywordInputList.length == 2) {
+    if (keywordInputList[0] !== "object" && keywordInputList.length === 2) {
         return -1;
     }
     // no duplicate
     else {
         var idCurrentKeyword = -1;
         for (i in allKeyword) {
-            if (allKeyword[i]["motherKeyword"] == keyword) {
+            if (allKeyword[i]["motherKeyword"] === keyword) {
                 idCurrentKeyword = i;
             }
         }
         return idCurrentKeyword;
     }
 }
+
 /*
  * Replace the autocompletion list of ace editor
  */
@@ -3809,7 +4356,7 @@ function addCommandToDetectKeywordIssue(editor, allKeyword, commandName) {
             for (var line = 0; line < numberOfLine; line++) {
                 var editorValueAtTheLine = editor.session.getLine(line);
                 var numberOfPercentCaractereAtLine = (editorValueAtTheLine.match(/\%/g) || []).length;
-                if (numberOfPercentCaractereAtLine != 0 && numberOfPercentCaractereAtLine % 2 == 0) {
+                if (numberOfPercentCaractereAtLine !== 0 && numberOfPercentCaractereAtLine % 2 === 0) {
                     var editorValueSplit = editorValueAtTheLine.split("%");
                     var cerberusVarAtLine = []
                     for (var i = 0; i < editorValueSplit.length; i++) {
@@ -3827,20 +4374,20 @@ function addCommandToDetectKeywordIssue(editor, allKeyword, commandName) {
                             var startKeyword = keywordsListCurrentlyCheck[0];
                             var secondKeyword = keywordsListCurrentlyCheck[1];
 
-                            if (startKeyword == "property" || startKeyword == "system" && keywordsListCurrentlyCheck.length == 2) {
-                                if (getPossibleMotherKeyword(secondKeyword, allKeyword) == -1) {
+                            if (startKeyword === "property" || startKeyword === "system" && keywordsListCurrentlyCheck.length === 2) {
+                                if (getPossibleMotherKeyword(secondKeyword, allKeyword) === -1) {
                                     issueWithKeyword = "warning";
                                 } else {
-                                    if (getPossibleMotherKeyword(secondKeyword, allKeyword).indexOf(startKeyword) == -1)
+                                    if (getPossibleMotherKeyword(secondKeyword, allKeyword).indexOf(startKeyword) === -1)
                                         issueWithKeyword = "warning";
                                     // keyword exist but not correct
                                 }
-                            } else if (startKeyword == "object" && keywordsListCurrentlyCheck.length == 3) {
+                            } else if (startKeyword === "object" && keywordsListCurrentlyCheck.length === 3) {
 
-                                if (getPossibleMotherKeyword(secondKeyword, allKeyword) == -1) {
+                                if (getPossibleMotherKeyword(secondKeyword, allKeyword) === -1) {
                                     issueWithKeyword = "warning";
                                 } else {
-                                    if (getPossibleMotherKeyword(secondKeyword, allKeyword).indexOf(startKeyword) == -1)
+                                    if (getPossibleMotherKeyword(secondKeyword, allKeyword).indexOf(startKeyword) === -1)
                                         issueWithKeyword = "warning";
                                     // keyword exist but not correct
                                 }
@@ -3850,7 +4397,7 @@ function addCommandToDetectKeywordIssue(editor, allKeyword, commandName) {
                                     "picturepath",
                                     "pictureurl"
                                 ];
-                                if (availableObjectProperties.indexOf(thirdKeyword) == -1) {
+                                if (availableObjectProperties.indexOf(thirdKeyword) === -1) {
                                     issueWithKeyword = "error";
                                 }
                             } else {
@@ -3859,11 +4406,11 @@ function addCommandToDetectKeywordIssue(editor, allKeyword, commandName) {
                         } else {
                             issueWithKeyword = "error";
                         }
-                        if (issueWithKeyword == "error") {
+                        if (issueWithKeyword === "error") {
                             var messageOfAnnotion = "error invalid keyword";
                             annotationObjectList.push(createAceAnnotationObject(line, messageOfAnnotion, "error", null, null));
                         }
-                        if (issueWithKeyword == "warning") {
+                        if (issueWithKeyword === "warning") {
                             var messageOfAnnotion = "warning the " + keywordsListCurrentlyCheck[0] + " : " + keywordsListCurrentlyCheck[1] + " don't exist";
                             annotationObjectList.push(createAceAnnotationObject(line, messageOfAnnotion, "warning", keywordsListCurrentlyCheck[0], keywordsListCurrentlyCheck[1]));
                         }
@@ -3881,7 +4428,8 @@ function addCommandToDetectKeywordIssue(editor, allKeyword, commandName) {
  */
 function createAceAnnotationObject(lineNumber, annotationText, annotationType, keywordTypeVar, keywordValueVar) {
 
-    return {row: lineNumber,
+    return {
+        row: lineNumber,
         column: 0,
         text: annotationText,
         type: annotationType,
@@ -3897,6 +4445,7 @@ function setAceAnnotation(editor, annotationObjectList) {
     // resend every annotation for each change
     editor.getSession().setAnnotations(annotationObjectList);
 }
+
 /*
  * Set a listenner for every left part of ace's lines in each line that will
  * resolve issue
@@ -3914,14 +4463,14 @@ function createGuterCellListenner(editor) {
             var annotationObjectList = editor.getSession().getAnnotations();
 
             for (var y = 0; y < annotationObjectList.length; y++) {
-                if (annotationObjectList[y].lineNumber == lineClickedId && annotationObjectList[y].type == "warning") {
+                if (annotationObjectList[y].lineNumber === lineClickedId && annotationObjectList[y].type === "warning") {
 
                     var keywordType = annotationObjectList[y].keywordType;
                     var keywordValue = annotationObjectList[y].keywordValue;
-                    if (keywordType == "property") {
+                    if (keywordType === "property") {
                         addPropertyWithAce(keywordValue);
                     }
-                    if (keywordType == "object") {
+                    if (keywordType === "object") {
                         addObjectWithAce(keywordValue);
                     }
                 }
@@ -3981,6 +4530,7 @@ function addPropertyWithAce(keywordValue) {
     });
     getKeywordList("property").push(keywordValue);
 }
+
 // Add keywordValue as a new object
 function addObjectWithAce(keywordValue) {
 
@@ -4005,6 +4555,7 @@ function addObjectWithAce(keywordValue) {
         }
     });
 }
+
 // Get the CURRENT list of keyword for each type
 function getKeywordList(type) {
     if (getTags() != undefined && getTags().length > 0) {
