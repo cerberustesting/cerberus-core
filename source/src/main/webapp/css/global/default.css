@@ -26,9 +26,17 @@
     margin-bottom:30px;  
 }
 
+#confirmationModal{
+	z-index: 10000001 !important
+}
+
 .modal {
     overflow: auto !important;
-    z-index: 999999997 !important;
+    z-index: 9999 !important;
+}
+
+.select2-dropdown{
+	z-index: 10000 !important;
 }
 
 td
