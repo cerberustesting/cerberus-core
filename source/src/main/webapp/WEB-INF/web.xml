@@ -797,8 +797,12 @@
         <servlet-class>org.cerberus.servlet.crud.testexecution.CreateTestCaseExecutionQueue</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>DummyRESTCall</servlet-name>
-        <servlet-class>org.cerberus.servlet.dummy.DummyRESTCall</servlet-class>
+        <servlet-name>GetDummyRESTCall</servlet-name>
+        <servlet-class>org.cerberus.servlet.dummy.GetDummyRESTCall</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>GetDummyRESTCallEmpty</servlet-name>
+        <servlet-class>org.cerberus.servlet.dummy.GetDummyRESTCallEmpty</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateTestCaseExecutionQueue</servlet-name>
@@ -1567,9 +1571,14 @@
         <url-pattern>/DeleteTestCaseExecutionFile</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>DummyRESTCall</servlet-name>
-        <url-pattern>/DummyRESTCall</url-pattern>
-        <url-pattern>/DummyRESTCall/*</url-pattern>
+        <servlet-name>GetDummyRESTCall</servlet-name>
+        <url-pattern>/GetDummyRESTCall</url-pattern>
+        <url-pattern>/GetDummyRESTCall/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GetDummyRESTCallEmpty</servlet-name>
+        <url-pattern>/GetDummyRESTCallEmpty</url-pattern>
+        <url-pattern>/GetDummyRESTCallEmpty/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>UpdateTestCaseExecutionQueue</servlet-name>
@@ -2040,7 +2049,6 @@
             <url-pattern>/NewBuildRevisionV000</url-pattern>
             <url-pattern>/DisableEnvironmentV000</url-pattern>
             <url-pattern>/NewEnvironmentEventV000</url-pattern>
-            <url-pattern>/DummySoap</url-pattern>
             <url-pattern>/ForgotPassword</url-pattern>
             <url-pattern>/ForgotPasswordEmailConfirmation</url-pattern>
             <url-pattern>/ChangeUserPassword</url-pattern>
@@ -2050,7 +2058,9 @@
             <url-pattern>/AddToExecutionQueueV003</url-pattern>
             <url-pattern>/ReadApplicationObjectImage</url-pattern>
             <url-pattern>/GetTestCasesV000</url-pattern>
-            <url-pattern>/DummyRESTCall</url-pattern>
+            <url-pattern>/DummySoap</url-pattern>
+            <url-pattern>/GetDummyRESTCall</url-pattern>
+            <url-pattern>/GetDummyRESTCallEmpty</url-pattern>
         </web-resource-collection>
     </security-constraint>
     <security-constraint>

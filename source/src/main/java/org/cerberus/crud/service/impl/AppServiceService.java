@@ -141,28 +141,39 @@ public class AppServiceService implements IAppServiceService {
     @Override
     public String guessContentType(AppService service, String defaultValue) {
         String result = defaultValue;
-        for (AppServiceHeader object : service.getResponseHeaderList()) {
-            if (object.getKey().equalsIgnoreCase("Content-Type")) {
-                if (object.getValue().contains("application/json")) {
-                    LOG.debug("JSON format guessed from header : " + object.getKey() + " : " + object.getValue());
-                    return AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON;
-                } else if (object.getValue().contains("application/xml")) {
-                    LOG.debug("XML format guessed from header : " + object.getKey() + " : " + object.getValue());
-                    return AppService.RESPONSEHTTPBODYCONTENTTYPE_XML;
+        if (service != null) {
+            for (AppServiceHeader object : service.getResponseHeaderList()) {
+                if ((object != null) && (object.getKey().equalsIgnoreCase("Content-Type"))) {
+                    if (object.getValue().contains("application/json")) {
+                        LOG.debug("JSON format guessed from header : " + object.getKey() + " : " + object.getValue());
+                        return AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON;
+                    } else if (object.getValue().contains("application/xml")) {
+                        LOG.debug("XML format guessed from header : " + object.getKey() + " : " + object.getValue());
+                        return AppService.RESPONSEHTTPBODYCONTENTTYPE_XML;
+                    }
                 }
             }
+            if (!StringUtil.isNullOrEmpty(service.getResponseHTTPBody())) {
+                if (service.getResponseHTTPBody().startsWith("<")) { // TODO find a better solution to guess the format of the request.
+                    LOG.debug("XML format guessed from 1st caracter of body.");
+                    return AppService.RESPONSEHTTPBODYCONTENTTYPE_XML;
+                } else if (service.getResponseHTTPBody().startsWith("{")) {
+                    LOG.debug("JSON format guessed from 1st caracter of body.");
+                    return AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON;
+                }
+            } else {
+                // Body is null so we don't know the format.
+                return AppService.RESPONSEHTTPBODYCONTENTTYPE_UNKNOWN;
+            }
+        } else {
+            // Service is null so we don't know the format.
+            return AppService.RESPONSEHTTPBODYCONTENTTYPE_UNKNOWN;
         }
-        if (service.getResponseHTTPBody().startsWith("<")) { // TODO find a better solution to guess the format of the request.
-            LOG.debug("XML format guessed from 1st caracter of body.");
-            return AppService.RESPONSEHTTPBODYCONTENTTYPE_XML;
-        } else if (service.getResponseHTTPBody().startsWith("{")) {
-            LOG.debug("JSON format guessed from 1st caracter of body.");
-            return AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON;
+        // Header did not define the format and could not guess from file content.
+        if (StringUtil.isNullOrEmpty(defaultValue)) {
+            return AppService.RESPONSEHTTPBODYCONTENTTYPE_TXT;
         }
-        if (StringUtil.isNullOrEmpty(result)) {
-            result = AppService.RESPONSEHTTPBODYCONTENTTYPE_TXT;
-        }
-        return result;
+        return defaultValue;
     }
 
     @Override

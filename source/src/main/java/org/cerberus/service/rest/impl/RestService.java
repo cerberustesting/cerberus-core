@@ -465,8 +465,7 @@ public class RestService implements IRestService {
 
             // Get result Content Type.
             if (responseHttp != null) {
-                serviceREST.setResponseHTTPBodyContentType(
-                        AppServiceService.guessContentType(serviceREST, AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON));
+                serviceREST.setResponseHTTPBodyContentType(AppServiceService.guessContentType(serviceREST, AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON));
             }
 
             result.setItem(serviceREST);
