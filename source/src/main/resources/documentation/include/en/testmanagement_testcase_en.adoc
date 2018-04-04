@@ -299,10 +299,14 @@ Below you will find useful properties :
 | %system.YESTERDAY-yyyy% |	Year of yesterday
 | %system.YESTERDAY-MM% |	Month of yesterday
 | %system.YESTERDAY-dd% |	Day of yesterday
-| %system.TODAY-doy% |	Day of yesterday from the beginning of the year
+| %system.YESTERDAY-doy% |	Day of yesterday from the beginning of the year
 | %system.YESTERDAY-HH% |	Hour of yesterday
 | %system.YESTERDAY-mm% |	Minute of yesterday
 | %system.YESTERDAY-ss% |	Second of yesterday
+| %system.TOMORROW-yyyy% |	Year of tomorrow
+| %system.TOMORROW-MM% |	Month of tomorrw
+| %system.TOMORROW-dd% |	Day of tomorrw
+| %system.TOMORROW-doy% |	Day of tomorrw from the beginning of the year
 | %system.ELAPSED-EXESTART% |	Number of milisecond since the start of the execution.
 | %system.ELAPSED-STEPSTART% |	Number of milisecond since the start of the execution of the current step.
 

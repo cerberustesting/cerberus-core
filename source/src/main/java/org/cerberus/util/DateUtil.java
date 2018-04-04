@@ -87,6 +87,19 @@ public class DateUtil {
         return formater.format(cal.getTime());
     }
 
+    public static String getTomorrowFormat(String format) {
+        // Calculating today + n minutes.
+        // 
+        Date today = new Date(); // Getting now.
+        SimpleDateFormat formater; // Define the MySQL Format.
+        formater = new SimpleDateFormat(format);
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(today);
+        cal.add(Calendar.HOUR, +24);
+        return formater.format(cal.getTime());
+    }
+
     /**
      * Format a long into a String in the format yyyy-MM-dd hh:mm:ss.SSS
      *

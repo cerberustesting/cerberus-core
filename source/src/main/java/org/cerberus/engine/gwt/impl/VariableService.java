@@ -350,6 +350,10 @@ public class VariableService implements IVariableService {
             stringToDecode = stringToDecode.replace("%SYS_YESTERDAY-HH%", DateUtil.getYesterdayFormat("HH"));
             stringToDecode = stringToDecode.replace("%SYS_YESTERDAY-mm%", DateUtil.getYesterdayFormat("mm"));
             stringToDecode = stringToDecode.replace("%SYS_YESTERDAY-ss%", DateUtil.getYesterdayFormat("ss"));
+            stringToDecode = stringToDecode.replace("%SYS_TOMORROW-yyyy%", DateUtil.getTomorrowFormat("yyyy"));
+            stringToDecode = stringToDecode.replace("%SYS_TOMORROW-MM%", DateUtil.getTomorrowFormat("MM"));
+            stringToDecode = stringToDecode.replace("%SYS_TOMORROW-dd%", DateUtil.getTomorrowFormat("dd"));
+            stringToDecode = stringToDecode.replace("%SYS_TOMORROW-doy%", DateUtil.getTomorrowFormat("D"));
             //New syntax
             stringToDecode = stringToDecode.replace("%system.TODAY-yyyy%", DateUtil.getTodayFormat("yyyy"));
             stringToDecode = stringToDecode.replace("%system.TODAY-MM%", DateUtil.getTodayFormat("MM"));
@@ -365,6 +369,10 @@ public class VariableService implements IVariableService {
             stringToDecode = stringToDecode.replace("%system.YESTERDAY-HH%", DateUtil.getYesterdayFormat("HH"));
             stringToDecode = stringToDecode.replace("%system.YESTERDAY-mm%", DateUtil.getYesterdayFormat("mm"));
             stringToDecode = stringToDecode.replace("%system.YESTERDAY-ss%", DateUtil.getYesterdayFormat("ss"));
+            stringToDecode = stringToDecode.replace("%system.TOMORROW-yyyy%", DateUtil.getTomorrowFormat("yyyy"));
+            stringToDecode = stringToDecode.replace("%system.TOMORROW-MM%", DateUtil.getTomorrowFormat("MM"));
+            stringToDecode = stringToDecode.replace("%system.TOMORROW-dd%", DateUtil.getTomorrowFormat("dd"));
+            stringToDecode = stringToDecode.replace("%system.TOMORROW-doy%", DateUtil.getTomorrowFormat("D"));
 
             return stringToDecode;
 

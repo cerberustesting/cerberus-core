@@ -1,11 +1,15 @@
 *Bug fixes*
 [square]
-* 
+* Improved automatic reload of execution detail page when execution still in queue.
+* Fixed filters on ReportByTag page.
+* Fixed nullPointerException when service call provide empty result.
 
 *Improvements / New features*
 [square]
-* 
+* Added new system variables : "TOMORROW-yyyy", "TOMORROW-MM", "TOMORROW-dd", "TOMORROW-doy".
+* New Interactive tutorial available from Documentation menu.
+* For Application Services, GET Query String is also feed from active Request details (key/value). Just like Postman does.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
-* 
+* Removed Opera support following selenium deprecation.

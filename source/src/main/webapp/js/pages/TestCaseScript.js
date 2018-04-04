@@ -222,6 +222,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
                             "LASTSERVICE_HTTPCODE",
                             "TODAY-yyyy", "TODAY-MM", "TODAY-dd", "TODAY-doy", "TODAY-HH", "TODAY-mm", "TODAY-ss",
                             "YESTERDAY-yyyy", "YESTERDAY-MM", "YESTERDAY-dd", "YESTERDAY-doy", "YESTERDAY-HH", "YESTERDAY-mm", "YESTERDAY-ss",
+                            "TOMORROW-yyyy", "TOMORROW-MM", "TOMORROW-dd", "TOMORROW-doy"
                         ];
                         var availableTags = [
                             "property",
@@ -466,9 +467,9 @@ $.when($.getScript("js/global/global.js")).then(function () {
         closeEveryNavbarMenu();
 
         $('[data-toggle="popover"]').popover({
-                'placement': 'auto',
-                'container': 'body'
-            }
+            'placement': 'auto',
+            'container': 'body'
+        }
         );
 
         // open Run navbar Menu
@@ -1208,7 +1209,7 @@ function sortProperties(identifier) {
     list.sort(function (a, b) {
 
         var aProp = $(a).find("#masterProp").data("property").property.toLowerCase(),
-            bProp = $(b).find("#masterProp").data("property").property.toLowerCase();
+                bProp = $(b).find("#masterProp").data("property").property.toLowerCase();
 
         if (aProp > bProp) {
             return 1;
@@ -1256,8 +1257,8 @@ function getTestCaseCountry(countryList, countryToCheck, isDisabled) {
         }
 
         div.append($("<label></label>").addClass("checkbox-inline")
-            .append(input)
-            .append(country));
+                .append(input)
+                .append(country));
 
         cpt++;
         html.push(div);
@@ -1312,15 +1313,15 @@ function showImportStepDetail(element) {
         var importInfoId = generateImportInfoId(stepInfo);
 
         var importInfo =
-            '<div id="' + importInfoId + '" class="row">' +
-            '   <div class="col-sm-5"><span class="badge">' + importInfoIdx + ' </span>&nbsp;' + stepInfo.description + '</div>' +
-            '   <div name="importInfo" class="col-sm-5"></div>' +
-            '   <div class="col-sm-2">' +
-            '    <label class="checkbox-inline">' +
-            '        <input type="checkbox" name="useStep" checked> Use Step' +
-            '    </label>' +
-            '   </div>' +
-            '</div>';
+                '<div id="' + importInfoId + '" class="row">' +
+                '   <div class="col-sm-5"><span class="badge">' + importInfoIdx + ' </span>&nbsp;' + stepInfo.description + '</div>' +
+                '   <div name="importInfo" class="col-sm-5"></div>' +
+                '   <div class="col-sm-2">' +
+                '    <label class="checkbox-inline">' +
+                '        <input type="checkbox" name="useStep" checked> Use Step' +
+                '    </label>' +
+                '   </div>' +
+                '</div>';
 
         $("#importDetail").append(importInfo);
         $("#" + importInfoId).find("[name='importInfo']").text("Imported from " + stepInfo.test + " - " + stepInfo.testCase + " - " + stepInfo.sort + ")").data("stepInfo", stepInfo);
@@ -1490,7 +1491,7 @@ function loadLibraryStep(search) {
                 if (search === undefined || search === "" || step.description.toLowerCase().indexOf(search_lower) > -1 || step.testCase.toLowerCase().indexOf(search_lower) > -1 || step.test.toLowerCase().indexOf(search_lower) > -1) {
                     if (!test.hasOwnProperty(step.test)) {
                         $("#lib").append($("<a></a>").addClass("list-group-item").attr("data-toggle", "collapse").attr("href", "[data-test='" + step.test + "']")
-                            .text(step.test).prepend($("<span></span>").addClass("glyphicon glyphicon-chevron-right")));
+                                .text(step.test).prepend($("<span></span>").addClass("glyphicon glyphicon-chevron-right")));
 
                         var listGr = $("<div></div>").addClass("list-group collapse").attr("data-test", step.test);
                         $("#lib").append(listGr);
@@ -1500,7 +1501,7 @@ function loadLibraryStep(search) {
                     if ((!test[step.test].testCase.hasOwnProperty(step.testCase))) {
                         var listGrp = test[step.test].content;
                         listGrp.append($("<a></a>").addClass("list-group-item sub-item").attr("data-toggle", "collapse").attr("href", "[data-test='" + step.test + "'][data-testCase='" + step.testCase + "']")
-                            .text(step.testCase + " - " + step.tcdesc).prepend($("<span></span>").addClass("glyphicon glyphicon-chevron-right")));
+                                .text(step.testCase + " - " + step.tcdesc).prepend($("<span></span>").addClass("glyphicon glyphicon-chevron-right")));
 
                         var listCaseGr = $("<div></div>").addClass("list-group collapse in").attr("data-test", step.test).attr("data-testCase", step.testCase);
                         listGrp.append(listCaseGr);
@@ -1521,8 +1522,8 @@ function loadLibraryStep(search) {
 
             $('#addStepModal > .list-group-item').unbind("click").on('click', function () {
                 $('.glyphicon', this)
-                    .toggleClass('glyphicon-chevron-right')
-                    .toggleClass('glyphicon-chevron-down');
+                        .toggleClass('glyphicon-chevron-right')
+                        .toggleClass('glyphicon-chevron-down');
             });
 
             $("#addStepModal #search").unbind("input").on("input", function (e) {
@@ -1585,13 +1586,13 @@ function showStepUsesLibraryInConfirmationModal(object) {
     showModalConfirmation(function () {
         $('#confirmationModal').modal('hide');
     }, undefined, doc.getDocLabel("page_global", "warning"),
-        doc.getDocLabel("page_testcasescript", "cant_detach_library") +
-        "<br/>" +
-        "<div id='otherStepThatUseIt' style='width:100%;'>" +
-        "<div style='width:30px; margin-left: auto; margin-right: auto;'>" +
-        "<span class='glyphicon glyphicon-refresh spin'></span>" +
-        "</div>" +
-        "</div>", "", "", "", "");
+            doc.getDocLabel("page_testcasescript", "cant_detach_library") +
+            "<br/>" +
+            "<div id='otherStepThatUseIt' style='width:100%;'>" +
+            "<div style='width:30px; margin-left: auto; margin-right: auto;'>" +
+            "<span class='glyphicon glyphicon-refresh spin'></span>" +
+            "</div>" +
+            "</div>", "", "", "", "");
 }
 
 
@@ -1647,7 +1648,7 @@ function handleDragEnter(event) {
             $(target).parent(".action-group").before(source.parentNode);
         }
     } else if (sourceData instanceof Control &&
-        (targetData instanceof Action || targetData instanceof Control)) {
+            (targetData instanceof Action || targetData instanceof Control)) {
         if (isBefore(source, target) || targetData instanceof Action) {
             $(target).after(source);
         } else {
@@ -1775,7 +1776,7 @@ function Step(json, stepList, canUpdate, hasPermissionsStepLibrary) {
 Step.prototype.draw = function () {
     var htmlElement = this.html;
     var drag = $("<div></div>").addClass("col-sm-1 drag-step").css("padding-left", "5px").css("padding-right", "5px").prop("draggable", true)
-        .append($("<span></span>").addClass("fa fa-ellipsis-v"));
+            .append($("<span></span>").addClass("fa fa-ellipsis-v"));
 
 
     var schema = $("<div style='margin-left:10px' class='col-lg-2 alert alert-info'><div>" + this.sort + " - " + this.description + "</div></div>")
@@ -2293,9 +2294,9 @@ Action.prototype.generateContent = function () {
     secondRow.append($("<div></div>").addClass("col-lg-2 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "action_field"))).append(actionList));
     secondRow.append($("<div></div>").addClass("col-lg-5").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value1_field"))).append(objectField));
     /*
-	 * if(secondRow.find("col-lg-6").find("label").text() === "Chemin vers
-	 * l'élement" ){ console.log(".append(choiceField)") }
-	 */
+     * if(secondRow.find("col-lg-6").find("label").text() === "Chemin vers
+     * l'élement" ){ console.log(".append(choiceField)") }
+     */
     secondRow.append($("<div></div>").addClass("col-lg-5 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value2_field"))).append(propertyField));
     thirdRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_operation_field"))).append(actionconditionoper));
     thirdRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_parameter_field"))).append(actionconditionval1));
@@ -2801,9 +2802,9 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 
                 }).data("ui-autocomplete")._renderItem = function (ul, item) {
                     return $("<li>")
-                        .data("ui-autocomplete-item", item)
-                        .append("<a>" + item.label + "</a>")
-                        .appendTo(ul);
+                            .data("ui-autocomplete-item", item)
+                            .append("<a>" + item.label + "</a>")
+                            .appendTo(ul);
                 };
             } else {
                 autocompleteVariable($(this), Tags);
@@ -4150,7 +4151,8 @@ function createAllKeywordList(objectList, propertyList) {
         "STEP.n.n.RETURNCODE", "CURRENTSTEP_INDEX", "CURRENTSTEP_STARTISO", "CURRENTSTEP_ELAPSEDMS", "CURRENTSTEP_SORT",
         "LASTSERVICE_HTTPCODE",
         "TODAY-yyyy", "TODAY-MM", "TODAY-dd", "TODAY-doy", "TODAY-HH", "TODAY-mm", "TODAY-ss",
-        "YESTERDAY-yyyy", "YESTERDAY-MM", "YESTERDAY-dd", "YESTERDAY-doy", "YESTERDAY-HH", "YESTERDAY-mm", "YESTERDAY-ss"
+        "YESTERDAY-yyyy", "YESTERDAY-MM", "YESTERDAY-dd", "YESTERDAY-doy", "YESTERDAY-HH", "YESTERDAY-mm", "YESTERDAY-ss",
+        "TOMORROW-yyyy", "TOMORROW-MM", "TOMORROW-dd", "TOMORROW-doy"
     ];
     var availableTags = [
         "property", // 0
