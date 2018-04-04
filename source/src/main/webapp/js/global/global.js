@@ -1381,8 +1381,8 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
         configs["fnStateSaveCallback"] = function (settings, data) {
             try {
                 localStorage.setItem(
-                        'DataTables_' + settings.sInstance + '_' + location.pathname,
-                        JSON.stringify(data)
+	                'DataTables_' + settings.sInstance + '_' + location.pathname,
+	                JSON.stringify(data)
                 );
             } catch (e) {
             	console.error("access denied, "+e)
@@ -1480,8 +1480,8 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
         configs["fnStateSaveCallback"] = function (oSettings,data) {
         	 try {
                  localStorage.setItem(
-                         'DataTables_' + oSettings.sInstance + '_' + location.pathname,
-                         JSON.stringify(data)
+                     'DataTables_' + oSettings.sInstance + '_' + location.pathname,
+                     JSON.stringify(data)
                  );
              } catch (e) {
             	 console.error("access denied, "+e)
@@ -1504,17 +1504,15 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
             
             if ("" !== user.userPreferences && undefined !== user.userPreferences && null !== user.userPreferences) {
                 var userPref = JSON.parse(user.userPreferences);
-                var current = userPref['DataTables_' + settings.sInstance + '_' + location.pathname]
-                for(var i= 0; i < JSON.parse(current)["columns"].length; i++)
-                {
-                	var search = JSON.parse(current)["columns"][i]["search"]["search"];
-                	search = search.substr(1,search.length-2)
-                	search = search.split("|")
-                	columnSearchValuesForClientSide.push(search)
-                }
-                
-                if (undefined !== userPref['DataTables_' + settings.sInstance + '_' + location.pathname]) {
-                    return JSON.parse(userPref['DataTables_' + settings.sInstance + '_' + location.pathname]);
+                var currentTable = userPref['DataTables_' + settings.sInstance + '_' + location.pathname]
+                if (undefined !== currentTable) {
+                	 for(var i= 0; i < JSON.parse(currentTable)["columns"].length; i++){
+                     	var currentSearch = JSON.parse(currentTable)["columns"][i]["search"]["search"];
+                     	var search = currentSearch.substr(1,currentSearch.length-2)
+                     	search = search.split("|")
+                     	columnSearchValuesForClientSide.push(search)
+                     }
+                    return JSON.parse(currentTable);
                 }
             }
         };
