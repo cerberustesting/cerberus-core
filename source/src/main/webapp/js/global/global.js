@@ -814,6 +814,9 @@ function getParameter(param, sys, forceReload) {
     return result;
 }
 
+function getParameterString(param, sys, forceReload) {
+    return getParameter(param, sys, forceReload).value;
+}
 
 /***********************************************Messages/ALERT***************************************/
 

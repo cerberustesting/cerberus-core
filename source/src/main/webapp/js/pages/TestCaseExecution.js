@@ -17,6 +17,9 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
+var paramActivatewebsocketpush = "N";
+var paramWebsocketpushperiod = 5000;
+
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
         var stepList = [];
@@ -27,6 +30,8 @@ $.when($.getScript("js/global/global.js")).then(function () {
 
         var executionId = GetURLParameter("executionId");
         var executionQueueId = GetURLParameter("executionQueueId");
+        paramActivatewebsocketpush = getParameterString("cerberus_featureflipping_activatewebsocketpush", "", true);
+        paramWebsocketpushperiod = getParameterString("cerberus_featureflipping_websocketpushperiod", "", true);
 
         if (isEmpty(executionId)) {
             // executionId parameter is not feed so we probably want to see the queue status.
@@ -114,7 +119,7 @@ function loadExecutionQueue(executionQueueId, bTriggerAgain) {
                             loadExecutionQueue(executionQueueId, true);
                         }, 5000);
                     }
-                    
+
                 } else {
                     configPanel.find("#tcDescription").html("");
                 }
@@ -151,35 +156,44 @@ function loadExecutionInformation(executionId, stepList, sockets) {
             updatePage(tce, stepList);
 
             if (tce.controlStatus === "PE") {
+                if (paramActivatewebsocketpush === "Y") {
+                    var parser = document.createElement('a');
+                    parser.href = window.location.href;
 
-                var parser = document.createElement('a');
-                parser.href = window.location.href;
+                    var protocol = "ws:";
+                    if (parser.protocol === "https:") {
+                        protocol = "wss:";
+                    }
+                    var path = parser.pathname.split("TestCaseExecution")[0];
+                    var new_uri = protocol + parser.host + path + "execution/" + executionId;
 
-                var protocol = "ws:";
-                if (parser.protocol === "https:") {
-                    protocol = "wss:";
-                }
-                var path = parser.pathname.split("ExecutionDetail2")[0];
-                var new_uri = protocol + parser.host + path + "execution/" + executionId;
+                    var socket = new WebSocket(new_uri);
 
-                var socket = new WebSocket(new_uri);
+                    socket.onopen = function (e) {
+                    } //on "écoute" pour savoir si la connexion vers le serveur websocket s'est bien faite
+                    socket.onmessage = function (e) {
+                        var data = JSON.parse(e.data);
+                        updatePage(data, stepList);
+                    } //on récupère les messages provenant du serveur websocket
+                    socket.onclose = function (e) {
+                    } //on est informé lors de la fermeture de la connexion vers le serveur
+                    socket.onerror = function (e) {
+                        setTimeout(function () {
+                            loadExecutionInformation(executionId, stepList);
+                        }, 5000);
+                    } //on traite les cas d'erreur*/
 
-                socket.onopen = function (e) {
-                } //on "écoute" pour savoir si la connexion vers le serveur websocket s'est bien faite
-                socket.onmessage = function (e) {
-                    var data = JSON.parse(e.data);
-                    updatePage(data, stepList);
-                } //on récupère les messages provenant du serveur websocket
-                socket.onclose = function (e) {
-                } //on est informé lors de la fermeture de la connexion vers le serveur
-                socket.onerror = function (e) {
+                    // Remain in memory
+                    sockets.push(socket);
+
+                } else {
+
                     setTimeout(function () {
                         loadExecutionInformation(executionId, stepList);
-                    }, 5000);
-                } //on traite les cas d'erreur*/
+                    }, paramWebsocketpushperiod);
 
-                // Remain in memory
-                sockets.push(socket);
+                }
+
             }
             $("#seeProperties").click(function () {
                 $("#propertiesModal").modal('show');
@@ -343,10 +357,12 @@ function updatePage(data, stepList) {
         $("#rerunFromQueue").unbind("click");
     } else {
         $("#ExecutionQueue").attr("disabled", false);
+        $("#ExecutionQueue").unbind("click");
         $("#ExecutionQueue").click(function () {
             openModalTestCaseExecutionQueue(data.queueId, 'EDIT');
         });
         $("#rerunFromQueue").attr("disabled", false);
+        $("#rerunFromQueue").unbind("click");
         $("#rerunFromQueue").click(function () {
             openModalTestCaseExecutionQueue(data.queueId, 'DUPLICATE');
         });

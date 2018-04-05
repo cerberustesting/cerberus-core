@@ -333,11 +333,6 @@ function feedExecutionQueueModalData(exeQ, modalId, mode, hasPermissionsUpdate) 
     var isEditable = (((hasPermissionsUpdate) && (mode === "EDIT") && ((exeQ.state === "WAITING") || (exeQ.state === "QUEUED") || (exeQ.state === "ERROR") || (exeQ.state === "CANCELLED")))
             || (mode === "DUPLICATE"));
 
-    console.info(isEditable);
-    console.info(mode);
-    console.info(hasPermissionsUpdate);
-    console.info(exeQ.state);
-
     formEdit.find("#test").empty();
     formEdit.find("#testCase").empty();
 
