@@ -46,6 +46,9 @@ To run image by connecting to a MySQL Cerberus database located at `<database_ho
 
     docker run -d -P -e DATABASE_HOST='<database_host>' -e DATABASE_PORT='<database_port>' cerberustesting/cerberus-as-glassfish:latest
 
+### Docker compose
+An example of docker-compose file is available [here](https://github.com/cerberustesting/cerberus-source/tree/master/docker/compositions/cerberus-glassfish-mysql)
+
 ### Configure the running Cerberus instance
 
 **Important**: Additional runtime configuration has to be made:
@@ -74,8 +77,8 @@ Environment variable                    | Definition                            
 `DATABASE_USER`                         | Cerberus database user                    | `cerberus`
 `DATABASE_PASSWORD`                     | Cerberus database password                | `toto`
 `GLASSFISH_HTTP_THREADPOOL_MAX_SIZE`    | Glassfish HTTP thread pool maximum size   | `500`
-`GLASSFISH_DOMAIN`                      | Glassfish domain name (cerberus by default | `500`
-`GLASSFISH_ADMIN_PASSWORD`              | Glassfish admin password                  | `500`
+`GLASSFISH_DOMAIN`                      | Glassfish domain name (cerberus by default | `domain1`
+`GLASSFISH_ADMIN_PASSWORD`              | Glassfish admin password                  | `admin`
 
 ## Exposed ports
 
