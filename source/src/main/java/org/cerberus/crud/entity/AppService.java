@@ -19,6 +19,8 @@
  */
 package org.cerberus.crud.entity;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Timestamp;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
@@ -66,12 +68,14 @@ public class AppService {
     private String responseHTTPBodyContentType;
     private List<AppServiceHeader> responseHeaderList;
     private int timeoutms; // Timeout used during service request
+    private byte[] file;
 
     /**
      * Invariant PROPERTY TYPE String.
      */
     public static final String TYPE_SOAP = "SOAP";
     public static final String TYPE_REST = "REST";
+    public static final String TYPE_FTP = "FTP";
     public static final String METHOD_HTTPPOST = "POST";
     public static final String METHOD_HTTPGET = "GET";
     public static final String METHOD_HTTPDELETE = "DELETE";
@@ -81,6 +85,14 @@ public class AppService {
     public static final String RESPONSEHTTPBODYCONTENTTYPE_JSON = "JSON";
     public static final String RESPONSEHTTPBODYCONTENTTYPE_TXT = "TXT";
     public static final String RESPONSEHTTPBODYCONTENTTYPE_UNKNOWN = "UNKNOWN";
+    
+    public byte[] getFile() {
+    	return this.file;
+    }
+    
+    public void setFile(byte[] file) {
+    	this.file = file;
+    }
 
     public int getTimeoutms() {
         return timeoutms;

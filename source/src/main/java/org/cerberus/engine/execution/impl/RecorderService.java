@@ -19,12 +19,16 @@
  */
 package org.cerberus.engine.execution.impl;
 
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,6 +37,7 @@ import javax.persistence.criteria.CriteriaBuilder.Trimspec;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.cerberus.crud.entity.AppService;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.TestCaseExecution;
@@ -499,13 +504,26 @@ public class RecorderService implements IRecorderService {
 
                 Recorder recorderResponse = this.initFilenames(runId, test, testCase, step, index, sequence, controlString, property, propertyIndex, "response", messageFormatExt, false);
                 recordFile(recorderResponse.getFullPath(), recorderResponse.getFileName(), se.getResponseHTTPBody());
-
                 // Index file created to database.
                 object = testCaseExecutionFileFactory.create(0, runId, recorderResponse.getLevel(), "Response", recorderResponse.getRelativeFilenameURL(), messageFormat, "", null, "", null);
                 testCaseExecutionFileService.save(object);
                 objectFileList.add(object);
+            }else {
+            	if(se.getFile() != null) {
+                    Recorder recorderResponse = this.initFilenames(runId, test, testCase, step, index, sequence, controlString, property, propertyIndex, "response", se.getResponseHTTPBodyContentType().toLowerCase(), false);
+            		File file = new File(recorderResponse.getFullPath());
+            		OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(new File(file.getAbsolutePath() + File.separator + recorderResponse.getFileName())));
+            		InputStream ftpFile = new ByteArrayInputStream(se.getFile());         		
+            		IOUtils.copy(ftpFile, outputStream);
+            		outputStream.close();
+            		ftpFile.close();
+            		se.setFile(null);
+    				// Index file created to database.
+                    object = testCaseExecutionFileFactory.create(0, runId, recorderResponse.getLevel(), "Response", recorderResponse.getRelativeFilenameURL(), se.getResponseHTTPBodyContentType(), "", null, "", null);
+                    testCaseExecutionFileService.save(object);
+                    objectFileList.add(object);
+            	}
             }
-
         } catch (Exception ex) {
             LOG.error(logPrefix + ex.toString());
         }

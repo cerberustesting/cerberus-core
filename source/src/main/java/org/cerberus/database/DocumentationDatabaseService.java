@@ -122,8 +122,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('appservice','operation','','fr','Operation','','_librairie_de_services')");
         b.append(",('appservice','service','','en','Service','','_service_library')");
         b.append(",('appservice','service','','fr','Service','','_librairie_de_services')");
-        b.append(",('appservice','servicePath','','en','Service Path','','_service_library')");
-        b.append(",('appservice','servicePath','','fr','Chemin du service','','_librairie_de_services')");
+        b.append(",('appservice','servicePath','','en','Service Path','This field is used to set the location of your service. you can put a <b>URL</b> as following : <code class=\\'doc-crbvvoca\\'> http://myservice.fr/users/1 </code> <br><br> <code class=\\'doc-crbvvoca\\'> ftp://username:password@host:port/myFile.txt </code><br><br>  you can also put a <b>relative path</b> as following : <br> <center> <code class=\\'doc-crbvvoca\\'> /users/1 </code> </center> <br> <center> <code class=\\'doc-crbvvoca\\'> /myFile.txt </code> </center>','_service_library')");
+        b.append(",('appservice','servicePath','','fr','Chemin du service','Ce champ est utilisé pour specifier où se situe votre service. vous pouvez mettre une <b>URL</b> comme ceci : <code class=\\'doc-crbvvoca\\'> http://myservice.fr/users/1 </code> <br><br> <code class=\\'doc-crbvvoca\\'> ftp://username:password@host:port/myFile.txt </code><br><br>  vous pouvez aussi mettre un <b>chemin relatif</b> comme cela : <br> <center> <code class=\\'doc-crbvvoca\\'> /users/1 </code> </center> <br> <center> <code class=\\'doc-crbvvoca\\'> /myFile.txt </code> </center>','_librairie_de_services')");
         b.append(",('appservice','srvRequest','','en','Request','','_service_library')");
         b.append(",('appservice','srvRequest','','fr','Requête','','_librairie_de_services')");
         b.append(",('appservice','type','','en','Type','','_service_library')");

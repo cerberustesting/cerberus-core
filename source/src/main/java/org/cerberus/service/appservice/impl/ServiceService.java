@@ -37,6 +37,7 @@ import org.cerberus.exception.CerberusEventException;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.appservice.IServiceService;
 import org.cerberus.service.file.IFileService;
+import org.cerberus.service.ftp.IFtpService;
 import org.cerberus.service.rest.IRestService;
 import org.cerberus.service.soap.ISoapService;
 import org.cerberus.util.StringUtil;
@@ -69,6 +70,8 @@ public class ServiceService implements IServiceService {
     private IVariableService variableService;
     @Autowired
     private IRestService restService;
+    @Autowired
+    private IFtpService ftpService;
     @Autowired
     private ICountryEnvironmentDatabaseService countryEnvironmentDatabaseService;
 
@@ -352,28 +355,14 @@ public class ServiceService implements IServiceService {
                          */
                         switch (appService.getMethod()) {
                         	
-                            case AppService.METHOD_HTTPGET:
-                            	
+                            case AppService.METHOD_HTTPGET:                           	
                             case AppService.METHOD_HTTPPOST:
-                                /**
+                            case AppService.METHOD_HTTPDELETE:
+                            case AppService.METHOD_HTTPPUT:
+                            case AppService.METHOD_HTTPPATCH:
+                            	/**
                                  * Call REST and store it into the execution.
                                  */
-                                result = restService.callREST(decodedServicePath, decodedRequest, appService.getMethod(),
-                                        appService.getHeaderList(), appService.getContentList(), token, timeOutMs, system);
-                                message = result.getResultMessage();
-                                break;
-                            case AppService.METHOD_HTTPDELETE:
-
-                                result = restService.callREST(decodedServicePath, decodedRequest, appService.getMethod(),
-                                        appService.getHeaderList(), appService.getContentList(), token, timeOutMs, system);
-                                message = result.getResultMessage();
-                                break;
-                            case AppService.METHOD_HTTPPUT:
-                            	 result = restService.callREST(decodedServicePath, decodedRequest, appService.getMethod(),
-                                         appService.getHeaderList(), appService.getContentList(), token, timeOutMs, system);
-                                 message = result.getResultMessage();
-                                 break;
-                            case AppService.METHOD_HTTPPATCH:
                             	 result = restService.callREST(decodedServicePath, decodedRequest, appService.getMethod(),
                                          appService.getHeaderList(), appService.getContentList(), token, timeOutMs, system);
                                  message = result.getResultMessage();
@@ -386,6 +375,22 @@ public class ServiceService implements IServiceService {
                         }
 
                         break;
+                    
+                    case AppService.TYPE_FTP:
+                    	/**
+                    	 * FTP.
+                    	 */
+                    	switch(appService.getMethod()) {
+                    		case AppService.METHOD_HTTPGET:
+                    			result = ftpService.getFTP(decodedServicePath);
+                    			message = result.getResultMessage();
+                                break;
+                    		default:
+                                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
+                                message.setDescription(message.getDescription().replace("%DESCRIPTION%", "Method : '" + appService.getMethod() + "' for REST Service is not supported by the engine."));
+                                result.setResultMessage(message);
+                    	}
+                    	break;
 
                     default:
                         message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);

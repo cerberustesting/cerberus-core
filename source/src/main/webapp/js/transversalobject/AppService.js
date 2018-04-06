@@ -38,7 +38,7 @@ function initModalAppService(){
 	console.info("init");
 	var doc = new Doc();
 	
-    displayInvariantList("type", "SRVTYPE", false, "SOAP");
+    displayInvariantList("type", "SRVTYPE", false, "REST");
     displayInvariantList("method", "SRVMETHOD", false, "GET");
     displayApplicationList("application", "", "");
 	
@@ -53,7 +53,7 @@ function initModalAppService(){
     $("[name='soapLibraryField']").html(doc.getDocLabel("appservice", "service"));
     $("[name='typeField']").html(doc.getDocLabel("appservice", "type"));
     $("[name='descriptionField']").html(doc.getDocLabel("appservice", "description"));
-    $("[name='servicePathField']").html(doc.getDocLabel("appservice", "servicePath"));
+    $("[name='servicePathField']").html(doc.getDocOnline("appservice", "servicePath"));
     $("[name='methodField']").html(doc.getDocLabel("appservice", "method"));
     $("[name='buttonClose']").html(doc.getDocLabel("page_appservice", "close_btn"));
     $("[name='buttonAdd']").html(doc.getDocLabel("page_appservice", "save_btn"));
@@ -62,6 +62,12 @@ function initModalAppService(){
     $("[name='lbl_creator']").html(doc.getDocOnline("transversal", "UsrCreated"));
     $("[name='lbl_lastModified']").html(doc.getDocOnline("transversal", "DateModif"));
     $("[name='lbl_lastModifier']").html(doc.getDocOnline("transversal", "UsrModif"));
+    
+    $('[data-toggle="popover"]').popover({
+        'placement': 'auto',
+        'container': 'body'}
+    );
+    
 }
 
 /***
@@ -264,15 +270,43 @@ function confirmAppServiceModalHandler(mode,page) {
 }
 
 function refreshDisplayOnTypeChange(newValue) {
+		
     if (newValue === "SOAP") {
         // If SOAP service, no need to feed the method.
         $('#editSoapLibraryModal #method').prop("disabled", true);
         $('#editSoapLibraryModal #operation').prop("readonly", false);
         $('#editSoapLibraryModal #attachementurl').prop("readonly", false);
-    } else {
+        $('#editSoapLibraryModal #host').prop("disabled", true);
+		$('#editSoapLibraryModal #port').prop("disabled", true);
+		$('#editSoapLibraryModal #user').prop("disabled", true);
+		$('#editSoapLibraryModal #password').prop("disabled", true);
+    }else if(newValue === "FTP"){
+    	$('#editSoapLibraryModal #method').prop("disabled", false);
+        $('#editSoapLibraryModal #operation').prop("readonly", true);
+        $('#editSoapLibraryModal #attachementurl').prop("readonly", true);
+        $('#editSoapLibraryModal #addContent').prop("disabled", true);
+        $('#editSoapLibraryModal #addHeader').prop("disabled", true);
+        $('#editSoapLibraryModal #host').prop("disabled", false);
+ 		$('#editSoapLibraryModal #port').prop("disabled", false);
+ 		$('#editSoapLibraryModal #user').prop("disabled", false);
+ 		$('#editSoapLibraryModal #password').prop("disabled", false);
+ 		$('#editSoapLibraryModal #method option[value="DELETE"]').css("display","none");
+ 		$('#editSoapLibraryModal #method option[value="PUT"]').css("display","none");
+ 		$('#editSoapLibraryModal #method option[value="PATCH"]').css("display","none");
+ 		$('#editSoapLibraryModal #method option[value="POST"]').css("display","none");
+ 		$('#editSoapLibraryModal #method').prop("disabled", false);
+    }else {
         $('#editSoapLibraryModal #method').prop("disabled", false);
         $('#editSoapLibraryModal #operation').prop("readonly", true);
         $('#editSoapLibraryModal #attachementurl').prop("readonly", true);
+        $('#editSoapLibraryModal #host').prop("disabled", true);
+		$('#editSoapLibraryModal #port').prop("disabled", true);
+		$('#editSoapLibraryModal #user').prop("disabled", true);
+		$('#editSoapLibraryModal #password').prop("disabled", true);
+		$('#editSoapLibraryModal #method option[value="DELETE"]').css("display","block");
+ 		$('#editSoapLibraryModal #method option[value="PUT"]').css("display","block");
+ 		$('#editSoapLibraryModal #method option[value="PATCH"]').css("display","block");
+ 		$('#editSoapLibraryModal #method option[value="POST"]').css("display","block");
     }
 }
 
