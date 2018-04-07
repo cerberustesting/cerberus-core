@@ -105,7 +105,7 @@ public class CountryEnvironmentDatabaseService implements ICountryEnvironmentDat
         MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
         Answer finalAnswer = new Answer(msg1);
 
-        List<CountryEnvironmentDatabase> oldList = new ArrayList();
+        List<CountryEnvironmentDatabase> oldList = new ArrayList<>();
         try {
             oldList = this.convert(this.readByVarious(system, country, environement));
         } catch (CerberusException ex) {
@@ -117,9 +117,9 @@ public class CountryEnvironmentDatabaseService implements ICountryEnvironmentDat
          * TestCaseStep in Database has same key : Update and remove from the
          * list. If TestCaseStep in database does ot exist : Insert it.
          */
-        List<CountryEnvironmentDatabase> listToUpdateOrInsert = new ArrayList(newList);
+        List<CountryEnvironmentDatabase> listToUpdateOrInsert = new ArrayList<>(newList);
         listToUpdateOrInsert.removeAll(oldList);
-        List<CountryEnvironmentDatabase> listToUpdateOrInsertToIterate = new ArrayList(listToUpdateOrInsert);
+        List<CountryEnvironmentDatabase> listToUpdateOrInsertToIterate = new ArrayList<>(listToUpdateOrInsert);
 
         for (CountryEnvironmentDatabase objectDifference : listToUpdateOrInsertToIterate) {
             for (CountryEnvironmentDatabase objectInDatabase : oldList) {
@@ -136,9 +136,9 @@ public class CountryEnvironmentDatabaseService implements ICountryEnvironmentDat
          * TestCaseStep in Page has same key : remove from the list. Then delete
          * the list of TestCaseStep
          */
-        List<CountryEnvironmentDatabase> listToDelete = new ArrayList(oldList);
+        List<CountryEnvironmentDatabase> listToDelete = new ArrayList<>(oldList);
         listToDelete.removeAll(newList);
-        List<CountryEnvironmentDatabase> listToDeleteToIterate = new ArrayList(listToDelete);
+        List<CountryEnvironmentDatabase> listToDeleteToIterate = new ArrayList<>(listToDelete);
 
         for (CountryEnvironmentDatabase objectDifference : listToDeleteToIterate) {
             for (CountryEnvironmentDatabase objectInPage : newList) {

@@ -210,7 +210,7 @@ public class DuplicateTestCase extends HttpServlet {
                 originalTC.setTestCase(testCase);
                 ans = testCaseService.create(originalTC);
 
-                List<TestCaseCountry> countryList = new ArrayList();
+                List<TestCaseCountry> countryList = new ArrayList<>();
                 countryList = testCaseCountryService.findTestCaseCountryByTestTestCase(originalTest, originalTestCase);
                 boolean success = true;
                 if (!countryList.isEmpty()) {
@@ -225,7 +225,7 @@ public class DuplicateTestCase extends HttpServlet {
 //                    success = testCaseCountryService.insertListTestCaseCountry(countryList);
 //                }
 
-                List<TestCaseCountryProperties> tccpList = new ArrayList();
+                List<TestCaseCountryProperties> tccpList = new ArrayList<>();
                 if (!countryList.isEmpty() && ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && success) {
                     tccpList = testCaseCountryPropertiesService.findListOfPropertyPerTestTestCase(originalTest, originalTestCase);
                     if (!tccpList.isEmpty()) {
@@ -233,7 +233,7 @@ public class DuplicateTestCase extends HttpServlet {
                     }
                 }
 
-                List<TestCaseStep> tcsList = new ArrayList();
+                List<TestCaseStep> tcsList = new ArrayList<>();
                 if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && success) {
                     tcsList = testCaseStepService.getListOfSteps(originalTest, originalTestCase);
                     if (!tcsList.isEmpty()) {
@@ -241,7 +241,7 @@ public class DuplicateTestCase extends HttpServlet {
                     }
                 }
 
-                List<TestCaseStepAction> tcsaList = new ArrayList();
+                List<TestCaseStepAction> tcsaList = new ArrayList<>();
                 if (!tcsList.isEmpty() && ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && success) {
                     tcsaList = testCaseStepActionService.findTestCaseStepActionbyTestTestCase(originalTest, originalTestCase);
                     if (!tcsaList.isEmpty()) {
@@ -336,7 +336,7 @@ public class DuplicateTestCase extends HttpServlet {
     }
 
     private List<TestCaseCountry> getCountryList(String targetTest, String targetTestCase, HttpServletRequest request) throws CerberusException, JSONException, UnsupportedEncodingException {
-        List<TestCaseCountry> countryList = new ArrayList();
+        List<TestCaseCountry> countryList = new ArrayList<>();
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         IInvariantService invariantService = appContext.getBean(InvariantService.class);
         IFactoryTestCaseCountry testCaseCountryFactory = appContext.getBean(IFactoryTestCaseCountry.class);

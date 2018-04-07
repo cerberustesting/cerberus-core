@@ -50,8 +50,8 @@ public class CerberusInformationDAO implements ICerberusInformationDAO {
     private static final Logger LOG = LogManager.getLogger(CerberusInformationDAO.class);
 
     @Override
-    public AnswerItem getDatabaseInformation() {
-        AnswerItem ans = new AnswerItem();
+    public AnswerItem<HashMap<String, String>> getDatabaseInformation() {
+        AnswerItem<HashMap<String, String>> ans = new AnswerItem<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         HashMap<String, String> cerberusInformation = new HashMap<>();

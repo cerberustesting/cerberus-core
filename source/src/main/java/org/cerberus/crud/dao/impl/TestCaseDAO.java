@@ -359,7 +359,7 @@ public class TestCaseDAO implements ITestCaseDAO {
     }
 
     @Override
-    public AnswerList findTestCaseByService(String service) {
+    public AnswerList<TestListDTO> findTestCaseByService(String service) {
         AnswerList ansList = new AnswerList();
         MessageEvent rs;
         List<TestListDTO> listOfTests = new ArrayList<TestListDTO>();
@@ -462,7 +462,7 @@ public class TestCaseDAO implements ITestCaseDAO {
     }
 
     @Override
-    public AnswerList findTestCaseByServiceByDataLib(String service) {
+    public AnswerList<TestListDTO> findTestCaseByServiceByDataLib(String service) {
         AnswerList ansList = new AnswerList();
         MessageEvent rs;
         List<TestListDTO> listOfTests = new ArrayList<TestListDTO>();

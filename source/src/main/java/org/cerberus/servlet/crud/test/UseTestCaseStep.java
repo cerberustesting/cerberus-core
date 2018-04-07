@@ -127,7 +127,7 @@ public class UseTestCaseStep extends HttpServlet {
             if (tccListString != null) {
                 tccListString.retainAll(tccFromListString);
                 if (tccListString.size() > 0 && propertyNamesOfStep.size() > 0) {
-                    List<TestCaseCountryProperties> tccpToImport = new ArrayList();
+                    List<TestCaseCountryProperties> tccpToImport = new ArrayList<>();
                     for (String country : tccListString) {
                         tccpList = testCaseCountryProperties.findListOfPropertyPerTestTestCaseCountry(fromTest, fromTestCase, country);
                         for (TestCaseCountryProperties tccp : tccpList) {

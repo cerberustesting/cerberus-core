@@ -386,7 +386,9 @@
                     <compilerArguments>
                         <endorseddirs>${endorsed.dir}</endorseddirs>
                     </compilerArguments>
-                    <showDeprecation>false</showDeprecation>
+<!--                    <compilerArguments>
+                        <Xlint:unchecked/>
+                    </compilerArguments>-->
                 </configuration>
             </plugin>
             <plugin>

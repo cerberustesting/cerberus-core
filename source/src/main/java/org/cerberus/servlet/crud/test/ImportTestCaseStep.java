@@ -116,7 +116,7 @@ public class ImportTestCaseStep extends HttpServlet {
         fromTcs.setStep(step);
 
         LOG.debug("Rewrite TestCaseStepAction");
-        List<TestCaseStepAction> tcsaToImport = new ArrayList();
+        List<TestCaseStepAction> tcsaToImport = new ArrayList<>();
         // retrieve list of property name used in the step
         List<String> propertyNamesOfStep = new ArrayList<String>();
         for (TestCaseStepAction tcsa : fromTcsa) {
@@ -130,7 +130,7 @@ public class ImportTestCaseStep extends HttpServlet {
         }
 
         LOG.debug("Rewrite TestCaseStepActionControl");
-        List<TestCaseStepActionControl> tcsacToImport = new ArrayList();
+        List<TestCaseStepActionControl> tcsacToImport = new ArrayList<>();
         for (TestCaseStepActionControl tcsac : fromTcsac) {
             tcsac.setTest(test);
             tcsac.setTestCase(testCase);
@@ -142,7 +142,7 @@ public class ImportTestCaseStep extends HttpServlet {
          * For the country defined in the destination testcase, insert the
          * properties of the origine testcase
          */
-        List<TestCaseCountryProperties> tccpToImport = new ArrayList();
+        List<TestCaseCountryProperties> tccpToImport = new ArrayList<>();
         if (importProperty.equalsIgnoreCase("Y")) {
             LOG.debug("Rewrite TestCaseCountryProperties");
             if (tccListString != null) {

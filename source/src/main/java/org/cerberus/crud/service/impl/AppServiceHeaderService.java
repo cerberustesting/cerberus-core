@@ -151,7 +151,7 @@ public class AppServiceHeaderService implements IAppServiceHeaderService {
         MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
         Answer finalAnswer = new Answer(msg1);
 
-        List<AppServiceHeader> oldList = new ArrayList();
+        List<AppServiceHeader> oldList = new ArrayList<>();
         try {
             oldList = this.convert(this.readByVarious(service, null));
         } catch (CerberusException ex) {
@@ -161,9 +161,9 @@ public class AppServiceHeaderService implements IAppServiceHeaderService {
         /**
          * Update and Create all objects database Objects from newList
          */
-        List<AppServiceHeader> listToUpdateOrInsert = new ArrayList(newList);
+        List<AppServiceHeader> listToUpdateOrInsert = new ArrayList<>(newList);
         listToUpdateOrInsert.removeAll(oldList);
-        List<AppServiceHeader> listToUpdateOrInsertToIterate = new ArrayList(listToUpdateOrInsert);
+        List<AppServiceHeader> listToUpdateOrInsertToIterate = new ArrayList<>(listToUpdateOrInsert);
 
         for (AppServiceHeader objectDifference : listToUpdateOrInsertToIterate) {
             for (AppServiceHeader objectInDatabase : oldList) {
@@ -178,9 +178,9 @@ public class AppServiceHeaderService implements IAppServiceHeaderService {
         /**
          * Delete all objects database Objects that do not exist from newList
          */
-        List<AppServiceHeader> listToDelete = new ArrayList(oldList);
+        List<AppServiceHeader> listToDelete = new ArrayList<>(oldList);
         listToDelete.removeAll(newList);
-        List<AppServiceHeader> listToDeleteToIterate = new ArrayList(listToDelete);
+        List<AppServiceHeader> listToDeleteToIterate = new ArrayList<>(listToDelete);
 
         for (AppServiceHeader tcsDifference : listToDeleteToIterate) {
             for (AppServiceHeader tcsInPage : newList) {

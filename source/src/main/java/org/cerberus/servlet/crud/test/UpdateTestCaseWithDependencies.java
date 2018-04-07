@@ -112,7 +112,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         User user = userService.findUserByKey(request.getUserPrincipal().getName());
 //        List<UserGroup> userGroupList = groupService.findGroupByUser(user);
         List<UserGroup> userGroupList = userGroupService.convert(userGroupService.readByUser(user.getLogin()));
-        List<String> groupList = new ArrayList();
+        List<String> groupList = new ArrayList<>();
         for (UserGroup group : userGroupList) {
             groupList.add(group.getGroup());
         }
@@ -185,9 +185,9 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
          * remove from the list. If TestCaseCountry in database does ot exist :
          * Insert it.
          */
-        List<TestCaseCountry> tccToUpdateOrInsert = new ArrayList(tccFromPage);
+        List<TestCaseCountry> tccToUpdateOrInsert = new ArrayList<>(tccFromPage);
         tccToUpdateOrInsert.removeAll(tccFromDtb);
-        List<TestCaseCountry> tccToUpdateOrInsertToIterate = new ArrayList(tccToUpdateOrInsert);
+        List<TestCaseCountry> tccToUpdateOrInsertToIterate = new ArrayList<>(tccToUpdateOrInsert);
 
         for (TestCaseCountry tccDifference : tccToUpdateOrInsertToIterate) {
             for (TestCaseCountry tccInDatabase : tccFromDtb) {
@@ -204,9 +204,9 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
          * list. Then delete the list of TestCaseCountry
          */
         if (!duplicate) {
-            List<TestCaseCountry> tccToDelete = new ArrayList(tccFromDtb);
+            List<TestCaseCountry> tccToDelete = new ArrayList<>(tccFromDtb);
             tccToDelete.removeAll(tccFromPage);
-            List<TestCaseCountry> tccToDeleteToIterate = new ArrayList(tccToDelete);
+            List<TestCaseCountry> tccToDeleteToIterate = new ArrayList<>(tccToDelete);
 
             for (TestCaseCountry tccDifference : tccToDeleteToIterate) {
                 for (TestCaseCountry tccInPage : tccFromPage) {
@@ -230,9 +230,9 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
          * in Database has same key : Update and remove from the list. If
          * TestCaseCountryProperties in database does ot exist : Insert it.
          */
-        List<TestCaseCountryProperties> tccpToUpdateOrInsert = new ArrayList(tccpFromPage);
+        List<TestCaseCountryProperties> tccpToUpdateOrInsert = new ArrayList<>(tccpFromPage);
         tccpToUpdateOrInsert.removeAll(tccpFromDtb);
-        List<TestCaseCountryProperties> tccpToUpdateOrInsertToIterate = new ArrayList(tccpToUpdateOrInsert);
+        List<TestCaseCountryProperties> tccpToUpdateOrInsertToIterate = new ArrayList<>(tccpToUpdateOrInsert);
 
         for (TestCaseCountryProperties tccpDifference : tccpToUpdateOrInsertToIterate) {
             for (TestCaseCountryProperties tccpInDatabase : tccpFromDtb) {
@@ -252,9 +252,9 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
          * TestCaseCountryProperties
          */
         if (!duplicate) {
-            List<TestCaseCountryProperties> tccpToDelete = new ArrayList(tccpFromDtb);
+            List<TestCaseCountryProperties> tccpToDelete = new ArrayList<>(tccpFromDtb);
             tccpToDelete.removeAll(tccpFromPage);
-            List<TestCaseCountryProperties> tccpToDeleteToIterate = new ArrayList(tccpToDelete);
+            List<TestCaseCountryProperties> tccpToDeleteToIterate = new ArrayList<>(tccpToDelete);
 
             for (TestCaseCountryProperties tccpDifference : tccpToDeleteToIterate) {
                 for (TestCaseCountryProperties tccpInPage : tccpFromPage) {
@@ -272,8 +272,8 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
          * - setting the correct related step and action for action or control
          */
         List<TestCaseStep> tcsFromPage = getTestCaseStepFromParameter(request, appContext, test, testCase, duplicate);
-        List<TestCaseStepAction> tcsaFromPage = new ArrayList();
-        List<TestCaseStepActionControl> tcsacFromPage = new ArrayList();
+        List<TestCaseStepAction> tcsaFromPage = new ArrayList<>();
+        List<TestCaseStepActionControl> tcsacFromPage = new ArrayList<>();
 
         int nextStepNumber = getMaxStepNumber(tcsFromPage);
         for (TestCaseStep tcs : tcsFromPage) {
@@ -308,13 +308,13 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         /*
          * Create, update or delete step, action and control according to the needs
          */
-        List<TestCaseStep> tcsFromDtb = new ArrayList(tcsService.getListOfSteps(initialTest, initialTestCase));
+        List<TestCaseStep> tcsFromDtb = new ArrayList<>(tcsService.getListOfSteps(initialTest, initialTestCase));
         tcsService.compareListAndUpdateInsertDeleteElements(tcsFromPage, tcsFromDtb, duplicate);
 
-        List<TestCaseStepAction> tcsaFromDtb = new ArrayList(tcsaService.findTestCaseStepActionbyTestTestCase(initialTest, initialTestCase));
+        List<TestCaseStepAction> tcsaFromDtb = new ArrayList<>(tcsaService.findTestCaseStepActionbyTestTestCase(initialTest, initialTestCase));
         tcsaService.compareListAndUpdateInsertDeleteElements(tcsaFromPage, tcsaFromDtb, duplicate);
 
-        List<TestCaseStepActionControl> tcsacFromDtb = new ArrayList(tcsacService.findControlByTestTestCase(initialTest, initialTestCase));
+        List<TestCaseStepActionControl> tcsacFromDtb = new ArrayList<>(tcsacService.findControlByTestTestCase(initialTest, initialTestCase));
         tcsacService.compareListAndUpdateInsertDeleteElements(tcsacFromPage, tcsacFromDtb, duplicate);
 
         /**
@@ -468,7 +468,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
     }
 
     private List<TestCaseCountryProperties> getTestCaseCountryPropertiesFromParameter(HttpServletRequest request, ApplicationContext appContext, String test, String testCase) {
-        List<TestCaseCountryProperties> testCaseCountryProp = new ArrayList();
+        List<TestCaseCountryProperties> testCaseCountryProp = new ArrayList<>();
         String[] testcase_properties_increment = getParameterValuesIfExists(request, "property_increment");
         IFactoryTestCaseCountryProperties testCaseCountryPropertiesFactory = appContext.getBean(IFactoryTestCaseCountryProperties.class);
         if (testcase_properties_increment != null) {
@@ -499,7 +499,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
     }
 
     private List<TestCaseStep> getTestCaseStepFromParameter(HttpServletRequest request, ApplicationContext appContext, String test, String testCase, boolean duplicate) {
-        List<TestCaseStep> testCaseStep = new ArrayList();
+        List<TestCaseStep> testCaseStep = new ArrayList<>();
         ITestCaseStepService tcsService = appContext.getBean(ITestCaseStepService.class);
         String[] testcase_step_increment = getParameterValuesIfExists(request, "step_increment");
         IFactoryTestCaseStep testCaseStepFactory = appContext.getBean(IFactoryTestCaseStep.class);
@@ -544,7 +544,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                                 act.setTest(test);
                                 act.setTestCase(testCase);
                                 act.setStep(step);
-                                List<TestCaseStepActionControl> updatedControlsPerAction = new ArrayList<TestCaseStepActionControl>();
+                                List<TestCaseStepActionControl> updatedControlsPerAction = new ArrayList<>();
                                 for (TestCaseStepActionControl ctrl : controlsPerAction) {
                                     ctrl.setTest(test);
                                     ctrl.setTestCase(testCase);
@@ -648,7 +648,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
     }
 
     private List<TestCaseStepAction> getTestCaseStepActionFromParameter(HttpServletRequest request, ApplicationContext appContext, String test, String testCase, String stepInc) {
-        List<TestCaseStepAction> testCaseStepAction = new ArrayList();
+        List<TestCaseStepAction> testCaseStepAction = new ArrayList<>();
         String[] stepAction_increment = getParameterValuesIfExists(request, "action_increment_" + stepInc);
         IFactoryTestCaseStepAction testCaseStepActionFactory = appContext.getBean(IFactoryTestCaseStepAction.class);
         if (stepAction_increment != null) {
@@ -679,7 +679,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
     }
 
     private List<TestCaseStepActionControl> getTestCaseStepActionControlFromParameter(HttpServletRequest request, ApplicationContext appContext, String test, String testCase, String stepInc, String actionInc) {
-        List<TestCaseStepActionControl> testCaseStepActionControl = new ArrayList();
+        List<TestCaseStepActionControl> testCaseStepActionControl = new ArrayList<>();
         String[] stepActionControl_increment = getParameterValuesIfExists(request, "control_increment_" + stepInc + "_" + actionInc);
         IFactoryTestCaseStepActionControl testCaseStepActionControlFactory = appContext.getBean(IFactoryTestCaseStepActionControl.class);
         if (stepActionControl_increment != null) {

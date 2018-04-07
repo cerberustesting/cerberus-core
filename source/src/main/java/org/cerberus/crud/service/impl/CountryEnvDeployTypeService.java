@@ -97,7 +97,7 @@ public class CountryEnvDeployTypeService implements ICountryEnvDeployTypeService
         MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
         Answer finalAnswer = new Answer(msg1);
 
-        List<CountryEnvDeployType> oldList = new ArrayList();
+        List<CountryEnvDeployType> oldList = new ArrayList<>();
         try {
             oldList = this.convert(this.readByVarious(system, country, environement, null));
         } catch (CerberusException ex) {
@@ -109,9 +109,9 @@ public class CountryEnvDeployTypeService implements ICountryEnvDeployTypeService
          * TestCaseStep in Database has same key : Update and remove from the
          * list. If TestCaseStep in database does ot exist : Insert it.
          */
-        List<CountryEnvDeployType> listToUpdateOrInsert = new ArrayList(newList);
+        List<CountryEnvDeployType> listToUpdateOrInsert = new ArrayList<>(newList);
         listToUpdateOrInsert.removeAll(oldList);
-        List<CountryEnvDeployType> listToUpdateOrInsertToIterate = new ArrayList(listToUpdateOrInsert);
+        List<CountryEnvDeployType> listToUpdateOrInsertToIterate = new ArrayList<>(listToUpdateOrInsert);
 
         for (CountryEnvDeployType objectDifference : listToUpdateOrInsertToIterate) {
             for (CountryEnvDeployType objectInDatabase : oldList) {
@@ -128,9 +128,9 @@ public class CountryEnvDeployTypeService implements ICountryEnvDeployTypeService
          * TestCaseStep in Page has same key : remove from the list. Then delete
          * the list of TestCaseStep
          */
-        List<CountryEnvDeployType> listToDelete = new ArrayList(oldList);
+        List<CountryEnvDeployType> listToDelete = new ArrayList<>(oldList);
         listToDelete.removeAll(newList);
-        List<CountryEnvDeployType> listToDeleteToIterate = new ArrayList(listToDelete);
+        List<CountryEnvDeployType> listToDeleteToIterate = new ArrayList<>(listToDelete);
 
         for (CountryEnvDeployType tcsDifference : listToDeleteToIterate) {
             for (CountryEnvDeployType tcsInPage : newList) {

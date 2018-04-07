@@ -404,7 +404,7 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
     }
 
     @Override
-    public AnswerList readByVarious1(String test, String testcase, int step, int sequence) {
+    public AnswerList<TestCaseStepActionControl> readByVarious1(String test, String testcase, int step, int sequence) {
         AnswerList response = new AnswerList();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));

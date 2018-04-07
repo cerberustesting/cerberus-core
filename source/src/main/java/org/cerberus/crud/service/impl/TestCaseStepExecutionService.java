@@ -78,7 +78,7 @@ public class TestCaseStepExecutionService implements ITestCaseStepExecutionServi
     public AnswerList readByVarious1WithDependency(long executionId, String test, String testcase) {
         AnswerList steps = this.readByVarious1(executionId, test, testcase);
         AnswerList response = null;
-        List<TestCaseStepExecution> tcseList = new ArrayList();
+        List<TestCaseStepExecution> tcseList = new ArrayList<>();
         for (Object step : steps.getDataList()) {
             TestCaseStepExecution tces = (TestCaseStepExecution) step;
 

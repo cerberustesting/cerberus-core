@@ -24,6 +24,7 @@ import java.util.List;
 import org.cerberus.crud.dao.ITestCaseStepDAO;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.TestCaseStep;
+import org.cerberus.crud.entity.TestCaseStepAction;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.ITestCaseStepService;
 import org.cerberus.enums.MessageEventEnum;
@@ -104,9 +105,9 @@ public class TestCaseStepService implements ITestCaseStepService {
          * TestCaseStep in Database has same key : Update and remove from the
          * list. If TestCaseStep in database does ot exist : Insert it.
          */
-        List<TestCaseStep> tcsToUpdateOrInsert = new ArrayList(newList);
+        List<TestCaseStep> tcsToUpdateOrInsert = new ArrayList<>(newList);
         tcsToUpdateOrInsert.removeAll(oldList);
-        List<TestCaseStep> tcsToUpdateOrInsertToIterate = new ArrayList(tcsToUpdateOrInsert);
+        List<TestCaseStep> tcsToUpdateOrInsertToIterate = new ArrayList<>(tcsToUpdateOrInsert);
 
         for (TestCaseStep tcsDifference : tcsToUpdateOrInsertToIterate) {
             for (TestCaseStep tcsInDatabase : oldList) {
@@ -126,9 +127,9 @@ public class TestCaseStepService implements ITestCaseStepService {
          * the list of TestCaseStep
          */
         if (!duplicate) {
-            List<TestCaseStep> tcsToDelete = new ArrayList(oldList);
+            List<TestCaseStep> tcsToDelete = new ArrayList<>(oldList);
             tcsToDelete.removeAll(newList);
-            List<TestCaseStep> tcsToDeleteToIterate = new ArrayList(tcsToDelete);
+            List<TestCaseStep> tcsToDeleteToIterate = new ArrayList<>(tcsToDelete);
 
             for (TestCaseStep tcsDifference : tcsToDeleteToIterate) {
                 for (TestCaseStep tcsInPage : newList) {
@@ -203,21 +204,21 @@ public class TestCaseStepService implements ITestCaseStepService {
     public AnswerList readByTestTestCaseWithDependency(String test, String testcase) {
         AnswerList steps = this.readByTestTestCase(test, testcase);
         AnswerList response = null;
-        List<TestCaseStep> tcseList = new ArrayList();
+        List<TestCaseStep> tcseList = new ArrayList<>();
         for (Object step : steps.getDataList()) {
             TestCaseStep tces = (TestCaseStep) step;
-            AnswerList actions = testCaseStepActionService.readByVarious1WithDependency(test, testcase, tces.getStep());
+            AnswerList<TestCaseStepAction> actions = testCaseStepActionService.readByVarious1WithDependency(test, testcase, tces.getStep());
             tces.setTestCaseStepAction(actions.getDataList());
             tcseList.add(tces);
         }
-        response = new AnswerList(tcseList, steps.getTotalRows(), new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+        response = new AnswerList<>(tcseList, steps.getTotalRows(), new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
         return response;
     }
 
     @Override
     public Answer duplicateList(List<TestCaseStep> listOfSteps, String targetTest, String targetTestCase) {
         Answer ans = new Answer(null);
-        List<TestCaseStep> listToCreate = new ArrayList();
+        List<TestCaseStep> listToCreate = new ArrayList<>();
         for (TestCaseStep objectToDuplicate : listOfSteps) {
             objectToDuplicate.setTest(targetTest);
             objectToDuplicate.setTestCase(targetTestCase);

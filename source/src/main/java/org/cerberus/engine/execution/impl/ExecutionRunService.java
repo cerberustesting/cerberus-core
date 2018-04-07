@@ -272,7 +272,7 @@ public class ExecutionRunService implements IExecutionRunService {
              * Load All properties of the testcase
              */
             LOG.debug(logPrefix + "Loading all Properties.");
-            List<TestCaseCountryProperties> tcProperties = new ArrayList();
+            List<TestCaseCountryProperties> tcProperties = new ArrayList<>();
             try {
                 tcProperties = testCaseCountryPropertiesService.findAllWithDependencies(tCExecution.getTest(), tCExecution.getTestCase(), tCExecution.getCountry());
                 tCExecution.setTestCaseCountryPropertyList(tcProperties);

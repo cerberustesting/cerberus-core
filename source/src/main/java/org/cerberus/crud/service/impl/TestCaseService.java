@@ -103,7 +103,7 @@ public class TestCaseService implements ITestCaseService {
             LOG.warn("test case is null - test: " + test + " testcase: " + testCase);
         } else {
             List<TestCaseCountry> testCaseCountry = testCaseCountryService.findTestCaseCountryByTestTestCase(test, testCase);
-            List<TestCaseCountry> testCaseCountryToAdd = new ArrayList();
+            List<TestCaseCountry> testCaseCountryToAdd = new ArrayList<>();
             for (TestCaseCountry tcc : testCaseCountry) {
                 List<TestCaseCountryProperties> properties = testCaseCountryPropertiesService.findListOfPropertyPerTestTestCaseCountry(test, testCase, tcc.getCountry());
                 tcc.setTestCaseCountryProperty(properties);
@@ -114,7 +114,7 @@ public class TestCaseService implements ITestCaseService {
             String initialTest = test;
             String initialTc = testCase;
             List<TestCaseStep> tcs = testCaseStepService.getListOfSteps(test, testCase);
-            List<TestCaseStep> tcsToAdd = new ArrayList();
+            List<TestCaseStep> tcsToAdd = new ArrayList<>();
             for (TestCaseStep step : tcs) {
                 int stepNumber = step.getStep();
                 int initialStep = step.getStep();
@@ -124,10 +124,10 @@ public class TestCaseService implements ITestCaseService {
                     stepNumber = step.getUseStepStep();
                 }
                 List<TestCaseStepAction> tcsa = testCaseStepActionService.getListOfAction(test, testCase, stepNumber);
-                List<TestCaseStepAction> tcsaToAdd = new ArrayList();
+                List<TestCaseStepAction> tcsaToAdd = new ArrayList<>();
                 for (TestCaseStepAction action : tcsa) {
                     List<TestCaseStepActionControl> tcsac = testCaseStepActionControlService.findControlByTestTestCaseStepSequence(test, testCase, stepNumber, action.getSequence());
-                    List<TestCaseStepActionControl> tcsacToAdd = new ArrayList();
+                    List<TestCaseStepActionControl> tcsacToAdd = new ArrayList<>();
                     for (TestCaseStepActionControl control : tcsac) {
                         control.setTest(initialTest);
                         control.setTestCase(initialTc);
@@ -210,15 +210,15 @@ public class TestCaseService implements ITestCaseService {
                 null, null, null, null, -1, null, null, null, null, null, "Y", null, null,
                 null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 
-        List<String> result = new ArrayList();
+        List<String> result = new ArrayList<>();
         List<TestCase> testCases = findTestCaseByAllCriteria(tCase, null, system);
         for (TestCase testCase : testCases) {
             if (!testCase.getGroup().equals("PRIVATE")) {
                 result.add(testCase.getTest());
             }
         }
-        Set<String> uniqueResult = new HashSet<String>(result);
-        result = new ArrayList();
+        Set<String> uniqueResult = new HashSet<>(result);
+        result = new ArrayList<>();
         result.addAll(uniqueResult);
         Collections.sort(result);
         return result;
@@ -230,7 +230,7 @@ public class TestCaseService implements ITestCaseService {
                 null, null, null, null, -1, null, null, null, null, null, "Y", null, null,
                 null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 
-        List<TestCase> result = new ArrayList();
+        List<TestCase> result = new ArrayList<>();
         List<TestCase> testCases = findTestCaseByAllCriteria(tCase, null, system);
         for (TestCase testCase : testCases) {
             if (!testCase.getGroup().equals("PRIVATE")) {
@@ -304,7 +304,7 @@ public class TestCaseService implements ITestCaseService {
 
     @Override
     public List<TestCase> findUseTestCaseList(String test, String testCase) throws CerberusException {
-        List<TestCase> result = new ArrayList();
+        List<TestCase> result = new ArrayList<>();
         List<TestCaseStep> tcsList = testCaseStepService.getListOfSteps(test, testCase);
         for (TestCaseStep tcs : tcsList) {
             if (("Y").equals(tcs.getUseStep())) {
@@ -336,8 +336,8 @@ public class TestCaseService implements ITestCaseService {
     @Override
     public AnswerList findTestCasesThatUseService(String service) {
 
-        AnswerList testCaseByServiceByDataLib = testCaseDao.findTestCaseByServiceByDataLib(service);
-        AnswerList testCaseByService = testCaseDao.findTestCaseByService(service);
+        AnswerList<TestListDTO> testCaseByServiceByDataLib = testCaseDao.findTestCaseByServiceByDataLib(service);
+        AnswerList<TestListDTO> testCaseByService = testCaseDao.findTestCaseByService(service);
         List<TestListDTO> listOfTestCaseByDataLib = testCaseByServiceByDataLib.getDataList();
         List<TestListDTO> listOfTestCaseByService = testCaseByService.getDataList();
         List<TestListDTO> newTestCase = new ArrayList<TestListDTO>();

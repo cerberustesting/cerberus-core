@@ -50,7 +50,7 @@ public class FileService implements IFileService {
     public AnswerList<List<HashMap<String, String>>> parseCSVFile(String urlToCSVFile, String separator, HashMap<String, String> columnsToGet) {
         String str = "";
         AnswerList result = new AnswerList();
-        List<HashMap<String, String>> csv = new ArrayList();
+        List<HashMap<String, String>> csv = new ArrayList<>();
         /**
          * Init message with generic failed message
          */

@@ -161,7 +161,7 @@ public class TestCaseCountryService implements ITestCaseCountryService {
         MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
         Answer finalAnswer = new Answer(msg1);
 
-        List<TestCaseCountry> oldList = new ArrayList();
+        List<TestCaseCountry> oldList = new ArrayList<>();
         try {
             oldList = this.convert(this.readByTestTestCase(null, test, testCase));
         } catch (CerberusException ex) {
@@ -171,9 +171,9 @@ public class TestCaseCountryService implements ITestCaseCountryService {
         /**
          * Update and Create all objects database Objects from newList
          */
-        List<TestCaseCountry> listToUpdateOrInsert = new ArrayList(newList);
+        List<TestCaseCountry> listToUpdateOrInsert = new ArrayList<>(newList);
         listToUpdateOrInsert.removeAll(oldList);
-        List<TestCaseCountry> listToUpdateOrInsertToIterate = new ArrayList(listToUpdateOrInsert);
+        List<TestCaseCountry> listToUpdateOrInsertToIterate = new ArrayList<>(listToUpdateOrInsert);
 
         for (TestCaseCountry objectDifference : listToUpdateOrInsertToIterate) {
             for (TestCaseCountry objectInDatabase : oldList) {
@@ -188,9 +188,9 @@ public class TestCaseCountryService implements ITestCaseCountryService {
         /**
          * Delete all objects database Objects that do not exist from newList
          */
-        List<TestCaseCountry> listToDelete = new ArrayList(oldList);
+        List<TestCaseCountry> listToDelete = new ArrayList<>(oldList);
         listToDelete.removeAll(newList);
-        List<TestCaseCountry> listToDeleteToIterate = new ArrayList(listToDelete);
+        List<TestCaseCountry> listToDeleteToIterate = new ArrayList<>(listToDelete);
 
         for (TestCaseCountry tcsDifference : listToDeleteToIterate) {
             for (TestCaseCountry tcsInPage : newList) {
@@ -242,7 +242,7 @@ public class TestCaseCountryService implements ITestCaseCountryService {
     @Override
     public Answer duplicateList(List<TestCaseCountry> objectList, String targetTest, String targetTestCase) {
         Answer ans = new Answer(null);
-        List<TestCaseCountry> listToCreate = new ArrayList();
+        List<TestCaseCountry> listToCreate = new ArrayList<>();
         for (TestCaseCountry objectToDuplicate : objectList) {
             objectToDuplicate.setTest(targetTest);
             objectToDuplicate.setTestCase(targetTestCase);

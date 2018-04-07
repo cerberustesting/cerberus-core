@@ -157,7 +157,7 @@ public class CreateTestCase extends HttpServlet {
                 // Update labels
                 if (request.getParameter("labelList") != null) {
                     JSONArray objLabelArray = new JSONArray(request.getParameter("labelList"));
-                    List<TestCaseLabel> labelList = new ArrayList();
+                    List<TestCaseLabel> labelList = new ArrayList<>();
                     labelList = getLabelListFromRequest(request, appContext, test, testcase, objLabelArray);
 
                     // Update the Database with the new list.
@@ -168,7 +168,7 @@ public class CreateTestCase extends HttpServlet {
                 // Update Countries
                 if (request.getParameter("countryList") != null) {
                     JSONArray objCountryArray = new JSONArray(request.getParameter("countryList"));
-                    List<TestCaseCountry> tccList = new ArrayList();
+                    List<TestCaseCountry> tccList = new ArrayList<>();
                     tccList = getCountryListFromRequest(request, appContext, test, testcase, objCountryArray);
 
                     // Update the Database with the new list.
@@ -176,8 +176,8 @@ public class CreateTestCase extends HttpServlet {
                     finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
 
                     // Duplicate other objects.
-                    List<TestCaseCountryProperties> tccpList = new ArrayList();
-                    List<TestCaseCountryProperties> newTccpList = new ArrayList();
+                    List<TestCaseCountryProperties> tccpList = new ArrayList<>();
+                    List<TestCaseCountryProperties> newTccpList = new ArrayList<>();
                     if (!tccList.isEmpty() && ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                         tccpList = testCaseCountryPropertiesService.findListOfPropertyPerTestTestCase(originalTest, originalTestCase);
                         //Build a new list with the countries that exist for the testcase.
@@ -194,7 +194,7 @@ public class CreateTestCase extends HttpServlet {
 
                 }
 
-                List<TestCaseStep> tcsList = new ArrayList();
+                List<TestCaseStep> tcsList = new ArrayList<>();
                 if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                     tcsList = testCaseStepService.getListOfSteps(originalTest, originalTestCase);
                     if (!tcsList.isEmpty()) {
@@ -203,7 +203,7 @@ public class CreateTestCase extends HttpServlet {
                     }
                 }
 
-                List<TestCaseStepAction> tcsaList = new ArrayList();
+                List<TestCaseStepAction> tcsaList = new ArrayList<>();
                 if (!tcsList.isEmpty() && ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                     tcsaList = testCaseStepActionService.findTestCaseStepActionbyTestTestCase(originalTest, originalTestCase);
                     if (!tcsaList.isEmpty()) {
@@ -331,7 +331,7 @@ public class CreateTestCase extends HttpServlet {
     }
 
     private List<TestCaseCountry> getCountryListFromRequest(HttpServletRequest request, ApplicationContext appContext, String test, String testCase, JSONArray json) throws CerberusException, JSONException, UnsupportedEncodingException {
-        List<TestCaseCountry> tdldList = new ArrayList();
+        List<TestCaseCountry> tdldList = new ArrayList<>();
 
         for (int i = 0; i < json.length(); i++) {
             JSONObject objectJson = json.getJSONObject(i);
@@ -352,7 +352,7 @@ public class CreateTestCase extends HttpServlet {
     }
 
     private List<TestCaseLabel> getLabelListFromRequest(HttpServletRequest request, ApplicationContext appContext, String test, String testCase, JSONArray json) throws CerberusException, JSONException, UnsupportedEncodingException {
-        List<TestCaseLabel> labelList = new ArrayList();
+        List<TestCaseLabel> labelList = new ArrayList<>();
 
         for (int i = 0; i < json.length(); i++) {
             JSONObject objectJson = json.getJSONObject(i);

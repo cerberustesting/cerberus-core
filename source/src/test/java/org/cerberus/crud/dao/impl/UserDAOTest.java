@@ -30,7 +30,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.crud.entity.User;

@@ -149,7 +149,7 @@ public interface ITestCaseExecutionDataService {
      * @return
      * @throws CerberusException
      */
-    public List<TestCaseExecutionData> convert(AnswerList answerList) throws CerberusException;
+    public List<TestCaseExecutionData> convert(AnswerList<TestCaseExecutionData> answerList) throws CerberusException;
 
     /**
      *

@@ -218,7 +218,7 @@ public class SikuliService implements ISikuliService {
             in.close();
         } catch (MalformedURLException ex) {
             LOG.warn(ex);
-            MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_SIKULI_SERVER_NOT_REACHABLE);
+            MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_SIKULI_SERVER_BADURL);
             mes.setDescription(mes.getDescription().replace("%URL%", urlToConnect));
             msg = mes;
         } catch (FileNotFoundException ex) {
@@ -235,6 +235,11 @@ public class SikuliService implements ISikuliService {
         } catch (MimeTypeException ex) {
             LOG.warn(ex);
             msg = new MessageEvent(MessageEventEnum.ACTION_FAILED);
+        } catch (Exception ex) {
+            LOG.warn(ex);
+            MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_SIKULI_SERVER_NOT_REACHABLE);
+            mes.setDescription(mes.getDescription().replace("%URL%", urlToConnect));
+            msg = mes;
         } finally {
             if (os != null) {
                 os.close();
@@ -259,7 +264,7 @@ public class SikuliService implements ISikuliService {
         }
         if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_FAILED).getCodeString())) {
             MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_OPENAPP);
-            mes.setDescription(mes.getDescription().replace("%STRING1%", appName));
+            mes.setDescription(mes.getDescription().replace("%STRING1%", appName) + " - " + actionResult.getMessageDescription());
             return mes;
         }
 
@@ -277,7 +282,7 @@ public class SikuliService implements ISikuliService {
         }
         if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_FAILED).getCodeString())) {
             MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_CLOSEAPP);
-            mes.setDescription(mes.getDescription().replace("%STRING1%", appName));
+            mes.setDescription(mes.getDescription().replace("%STRING1%", appName) + " - " + actionResult.getMessageDescription());
             return mes;
         }
 
@@ -301,7 +306,7 @@ public class SikuliService implements ISikuliService {
         }
         if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_FAILED).getCodeString())) {
             MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_CLICK_NO_SUCH_ELEMENT);
-            mes.setDescription(mes.getDescription().replace("%ELEMENT%", locator));
+            mes.setDescription(mes.getDescription().replace("%ELEMENT%", locator) + " - " + actionResult.getMessageDescription());
             return mes;
         }
 
@@ -325,7 +330,7 @@ public class SikuliService implements ISikuliService {
         }
         if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_FAILED).getCodeString())) {
             MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_RIGHTCLICK_NO_SUCH_ELEMENT);
-            mes.setDescription(mes.getDescription().replace("%ELEMENT%", locator));
+            mes.setDescription(mes.getDescription().replace("%ELEMENT%", locator) + " - " + actionResult.getMessageDescription());
             return mes;
         }
 
@@ -355,7 +360,7 @@ public class SikuliService implements ISikuliService {
         }
         if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_FAILED).getCodeString())) {
             MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_DOUBLECLICK_NO_SUCH_ELEMENT);
-            mes.setDescription(mes.getDescription().replace("%ELEMENT%", locator));
+            mes.setDescription(mes.getDescription().replace("%ELEMENT%", locator) + " - " + actionResult.getMessageDescription());
             return mes;
         }
 
@@ -374,7 +379,7 @@ public class SikuliService implements ISikuliService {
         }
         if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_FAILED).getCodeString())) {
             MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_TYPE_NO_SUCH_ELEMENT);
-            mes.setDescription(mes.getDescription().replace("%ELEMENT%", locator));
+            mes.setDescription(mes.getDescription().replace("%ELEMENT%", locator) + " - " + actionResult.getMessageDescription());
             return mes;
         }
 
@@ -398,7 +403,7 @@ public class SikuliService implements ISikuliService {
         }
         if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_FAILED).getCodeString())) {
             MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_MOUSEOVER_NO_SUCH_ELEMENT);
-            mes.setDescription(mes.getDescription().replace("%ELEMENT%", locator));
+            mes.setDescription(mes.getDescription().replace("%ELEMENT%", locator) + " - " + actionResult.getMessageDescription());
             return mes;
         }
 
@@ -422,7 +427,7 @@ public class SikuliService implements ISikuliService {
         }
         if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_FAILED).getCodeString())) {
             MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_WAIT_NO_SUCH_ELEMENT);
-            mes.setDescription(mes.getDescription().replace("%ELEMENT%", locator));
+            mes.setDescription(mes.getDescription().replace("%ELEMENT%", locator) + " - " + actionResult.getMessageDescription());
             return mes;
         }
 
@@ -446,7 +451,7 @@ public class SikuliService implements ISikuliService {
         }
         if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_FAILED).getCodeString())) {
             MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_RIGHTCLICK_NO_SUCH_ELEMENT);
-            mes.setDescription(mes.getDescription().replace("%ELEMENT%", locator));
+            mes.setDescription(mes.getDescription().replace("%ELEMENT%", locator) + " - " + actionResult.getMessageDescription());
             return mes;
         }
 
@@ -465,7 +470,7 @@ public class SikuliService implements ISikuliService {
         }
         if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_FAILED).getCodeString())) {
             MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_KEYPRESS_OTHER);
-            mes.setDescription(mes.getDescription().replace("%KEY%", text));
+            mes.setDescription(mes.getDescription().replace("%KEY%", text) + " - " + actionResult.getMessageDescription());
             return mes;
         }
 
@@ -483,7 +488,7 @@ public class SikuliService implements ISikuliService {
         }
         if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_FAILED).getCodeString())) {
             MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_PRESENT);
-            mes.setDescription(mes.getDescription().replace("%STRING1%", locator));
+            mes.setDescription(mes.getDescription().replace("%STRING1%", locator) + " - " + actionResult.getMessageDescription());
             return mes;
         }
 
@@ -501,7 +506,7 @@ public class SikuliService implements ISikuliService {
         }
         if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_FAILED).getCodeString())) {
             MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTPRESENT);
-            mes.setDescription(mes.getDescription().replace("%STRING1%", locator));
+            mes.setDescription(mes.getDescription().replace("%STRING1%", locator) + " - " + actionResult.getMessageDescription());
             return mes;
         }
 
@@ -519,7 +524,7 @@ public class SikuliService implements ISikuliService {
         }
         if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_FAILED).getCodeString())) {
             MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTINPAGE);
-            mes.setDescription(mes.getDescription().replace("%STRING1%", text));
+            mes.setDescription(mes.getDescription().replace("%STRING1%", text) + " - " + actionResult.getMessageDescription());
             return mes;
         }
 

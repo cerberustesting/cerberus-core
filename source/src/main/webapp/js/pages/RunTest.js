@@ -944,7 +944,6 @@ function loadExecForm(tag) {
             loadSelect("SELENIUMLOG", "SeleniumLog", false, ""),
             loadSelect("MANUALEXECUTION", "manualExecution", false, ""),
             loadSelect("PAGESOURCE", "PageSource", false, ""),
-            loadSelect("SYNCHRONEOUS", "Synchroneous", false, ""),
             loadSelect("RETRIES", "retries", false, "")
             ).then(function () {
         applyExecPref(tag);
@@ -979,7 +978,6 @@ function applyExecPref(tag) {
         $("#screenshot").val(pref.Screenshot);
         $("#pageSource").val(pref.PageSource);
         $("#seleniumLog").val(pref.SeleniumLog);
-        $("#synchroneous").val(pref.Synchroneous);
         $("#timeout").val(pref.timeout);
         $("#retries").val(pref.retries);
         $("#manualExecution").val(pref.manualExecution);

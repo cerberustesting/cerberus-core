@@ -338,12 +338,6 @@
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            <label for="synchroneous" class="col-sm-3 control-label bold">Synchroneous</label>
-                                            <div class="col-sm-9">
-                                                <select class="form-control input-sm" id="synchroneous" name="Synchroneous"></select>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
                                             <label for="timeout" class="col-sm-3 control-label bold">Timeout</label>
                                             <div class="col-sm-9">
                                                 <input type="text" class="form-control input-sm" id="timeout" name="timeout"/>
@@ -385,24 +379,21 @@
                         <input type="hidden" name="ss_ip" id="ss_ipATQ">
                         <input type="hidden" name="ss_p" id="ss_pATQ">
                         <input type="hidden" name="version" id="versionATQ">
-                        <input type="hidden" name="platform" id="platformATQ">
                         <input type="hidden" name="Tag" id="tagATQ">
                         <input type="hidden" name="outputformat" id="outputformatATQ" value="gui">
                         <input type="hidden" name="verbose" id="verboseATQ">
                         <input type="hidden" name="screenshot" id="screenshotATQ">
                         <input type="hidden" name="pageSource" id="pageSourceATQ">
                         <input type="hidden" name="seleniumLog" id="seleniumLogATQ">
-                        <input type="hidden" name="synchroneous" id="synchroneousATQ">
                         <input type="hidden" name="timeout" id="timeoutATQ">
                         <input type="hidden" name="retries" id="retriesATQ">
                         <input type="hidden" name="manualExecution" id="manualExecutionATQ">
-                        <input type="hidden" name="screenSize" id="screenSizeATQ">
                     </form>
 
                 </div>
             </div>
 
-            <div class="row hidden" id="runCampaignBlock" style="display: none;">
+            <div class="row" id="runCampaignBlock" style="display: none;">
                 <div class="col-lg-6">
                     <button type="button" class="btn btn-primary btn-lg btn-block"  id="runCampaign">Run Campaign</button>
                 </div>

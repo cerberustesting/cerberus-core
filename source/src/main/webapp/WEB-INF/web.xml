@@ -797,12 +797,12 @@
         <servlet-class>org.cerberus.servlet.crud.testexecution.CreateTestCaseExecutionQueue</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>GetDummyRESTCall</servlet-name>
-        <servlet-class>org.cerberus.servlet.dummy.GetDummyRESTCall</servlet-class>
+        <servlet-name>DummyRESTCall</servlet-name>
+        <servlet-class>org.cerberus.servlet.dummy.DummyRESTCall</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>GetDummyRESTCallEmpty</servlet-name>
-        <servlet-class>org.cerberus.servlet.dummy.GetDummyRESTCallEmpty</servlet-class>
+        <servlet-name>DummyRESTCallEmpty</servlet-name>
+        <servlet-class>org.cerberus.servlet.dummy.DummyRESTCallEmpty</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateTestCaseExecutionQueue</servlet-name>
@@ -817,7 +817,6 @@
         <servlet-name>springrest</servlet-name>
         <url-pattern>/api/*</url-pattern>
     </servlet-mapping>
-
     <servlet-mapping>
         <servlet-name>ReadCerberusDetailInformation</servlet-name>
         <url-pattern>/ReadCerberusDetailInformation</url-pattern>
@@ -1571,14 +1570,14 @@
         <url-pattern>/DeleteTestCaseExecutionFile</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>GetDummyRESTCall</servlet-name>
-        <url-pattern>/GetDummyRESTCall</url-pattern>
-        <url-pattern>/GetDummyRESTCall/*</url-pattern>
+        <servlet-name>DummyRESTCall</servlet-name>
+        <url-pattern>/DummyRESTCall</url-pattern>
+        <url-pattern>/DummyRESTCall/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>GetDummyRESTCallEmpty</servlet-name>
-        <url-pattern>/GetDummyRESTCallEmpty</url-pattern>
-        <url-pattern>/GetDummyRESTCallEmpty/*</url-pattern>
+        <servlet-name>DummyRESTCallEmpty</servlet-name>
+        <url-pattern>/DummyRESTCallEmpty</url-pattern>
+        <url-pattern>/DummyRESTCallEmpty/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>UpdateTestCaseExecutionQueue</servlet-name>
@@ -2059,8 +2058,8 @@
             <url-pattern>/ReadApplicationObjectImage</url-pattern>
             <url-pattern>/GetTestCasesV000</url-pattern>
             <url-pattern>/DummySoap</url-pattern>
-            <url-pattern>/GetDummyRESTCall</url-pattern>
-            <url-pattern>/GetDummyRESTCallEmpty</url-pattern>
+            <url-pattern>/DummyRESTCall</url-pattern>
+            <url-pattern>/DummyRESTCallEmpty</url-pattern>
         </web-resource-collection>
     </security-constraint>
     <security-constraint>

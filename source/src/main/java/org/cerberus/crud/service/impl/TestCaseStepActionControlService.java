@@ -114,9 +114,9 @@ public class TestCaseStepActionControlService implements ITestCaseStepActionCont
          * in Database has same key : Update and remove from the list. If
          * TestCaseStepActionControl in database does ot exist : Insert it.
          */
-        List<TestCaseStepActionControl> tcsacToUpdateOrInsert = new ArrayList(newList);
+        List<TestCaseStepActionControl> tcsacToUpdateOrInsert = new ArrayList<>(newList);
         tcsacToUpdateOrInsert.removeAll(oldList);
-        List<TestCaseStepActionControl> tcsacToUpdateOrInsertToIterate = new ArrayList(tcsacToUpdateOrInsert);
+        List<TestCaseStepActionControl> tcsacToUpdateOrInsertToIterate = new ArrayList<>(tcsacToUpdateOrInsert);
 
         for (TestCaseStepActionControl tcsacDifference : tcsacToUpdateOrInsertToIterate) {
             for (TestCaseStepActionControl tcsacInDatabase : oldList) {
@@ -133,9 +133,9 @@ public class TestCaseStepActionControlService implements ITestCaseStepActionCont
          * the list of TestCaseStep
          */
         if (!duplicate) {
-            List<TestCaseStepActionControl> tcsacToDelete = new ArrayList(oldList);
+            List<TestCaseStepActionControl> tcsacToDelete = new ArrayList<>(oldList);
             tcsacToDelete.removeAll(newList);
-            List<TestCaseStepActionControl> tcsacToDeleteToIterate = new ArrayList(tcsacToDelete);
+            List<TestCaseStepActionControl> tcsacToDeleteToIterate = new ArrayList<>(tcsacToDelete);
 
             for (TestCaseStepActionControl tcsacDifference : tcsacToDeleteToIterate) {
                 for (TestCaseStepActionControl tcsacInPage : newList) {
@@ -158,7 +158,7 @@ public class TestCaseStepActionControlService implements ITestCaseStepActionCont
     }
 
     @Override
-    public AnswerList readByVarious1(String test, String testcase, int step, int sequence) {
+    public AnswerList<TestCaseStepActionControl> readByVarious1(String test, String testcase, int step, int sequence) {
         return testCaseStepActionControlDao.readByVarious1(test, testcase, step, sequence);
     }
 
@@ -179,7 +179,7 @@ public class TestCaseStepActionControlService implements ITestCaseStepActionCont
     @Override
     public Answer duplicateList(List<TestCaseStepActionControl> objectList, String targetTest, String targetTestCase) {
         Answer ans = new Answer(null);
-        List<TestCaseStepActionControl> listToCreate = new ArrayList();
+        List<TestCaseStepActionControl> listToCreate = new ArrayList<>();
         for (TestCaseStepActionControl objectToDuplicate : objectList) {
             objectToDuplicate.setTest(targetTest);
             objectToDuplicate.setTestCase(targetTestCase);

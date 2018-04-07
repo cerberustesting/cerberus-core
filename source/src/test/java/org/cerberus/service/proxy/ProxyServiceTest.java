@@ -19,7 +19,7 @@
  */
 package org.cerberus.service.proxy;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.cerberus.service.proxy.impl.ProxyService;
 import org.junit.Test;
 import org.mockito.Mock;

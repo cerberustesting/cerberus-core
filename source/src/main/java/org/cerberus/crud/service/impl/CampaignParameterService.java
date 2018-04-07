@@ -121,7 +121,7 @@ public class CampaignParameterService implements ICampaignParameterService {
         MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
         Answer finalAnswer = new Answer(msg1);
 
-        List<CampaignParameter> oldList = new ArrayList();
+        List<CampaignParameter> oldList = new ArrayList<>();
         try {
             oldList = this.convert(this.readByCampaign(campaign));
         } catch (CerberusException ex) {
@@ -133,9 +133,9 @@ public class CampaignParameterService implements ICampaignParameterService {
          * TestCaseStep in Database has same key : Update and remove from the
          * list. If TestCaseStep in database does ot exist : Insert it.
          */
-        List<CampaignParameter> listToUpdateOrInsert = new ArrayList(newList);
+        List<CampaignParameter> listToUpdateOrInsert = new ArrayList<>(newList);
         listToUpdateOrInsert.removeAll(oldList);
-        List<CampaignParameter> listToUpdateOrInsertToIterate = new ArrayList(listToUpdateOrInsert);
+        List<CampaignParameter> listToUpdateOrInsertToIterate = new ArrayList<>(listToUpdateOrInsert);
 
         for (CampaignParameter objectDifference : listToUpdateOrInsertToIterate) {
             for (CampaignParameter objectInDatabase : oldList) {
@@ -152,9 +152,9 @@ public class CampaignParameterService implements ICampaignParameterService {
          * TestCaseStep in Page has same key : remove from the list. Then delete
          * the list of TestCaseStep
          */
-        List<CampaignParameter> listToDelete = new ArrayList(oldList);
+        List<CampaignParameter> listToDelete = new ArrayList<>(oldList);
         listToDelete.removeAll(newList);
-        List<CampaignParameter> listToDeleteToIterate = new ArrayList(listToDelete);
+        List<CampaignParameter> listToDeleteToIterate = new ArrayList<>(listToDelete);
 
         for (CampaignParameter tcsDifference : listToDeleteToIterate) {
             for (CampaignParameter tcsInPage : newList) {

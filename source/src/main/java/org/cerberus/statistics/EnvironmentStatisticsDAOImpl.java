@@ -51,11 +51,11 @@ public class EnvironmentStatisticsDAOImpl implements IEnvironmentStatisticsDAO {
     private final int MAX_ROW_SELECTED = 1000;
 
     @Override
-    public AnswerList getEnvironmentStatistics(String system) {
+    public AnswerList<BuildRevisionStatisticsEnv> getEnvironmentStatistics(String system) {
         AnswerList response = new AnswerList();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<BuildRevisionStatisticsEnv> objectList = new ArrayList<BuildRevisionStatisticsEnv>();
+        List<BuildRevisionStatisticsEnv> objectList = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
 
         StringBuilder query = new StringBuilder();

@@ -492,7 +492,7 @@ public class InvariantDAO implements IInvariantDAO {
 
     @Override
     public AnswerList readDistinctValuesByCriteria(String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, String PublicPrivateFilter, String columnName) {
-        List invariantList = new ArrayList();
+        List<String> invariantList = new ArrayList<>();
         AnswerList answer = new AnswerList();
         List<String> individalColumnSearchValues = new ArrayList<String>();
         MessageEvent msg;

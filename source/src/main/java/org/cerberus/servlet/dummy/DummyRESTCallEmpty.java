@@ -21,8 +21,6 @@ package org.cerberus.servlet.dummy;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Enumeration;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -30,10 +28,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import org.cerberus.version.Infos;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -42,10 +36,10 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author vertigo
  */
-@WebServlet(name = "GetDummyRESTCall", urlPatterns = {"/GetDummyRESTCall"})
-public class GetDummyRESTCall extends HttpServlet {
+@WebServlet(name = "DummyRESTCallEmpty", urlPatterns = {"/DummyRESTCallEmpty"})
+public class DummyRESTCallEmpty extends HttpServlet {
 
-    private static final Logger LOG = LogManager.getLogger(GetDummyRESTCall.class);
+    private static final Logger LOG = LogManager.getLogger(DummyRESTCallEmpty.class);
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -62,80 +56,10 @@ public class GetDummyRESTCall extends HttpServlet {
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
 
-        response.setContentType("application/json");
-        response.setCharacterEncoding("utf8");
+        response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+        out.print("Error while Getting number of executions : ");
+        out.close();
 
-        try {
-            Thread.sleep(1000);
-            JSONObject jsonResponse = new JSONObject();
-            jsonResponse.put("messageType", "OK");
-            jsonResponse.put("message", "Dummy call performed with success.");
-            jsonResponse.put("ContextPath", request.getContextPath());
-            jsonResponse.put("RemoteUser", request.getRemoteUser());
-            jsonResponse.put("RequestURI", request.getRequestURI());
-            jsonResponse.put("RequestURL", request.getRequestURL().toString());
-            jsonResponse.put("RemoteUser", request.getRemoteUser());
-            jsonResponse.put("AuthType", request.getAuthType());
-            jsonResponse.put("Method", request.getMethod());
-            jsonResponse.put("RemoteAddr", request.getRemoteAddr());
-            jsonResponse.put("RemoteHost", request.getRemoteHost());
-            jsonResponse.put("RemotePort", request.getRemotePort());
-            jsonResponse.put("LocalAddr", request.getLocalAddr());
-            jsonResponse.put("LocalName", request.getLocalName());
-            jsonResponse.put("LocalPort", request.getLocalPort());
-            jsonResponse.put("QueryString", request.getQueryString());
-            jsonResponse.put("Boolean", true);
-
-            String remoteIP = request.getRemoteAddr();
-            if (request.getHeader("x-forwarded-for") != null) {
-                remoteIP = request.getHeader("x-forwarded-for");
-            }
-            jsonResponse.put("RemoteIP", remoteIP);
-
-            JSONArray jsonArray = new JSONArray();
-            for (int i = 0; i < 10; i++) {
-                JSONObject tempJsonResponse = new JSONObject();
-                tempJsonResponse.put("integer", i);
-                tempJsonResponse.put("val1", "AAA" + i);
-                tempJsonResponse.put("val2", "BBB");
-                tempJsonResponse.put("val3", true);
-                tempJsonResponse.put("val4", false);
-                jsonArray.put(tempJsonResponse);
-            }
-            jsonResponse.put("myArray", jsonArray);
-
-            // Extract headers.
-            JSONObject jsonHeaders = new JSONObject();
-            Enumeration<String> headerNames = request.getHeaderNames();
-            while (headerNames.hasMoreElements()) {
-                String headerName = headerNames.nextElement();
-                Enumeration<String> headers = request.getHeaders(headerName);
-                while (headers.hasMoreElements()) {
-                    String headerValue = headers.nextElement();
-                    jsonHeaders.put(headerName, headerValue);
-                }
-            }
-            jsonResponse.put("Header", jsonHeaders);
-
-            // Extract Parameters.
-            JSONObject jsonParameters = new JSONObject();
-            Enumeration<String> parametersNames = request.getParameterNames();
-            while (parametersNames.hasMoreElements()) {
-                String parameterName = parametersNames.nextElement();
-                String parameterValue = request.getParameter(parameterName);
-                jsonParameters.put(parameterName, parameterValue);
-            }
-            jsonResponse.put("Parameters", jsonParameters);
-
-            response.getWriter().print(jsonResponse.toString());
-
-        } catch (Exception e) {
-            LOG.warn(Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", e);
-            out.print("Error while Getting number of executions : ");
-            out.println(e.getMessage());
-        } finally {
-            out.close();
-        }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

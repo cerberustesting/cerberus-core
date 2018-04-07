@@ -67,7 +67,7 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
 
     @Override
     public List<CountryEnvParam> findCountryEnvParamByCriteria(CountryEnvParam countryEnvParam) throws CerberusException {
-        List<CountryEnvParam> result = new ArrayList();
+        List<CountryEnvParam> result = new ArrayList<>();
         boolean throwex = false;
         StringBuilder query = new StringBuilder();
         query.append("SELECT `system`, `country`, `environment`, `Build`, `Revision`,`chain`, `distriblist`, `eMailBodyRevision`, `type`,`eMailBodyChain`, `eMailBodyDisableEnvironment`,  `active`, `maintenanceact`, ");

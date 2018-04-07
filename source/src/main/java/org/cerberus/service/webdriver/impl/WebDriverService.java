@@ -1222,7 +1222,7 @@ public class WebDriverService implements IWebDriverService {
 
     @Override
     public List<String> getSeleniumLog(Session session) {
-        List<String> result = new ArrayList();
+        List<String> result = new ArrayList<>();
         Logs logs = session.getDriver().manage().logs();
 
         for (String logType : logs.getAvailableLogTypes()) {

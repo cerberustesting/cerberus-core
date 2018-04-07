@@ -152,7 +152,7 @@ public class TestCaseLabelService implements ITestCaseLabelService {
         MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
         Answer finalAnswer = new Answer(msg1);
 
-        List<TestCaseLabel> oldList = new ArrayList();
+        List<TestCaseLabel> oldList = new ArrayList<>();
         try {
             oldList = this.convert(this.readByTestTestCase(test, testCase));
         } catch (CerberusException ex) {
@@ -162,9 +162,9 @@ public class TestCaseLabelService implements ITestCaseLabelService {
         /**
          * Update and Create all objects database Objects from newList
          */
-        List<TestCaseLabel> listToUpdateOrInsert = new ArrayList(newList);
+        List<TestCaseLabel> listToUpdateOrInsert = new ArrayList<>(newList);
         listToUpdateOrInsert.removeAll(oldList);
-        List<TestCaseLabel> listToUpdateOrInsertToIterate = new ArrayList(listToUpdateOrInsert);
+        List<TestCaseLabel> listToUpdateOrInsertToIterate = new ArrayList<>(listToUpdateOrInsert);
 
         for (TestCaseLabel objectDifference : listToUpdateOrInsertToIterate) {
             for (TestCaseLabel objectInDatabase : oldList) {
@@ -179,9 +179,9 @@ public class TestCaseLabelService implements ITestCaseLabelService {
         /**
          * Delete all objects database Objects that do not exist from newList
          */
-        List<TestCaseLabel> listToDelete = new ArrayList(oldList);
+        List<TestCaseLabel> listToDelete = new ArrayList<>(oldList);
         listToDelete.removeAll(newList);
-        List<TestCaseLabel> listToDeleteToIterate = new ArrayList(listToDelete);
+        List<TestCaseLabel> listToDeleteToIterate = new ArrayList<>(listToDelete);
 
         for (TestCaseLabel tcsDifference : listToDeleteToIterate) {
             for (TestCaseLabel tcsInPage : newList) {
@@ -206,7 +206,7 @@ public class TestCaseLabelService implements ITestCaseLabelService {
     @Override
     public Answer duplicateList(List<TestCaseLabel> dataList, String targetTest, String targetTestCase) {
         Answer ans = new Answer(null);
-        List<TestCaseLabel> listToCreate = new ArrayList();
+        List<TestCaseLabel> listToCreate = new ArrayList<>();
         for (TestCaseLabel objectToDuplicate : dataList) {
             objectToDuplicate.setTest(targetTest);
             objectToDuplicate.setTestcase(targetTestCase);

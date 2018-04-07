@@ -119,7 +119,7 @@ public class UpdateApplication extends HttpServlet {
 
         // Getting list of application from JSON Call
         JSONArray objApplicationArray = new JSONArray(request.getParameter("environmentList"));
-        List<CountryEnvironmentParameters> ceaList = new ArrayList();
+        List<CountryEnvironmentParameters> ceaList = new ArrayList<>();
         ceaList = getCountryEnvironmentApplicationFromParameter(request, appContext, system, application, objApplicationArray);
 
         // Prepare the final answer.
@@ -208,7 +208,7 @@ public class UpdateApplication extends HttpServlet {
     }
 
     private List<CountryEnvironmentParameters> getCountryEnvironmentApplicationFromParameter(HttpServletRequest request, ApplicationContext appContext, String system, String application, JSONArray json) throws JSONException {
-        List<CountryEnvironmentParameters> cedList = new ArrayList();
+        List<CountryEnvironmentParameters> cedList = new ArrayList<>();
         ICountryEnvironmentParametersService ceaService = appContext.getBean(ICountryEnvironmentParametersService.class);
         IFactoryCountryEnvironmentParameters cedFactory = appContext.getBean(IFactoryCountryEnvironmentParameters.class);
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);

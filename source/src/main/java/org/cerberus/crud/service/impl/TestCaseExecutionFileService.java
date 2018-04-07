@@ -66,12 +66,12 @@ public class TestCaseExecutionFileService implements ITestCaseExecutionFileServi
     }
 
     @Override
-    public AnswerList<List<TestCaseExecutionFile>> readByVariousByCriteria(long exeId, String level, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
+    public AnswerList<TestCaseExecutionFile> readByVariousByCriteria(long exeId, String level, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
         return testCaseExecutionFileDAO.readByVariousByCriteria(exeId, level, length, length, columnName, sort, searchParameter, individualSearch);
     }
 
     @Override
-    public AnswerList<List<TestCaseExecutionFile>> readByVarious(long ExeId, String level) {
+    public AnswerList<TestCaseExecutionFile> readByVarious(long ExeId, String level) {
         return testCaseExecutionFileDAO.readByVariousByCriteria(ExeId, level, 0, 0, null, null, null, null);
     }
 

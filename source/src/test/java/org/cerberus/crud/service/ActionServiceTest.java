@@ -19,7 +19,7 @@
  */
 package org.cerberus.crud.service;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.Selenium;
 import org.cerberus.crud.entity.TestCaseExecution;

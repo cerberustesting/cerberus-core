@@ -100,7 +100,7 @@ public class ControlService implements IControlService {
             if (testCaseStepActionControlExecution.getValue1().contains("%")) {
 
                 // When starting a new control, we reset the property list that was already calculated.
-                tCExecution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList());
+                tCExecution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList<>());
 
                 answerDecode = variableService.decodeStringCompletly(testCaseStepActionControlExecution.getValue1(), tCExecution,
                         testCaseStepActionControlExecution.getTestCaseStepActionExecution(), false);
@@ -121,7 +121,7 @@ public class ControlService implements IControlService {
             if (testCaseStepActionControlExecution.getValue2().contains("%")) {
 
                 // When starting a new control, we reset the property list that was already calculated.
-                tCExecution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList());
+                tCExecution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList<>());
 
                 answerDecode = variableService.decodeStringCompletly(testCaseStepActionControlExecution.getValue2(),
                         tCExecution, testCaseStepActionControlExecution.getTestCaseStepActionExecution(), false);
@@ -151,7 +151,7 @@ public class ControlService implements IControlService {
         testCaseStepActionControlExecution.setStart(new Date().getTime());
 
         // When starting a new control, we reset the property list that was already calculated.
-        tCExecution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList());
+        tCExecution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList<>());
 
         try {
 

@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.factory.impl.FactoryTestCase;
+import org.cerberus.dto.TestListDTO;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -160,14 +161,14 @@ public interface ITestCaseDAO {
      * @param service
      * @return
      */
-    public AnswerList findTestCaseByService(String service);
+    public AnswerList<TestListDTO> findTestCaseByService(String service);
     
     /**
      * 
      * @param service
      * @return
      */
-    public AnswerList findTestCaseByServiceByDataLib(String service);
+    public AnswerList<TestListDTO> findTestCaseByServiceByDataLib(String service);
     
     
 }

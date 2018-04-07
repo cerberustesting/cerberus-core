@@ -21,7 +21,7 @@ package org.cerberus.util;
 
 import javax.xml.XMLConstants;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.cerberus.util.XmlUtil.UniversalNamespaceCache;
 import org.junit.Test;

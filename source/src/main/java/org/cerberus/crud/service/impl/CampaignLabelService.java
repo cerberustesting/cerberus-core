@@ -156,7 +156,7 @@ public class CampaignLabelService implements ICampaignLabelService {
         MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
         Answer finalAnswer = new Answer(msg1);
 
-        List<CampaignLabel> oldList = new ArrayList();
+        List<CampaignLabel> oldList = new ArrayList<>();
         try {
             oldList = this.convert(this.readByVarious(campaign));
         } catch (CerberusException ex) {
@@ -166,9 +166,9 @@ public class CampaignLabelService implements ICampaignLabelService {
         /**
          * Update and Create all objects database Objects from newList
          */
-        List<CampaignLabel> listToUpdateOrInsert = new ArrayList(newList);
+        List<CampaignLabel> listToUpdateOrInsert = new ArrayList<>(newList);
         listToUpdateOrInsert.removeAll(oldList);
-        List<CampaignLabel> listToUpdateOrInsertToIterate = new ArrayList(listToUpdateOrInsert);
+        List<CampaignLabel> listToUpdateOrInsertToIterate = new ArrayList<>(listToUpdateOrInsert);
 
         for (CampaignLabel objectDifference : listToUpdateOrInsertToIterate) {
             for (CampaignLabel objectInDatabase : oldList) {
@@ -183,9 +183,9 @@ public class CampaignLabelService implements ICampaignLabelService {
         /**
          * Delete all objects database Objects that do not exist from newList
          */
-        List<CampaignLabel> listToDelete = new ArrayList(oldList);
+        List<CampaignLabel> listToDelete = new ArrayList<>(oldList);
         listToDelete.removeAll(newList);
-        List<CampaignLabel> listToDeleteToIterate = new ArrayList(listToDelete);
+        List<CampaignLabel> listToDeleteToIterate = new ArrayList<>(listToDelete);
 
         for (CampaignLabel tcsDifference : listToDeleteToIterate) {
             for (CampaignLabel tcsInPage : newList) {

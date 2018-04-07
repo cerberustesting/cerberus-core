@@ -140,8 +140,8 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
         if (parameterService.getParameterBooleanByKey("cerberus_property_countrylevelheritage", "", false)) {
 
             // Heritage is done at property + country level.
-            List<TestCaseCountryProperties> tccpList = new ArrayList();
-            List<TestCaseCountryProperties> tccpListPerCountry = new ArrayList();
+            List<TestCaseCountryProperties> tccpList = new ArrayList<>();
+            List<TestCaseCountryProperties> tccpListPerCountry = new ArrayList<>();
             TestCase mainTC = testCaseService.findTestCaseByKey(test, testcase);
 
             //find all properties of preTests
@@ -185,7 +185,7 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
         } else {
 
             // Heritage is done at property + country level.
-            List<TestCaseCountryProperties> tccpList = new ArrayList();
+            List<TestCaseCountryProperties> tccpList = new ArrayList<>();
             TestCase mainTC = testCaseService.findTestCaseByKey(test, testcase);
 
             /**
@@ -300,7 +300,7 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
         MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
         Answer finalAnswer = new Answer(msg1);
 
-        List<TestCaseCountryProperties> oldList = new ArrayList();
+        List<TestCaseCountryProperties> oldList = new ArrayList<>();
 //        try {
         oldList = this.findListOfPropertyPerTestTestCase(test, testCase);
 //        } catch (CerberusException ex) {
@@ -312,9 +312,9 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
          * Database has same key : Update and remove from the list. If Object in
          * database does ot exist : Insert it.
          */
-        List<TestCaseCountryProperties> listToUpdateOrInsert = new ArrayList(newList);
+        List<TestCaseCountryProperties> listToUpdateOrInsert = new ArrayList<>(newList);
         listToUpdateOrInsert.removeAll(oldList);
-        List<TestCaseCountryProperties> listToUpdateOrInsertToIterate = new ArrayList(listToUpdateOrInsert);
+        List<TestCaseCountryProperties> listToUpdateOrInsertToIterate = new ArrayList<>(listToUpdateOrInsert);
 
         for (TestCaseCountryProperties objectDifference : listToUpdateOrInsertToIterate) {
             for (TestCaseCountryProperties objectInDatabase : oldList) {
@@ -331,9 +331,9 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
          * Page has same key : remove from the list. Then delete the list of
          * Object
          */
-        List<TestCaseCountryProperties> listToDelete = new ArrayList(oldList);
+        List<TestCaseCountryProperties> listToDelete = new ArrayList<>(oldList);
         listToDelete.removeAll(newList);
-        List<TestCaseCountryProperties> listToDeleteToIterate = new ArrayList(listToDelete);
+        List<TestCaseCountryProperties> listToDeleteToIterate = new ArrayList<>(listToDelete);
 
         for (TestCaseCountryProperties objectDifference : listToDeleteToIterate) {
             for (TestCaseCountryProperties objectInPage : newList) {
@@ -358,7 +358,7 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
     @Override
     public Answer duplicateList(List<TestCaseCountryProperties> objectList, String targetTest, String targetTestCase) {
         Answer ans = new Answer(null);
-        List<TestCaseCountryProperties> listToCreate = new ArrayList();
+        List<TestCaseCountryProperties> listToCreate = new ArrayList<>();
         for (TestCaseCountryProperties objectToDuplicate : objectList) {
             objectToDuplicate.setTest(targetTest);
             objectToDuplicate.setTestCase(targetTestCase);

@@ -63,7 +63,7 @@ public interface ITestCaseExecutionFileService {
      * @param individualSearch
      * @return
      */
-    AnswerList<List<TestCaseExecutionFile>> readByVariousByCriteria(long exeId, String level, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
+    AnswerList<TestCaseExecutionFile> readByVariousByCriteria(long exeId, String level, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
     /**
      *
@@ -71,7 +71,7 @@ public interface ITestCaseExecutionFileService {
      * @param level
      * @return
      */
-    AnswerList<List<TestCaseExecutionFile>> readByVarious(long exeId, String level);
+    AnswerList<TestCaseExecutionFile> readByVarious(long exeId, String level);
 
     /**
      *

@@ -49,9 +49,9 @@ public interface ITestCaseStepActionDAO {
 
     List<TestCaseStepAction> findTestCaseStepActionbyTestTestCase(String test, String testCase) throws CerberusException ;
 
-    AnswerList readByTestTestCase(String test, String testcase);
+    AnswerList<TestCaseStepAction> readByTestTestCase(String test, String testcase);
 
-    AnswerList readByVarious1(String test, String testcase, int step);
+    AnswerList<TestCaseStepAction> readByVarious1(String test, String testcase, int step);
 
     Answer create(TestCaseStepAction testCaseStepAction);
 }

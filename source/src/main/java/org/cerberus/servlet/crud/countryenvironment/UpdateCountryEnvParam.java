@@ -245,7 +245,7 @@ public class UpdateCountryEnvParam extends HttpServlet {
     }
 
     private List<CountryEnvironmentDatabase> getCountryEnvironmentDatabaseFromParameter(HttpServletRequest request, ApplicationContext appContext, String system, String country, String environment, JSONArray json) throws JSONException {
-        List<CountryEnvironmentDatabase> cebList = new ArrayList();
+        List<CountryEnvironmentDatabase> cebList = new ArrayList<>();
         IFactoryCountryEnvironmentDatabase cebFactory = appContext.getBean(IFactoryCountryEnvironmentDatabase.class);
 
         for (int i = 0; i < json.length(); i++) {
@@ -266,7 +266,7 @@ public class UpdateCountryEnvParam extends HttpServlet {
     }
 
     private List<CountryEnvironmentParameters> getCountryEnvironmentApplicationFromParameter(HttpServletRequest request, ApplicationContext appContext, String system, String country, String environment, JSONArray json) throws JSONException {
-        List<CountryEnvironmentParameters> ceaList = new ArrayList();
+        List<CountryEnvironmentParameters> ceaList = new ArrayList<>();
         ICountryEnvironmentParametersService ceaService = appContext.getBean(ICountryEnvironmentParametersService.class);
         IFactoryCountryEnvironmentParameters ceaFactory = appContext.getBean(IFactoryCountryEnvironmentParameters.class);
 
@@ -306,7 +306,7 @@ public class UpdateCountryEnvParam extends HttpServlet {
     }
 
     private List<CountryEnvDeployType> getCountryEnvironmentDeployTypeFromParameter(HttpServletRequest request, ApplicationContext appContext, String system, String country, String environment, JSONArray json) throws JSONException {
-        List<CountryEnvDeployType> cedList = new ArrayList();
+        List<CountryEnvDeployType> cedList = new ArrayList<>();
         IFactoryCountryEnvDeployType cedFactory = appContext.getBean(IFactoryCountryEnvDeployType.class);
 
         for (int i = 0; i < json.length(); i++) {
@@ -325,7 +325,7 @@ public class UpdateCountryEnvParam extends HttpServlet {
     }
 
     private List<CountryEnvLink> getCountryEnvironmentLinkFromParameter(HttpServletRequest request, ApplicationContext appContext, String system, String country, String environment, JSONArray json) throws JSONException {
-        List<CountryEnvLink> ceiList = new ArrayList();
+        List<CountryEnvLink> ceiList = new ArrayList<>();
         IFactoryCountryEnvLink ceiFactory = appContext.getBean(IFactoryCountryEnvLink.class);
 
         for (int i = 0; i < json.length(); i++) {

@@ -27,6 +27,6 @@ import org.cerberus.util.answer.AnswerList;
  */
 public interface IEnvironmentStatisticsDAO {
 
-    AnswerList getEnvironmentStatistics(String System);
+    AnswerList<BuildRevisionStatisticsEnv> getEnvironmentStatistics(String System);
 
 }

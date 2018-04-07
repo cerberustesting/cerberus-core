@@ -318,7 +318,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                     }
 
                     msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCaseExecutionInQueue").replace("%OPERATION%", "SELECT"));
-                    answer = new AnswerList(testCaseExecutionInQueueList, testCaseExecutionInQueueList.size());
+                    answer = new AnswerList<>(testCaseExecutionInQueueList, testCaseExecutionInQueueList.size());
                 } catch (SQLException exception) {
                     LOG.error("Unable to execute query : " + exception.toString());
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -399,7 +399,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                     }
 
                     msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCaseExecutionInQueue").replace("%OPERATION%", "SELECT"));
-                    answer = new AnswerList(testCaseExecutionInQueueList, testCaseExecutionInQueueList.size());
+                    answer = new AnswerList<>(testCaseExecutionInQueueList, testCaseExecutionInQueueList.size());
                 } catch (SQLException exception) {
                     LOG.error("Unable to execute query : " + exception.toString());
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -475,7 +475,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                     }
 
                     msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCaseExecutionInQueue").replace("%OPERATION%", "SELECT"));
-                    answer = new AnswerList(testCaseExecutionInQueueList, testCaseExecutionInQueueList.size());
+                    answer = new AnswerList<>(testCaseExecutionInQueueList, testCaseExecutionInQueueList.size());
                 } catch (SQLException exception) {
                     LOG.error("Unable to execute query : " + exception.toString());
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -608,14 +608,14 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                         LOG.error("Partial Result in the query.");
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                        response = new AnswerList(objectList, nrTotalRows);
+                        response = new AnswerList<>(objectList, nrTotalRows);
                     } else if (objectList.size() <= 0) {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                        response = new AnswerList(objectList, nrTotalRows);
+                        response = new AnswerList<>(objectList, nrTotalRows);
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                         msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                        response = new AnswerList(objectList, nrTotalRows);
+                        response = new AnswerList<>(objectList, nrTotalRows);
                     }
 
                 } catch (SQLException exception) {
@@ -750,7 +750,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                         EnvCountryBrowserList.add(this.loadFromResultSet(resultSet));
                     }
                     msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCaseExecutionInQueue").replace("%OPERATION%", "SELECT"));
-                    answer = new AnswerList(EnvCountryBrowserList, EnvCountryBrowserList.size());
+                    answer = new AnswerList<>(EnvCountryBrowserList, EnvCountryBrowserList.size());
                 } catch (SQLException exception) {
                     LOG.warn("Unable to execute query : " + exception.toString());
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -878,7 +878,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                         column.add(tmp);
                     }
                     msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCaseExecution").replace("%OPERATION%", "SELECT"));
-                    answer = new AnswerList(column, column.size());
+                    answer = new AnswerList<>(column, column.size());
                 } catch (SQLException exception) {
                     LOG.warn("Unable to execute query : " + exception.toString());
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -998,14 +998,14 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                     LOG.error("Partial Result in the query.");
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                    answer = new AnswerList(distinctValues, nrTotalRows);
+                    answer = new AnswerList<>(distinctValues, nrTotalRows);
                 } else if (distinctValues.size() <= 0) {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                    answer = new AnswerList(distinctValues, nrTotalRows);
+                    answer = new AnswerList<>(distinctValues, nrTotalRows);
                 } else {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                     msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                    answer = new AnswerList(distinctValues, nrTotalRows);
+                    answer = new AnswerList<>(distinctValues, nrTotalRows);
                 }
             }catch (SQLException e) {
                 LOG.warn("Unable to execute query : " + e.toString());

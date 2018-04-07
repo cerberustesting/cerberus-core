@@ -188,7 +188,7 @@ public class CreateTestDataLib extends HttpServlet {
                     logEventService.createForPrivateCalls("/CreateTestDataLib", "CREATE", "Create TestDataLib  : " + request.getParameter("name"), request);
                 }
 
-                List<TestDataLibData> tdldList = new ArrayList();
+                List<TestDataLibData> tdldList = new ArrayList<>();
                 TestDataLib dataLibWithUploadedFile = (TestDataLib) ansItem.getItem();
 
                 if (file != null) {
@@ -216,7 +216,7 @@ public class CreateTestDataLib extends HttpServlet {
                         int i = 0;
                         int y = 1;
                         TestDataLibData firstLineLibData = tdldList.get(0);
-                        tdldList = new ArrayList();
+                        tdldList = new ArrayList<>();
                         if (StringUtil.isNullOrEmpty(firstLineLibData.getColumnPosition())) {
                             firstLineLibData.setColumnPosition("1");
                         }
@@ -264,7 +264,7 @@ public class CreateTestDataLib extends HttpServlet {
     }
 
     private List<TestDataLibData> getSubDataFromParameter(HttpServletRequest request, ApplicationContext appContext, int testDataLibId, JSONArray json) throws JSONException {
-        List<TestDataLibData> tdldList = new ArrayList();
+        List<TestDataLibData> tdldList = new ArrayList<>();
         IFactoryTestDataLibData tdldFactory = appContext.getBean(IFactoryTestDataLibData.class);
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
         String charset = request.getCharacterEncoding();

@@ -155,7 +155,7 @@ public class CreateTestCaseExecutionQueue extends HttpServlet {
         // Prepare the final answer.
         MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
         Answer finalAnswer = new Answer(msg1);
-        List<TestCaseExecutionQueue> insertedList = new ArrayList();
+        List<TestCaseExecutionQueue> insertedList = new ArrayList<>();
 
         for (String myId : myIds) {
 

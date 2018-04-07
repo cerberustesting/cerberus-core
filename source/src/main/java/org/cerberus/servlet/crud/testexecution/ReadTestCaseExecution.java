@@ -324,7 +324,7 @@ public class ReadTestCaseExecution extends HttpServlet {
         Map<String, List<String>> individualSearch = new HashMap<String, List<String>>();
         for (int a = 0; a < columnToSort.length; a++) {
             if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
-                List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
+                List<String> search = new ArrayList<>(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
                 individualSearch.put(columnToSort[a], search);
             }
         }
@@ -446,11 +446,11 @@ public class ReadTestCaseExecution extends HttpServlet {
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
 
         Map<String, List<String>> individualSearch = new HashMap<>();
-        List<String> individualLike = new ArrayList(Arrays.asList(ParameterParserUtil.parseStringParam(request.getParameter("sLike"), "").split(",")));
+        List<String> individualLike = new ArrayList<>(Arrays.asList(ParameterParserUtil.parseStringParam(request.getParameter("sLike"), "").split(",")));
         
         for (int a = 0; a < columnToSort.length; a++) {
             if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
-                List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
+                List<String> search = new ArrayList<>(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
                 if(individualLike.contains(columnToSort[a])) {
                 	individualSearch.put(columnToSort[a]+":like", search);
                 }else {
@@ -792,7 +792,7 @@ public class ReadTestCaseExecution extends HttpServlet {
                      */
                     AnswerList<Invariant> invariants = invariantService.readByIdname(columnName.replace("exe.", ""));
                     List<Invariant> invariantList = invariantService.convert(invariants);
-                    List<String> stringResult = new ArrayList();
+                    List<String> stringResult = new ArrayList<>();
                     for (Invariant inv : invariantList) {
                         stringResult.add(inv.getValue());
                     }
@@ -811,7 +811,7 @@ public class ReadTestCaseExecution extends HttpServlet {
             case "exe.build":
             case "exe.revision":
             	individualSearch = new HashMap<>();
-                individualSearch.put("level", new ArrayList(Arrays.asList(columnName.equals("exe.build") ? "1" : "2")));
+                individualSearch.put("level", new ArrayList<>(Arrays.asList(columnName.equals("exe.build") ? "1" : "2")));
                 values = buildRevisionInvariantService.readDistinctValuesByCriteria(system, "", individualSearch, "versionName");
                 break;
             /**
@@ -828,12 +828,12 @@ public class ReadTestCaseExecution extends HttpServlet {
                 String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "tec.test,tec.testcase,application,project,ticket,description,behaviororvalueexpected,readonly,bugtrackernewurl,deploytype,mavengroupid");
                 String columnToSort[] = sColumns.split(",");
 
-                List<String> individualLike = new ArrayList(Arrays.asList(ParameterParserUtil.parseStringParam(request.getParameter("sLike"), "").split(",")));
+                List<String> individualLike = new ArrayList<>(Arrays.asList(ParameterParserUtil.parseStringParam(request.getParameter("sLike"), "").split(",")));
 
                 individualSearch = new HashMap<>();
                 for (int a = 0; a < columnToSort.length; a++) {
                     if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
-                    	List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
+                    	List<String> search = new ArrayList<>(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
                     	if(individualLike.contains(columnToSort[a])) {
                         	individualSearch.put(columnToSort[a]+":like", search);
                         }else {

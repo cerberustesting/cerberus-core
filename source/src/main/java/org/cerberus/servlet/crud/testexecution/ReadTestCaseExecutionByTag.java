@@ -108,7 +108,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         try {
             // Data/Filter Parameters.
             String Tag = ParameterParserUtil.parseStringParam(request.getParameter("Tag"), "");
-            List<String> outputReport = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("outputReport"), new ArrayList(), "UTF-8");
+            List<String> outputReport = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("outputReport"), new ArrayList<>(), "UTF-8");
 
             JSONObject jsonResponse = new JSONObject();
             JSONObject statusFilter = getStatusList(request);

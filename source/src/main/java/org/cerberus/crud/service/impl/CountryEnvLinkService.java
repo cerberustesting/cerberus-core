@@ -101,7 +101,7 @@ public class CountryEnvLinkService implements ICountryEnvLinkService {
         MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
         Answer finalAnswer = new Answer(msg1);
 
-        List<CountryEnvLink> oldList = new ArrayList();
+        List<CountryEnvLink> oldList = new ArrayList<>();
         try {
             oldList = this.convert(this.readByVarious(system, country, environement));
         } catch (CerberusException ex) {
@@ -113,9 +113,9 @@ public class CountryEnvLinkService implements ICountryEnvLinkService {
          * TestCaseStep in Database has same key : Update and remove from the
          * list. If TestCaseStep in database does ot exist : Insert it.
          */
-        List<CountryEnvLink> listToUpdateOrInsert = new ArrayList(newList);
+        List<CountryEnvLink> listToUpdateOrInsert = new ArrayList<>(newList);
         listToUpdateOrInsert.removeAll(oldList);
-        List<CountryEnvLink> listToUpdateOrInsertToIterate = new ArrayList(listToUpdateOrInsert);
+        List<CountryEnvLink> listToUpdateOrInsertToIterate = new ArrayList<>(listToUpdateOrInsert);
 
         for (CountryEnvLink objectDifference : listToUpdateOrInsertToIterate) {
             for (CountryEnvLink objectInDatabase : oldList) {
@@ -132,9 +132,9 @@ public class CountryEnvLinkService implements ICountryEnvLinkService {
          * TestCaseStep in Page has same key : remove from the list. Then delete
          * the list of TestCaseStep
          */
-        List<CountryEnvLink> listToDelete = new ArrayList(oldList);
+        List<CountryEnvLink> listToDelete = new ArrayList<>(oldList);
         listToDelete.removeAll(newList);
-        List<CountryEnvLink> listToDeleteToIterate = new ArrayList(listToDelete);
+        List<CountryEnvLink> listToDeleteToIterate = new ArrayList<>(listToDelete);
 
         for (CountryEnvLink tcsDifference : listToDeleteToIterate) {
             for (CountryEnvLink tcsInPage : newList) {

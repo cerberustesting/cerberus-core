@@ -97,7 +97,7 @@ public class ReadCerberusDetailInformation extends HttpServlet {
 
             cerberusDatabaseInformation = appContext.getBean(ICerberusInformationDAO.class);
 
-            AnswerItem ans = cerberusDatabaseInformation.getDatabaseInformation();
+            AnswerItem<HashMap<String, String>> ans = cerberusDatabaseInformation.getDatabaseInformation();
             HashMap<String, String> cerberusInformation = (HashMap<String, String>) ans.getItem();
 
             // Database Informations.

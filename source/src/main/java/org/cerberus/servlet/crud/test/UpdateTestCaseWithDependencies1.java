@@ -170,8 +170,8 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
                  * - setting the correct related step and action for action or control
                  */
                 List<TestCaseStep> tcsFromPage = getTestCaseStepFromParameter(request, appContext, test, testCase, duplicate, stepArray);
-                List<TestCaseStepAction> tcsaFromPage = new ArrayList();
-                List<TestCaseStepActionControl> tcsacFromPage = new ArrayList();
+                List<TestCaseStepAction> tcsaFromPage = new ArrayList<>();
+                List<TestCaseStepActionControl> tcsacFromPage = new ArrayList<>();
 
                 int nextStepNumber = getMaxStepNumber(tcsFromPage);
                 for (TestCaseStep tcs : tcsFromPage) {
@@ -206,13 +206,13 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
                 /*
                  * Create, update or delete step, action and control according to the needs
                  */
-                List<TestCaseStep> tcsFromDtb = new ArrayList(tcsService.getListOfSteps(initialTest, initialTestCase));
+                List<TestCaseStep> tcsFromDtb = new ArrayList<>(tcsService.getListOfSteps(initialTest, initialTestCase));
                 tcsService.compareListAndUpdateInsertDeleteElements(tcsFromPage, tcsFromDtb, duplicate);
 
-                List<TestCaseStepAction> tcsaFromDtb = new ArrayList(tcsaService.findTestCaseStepActionbyTestTestCase(initialTest, initialTestCase));
+                List<TestCaseStepAction> tcsaFromDtb = new ArrayList<>(tcsaService.findTestCaseStepActionbyTestTestCase(initialTest, initialTestCase));
                 tcsaService.compareListAndUpdateInsertDeleteElements(tcsaFromPage, tcsaFromDtb, duplicate);
 
-                List<TestCaseStepActionControl> tcsacFromDtb = new ArrayList(tcsacService.findControlByTestTestCase(initialTest, initialTestCase));
+                List<TestCaseStepActionControl> tcsacFromDtb = new ArrayList<>(tcsacService.findControlByTestTestCase(initialTest, initialTestCase));
                 tcsacService.compareListAndUpdateInsertDeleteElements(tcsacFromPage, tcsacFromDtb, duplicate);
                 
                 tc.setTestCaseVersion(tc.getTestCaseVersion() + 1);
@@ -301,7 +301,7 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
     }
 
     private List<TestCaseCountryProperties> getTestCaseCountryPropertiesFromParameter(HttpServletRequest request, ApplicationContext appContext, String test, String testCase, JSONArray properties) throws JSONException {
-        List<TestCaseCountryProperties> testCaseCountryProp = new ArrayList();
+        List<TestCaseCountryProperties> testCaseCountryProp = new ArrayList<>();
 //        String[] testcase_properties_increment = getParameterValuesIfExists(request, "property_increment");
         IFactoryTestCaseCountryProperties testCaseCountryPropertiesFactory = appContext.getBean(IFactoryTestCaseCountryProperties.class);
         for (int i = 0; i < properties.length(); i++) {
@@ -332,7 +332,7 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
     }
 
     private List<TestCaseStep> getTestCaseStepFromParameter(HttpServletRequest request, ApplicationContext appContext, String test, String testCase, boolean duplicate, JSONArray stepArray) throws JSONException {
-        List<TestCaseStep> testCaseStep = new ArrayList();
+        List<TestCaseStep> testCaseStep = new ArrayList<>();
         ITestCaseStepService tcsService = appContext.getBean(ITestCaseStepService.class);
         IFactoryTestCaseStep testCaseStepFactory = appContext.getBean(IFactoryTestCaseStep.class);
 
@@ -377,7 +377,7 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
     }
 
     private List<TestCaseStepAction> getTestCaseStepActionFromParameter(HttpServletRequest request, ApplicationContext appContext, String test, String testCase, JSONArray testCaseStepActionJson) throws JSONException {
-        List<TestCaseStepAction> testCaseStepAction = new ArrayList();
+        List<TestCaseStepAction> testCaseStepAction = new ArrayList<>();
         IFactoryTestCaseStepAction testCaseStepActionFactory = appContext.getBean(IFactoryTestCaseStepAction.class);
 
         for (int i = 0; i < testCaseStepActionJson.length(); i++) {
@@ -408,7 +408,7 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
     }
 
     private List<TestCaseStepActionControl> getTestCaseStepActionControlFromParameter(HttpServletRequest request, ApplicationContext appContext, String test, String testCase, JSONArray controlArray) throws JSONException {
-        List<TestCaseStepActionControl> testCaseStepActionControl = new ArrayList();
+        List<TestCaseStepActionControl> testCaseStepActionControl = new ArrayList<>();
         IFactoryTestCaseStepActionControl testCaseStepActionControlFactory = appContext.getBean(IFactoryTestCaseStepActionControl.class);
 
         for (int i = 0; i < controlArray.length(); i++) {

@@ -167,7 +167,7 @@ public class UpdateTestCaseProperties1 extends HttpServlet {
     }
 
     private List<TestCaseCountryProperties> getTestCaseCountryPropertiesFromParameter(HttpServletRequest request, ApplicationContext appContext, String test, String testCase) throws JSONException {
-        List<TestCaseCountryProperties> testCaseCountryProp = new ArrayList();
+        List<TestCaseCountryProperties> testCaseCountryProp = new ArrayList<>();
 //        String[] testcase_properties_increment = getParameterValuesIfExists(request, "property_increment");
         IFactoryTestCaseCountryProperties testCaseCountryPropertiesFactory = appContext.getBean(IFactoryTestCaseCountryProperties.class);
         JSONArray properties = new JSONArray(request.getParameter("propArr"));

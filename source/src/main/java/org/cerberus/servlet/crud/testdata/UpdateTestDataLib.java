@@ -249,7 +249,7 @@ public class UpdateTestDataLib extends HttpServlet {
                                 + system + " environment: " + environment + " country: " + country, request);
                     }
 
-                    List<TestDataLibData> tdldList = new ArrayList();
+                    List<TestDataLibData> tdldList = new ArrayList<>();
 
                     // Getting list of SubData from JSON Call
                     if (fileData.get("subDataList") != null) {
@@ -266,7 +266,7 @@ public class UpdateTestDataLib extends HttpServlet {
                             String[] subData = (!lib.getSeparator().isEmpty()) ? str.split(lib.getSeparator()) : str.split(",");
                             // We take the subdata from the servlet input.
                             TestDataLibData firstLine = tdldList.get(0);
-                            tdldList = new ArrayList();
+                            tdldList = new ArrayList<>();
                             firstLine.setColumnPosition("1");
                             tdldList.add(firstLine);
                             int i = 1;
@@ -304,7 +304,7 @@ public class UpdateTestDataLib extends HttpServlet {
     }
 
     private List<TestDataLibData> getSubDataFromParameter(HttpServletRequest request, ApplicationContext appContext, int testDataLibId, JSONArray json) throws JSONException {
-        List<TestDataLibData> tdldList = new ArrayList();
+        List<TestDataLibData> tdldList = new ArrayList<>();
         IFactoryTestDataLibData tdldFactory = appContext.getBean(IFactoryTestDataLibData.class);
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
         String charset = request.getCharacterEncoding();

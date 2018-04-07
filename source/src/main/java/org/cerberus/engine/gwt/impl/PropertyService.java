@@ -160,10 +160,10 @@ public class PropertyService implements IPropertyService {
          * Get the list of properties needed to calculate the required property
          */
         List<TestCaseCountryProperties> tcProperties = tCExecution.getTestCaseCountryPropertyList();
-        List<TestCaseCountryProperties> linkedProperties = new ArrayList();
+        List<TestCaseCountryProperties> linkedProperties = new ArrayList<>();
         for (String internalProperty : internalPropertiesFromStringToDecode) { // Looping on potential properties in string to decode.
-            List<TestCaseCountryProperties> newLinkedProperties = new ArrayList();
-            newLinkedProperties = this.getListOfPropertiesLinkedToProperty(country, internalProperty, new ArrayList(), tcProperties);
+            List<TestCaseCountryProperties> newLinkedProperties = new ArrayList<>();
+            newLinkedProperties = this.getListOfPropertiesLinkedToProperty(country, internalProperty, new ArrayList<>(), tcProperties);
             linkedProperties.addAll(newLinkedProperties);
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Property " + internalProperty + " need calculation of these (" + newLinkedProperties.size() + ") property(ies) " + newLinkedProperties);
@@ -305,7 +305,7 @@ public class PropertyService implements IPropertyService {
      */
     private List<TestCaseCountryProperties> getListOfPropertiesLinkedToProperty(String country, String property, List<String> crossedProperties,
             List<TestCaseCountryProperties> propertiesOfTestcase) {
-        List<TestCaseCountryProperties> result = new ArrayList();
+        List<TestCaseCountryProperties> result = new ArrayList<>();
         TestCaseCountryProperties testCaseCountryProperty = null;
         /*
          * Check if property is not already known (recursive case).
@@ -328,10 +328,10 @@ public class PropertyService implements IPropertyService {
         /* 
          * Check if property value1 and value2 contains internal properties
          */
-        List<String> allProperties = new ArrayList();
+        List<String> allProperties = new ArrayList<>();
 
         // Value1 treatment
-        List<String> propertiesValue1 = new ArrayList();
+        List<String> propertiesValue1 = new ArrayList<>();
         //check the properties specified in the test
         for (String propNameFromValue1 : this.getPropertiesListFromString(testCaseCountryProperty.getValue1())) {
             for (TestCaseCountryProperties pr : propertiesOfTestcase) {
@@ -344,7 +344,7 @@ public class PropertyService implements IPropertyService {
         allProperties.addAll(propertiesValue1);
 
         // Value2 treatment :
-        List<String> propertiesValue2 = new ArrayList();
+        List<String> propertiesValue2 = new ArrayList<>();
         //check the properties specified in the test
         for (String propNameFromValue2 : this.getPropertiesListFromString(testCaseCountryProperty.getValue2())) {
             for (TestCaseCountryProperties pr : propertiesOfTestcase) {
@@ -713,6 +713,7 @@ public class PropertyService implements IPropertyService {
                             testCaseExecutionData = this.property_getFromGroovy(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
                             break;
 
+                        // DEPRECATED Property types.
                         case TestCaseCountryProperties.TYPE_EXECUTESOAPFROMLIB: // DEPRECATED
                             testCaseExecutionData = this.property_executeSoapFromLib(testCaseExecutionData, tCExecution, testCaseStepActionExecution, testCaseCountryProperty, forceRecalculation);
                             res = testCaseExecutionData.getPropertyResultMessage();
@@ -767,7 +768,7 @@ public class PropertyService implements IPropertyService {
 
                     // Convert json to HashMap.
                     List<HashMap<String, String>> result = null;
-                    result = new ArrayList();
+                    result = new ArrayList<>();
                     try {
                         LOG.debug("Converting Json : " + testCaseExecutionDataFromCache.getJsonResult());
 

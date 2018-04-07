@@ -118,7 +118,7 @@ public class TestDataLibDataService implements ITestDataLibDataService {
         MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
         Answer finalAnswer = new Answer(msg1);
 
-        List<TestDataLibData> oldList = new ArrayList();
+        List<TestDataLibData> oldList = new ArrayList<>();
         try {
             oldList = this.convert(this.readByVarious(testDataLibId, null, null, null));
         } catch (CerberusException ex) {
@@ -128,9 +128,9 @@ public class TestDataLibDataService implements ITestDataLibDataService {
         /**
          * Update and Create all objects database Objects from newList
          */
-        List<TestDataLibData> listToUpdateOrInsert = new ArrayList(newList);
+        List<TestDataLibData> listToUpdateOrInsert = new ArrayList<>(newList);
         listToUpdateOrInsert.removeAll(oldList);
-        List<TestDataLibData> listToUpdateOrInsertToIterate = new ArrayList(listToUpdateOrInsert);
+        List<TestDataLibData> listToUpdateOrInsertToIterate = new ArrayList<>(listToUpdateOrInsert);
         
         for (TestDataLibData objectDifference : listToUpdateOrInsertToIterate) {
             for (TestDataLibData objectInDatabase : oldList) {
@@ -145,9 +145,9 @@ public class TestDataLibDataService implements ITestDataLibDataService {
         /**
          * Delete all objects database Objects that do not exist from newList
          */
-        List<TestDataLibData> listToDelete = new ArrayList(oldList);
+        List<TestDataLibData> listToDelete = new ArrayList<>(oldList);
         listToDelete.removeAll(newList);
-        List<TestDataLibData> listToDeleteToIterate = new ArrayList(listToDelete);
+        List<TestDataLibData> listToDeleteToIterate = new ArrayList<>(listToDelete);
 
         for (TestDataLibData tcsDifference : listToDeleteToIterate) {
             for (TestDataLibData tcsInPage : newList) {

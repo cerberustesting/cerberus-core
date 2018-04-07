@@ -161,7 +161,7 @@ public class UpdateAppService extends HttpServlet {
                 // Update content
                 if (request.getParameter("contentList") != null) {
                     JSONArray objContentArray = new JSONArray(request.getParameter("contentList"));
-                    List<AppServiceContent> contentList = new ArrayList();
+                    List<AppServiceContent> contentList = new ArrayList<>();
                     contentList = getContentListFromRequest(request, appContext, service, objContentArray);
 
                     // Update the Database with the new list.
@@ -172,7 +172,7 @@ public class UpdateAppService extends HttpServlet {
                 // Update header
                 if (request.getParameter("headerList") != null) {
                     JSONArray objHeaderArray = new JSONArray(request.getParameter("headerList"));
-                    List<AppServiceHeader> headerList = new ArrayList();
+                    List<AppServiceHeader> headerList = new ArrayList<>();
                     headerList = getHeaderListFromRequest(request, appContext, service, objHeaderArray);
 
                     // Update the Database with the new list.
@@ -194,7 +194,7 @@ public class UpdateAppService extends HttpServlet {
     }
 
     private List<AppServiceContent> getContentListFromRequest(HttpServletRequest request, ApplicationContext appContext, String service, JSONArray json) throws CerberusException, JSONException, UnsupportedEncodingException {
-        List<AppServiceContent> contentList = new ArrayList();
+        List<AppServiceContent> contentList = new ArrayList<>();
 
         for (int i = 0; i < json.length(); i++) {
             JSONObject objectJson = json.getJSONObject(i);
@@ -215,7 +215,7 @@ public class UpdateAppService extends HttpServlet {
     }
 
     private List<AppServiceHeader> getHeaderListFromRequest(HttpServletRequest request, ApplicationContext appContext, String service, JSONArray json) throws CerberusException, JSONException, UnsupportedEncodingException {
-        List<AppServiceHeader> headerList = new ArrayList();
+        List<AppServiceHeader> headerList = new ArrayList<>();
 
         for (int i = 0; i < json.length(); i++) {
             JSONObject objectJson = json.getJSONObject(i);

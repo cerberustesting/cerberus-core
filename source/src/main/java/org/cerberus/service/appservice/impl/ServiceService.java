@@ -79,7 +79,7 @@ public class ServiceService implements IServiceService {
         String decodedServicePath = null;
         String decodedOperation;
         String decodedAttachement;
-        AnswerItem result = new AnswerItem();
+        AnswerItem<AppService> result = new AnswerItem<>();
         String system = tCExecution.getApplicationObj().getSystem();
         String country = tCExecution.getCountry();
         String environment = tCExecution.getEnvironment();

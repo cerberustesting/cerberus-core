@@ -34,7 +34,7 @@ public class EnvironmentStatisticsServiceImpl implements IEnvironmentStatisticsS
     IEnvironmentStatisticsDAO environmentStatisticsDAO;
 
     @Override
-    public AnswerList getEnvironmentStatistics(String system) {
+    public AnswerList<BuildRevisionStatisticsEnv> getEnvironmentStatistics(String system) {
         return environmentStatisticsDAO.getEnvironmentStatistics(system);
     }
 
