@@ -653,6 +653,11 @@ img.selectedPicture{
     color: #8B0404;
 }
 
+.popover{
+	z-index: 10000 !important;
+	word-wrap: break-word;
+}
+
 .tooltip-inner {
     max-width: 1000px;
     overflow-wrap: break-word; 

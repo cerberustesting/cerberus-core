@@ -7661,6 +7661,10 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add("select 1 from DUAL;");
         a.add("select 1 from DUAL;");
         a.add("select 1 from DUAL;");
+        
+        // Add FTP Service
+        // 1328
+        a.add("INSERT INTO `invariant` (idname, value, sort, description) VALUES ('SRVTYPE', 'FTP', 300, 'FTP Service.')");
 
 
         return a;

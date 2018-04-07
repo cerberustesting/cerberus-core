@@ -337,7 +337,8 @@ public final class StringUtil {
         return url.startsWith("http://")
                 || url.startsWith("https://")
                 // File scheme can have no authority component, then only one slash is necessary
-                || url.startsWith("file:/");
+                || url.startsWith("file:/")
+                || url.startsWith("ftp://");
     }
 
     /**
