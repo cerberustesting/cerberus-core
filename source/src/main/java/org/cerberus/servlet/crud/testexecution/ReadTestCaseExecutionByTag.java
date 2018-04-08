@@ -99,7 +99,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         response.setCharacterEncoding("utf8");
         String echo = request.getParameter("sEcho");
 
-        AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+        AnswerItem answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
 
         testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
         tagService = appContext.getBean(ITagService.class);

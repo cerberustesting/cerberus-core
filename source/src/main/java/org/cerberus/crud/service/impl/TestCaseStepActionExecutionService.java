@@ -151,7 +151,7 @@ public class TestCaseStepActionExecutionService implements ITestCaseStepActionEx
 
             tcsaeList.add(tcsae);
         }
-        response = new AnswerList(tcsaeList, actions.getTotalRows());
+        response = new AnswerList<>(tcsaeList, actions.getTotalRows());
         return response;
     }
 }

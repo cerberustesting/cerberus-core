@@ -75,7 +75,7 @@ public class ReadCampaignParameter extends HttpServlet {
 
         String campaign = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("campaign"), "");
 
-        AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+        AnswerItem answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
         try {
             JSONObject jsonResponse = new JSONObject();
             if (!campaign.equals("")) {
@@ -139,7 +139,7 @@ public class ReadCampaignParameter extends HttpServlet {
     }// </editor-fold>
 
     private AnswerItem findParameterListByCampaign(ApplicationContext appContext, HttpServletRequest request, HttpServletResponse response, String campaign) throws JSONException {
-        AnswerItem item = new AnswerItem();
+        AnswerItem item = new AnswerItem<>();
         JSONObject jsonResponse = new JSONObject();
         campaignParameterService = appContext.getBean(ICampaignParameterService.class);
 

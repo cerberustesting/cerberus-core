@@ -377,6 +377,7 @@
         </pluginManagement>
 
         <plugins>
+            
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven-compiler-plugin.version}</version>
@@ -391,6 +392,7 @@
                     </compilerArguments>-->
                 </configuration>
             </plugin>
+            
             <plugin>
                 <artifactId>maven-war-plugin</artifactId>
                 <version>${maven-war-plugin.version}</version>
@@ -398,6 +400,7 @@
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                 </configuration>
             </plugin>
+            
             <plugin>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <version>${maven-dependency-plugin.version}</version>
@@ -422,6 +425,7 @@
                     </execution>
                 </executions>
             </plugin>
+            
             <plugin>
                 <groupId>org.asciidoctor</groupId>
                 <artifactId>asciidoctor-maven-plugin</artifactId>
@@ -442,6 +446,7 @@
                     <doctype>book</doctype>
                 </configuration>
             </plugin>
+            
             <plugin>
                 <groupId>com.mycila</groupId>
                 <artifactId>license-maven-plugin</artifactId>
@@ -472,6 +477,7 @@
                     </execution>
                 </executions>
             </plugin>
+            
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>${maven-assembly-plugin.version}</version>
@@ -491,6 +497,7 @@
                     </execution>
                 </executions>
             </plugin>
+            
             <plugin>
                 <artifactId>maven-deploy-plugin</artifactId>
                 <version>${maven-deploy-plugin.version}</version>
@@ -498,6 +505,7 @@
                     <skip>true</skip>
                 </configuration>
             </plugin>
+            
         </plugins>
     </build>
 
@@ -528,6 +536,7 @@
                 - cerberus.sourceforge.username, which is a correct Cerberus' Sourceforge user
                 - cerberus.sourceforge.password, which is a correct Cerberus' Sourceforge password
         -->
+        
         <profile>
             <id>release</id>
             <properties>

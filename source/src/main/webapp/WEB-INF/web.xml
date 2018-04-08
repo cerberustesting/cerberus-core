@@ -635,10 +635,6 @@
         <servlet-class>org.cerberus.servlet.zzpublic.AddToExecutionQueueV003</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>GetExecutionQueue</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.testexecution.GetExecutionQueue</servlet-class>
-    </servlet>
-    <servlet>
         <description>Execute the next record from the execution queue.</description>
         <servlet-name>ExecuteNextInQueue</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.testexecution.ExecuteNextInQueue</servlet-class>
@@ -1404,10 +1400,6 @@
     <servlet-mapping>
         <servlet-name>AddToExecutionQueueV003</servlet-name>
         <url-pattern>/AddToExecutionQueueV003</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>GetExecutionQueue</servlet-name>
-        <url-pattern>/GetExecutionQueue</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ExecuteNextInQueue</servlet-name>

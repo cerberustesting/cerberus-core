@@ -98,7 +98,7 @@ public class FtpService implements IFtpService{
 	@Override
 	public AnswerItem<AppService> getFTP(String chain) {
 		MessageEvent message = null;
-		AnswerItem result = new AnswerItem();
+		AnswerItem result = new AnswerItem<>();
 		HashMap<String, String> informations = this.fromFtpStringToHashMap(chain);
 		
 		if(informations.size() <= 4) {

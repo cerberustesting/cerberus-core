@@ -236,7 +236,7 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
     @Override
     public AnswerList readByVarious1(long executionId, String test, String testcase) {
         MessageEvent msg;
-        AnswerList answer = new AnswerList();
+        AnswerList answer = new AnswerList<>();
         List<TestCaseStepExecution> list = new ArrayList<TestCaseStepExecution>();
         StringBuilder query = new StringBuilder();
         query.append("SELECT * FROM testcasestepexecution a ");

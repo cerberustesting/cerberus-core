@@ -177,7 +177,7 @@ public class CampaignParameterService implements ICampaignParameterService {
     }
 
     @Override
-    public CampaignParameter convert(AnswerItem answerItem) throws CerberusException {
+    public CampaignParameter convert(AnswerItem<CampaignParameter> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (CampaignParameter) answerItem.getItem();
@@ -186,7 +186,7 @@ public class CampaignParameterService implements ICampaignParameterService {
     }
 
     @Override
-    public List<CampaignParameter> convert(AnswerList answerList) throws CerberusException {
+    public List<CampaignParameter> convert(AnswerList<CampaignParameter> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (List<CampaignParameter>) answerList.getDataList();

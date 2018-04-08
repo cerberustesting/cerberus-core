@@ -76,7 +76,7 @@ public class InvariantService implements IInvariantService {
 
     @Override
     public HashMap<String, String> readToHashMapGp1StringByIdname(String idName, String defaultValue) {
-        HashMap<String, String> result = new HashMap<String, String>();
+        HashMap<String, String> result = new HashMap<>();
 
         AnswerList answer = readByIdname(idName); //TODO: handle if the response does not turn ok
         for (Invariant inv : (List<Invariant>) answer.getDataList()) {
@@ -241,7 +241,7 @@ public class InvariantService implements IInvariantService {
     }
 
     @Override
-    public Invariant convert(AnswerItem answerItem) throws CerberusException {
+    public Invariant convert(AnswerItem<Invariant> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (Invariant) answerItem.getItem();
@@ -250,7 +250,7 @@ public class InvariantService implements IInvariantService {
     }
 
     @Override
-    public List<Invariant> convert(AnswerList answerList) throws CerberusException {
+    public List<Invariant> convert(AnswerList<Invariant> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (List<Invariant>) answerList.getDataList();

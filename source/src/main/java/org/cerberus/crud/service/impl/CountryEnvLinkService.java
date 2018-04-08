@@ -157,7 +157,7 @@ public class CountryEnvLinkService implements ICountryEnvLinkService {
     }
 
     @Override
-    public CountryEnvLink convert(AnswerItem answerItem) throws CerberusException {
+    public CountryEnvLink convert(AnswerItem<CountryEnvLink> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (CountryEnvLink) answerItem.getItem();
@@ -166,7 +166,7 @@ public class CountryEnvLinkService implements ICountryEnvLinkService {
     }
 
     @Override
-    public List<CountryEnvLink> convert(AnswerList answerList) throws CerberusException {
+    public List<CountryEnvLink> convert(AnswerList<CountryEnvLink> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (List<CountryEnvLink>) answerList.getDataList();

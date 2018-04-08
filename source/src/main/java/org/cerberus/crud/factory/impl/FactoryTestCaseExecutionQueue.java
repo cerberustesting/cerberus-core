@@ -37,7 +37,7 @@ public class FactoryTestCaseExecutionQueue implements IFactoryTestCaseExecutionQ
     private static final long NEW_ENTRY_INDEX = -1;
     
     @Override
-    public TestCaseExecutionQueue create(long id, String test, String testCase, String country, String environment, String robot, String robotIP, String robotPort,
+    public TestCaseExecutionQueue create(long id, String test, String testCase, String country, String environment, String robot, String robotDecli, String robotIP, String robotPort,
             String browser, String browserVersion, String platform, String screenSize, int manualURL, String manualHost, String manualContextRoot, String manualLoginRelativeURL,
             String manualEnvData, String tag, int screenshot, int verbose, String timeout, int pageSource, int seleniumLog,
             long exeId, Integer retries, String manualExecution, String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif) throws FactoryCreationException {
@@ -49,6 +49,7 @@ public class FactoryTestCaseExecutionQueue implements IFactoryTestCaseExecutionQ
             inQueue.setCountry(country);
             inQueue.setEnvironment(environment);
             inQueue.setRobot(robot);
+            inQueue.setRobotDecli(robotDecli);
             inQueue.setRobotIP(robotIP);
             inQueue.setRobotPort(robotPort);
             inQueue.setBrowser(browser);
@@ -86,12 +87,12 @@ public class FactoryTestCaseExecutionQueue implements IFactoryTestCaseExecutionQ
     }
     
     @Override
-    public TestCaseExecutionQueue create(String test, String testCase, String country, String environment, String robot, String robotIP, String robotPort, String browser,
+    public TestCaseExecutionQueue create(String test, String testCase, String country, String environment, String robot, String robotDecli, String robotIP, String robotPort, String browser,
             String browserVersion, String platform, String screenSize, int manualURL, String manualHost, String manualContextRoot, String manualLoginRelativeURL, String manualEnvData,
             String tag, int screenshot, int verbose, String timeout, int pageSource, int seleniumLog, long exeId, Integer retries,
             String manualExecution, int priority, String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif)
             throws FactoryCreationException {
-        TestCaseExecutionQueue inQueue = create(NEW_ENTRY_INDEX, test, testCase, country, environment, robot, robotIP, robotPort, browser, browserVersion, platform, screenSize, manualURL, manualHost,
+        TestCaseExecutionQueue inQueue = create(NEW_ENTRY_INDEX, test, testCase, country, environment, robot, robotDecli, robotIP, robotPort, browser, browserVersion, platform, screenSize, manualURL, manualHost,
                 manualContextRoot, manualLoginRelativeURL, manualEnvData, tag, screenshot, verbose, timeout, pageSource, seleniumLog, exeId,
                 retries, manualExecution, usrCreated, dateCreated, usrModif, dateModif);
         inQueue.setState(TestCaseExecutionQueue.State.QUEUED);
@@ -102,12 +103,12 @@ public class FactoryTestCaseExecutionQueue implements IFactoryTestCaseExecutionQ
     }
     
     @Override
-    public TestCaseExecutionQueue create(long id, String test, String testCase, String country, String environment, String robot, String robotIP, String robotPort, String browser,
+    public TestCaseExecutionQueue create(long id, String test, String testCase, String country, String environment, String robot, String robotDecli, String robotIP, String robotPort, String browser,
             String browserVersion, String platform, String screenSize, int manualURL, String manualHost, String manualContextRoot, String manualLoginRelativeURL, String manualEnvData,
             String tag, int screenshot, int verbose, String timeout, int pageSource, int seleniumLog, Date requestDate, TestCaseExecutionQueue.State state, int priority, String comment, String debugFlag, Integer retries,
             String manualExecution, long exeId, String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif) throws FactoryCreationException {
         TestCaseExecutionQueue inQueue;
-        inQueue = this.create(id, test, testCase, country, environment, robot, robotIP, robotPort, browser, browserVersion, platform, screenSize, manualURL, manualHost,
+        inQueue = this.create(id, test, testCase, country, environment, robot, robotDecli, robotIP, robotPort, browser, browserVersion, platform, screenSize, manualURL, manualHost,
                 manualContextRoot, manualLoginRelativeURL, manualEnvData, tag, screenshot, verbose, timeout, pageSource, seleniumLog, exeId, retries, manualExecution,
                 usrCreated, dateCreated, usrModif, dateModif);
         inQueue.setState(state);

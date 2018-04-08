@@ -86,7 +86,7 @@ public class ReadTestDataLib extends HttpServlet {
         // Default message to unexpected error.
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        AnswerItem answer = new AnswerItem(msg);
+        AnswerItem answer = new AnswerItem<>(msg);
 
         response.setContentType("application/json");
         response.setCharacterEncoding("utf8");
@@ -183,7 +183,7 @@ public class ReadTestDataLib extends HttpServlet {
      * @throws JSONException
      */
     private AnswerItem findTestDataLibList(ApplicationContext appContext, HttpServletRequest request) throws IOException, BeansException, NumberFormatException, JSONException {
-        AnswerItem item = new AnswerItem();
+        AnswerItem item = new AnswerItem<>();
         JSONObject jsonResponse = new JSONObject();
         testDataLibService = appContext.getBean(ITestDataLibService.class);
 
@@ -247,7 +247,7 @@ public class ReadTestDataLib extends HttpServlet {
      * @throws JSONException
      */
     private AnswerItem findTestDataLibByID(int testDatalib, ApplicationContext appContext, boolean userHasPermissions) throws JSONException {
-        AnswerItem item = new AnswerItem();
+        AnswerItem item = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         ITestDataLibService testDataService = appContext.getBean(ITestDataLibService.class);
@@ -281,7 +281,7 @@ public class ReadTestDataLib extends HttpServlet {
      */
     private AnswerItem findTestDataLibNameList(String nameToSearch, int limit, boolean like, ApplicationContext appContext) throws JSONException {
 
-        AnswerItem ansItem = new AnswerItem();
+        AnswerItem ansItem = new AnswerItem<>();
 
         JSONObject object = new JSONObject();
 
@@ -324,7 +324,7 @@ public class ReadTestDataLib extends HttpServlet {
     private AnswerItem getTestCasesUsingTestDataLib(int testDataLibId, String name, String country, ApplicationContext appContext, boolean userHasPermissions) throws JSONException {
         JSONObject object = new JSONObject();
         JSONArray objectArray = new JSONArray();
-        AnswerItem ansItem = new AnswerItem();
+        AnswerItem ansItem = new AnswerItem<>();
         ITestCaseService tcService = appContext.getBean(ITestCaseService.class);
 
         AnswerList ansList = tcService.findTestCasesThatUseTestDataLib(testDataLibId, name, country);
@@ -377,7 +377,7 @@ public class ReadTestDataLib extends HttpServlet {
      * @throws JSONException
      */
     private AnswerItem findDistinctGroups(ApplicationContext appContext) throws JSONException {
-        AnswerItem answerItem = new AnswerItem();
+        AnswerItem answerItem = new AnswerItem<>();
 
         ITestDataLibService testDataService = appContext.getBean(ITestDataLibService.class);
 
@@ -429,7 +429,7 @@ public class ReadTestDataLib extends HttpServlet {
     }
 
     private AnswerItem findDistinctValuesOfColumn(ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
-        AnswerItem answer = new AnswerItem();
+        AnswerItem answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         testDataLibService = appContext.getBean(ITestDataLibService.class);

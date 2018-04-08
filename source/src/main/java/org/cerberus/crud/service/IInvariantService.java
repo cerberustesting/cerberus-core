@@ -166,7 +166,7 @@ public interface IInvariantService {
      * @return
      * @throws CerberusException
      */
-    Invariant convert(AnswerItem answerItem) throws CerberusException;
+    Invariant convert(AnswerItem<Invariant> answerItem) throws CerberusException;
 
     /**
      *
@@ -174,7 +174,7 @@ public interface IInvariantService {
      * @return
      * @throws CerberusException
      */
-    List<Invariant> convert(AnswerList answerList) throws CerberusException;
+    List<Invariant> convert(AnswerList<Invariant> answerList) throws CerberusException;
 
     /**
      *

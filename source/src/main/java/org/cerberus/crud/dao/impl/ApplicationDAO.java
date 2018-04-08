@@ -70,7 +70,7 @@ public class ApplicationDAO implements IApplicationDAO {
 
     @Override
     public AnswerItem<Application> readByKey(String application) {
-        AnswerItem ans = new AnswerItem();
+        AnswerItem ans = new AnswerItem<>();
         Application result = null;
         final String query = "SELECT * FROM `application` app WHERE `application` = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -132,7 +132,7 @@ public class ApplicationDAO implements IApplicationDAO {
 
     @Override
     public AnswerList<Application> readBySystemByCriteria(String system, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
-        AnswerList response = new AnswerList();
+        AnswerList response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<Application> objectList = new ArrayList<Application>();
@@ -231,14 +231,14 @@ public class ApplicationDAO implements IApplicationDAO {
                         LOG.error("Partial Result in the query.");
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                        response = new AnswerList(objectList, nrTotalRows);
+                        response = new AnswerList<>(objectList, nrTotalRows);
                     } else if (objectList.size() <= 0) {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                        response = new AnswerList(objectList, nrTotalRows);
+                        response = new AnswerList<>(objectList, nrTotalRows);
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                         msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                        response = new AnswerList(objectList, nrTotalRows);
+                        response = new AnswerList<>(objectList, nrTotalRows);
                     }
 
                 } catch (SQLException exception) {
@@ -285,7 +285,7 @@ public class ApplicationDAO implements IApplicationDAO {
 
     @Override
     public AnswerItem<HashMap<String, HashMap<String, Integer>>> readTestCaseCountersBySystemByStatus(String system) {
-        AnswerItem response = new AnswerItem();
+        AnswerItem response = new AnswerItem<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
@@ -550,7 +550,7 @@ public class ApplicationDAO implements IApplicationDAO {
     @Override
     public AnswerList<String> readDistinctSystem() {
         MessageEvent msg;
-        AnswerList answer = new AnswerList();
+        AnswerList answer = new AnswerList<>();
         List<String> result = new ArrayList<String>();
         final String query = "SELECT DISTINCT a.system FROM application a ORDER BY a.system ASC";
 
@@ -639,7 +639,7 @@ public class ApplicationDAO implements IApplicationDAO {
 
     @Override
     public AnswerList<String> readDistinctValuesByCriteria(String system, String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
-        AnswerList answer = new AnswerList();
+        AnswerList answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<String> distinctValues = new ArrayList<>();
@@ -728,14 +728,14 @@ public class ApplicationDAO implements IApplicationDAO {
                     LOG.error("Partial Result in the query.");
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                    answer = new AnswerList(distinctValues, nrTotalRows);
+                    answer = new AnswerList<>(distinctValues, nrTotalRows);
                 } else if (distinctValues.size() <= 0) {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                    answer = new AnswerList(distinctValues, nrTotalRows);
+                    answer = new AnswerList<>(distinctValues, nrTotalRows);
                 } else {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                     msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                    answer = new AnswerList(distinctValues, nrTotalRows);
+                    answer = new AnswerList<>(distinctValues, nrTotalRows);
                 }
             }catch (Exception e) {
                 LOG.warn("Unable to execute query : " + e.toString());

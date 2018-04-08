@@ -73,7 +73,7 @@ public class ReadTestDataLibData extends HttpServlet {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         
-        AnswerItem answer = new AnswerItem(msg);
+        AnswerItem answer = new AnswerItem<>(msg);
         
         response.setContentType("application/json");
         response.setCharacterEncoding("utf8");
@@ -182,7 +182,7 @@ public class ReadTestDataLibData extends HttpServlet {
 
         jsonResponse.put("contentTable", jsonArray);
 
-        AnswerItem item = new AnswerItem();
+        AnswerItem item = new AnswerItem<>();
         item.setItem(jsonResponse);
         item.setResultMessage(answer.getResultMessage());
 
@@ -212,7 +212,7 @@ public class ReadTestDataLibData extends HttpServlet {
         jsonResponse.put("iTotalRecords", answer.getTotalRows());
         jsonResponse.put("iTotalDisplayRecords", answer.getTotalRows());
 
-        AnswerItem item = new AnswerItem();
+        AnswerItem item = new AnswerItem<>();
         item.setItem(jsonResponse);
         item.setResultMessage(answer.getResultMessage());
 
@@ -234,7 +234,7 @@ public class ReadTestDataLibData extends HttpServlet {
 
         jsonResponse.put("contentTable", jsonArray);
 
-        AnswerItem item = new AnswerItem();
+        AnswerItem item = new AnswerItem<>();
         item.setItem(jsonResponse);
         item.setResultMessage(answer.getResultMessage());
 

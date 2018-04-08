@@ -69,7 +69,7 @@ public class InvariantDAO implements IInvariantDAO {
 
     @Override
     public AnswerItem readByKey(String id, String value) {
-        AnswerItem ans = new AnswerItem();
+        AnswerItem ans = new AnswerItem<>();
         Invariant result = null;
         final String query = "SELECT * FROM `invariant` WHERE `idname` = ? AND `value` = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -133,7 +133,7 @@ public class InvariantDAO implements IInvariantDAO {
 
     @Override
     public AnswerList readByIdname(String idName) {
-        AnswerList answer = new AnswerList();
+        AnswerList answer = new AnswerList<>();
         MessageEvent msg;
         List<Invariant> result = new ArrayList<>();
 
@@ -176,7 +176,7 @@ public class InvariantDAO implements IInvariantDAO {
 
     @Override
     public AnswerList readByIdnameByGp1(String idName, String gp) {
-        AnswerList ansList = new AnswerList();
+        AnswerList ansList = new AnswerList<>();
         MessageEvent msg;
 
         List<Invariant> invariantList = new ArrayList<Invariant>();
@@ -248,7 +248,7 @@ public class InvariantDAO implements IInvariantDAO {
     @Override
     public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch, String PublicPrivateFilter) {
         List<Invariant> invariantList = new ArrayList<>();
-        AnswerList answer = new AnswerList();
+        AnswerList answer = new AnswerList<>();
         MessageEvent msg;
 
         StringBuilder searchSQL = new StringBuilder();
@@ -362,7 +362,7 @@ public class InvariantDAO implements IInvariantDAO {
     @Override
     public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, String PublicPrivateFilter) {
         List<Invariant> invariantList = new ArrayList<>();
-        AnswerList answer = new AnswerList();
+        AnswerList answer = new AnswerList<>();
         List<String> individalColumnSearchValues = new ArrayList<>();
         MessageEvent msg;
 
@@ -493,7 +493,7 @@ public class InvariantDAO implements IInvariantDAO {
     @Override
     public AnswerList readDistinctValuesByCriteria(String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, String PublicPrivateFilter, String columnName) {
         List<String> invariantList = new ArrayList<>();
-        AnswerList answer = new AnswerList();
+        AnswerList answer = new AnswerList<>();
         List<String> individalColumnSearchValues = new ArrayList<String>();
         MessageEvent msg;
 
@@ -607,7 +607,7 @@ public class InvariantDAO implements IInvariantDAO {
 
     @Override
     public AnswerList readCountryListEnvironmentLastChanges(String system, Integer nbdays) {
-        AnswerList response = new AnswerList();
+        AnswerList response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<Invariant> objectList = new ArrayList<Invariant>();
@@ -653,14 +653,14 @@ public class InvariantDAO implements IInvariantDAO {
                         LOG.error("Partial Result in the query.");
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                        response = new AnswerList(objectList, nrTotalRows);
+                        response = new AnswerList<>(objectList, nrTotalRows);
                     } else if (objectList.size() <= 0) {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                        response = new AnswerList(objectList, nrTotalRows);
+                        response = new AnswerList<>(objectList, nrTotalRows);
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                         msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                        response = new AnswerList(objectList, nrTotalRows);
+                        response = new AnswerList<>(objectList, nrTotalRows);
                     }
 
                 } catch (SQLException exception) {

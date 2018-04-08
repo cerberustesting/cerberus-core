@@ -124,7 +124,7 @@ public interface ITestCaseLabelService {
      * @return
      * @throws CerberusException
      */
-    TestCaseLabel convert(AnswerItem answerItem) throws CerberusException;
+    TestCaseLabel convert(AnswerItem<TestCaseLabel> answerItem) throws CerberusException;
 
     /**
      *
@@ -132,7 +132,7 @@ public interface ITestCaseLabelService {
      * @return
      * @throws CerberusException
      */
-    List<TestCaseLabel> convert(AnswerList answerList) throws CerberusException;
+    List<TestCaseLabel> convert(AnswerList<TestCaseLabel> answerList) throws CerberusException;
 
     /**
      *

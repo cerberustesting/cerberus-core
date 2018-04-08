@@ -119,7 +119,7 @@ public class TestCaseLabelService implements ITestCaseLabelService {
     }
 
     @Override
-    public TestCaseLabel convert(AnswerItem answerItem) throws CerberusException {
+    public TestCaseLabel convert(AnswerItem<TestCaseLabel> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (TestCaseLabel) answerItem.getItem();
@@ -128,7 +128,7 @@ public class TestCaseLabelService implements ITestCaseLabelService {
     }
 
     @Override
-    public List<TestCaseLabel> convert(AnswerList answerList) throws CerberusException {
+    public List<TestCaseLabel> convert(AnswerList<TestCaseLabel> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (List<TestCaseLabel>) answerList.getDataList();

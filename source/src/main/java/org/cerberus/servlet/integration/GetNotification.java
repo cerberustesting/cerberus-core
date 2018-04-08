@@ -83,7 +83,7 @@ public class GetNotification extends HttpServlet {
         String chain = policy.sanitize(request.getParameter("chain"));
 
         // Init Answer with potencial error from Parsing parameter.
-//        AnswerItem answer = new AnswerItem(msg);
+//        AnswerItem answer = new AnswerItem<>(msg);
         String eMailContent = "";
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         IEmailGenerationService emailService = appContext.getBean(IEmailGenerationService.class);

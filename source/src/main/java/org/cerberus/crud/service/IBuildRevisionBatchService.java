@@ -107,7 +107,7 @@ public interface IBuildRevisionBatchService {
      * @return
      * @throws CerberusException
      */
-    BuildRevisionBatch convert(AnswerItem answerItem) throws CerberusException;
+    BuildRevisionBatch convert(AnswerItem<BuildRevisionBatch> answerItem) throws CerberusException;
 
     /**
      *
@@ -115,7 +115,7 @@ public interface IBuildRevisionBatchService {
      * @return
      * @throws CerberusException
      */
-    List<BuildRevisionBatch> convert(AnswerList answerList) throws CerberusException;
+    List<BuildRevisionBatch> convert(AnswerList<BuildRevisionBatch> answerList) throws CerberusException;
 
     /**
      *

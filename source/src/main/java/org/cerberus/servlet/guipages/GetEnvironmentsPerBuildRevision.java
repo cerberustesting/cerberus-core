@@ -88,7 +88,7 @@ public class GetEnvironmentsPerBuildRevision extends HttpServlet {
         boolean userHasPermissions = true;
 
         // Init Answer with potencial error from Parsing parameter.
-        AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+        AnswerItem answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
 
         try {
             JSONObject jsonResponse = new JSONObject();

@@ -86,7 +86,7 @@ public class ControlService implements IControlService {
     public TestCaseStepActionControlExecution doControl(TestCaseStepActionControlExecution testCaseStepActionControlExecution) {
         MessageEvent res;
         TestCaseExecution tCExecution = testCaseStepActionControlExecution.getTestCaseStepActionExecution().getTestCaseStepExecution().gettCExecution();
-        AnswerItem<String> answerDecode = new AnswerItem();
+        AnswerItem<String> answerDecode = new AnswerItem<>();
 
         /**
          * Decode the 2 fields property and values before doing the control.

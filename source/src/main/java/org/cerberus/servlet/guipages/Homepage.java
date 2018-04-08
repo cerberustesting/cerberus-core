@@ -77,7 +77,7 @@ public class Homepage extends HttpServlet {
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
 
-        AnswerItem answer = new AnswerItem(MessageEventEnum.DATA_OPERATION_OK);
+        AnswerItem answer = new AnswerItem<>(MessageEventEnum.DATA_OPERATION_OK);
 
         try {
             JSONObject jsonResponse = new JSONObject();
@@ -102,7 +102,7 @@ public class Homepage extends HttpServlet {
     }
 
     private AnswerItem readApplicationList(String system, ApplicationContext appContext) throws JSONException {
-        AnswerItem item = new AnswerItem();
+        AnswerItem item = new AnswerItem<>();
         JSONObject jsonResponse = new JSONObject();
         IApplicationService applicationService = appContext.getBean(ApplicationService.class);
 

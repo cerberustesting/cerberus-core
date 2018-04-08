@@ -98,7 +98,7 @@ public class LabelService implements ILabelService {
     }
 
     @Override
-    public Label convert(AnswerItem answerItem) throws CerberusException {
+    public Label convert(AnswerItem<Label> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (Label) answerItem.getItem();
@@ -107,7 +107,7 @@ public class LabelService implements ILabelService {
     }
 
     @Override
-    public List<Label> convert(AnswerList answerList) throws CerberusException {
+    public List<Label> convert(AnswerList<Label> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (List<Label>) answerList.getDataList();

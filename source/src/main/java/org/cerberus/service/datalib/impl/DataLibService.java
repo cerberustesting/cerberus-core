@@ -139,7 +139,7 @@ public class DataLibService implements IDataLibService {
         HashMap<String, String> columnList = null;
         //Manage error message.
         if (resultColumns.getResultMessage().getCode() == MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_SUBDATA.getCode()) {
-            AnswerItem answerDecode = new AnswerItem();
+            AnswerItem answerDecode = new AnswerItem<>();
             columnList = resultColumns.getItem();
             // Now that we have the list of column with subdata and value, we can try to decode it.
             if (columnList != null) {
@@ -152,7 +152,7 @@ public class DataLibService implements IDataLibService {
 
                         if (!(answerDecode.isCodeStringEquals("OK"))) {
                             // If anything wrong with the decode --> we stop here with decode message in the action result.
-                            result = new AnswerList();
+                            result = new AnswerList<>();
                             result.setDataList(null);
                             msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_GLOBAL_SUBDATAISSUE);
                             msg.setDescription(msg.getDescription().replace("%SUBDATAMESSAGE%", answerDecode.getMessageDescription().replace("%FIELD%", "Column value '" + eValue + "'")));
@@ -167,7 +167,7 @@ public class DataLibService implements IDataLibService {
             }
 
         } else if (resultColumns.getResultMessage().getCode() == MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SUBDATA.getCode()) {
-            result = new AnswerList();
+            result = new AnswerList<>();
             result.setDataList(null);
             msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_GLOBAL_SUBDATAISSUE);
             msg.setDescription(msg.getDescription().replace("%SUBDATAMESSAGE%", resultColumns.getMessageDescription()));
@@ -189,7 +189,7 @@ public class DataLibService implements IDataLibService {
         if (resultData.getResultMessage().getCode() == MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_DATA.getCode()) {
 
             if (resultData.getDataList().size() < nbRowsRequested) { // We check if the data provided is enought to provide the answer.
-                result = new AnswerList();
+                result = new AnswerList<>();
                 result.setDataList(null);
                 msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_GLOBAL_NOTENOUGHTDATA);
                 msg.setDescription(msg.getDescription().replace("%DATAMESSAGE%", resultData.getMessageDescription()).replace("%NBREQUEST%", Integer.toString(nbRowsRequested)));
@@ -198,14 +198,14 @@ public class DataLibService implements IDataLibService {
             }
 
         } else if (resultData.getResultMessage().getCode() == MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_GENERIC_NODATA.getCode()) {
-            result = new AnswerList();
+            result = new AnswerList<>();
             result.setDataList(null);
             msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_GLOBAL_NODATA);
             msg.setDescription(msg.getDescription().replace("%DATAMESSAGE%", resultData.getMessageDescription()));
             result.setResultMessage(msg);
             return result;
         } else {
-            result = new AnswerList();
+            result = new AnswerList<>();
             result.setDataList(null);
             msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_GLOBAL_DATAISSUE);
             msg.setDescription(msg.getDescription().replace("%DATAMESSAGE%", resultData.getMessageDescription()));
@@ -289,7 +289,7 @@ public class DataLibService implements IDataLibService {
 
     @Override
     public AnswerList<HashMap<String, String>> filterWithNatureSTATIC(AnswerList<HashMap<String, String>> dataObjectList, int outputRequestedDimention) {
-        AnswerList<HashMap<String, String>> result = new AnswerList();
+        AnswerList<HashMap<String, String>> result = new AnswerList<>();
 
         List<HashMap<String, String>> resultObject;
         resultObject = new ArrayList<HashMap<String, String>>();
@@ -311,7 +311,7 @@ public class DataLibService implements IDataLibService {
 
     @Override
     public AnswerList<HashMap<String, String>> filterWithNatureRANDOM(AnswerList<HashMap<String, String>> dataObjectList, int outputRequestedDimention) {
-        AnswerList<HashMap<String, String>> result = new AnswerList();
+        AnswerList<HashMap<String, String>> result = new AnswerList<>();
         String selectedList = "";
 
         List<HashMap<String, String>> resultObject;
@@ -334,7 +334,7 @@ public class DataLibService implements IDataLibService {
 
     @Override
     public AnswerList<HashMap<String, String>> filterWithNatureRANDOMNEW(AnswerList<HashMap<String, String>> dataObjectList, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseProperties, int outputRequestedDimention) {
-        AnswerList<HashMap<String, String>> result = new AnswerList();
+        AnswerList<HashMap<String, String>> result = new AnswerList<>();
         List<HashMap<String, String>> list; // Temporary list in order to treat the input list
 
         List<HashMap<String, String>> resultObject;
@@ -399,7 +399,7 @@ public class DataLibService implements IDataLibService {
 
     @Override
     public AnswerList<HashMap<String, String>> filterWithNatureNOTINUSE(AnswerList<HashMap<String, String>> dataObjectList, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty, int outputRequestedDimention) {
-        AnswerList<HashMap<String, String>> result = new AnswerList();
+        AnswerList<HashMap<String, String>> result = new AnswerList<>();
         List<HashMap<String, String>> list = dataObjectList.getDataList(); // Temporary list in order to treat the input list
 
         List<HashMap<String, String>> resultObject;
@@ -472,8 +472,8 @@ public class DataLibService implements IDataLibService {
      * @return
      */
     private AnswerItem<HashMap<String, String>> getSubDataFromType(TestDataLib lib) {
-        AnswerList answerData = new AnswerList();
-        AnswerItem<HashMap<String, String>> result = new AnswerItem();
+        AnswerList answerData = new AnswerList<>();
+        AnswerItem<HashMap<String, String>> result = new AnswerItem<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS);
 
         List<TestDataLibData> objectDataList = new ArrayList<TestDataLibData>();
@@ -600,7 +600,7 @@ public class DataLibService implements IDataLibService {
      */
     private AnswerList<HashMap<String, String>> getDataObjectList(TestDataLib lib, HashMap<String, String> columnList, int rowLimit,
             TestCaseExecution tCExecution, TestCaseExecutionData testCaseExecutionData) {
-        AnswerList result = new AnswerList();
+        AnswerList result = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS);
         CountryEnvironmentDatabase countryEnvironmentDatabase;
         AnswerList responseList;

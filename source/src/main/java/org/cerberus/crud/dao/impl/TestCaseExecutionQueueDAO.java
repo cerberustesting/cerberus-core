@@ -71,6 +71,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
     private static final String COLUMN_COUNTRY = "Country";
     private static final String COLUMN_ENVIRONMENT = "Environment";
     private static final String COLUMN_ROBOT = "Robot";
+    private static final String COLUMN_ROBOTDECLI = "RobotDecli";
     private static final String COLUMN_ROBOT_IP = "RobotIP";
     private static final String COLUMN_ROBOT_PORT = "RobotPort";
     private static final String COLUMN_BROWSER = "Browser";
@@ -239,7 +240,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
     @Override
     public AnswerList readByTagByCriteria(String tag, int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-        AnswerList answer = new AnswerList();
+        AnswerList answer = new AnswerList<>();
         List<String> individalColumnSearchValues = new ArrayList<String>();
 
         final StringBuilder query = new StringBuilder();
@@ -362,7 +363,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
     @Override
     public AnswerList readByVarious1(String tag, List<String> stateList, boolean withDependencies) throws CerberusException {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-        AnswerList answer = new AnswerList();
+        AnswerList answer = new AnswerList<>();
 
         final StringBuilder query = new StringBuilder();
 
@@ -443,7 +444,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
     @Override
     public AnswerList readByVarious2(List<String> stateList) throws CerberusException {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-        AnswerList answer = new AnswerList();
+        AnswerList answer = new AnswerList<>();
 
         final StringBuilder query = new StringBuilder();
 
@@ -515,7 +516,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
     @Override
     public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
 
-        AnswerList response = new AnswerList();
+        AnswerList response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<TestCaseExecutionQueue> objectList = new ArrayList<TestCaseExecutionQueue>();
@@ -729,7 +730,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
 
     @Override
     public AnswerList readDistinctEnvCountryBrowserByTag(String tag) {
-        AnswerList answer = new AnswerList();
+        AnswerList answer = new AnswerList<>();
         StringBuilder query = new StringBuilder();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
 
@@ -796,7 +797,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
 
     @Override
     public AnswerList readDistinctColumnByTag(String tag, boolean env, boolean country, boolean browser, boolean app) {
-        AnswerList answer = new AnswerList();
+        AnswerList answer = new AnswerList<>();
         StringBuilder query = new StringBuilder();
         StringBuilder distinct = new StringBuilder();
         int prev = 0;
@@ -919,7 +920,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
 
     @Override
     public AnswerList readDistinctValuesByCriteria(String columnName, String sort, String searchTerm, Map<String, List<String>> individualSearch, String column) {
-        AnswerList answer = new AnswerList();
+        AnswerList answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<String> distinctValues = new ArrayList<>();
@@ -1028,7 +1029,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
 
     @Override
     public AnswerList findTagList(int tagnumber) {
-        AnswerList response = new AnswerList();
+        AnswerList response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
         List<String> list = null;
         StringBuilder query = new StringBuilder();
@@ -1088,7 +1089,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
 
     @Override
     public AnswerList readBySystemByVarious(String system, List<String> testList, List<String> applicationList, List<String> projectList, List<String> tcstatusList, List<String> groupList, List<String> tcactiveList, List<String> priorityList, List<String> targetsprintList, List<String> targetrevisionList, List<String> creatorList, List<String> implementerList, List<String> buildList, List<String> revisionList, List<String> environmentList, List<String> countryList, List<String> browserList, List<String> tcestatusList, String ip, String port, String tag, String browserversion, String comment, String bugid, String ticket) {
-        AnswerList answer = new AnswerList();
+        AnswerList answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
         List<TestCaseExecutionQueue> tceList = new ArrayList<TestCaseExecutionQueue>();
         List<String> whereClauses = new LinkedList<String>();
@@ -1435,12 +1436,12 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
         query.append("INSERT INTO `" + TABLE + "` (`" + COLUMN_TEST + "`, `" + COLUMN_TEST_CASE + "`, `" + COLUMN_COUNTRY + "`, `" + COLUMN_ENVIRONMENT + "`, `" + COLUMN_ROBOT
-                + "`, `" + COLUMN_ROBOT_IP + "`, `" + COLUMN_ROBOT_PORT + "`, `" + COLUMN_BROWSER + "`, `" + COLUMN_BROWSER_VERSION + "`, `" + COLUMN_PLATFORM
+                + "`, `" + COLUMN_ROBOTDECLI + "`, `" + COLUMN_ROBOT_IP + "`, `" + COLUMN_ROBOT_PORT + "`, `" + COLUMN_BROWSER + "`, `" + COLUMN_BROWSER_VERSION + "`, `" + COLUMN_PLATFORM
                 + "`, `" + COLUMN_SCREENSIZE + "`, `" + COLUMN_MANUAL_URL + "`, `" + COLUMN_MANUAL_HOST + "`, `" + COLUMN_MANUAL_CONTEXT_ROOT + "`, `"
                 + COLUMN_MANUAL_LOGIN_RELATIVE_URL + "`, `" + COLUMN_MANUAL_ENV_DATA + "`, `" + COLUMN_TAG + "`, `" + COLUMN_SCREENSHOT + "`, `" + COLUMN_VERBOSE + "`, `"
                 + COLUMN_TIMEOUT + "`, `" + COLUMN_PAGE_SOURCE + "`, `" + COLUMN_SELENIUM_LOG + "`, `" + COLUMN_RETRIES + "`, `"
                 + COLUMN_MANUAL_EXECUTION + "`, `" + COLUMN_USRCREATED + "`, `" + COLUMN_STATE + "`, `" + COLUMN_COMMENT + "`, `" + COLUMN_DEBUGFLAG + "`, `" + COLUMN_PRIORITY + "`) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -1461,6 +1462,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
             preStat.setString(i++, object.getCountry());
             preStat.setString(i++, object.getEnvironment());
             preStat.setString(i++, object.getRobot());
+            preStat.setString(i++, object.getRobotDecli());
             preStat.setString(i++, object.getRobotIP());
             preStat.setString(i++, object.getRobotPort());
             preStat.setString(i++, object.getBrowser());
@@ -1519,13 +1521,13 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
             }
         } 
-        return new AnswerItem(newObject, msg);
+        return new AnswerItem<>(newObject, msg);
     }
 
     @Override
     public Answer update(TestCaseExecutionQueue object) {
         MessageEvent msg = null;
-        String query = "UPDATE testcaseexecutionqueue exq SET `Test` = ?, `TestCase` = ?, `Country` = ?, Environment = ?, Robot = ?, "
+        String query = "UPDATE testcaseexecutionqueue exq SET `Test` = ?, `TestCase` = ?, `Country` = ?, Environment = ?, Robot = ?, RobotDecli = ?, "
                 + "RobotIP = ?, `RobotPort` = ?, Browser = ?, BrowserVersion = ?, `Platform`= ?, `ScreenSize` = ?, "
                 + "ManualURL = ?, `ManualHost` = ?, ManualContextRoot = ?, `ManualLoginRelativeUrl`= ?, `ManualEnvData` = ?, "
                 + "Tag = ?, `Screenshot` = ?, Verbose = ?, `Timeout`= ?, `PageSource` = ?, `debugFlag` = ?, `priority` = ?, "
@@ -1548,6 +1550,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                 preStat.setString(i++, object.getCountry());
                 preStat.setString(i++, object.getEnvironment());
                 preStat.setString(i++, object.getRobot());
+                preStat.setString(i++, object.getRobotDecli());
                 preStat.setString(i++, object.getRobotIP());
                 preStat.setString(i++, object.getRobotPort());
                 preStat.setString(i++, object.getBrowser());
@@ -2137,6 +2140,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                 resultSet.getString(COLUMN_COUNTRY),
                 resultSet.getString(COLUMN_ENVIRONMENT),
                 resultSet.getString(COLUMN_ROBOT),
+                resultSet.getString(COLUMN_ROBOTDECLI),
                 resultSet.getString(COLUMN_ROBOT_IP),
                 resultSet.getString(COLUMN_ROBOT_PORT),
                 resultSet.getString(COLUMN_BROWSER),

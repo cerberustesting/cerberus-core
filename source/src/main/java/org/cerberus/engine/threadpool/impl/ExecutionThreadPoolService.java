@@ -66,7 +66,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
 
     @Override
     public HashMap<String, Integer> getCurrentlyRunning() throws CerberusException {
-        AnswerList answer = new AnswerList();
+        AnswerList answer = new AnswerList<>();
         HashMap<String, Integer> constrains_current = new HashMap<String, Integer>();
 
         // Getting all executions already running in the queue.
@@ -100,7 +100,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
 
     @Override
     public HashMap<String, Integer> getCurrentlyPoolSizes() throws CerberusException {
-        AnswerList answer = new AnswerList();
+        AnswerList answer = new AnswerList<>();
         HashMap<String, Integer> constrains_current = new HashMap<String, Integer>();
 
         String const01_key = TestCaseExecutionQueueToTreat.CONSTRAIN1_GLOBAL;
@@ -137,7 +137,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
 
     @Override
     public HashMap<String, Integer> getCurrentlyToTreat() throws CerberusException {
-        AnswerList answer = new AnswerList();
+        AnswerList answer = new AnswerList<>();
         HashMap<String, Integer> constrains_current = new HashMap<String, Integer>();
 
         // Getting all executions to be treated.
@@ -210,7 +210,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                 String cerberus_url = parameterService.getParameterStringByKey("cerberus_url", "", "");
 
                 // Getting all executions to be treated.
-                AnswerList answer = new AnswerList();
+                AnswerList answer = new AnswerList<>();
                 answer = tceiqService.readQueueToTreat();
                 List<TestCaseExecutionQueueToTreat> executionsInQueue = (List<TestCaseExecutionQueueToTreat>) answer.getDataList();
 

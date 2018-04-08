@@ -112,7 +112,7 @@ public class AppServiceService implements IAppServiceService {
     }
 
     @Override
-    public AppService convert(AnswerItem answerItem) throws CerberusException {
+    public AppService convert(AnswerItem<AppService> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (AppService) answerItem.getItem();
@@ -121,7 +121,7 @@ public class AppServiceService implements IAppServiceService {
     }
 
     @Override
-    public List<AppService> convert(AnswerList answerList) throws CerberusException {
+    public List<AppService> convert(AnswerList<AppService> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (List<AppService>) answerList.getDataList();

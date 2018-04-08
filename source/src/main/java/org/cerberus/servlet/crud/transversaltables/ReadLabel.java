@@ -103,7 +103,7 @@ public class ReadLabel extends HttpServlet {
         Boolean likeColumn = ParameterParserUtil.parseBooleanParam(request.getParameter("likeColumn"), false);
         
         // Init Answer with potencial error from Parsing parameter.
-        AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+        AnswerItem answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
 
         try {
             JSONObject jsonResponse = new JSONObject();
@@ -187,7 +187,7 @@ public class ReadLabel extends HttpServlet {
 
     private AnswerItem findLabelList(String system, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
-        AnswerItem item = new AnswerItem();
+        AnswerItem item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         labelService = appContext.getBean(LabelService.class);
 
@@ -239,7 +239,7 @@ public class ReadLabel extends HttpServlet {
     }
 
     private AnswerItem findLabelByKey(Integer id, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
-        AnswerItem item = new AnswerItem();
+        AnswerItem item = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         ILabelService labelService = appContext.getBean(ILabelService.class);
@@ -277,7 +277,7 @@ public class ReadLabel extends HttpServlet {
     }
 
     private AnswerItem findDistinctValuesOfColumn(String system, ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
-        AnswerItem answer = new AnswerItem();
+        AnswerItem answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         labelService = appContext.getBean(ILabelService.class);

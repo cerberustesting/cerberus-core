@@ -126,7 +126,7 @@ public class ReadTestCase extends HttpServlet {
         boolean userHasPermissions = request.isUserInRole("TestAdmin");
 
         // Init Answer with potencial error from Parsing parameter.
-        AnswerItem answer = new AnswerItem(msg);
+        AnswerItem answer = new AnswerItem<>(msg);
 
         try {
             JSONObject jsonResponse = new JSONObject();
@@ -212,7 +212,7 @@ public class ReadTestCase extends HttpServlet {
     }// </editor-fold>
 
     private AnswerItem findTestCaseByTest(String system, String test, ApplicationContext appContext, HttpServletRequest request) throws JSONException {
-        AnswerItem answer = new AnswerItem();
+        AnswerItem answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         testCaseService = appContext.getBean(ITestCaseService.class);
@@ -320,7 +320,7 @@ public class ReadTestCase extends HttpServlet {
     }
 
     private AnswerItem findTestCaseByTestTestCase(String test, String testCase, ApplicationContext appContext, HttpServletRequest request) throws JSONException {
-        AnswerItem item = new AnswerItem();
+        AnswerItem item = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         testCaseService = appContext.getBean(ITestCaseService.class);
@@ -364,7 +364,7 @@ public class ReadTestCase extends HttpServlet {
     }
 
     private AnswerItem findTestCaseByVarious(ApplicationContext appContext, HttpServletRequest request) throws JSONException {
-        AnswerItem item = new AnswerItem();
+        AnswerItem item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         JSONArray dataArray = new JSONArray();
 
@@ -398,7 +398,7 @@ public class ReadTestCase extends HttpServlet {
     }
 
     private AnswerItem findTestCaseByCampaign(ApplicationContext appContext, String campaign) throws JSONException {
-        AnswerItem answer = new AnswerItem();
+        AnswerItem answer = new AnswerItem<>();
         JSONObject jsonResponse = new JSONObject();
         JSONArray dataArray = new JSONArray();
 
@@ -432,7 +432,7 @@ public class ReadTestCase extends HttpServlet {
     }
 
     private AnswerItem findTestCaseWithStep(ApplicationContext appContext, HttpServletRequest request, String test, String testCase) throws JSONException {
-        AnswerItem item = new AnswerItem();
+        AnswerItem item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         HashMap<String, JSONObject> hashProp = new HashMap<String, JSONObject>();
         JSONObject jsonResponse = new JSONObject();
@@ -594,7 +594,7 @@ public class ReadTestCase extends HttpServlet {
     }
 
     private AnswerItem findDistinctValuesOfColumn(String system, String test, ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
-        AnswerItem answer = new AnswerItem();
+        AnswerItem answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         testCaseService = appContext.getBean(ITestCaseService.class);

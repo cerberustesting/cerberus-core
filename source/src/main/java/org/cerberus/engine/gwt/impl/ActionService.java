@@ -116,7 +116,7 @@ public class ActionService implements IActionService {
     public TestCaseStepActionExecution doAction(TestCaseStepActionExecution testCaseStepActionExecution) {
         MessageEvent res;
         TestCaseExecution tCExecution = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution();
-        AnswerItem<String> answerDecode = new AnswerItem();
+        AnswerItem<String> answerDecode = new AnswerItem<>();
 
         /**
          * Decode the object field before doing the action.
@@ -1094,7 +1094,7 @@ public class ActionService implements IActionService {
 
     private MessageEvent doActionCalculateProperty(TestCaseStepActionExecution testCaseStepActionExecution, String value1, String value2) {
         MessageEvent message;
-        AnswerItem<String> answerDecode = new AnswerItem();
+        AnswerItem<String> answerDecode = new AnswerItem<>();
         if (StringUtil.isNullOrEmpty(value1)) {
 
             // Value1 is a mandatory parameter.

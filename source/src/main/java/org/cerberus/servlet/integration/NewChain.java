@@ -66,7 +66,7 @@ public class NewChain extends HttpServlet {
             throws ServletException, IOException, JSONException {
 
         JSONObject jsonResponse = new JSONObject();
-        AnswerItem answerItem = new AnswerItem();
+        AnswerItem answerItem = new AnswerItem<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         answerItem.setResultMessage(msg);
@@ -83,7 +83,7 @@ public class NewChain extends HttpServlet {
         String chain = policy.sanitize(request.getParameter("chain"));
 
         // Init Answer with potencial error from Parsing parameter.
-//        AnswerItem answer = new AnswerItem(msg);
+//        AnswerItem answer = new AnswerItem<>(msg);
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         IEmailService emailService = appContext.getBean(IEmailService.class);
         ICountryEnvParamService countryEnvParamService = appContext.getBean(ICountryEnvParamService.class);

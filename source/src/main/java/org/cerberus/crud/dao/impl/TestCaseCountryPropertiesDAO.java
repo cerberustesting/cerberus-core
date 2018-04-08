@@ -635,7 +635,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
 
     @Override
     public AnswerList findTestCaseCountryPropertiesByValue1(int testDataLib, String name, String country, String propertyType) {
-        AnswerList ansList = new AnswerList();
+        AnswerList ansList = new AnswerList<>();
         MessageEvent rs;
         List<TestListDTO> listOfTests = new ArrayList<TestListDTO>();
         StringBuilder query = new StringBuilder();

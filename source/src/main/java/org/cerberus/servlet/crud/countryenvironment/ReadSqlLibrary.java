@@ -92,7 +92,7 @@ public class ReadSqlLibrary extends HttpServlet {
         // Global boolean on the servlet that define if the user has permition to edit and delete object.
         boolean userHasPermissions = request.isUserInRole("TestAdmin");
         // Init Answer with potencial error from Parsing sqlLibrary.
-        AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+        AnswerItem answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
 
         try {
             JSONObject jsonResponse;
@@ -125,7 +125,7 @@ public class ReadSqlLibrary extends HttpServlet {
 
     private AnswerItem findSqlLibraryList(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
-        AnswerItem item = new AnswerItem();
+        AnswerItem item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         sqlLibraryService = appContext.getBean(SqlLibraryService.class);
 
@@ -189,7 +189,7 @@ public class ReadSqlLibrary extends HttpServlet {
     }
 
     private AnswerItem findDistinctValuesOfColumn(ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
-        AnswerItem answer = new AnswerItem();
+        AnswerItem answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         sqlLibraryService = appContext.getBean(ISqlLibraryService.class);

@@ -113,7 +113,7 @@ public interface IAppServiceService {
      * @return
      * @throws CerberusException
      */
-    AppService convert(AnswerItem answerItem) throws CerberusException;
+    AppService convert(AnswerItem<AppService> answerItem) throws CerberusException;
 
     /**
      *
@@ -121,7 +121,7 @@ public interface IAppServiceService {
      * @return
      * @throws CerberusException
      */
-    List<AppService> convert(AnswerList answerList) throws CerberusException;
+    List<AppService> convert(AnswerList<AppService> answerList) throws CerberusException;
 
     /**
      *

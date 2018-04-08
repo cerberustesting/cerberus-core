@@ -97,7 +97,7 @@ public class ReadTestCaseLabel extends HttpServlet {
         boolean userHasPermissions = request.isUserInRole("Test");
 
         // Init Answer with potencial error from Parsing parameter.
-        AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+        AnswerItem answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
 
         try {
             JSONObject jsonResponse = new JSONObject();
@@ -171,7 +171,7 @@ public class ReadTestCaseLabel extends HttpServlet {
 
     private AnswerItem findTestCaseLabelList(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
-        AnswerItem item = new AnswerItem();
+        AnswerItem item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         testCaseLabelService = appContext.getBean(ITestCaseLabelService.class);
 
@@ -213,7 +213,7 @@ public class ReadTestCaseLabel extends HttpServlet {
     }
 
     private AnswerItem findLabelByKey(Integer id, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
-        AnswerItem item = new AnswerItem();
+        AnswerItem item = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         ITestCaseLabelService labelService = appContext.getBean(ITestCaseLabelService.class);
@@ -243,7 +243,7 @@ public class ReadTestCaseLabel extends HttpServlet {
     }
 
     private AnswerItem findByTestTestCase(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
-        AnswerItem item = new AnswerItem();
+        AnswerItem item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         testCaseLabelService = appContext.getBean(ITestCaseLabelService.class);
 

@@ -144,7 +144,7 @@ public interface ICountryEnvironmentParametersService {
      * @return
      * @throws CerberusException
      */
-    CountryEnvironmentParameters convert(AnswerItem answerItem) throws CerberusException;
+    CountryEnvironmentParameters convert(AnswerItem<CountryEnvironmentParameters> answerItem) throws CerberusException;
 
     /**
      *
@@ -152,7 +152,7 @@ public interface ICountryEnvironmentParametersService {
      * @return
      * @throws CerberusException
      */
-    List<CountryEnvironmentParameters> convert(AnswerList answerList) throws CerberusException;
+    List<CountryEnvironmentParameters> convert(AnswerList<CountryEnvironmentParameters> answerList) throws CerberusException;
 
     /**
      *

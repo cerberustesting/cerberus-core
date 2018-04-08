@@ -48,7 +48,7 @@ public class CountryEnvDeployTypeService implements ICountryEnvDeployTypeService
     private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(CountryEnvDeployTypeService.class);
 
     @Override
-    public AnswerList readByVarious(String system, String country, String environment, String deployType) {
+    public AnswerList<CountryEnvDeployType> readByVarious(String system, String country, String environment, String deployType) {
         return countryEnvDeployTypeDAO.readByVariousByCriteria(system, country, environment, deployType, 0, 0, null, null, null, null);
     }
 
@@ -153,7 +153,7 @@ public class CountryEnvDeployTypeService implements ICountryEnvDeployTypeService
     }
 
     @Override
-    public CountryEnvDeployType convert(AnswerItem answerItem) throws CerberusException {
+    public CountryEnvDeployType convert(AnswerItem<CountryEnvDeployType> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (CountryEnvDeployType) answerItem.getItem();
@@ -162,7 +162,7 @@ public class CountryEnvDeployTypeService implements ICountryEnvDeployTypeService
     }
 
     @Override
-    public List<CountryEnvDeployType> convert(AnswerList answerList) throws CerberusException {
+    public List<CountryEnvDeployType> convert(AnswerList<CountryEnvDeployType> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (List<CountryEnvDeployType>) answerList.getDataList();

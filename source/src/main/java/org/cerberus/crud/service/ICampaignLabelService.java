@@ -136,7 +136,7 @@ public interface ICampaignLabelService {
      * @return
      * @throws CerberusException
      */
-    CampaignLabel convert(AnswerItem answerItem) throws CerberusException;
+    CampaignLabel convert(AnswerItem<CampaignLabel> answerItem) throws CerberusException;
 
     /**
      *
@@ -144,7 +144,7 @@ public interface ICampaignLabelService {
      * @return
      * @throws CerberusException
      */
-    List<CampaignLabel> convert(AnswerList answerList) throws CerberusException;
+    List<CampaignLabel> convert(AnswerList<CampaignLabel> answerList) throws CerberusException;
 
     /**
      *

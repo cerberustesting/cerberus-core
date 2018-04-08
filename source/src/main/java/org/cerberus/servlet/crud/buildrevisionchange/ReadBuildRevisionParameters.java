@@ -123,7 +123,7 @@ public class ReadBuildRevisionParameters extends HttpServlet {
         boolean userHasPermissions = request.isUserInRole("Integrator");
 
         // Init Answer with potencial error from Parsing parameter.
-        AnswerItem answer = new AnswerItem(msg);
+        AnswerItem answer = new AnswerItem<>(msg);
 
         try {
             JSONObject jsonResponse = new JSONObject();
@@ -208,7 +208,7 @@ public class ReadBuildRevisionParameters extends HttpServlet {
 
     private AnswerItem findBuildRevisionParametersList(String system, String build, String revision, String application, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
-        AnswerItem item = new AnswerItem();
+        AnswerItem item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         brpService = appContext.getBean(BuildRevisionParametersService.class);
 
@@ -256,7 +256,7 @@ public class ReadBuildRevisionParameters extends HttpServlet {
     }
 
     private AnswerItem findBuildRevisionParametersByKey(Integer id, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
-        AnswerItem item = new AnswerItem();
+        AnswerItem item = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         IBuildRevisionParametersService libService = appContext.getBean(IBuildRevisionParametersService.class);
@@ -280,7 +280,7 @@ public class ReadBuildRevisionParameters extends HttpServlet {
     }
 
     private AnswerItem findlastBuildRevisionParametersBySystem(String system, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
-        AnswerItem item = new AnswerItem();
+        AnswerItem item = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         IBuildRevisionParametersService libService = appContext.getBean(IBuildRevisionParametersService.class);
@@ -305,7 +305,7 @@ public class ReadBuildRevisionParameters extends HttpServlet {
 
     private AnswerItem findSVNBuildRevisionParametersBySystem(String system, String country, String environment, String build, String revision, String lastbuild, String lastrevision, ApplicationContext appContext, boolean userHasPermissions) throws JSONException {
 
-        AnswerItem item = new AnswerItem();
+        AnswerItem item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         brpService = appContext.getBean(IBuildRevisionParametersService.class);
         appService = appContext.getBean(IApplicationService.class);
@@ -353,7 +353,7 @@ public class ReadBuildRevisionParameters extends HttpServlet {
 
     private AnswerItem findManualBuildRevisionParametersBySystem(String system, String build, String revision, String lastbuild, String lastrevision, ApplicationContext appContext, boolean userHasPermissions) throws JSONException {
 
-        AnswerItem item = new AnswerItem();
+        AnswerItem item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         brpService = appContext.getBean(BuildRevisionParametersService.class);
 
@@ -388,7 +388,7 @@ public class ReadBuildRevisionParameters extends HttpServlet {
     }
 
     private AnswerItem findDistinctValuesOfColumn(String system, ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
-        AnswerItem answer = new AnswerItem();
+        AnswerItem answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         brpService = appContext.getBean(IBuildRevisionParametersService.class);

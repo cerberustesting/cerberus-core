@@ -691,8 +691,8 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
     }
 
     @Override
-    public AnswerList readByTestTestCase(String test, String testcase) {
-        AnswerList response = new AnswerList();
+    public AnswerList<TestCaseStep> readByTestTestCase(String test, String testcase) {
+        AnswerList response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<TestCaseStep> stepList = new ArrayList<TestCaseStep>();
@@ -726,14 +726,14 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
                         LOG.error("Partial Result in the query.");
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                        response = new AnswerList(stepList, stepList.size());
+                        response = new AnswerList<>(stepList, stepList.size());
                     } else if (stepList.size() <= 0) {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                        response = new AnswerList(stepList, stepList.size());
+                        response = new AnswerList<>(stepList, stepList.size());
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                         msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                        response = new AnswerList(stepList, stepList.size());
+                        response = new AnswerList<>(stepList, stepList.size());
                     }
 
                 } catch (SQLException exception) {
@@ -779,7 +779,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
 
     @Override
     public AnswerList readByLibraryUsed(String test, String testcase, int step) {
-        AnswerList response = new AnswerList();
+        AnswerList response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<TestCaseStep> stepList = new ArrayList<TestCaseStep>();
@@ -812,14 +812,14 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
                         LOG.error("Partial Result in the query.");
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                        response = new AnswerList(stepList, stepList.size());
+                        response = new AnswerList<>(stepList, stepList.size());
                     } else if (stepList.size() <= 0) {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                        response = new AnswerList(stepList, stepList.size());
+                        response = new AnswerList<>(stepList, stepList.size());
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                         msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                        response = new AnswerList(stepList, stepList.size());
+                        response = new AnswerList<>(stepList, stepList.size());
                     }
 
                 } catch (SQLException exception) {

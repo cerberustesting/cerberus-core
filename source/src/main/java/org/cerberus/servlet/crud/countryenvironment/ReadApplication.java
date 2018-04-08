@@ -101,7 +101,7 @@ public class ReadApplication extends HttpServlet {
         boolean userHasPermissions = request.isUserInRole("Integrator");
 
         // Init Answer with potencial error from Parsing parameter.
-        AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+        AnswerItem answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
 
         try {
             JSONObject jsonResponse = new JSONObject();
@@ -186,7 +186,7 @@ public class ReadApplication extends HttpServlet {
 
     private AnswerItem findApplicationList(String system, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
-        AnswerItem item = new AnswerItem();
+        AnswerItem item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         applicationService = appContext.getBean(ApplicationService.class);
 
@@ -234,7 +234,7 @@ public class ReadApplication extends HttpServlet {
     }
 
     private AnswerItem findApplicationByKey(String id, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
-        AnswerItem item = new AnswerItem();
+        AnswerItem item = new AnswerItem<>();
         JSONObject response = new JSONObject();
 
         IApplicationService libService = appContext.getBean(IApplicationService.class);
@@ -264,7 +264,7 @@ public class ReadApplication extends HttpServlet {
     }
 
     private AnswerItem findDistinctValuesOfColumn(String system, ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
-        AnswerItem answer = new AnswerItem();
+        AnswerItem answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         applicationService = appContext.getBean(IApplicationService.class);

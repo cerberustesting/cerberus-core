@@ -62,7 +62,7 @@ public class BuildRevisionInvariantDAO implements IBuildRevisionInvariantDAO {
 
     @Override
     public AnswerItem readByKey(String system, Integer level, Integer seq) {
-        AnswerItem ans = new AnswerItem();
+        AnswerItem ans = new AnswerItem<>();
         BuildRevisionInvariant result = null;
         final String query = "SELECT * FROM `buildrevisioninvariant` WHERE `system` = ? and level = ? and seq = ? ";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -120,7 +120,7 @@ public class BuildRevisionInvariantDAO implements IBuildRevisionInvariantDAO {
 
     @Override
     public AnswerItem readByKey(String system, Integer level, String versionName) {
-        AnswerItem ans = new AnswerItem();
+        AnswerItem ans = new AnswerItem<>();
         BuildRevisionInvariant result = null;
         final String query = "SELECT * FROM `buildrevisioninvariant` WHERE `system` = ? and level = ? and versionname = ? ";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -178,7 +178,7 @@ public class BuildRevisionInvariantDAO implements IBuildRevisionInvariantDAO {
 
     @Override
     public AnswerList readByVariousByCriteria(String system, Integer level, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
-        AnswerList response = new AnswerList();
+        AnswerList response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<BuildRevisionInvariant> briList = new ArrayList<BuildRevisionInvariant>();
@@ -266,14 +266,14 @@ public class BuildRevisionInvariantDAO implements IBuildRevisionInvariantDAO {
                         LOG.error("Partial Result in the query.");
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                        response = new AnswerList(briList, nrTotalRows);
+                        response = new AnswerList<>(briList, nrTotalRows);
                     } else if (briList.size() <= 0) {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                        response = new AnswerList(briList, nrTotalRows);
+                        response = new AnswerList<>(briList, nrTotalRows);
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                         msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                        response = new AnswerList(briList, nrTotalRows);
+                        response = new AnswerList<>(briList, nrTotalRows);
                     }
 
                 } catch (SQLException exception) {
@@ -475,7 +475,7 @@ public class BuildRevisionInvariantDAO implements IBuildRevisionInvariantDAO {
 
     @Override
     public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
-        AnswerList answer = new AnswerList();
+        AnswerList answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<String> distinctValues = new ArrayList<>();
@@ -548,14 +548,14 @@ public class BuildRevisionInvariantDAO implements IBuildRevisionInvariantDAO {
                     LOG.error("Partial Result in the query.");
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                    answer = new AnswerList(distinctValues, nrTotalRows);
+                    answer = new AnswerList<>(distinctValues, nrTotalRows);
                 } else if (distinctValues.size() <= 0) {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                    answer = new AnswerList(distinctValues, nrTotalRows);
+                    answer = new AnswerList<>(distinctValues, nrTotalRows);
                 } else {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                     msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                    answer = new AnswerList(distinctValues, nrTotalRows);
+                    answer = new AnswerList<>(distinctValues, nrTotalRows);
                 }
             }catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());

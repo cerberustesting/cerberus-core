@@ -658,7 +658,7 @@ public class UserDAO implements IUserDAO {
 
     @Override
     public AnswerItem readByKey(String login) {
-        AnswerItem ans = new AnswerItem();
+        AnswerItem ans = new AnswerItem<>();
         User result;
         final String query = "SELECT * FROM `user` usr WHERE usr.`login` = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -714,7 +714,7 @@ public class UserDAO implements IUserDAO {
 
     @Override
     public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
-        AnswerList response = new AnswerList();
+        AnswerList response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<User> applicationList = new ArrayList<User>();
@@ -800,11 +800,11 @@ public class UserDAO implements IUserDAO {
                         LOG.error("Partial Result in the query.");
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                        response = new AnswerList(applicationList, nrTotalRows);
+                        response = new AnswerList<>(applicationList, nrTotalRows);
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                         msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                        response = new AnswerList(applicationList, nrTotalRows);
+                        response = new AnswerList<>(applicationList, nrTotalRows);
                     }
 
                 } catch (SQLException exception) {
@@ -851,7 +851,7 @@ public class UserDAO implements IUserDAO {
 
     @Override
     public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
-        AnswerList response = new AnswerList();
+        AnswerList response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<User> applicationList = new ArrayList<User>();
@@ -953,11 +953,11 @@ public class UserDAO implements IUserDAO {
                         LOG.error("Partial Result in the query.");
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                        response = new AnswerList(applicationList, nrTotalRows);
+                        response = new AnswerList<>(applicationList, nrTotalRows);
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                         msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                        response = new AnswerList(applicationList, nrTotalRows);
+                        response = new AnswerList<>(applicationList, nrTotalRows);
                     }
 
                 } catch (SQLException exception) {

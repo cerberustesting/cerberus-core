@@ -143,7 +143,7 @@ public class RestService implements IRestService {
     public AnswerItem<AppService> callREST(String servicePath, String requestString, String method,
             List<AppServiceHeader> headerList, List<AppServiceContent> contentList, String token, int timeOutMs,
             String system) {
-        AnswerItem result = new AnswerItem();
+        AnswerItem result = new AnswerItem<>();
         AppService serviceREST = factoryAppService.create("", AppService.TYPE_REST, method, "", "", "", "", "", "", "",
                 "", null, "", null);
         serviceREST.setProxy(false);

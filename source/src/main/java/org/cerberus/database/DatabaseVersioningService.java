@@ -47,7 +47,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         LOG.info("Starting Execution of '" + SQLString + "'");
 
         try (Connection connection = this.databaseSpring.connect();
-             Statement preStat = connection.createStatement();) {
+                Statement preStat = connection.createStatement();) {
             preStat.execute(SQLString);
             LOG.info("'" + SQLString + "' Executed successfully.");
         } catch (Exception exception1) {
@@ -7650,7 +7650,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append(")");
         a.add(b.toString());
         a.add("select 1 from DUAL;");
-        
+
         // Alter Documentation table.
         // 1323
         a.add("ALTER TABLE `documentation` MODIFY COLUMN DocLabel varchar(800)");
@@ -7661,14 +7661,16 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add("select 1 from DUAL;");
         a.add("select 1 from DUAL;");
         a.add("select 1 from DUAL;");
-        
+
         // Add FTP Service
         // 1328
         a.add("INSERT INTO `invariant` (idname, value, sort, description) VALUES ('SRVTYPE', 'FTP', 300, 'FTP Service.')");
 
+        // Add RobotDecli in queue table.
+        // 1329
+        a.add("ALTER TABLE `testcaseexecutionqueue` ADD COLUMN `RobotDecli` VARCHAR(100) NOT NULL DEFAULT '' AFTER `Robot`;");
 
         return a;
     }
 
 }
-

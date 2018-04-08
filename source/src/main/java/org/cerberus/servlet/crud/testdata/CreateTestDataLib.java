@@ -93,7 +93,7 @@ public class CreateTestDataLib extends HttpServlet {
 
         JSONObject jsonResponse = new JSONObject();
         Answer ans = new Answer();
-        AnswerItem ansItem = new AnswerItem();
+        AnswerItem ansItem = new AnswerItem<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         ans.setResultMessage(msg);

@@ -221,7 +221,7 @@ public class CountryEnvironmentParametersService implements ICountryEnvironmentP
     }
 
     @Override
-    public CountryEnvironmentParameters convert(AnswerItem answerItem) throws CerberusException {
+    public CountryEnvironmentParameters convert(AnswerItem<CountryEnvironmentParameters> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (CountryEnvironmentParameters) answerItem.getItem();
@@ -230,7 +230,7 @@ public class CountryEnvironmentParametersService implements ICountryEnvironmentP
     }
 
     @Override
-    public List<CountryEnvironmentParameters> convert(AnswerList answerList) throws CerberusException {
+    public List<CountryEnvironmentParameters> convert(AnswerList<CountryEnvironmentParameters> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (List<CountryEnvironmentParameters>) answerList.getDataList();

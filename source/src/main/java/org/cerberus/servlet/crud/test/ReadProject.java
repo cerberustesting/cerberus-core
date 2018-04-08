@@ -100,7 +100,7 @@ public class ReadProject extends HttpServlet {
         boolean userHasPermissions = request.isUserInRole("Integrator");
 
         // Init Answer with potencial error from Parsing parameter.
-        AnswerItem answer = new AnswerItem(msg);
+        AnswerItem answer = new AnswerItem<>(msg);
 
         try {
             JSONObject jsonResponse = new JSONObject();
@@ -178,7 +178,7 @@ public class ReadProject extends HttpServlet {
 
     private AnswerItem findProjectList(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
-        AnswerItem item = new AnswerItem();
+        AnswerItem item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         projectService = appContext.getBean(ProjectService.class);
 
@@ -226,7 +226,7 @@ public class ReadProject extends HttpServlet {
     }
 
     private AnswerItem findProjectByID(String id, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
-        AnswerItem item = new AnswerItem();
+        AnswerItem item = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         IProjectService libService = appContext.getBean(IProjectService.class);
@@ -256,7 +256,7 @@ public class ReadProject extends HttpServlet {
     }
 
     private AnswerItem findDistinctValuesOfColumn(ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
-        AnswerItem answer = new AnswerItem();
+        AnswerItem answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         projectService = appContext.getBean(ProjectService.class);

@@ -126,7 +126,7 @@ public class PropertyService implements IPropertyService {
             TestCaseStepActionExecution testCaseStepActionExecution, boolean forceCalculation) throws CerberusEventException {
 
         MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS);
-        AnswerItem<String> answer = new AnswerItem();
+        AnswerItem<String> answer = new AnswerItem<>();
         answer.setResultMessage(msg);
         answer.setItem(stringToDecode);
 
@@ -538,7 +538,7 @@ public class PropertyService implements IPropertyService {
         MessageEvent res;
         String test = tCExecution.getTest();
         String testCase = tCExecution.getTestCase();
-        AnswerItem<String> answerDecode = new AnswerItem();
+        AnswerItem<String> answerDecode = new AnswerItem<>();
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Starting to calculate Property : '" + testCaseCountryProperty.getProperty() + "'");
@@ -1010,7 +1010,7 @@ public class PropertyService implements IPropertyService {
 
     private TestCaseExecutionData property_executeSoapFromLib(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseStepActionExecution testCaseStepActionExecution, TestCaseCountryProperties testCaseCountryProperty, boolean forceCalculation) {
         String result = null;
-        AnswerItem<String> answerDecode = new AnswerItem();
+        AnswerItem<String> answerDecode = new AnswerItem<>();
 
         try {
             AppService appService = this.appServiceService.findAppServiceByKey(testCaseExecutionData.getValue1());
@@ -1267,7 +1267,7 @@ public class PropertyService implements IPropertyService {
 
         TestDataLib testDataLib;
         List<HashMap<String, String>> result = null;
-        AnswerItem<String> answerDecode = new AnswerItem();
+        AnswerItem<String> answerDecode = new AnswerItem<>();
 
         // We get here the correct TestDataLib entry from the Value1 (name) that better match the context on system, environment and country.
         AnswerItem<TestDataLib> answer = testDataLibService.readByNameBySystemByEnvironmentByCountry(testCaseExecutionData.getValue1(),

@@ -36,7 +36,7 @@ public interface IBatchInvariantDAO {
      * @param batch
      * @return
      */
-    public AnswerItem readByKey(String batch);
+    public AnswerItem<BatchInvariant> readByKey(String batch);
 
     /**
      *
@@ -49,7 +49,7 @@ public interface IBatchInvariantDAO {
      * @param individualSearch
      * @return
      */
-    public AnswerList readBySystemByCriteria(String system, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
+    public AnswerList<BatchInvariant> readBySystemByCriteria(String system, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
     /**
      *

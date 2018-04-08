@@ -123,7 +123,7 @@ public class CampaignLabelService implements ICampaignLabelService {
     }
 
     @Override
-    public CampaignLabel convert(AnswerItem answerItem) throws CerberusException {
+    public CampaignLabel convert(AnswerItem<CampaignLabel> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (CampaignLabel) answerItem.getItem();
@@ -132,7 +132,7 @@ public class CampaignLabelService implements ICampaignLabelService {
     }
 
     @Override
-    public List<CampaignLabel> convert(AnswerList answerList) throws CerberusException {
+    public List<CampaignLabel> convert(AnswerList<CampaignLabel> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (List<CampaignLabel>) answerList.getDataList();

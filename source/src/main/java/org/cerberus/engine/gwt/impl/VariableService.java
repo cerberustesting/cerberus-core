@@ -63,7 +63,7 @@ public class VariableService implements IVariableService {
             TestCaseStepActionExecution testCaseStepActionExecution, boolean forceCalculation) throws CerberusEventException {
 
         MessageEvent msg = new MessageEvent(MessageEventEnum.DECODE_SUCCESS);
-        AnswerItem<String> answer = new AnswerItem();
+        AnswerItem<String> answer = new AnswerItem<>();
         answer.setResultMessage(msg);
         answer.setItem(stringToDecode);
 

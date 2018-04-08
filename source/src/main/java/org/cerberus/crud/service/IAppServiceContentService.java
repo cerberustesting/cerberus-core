@@ -121,6 +121,8 @@ public interface IAppServiceContentService {
 
     /**
      *
+     * @param service
+     * @param key
      * @param object
      * @return
      */
@@ -132,7 +134,7 @@ public interface IAppServiceContentService {
      * @return
      * @throws CerberusException
      */
-    AppServiceContent convert(AnswerItem answerItem) throws CerberusException;
+    AppServiceContent convert(AnswerItem<AppServiceContent> answerItem) throws CerberusException;
 
     /**
      *
@@ -140,7 +142,7 @@ public interface IAppServiceContentService {
      * @return
      * @throws CerberusException
      */
-    List<AppServiceContent> convert(AnswerList answerList) throws CerberusException;
+    List<AppServiceContent> convert(AnswerList<AppServiceContent> answerList) throws CerberusException;
 
     /**
      *

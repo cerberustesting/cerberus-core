@@ -111,7 +111,7 @@ public class TestCaseCountryService implements ITestCaseCountryService {
     }
 
     @Override
-    public AnswerList readByTestTestCase(String system, String test, String testCase) {
+    public AnswerList<TestCaseCountry> readByTestTestCase(String system, String test, String testCase) {
         return tccDao.readByVarious1(system, test, testCase);
     }
 
@@ -213,7 +213,7 @@ public class TestCaseCountryService implements ITestCaseCountryService {
     }
 
     @Override
-    public TestCaseCountry convert(AnswerItem answerItem) throws CerberusException {
+    public TestCaseCountry convert(AnswerItem<TestCaseCountry> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (TestCaseCountry) answerItem.getItem();
@@ -222,7 +222,7 @@ public class TestCaseCountryService implements ITestCaseCountryService {
     }
 
     @Override
-    public List<TestCaseCountry> convert(AnswerList answerList) throws CerberusException {
+    public List<TestCaseCountry> convert(AnswerList<TestCaseCountry> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (List<TestCaseCountry>) answerList.getDataList();

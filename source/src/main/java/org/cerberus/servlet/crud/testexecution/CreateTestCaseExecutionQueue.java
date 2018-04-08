@@ -71,6 +71,8 @@ public class CreateTestCaseExecutionQueue extends HttpServlet {
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
+     * @throws org.cerberus.exception.CerberusException
+     * @throws org.json.JSONException
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, CerberusException, JSONException {
@@ -78,7 +80,7 @@ public class CreateTestCaseExecutionQueue extends HttpServlet {
         JSONObject executionQueue = new JSONObject();
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         Answer ans = new Answer();
-        AnswerItem ansItem = new AnswerItem();
+        AnswerItem ansItem = new AnswerItem<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         ans.setResultMessage(msg);
@@ -199,7 +201,7 @@ public class CreateTestCaseExecutionQueue extends HttpServlet {
                         TestCaseExecutionQueue executionQueueData;
                         if (id == 0) {
                             // If id is not defined, we build the execution queue from all request datas.
-                            executionQueueData = executionQueueFactory.create(test, testcase, country, environment, robot, robotIP, robotPort, browser, browserVersion,
+                            executionQueueData = executionQueueFactory.create(test, testcase, country, environment, robot, robot, robotIP, robotPort, browser, browserVersion,
                                     platform, screenSize, manualURL, manualHost, manualContextRoot, manualLoginRelativeURL, manualEnvData, tag, screenshot, verbose, timeout,
                                     pageSource, seleniumLog, 0, retries, manualExecution, priority, request.getRemoteUser(), null, null, null);
                             executionQueueData.setDebugFlag(debugFlag);

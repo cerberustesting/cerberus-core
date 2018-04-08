@@ -97,7 +97,7 @@ public interface ICampaignService {
      * @return
      * @throws CerberusException
      */
-    Campaign convert(AnswerItem answerItem) throws CerberusException;
+    Campaign convert(AnswerItem<Campaign> answerItem) throws CerberusException;
 
     /**
      *
@@ -105,7 +105,7 @@ public interface ICampaignService {
      * @return
      * @throws CerberusException
      */
-    List<Campaign> convert(AnswerList answerList) throws CerberusException;
+    List<Campaign> convert(AnswerList<Campaign> answerList) throws CerberusException;
 
     /**
      *

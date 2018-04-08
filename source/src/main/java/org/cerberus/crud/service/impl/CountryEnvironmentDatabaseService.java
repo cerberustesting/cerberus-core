@@ -167,7 +167,7 @@ public class CountryEnvironmentDatabaseService implements ICountryEnvironmentDat
     }
 
     @Override
-    public CountryEnvironmentDatabase convert(AnswerItem answerItem) throws CerberusException {
+    public CountryEnvironmentDatabase convert(AnswerItem<CountryEnvironmentDatabase> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (CountryEnvironmentDatabase) answerItem.getItem();
@@ -176,7 +176,7 @@ public class CountryEnvironmentDatabaseService implements ICountryEnvironmentDat
     }
 
     @Override
-    public List<CountryEnvironmentDatabase> convert(AnswerList answerList) throws CerberusException {
+    public List<CountryEnvironmentDatabase> convert(AnswerList<CountryEnvironmentDatabase> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (List<CountryEnvironmentDatabase>) answerList.getDataList();

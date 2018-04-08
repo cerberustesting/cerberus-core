@@ -95,7 +95,7 @@ public class ReadCountryEnvironmentDatabase extends HttpServlet {
         boolean userHasPermissions = request.isUserInRole("IntegratorRO");
 
         // Init Answer with potencial error from Parsing parameter.
-        AnswerItem answer = new AnswerItem(msg);
+        AnswerItem answer = new AnswerItem<>(msg);
 
         try {
             JSONObject jsonResponse = new JSONObject();
@@ -166,7 +166,7 @@ public class ReadCountryEnvironmentDatabase extends HttpServlet {
 
     private AnswerItem findCountryEnvDatabaseList(String system, String country, String environment, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
-        AnswerItem item = new AnswerItem();
+        AnswerItem item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         cedService = appContext.getBean(ICountryEnvironmentDatabaseService.class);
 

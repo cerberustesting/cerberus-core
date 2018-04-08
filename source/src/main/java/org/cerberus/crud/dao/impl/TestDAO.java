@@ -92,7 +92,7 @@ public class TestDAO implements ITestDAO {
 
     @Override
     public AnswerItem readByKey(String test) {
-        AnswerItem ans = new AnswerItem();
+        AnswerItem ans = new AnswerItem<>();
         Test result;
         final String query = "SELECT * FROM `test` WHERE `test` = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -506,7 +506,7 @@ public class TestDAO implements ITestDAO {
 
     @Override
     public AnswerList readDistinctBySystem(String system) {
-        AnswerList response = new AnswerList();
+        AnswerList response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<Test> testList = new ArrayList<Test>();
@@ -543,14 +543,14 @@ public class TestDAO implements ITestDAO {
                         LOG.error("Partial Result in the query.");
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                        response = new AnswerList(testList, nrTotalRows);
+                        response = new AnswerList<>(testList, nrTotalRows);
                     } else if (testList.size() <= 0) {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                        response = new AnswerList(testList, nrTotalRows);
+                        response = new AnswerList<>(testList, nrTotalRows);
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                         msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                        response = new AnswerList(testList, nrTotalRows);
+                        response = new AnswerList<>(testList, nrTotalRows);
                     }
 
                 } catch (SQLException exception) {
@@ -596,7 +596,7 @@ public class TestDAO implements ITestDAO {
 
     @Override
     public AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
-        AnswerList response = new AnswerList();
+        AnswerList response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<Test> testList = new ArrayList<Test>();
@@ -672,14 +672,14 @@ public class TestDAO implements ITestDAO {
                         LOG.error("Partial Result in the query.");
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                        response = new AnswerList(testList, nrTotalRows);
+                        response = new AnswerList<>(testList, nrTotalRows);
                     } else if (testList.size() <= 0) {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                        response = new AnswerList(testList, nrTotalRows);
+                        response = new AnswerList<>(testList, nrTotalRows);
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                         msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                        response = new AnswerList(testList, nrTotalRows);
+                        response = new AnswerList<>(testList, nrTotalRows);
                     }
 
                 } catch (SQLException exception) {
@@ -725,7 +725,7 @@ public class TestDAO implements ITestDAO {
 
     @Override
     public AnswerList<List<String>> readDistinctValuesByCriteria(String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
-        AnswerList answer = new AnswerList();
+        AnswerList answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<String> distinctValues = new ArrayList<>();
@@ -798,14 +798,14 @@ public class TestDAO implements ITestDAO {
                     LOG.error("Partial Result in the query.");
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                    answer = new AnswerList(distinctValues, nrTotalRows);
+                    answer = new AnswerList<>(distinctValues, nrTotalRows);
                 } else if (distinctValues.size() <= 0) {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                    answer = new AnswerList(distinctValues, nrTotalRows);
+                    answer = new AnswerList<>(distinctValues, nrTotalRows);
                 } else {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                     msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                    answer = new AnswerList(distinctValues, nrTotalRows);
+                    answer = new AnswerList<>(distinctValues, nrTotalRows);
                 }
             }catch (Exception e) {
                 LOG.warn("Unable to execute query : " + e.toString());

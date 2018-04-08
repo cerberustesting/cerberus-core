@@ -104,7 +104,7 @@ public class ReadApplicationObject extends HttpServlet {
         boolean userHasPermissions = request.isUserInRole("Integrator");
 
         // Init Answer with potencial error from Parsing parameter.
-        AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+        AnswerItem answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
 
         try {
             JSONObject jsonResponse = new JSONObject();
@@ -200,7 +200,7 @@ public class ReadApplicationObject extends HttpServlet {
 
     private AnswerItem findApplicationObjectList(String application, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
-        AnswerItem item = new AnswerItem();
+        AnswerItem item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         applicationObjectService = appContext.getBean(IApplicationObjectService.class);
 
@@ -250,7 +250,7 @@ public class ReadApplicationObject extends HttpServlet {
 
     private AnswerItem findApplicationObjectList(String application, ApplicationContext appContext, boolean userHasPermissions) throws JSONException {
 
-        AnswerItem item = new AnswerItem();
+        AnswerItem item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         applicationObjectService = appContext.getBean(IApplicationObjectService.class);
 
@@ -276,7 +276,7 @@ public class ReadApplicationObject extends HttpServlet {
 
     private AnswerItem findApplicationObject(String application, String objecta, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
-        AnswerItem item = new AnswerItem();
+        AnswerItem item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         applicationObjectService = appContext.getBean(IApplicationObjectService.class);
 
@@ -297,7 +297,7 @@ public class ReadApplicationObject extends HttpServlet {
 
     private AnswerItem findApplicationObject(int id, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
-        AnswerItem item = new AnswerItem();
+        AnswerItem item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         applicationObjectService = appContext.getBean(IApplicationObjectService.class);
 
@@ -333,9 +333,9 @@ public class ReadApplicationObject extends HttpServlet {
      * @throws JSONException
      */
     private AnswerItem findValuesForColumnFilter(ApplicationContext appContext, HttpServletRequest request) throws JSONException {
-        AnswerItem answer = new AnswerItem();
+        AnswerItem answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
-        AnswerList values = new AnswerList();
+        AnswerList values = new AnswerList<>();
         
         applicationObjectService = appContext.getBean(IApplicationObjectService.class);
 

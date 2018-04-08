@@ -382,11 +382,11 @@ public class TestCaseService implements ITestCaseService {
 
     @Override
     public AnswerItem readByKeyWithDependency(String test, String testCase) {
-        AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
+        AnswerItem answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
         AnswerItem ai = testCaseDao.readByKey(test, testCase);
         if (ai.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && ai.getItem() != null) {
             TestCase tc = (TestCase) ai.getItem();
-            AnswerList al = testCaseStepService.readByTestTestCaseWithDependency(tc.getTest(), tc.getTestCase());
+            AnswerList<TestCaseStep> al = testCaseStepService.readByTestTestCaseWithDependency(tc.getTest(), tc.getTestCase());
             if (al.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && al.getDataList() != null) {
                 tc.setTestCaseStep(al.getDataList());
             }
@@ -417,7 +417,7 @@ public class TestCaseService implements ITestCaseService {
     }
 
     @Override
-    public TestCase convert(AnswerItem answerItem) throws CerberusException {
+    public TestCase convert(AnswerItem<TestCase> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (TestCase) answerItem.getItem();
@@ -426,7 +426,7 @@ public class TestCaseService implements ITestCaseService {
     }
 
     @Override
-    public List<TestCase> convert(AnswerList answerList) throws CerberusException {
+    public List<TestCase> convert(AnswerList<TestCase> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (List<TestCase>) answerList.getDataList();

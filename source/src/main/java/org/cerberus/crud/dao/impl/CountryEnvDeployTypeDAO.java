@@ -57,8 +57,8 @@ public class CountryEnvDeployTypeDAO implements ICountryEnvDeployTypeDAO {
     private final int MAX_ROW_SELECTED = 100000;
 
     @Override
-    public AnswerList readByVariousByCriteria(String system, String country, String environment, String deployType, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
-        AnswerList response = new AnswerList();
+    public AnswerList<CountryEnvDeployType> readByVariousByCriteria(String system, String country, String environment, String deployType, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+        AnswerList<CountryEnvDeployType> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<CountryEnvDeployType> objectList = new ArrayList<CountryEnvDeployType>();
@@ -155,14 +155,14 @@ public class CountryEnvDeployTypeDAO implements ICountryEnvDeployTypeDAO {
                         LOG.error("Partial Result in the query.");
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                        response = new AnswerList(objectList, nrTotalRows);
+                        response = new AnswerList<>(objectList, nrTotalRows);
                     } else if (objectList.size() <= 0) {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                        response = new AnswerList(objectList, nrTotalRows);
+                        response = new AnswerList<>(objectList, nrTotalRows);
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                         msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                        response = new AnswerList(objectList, nrTotalRows);
+                        response = new AnswerList<>(objectList, nrTotalRows);
                     }
 
                 } catch (SQLException exception) {

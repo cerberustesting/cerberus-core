@@ -109,7 +109,7 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
     @Override
     public AnswerList readByVarious1(long executionId, String test, String testCase, int step, int index) {
         MessageEvent msg;
-        AnswerList answer = new AnswerList();
+        AnswerList answer = new AnswerList<>();
         List<TestCaseStepActionExecution> list = new ArrayList<TestCaseStepActionExecution>();
         StringBuilder query = new StringBuilder();
         query.append("SELECT * FROM testcasestepactionexecution exa ");
@@ -179,7 +179,7 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
     @Override
     public AnswerItem readByKey(long executionId, String test, String testCase, int step, int index, int sequence) {
         MessageEvent msg;
-        AnswerItem answer = new AnswerItem();
+        AnswerItem answer = new AnswerItem<>();
         TestCaseStepActionExecution tcsa = null;
         StringBuilder query = new StringBuilder();
         query.append("SELECT * FROM testcasestepactionexecution exa ");

@@ -171,7 +171,7 @@ public class TestDataLibDataService implements ITestDataLibDataService {
     }
 
     @Override
-    public TestDataLibData convert(AnswerItem answerItem) throws CerberusException {
+    public TestDataLibData convert(AnswerItem<TestDataLibData> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (TestDataLibData) answerItem.getItem();
@@ -180,7 +180,7 @@ public class TestDataLibDataService implements ITestDataLibDataService {
     }
 
     @Override
-    public List<TestDataLibData> convert(AnswerList answerList) throws CerberusException {
+    public List<TestDataLibData> convert(AnswerList<TestDataLibData> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (List<TestDataLibData>) answerList.getDataList();

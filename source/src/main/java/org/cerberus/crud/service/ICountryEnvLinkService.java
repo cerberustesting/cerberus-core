@@ -112,7 +112,7 @@ public interface ICountryEnvLinkService {
      * @return
      * @throws CerberusException
      */
-    CountryEnvLink convert(AnswerItem answerItem) throws CerberusException;
+    CountryEnvLink convert(AnswerItem<CountryEnvLink> answerItem) throws CerberusException;
 
     /**
      *
@@ -120,7 +120,7 @@ public interface ICountryEnvLinkService {
      * @return
      * @throws CerberusException
      */
-    List<CountryEnvLink> convert(AnswerList answerList) throws CerberusException;
+    List<CountryEnvLink> convert(AnswerList<CountryEnvLink> answerList) throws CerberusException;
 
     /**
      *

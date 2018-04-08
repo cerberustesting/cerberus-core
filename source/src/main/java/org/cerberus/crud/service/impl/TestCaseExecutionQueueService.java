@@ -209,7 +209,7 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
     }
 
     @Override
-    public TestCaseExecutionQueue convert(AnswerItem answerItem) throws CerberusException {
+    public TestCaseExecutionQueue convert(AnswerItem<TestCaseExecutionQueue> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (TestCaseExecutionQueue) answerItem.getItem();
@@ -218,7 +218,7 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
     }
 
     @Override
-    public List<TestCaseExecutionQueue> convert(AnswerList answerList) throws CerberusException {
+    public List<TestCaseExecutionQueue> convert(AnswerList<TestCaseExecutionQueue> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (List<TestCaseExecutionQueue>) answerList.getDataList();
@@ -242,7 +242,7 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
         String environment = testCaseExecutionInQueue.getEnvironment();
         String country = testCaseExecutionInQueue.getCountry();
         String browser = testCaseExecutionInQueue.getBrowser();
-        String robotDecli = testCaseExecutionInQueue.getRobot();
+        String robotDecli = testCaseExecutionInQueue.getRobotDecli();
         if (StringUtil.isNullOrEmpty(robotDecli)) {
             if (!StringUtil.isNullOrEmpty(browser)) {
                 robotDecli = browser;

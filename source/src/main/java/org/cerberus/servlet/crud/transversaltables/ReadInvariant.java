@@ -113,7 +113,7 @@ public class ReadInvariant extends HttpServlet {
                     inv.put("hasPermissionsUpdate", invariantService.hasPermissionsUpdate((Invariant) answer.getItem(), request));
                     jsonResponse.put("contentTable", inv);
                 } catch (CerberusException e) {
-                    answer = new AnswerItem();
+                    answer = new AnswerItem<>();
                     MessageEvent msg = new MessageEvent(MessageEventEnum.ACTION_FAILED);
                     answer.setResultMessage(msg);
                 }
@@ -173,7 +173,7 @@ public class ReadInvariant extends HttpServlet {
 
     private AnswerItem findInvariantListByIdName(ApplicationContext appContext, String access, String idName) throws JSONException {
         AnswerList answerService;
-        AnswerItem answer = new AnswerItem();
+        AnswerItem answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         //finds the list of invariants by idname
@@ -199,7 +199,7 @@ public class ReadInvariant extends HttpServlet {
     }
 
     private AnswerItem findInvariantListBykey(ApplicationContext appContext, String idName, String value) throws JSONException, CerberusException {
-        AnswerItem answer = new AnswerItem();
+        AnswerItem answer = new AnswerItem<>();
 
         //finds the list of invariants by idname
         invariantService = appContext.getBean(InvariantService.class);
@@ -215,7 +215,7 @@ public class ReadInvariant extends HttpServlet {
     }
 
     private AnswerItem findInvariantList(ApplicationContext appContext, String access, HttpServletRequest request, HttpServletResponse response) throws JSONException {
-        AnswerItem item = new AnswerItem();
+        AnswerItem item = new AnswerItem<>();
         JSONObject jsonResponse = new JSONObject();
 
         invariantService = appContext.getBean(IInvariantService.class);
@@ -273,7 +273,7 @@ public class ReadInvariant extends HttpServlet {
     }
 
     private AnswerItem findDistinctValuesOfColumn(ApplicationContext appContext, HttpServletRequest request, String columnName, String access) throws JSONException {
-        AnswerItem answer = new AnswerItem();
+        AnswerItem answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         invariantService = appContext.getBean(IInvariantService.class);

@@ -59,17 +59,17 @@ public class TagService implements ITagService {
     private final String OBJECT_NAME = "Tag";
 
     @Override
-    public AnswerItem readByKey(String tag) {
+    public AnswerItem<Tag> readByKey(String tag) {
         return tagDAO.readByKey(tag);
     }
 
     @Override
-    public AnswerItem readByKeyTech(long tag) {
+    public AnswerItem<Tag> readByKeyTech(long tag) {
         return tagDAO.readByKeyTech(tag);
     }
 
     @Override
-    public AnswerList readAll() {
+    public AnswerList<Tag> readAll() {
         return tagDAO.readByVariousByCriteria(null, 0, 0, "sort", "asc", null, null);
     }
 
@@ -136,7 +136,7 @@ public class TagService implements ITagService {
     }
 
     @Override
-    public Tag convert(AnswerItem answerItem) throws CerberusException {
+    public Tag convert(AnswerItem<Tag> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (Tag) answerItem.getItem();
@@ -145,7 +145,7 @@ public class TagService implements ITagService {
     }
 
     @Override
-    public List<Tag> convert(AnswerList answerList) throws CerberusException {
+    public List<Tag> convert(AnswerList<Tag> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (List<Tag>) answerList.getDataList();

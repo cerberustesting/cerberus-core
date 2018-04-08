@@ -91,7 +91,7 @@ public interface ITestService {
      * @return
      * @throws CerberusException
      */
-    Test convert(AnswerItem answerItem) throws CerberusException;
+    Test convert(AnswerItem<Test> answerItem) throws CerberusException;
 
     /**
      *
@@ -99,7 +99,7 @@ public interface ITestService {
      * @return
      * @throws CerberusException
      */
-    List<Test> convert(AnswerList answerList) throws CerberusException;
+    List<Test> convert(AnswerList<Test> answerList) throws CerberusException;
 
     /**
      *

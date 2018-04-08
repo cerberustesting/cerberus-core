@@ -57,6 +57,7 @@ import org.cerberus.crud.factory.IFactoryTestCaseExecutionQueue;
 import org.cerberus.crud.service.IApplicationService;
 import org.cerberus.crud.service.ICountryEnvParamService;
 import org.cerberus.crud.service.IInvariantService;
+import org.cerberus.crud.service.IRobotService;
 import org.cerberus.crud.service.ITagService;
 import org.cerberus.crud.service.ITestCaseCountryService;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
@@ -130,6 +131,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
     private ITestCaseCountryService testCaseCountryService;
     private ICampaignParameterService campaignParameterService;
     private ICountryEnvParamService countryEnvParamService;
+    private IRobotService robotService;
 
     /**
      * Process request for both GET and POST method.
@@ -163,6 +165,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
         testCaseCountryService = appContext.getBean(ITestCaseCountryService.class);
         campaignParameterService = appContext.getBean(ICampaignParameterService.class);
         countryEnvParamService = appContext.getBean(ICountryEnvParamService.class);
+        robotService = appContext.getBean(IRobotService.class);
 
         // Calling Servlet Transversal Util.
         ServletUtil.servletStart(request);
@@ -357,8 +360,11 @@ public class AddToExecutionQueueV003 extends HttpServlet {
             int nbenv = environments.size();
             int nbcountries = countries.size();
 
+            // Part 0: Load to memory Environments and robots.
+            Map<String, String> invariantEnvMap = invariantService.readToHashMapGp1StringByIdname("ENVIRONMENT", "");
+            Map<String, String> robotMap = robotService.readToHashMapRobotDecli();
+
             // Part 1: Getting all possible Execution from test cases + countries + environments + browsers which have been sent to this servlet.
-            Map<String, String> invariantEnv = invariantService.readToHashMapGp1StringByIdname("ENVIRONMENT", "");
             List<TestCaseExecutionQueue> toInserts = new ArrayList<TestCaseExecutionQueue>();
             try {
                 HashMap<String, CountryEnvParam> envMap = new HashMap<>();
@@ -381,7 +387,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                             if (countries.contains(country.getCountry())) {
                                 // for each environment we test that correspondng gp1 is compatible with testcase environment flag activation.
                                 for (String environment : environments) {
-                                    String envGp1 = invariantEnv.get(environment);
+                                    String envGp1 = invariantEnvMap.get(environment);
                                     if (((envGp1.equals("PROD")) && (tc.getActivePROD().equalsIgnoreCase("Y")))
                                             || ((envGp1.equals("UAT")) && (tc.getActiveUAT().equalsIgnoreCase("Y")))
                                             || ((envGp1.equals("QA")) && (tc.getActiveQA().equalsIgnoreCase("Y")))
@@ -409,7 +415,12 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                                                 for (String robot : robots) {
                                                     try {
                                                         LOG.debug("Insert Queue Entry.");
-                                                        toInserts.add(inQueueFactoryService.create(test, testCase, country.getCountry(), environment, robot, robotIP, robotPort, browser, browserVersion,
+                                                        // We get here the corresponding robotDecli value from robot.
+                                                        String robotDecli = robotMap.get(robot);
+                                                        if (StringUtil.isNullOrEmpty(robotDecli)) {
+                                                            robotDecli = robot;
+                                                        }
+                                                        toInserts.add(inQueueFactoryService.create(test, testCase, country.getCountry(), environment, robot, robotDecli, robotIP, robotPort, browser, browserVersion,
                                                                 platform, screenSize, manualURL, manualHost, manualContextRoot, manualLoginRelativeURL, manualEnvData, tag, screenshot, verbose,
                                                                 timeout, pageSource, seleniumLog, 0, retries, manualExecution, priority, user, null, null, null));
                                                     } catch (FactoryCreationException e) {
@@ -422,7 +433,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                                                 LOG.debug("Forcing Robot to empty value. Application type=" + app.getType());
                                                 try {
                                                     LOG.debug("Insert Queue Entry.");
-                                                    toInserts.add(inQueueFactoryService.create(test, testCase, country.getCountry(), environment, "", "", "", "", "",
+                                                    toInserts.add(inQueueFactoryService.create(test, testCase, country.getCountry(), environment, "", "", "", "", "", "",
                                                             "", "", manualURL, manualHost, manualContextRoot, manualLoginRelativeURL, manualEnvData, tag, screenshot, verbose,
                                                             timeout, pageSource, seleniumLog, 0, retries, manualExecution, priority, user, null, null, null));
                                                 } catch (FactoryCreationException e) {
@@ -511,7 +522,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
         }
 
         // Init Answer with potencial error from Parsing parameter.
-        AnswerItem answer = new AnswerItem(msg);
+        AnswerItem answer = new AnswerItem<>(msg);
 
         switch (outputFormat) {
             case "json":

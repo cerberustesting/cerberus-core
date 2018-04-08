@@ -97,8 +97,8 @@ public class TestDataLibService implements ITestDataLibService {
 
     @Override
     public AnswerList<HashMap<String, String>> readINTERNALWithSubdataByCriteria(String dataName, String dataSystem, String dataCountry, String dataEnvironment, int rowLimit, String system) {
-        AnswerList answer = new AnswerList();
-        AnswerList answerData = new AnswerList();
+        AnswerList answer = new AnswerList<>();
+        AnswerList answerData = new AnswerList<>();
         MessageEvent msg;
 
         List<HashMap<String, String>> result = new ArrayList<HashMap<String, String>>();
@@ -157,7 +157,7 @@ public class TestDataLibService implements ITestDataLibService {
     }
 
     @Override
-    public TestDataLib convert(AnswerItem answerItem) throws CerberusException {
+    public TestDataLib convert(AnswerItem<TestDataLib> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (TestDataLib) answerItem.getItem();
@@ -166,7 +166,7 @@ public class TestDataLibService implements ITestDataLibService {
     }
 
     @Override
-    public List<TestDataLib> convert(AnswerList answerList) throws CerberusException {
+    public List<TestDataLib> convert(AnswerList<TestDataLib> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (List<TestDataLib>) answerList.getDataList();

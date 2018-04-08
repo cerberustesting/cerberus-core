@@ -88,7 +88,7 @@ public class TestCaseStepActionControlExecutionService implements ITestCaseStepA
 
             tcsaceList.add(tcsace);
         }
-        response = new AnswerList(tcsaceList, controls.getTotalRows());
+        response = new AnswerList<>(tcsaceList, controls.getTotalRows());
         return response;
 
     }

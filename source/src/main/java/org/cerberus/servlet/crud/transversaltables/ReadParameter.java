@@ -98,7 +98,7 @@ public class ReadParameter extends HttpServlet {
         boolean userHasPermissions = request.isUserInRole("Administrator");
 
         // Init Answer with potencial error from Parsing parameter.
-        AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+        AnswerItem answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
 
         try {
             JSONObject jsonResponse;
@@ -172,7 +172,7 @@ public class ReadParameter extends HttpServlet {
 
     private AnswerItem findParameterList(String system1, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
-        AnswerItem item = new AnswerItem();
+        AnswerItem item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         parameterService = appContext.getBean(ParameterService.class);
 
@@ -221,7 +221,7 @@ public class ReadParameter extends HttpServlet {
     }
 
     private AnswerItem findParameterBySystemByKey(String system1, String key, Boolean userHasPermissions, ApplicationContext appContext) throws JSONException {
-        AnswerItem item = new AnswerItem();
+        AnswerItem item = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         parameterService = appContext.getBean(ParameterService.class);
@@ -250,7 +250,7 @@ public class ReadParameter extends HttpServlet {
     }
 
     private AnswerItem findDistinctValuesOfColumn(String system, ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
-        AnswerItem answer = new AnswerItem();
+        AnswerItem answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         parameterService = appContext.getBean(IParameterService.class);

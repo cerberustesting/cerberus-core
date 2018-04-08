@@ -41,14 +41,14 @@ public interface ICountryEnvParamDAO {
      * @param environment
      * @return
      */
-    public AnswerItem readByKey(String system, String country, String environment);
+    public AnswerItem<CountryEnvParam> readByKey(String system, String country, String environment);
 
     /**
      *
      * @param system
      * @return
      */
-    public AnswerList readActiveBySystem(String system);
+    public AnswerList<CountryEnvParam> readActiveBySystem(String system);
 
     /**
      *

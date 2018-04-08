@@ -97,7 +97,7 @@ public class ReadAppService extends HttpServlet {
         boolean userHasPermissions = request.isUserInRole("TestAdmin");
 
         // Init Answer with potencial error from Parsing soapLibrary.
-        AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+        AnswerItem answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
         boolean testcase = ParameterParserUtil.parseBooleanParam(request.getParameter("testcase"), false);
 
         try {
@@ -137,7 +137,7 @@ public class ReadAppService extends HttpServlet {
 
     private AnswerItem findAppServiceList(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
-        AnswerItem item = new AnswerItem();
+        AnswerItem item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         appServiceService = appContext.getBean(AppServiceService.class);
 
@@ -203,7 +203,7 @@ public class ReadAppService extends HttpServlet {
     }
 
     private AnswerItem findAppServiceByLikeName(String key, ApplicationContext appContext, int limit) throws JSONException {
-        AnswerItem answerItem = new AnswerItem();
+        AnswerItem answerItem = new AnswerItem<>();
         JSONObject response = new JSONObject();
         appServiceService = appContext.getBean(AppServiceService.class);
         AnswerList resp = appServiceService.readByLikeName(key, limit);
@@ -237,7 +237,7 @@ public class ReadAppService extends HttpServlet {
     private AnswerItem getTestCasesUsingService(String service,ApplicationContext appContext) throws JSONException {
         JSONObject object = new JSONObject();
         JSONArray objectArray = new JSONArray();
-        AnswerItem ansItem = new AnswerItem();
+        AnswerItem ansItem = new AnswerItem<>();
         ITestCaseService tcService = appContext.getBean(ITestCaseService.class);
 
         AnswerList ansList = tcService.findTestCasesThatUseService(service);
@@ -277,7 +277,7 @@ public class ReadAppService extends HttpServlet {
     }
 
     private AnswerItem findDistinctValuesOfColumn(ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
-        AnswerItem answer = new AnswerItem();
+        AnswerItem answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         appServiceService = appContext.getBean(IAppServiceService.class);

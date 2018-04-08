@@ -139,7 +139,7 @@ public class TestCaseDAO implements ITestCaseDAO {
 
     @Override
     public AnswerList readByTestByCriteria(String system, String test, int start, int amount, String sortInformation, String searchTerm, Map<String, List<String>> individualSearch) {
-        AnswerList answer = new AnswerList();
+        AnswerList answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<TestCase> testCaseList = new ArrayList<TestCase>();
@@ -256,14 +256,14 @@ public class TestCaseDAO implements ITestCaseDAO {
                         LOG.error("Partial Result in the query.");
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                        answer = new AnswerList(testCaseList, nrTotalRows);
+                        answer = new AnswerList<>(testCaseList, nrTotalRows);
                     } else if (testCaseList.size() <= 0) {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                        answer = new AnswerList(testCaseList, nrTotalRows);
+                        answer = new AnswerList<>(testCaseList, nrTotalRows);
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                         msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                        answer = new AnswerList(testCaseList, nrTotalRows);
+                        answer = new AnswerList<>(testCaseList, nrTotalRows);
                     }
                 } catch (SQLException exception) {
                     LOG.error("Unable to execute query : " + exception.toString());
@@ -360,7 +360,7 @@ public class TestCaseDAO implements ITestCaseDAO {
 
     @Override
     public AnswerList<TestListDTO> findTestCaseByService(String service) {
-        AnswerList ansList = new AnswerList();
+        AnswerList ansList = new AnswerList<>();
         MessageEvent rs;
         List<TestListDTO> listOfTests = new ArrayList<TestListDTO>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -463,7 +463,7 @@ public class TestCaseDAO implements ITestCaseDAO {
 
     @Override
     public AnswerList<TestListDTO> findTestCaseByServiceByDataLib(String service) {
-        AnswerList ansList = new AnswerList();
+        AnswerList ansList = new AnswerList<>();
         MessageEvent rs;
         List<TestListDTO> listOfTests = new ArrayList<TestListDTO>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -974,7 +974,7 @@ public class TestCaseDAO implements ITestCaseDAO {
     @Override
     public AnswerList<List<TestCase>> readByVarious(String[] test, String[] idProject, String[] app, String[] creator, String[] implementer, String[] system,
             String[] campaign, String[] labelid, String[] priority, String[] group, String[] status, int length) {
-        AnswerList answer = new AnswerList();
+        AnswerList answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<TestCase> testCaseList = new ArrayList<TestCase>();
@@ -1029,14 +1029,14 @@ public class TestCaseDAO implements ITestCaseDAO {
                         LOG.error("Partial Result in the query.");
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                        answer = new AnswerList(testCaseList, testCaseList.size());
+                        answer = new AnswerList<>(testCaseList, testCaseList.size());
                     } else if (testCaseList.size() <= 0) {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                        answer = new AnswerList(testCaseList, testCaseList.size());
+                        answer = new AnswerList<>(testCaseList, testCaseList.size());
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                         msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                        answer = new AnswerList(testCaseList, testCaseList.size());
+                        answer = new AnswerList<>(testCaseList, testCaseList.size());
                     }
 
                 } catch (SQLException exception) {
@@ -1259,7 +1259,7 @@ public class TestCaseDAO implements ITestCaseDAO {
     @Override
     public AnswerItem<List<TestCase>> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries, boolean withLabelOrBattery, String[] status, String[] system, String[] application, String[] priority, String[] group, Integer maxReturn) {
         List<TestCase> list = null;
-        AnswerItem answer = new AnswerItem();
+        AnswerItem answer = new AnswerItem<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         HashMap<String, String[]> tcParameters = new HashMap<String, String[]>();
@@ -1346,14 +1346,14 @@ public class TestCaseDAO implements ITestCaseDAO {
                         LOG.error("Partial Result in the query.");
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + maxReturn));
-                        answer = new AnswerItem(list);
+                        answer = new AnswerItem<>(list);
                     } else if (list.size() <= 0) {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                        answer = new AnswerItem(list);
+                        answer = new AnswerItem<>(list);
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                         msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                        answer = new AnswerItem(list);
+                        answer = new AnswerItem<>(list);
                     }
                 } catch (SQLException exception) {
                     LOG.error("Unable to execute query : " + exception.toString());
@@ -1536,7 +1536,7 @@ public class TestCaseDAO implements ITestCaseDAO {
 
     @Override
     public AnswerList readTestCaseByStepsInLibrary(String test) {
-        AnswerList response = new AnswerList();
+        AnswerList response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
         List<TestCase> list = new ArrayList<TestCase>();
         StringBuilder query = new StringBuilder();
@@ -1567,14 +1567,14 @@ public class TestCaseDAO implements ITestCaseDAO {
                         LOG.error("Partial Result in the query.");
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                        response = new AnswerList(list, list.size());
+                        response = new AnswerList<>(list, list.size());
                     } else if (list.size() <= 0) {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                        response = new AnswerList(list, list.size());
+                        response = new AnswerList<>(list, list.size());
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                         msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                        response = new AnswerList(list, list.size());
+                        response = new AnswerList<>(list, list.size());
                     }
 
                 } catch (SQLException exception) {
@@ -1615,7 +1615,7 @@ public class TestCaseDAO implements ITestCaseDAO {
 
     @Override
     public AnswerItem readByKey(String test, String testCase) {
-        AnswerItem ans = new AnswerItem();
+        AnswerItem ans = new AnswerItem<>();
         TestCase result = null;
         final String query = "SELECT * FROM `testcase` tec LEFT OUTER JOIN application app ON app.application=tec.application WHERE tec.`test` = ? AND tec.`testcase` = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -1656,7 +1656,7 @@ public class TestCaseDAO implements ITestCaseDAO {
 
     @Override
     public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String test, String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
-        AnswerList answer = new AnswerList();
+        AnswerList answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<String> distinctValues = new ArrayList<>();
@@ -1759,14 +1759,14 @@ public class TestCaseDAO implements ITestCaseDAO {
                     LOG.error("Partial Result in the query.");
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                    answer = new AnswerList(distinctValues, nrTotalRows);
+                    answer = new AnswerList<>(distinctValues, nrTotalRows);
                 } else if (distinctValues.size() <= 0) {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                    answer = new AnswerList(distinctValues, nrTotalRows);
+                    answer = new AnswerList<>(distinctValues, nrTotalRows);
                 } else {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                     msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                    answer = new AnswerList(distinctValues, nrTotalRows);
+                    answer = new AnswerList<>(distinctValues, nrTotalRows);
                 }
             }catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());

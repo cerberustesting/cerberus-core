@@ -201,7 +201,7 @@ public class UserGroupDAO implements IUserGroupDAO {
 
     @Override
     public AnswerList<UserGroup> readByUser(String login) {
-        AnswerList ans = new AnswerList();
+        AnswerList ans = new AnswerList<>();
         MessageEvent msg = null;
 
         try (Connection connection = databaseSpring.connect();

@@ -296,7 +296,7 @@ public interface ITestCaseExecutionQueueService {
      * @return
      * @throws CerberusException
      */
-    TestCaseExecutionQueue convert(AnswerItem answerItem) throws CerberusException;
+    TestCaseExecutionQueue convert(AnswerItem<TestCaseExecutionQueue> answerItem) throws CerberusException;
 
     /**
      *
@@ -304,7 +304,7 @@ public interface ITestCaseExecutionQueueService {
      * @return
      * @throws CerberusException
      */
-    List<TestCaseExecutionQueue> convert(AnswerList answerList) throws CerberusException;
+    List<TestCaseExecutionQueue> convert(AnswerList<TestCaseExecutionQueue> answerList) throws CerberusException;
 
     /**
      *

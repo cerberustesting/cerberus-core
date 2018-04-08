@@ -296,7 +296,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
 
     @Override
     public AnswerItem readLastByCriteria(String application) {
-        AnswerItem ans = new AnswerItem();
+        AnswerItem ans = new AnswerItem<>();
         TestCaseExecution result = null;
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -666,7 +666,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
 
     @Override
     public AnswerList findTagList(int tagnumber) {
-        AnswerList response = new AnswerList();
+        AnswerList response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
         List<String> list = null;
         StringBuilder query = new StringBuilder();
@@ -762,7 +762,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     @Override
     public AnswerList readByTagByCriteria(String tag, int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-        AnswerList answer = new AnswerList();
+        AnswerList answer = new AnswerList<>();
         List<String> individalColumnSearchValues = new ArrayList<String>();
 
         final StringBuffer query = new StringBuffer();
@@ -839,7 +839,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                         testCaseExecutionList.add(this.loadWithDependenciesFromResultSet(resultSet));
                     }
                     msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCaseExecution").replace("%OPERATION%", "SELECT"));
-//                    answer = new AnswerList(testCaseExecutionList, testCaseExecutionList.size());
+//                    answer = new AnswerList<>(testCaseExecutionList, testCaseExecutionList.size());
                     answer.setTotalRows(testCaseExecutionList.size());
                 } catch (SQLException exception) {
                     LOG.warn("Unable to execute query : " + exception.toString());
@@ -882,7 +882,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     @Override
     public AnswerList readByTag(String tag) throws CerberusException {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-        AnswerList answer = new AnswerList();
+        AnswerList answer = new AnswerList<>();
 
         final StringBuffer query = new StringBuffer();
 
@@ -951,7 +951,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     @Override
     public AnswerList readByCriteria(int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch, List<String> individualLike) throws CerberusException {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-        AnswerList answer = new AnswerList();
+        AnswerList answer = new AnswerList<>();
         List<String> individalColumnSearchValues = new ArrayList<String>();
 
         final StringBuffer query = new StringBuffer();
@@ -1055,7 +1055,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                         testCaseExecutionList.add(this.loadFromResultSet(resultSet));
                     }
                     msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCaseExecution").replace("%OPERATION%", "SELECT"));
-//                    answer = new AnswerList(testCaseExecutionList, testCaseExecutionList.size());
+//                    answer = new AnswerList<>(testCaseExecutionList, testCaseExecutionList.size());
                     answer.setTotalRows(testCaseExecutionList.size());
                 } catch (SQLException exception) {
                     LOG.warn("Unable to execute query : " + exception.toString());
@@ -1097,7 +1097,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
 
     @Override
     public AnswerList readDistinctEnvCoutnryBrowserByTag(String tag) {
-        AnswerList answer = new AnswerList();
+        AnswerList answer = new AnswerList<>();
         StringBuilder query = new StringBuilder();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
 
@@ -1118,7 +1118,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                         testCaseExecutionList.add(this.loadFromResultSet(resultSet));
                     }
                     msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCaseExecution").replace("%OPERATION%", "SELECT"));
-                    answer = new AnswerList(testCaseExecutionList, testCaseExecutionList.size());
+                    answer = new AnswerList<>(testCaseExecutionList, testCaseExecutionList.size());
                 } catch (SQLException exception) {
                     LOG.warn("Unable to execute query : " + exception.toString());
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -1158,7 +1158,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
 
     @Override
     public AnswerList readDistinctColumnByTag(String tag, boolean env, boolean country, boolean browser, boolean app) {
-        AnswerList answer = new AnswerList();
+        AnswerList answer = new AnswerList<>();
         StringBuilder query = new StringBuilder();
         StringBuilder distinct = new StringBuilder();
         int prev = 0;
@@ -1238,7 +1238,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                         column.add(tmp);
                     }
                     msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCaseExecution").replace("%OPERATION%", "SELECT"));
-                    answer = new AnswerList(column, column.size());
+                    answer = new AnswerList<>(column, column.size());
                 } catch (SQLException exception) {
                     LOG.warn("Unable to execute query : " + exception.toString());
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -1284,7 +1284,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             List<String> countryList, List<String> browserList, List<String> tcestatusList, String ip, String port, String tag, String browserversion,
             String comment, String bugid, String ticket) {
 
-        AnswerList answer = new AnswerList();
+        AnswerList answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
         List<TestCaseExecution> tceList = new ArrayList<TestCaseExecution>();
         List<String> whereClauses = new LinkedList<String>();
@@ -1597,7 +1597,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
 
     @Override
     public AnswerItem readByKey(long executionId) {
-        AnswerItem ans = new AnswerItem();
+        AnswerItem ans = new AnswerItem<>();
         TestCaseExecution result = null;
         final String query = "SELECT * FROM `testcaseexecution` exe WHERE exe.`id` = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -1723,7 +1723,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
 
     @Override
     public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
-        AnswerList answer = new AnswerList();
+        AnswerList answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<String> distinctValues = new ArrayList<>();
@@ -1835,14 +1835,14 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                     LOG.error("Partial Result in the query.");
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                    answer = new AnswerList(distinctValues, nrTotalRows);
+                    answer = new AnswerList<>(distinctValues, nrTotalRows);
                 } else if (distinctValues.size() <= 0) {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                    answer = new AnswerList(distinctValues, nrTotalRows);
+                    answer = new AnswerList<>(distinctValues, nrTotalRows);
                 } else {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                     msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                    answer = new AnswerList(distinctValues, nrTotalRows);
+                    answer = new AnswerList<>(distinctValues, nrTotalRows);
                 }
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());

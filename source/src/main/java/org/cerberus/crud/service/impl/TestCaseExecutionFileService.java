@@ -188,7 +188,7 @@ public class TestCaseExecutionFileService implements ITestCaseExecutionFileServi
     
     
     @Override
-    public TestCaseExecutionFile convert(AnswerItem answerItem) throws CerberusException {
+    public TestCaseExecutionFile convert(AnswerItem<TestCaseExecutionFile> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (TestCaseExecutionFile) answerItem.getItem();
@@ -197,7 +197,7 @@ public class TestCaseExecutionFileService implements ITestCaseExecutionFileServi
     }
 
     @Override
-    public List<TestCaseExecutionFile> convert(AnswerList answerList) throws CerberusException {
+    public List<TestCaseExecutionFile> convert(AnswerList<TestCaseExecutionFile> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (List<TestCaseExecutionFile>) answerList.getDataList();

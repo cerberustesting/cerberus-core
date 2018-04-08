@@ -114,7 +114,7 @@ public interface ILabelService {
      * @return
      * @throws CerberusException
      */
-    Label convert(AnswerItem answerItem) throws CerberusException;
+    Label convert(AnswerItem<Label> answerItem) throws CerberusException;
 
     /**
      *
@@ -122,7 +122,7 @@ public interface ILabelService {
      * @return
      * @throws CerberusException
      */
-    List<Label> convert(AnswerList answerList) throws CerberusException;
+    List<Label> convert(AnswerList<Label> answerList) throws CerberusException;
 
     /**
      *

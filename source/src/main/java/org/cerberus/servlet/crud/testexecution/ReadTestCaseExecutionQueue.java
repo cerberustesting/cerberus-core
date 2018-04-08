@@ -113,7 +113,7 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
                 queueid_error = true;
             }
         }
-        AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+        AnswerItem answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
 
         // Global boolean on the servlet that define if the user has permition to edit and delete object.
         boolean userHasPermissions = request.isUserInRole("RunTest");
@@ -185,7 +185,7 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
     }
 
     private AnswerItem findExecutionQueueByKeyTech(Long queueid, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
-        AnswerItem item = new AnswerItem();
+        AnswerItem item = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         ITestCaseExecutionQueueService queueService = appContext.getBean(ITestCaseExecutionQueueService.class);
@@ -212,7 +212,7 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
 
     private AnswerItem findExecutionInQueueList(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
-        AnswerItem item = new AnswerItem();
+        AnswerItem item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         executionService = appContext.getBean(ITestCaseExecutionQueueService.class);
 
@@ -260,7 +260,7 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
     }
 
     private AnswerItem findExecutionInQueueStatus(ApplicationContext appContext, HttpServletRequest request) throws JSONException {
-        AnswerItem item = new AnswerItem();
+        AnswerItem item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         executionThreadPoolService = appContext.getBean(IExecutionThreadPoolService.class);
         parameterService = appContext.getBean(IParameterService.class);
@@ -342,9 +342,9 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
     }
 
     private AnswerItem findDistinctValuesOfColumn(ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
-        AnswerItem answer = new AnswerItem();
+        AnswerItem answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
-        AnswerList values = new AnswerList();
+        AnswerList values = new AnswerList<>();
 
         executionService = appContext.getBean(ITestCaseExecutionQueueService.class);
 

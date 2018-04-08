@@ -102,7 +102,7 @@ public class ReadTest extends HttpServlet {
         boolean userHasPermissions = request.isUserInRole("TestAdmin");
 
         // Init Answer with potencial error from Parsing parameter.
-        AnswerItem answer = new AnswerItem(msg);
+        AnswerItem answer = new AnswerItem<>(msg);
 
         try {
             JSONObject jsonResponse = new JSONObject();
@@ -181,7 +181,7 @@ public class ReadTest extends HttpServlet {
     }// </editor-fold>
 
     private AnswerItem findTestByKey(String testName, ApplicationContext appContext, boolean userHasPermissions) throws JSONException {
-        AnswerItem answer = new AnswerItem();
+        AnswerItem answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         testService = appContext.getBean(TestService.class);
@@ -203,8 +203,8 @@ public class ReadTest extends HttpServlet {
 
     
     private AnswerItem findTestList(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
-        AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
-        AnswerList testList = new AnswerList();
+        AnswerItem answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
+        AnswerList testList = new AnswerList<>();
         JSONObject object = new JSONObject();
 
         testService = appContext.getBean(TestService.class);
@@ -253,8 +253,8 @@ public class ReadTest extends HttpServlet {
     }
 
     private AnswerItem findTestBySystem(String system, ApplicationContext appContext, boolean userHasPermissions) throws JSONException {
-        AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
-        AnswerList testList = new AnswerList();
+        AnswerItem answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
+        AnswerList testList = new AnswerList<>();
         JSONObject object = new JSONObject();
 
         testService = appContext.getBean(TestService.class);
@@ -287,7 +287,7 @@ public class ReadTest extends HttpServlet {
     }
     
     private AnswerItem findDistinctValuesOfColumn(ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException{
-        AnswerItem answer = new AnswerItem();
+        AnswerItem answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         testService = appContext.getBean(TestService.class);

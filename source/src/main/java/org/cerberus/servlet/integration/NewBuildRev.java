@@ -73,7 +73,7 @@ public class NewBuildRev extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, JSONException {
         JSONObject jsonResponse = new JSONObject();
-        AnswerItem answerItem = new AnswerItem();
+        AnswerItem answerItem = new AnswerItem<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         answerItem.setResultMessage(msg);
@@ -91,7 +91,7 @@ public class NewBuildRev extends HttpServlet {
         String revision = policy.sanitize(request.getParameter("revision"));
 
         // Init Answer with potencial error from Parsing parameter.
-//        AnswerItem answer = new AnswerItem(msg);
+//        AnswerItem answer = new AnswerItem<>(msg);
         String eMailContent;
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         IEmailService emailService = appContext.getBean(IEmailService.class);

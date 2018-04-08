@@ -99,7 +99,7 @@ public class ReadTag extends HttpServlet {
         boolean userHasPermissions = request.isUserInRole("RunTest");
 
         // Init Answer with potencial error from Parsing parameter.
-        AnswerItem answer = new AnswerItem(msg);
+        AnswerItem answer = new AnswerItem<>(msg);
 
         try {
             JSONObject jsonResponse = new JSONObject();
@@ -180,7 +180,7 @@ public class ReadTag extends HttpServlet {
 
     private AnswerItem findTagList(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
-        AnswerItem item = new AnswerItem();
+        AnswerItem item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         tagService = appContext.getBean(TagService.class);
 
@@ -230,7 +230,7 @@ public class ReadTag extends HttpServlet {
     }
 
     private AnswerItem findTagByKeyTech(long id, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
-        AnswerItem item = new AnswerItem();
+        AnswerItem item = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         ITagService libService = appContext.getBean(ITagService.class);
@@ -253,7 +253,7 @@ public class ReadTag extends HttpServlet {
     }
 
     private AnswerItem findTagByKey(String tag, ApplicationContext appContext, HttpServletRequest request) throws JSONException, CerberusException {
-        AnswerItem item = new AnswerItem();
+        AnswerItem item = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         ITagService libService = appContext.getBean(ITagService.class);
@@ -286,7 +286,7 @@ public class ReadTag extends HttpServlet {
     }
 
     private AnswerItem findDistinctValuesOfColumn(ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
-        AnswerItem answer = new AnswerItem();
+        AnswerItem answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         tagService = appContext.getBean(TagService.class);

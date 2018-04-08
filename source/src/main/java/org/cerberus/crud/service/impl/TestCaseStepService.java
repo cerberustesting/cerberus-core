@@ -191,7 +191,7 @@ public class TestCaseStepService implements ITestCaseStepService {
     }
 
     @Override
-    public AnswerList readByTestTestCase(String test, String testcase) {
+    public AnswerList<TestCaseStep> readByTestTestCase(String test, String testcase) {
         return testCaseStepDAO.readByTestTestCase(test, testcase);
     }
 
@@ -201,9 +201,9 @@ public class TestCaseStepService implements ITestCaseStepService {
     }
 
     @Override
-    public AnswerList readByTestTestCaseWithDependency(String test, String testcase) {
-        AnswerList steps = this.readByTestTestCase(test, testcase);
-        AnswerList response = null;
+    public AnswerList<TestCaseStep> readByTestTestCaseWithDependency(String test, String testcase) {
+        AnswerList<TestCaseStep> steps = this.readByTestTestCase(test, testcase);
+        AnswerList<TestCaseStep> response = null;
         List<TestCaseStep> tcseList = new ArrayList<>();
         for (Object step : steps.getDataList()) {
             TestCaseStep tces = (TestCaseStep) step;

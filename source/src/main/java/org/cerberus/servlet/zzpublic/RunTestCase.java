@@ -344,7 +344,7 @@ public class RunTestCase extends HttpServlet {
             try {
                 tCExecution.setQueueID(idFromQueue);
 
-                TestCaseExecutionQueue queueExecution = factoryTCExecutionQueue.create(idFromQueue, test, testCase, country, environment, robot, ss_ip, ss_p, browser, version,
+                TestCaseExecutionQueue queueExecution = factoryTCExecutionQueue.create(idFromQueue, test, testCase, country, environment, robot, robot, ss_ip, ss_p, browser, version,
                         platform, screenSize, 0, myHost, myContextRoot, myLoginRelativeURL, myEnvData, tag, screenshot, verbose, timeout, getPageSource, getSeleniumLog, 0, numberOfRetries,
                         manualExecution, executor, null, null, null);
                 tCExecution.setTestCaseExecutionQueue(queueExecution);

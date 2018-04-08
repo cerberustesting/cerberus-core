@@ -111,7 +111,7 @@ public class ReadTestCaseExecution extends HttpServlet {
 
         try {
             JSONObject jsonResponse = new JSONObject();
-            AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+            AnswerItem answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
             // Data/Filter Parameters.
             String Tag = ParameterParserUtil.parseStringParam(request.getParameter("Tag"), "");
             String value = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
@@ -227,11 +227,11 @@ public class ReadTestCaseExecution extends HttpServlet {
     }// </editor-fold>
 
     private AnswerItem findExecutionColumns(ApplicationContext appContext, HttpServletRequest request, String Tag) throws CerberusException, ParseException, JSONException {
-        AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+        AnswerItem answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
         JSONObject jsonResponse = new JSONObject();
 
-        AnswerList testCaseExecutionList = new AnswerList();
-        AnswerList testCaseExecutionListInQueue = new AnswerList();
+        AnswerList testCaseExecutionList = new AnswerList<>();
+        AnswerList testCaseExecutionListInQueue = new AnswerList<>();
 
         testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
         testCaseExecutionInQueueService = appContext.getBean(ITestCaseExecutionQueueService.class);
@@ -295,7 +295,7 @@ public class ReadTestCaseExecution extends HttpServlet {
 
     private AnswerItem findExecutionListByTag(ApplicationContext appContext, HttpServletRequest request, String Tag)
             throws CerberusException, ParseException, JSONException {
-        AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+        AnswerItem answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
         testCaseLabelService = appContext.getBean(ITestCaseLabelService.class);
 
         int startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"), "0"));
@@ -429,8 +429,8 @@ public class ReadTestCaseExecution extends HttpServlet {
     }
 
     private AnswerItem findTestCaseExecutionList(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException, CerberusException {
-        AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
-        AnswerList testCaseExecutionList = new AnswerList();
+        AnswerItem answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
+        AnswerList testCaseExecutionList = new AnswerList<>();
         JSONObject object = new JSONObject();
 
         testCaseExecutionService = appContext.getBean(TestCaseExecutionService.class);
@@ -607,7 +607,7 @@ public class ReadTestCaseExecution extends HttpServlet {
 
     private AnswerItem findExecutionListBySystem(String system, ApplicationContext appContext, HttpServletRequest request)
             throws ParseException, JSONException {
-        AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+        AnswerItem answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
 
         /**
          * Parse all parameters used in the search.
@@ -743,9 +743,9 @@ public class ReadTestCaseExecution extends HttpServlet {
      * @throws JSONException
      */
     private AnswerItem findValuesForColumnFilter(String system, String test, ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
-        AnswerItem answer = new AnswerItem();
+        AnswerItem answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
-        AnswerList values = new AnswerList();
+        AnswerList values = new AnswerList<>();
         Map<String, List<String>> individualSearch = new HashMap<>();
 
         testCaseService = appContext.getBean(TestCaseService.class);

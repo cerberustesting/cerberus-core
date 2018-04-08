@@ -195,7 +195,7 @@ public class ServiceService implements IServiceService {
                 decodedServicePath = servicePath;
                 decodedRequest = appService.getServiceRequest();
                 LOG.debug("AppService with correct path is  now OK : " + servicePath);
-                AnswerItem<String> answerDecode = new AnswerItem();
+                AnswerItem<String> answerDecode = new AnswerItem<>();
 
                 try {
 

@@ -211,7 +211,7 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
 
     @Override
     public AnswerList<TestCaseStepAction> readByTestTestCase(String test, String testcase) {
-        AnswerList<TestCaseStepAction> response = new AnswerList();
+        AnswerList<TestCaseStepAction> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<TestCaseStepAction> actionList = new ArrayList<TestCaseStepAction>();

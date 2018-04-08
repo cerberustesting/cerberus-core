@@ -158,7 +158,7 @@ public interface ITestCaseExecutionFileService {
      * @return
      * @throws CerberusException
      */
-    TestCaseExecutionFile convert(AnswerItem answerItem) throws CerberusException;
+    TestCaseExecutionFile convert(AnswerItem<TestCaseExecutionFile> answerItem) throws CerberusException;
 
     /**
      *
@@ -166,7 +166,7 @@ public interface ITestCaseExecutionFileService {
      * @return
      * @throws CerberusException
      */
-    List<TestCaseExecutionFile> convert(AnswerList answerList) throws CerberusException;
+    List<TestCaseExecutionFile> convert(AnswerList<TestCaseExecutionFile> answerList) throws CerberusException;
 
     /**
      *

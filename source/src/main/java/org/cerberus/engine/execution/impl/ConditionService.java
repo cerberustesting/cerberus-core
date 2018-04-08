@@ -71,7 +71,7 @@ public class ConditionService implements IConditionService {
 
         LOG.debug("Starting Evaluation condition : " + conditionOper);
 
-        AnswerItem ans = new AnswerItem();
+        AnswerItem ans = new AnswerItem<>();
         MessageEvent mes;
         boolean execute_Operation = true;
 
@@ -163,7 +163,7 @@ public class ConditionService implements IConditionService {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Checking if property Exist");
         }
-        AnswerItem ans = new AnswerItem();
+        AnswerItem ans = new AnswerItem<>();
         MessageEvent mes;
 
         if (StringUtil.isNullOrEmpty(conditionValue1)) {
@@ -200,7 +200,7 @@ public class ConditionService implements IConditionService {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Checking if Element Present");
         }
-        AnswerItem ans = new AnswerItem();
+        AnswerItem ans = new AnswerItem<>();
         MessageEvent mes;
 
         if (StringUtil.isNullOrEmpty(conditionValue1)) {
@@ -291,7 +291,7 @@ public class ConditionService implements IConditionService {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Checking if Element is Not Present");
         }
-        AnswerItem ans = new AnswerItem();
+        AnswerItem ans = new AnswerItem<>();
         MessageEvent mes;
 
         if (StringUtil.isNullOrEmpty(conditionValue1)) {
@@ -390,7 +390,7 @@ public class ConditionService implements IConditionService {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Checking if String Equal");
         }
-        AnswerItem ans = new AnswerItem();
+        AnswerItem ans = new AnswerItem<>();
         MessageEvent mes;
 
         if (conditionValue1.equals(conditionValue2)) {
@@ -414,7 +414,7 @@ public class ConditionService implements IConditionService {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Checking if String Different");
         }
-        AnswerItem ans = new AnswerItem();
+        AnswerItem ans = new AnswerItem<>();
         MessageEvent mes;
 
         boolean execute_Action = true;
@@ -440,7 +440,7 @@ public class ConditionService implements IConditionService {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Checking if String Greater");
         }
-        AnswerItem ans = new AnswerItem();
+        AnswerItem ans = new AnswerItem<>();
         MessageEvent mes;
 
         boolean execute_Action = true;
@@ -466,7 +466,7 @@ public class ConditionService implements IConditionService {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Checking if String Minor");
         }
-        AnswerItem ans = new AnswerItem();
+        AnswerItem ans = new AnswerItem<>();
         MessageEvent mes;
 
         boolean execute_Action = true;
@@ -492,7 +492,7 @@ public class ConditionService implements IConditionService {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Checking if String Contains");
         }
-        AnswerItem ans = new AnswerItem();
+        AnswerItem ans = new AnswerItem<>();
         MessageEvent mes;
 
         boolean execute_Action = true;
@@ -518,7 +518,7 @@ public class ConditionService implements IConditionService {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Checking if Numeric Equals");
         }
-        AnswerItem ans = new AnswerItem();
+        AnswerItem ans = new AnswerItem<>();
         MessageEvent mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_PENDING);
 
         // We first prepare the string for nueric conversion to replace , by .

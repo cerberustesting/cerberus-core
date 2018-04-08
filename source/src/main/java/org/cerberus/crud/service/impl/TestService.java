@@ -107,7 +107,7 @@ public class TestService implements ITestService {
     }
 
     @Override
-    public Test convert(AnswerItem answerItem) throws CerberusException {
+    public Test convert(AnswerItem<Test> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (Test) answerItem.getItem();
@@ -116,7 +116,7 @@ public class TestService implements ITestService {
     }
 
     @Override
-    public List<Test> convert(AnswerList answerList) throws CerberusException {
+    public List<Test> convert(AnswerList<Test> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (List<Test>) answerList.getDataList();

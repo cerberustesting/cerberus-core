@@ -21,11 +21,9 @@ package org.cerberus.crud.service.impl;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -260,12 +258,12 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
         AnswerList files = testCaseExecutionFileService.readByVarious(executionId, "");
         testCaseExecution.setFileList((List<TestCaseExecutionFile>) files.getDataList());
 
-        AnswerItem response = new AnswerItem(testCaseExecution, tce.getResultMessage());
+        AnswerItem response = new AnswerItem<>(testCaseExecution, tce.getResultMessage());
         return response;
     }
 
     @Override
-    public TestCaseExecution convert(AnswerItem answerItem) throws CerberusException {
+    public TestCaseExecution convert(AnswerItem<TestCaseExecution> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (TestCaseExecution) answerItem.getItem();
@@ -274,7 +272,7 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     }
 
     @Override
-    public List<TestCaseExecution> convert(AnswerList answerList) throws CerberusException {
+    public List<TestCaseExecution> convert(AnswerList<TestCaseExecution> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (List<TestCaseExecution>) answerList.getDataList();

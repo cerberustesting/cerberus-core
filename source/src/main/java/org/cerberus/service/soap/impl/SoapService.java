@@ -203,7 +203,7 @@ public class SoapService implements ISoapService {
 
     @Override
     public AnswerItem<AppService> callSOAP(String envelope, String servicePath, String soapOperation, String attachmentUrl, List<AppServiceHeader> header, String token, int timeOutMs, String system) {
-        AnswerItem result = new AnswerItem();
+        AnswerItem result = new AnswerItem<>();
         String unescapedEnvelope = StringEscapeUtils.unescapeXml(envelope);
         boolean is12SoapVersion = SOAP_1_2_NAMESPACE_PATTERN.matcher(unescapedEnvelope).matches();
 

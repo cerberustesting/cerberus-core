@@ -26,7 +26,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -335,6 +334,7 @@ public class AddToExecutionQueue extends HttpServlet {
         Date requestDate = new Date();
 
         String robot = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter(PARAMETER_ROBOT), null, charset);
+        String robotDecli = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter(PARAMETER_ROBOT), null, charset);
         String robotIP = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter(PARAMETER_ROBOT_IP), null, charset);
         String robotPort = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter(PARAMETER_ROBOT_PORT), null, charset);
         String browserVersion = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter(PARAMETER_BROWSER_VERSION), null, charset);
@@ -361,7 +361,7 @@ public class AddToExecutionQueue extends HttpServlet {
                     for (String browser : browsers) {
                         try {
                             String user = request.getRemoteUser() == null ? "" : request.getRemoteUser();
-                            inQueues.add(inQueueFactoryService.create(test, testCase, country, environment, robot, robotIP, robotPort, browser, browserVersion,
+                            inQueues.add(inQueueFactoryService.create(test, testCase, country, environment, robot, robotDecli, robotIP, robotPort, browser, browserVersion,
                                     platform, "", manualURL, manualHost, manualContextRoot, manualLoginRelativeURL, manualEnvData, tag, screenshot, verbose, timeout, pageSource,
                                     seleniumLog, 0, retries, manualExecution, 1000, user, null, null, null));
                         } catch (FactoryCreationException e) {

@@ -94,7 +94,7 @@ public class BuildRevisionInvariantService implements IBuildRevisionInvariantSer
     }
 
     @Override
-    public BuildRevisionInvariant convert(AnswerItem answerItem) throws CerberusException {
+    public BuildRevisionInvariant convert(AnswerItem<BuildRevisionInvariant> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (BuildRevisionInvariant) answerItem.getItem();
@@ -103,7 +103,7 @@ public class BuildRevisionInvariantService implements IBuildRevisionInvariantSer
     }
 
     @Override
-    public List<BuildRevisionInvariant> convert(AnswerList answerList) throws CerberusException {
+    public List<BuildRevisionInvariant> convert(AnswerList<BuildRevisionInvariant> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (List<BuildRevisionInvariant>) answerList.getDataList();

@@ -199,7 +199,7 @@ public class RecorderService implements IRecorderService {
     public AnswerItem recordManuallyFile(TestCaseStepActionExecution testCaseStepActionExecution, TestCaseStepActionControlExecution testCaseStepActionControlExecution, String extension, String desc, FileItem file, Integer id, String fileName, Integer fileID) {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
                 "Can't upload file");
-        AnswerItem a = new AnswerItem();
+        AnswerItem a = new AnswerItem<>();
         TestCaseExecutionFile object = null;
         String returnCode;
         Integer controlNumber = 0;

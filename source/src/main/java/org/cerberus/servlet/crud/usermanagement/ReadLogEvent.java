@@ -112,7 +112,7 @@ public class ReadLogEvent extends HttpServlet {
         String columnName = ParameterParserUtil.parseStringParam(request.getParameter("columnName"), "");
 
         // Init Answer with potencial error from Parsing parameter.
-        AnswerItem answer = new AnswerItem(msg);
+        AnswerItem answer = new AnswerItem<>(msg);
 
         try {
             JSONObject jsonResponse = new JSONObject();
@@ -189,7 +189,7 @@ public class ReadLogEvent extends HttpServlet {
     }// </editor-fold>
 
     private AnswerItem findLogEventList(ApplicationContext appContext, HttpServletRequest request) throws CerberusException, JSONException {
-        AnswerItem item = new AnswerItem();
+        AnswerItem item = new AnswerItem<>();
         JSONObject jsonResponse = new JSONObject();
         logEventService = appContext.getBean(LogEventService.class);
 
@@ -244,7 +244,7 @@ public class ReadLogEvent extends HttpServlet {
     }
 
     private AnswerItem findLogEventByID(ApplicationContext appContext, long id) throws JSONException, CerberusException {
-        AnswerItem item = new AnswerItem();
+        AnswerItem item = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         ILogEventService libService = appContext.getBean(ILogEventService.class);
@@ -265,7 +265,7 @@ public class ReadLogEvent extends HttpServlet {
     }
 
     private AnswerItem findDistinctValuesOfColumn(ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
-        AnswerItem answer = new AnswerItem();
+        AnswerItem answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         logEventService = appContext.getBean(ILogEventService.class);

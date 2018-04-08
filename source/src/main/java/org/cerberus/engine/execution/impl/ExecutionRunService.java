@@ -314,7 +314,7 @@ public class ExecutionRunService implements IExecutionRunService {
 
             // Evaluate the condition at the step level.
             AnswerItem<Boolean> conditionAnswerTc;
-            AnswerItem<String> answerDecode = new AnswerItem();
+            AnswerItem<String> answerDecode = new AnswerItem<>();
             boolean conditionDecodeError = false;
             /**
              * If execution is not manual, evaluate the condition at the step
@@ -731,7 +731,7 @@ public class ExecutionRunService implements IExecutionRunService {
                     Tag currentTag = tagService.convert(tagService.readByKey(tCExecution.getTag()));
                     if ((currentTag != null)) {
                         if (currentTag.getDateEndQueue().before(Timestamp.valueOf("1980-01-01 01:01:01.000000001"))) {
-                            AnswerList answerListQueue = new AnswerList();
+                            AnswerList answerListQueue = new AnswerList<>();
                             answerListQueue = executionQueueService.readQueueOpen(tCExecution.getTag());
                             if (answerListQueue.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && (answerListQueue.getDataList().isEmpty())) {
                                 LOG.debug("No More executions in (queue) on tag : " + tCExecution.getTag() + " - " + answerListQueue.getDataList().size() + " " + answerListQueue.getMessageCodeString() + " - ");
@@ -811,7 +811,7 @@ public class ExecutionRunService implements IExecutionRunService {
 
         long runID = testCaseStepExecution.getId();
         String logPrefix = runID + " - ";
-        AnswerItem<String> answerDecode = new AnswerItem();
+        AnswerItem<String> answerDecode = new AnswerItem<>();
 
         // Initialise the Step Data List.
         List<TestCaseExecutionData> myStepDataList = new ArrayList<TestCaseExecutionData>();
@@ -1011,7 +1011,7 @@ public class ExecutionRunService implements IExecutionRunService {
     private TestCaseStepActionExecution executeAction(TestCaseStepActionExecution testCaseStepActionExecution, TestCaseExecution tcExecution) {
 
         LOG.debug("Starting execute Action : " + testCaseStepActionExecution.getAction());
-        AnswerItem<String> answerDecode = new AnswerItem();
+        AnswerItem<String> answerDecode = new AnswerItem<>();
 
         /**
          * If execution is not manual, do action and record files

@@ -118,7 +118,7 @@ public interface ICountryEnvParam_logService {
      * @return
      * @throws CerberusException
      */
-    CountryEnvParam_log convert(AnswerItem answerItem) throws CerberusException;
+    CountryEnvParam_log convert(AnswerItem<CountryEnvParam_log> answerItem) throws CerberusException;
 
     /**
      *
@@ -126,7 +126,7 @@ public interface ICountryEnvParam_logService {
      * @return
      * @throws CerberusException
      */
-    List<CountryEnvParam_log> convert(AnswerList answerList) throws CerberusException;
+    List<CountryEnvParam_log> convert(AnswerList<CountryEnvParam_log> answerList) throws CerberusException;
 
     /**
      *

@@ -141,7 +141,7 @@ public interface ITestDataLibDataService {
      * @return
      * @throws CerberusException
      */
-    TestDataLibData convert(AnswerItem answerItem) throws CerberusException;
+    TestDataLibData convert(AnswerItem<TestDataLibData> answerItem) throws CerberusException;
 
     /**
      *
@@ -149,7 +149,7 @@ public interface ITestDataLibDataService {
      * @return
      * @throws CerberusException
      */
-    List<TestDataLibData> convert(AnswerList answerList) throws CerberusException;
+    List<TestDataLibData> convert(AnswerList<TestDataLibData> answerList) throws CerberusException;
 
     /**
      *

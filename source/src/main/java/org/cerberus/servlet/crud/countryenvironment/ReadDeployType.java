@@ -103,7 +103,7 @@ public class ReadDeployType extends HttpServlet {
         String columnName = ParameterParserUtil.parseStringParam(request.getParameter("columnName"), "");
 
         // Init Answer with potencial error from Parsing parameter.
-        AnswerItem answer = new AnswerItem(msg);
+        AnswerItem answer = new AnswerItem<>(msg);
 
         try {
             JSONObject jsonResponse = new JSONObject();
@@ -181,7 +181,7 @@ public class ReadDeployType extends HttpServlet {
 
     private AnswerItem findDeployTypeList(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
-        AnswerItem item = new AnswerItem();
+        AnswerItem item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         deployTypeService = appContext.getBean(DeployTypeService.class);
 
@@ -228,7 +228,7 @@ public class ReadDeployType extends HttpServlet {
     }
 
     private AnswerItem findDeployTypeByID(String id, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
-        AnswerItem item = new AnswerItem();
+        AnswerItem item = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         IDeployTypeService libService = appContext.getBean(IDeployTypeService.class);
@@ -258,7 +258,7 @@ public class ReadDeployType extends HttpServlet {
     }
 
     private AnswerItem findDistinctValuesOfColumn(ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
-        AnswerItem answer = new AnswerItem();
+        AnswerItem answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         deployTypeService = appContext.getBean(IDeployTypeService.class);

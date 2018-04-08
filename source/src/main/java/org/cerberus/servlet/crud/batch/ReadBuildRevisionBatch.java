@@ -101,7 +101,7 @@ public class ReadBuildRevisionBatch extends HttpServlet {
         boolean userHasPermissions = request.isUserInRole("IntegratorRO");
 
         // Init Answer with potencial error from Parsing parameter.
-        AnswerItem answer = new AnswerItem(msg);
+        AnswerItem answer = new AnswerItem<>(msg);
 
         try {
             JSONObject jsonResponse = new JSONObject();
@@ -174,7 +174,7 @@ public class ReadBuildRevisionBatch extends HttpServlet {
 
     private AnswerItem findBuildRevisionBatchList(String system, String country, String environment, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
-        AnswerItem item = new AnswerItem();
+        AnswerItem item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         brbService = appContext.getBean(IBuildRevisionBatchService.class);
 
@@ -216,7 +216,7 @@ public class ReadBuildRevisionBatch extends HttpServlet {
     }
 
     private AnswerItem findDistinctValuesOfColumn(String system, ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
-        AnswerItem answer = new AnswerItem();
+        AnswerItem answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         brbService = appContext.getBean(IBuildRevisionBatchService.class);

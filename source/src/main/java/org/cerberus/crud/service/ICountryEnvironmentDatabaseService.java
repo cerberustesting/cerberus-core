@@ -132,7 +132,7 @@ public interface ICountryEnvironmentDatabaseService {
      * @return
      * @throws CerberusException
      */
-    CountryEnvironmentDatabase convert(AnswerItem answerItem) throws CerberusException;
+    CountryEnvironmentDatabase convert(AnswerItem<CountryEnvironmentDatabase> answerItem) throws CerberusException;
 
     /**
      *
@@ -140,7 +140,7 @@ public interface ICountryEnvironmentDatabaseService {
      * @return
      * @throws CerberusException
      */
-    List<CountryEnvironmentDatabase> convert(AnswerList answerList) throws CerberusException;
+    List<CountryEnvironmentDatabase> convert(AnswerList<CountryEnvironmentDatabase> answerList) throws CerberusException;
 
     /**
      *

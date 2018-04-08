@@ -90,7 +90,7 @@ public class TestCaseStepExecutionService implements ITestCaseStepExecutionServi
 
             tcseList.add(tces);
         }
-        response = new AnswerList(tcseList, steps.getTotalRows());
+        response = new AnswerList<>(tcseList, steps.getTotalRows());
         return response;
     }
 }
