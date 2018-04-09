@@ -54,8 +54,7 @@ function setup() {
     local ASADMIN_DEFAULT=asadmin
     ${ASADMIN_DEFAULT} start-domain ${GLASSFISH_DOMAIN}
 
-    echo "AS_ADMIN_PASSWORD=admin" > /tmp/glassfishpwd
-    echo "AS_ADMIN_NEWPASSWORD=${GLASSFISH_ADMIN_PASSWORD}" >> /tmp/glassfishpwd
+    cat /tmp/glassfish_admin_set_password.txt > /tmp/glassfishpwd
     ${ASADMIN_DEFAULT} --user ${GLASSFISH_ADMIN_USER} --passwordfile /tmp/glassfishpwd change-admin-password --domain_name ${GLASSFISH_DOMAIN}
     rm /tmp/glassfishpwd
     echo "AS_ADMIN_PASSWORD=${GLASSFISH_ADMIN_PASSWORD}" > /tmp/glassfishpwd
