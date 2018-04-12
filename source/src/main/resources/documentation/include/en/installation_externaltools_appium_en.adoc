@@ -1,9 +1,9 @@
+==== Table of Contents
+
 http://appium.io/[Appium] is an open source test automation framework for use with native, hybrid and mobile Web applications.
 It drives iOS, Android, and Windows applications using the https://www.w3.org/TR/webdriver/[WebDriver] protocol.
 
 This procedure covers installation and configuration of **Appium v.1.6.2+**.
-
-==== Table of Contents
 
 . <<installation_externaltools_appium_en_appium_server_installation, Appium server installation>>
 . <<installation_externaltools_appium_en_client_use, Client use>>

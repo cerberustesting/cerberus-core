@@ -1,5 +1,3 @@
-La page d'execution est découpée en trois parties.
-
 === Selection du périmètre à executer
 
 image:runtestselection.png[RunTestSelection]

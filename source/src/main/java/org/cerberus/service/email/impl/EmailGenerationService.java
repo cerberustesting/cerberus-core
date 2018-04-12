@@ -266,7 +266,10 @@ public class EmailGenerationService implements IEmailGenerationService {
         body = body.replace("%NAME%", user.getName());
         body = body.replace("%LOGIN%", user.getLogin());
 
-        String cerberusUrl = parameterService.findParameterByKey("cerberus_url", system).getValue();
+        String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", system, "");
+        if (StringUtil.isNullOrEmpty(cerberusUrl)) {
+            cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", system, "");
+        }
         StringBuilder sb = new StringBuilder();
         sb.append("<a href='");
         sb.append(cerberusUrl);
@@ -297,7 +300,11 @@ public class EmailGenerationService implements IEmailGenerationService {
         String subject = parameterService.getParameterStringByKey("cerberus_notification_tagexecutionstart_subject", system, "Empty Subject. Please define parameter 'cerberus_notification_tagexecutionstart_subject'.");
         String body = parameterService.getParameterStringByKey("cerberus_notification_tagexecutionstart_body", system, "Empty Body. Please define parameter 'cerberus_notification_tagexecutionstart_body'.");
 
-        String cerberusUrl = parameterService.findParameterByKey("cerberus_url", system).getValue();
+        String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", system, "");
+        if (StringUtil.isNullOrEmpty(cerberusUrl)) {
+            cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", system, "");
+        }
+
         StringBuilder urlreporttag = new StringBuilder();
         urlreporttag.append(cerberusUrl);
         urlreporttag.append("/ReportingExecutionByTag.jsp?Tag=");
@@ -328,7 +335,11 @@ public class EmailGenerationService implements IEmailGenerationService {
         String subject = parameterService.getParameterStringByKey("cerberus_notification_tagexecutionend_subject", system, "Empty Subject. Please define parameter 'cerberus_notification_tagexecutionend_subject'.");
         String body = parameterService.getParameterStringByKey("cerberus_notification_tagexecutionend_body", system, "Empty Body. Please define parameter 'cerberus_notification_tagexecutionend_body'.");
 
-        String cerberusUrl = parameterService.findParameterByKey("cerberus_url", system).getValue();
+        String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", system, "");
+        if (StringUtil.isNullOrEmpty(cerberusUrl)) {
+            cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", system, "");
+        }
+        
         StringBuilder urlreporttag = new StringBuilder();
         urlreporttag.append(cerberusUrl);
         urlreporttag.append("/ReportingExecutionByTag.jsp?Tag=");

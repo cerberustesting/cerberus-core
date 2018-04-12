@@ -1,8 +1,7 @@
-Dans cette section, vous retrouverez toutes les informations sur la gestion des données via la datalibrary.
+=== Créer une donnée
+
 A Test Data Library is used to store or define the way to retrieve the data that will be necessary to perform the tests.
 Different way of getting the data can be used (INTERNAL, SQL, SERVICE or CSV) but that definition is independent from the test case definition so that you can easily change from one to another without impacting all the corresponding test cases.
-
-=== Créer une donnée
 
 . Cliquer sur *[red]#Data -> Data Library#*. image:testdatapage.png[testdatapage,300,300,float="right",align="center"]
 . Cliquer sur *[red]#Create New Entry#* button.

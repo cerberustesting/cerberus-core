@@ -67,10 +67,10 @@ public class DeleteTest extends HttpServlet {
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, JSONException {
@@ -98,6 +98,7 @@ public class DeleteTest extends HttpServlet {
             // All data seems cleans so we can call the services.
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             ITestService testService = appContext.getBean(ITestService.class);
+            IParameterService parameterService = appContext.getBean(IParameterService.class);
 
             AnswerItem resp = testService.readByKey(key);
 
@@ -117,30 +118,36 @@ public class DeleteTest extends HttpServlet {
                 try {
                     final Collection<TestCaseStep> externallyUsedTestCaseSteps = externallyUsedTestCaseSteps(testData);
                     if (!externallyUsedTestCaseSteps.isEmpty()) {
-                        final String cerberusUrl = appContext.getBean(IParameterService.class).findParameterByKey("cerberus_url", "").getValue();
+                        String cerberusUrlTemp = parameterService.getParameterStringByKey("cerberus_gui_url", "", "");
+                        if (StringUtil.isNullOrEmpty(cerberusUrlTemp)) {
+                            cerberusUrlTemp = parameterService.getParameterStringByKey("cerberus_url", "", "");
+                        }
+                        final String cerberusUrl = cerberusUrlTemp;
+
+//                        final String cerberusUrl = appContext.getBean(IParameterService.class).findParameterByKey("cerberus_url", "").getValue();
                         ans.setResultMessage(
                                 new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED)
                                         .resolveDescription("ITEM", "Test")
                                         .resolveDescription("OPERATION", "Delete")
                                         .resolveDescription(
-                                                "REASON", "You are trying to remove a Test which contains Test Case Steps which are currently used by other Test Case Steps outside of the removing Test. Please remove this link before to proceed: " +
-                                                        Collections2.transform(externallyUsedTestCaseSteps, new Function<TestCaseStep, String>() {
-                                                                    @Override
-                                                                    @Nullable
-                                                                    public String apply(@Nullable final TestCaseStep input) {
-                                                                        return String.format(
-                                                                                "<a href='%s/TestCaseScript.jsp?test=%s&testcase=%s&step=%s'>%s/%s#%s</a>",
-                                                                                cerberusUrl,
-                                                                                input.getTest(),
-                                                                                input.getTestCase(),
-                                                                                input.getStep(),
-                                                                                input.getTest(),
-                                                                                input.getTestCase(),
-                                                                                input.getStep()
-                                                                        );
-                                                                    }
-                                                                }
-                                                        )
+                                                "REASON", "You are trying to remove a Test which contains Test Case Steps which are currently used by other Test Case Steps outside of the removing Test. Please remove this link before to proceed: "
+                                                + Collections2.transform(externallyUsedTestCaseSteps, new Function<TestCaseStep, String>() {
+                                                    @Override
+                                                    @Nullable
+                                                    public String apply(@Nullable final TestCaseStep input) {
+                                                        return String.format(
+                                                                "<a href='%s/TestCaseScript.jsp?test=%s&testcase=%s&step=%s'>%s/%s#%s</a>",
+                                                                cerberusUrl,
+                                                                input.getTest(),
+                                                                input.getTestCase(),
+                                                                input.getStep(),
+                                                                input.getTest(),
+                                                                input.getTestCase(),
+                                                                input.getStep()
+                                                        );
+                                                    }
+                                                }
+                                                )
                                         )
                         );
                     } else {
@@ -172,10 +179,15 @@ public class DeleteTest extends HttpServlet {
     }
 
     /**
-     * Get {@link TestCaseStep} which are using an other {@link TestCaseStep} from the given {@link Test} but which are NOT included into this {@link Test}
+     * Get {@link TestCaseStep} which are using an other {@link TestCaseStep}
+     * from the given {@link Test} but which are NOT included into this
+     * {@link Test}
      *
-     * @param test the {@link Test} from which getting externally used {@link TestCaseStep}s
-     * @return a {@link Collection} of {@link TestCaseStep} which are using an other {@link TestCaseStep} from the given {@link Test} but which are NOT included into this {@link Test}
+     * @param test the {@link Test} from which getting externally used
+     * {@link TestCaseStep}s
+     * @return a {@link Collection} of {@link TestCaseStep} which are using an
+     * other {@link TestCaseStep} from the given {@link Test} but which are NOT
+     * included into this {@link Test}
      * @throws CerberusException if an unexpected error occurred
      */
     private Collection<TestCaseStep> externallyUsedTestCaseSteps(final Test test) throws CerberusException {
@@ -201,14 +213,13 @@ public class DeleteTest extends HttpServlet {
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-
     /**
      * Handles the HTTP <code>GET</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -223,10 +234,10 @@ public class DeleteTest extends HttpServlet {
     /**
      * Handles the HTTP <code>POST</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

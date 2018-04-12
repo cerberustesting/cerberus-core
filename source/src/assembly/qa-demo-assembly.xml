@@ -30,7 +30,7 @@
 	<files>
 		<file>
 			<source>${project.build.directory}/${project.build.finalName}.war</source>
-			<outputDirectory>/</outputDirectory>
+			<outputDirectory>.</outputDirectory>
 		</file>
 	</files>
 </assembly>

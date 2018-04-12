@@ -66,6 +66,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
     private static final String TABLE_APPLICATION = "application";
 
     private static final String COLUMN_ID = "ID";
+    private static final String COLUMN_SYSTEM = "System";
     private static final String COLUMN_TEST = "Test";
     private static final String COLUMN_TEST_CASE = "TestCase";
     private static final String COLUMN_COUNTRY = "Country";
@@ -1435,13 +1436,13 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
         TestCaseExecutionQueue newObject = object;
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO `" + TABLE + "` (`" + COLUMN_TEST + "`, `" + COLUMN_TEST_CASE + "`, `" + COLUMN_COUNTRY + "`, `" + COLUMN_ENVIRONMENT + "`, `" + COLUMN_ROBOT
+        query.append("INSERT INTO `" + TABLE + "` (`" + COLUMN_SYSTEM + "`, `" + COLUMN_TEST + "`, `" + COLUMN_TEST_CASE + "`, `" + COLUMN_COUNTRY + "`, `" + COLUMN_ENVIRONMENT + "`, `" + COLUMN_ROBOT
                 + "`, `" + COLUMN_ROBOTDECLI + "`, `" + COLUMN_ROBOT_IP + "`, `" + COLUMN_ROBOT_PORT + "`, `" + COLUMN_BROWSER + "`, `" + COLUMN_BROWSER_VERSION + "`, `" + COLUMN_PLATFORM
                 + "`, `" + COLUMN_SCREENSIZE + "`, `" + COLUMN_MANUAL_URL + "`, `" + COLUMN_MANUAL_HOST + "`, `" + COLUMN_MANUAL_CONTEXT_ROOT + "`, `"
                 + COLUMN_MANUAL_LOGIN_RELATIVE_URL + "`, `" + COLUMN_MANUAL_ENV_DATA + "`, `" + COLUMN_TAG + "`, `" + COLUMN_SCREENSHOT + "`, `" + COLUMN_VERBOSE + "`, `"
                 + COLUMN_TIMEOUT + "`, `" + COLUMN_PAGE_SOURCE + "`, `" + COLUMN_SELENIUM_LOG + "`, `" + COLUMN_RETRIES + "`, `"
                 + COLUMN_MANUAL_EXECUTION + "`, `" + COLUMN_USRCREATED + "`, `" + COLUMN_STATE + "`, `" + COLUMN_COMMENT + "`, `" + COLUMN_DEBUGFLAG + "`, `" + COLUMN_PRIORITY + "`) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -1457,6 +1458,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
         		PreparedStatement preStat = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);) {
             
             int i = 1;
+            preStat.setString(i++, object.getSystem());
             preStat.setString(i++, object.getTest());
             preStat.setString(i++, object.getTestCase());
             preStat.setString(i++, object.getCountry());
@@ -1527,7 +1529,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
     @Override
     public Answer update(TestCaseExecutionQueue object) {
         MessageEvent msg = null;
-        String query = "UPDATE testcaseexecutionqueue exq SET `Test` = ?, `TestCase` = ?, `Country` = ?, Environment = ?, Robot = ?, RobotDecli = ?, "
+        String query = "UPDATE testcaseexecutionqueue exq SET `System` = ?, `Test` = ?, `TestCase` = ?, `Country` = ?, Environment = ?, Robot = ?, RobotDecli = ?, "
                 + "RobotIP = ?, `RobotPort` = ?, Browser = ?, BrowserVersion = ?, `Platform`= ?, `ScreenSize` = ?, "
                 + "ManualURL = ?, `ManualHost` = ?, ManualContextRoot = ?, `ManualLoginRelativeUrl`= ?, `ManualEnvData` = ?, "
                 + "Tag = ?, `Screenshot` = ?, Verbose = ?, `Timeout`= ?, `PageSource` = ?, `debugFlag` = ?, `priority` = ?, "
@@ -1545,6 +1547,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
                 int i = 1;
+                preStat.setString(i++, object.getSystem());
                 preStat.setString(i++, object.getTest());
                 preStat.setString(i++, object.getTestCase());
                 preStat.setString(i++, object.getCountry());
@@ -2135,6 +2138,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
     public TestCaseExecutionQueue loadFromResultSet(ResultSet resultSet) throws FactoryCreationException, SQLException {
         return factoryTestCaseExecutionInQueue.create(
                 resultSet.getLong(COLUMN_ID),
+                resultSet.getString(COLUMN_SYSTEM),
                 resultSet.getString(COLUMN_TEST),
                 resultSet.getString(COLUMN_TEST_CASE),
                 resultSet.getString(COLUMN_COUNTRY),

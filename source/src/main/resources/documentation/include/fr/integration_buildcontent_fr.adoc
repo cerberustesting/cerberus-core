@@ -1,3 +1,5 @@
+=== Build content
+
 In this section, you will find information on build content in Cerberus
 
 image:buildcontentpage.png[BuildContentPage]

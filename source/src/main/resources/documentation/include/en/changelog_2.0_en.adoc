@@ -1,6 +1,3 @@
-*Bug fixes*
-[square]
-
 *Improvements / New features*
 [square]
 * [GUI] We can now edit or add service directly from TestCaseScript page.

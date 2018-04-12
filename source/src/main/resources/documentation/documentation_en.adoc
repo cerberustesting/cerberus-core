@@ -316,37 +316,37 @@ include::include/{lang}/{file-to-include}[]
 
 link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
 
-= ChangeLog
+== ChangeLog
 
-== 1.1.13
+=== 1.1.13
 :file-to-include: changelog_1.1.13_en.adoc
 include::include/en/{file-to-include}[]
 
-== 1.1.14
+=== 1.1.14
 :file-to-include: changelog_1.1.14_en.adoc
 include::include/en/{file-to-include}[]
 
-== 2.0
+=== 2.0
 :file-to-include: changelog_2.0_en.adoc
 include::include/en/{file-to-include}[]
 
-== 3.0
+=== 3.0
 :file-to-include: changelog_3.0_en.adoc
 include::include/en/{file-to-include}[]
 
-== 3.1
+=== 3.1
 :file-to-include: changelog_3.1_en.adoc
 include::include/en/{file-to-include}[]
 
-== 3.2
+=== 3.2
 :file-to-include: changelog_3.2_en.adoc
 include::include/en/{file-to-include}[]
 
-== 3.3
+=== 3.3
 :file-to-include: changelog_3.3_en.adoc
 include::include/en/{file-to-include}[]
 
-== 3.4
+=== 3.4
 :file-to-include: changelog_3.4_en.adoc
 include::include/en/{file-to-include}[]
 

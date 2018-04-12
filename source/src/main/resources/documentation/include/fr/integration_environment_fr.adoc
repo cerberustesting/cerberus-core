@@ -1,8 +1,8 @@
+= Create environment 
+
 In this section, you will find information on how to manage environment in Cerberus.
 
 image:environmentpage.png[EnvironmentPage]
-
-=== Create environment 
 
 . Go to *[red]#Integration -> Environment#* image:environmentcreate.png[CreateEnvironment,200,200,float="right",align="center"]
 . Click on *[red]#Create New Environment#*

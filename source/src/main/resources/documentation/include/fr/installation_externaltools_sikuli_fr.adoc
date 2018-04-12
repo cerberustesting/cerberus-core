@@ -1,11 +1,11 @@
+==== Sikuli installation
+
 http://sikulix.com/[Sikuli] is an open source project that automates anything you see on the screen 
 of your desktop computer running Windows, Mac or some Linux/Unix. It uses image recognition powered by OpenCV 
 to identify and control GUI components. This is handy in cases when there is no easy access to a GUI's 
 internals or the source code of the application or web page you want to act on..
 
 This procedure covers installation and configuration of **SikuliX 1.1.1**.
-
-== Sikuli installation
 
 [NOTE]
 .Sikuli have to be installed only on the server where the test will run (on the robot server)!
@@ -14,7 +14,7 @@ Cerberus will interact with Sikuli that will control the system on which the tes
 the Cereberus Server, but only on robot server.
 =================================================
 
-=== Prerequisites
+===== Prerequisites
 
 SikuliX can be used on systems with : +
 
@@ -33,7 +33,7 @@ On 64-Bit capable systems a Java 64-Bit version is strongly recommended.
 SikuliX will detect Java's bitness at runtime and select the fitting native library set automatically. 
 So you might freely switch between different Java versions with the same SikuliX on one machine.
 
-=== Installation
+===== Installation
 
 After having downloaded sikulixsetup.jar, you should consider the following recommendations, before doing anything: +
 
@@ -68,7 +68,7 @@ sikulixapi.jar --- Java programming support (option2)
 See official documentation http://sikulix.com/quickstart/[here] for more details.
 
 
-=== Connect Cerberus to Sikuli
+===== Connect Cerberus to Sikuli
 
 You'll need to download the project https://github.com/cerberustesting/cerberus-extension-sikuli[cerberus-extension-sikuli] 
 to interface Cerberus with your sikuli server.

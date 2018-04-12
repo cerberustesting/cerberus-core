@@ -1,8 +1,7 @@
-In this section, you will find information on data library in Cerberus.
+=== Create data
+
 A Test Data Library is used to store or define the way to retrieve the data that will be necessary to perform the tests.
 Different way of getting the data can be used (INTERNAL, SQL, SERVICE or CSV) but that definition is independent from the test case definition so that you can easily change from one to another without impacting all the corresponding test cases.
-
-=== Create data
 
 . Go to *[red]#Data -> Data Library#*. image:testdatapage.png[testdatapage,200,200,float="right",align="center"]
 . Click on *[red]#Create New Entry#* button.

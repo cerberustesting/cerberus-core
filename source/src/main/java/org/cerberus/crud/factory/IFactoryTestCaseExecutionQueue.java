@@ -32,19 +32,19 @@ import org.cerberus.exception.FactoryCreationException;
  */
 public interface IFactoryTestCaseExecutionQueue {
 
-    TestCaseExecutionQueue create(long id, String test, String testCase, String country, String environment, String robot, String robotDecli, String robotIP, String robotPort, String browser,
+    TestCaseExecutionQueue create(long id, String system, String test, String testCase, String country, String environment, String robot, String robotDecli, String robotIP, String robotPort, String browser,
             String browserVersion, String platform, String screenSize, int manualURL, String manualHost, String manualContextRoot, String manualLoginRelativeURL, String manualEnvData,
             String tag, int screenshot, int verbose, String timeout, int pageSource, int seleniumLog, long exeId, Integer retries, 
             String manualExecution, String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif)
             throws FactoryCreationException;
 
-    TestCaseExecutionQueue create(String test, String testCase, String country, String environment, String robot, String robotDecli, String robotIP, String robotPort, String browser,
+    TestCaseExecutionQueue create(String system, String test, String testCase, String country, String environment, String robot, String robotDecli, String robotIP, String robotPort, String browser,
             String browserVersion, String platform, String screenSize, int manualURL, String manualHost, String manualContextRoot, String manualLoginRelativeURL, String manualEnvData,
             String tag, int screenshot, int verbose, String timeout, int pageSource, int seleniumLog, long exeId, Integer retries, 
             String manualExecution, int priority, String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif)
             throws FactoryCreationException;
 
-    TestCaseExecutionQueue create(long id, String test, String testCase, String country, String environment, String robot, String robotDecli, String robotIP, String robotPort, String browser,
+    TestCaseExecutionQueue create(long id, String system, String test, String testCase, String country, String environment, String robot, String robotDecli, String robotIP, String robotPort, String browser,
             String browserVersion, String platform, String screenSize, int manualURL, String manualHost, String manualContextRoot, String manualLoginRelativeURL, String manualEnvData,
             String tag, int screenshot, int verbose, String timeout, int pageSource, int seleniumLog, Date requestDate, TestCaseExecutionQueue.State state, int Priority, String comment, String DebugFlag, Integer retries,
             String manualExecution, long exeId, String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif)

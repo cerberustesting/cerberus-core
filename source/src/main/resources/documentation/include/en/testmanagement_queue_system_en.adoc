@@ -1,5 +1,3 @@
-In this section, you will find information on the queuing system of Cerberus.
-
 === Workflow
  
 The queuing system allow you to submit many execution and have them executed automatically ASAP depending on constrain configuration.

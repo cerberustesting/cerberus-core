@@ -201,7 +201,7 @@ public class CreateTestCaseExecutionQueue extends HttpServlet {
                         TestCaseExecutionQueue executionQueueData;
                         if (id == 0) {
                             // If id is not defined, we build the execution queue from all request datas.
-                            executionQueueData = executionQueueFactory.create(test, testcase, country, environment, robot, robot, robotIP, robotPort, browser, browserVersion,
+                            executionQueueData = executionQueueFactory.create("", test, testcase, country, environment, robot, robot, robotIP, robotPort, browser, browserVersion,
                                     platform, screenSize, manualURL, manualHost, manualContextRoot, manualLoginRelativeURL, manualEnvData, tag, screenshot, verbose, timeout,
                                     pageSource, seleniumLog, 0, retries, manualExecution, priority, request.getRemoteUser(), null, null, null);
                             executionQueueData.setDebugFlag(debugFlag);

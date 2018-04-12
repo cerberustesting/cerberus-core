@@ -7386,21 +7386,13 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 
         // New updated Documentation.
         // 1272-1273
-        b = new StringBuilder();
-        b.append("select 1 from DUAL;");
-        a.add(b.toString());
-        b = new StringBuilder();
-        b.append("select 1 from DUAL;");
-        a.add(b.toString());
+        a.add("select 1 from DUAL;");
+        a.add("select 1 from DUAL;");
 
         // New updated Documentation.
         // 1274-1275
-        b = new StringBuilder();
-        b.append("select 1 from DUAL;");
-        a.add(b.toString());
-        b = new StringBuilder();
-        b.append("select 1 from DUAL;");
-        a.add(b.toString());
+        a.add("select 1 from DUAL;");
+        a.add("select 1 from DUAL;");
 
         // ADD a parameter for the path to store manual exe files
         // 1276-1277
@@ -7501,9 +7493,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 
         // Modify table testcasestepexecution
         // 1290
-        b = new StringBuilder();
-        b.append("ALTER TABLE `testcasestepexecution`  CHANGE COLUMN `ReturnMessage` `ReturnMessage` TEXT ;");
-        a.add(b.toString());
+        a.add("ALTER TABLE `testcasestepexecution`  CHANGE COLUMN `ReturnMessage` `ReturnMessage` TEXT ;");
 
         // Modify table testcaseexecutiondata adding cache flag
         // 1291
@@ -7669,6 +7659,15 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // Add RobotDecli in queue table.
         // 1329
         a.add("ALTER TABLE `testcaseexecutionqueue` ADD COLUMN `RobotDecli` VARCHAR(100) NOT NULL DEFAULT '' AFTER `Robot`;");
+
+        // Add System in queue table.
+        // 1330
+        a.add("ALTER TABLE `testcaseexecutionqueue` ADD COLUMN `System` VARCHAR(45) NOT NULL DEFAULT '' AFTER `ID`;");
+
+        // Add and update cerberus_url parameter.
+        // 1331-1332
+        a.add("UPDATE `parameter` SET `description`='URL to Cerberus used in order to trigger executions from the queue. This parameter is mandatory. ex : http://localhost:8080/Cerberus' WHERE `system`='' and`param`='cerberus_url';");
+        a.add("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ('', 'cerberus_gui_url', '', 'URL to Cerberus used inside all GUI links and mail sent by Cerberus. This parameter is not mandatory and takes the value of cerberus_url in case empty. ex : http://localhost:8080/Cerberus');");
 
         return a;
     }

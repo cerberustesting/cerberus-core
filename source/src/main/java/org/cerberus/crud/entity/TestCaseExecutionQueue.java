@@ -25,6 +25,7 @@ import java.util.Date;
 public class TestCaseExecutionQueue {
 
     private long id;
+    private String system;
     private String test;
     private String testCase;
     private String country;
@@ -77,6 +78,14 @@ public class TestCaseExecutionQueue {
         CANCELLED,
         ERROR,
         DONE
+    }
+
+    public String getSystem() {
+        return system;
+    }
+
+    public void setSystem(String system) {
+        this.system = system;
     }
 
     public String getRobotDecli() {

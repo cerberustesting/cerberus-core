@@ -404,7 +404,7 @@ public class AddToExecutionQueueV002 extends HttpServlet {
                                                 for (String browser : browsers) {
                                                     try {
                                                         LOG.debug("Insert Queue Entry.");
-                                                        toInserts.add(inQueueFactoryService.create(test, testCase, country.getCountry(), environment, robot, robot, robotIP, robotPort, browser, browserVersion,
+                                                        toInserts.add(inQueueFactoryService.create("", test, testCase, country.getCountry(), environment, robot, robot, robotIP, robotPort, browser, browserVersion,
                                                                 platform, screenSize, manualURL, manualHost, manualContextRoot, manualLoginRelativeURL, manualEnvData, tag, screenshot, verbose,
                                                                 timeout, pageSource, seleniumLog, 0, retries, manualExecution, priority, user, null, null, null));
                                                     } catch (FactoryCreationException e) {
@@ -417,7 +417,7 @@ public class AddToExecutionQueueV002 extends HttpServlet {
                                                 LOG.debug("Forcing Browser to empty value. Application type=" + app.getType());
                                                 try {
                                                     LOG.debug("Insert Queue Entry.");
-                                                    toInserts.add(inQueueFactoryService.create(test, testCase, country.getCountry(), environment, robot, robot, robotIP, robotPort, "", browserVersion,
+                                                    toInserts.add(inQueueFactoryService.create("", test, testCase, country.getCountry(), environment, robot, robot, robotIP, robotPort, "", browserVersion,
                                                             platform, screenSize, manualURL, manualHost, manualContextRoot, manualLoginRelativeURL, manualEnvData, tag, screenshot, verbose,
                                                             timeout, pageSource, seleniumLog, 0, retries, manualExecution, priority, user, null, null, null));
                                                 } catch (FactoryCreationException e) {

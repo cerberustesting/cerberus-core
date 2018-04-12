@@ -1,11 +1,11 @@
 *Bug fixes*
 [square]
-* 
+* bla bla
 
 *Improvements / New features*
 [square]
-* 
+* bla bla
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
-* 
+* bla bla

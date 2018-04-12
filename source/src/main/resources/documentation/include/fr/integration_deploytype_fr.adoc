@@ -1,3 +1,5 @@
+=== Deploy Type
+
 In this section, you will find information on deploy type.
 
 image:deploytypepage.png[Logo]

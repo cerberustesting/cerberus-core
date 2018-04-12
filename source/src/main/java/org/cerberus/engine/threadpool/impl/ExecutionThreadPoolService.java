@@ -207,8 +207,6 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                 myVersionService.UpdateMyVersionString("queueprocessingjobrunning", "Y");
                 myVersionService.UpdateMyVersionString("queueprocessingjobstart", String.valueOf(new Date()));
 
-                String cerberus_url = parameterService.getParameterStringByKey("cerberus_url", "", "");
-
                 // Getting all executions to be treated.
                 AnswerList answer = new AnswerList<>();
                 answer = tceiqService.readQueueToTreat();
@@ -300,7 +298,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                         if (queueService.updateToWaiting(exe.getId())) {
                             try {
                                 ExecutionQueueWorkerThread task = new ExecutionQueueWorkerThread();
-                                task.setCerberusExecutionUrl(cerberus_url);
+                                task.setCerberusExecutionUrl(parameterService.getParameterStringByKey("cerberus_url", exe.getSystem(), ""));
                                 task.setQueueId(exe.getId());
                                 task.setToExecuteTimeout(queueTimeout);
                                 task.setQueueService(queueService);
