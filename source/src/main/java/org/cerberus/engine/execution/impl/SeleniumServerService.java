@@ -449,7 +449,7 @@ public class SeleniumServerService implements ISeleniumServerService {
                  */
                 ChromeOptions options = new ChromeOptions();
                 // Maximize windows for chrome browser
-                options.addArguments("--start-fullscreen");
+                options.addArguments("start-maximized");
                 // Set UserAgent if necessary
                 String usedUserAgent = getUserAgentToUse(tCExecution.getTestCaseObj().getUserAgent(), tCExecution.getUserAgent());
                 if (!StringUtil.isNullOrEmpty(usedUserAgent)) {
