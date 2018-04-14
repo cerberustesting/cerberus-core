@@ -508,7 +508,7 @@ function runCampaign(doRedirect) {
     paramSerialized += "&seleniumlog=" + $("#executionSettingsForm #seleniumLog").val();
     paramSerialized += "&manualexecution=" + $("#executionSettingsForm #manualExecution").val();
     paramSerialized += "&retries=" + $("#executionSettingsForm #retries").val();
-    paramSerialized += "&priority=1000";
+    paramSerialized += "&priority=" + $("#executionSettingsForm #priority").val();
     paramSerialized += "&outputformat=json";
 
     var environmentstring = "";
@@ -595,7 +595,7 @@ function runTestCase(doRedirect) {
     paramSerialized += "&seleniumlog=" + $("#executionSettingsForm #seleniumLog").val();
     paramSerialized += "&manualexecution=" + $("#executionSettingsForm #manualExecution").val();
     paramSerialized += "&retries=" + $("#executionSettingsForm #retries").val();
-    paramSerialized += "&priority=1000";
+    paramSerialized += "&priority=" + $("#executionSettingsForm #priority").val();
     paramSerialized += "&outputformat=json";
 
     var teststring = "";

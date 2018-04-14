@@ -350,6 +350,12 @@
                                             </div>
                                         </div>
                                         <div class="form-group">
+                                            <label for="priority" class="col-sm-3 control-label bold">Priority</label>
+                                            <div class="col-sm-9">
+                                                <input type="text"  class="form-control input-sm" id="priority" name="priority"/>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
                                             <label for="manualExecution" class="col-sm-3 control-label bold">Manual Execution</label>
                                             <div class="col-sm-9">
                                                 <select class="form-control input-sm" id="manualExecution" name="manualExecution"></select>
