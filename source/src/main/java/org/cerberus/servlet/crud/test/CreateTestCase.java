@@ -157,8 +157,7 @@ public class CreateTestCase extends HttpServlet {
                 // Update labels
                 if (request.getParameter("labelList") != null) {
                     JSONArray objLabelArray = new JSONArray(request.getParameter("labelList"));
-                    List<TestCaseLabel> labelList = new ArrayList<>();
-                    labelList = getLabelListFromRequest(request, appContext, test, testcase, objLabelArray);
+                    List<TestCaseLabel> labelList = getLabelListFromRequest(request, appContext, test, testcase, objLabelArray);
 
                     // Update the Database with the new list.
                     ans = testCaseLabelService.compareListAndUpdateInsertDeleteElements(test, testcase, labelList);
@@ -168,8 +167,7 @@ public class CreateTestCase extends HttpServlet {
                 // Update Countries
                 if (request.getParameter("countryList") != null) {
                     JSONArray objCountryArray = new JSONArray(request.getParameter("countryList"));
-                    List<TestCaseCountry> tccList = new ArrayList<>();
-                    tccList = getCountryListFromRequest(request, appContext, test, testcase, objCountryArray);
+                    List<TestCaseCountry> tccList = getCountryListFromRequest(request, appContext, test, testcase, objCountryArray);
 
                     // Update the Database with the new list.
                     ans = testCaseCountryService.compareListAndUpdateInsertDeleteElements(test, testcase, tccList);
@@ -322,6 +320,8 @@ public class CreateTestCase extends HttpServlet {
         tc.setBugID(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("bugId"), "", charset));
         tc.setComment(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("comment"), "", charset));
         tc.setFunction(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("function"), "", charset));
+        tc.setUserAgent(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("userAgent"), "", charset));
+        tc.setScreenSize(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("screenSize"), "", charset));
         tc.setTestCaseVersion(0);
         // Parameter that we cannot secure as we need the html --> We DECODE them
         tc.setHowTo(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("howTo"), "", charset));
