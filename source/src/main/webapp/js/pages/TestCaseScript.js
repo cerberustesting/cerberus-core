@@ -439,11 +439,20 @@ $.when($.getScript("js/global/global.js")).then(function () {
                         } else {
                             $("#rerunFromQueue").attr("disabled", true);
                         }
+                        $("#rerunFromQueueandSee").attr("title", "Last Execution was " + data.contentTable.controlStatus + " in " + data.contentTable.env + " in " + data.contentTable.country + " on " + data.contentTable.end)
+                        if (data.contentTable.queueId > 0) {
+                            $("#rerunFromQueueandSee").click(function () {
+                                triggerTestCaseExecutionQueueandSeeFromTC(data.contentTable.queueId);
+                            });
+                        } else {
+                            $("#rerunFromQueueandSee").attr("disabled", true);
+                        }
                     } else {
                         $("#seeLastExecUniq").attr("disabled", true);
                         $("#seeLastExec").attr("disabled", true);
                         $("#rerunTestCase").attr("disabled", true);
                         $("#rerunFromQueue").attr("disabled", true);
+                        $("#rerunFromQueueandSee").attr("disabled", true);
                     }
                 },
                 error: showUnexpectedError
@@ -493,6 +502,7 @@ function displayPageLabel(doc) {
     $("#runTestCase").html("<span class='glyphicon glyphicon-play'></span> " + doc.getDocLabel("page_testcasescript", "run_testcase"));
     $("#rerunTestCase").html("<span class='glyphicon glyphicon-forward'></span> " + doc.getDocLabel("page_testcasescript", "rerun_testcase"));
     $("#rerunFromQueue").html("<span class='glyphicon glyphicon-forward'></span> " + doc.getDocLabel("page_testcasescript", "rerunqueue_testcase"));
+    $("#rerunFromQueueandSee").html("<span class='glyphicon glyphicon-forward'></span> " + doc.getDocLabel("page_testcasescript", "rerunqueueandsee_testcase"));
     $("#editTcInfo").html("<span class='glyphicon glyphicon-pencil'></span> " + doc.getDocLabel("page_testcasescript", "edit_testcase"));
     $("#saveScript").html("<span class='glyphicon glyphicon-floppy-disk'></span> " + doc.getDocLabel("page_testcasescript", "save_script"));
     $("#saveScriptAs").html("<span class='glyphicon glyphicon-floppy-disk'></span> " + doc.getDocLabel("page_testcasescript", "saveas_script"));
@@ -558,6 +568,30 @@ function displayPageLabel(doc) {
     $("[name='lbl_usrcreated']").html(doc.getDocOnline("transversal", "UsrCreated"));
     $("[name='lbl_datemodif']").html(doc.getDocOnline("transversal", "DateModif"));
     $("[name='lbl_usrmodif']").html(doc.getDocOnline("transversal", "UsrModif"));
+}
+
+function triggerTestCaseExecutionQueueandSeeFromTC(queueId) {
+    $.ajax({
+        url: "CreateTestCaseExecutionQueue",
+        async: true,
+        method: "POST",
+        data: {
+            id: queueId,
+            actionState: "toQUEUED",
+            actionSave: "save"
+        },
+        success: function (data) {
+            if (getAlertType(data.messageType) === "success") {
+                showMessageMainPage(getAlertType(data.messageType), data.message, false, 60000);
+                var url = "./TestCaseExecution.jsp?executionQueueId=" + data.testCaseExecutionQueueList[0].id;
+                console.info("redir : " + url);
+                window.location.replace(url);
+            } else {
+                showMessageMainPage(getAlertType(data.messageType), data.message, false, 60000);
+            }
+        },
+        error: showUnexpectedError
+    });
 }
 
 function addAction(action) {

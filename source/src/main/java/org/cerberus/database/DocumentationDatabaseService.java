@@ -692,6 +692,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_executiondetail','reruntc','','fr','ReExecuter le TestCase','',NULL)");
         b.append(",('page_executiondetail','reruntcqueue','','en','ReRun From Queue','',NULL)");
         b.append(",('page_executiondetail','reruntcqueue','','fr','ReExecuter de la Queue','',NULL)");
+        b.append(",('page_executiondetail','reruntcqueueandsee','','en','ReRun From Queue and See','',NULL)");
+        b.append(",('page_executiondetail','reruntcqueueandsee','','fr','ReExecuter de la Queue et Voir','',NULL)");
         b.append(",('page_executiondetail','return_code','','en','Return Code','',NULL)");
         b.append(",('page_executiondetail','return_code','','fr','Code de retour','',NULL)");
         b.append(",('page_executiondetail','return_message','','en','Return Message','',NULL)");
@@ -1620,8 +1622,10 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_testcasescript','property_field','','fr','Propriété','',NULL)");
         b.append(",('page_testcasescript','rc','','en','Result Code','',NULL)");
         b.append(",('page_testcasescript','rc','','fr','Code Retour','',NULL)");
-        b.append(",('page_testcasescript','rerunqueue_testcase','','en','Run From Queue','',NULL)");
-        b.append(",('page_testcasescript','rerunqueue_testcase','','fr','Executer de la Queue','',NULL)");
+        b.append(",('page_testcasescript','rerunqueue_testcase','','en','ReRun From Queue','',NULL)");
+        b.append(",('page_testcasescript','rerunqueue_testcase','','fr','ReExecuter de la Queue','',NULL)");
+        b.append(",('page_testcasescript','rerunqueueandsee_testcase','','en','ReRun From Queue and See','',NULL)");
+        b.append(",('page_testcasescript','rerunqueueandsee_testcase','','fr','ReExecuter de la Queue et Voir','',NULL)");
         b.append(",('page_testcasescript','rerun_testcase','','en','Rerun TestCase','',NULL)");
         b.append(",('page_testcasescript','rerun_testcase','','fr','ReExecuter le TestCase','',NULL)");
         b.append(",('page_testcasescript','retrynb','','en','Retry Number','',NULL)");

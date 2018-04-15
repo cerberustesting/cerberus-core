@@ -302,6 +302,7 @@ function displayPageLabel(doc) {
     $("#runTestCase").html("<span class='glyphicon glyphicon-play'></span> " + doc.getDocLabel("page_executiondetail", "runtc"));
     $("#rerunTestCase").html("<span class='glyphicon glyphicon-forward'></span> " + doc.getDocLabel("page_executiondetail", "reruntc"));
     $("#rerunFromQueue").html("<span class='glyphicon glyphicon-forward'></span> " + doc.getDocLabel("page_executiondetail", "reruntcqueue"));
+    $("#rerunFromQueueandSee").html("<span class='glyphicon glyphicon-forward'></span> " + doc.getDocLabel("page_executiondetail", "reruntcqueueandsee"));
     $("#editTcInfo").html("<span class='glyphicon glyphicon-new-window'></span> " + doc.getDocLabel("page_executiondetail", "edittc"));
     $("#editTcHeader").html("<span class='glyphicon glyphicon-pencil'></span> " + doc.getDocLabel("page_executiondetail", "edittch"));
     $("#editTcStepInfo").html("<span class='glyphicon glyphicon-new-window'></span> " + doc.getDocLabel("page_executiondetail", "edittcstep"));
@@ -335,7 +336,7 @@ function updatePage(data, stepList) {
         $("#runTestCase").attr("disabled", false);
         $("#runTestCase").parent().attr("href", "RunTests.jsp?test=" + data.test + "&testcase=" + data.testcase);
         $("#rerunTestCase").attr("disabled", false);
-        $("#rerunTestCase").parent().attr("href", "RunTests.jsp?test=" + data.test + "&testcase=" + data.testcase + "&country=" + data.country + "&environment=" + data.environment + "&browser=" + data.browser + "&tag=" + data.tag);
+        $("#rerunTestCase").parent().attr("href", "RunTests.jsp?test=" + data.test + "&testcase=" + data.testcase + "&country=" + data.country + "&environment=" + data.environment + "&tag=" + data.tag);
     }
 
     $("#lastExecution").attr("disabled", false);
@@ -355,6 +356,8 @@ function updatePage(data, stepList) {
         $("#ExecutionQueue").unbind("click");
         $("#rerunFromQueue").attr("disabled", "disabled");
         $("#rerunFromQueue").unbind("click");
+        $("#rerunFromQueueandSee").attr("disabled", "disabled");
+        $("#rerunFromQueueandSee").unbind("click");
     } else {
         $("#ExecutionQueue").attr("disabled", false);
         $("#ExecutionQueue").unbind("click");
@@ -365,6 +368,11 @@ function updatePage(data, stepList) {
         $("#rerunFromQueue").unbind("click");
         $("#rerunFromQueue").click(function () {
             openModalTestCaseExecutionQueue(data.queueId, 'DUPLICATE');
+        });
+        $("#rerunFromQueueandSee").attr("disabled", false);
+        $("#rerunFromQueueandSee").unbind("click");
+        $("#rerunFromQueueandSee").click(function () {
+            triggerTestCaseExecutionQueueandSee(data.queueId);
         });
     }
 
@@ -420,6 +428,31 @@ function updatePage(data, stepList) {
     createStepList(data.testCaseStepExecutionList, stepList);
     createProperties(data.testCaseExecutionDataList);
     setUpClickFunctionToSaveTestCaseExecutionButton(data);
+}
+
+
+function triggerTestCaseExecutionQueueandSee(queueId) {
+    $.ajax({
+        url: "CreateTestCaseExecutionQueue",
+        async: true,
+        method: "POST",
+        data: {
+            id: queueId,
+            actionState: "toQUEUED",
+            actionSave: "save"
+        },
+        success: function (data) {
+            if (getAlertType(data.messageType) === "success") {
+                showMessageMainPage(getAlertType(data.messageType), data.message, false, 60000);
+                var url = "./TestCaseExecution.jsp?executionQueueId=" + data.testCaseExecutionQueueList[0].id;
+                console.info("redir : " + url);
+                window.location.replace(url);
+            } else {
+                showMessageMainPage(getAlertType(data.messageType), data.message, false, 60000);
+            }
+        },
+        error: showUnexpectedError
+    });
 }
 
 

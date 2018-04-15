@@ -78,7 +78,7 @@
                                                     <a><button class="btn btn-default pull-left" id="seeLastExec" style="margin-left: 5px; margin-right: 5px;"><span class="glyphicon glyphicon-list"></span> Last Executions</button></a>
                                                     <a><button class="btn btn-default pull-left" id="seeTest" style="margin-left: 5px; margin-right: 5px;"><span class="glyphicon glyphicon-list"></span> Test</button></a>
                                                     <a><button class="btn btn-default pull-left" id="seeLogs" style="margin-left: 5px; margin-right: 5px;"><span class="glyphicon glyphicon-list"></span> Logs</button></a>
-                                                </div>                                    
+                                                </div>
                                             </div>
 
                                             <div class="btn-group">
@@ -89,6 +89,7 @@
                                                     <a><button class="btn btn-default pull-left" id="runTestCase" style="margin-left: 5px; margin-left: 5px;" data-toggle="tooltip" ><span class="glyphicon glyphicon-play"></span>Run</button></a>
                                                     <a><button class="btn btn-default pull-left" id="rerunTestCase" style="margin-left: 5px; margin-left: 5px;"><span class="glyphicon glyphicon-forward"></span>ReRun</button></a>
                                                     <a><button class="btn btn-default pull-left" id="rerunFromQueue" style="margin-left: 5px; margin-left: 5px;"><span class="glyphicon glyphicon-forward"></span>From Queue</button></a>
+                                                    <a><button class="btn btn-default pull-left" id="rerunFromQueueandSee" style="margin-left: 5px; margin-left: 5px;"><span class="glyphicon glyphicon-forward"></span>From Queue and See</button></a>
                                                 </div>
                                             </div>
 
