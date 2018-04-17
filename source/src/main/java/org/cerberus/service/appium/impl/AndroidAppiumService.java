@@ -19,6 +19,7 @@
  */
 package org.cerberus.service.appium.impl;
 
+import com.google.common.collect.Lists;
 import io.appium.java_client.TouchAction;
 import io.appium.java_client.android.AndroidKeyCode;
 import io.appium.java_client.android.AndroidDriver;
@@ -30,6 +31,8 @@ import org.cerberus.engine.entity.Session;
 import org.cerberus.enums.MessageEventEnum;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Pattern;
 import org.cerberus.crud.entity.Parameter;
 import org.cerberus.crud.service.impl.ParameterService;
@@ -159,4 +162,22 @@ public class AndroidAppiumService extends AppiumService {
         }
     }
 
+    @Override
+    public MessageEvent executeShell(Session session, String cmd, String args) throws IllegalArgumentException {
+        try {
+            AndroidDriver driver = ((AndroidDriver) session.getAppiumDriver());
+
+            Map<String, Object> argss = new HashMap<>();
+            argss.put("command", cmd);
+            argss.put("args", Lists.newArrayList(args));
+
+            String message = driver.executeScript("mobile: shell", argss).toString();
+
+            return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_EXECUTESHELL).resolveDescription("LOG", message);
+        } catch (Exception e) {
+            LOG.warn("Unable to swipe screen due to " + e.getMessage(), e);
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTESHELL)
+                    .resolveDescription("EXCEPTION", e.getMessage());
+        }
+    }
 }

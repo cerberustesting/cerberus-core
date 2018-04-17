@@ -272,6 +272,9 @@ public class ActionService implements IActionService {
                 case TestCaseStepAction.ACTION_DONOTHING:
                     res = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
                     break;
+                case TestCaseStepAction.ACTION_EXECUTESHELL:
+                    res = this.doActionExecuteShell(tCExecution, value1, value2);
+                    break;
                 // DEPRECATED ACTIONS FROM HERE.
                 case TestCaseStepAction.ACTION_MOUSEOVERANDWAIT:
                     res = this.doActionMouseOverAndWait(tCExecution, value1, value2);
@@ -327,6 +330,28 @@ public class ActionService implements IActionService {
 
         testCaseStepActionExecution.setEnd(new Date().getTime());
         return testCaseStepActionExecution;
+    }
+
+    private MessageEvent doActionExecuteShell(TestCaseExecution tCExecution, String command, String args) {
+        MessageEvent message;
+
+        try {
+
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
+                return androidAppiumService.executeShell(tCExecution.getSession(), command, args);
+            }
+
+            message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+            message.setDescription(message.getDescription().replace("%ACTION%", "executeJS"));
+            message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
+            return message;
+        } catch (Exception e) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTESHELL);
+            String messageString = e.getMessage().split("\n")[0];
+            message.setDescription(message.getDescription().replace("%EXCEPTION%", messageString));
+            LOG.debug("Exception Running Shell :" + messageString,e);
+            return message;
+        }
     }
 
     private MessageEvent doActionClick(TestCaseExecution tCExecution, String value1, String value2) {

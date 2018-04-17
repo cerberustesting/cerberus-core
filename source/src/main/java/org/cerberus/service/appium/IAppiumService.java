@@ -44,5 +44,7 @@ public interface IAppiumService {
     MessageEvent swipe(Session session, SwipeAction swipeAction);
     
     Direction getDirectionForSwipe(Session session, SwipeAction action) throws IllegalArgumentException;
-    
+
+    MessageEvent executeShell(Session session, String cmd, String args) throws IllegalArgumentException;
+
 }
