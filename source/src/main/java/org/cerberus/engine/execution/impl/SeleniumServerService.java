@@ -19,6 +19,7 @@
  */
 package org.cerberus.engine.execution.impl;
 
+import com.google.common.collect.Lists;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.ios.IOSDriver;
@@ -29,6 +30,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpHost;
@@ -515,7 +517,8 @@ public class SeleniumServerService implements ISeleniumServerService {
     }
 
     @Override
-    public boolean stopServer(Session session) {
+    public boolean stopServer(TestCaseExecution tce) {
+        Session session = tce.getSession();
         if (session.isStarted()) {
             try {
                 // Wait 2 sec till HAR is exported
@@ -523,6 +526,31 @@ public class SeleniumServerService implements ISeleniumServerService {
             } catch (InterruptedException ex) {
                 LOG.error(ex.toString());
             }
+
+            // possibility to use application environment variable1 & variable2 to execute shell (adb) on mobile (Android)
+            // variable1 : command (ex : "am start")
+            // variable2 : args (ex : "-p 60")
+            // variable3 : package application. If available, call apiumDriver to force remove application from the phone
+            if(session.getAppiumDriver() != null && tce.getCountryEnvironmentParameters() != null) {
+                AppiumDriver driver = session.getAppiumDriver();
+
+                if(!StringUtil.isNullOrEmpty(tce.getCountryEnvironmentParameters().getVar1())) {
+                    // init shell executor
+                    Map<String, Object> args = new HashMap<>();
+                    args.put("command", tce.getCountryEnvironmentParameters().getVar1());
+                    args.put("args", Lists.newArrayList(tce.getCountryEnvironmentParameters().getVar2()));
+
+                    LOG.info("Execute shell with appium : " + tce.getCountryEnvironmentParameters().getVar1() + " " + tce.getCountryEnvironmentParameters().getVar2());
+                    LOG.info(driver.executeScript("mobile: shell", args));
+                }
+                if(session.getAppiumDriver() != null && tce.getCountryEnvironmentParameters() != null &&
+                        !StringUtil.isNullOrEmpty(tce.getCountryEnvironmentParameters().getVar3())) {
+                    driver.removeApp(tce.getCountryEnvironmentParameters().getVar3()); // remove manually app after execute a shell
+                }
+
+            }
+
+
             LOG.info("Stop execution session");
             session.quit();
             return true;

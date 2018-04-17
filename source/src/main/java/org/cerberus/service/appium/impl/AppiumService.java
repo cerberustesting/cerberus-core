@@ -20,6 +20,7 @@
 package org.cerberus.service.appium.impl;
 
 import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.MobileElement;
 import io.appium.java_client.TouchAction;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -96,9 +97,19 @@ public abstract class AppiumService implements IAppiumService {
         MessageEvent message;
         try {
             if (!StringUtil.isNull(property)) {
-                TouchAction action = new TouchAction(session.getAppiumDriver());
-                action.press(this.getElement(session, identifier, false, false)).release().perform();
-                session.getAppiumDriver().getKeyboard().pressKey(property);
+                WebElement elmt = this.getElement(session, identifier, false, false);
+                if(elmt instanceof MobileElement) {
+                    ((MobileElement) this.getElement(session, identifier, false, false)).setValue(property);
+                } else { // FIXME See if we can delete it ??
+                    TouchAction action = new TouchAction(session.getAppiumDriver());
+                    action.press(this.getElement(session, identifier, false, false)).release().perform();
+                    try {
+                        Thread.sleep(3000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    session.getAppiumDriver().getKeyboard().sendKeys(property);
+                }
             }
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_TYPE);
             message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));

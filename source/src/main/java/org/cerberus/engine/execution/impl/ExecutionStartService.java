@@ -456,11 +456,11 @@ public class ExecutionStartService implements IExecutionStartService {
             try {
                 if (tCExecution.getId() == 0) {
                     LOG.debug("Starting to Stop the Selenium Server.");
-                    this.serverService.stopServer(tCExecution.getSession());
+                    this.serverService.stopServer(tCExecution);
                     LOG.debug("Selenium Server stopped.");
                 }
             } catch (Exception ex) {
-                LOG.warn(ex.toString());
+                LOG.warn(ex.toString(), ex);
             }
         }
 

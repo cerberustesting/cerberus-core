@@ -158,6 +158,17 @@ appium --default-capabilities /chemin/vers/le/fichier/common.caps
 
 La section suivante présente différents cas d'utilisation pour l'utilisation du serveur Appium.
 
+===== Parametrage specifique pour l'Application
+
+Vous pouvez utiliser variable 1 et variable 2 pour executer une commande shell (adb) sur le mobile (Android) avant que le test ne se termine (juste avant que le driver se deconnecte).
+* `variable1` : commande (ex : "am start")
+* `variable2` : arguments (ex : "-p 60")
+
+Pour les application Android : le package de l'application. Si renseigné, appel la methode de suppression de l'application avant de stoper le test (force à désinstaller l'apk)
+* `variable3` : package de l'application.
+
+image:appium_android_application_environment.png[Environment seetings]
+
 ===== Exécuter un cas de test mobile avec Cerberus
 
 Une fois le cas de test écrit, Cerberus peut exécuter ce cas de test sur le mobile souhaité en configurant au préalable un Robot associé.

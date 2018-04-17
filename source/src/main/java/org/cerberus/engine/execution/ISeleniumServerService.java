@@ -44,7 +44,7 @@ public interface ISeleniumServerService {
      * @param session
      * @return true if server successfully closed
      */
-    boolean stopServer(Session session);
+    boolean stopServer(TestCaseExecution session);
 
     /**
      * Find the capabilities used by the server

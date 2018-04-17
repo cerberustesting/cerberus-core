@@ -1297,12 +1297,12 @@ public class ExecutionRunService implements IExecutionRunService {
                 || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
                 || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
             try {
-                this.seleniumServerService.stopServer(tCExecution.getSession());
+                this.seleniumServerService.stopServer(tCExecution);
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Stop server for execution " + tCExecution.getId());
                 }
             } catch (WebDriverException exception) {
-                LOG.warn("Selenium didn't manage to close connection for execution " + tCExecution.getId() + " due to " + exception.toString());
+                LOG.warn("Selenium didn't manage to close connection for execution " + tCExecution.getId() + " due to " + exception.toString(), exception);
             }
         }
         if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
