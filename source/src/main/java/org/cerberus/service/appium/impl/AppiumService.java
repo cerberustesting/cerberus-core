@@ -20,8 +20,10 @@
 package org.cerberus.service.appium.impl;
 
 import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.MobileBy;
 import io.appium.java_client.MobileElement;
 import io.appium.java_client.TouchAction;
+import io.appium.java_client.android.AndroidElement;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.cerberus.engine.entity.Identifier;
@@ -307,5 +309,76 @@ public abstract class AppiumService implements IAppiumService {
                 throw new IllegalArgumentException("Unknown direction");
         }
         return direction;
+    }
+
+    @Override
+    public MessageEvent scrollTo(Session session, Identifier element, String numberScrollDownMax) throws IllegalArgumentException {
+        AppiumDriver driver = session.getAppiumDriver();
+        MessageEvent message;
+        try {
+            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SCROLLTO);
+
+            int numberOfScrollDown = 8;
+            try {
+                numberOfScrollDown = Integer.parseInt(numberScrollDownMax);
+            } catch (NumberFormatException e) {
+                // do nothing
+            }
+
+            // check text
+            if (element.getIdentifier().equals("text")) {
+                scrollDown(driver, By.xpath("//*[contains(@text,'" + element.getLocator() + "')]"), numberOfScrollDown);
+            }
+            else {
+                scrollDown(driver,this.getBy(element), numberOfScrollDown);
+            }
+
+            message.setDescription(message.getDescription().replace("%VALUE%", element.toString()));
+
+            return message;
+        } catch (Exception e) {
+            LOG.error("An error occured during scroll to (element:" + element + ",numberScrollDownMax:" + numberScrollDownMax + ")", e);
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_GENERIC);
+            message.setDescription(message.getDescription().replace("%DETAIL%", e.getMessage()));
+            return message;
+        }
+    }
+
+    /**
+     * Scroll down and stop when element is present
+     * @param driver
+     * @param element
+     * @return
+     */
+    private boolean scrollDown(AppiumDriver driver, By element, int numberOfScrollDown) {
+
+        int pressX = driver.manage().window().getSize().width / 2;
+
+        int bottomY = driver.manage().window().getSize().height * 4/5;
+
+        int topY = driver.manage().window().getSize().height / 8;
+
+        int i = 0;
+
+        do{
+
+            boolean isPresent = driver.findElements(element).size()>0;
+            if(isPresent){
+                return true;
+            }
+            else{
+                scroll(driver, pressX, bottomY, pressX, topY);}
+            i++;
+
+        } while(i <= numberOfScrollDown);
+
+        return false;
+    }
+
+    private void scroll(AppiumDriver driver, int fromX, int fromY, int toX, int toY) {
+        TouchAction touchAction = new TouchAction(driver);
+
+        touchAction.longPress(fromX, fromY).moveTo(toX, toY).release().perform();
+
     }
 }

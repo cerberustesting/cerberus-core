@@ -3183,6 +3183,7 @@ function setPlaceholderAction(actionElement) {
             {"type": "waitVanish", "object": "Element", "property": null},
             {"type": "callService", "object": "Nom du Service", "property": null},
             {"type": "executeSqlUpdate", "object": "Nom de Base de donnée", "property": "Script à executer"},
+            {"type": "scrollTo", "object": "element (id, xpath, ..., and text= to scroll to text)", "property": "number max of scroll down Max (default to 8)"},
             {
                 "type": "executeSqlStoredProcedure",
                 "object": "Nom de Base de donnée",
@@ -3226,6 +3227,7 @@ function setPlaceholderAction(actionElement) {
             {"type": "executeSqlUpdate", "object": "Database Name", "property": "Script"},
             {"type": "executeSqlStoredProcedure", "object": "Database Name", "property": "Stored Procedure"},
             {"type": "calculateProperty", "object": "Property Name", "property": "[opt] Name of an other property"},
+            {"type": "scrollTo", "object": "element ('id=ressource-id'. Empty if you want use text)", "property": "text (empty if you want use element)"},
             {"type": "doNothing", "object": null, "property": null},
             {"type": "mouseOverAndWait", "object": "[Deprecated]", "property": "[Deprecated]"},
             {"type": "removeDifference", "object": "[Deprecated]", "property": "[Deprecated]"}

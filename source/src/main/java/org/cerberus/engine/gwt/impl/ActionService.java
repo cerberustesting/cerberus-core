@@ -275,7 +275,9 @@ public class ActionService implements IActionService {
                 case TestCaseStepAction.ACTION_EXECUTESHELL:
                     res = this.doActionExecuteShell(tCExecution, value1, value2);
                     break;
-                // DEPRECATED ACTIONS FROM HERE.
+                case TestCaseStepAction.ACTION_SCROLLTO:
+                    res = this.doActionScrollTo(tCExecution, value1, value2);
+                    break;                // DEPRECATED ACTIONS FROM HERE.
                 case TestCaseStepAction.ACTION_MOUSEOVERANDWAIT:
                     res = this.doActionMouseOverAndWait(tCExecution, value1, value2);
                     res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
@@ -330,6 +332,36 @@ public class ActionService implements IActionService {
 
         testCaseStepActionExecution.setEnd(new Date().getTime());
         return testCaseStepActionExecution;
+    }
+
+
+    private MessageEvent doActionScrollTo(TestCaseExecution tCExecution, String element, String text) {
+        MessageEvent message;
+
+        try {
+            Identifier identifier=null;
+            if(!StringUtil.isNullOrEmpty(element)) {
+                identifier=identifierService.convertStringToIdentifier(element);
+            }
+
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
+                return androidAppiumService.scrollTo(tCExecution.getSession(), identifier, text);
+            }
+            else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
+                return iosAppiumService.scrollTo(tCExecution.getSession(), identifier, text);
+            }
+
+            message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+            message.setDescription(message.getDescription().replace("%ACTION%", "scrollTo"));
+            message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
+            return message;
+        } catch (Exception e) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_GENERIC);
+            String messageString = e.getMessage().split("\n")[0];
+            message.setDescription(message.getDescription().replace("%DETAIL%", messageString));
+            LOG.debug("Exception Running scroll to  :" + messageString,e);
+            return message;
+        }
     }
 
     private MessageEvent doActionExecuteShell(TestCaseExecution tCExecution, String command, String args) {
