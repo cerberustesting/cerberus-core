@@ -14,7 +14,43 @@ This procedure covers installation and configuration of **Appium v.1.6.2+**.
 
 ===== Android
 
+====== Classic installation
 Install _Android SDK_ v.1.7+. See official documentation https://developer.android.com/studio/install.html[here] and https://developer.android.com/studio/intro/update.html[here] for more details.
+
+====== Docker install
++
+--------------------------------------
+# Note: It requires docker-compose 1.6.0+
+#
+# Usage: docker-compose up -d
+version: '2'
+
+services:
+  # Selenium hub
+  selenium_hub:
+    image: selenium/hub:3.7.1
+    ports:
+      - 4444:4444
+
+  # Appium Docker Android
+  appium_android_device:
+    image: appium/appium
+    depends_on:
+      - selenium_hub
+    privileged: true
+    volumes:
+#      - /dev/bus/usb:/dev/bus/usb
+      - ~/.android:/root/.android
+      - ./localapk/:/apk/  # used to push apk to install
+    ports:
+      - 4723:4723
+    environment:
+      - CONNECT_TO_GRID=True
+      - SELENIUM_HOST=selenium_hub
+      # Enable it for msite testing
+      #- BROWSER_NAME=chrom
+--------------------------------------
++
 
 ===== IOS
 
@@ -159,6 +195,18 @@ appium --default-capabilities /path/to/common.caps
 ==== Client use
 
 The following section will show different use cases to connect to the Appium server.
+
+===== Application specific seetings
+
+You have the possibility to use application environment variable1 & variable2 to execute shell (adb) on mobile (Android) before a test stop (just before the drivers disconnect):
+* `variable1` : command (ex : "am start")
+* `variable2` : args (ex : "-p 60")
+
+It can be usefull to change a status on application before it remove.
+
+`variable3` : package application. If available, call appiumDriver to force remove application from the phone before stop the test
+
+image:appium_android_application_environment.png[Environment seetings]
 
 ===== Execute mobile test case with Cerberus
 

@@ -84,9 +84,14 @@ public class TestCaseStepAction {
     public static final String ACTION_EXECUTESQLSTOREPROCEDURE = "executeSqlStoredProcedure";
     public static final String ACTION_CALCULATEPROPERTY = "calculateProperty";
     public static final String ACTION_DONOTHING = "doNothing";
+    public static final String ACTION_EXECUTESHELL = "executeShell";
+    public static final String ACTION_SCROLLTO = "scrollTo";
+
+
     // DEPRECATED
     public static final String ACTION_REMOVEDIFFERENCE = "removeDifference";
     public static final String ACTION_MOUSEOVERANDWAIT = "mouseOverAndWait";
+
     /**
      * Invariant FORCEEXESTATUS String.
      */

@@ -7669,6 +7669,14 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add("UPDATE `parameter` SET `description`='URL to Cerberus used in order to trigger executions from the queue. This parameter is mandatory. ex : http://localhost:8080/Cerberus' WHERE `system`='' and`param`='cerberus_url';");
         a.add("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ('', 'cerberus_gui_url', '', 'URL to Cerberus used inside all GUI links and mail sent by Cerberus. This parameter is not mandatory and takes the value of cerberus_url in case empty. ex : http://localhost:8080/Cerberus');");
 
+        // add an action
+        // 1333
+        a.add("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('ACTION', 'executeShell', '6551', 'Execute 1 command shell. Value1 is the command (ex : \"grep\"), Value2 is the arguments (ex : \"-name toto\")', 'Execute 1 command shell');");
+
+        // add an action
+        // 1333
+        a.add("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('ACTION', 'scrollTo', '13003', 'Scroll to element or text', 'Scroll to element or text');");
+
         return a;
     }
 

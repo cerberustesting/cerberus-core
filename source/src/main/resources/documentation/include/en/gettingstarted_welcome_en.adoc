@@ -50,11 +50,11 @@ You will find in this section a grphical representation of the main Cerberus ele
 
 Below the system :
 
-image:systemillustration.png[SystemIllustration]
+image:systemillustration.PNG[SystemIllustration]
 
 Below the test case :
 
-image:testcaseillustration.png[TestCaseIllustration]
+image:testcaseillustration.PNG[TestCaseIllustration]
 
 
 ==== Tutorials

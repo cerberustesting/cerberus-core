@@ -10,6 +10,18 @@
 * New Interactive tutorial available from Documentation menu.
 * For Application Services, GET Query String is also feed from active Request details (key/value). Just like Postman does.
 
+
+* For Mobile devices (Appium)
+** *Android* : Fix a Bug on webview with Android devices : can't type correctly a field.
+** *Android* : Possibility to use application environment variable1 & variable2 to execute shell (adb) on mobile (Android) before a test stop (just before the drivers disconnect) - It can be usefull to change a status on application before it remove for exemple:
+*** `variable1` : command (ex : "am start")
+*** `variable2` : args (ex : "-p 60")
+** *Android* : Possibility to call appiumDriver to force remove application from the phone before stop the test
+*** `variable3` : package application. If available, call appiumDriver to force remove application from the phone before stop the test
+** *Android* : New action `executeShell` to execute a shell command (adb shell) on android devices
+** *Android and iOS* : New action `scrollTo` to scroll to an element or a text
+
+
 *Warning to be considered before applying the version (deprecated features)*
 [square]
 * Removed Opera support following selenium deprecation.
