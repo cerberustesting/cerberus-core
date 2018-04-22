@@ -3174,7 +3174,7 @@ function setPlaceholderAction(actionElement) {
             {"type": "executeShell", "object": "Commande (ex : \"grep\")", "property": "Arguments (ex : \"--name toto\")"},
             {"type": "openApp", "object": "Nom ou chemin de l'application", "property": null},
             {"type": "closeApp", "object": "Nom ou chemin de l'application", "property": null},
-            {"type": "select", "object": "Chemin vers l'élement", "property": "Chemin vers l'option"},
+            {"type": "select", "object": "Chemin vers l'élement", "property": "Chemin ou valeur de l'option"},
             {"type": "keypress", "object": "[opt] Chemin vers l'élement à cibler", "property": "Touche à presser"},
             {"type": "type", "object": "Chemin vers l'élement", "property": "Texte à entrer"},
             {"type": "hideKeyboard", "object": null, "property": null},
@@ -3184,16 +3184,8 @@ function setPlaceholderAction(actionElement) {
             {"type": "callService", "object": "Nom du Service", "property": null},
             {"type": "executeSqlUpdate", "object": "Nom de Base de donnée", "property": "Script à executer"},
             {"type": "scrollTo", "object": "element (id, xpath, ..., and text= to scroll to text)", "property": "number max of scroll down Max (default to 8)"},
-            {
-                "type": "executeSqlStoredProcedure",
-                "object": "Nom de Base de donnée",
-                "property": "Procedure Stoquée à executer"
-            },
-            {
-                "type": "calculateProperty",
-                "object": "Nom d'une Proprieté",
-                "property": "[opt] Nom d'une autre propriété"
-            },
+            {"type": "executeSqlStoredProcedure", "object": "Nom de Base de donnée", "property": "Procedure Stoquée à executer"},
+            {"type": "calculateProperty", "object": "Nom d'une Proprieté", "property": "[opt] Nom d'une autre propriété"},
             {"type": "doNothing", "object": null, "property": null},
             {"type": "mouseOverAndWait", "object": "Action Depreciée", "property": "Action Depreciée"},
             {"type": "removeDifference", "object": "Action Depreciée", "property": "Action Depreciée"}
@@ -3216,7 +3208,7 @@ function setPlaceholderAction(actionElement) {
             {"type": "executeShell", "object": "Command (ex : \"grep\")", "property": "Arguments (ex : \"--name toto\")"},
             {"type": "openApp", "object": "Application name or path", "property": null},
             {"type": "closeApp", "object": "Application name or path", "property": null},
-            {"type": "select", "object": "Element path", "property": "Option path"},
+            {"type": "select", "object": "Element path", "property": "Option value or path"},
             {"type": "keypress", "object": "[opt] Target element path", "property": "Key to press"},
             {"type": "type", "object": "Element path", "property": "Text to type"},
             {"type": "hideKeyboard", "object": null, "property": null},

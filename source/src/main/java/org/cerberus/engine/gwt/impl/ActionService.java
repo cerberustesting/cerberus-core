@@ -277,7 +277,10 @@ public class ActionService implements IActionService {
                     break;
                 case TestCaseStepAction.ACTION_SCROLLTO:
                     res = this.doActionScrollTo(tCExecution, value1, value2);
-                    break;                // DEPRECATED ACTIONS FROM HERE.
+                    break;
+                /**
+                 * DEPRECATED ACTIONS FROM HERE.
+                 */
                 case TestCaseStepAction.ACTION_MOUSEOVERANDWAIT:
                     res = this.doActionMouseOverAndWait(tCExecution, value1, value2);
                     res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
@@ -334,20 +337,18 @@ public class ActionService implements IActionService {
         return testCaseStepActionExecution;
     }
 
-
     private MessageEvent doActionScrollTo(TestCaseExecution tCExecution, String element, String text) {
         MessageEvent message;
 
         try {
-            Identifier identifier=null;
-            if(!StringUtil.isNullOrEmpty(element)) {
-                identifier=identifierService.convertStringToIdentifier(element);
+            Identifier identifier = null;
+            if (!StringUtil.isNullOrEmpty(element)) {
+                identifier = identifierService.convertStringToIdentifier(element);
             }
 
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
                 return androidAppiumService.scrollTo(tCExecution.getSession(), identifier, text);
-            }
-            else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
+            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
                 return iosAppiumService.scrollTo(tCExecution.getSession(), identifier, text);
             }
 
@@ -359,7 +360,7 @@ public class ActionService implements IActionService {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_GENERIC);
             String messageString = e.getMessage().split("\n")[0];
             message.setDescription(message.getDescription().replace("%DETAIL%", messageString));
-            LOG.debug("Exception Running scroll to  :" + messageString,e);
+            LOG.debug("Exception Running scroll to  :" + messageString, e);
             return message;
         }
     }
@@ -381,7 +382,7 @@ public class ActionService implements IActionService {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTESHELL);
             String messageString = e.getMessage().split("\n")[0];
             message.setDescription(message.getDescription().replace("%EXCEPTION%", messageString));
-            LOG.debug("Exception Running Shell :" + messageString,e);
+            LOG.debug("Exception Running Shell :" + messageString, e);
             return message;
         }
     }
@@ -1119,8 +1120,6 @@ public class ActionService implements IActionService {
         return message;
 
     }
-
-
 
     private MessageEvent doActionRemoveDifference(TestCaseStepActionExecution testCaseStepActionExecution, String object, String property) {
         // Filters differences from the given object pattern
