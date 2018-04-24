@@ -949,6 +949,65 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         answer.setResultMessage(msg);
         return answer;
     }
+       
+    @Override
+    public Answer bulkRenameDataLib(String oldName, String newName) {
+        Answer answer = new Answer();
+        MessageEvent msg;
+        
+        String query ="UPDATE testdatalib SET `name`="+newName;
+        query += " WHERE `name`="+oldName;
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+
+                int rowsUpdated = preStat.executeUpdate();
+
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                // Message to customize : X datalib updated using the rowsUpdated variable
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
+
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                if (exception.getSQLState().equals(SQL_DUPLICATED_CODE)) { //23000 is the sql state for duplicate entries
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_DUPLICATE);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", "Test data lib ").replace("%OPERATION%", "UPDATE").replace("%REASON%", exception.toString()));
+                } else {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+                }
+            } finally {
+                if (preStat != null) {
+                    preStat.close();
+                }
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+
+        } finally {
+            try {
+                if (!this.databaseSpring.isOnTransaction()) {
+                    if (connection != null) {
+                        connection.close();
+                    }
+                }
+            } catch (SQLException ex) {
+                LOG.warn("Unable to close connection : " + ex.toString());
+            }
+        }
+
+        answer.setResultMessage(msg);
+        return answer;
+    }
 
     @Override
     public TestDataLib loadFromResultSet(ResultSet resultSet) throws SQLException {
