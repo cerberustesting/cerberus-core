@@ -955,8 +955,8 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         Answer answer = new Answer();
         MessageEvent msg;
         
-        String query ="UPDATE testdatalib SET `name`="+newName;
-        query += " WHERE `name`="+oldName;
+        String query ="UPDATE testdatalib SET `name`=? ";
+        query += " WHERE `name`=? ";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -967,6 +967,9 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
+            	int i = 1;
+                preStat.setString(i++, oldName);
+                preStat.setString(i++, newName);
 
                 int rowsUpdated = preStat.executeUpdate();
 

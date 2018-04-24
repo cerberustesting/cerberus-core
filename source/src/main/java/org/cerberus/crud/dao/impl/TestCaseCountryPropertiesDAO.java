@@ -547,8 +547,8 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
     	Answer answer = new Answer();
         MessageEvent msg;
         
-        String query ="UPDATE testcasecountryproperties SET `Value1`="+newName;
-        query += " WHERE `Type` = 'getFromDataLib' AND Value1="+oldName;
+        String query ="UPDATE testcasecountryproperties SET `Value1`=? ";
+        query += "WHERE `Type` = 'getFromDataLib' AND `Value1`=?";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -559,7 +559,9 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
-
+            	int i = 1;
+                preStat.setString(i++, newName);
+                preStat.setString(i++, oldName);
                 int rowsUpdated = preStat.executeUpdate();
 
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
