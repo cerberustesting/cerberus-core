@@ -45,7 +45,7 @@ public interface IAppiumService {
     
     Direction getDirectionForSwipe(Session session, SwipeAction action) throws IllegalArgumentException;
 
-    MessageEvent executeShell(Session session, String cmd, String args) throws IllegalArgumentException;
+    MessageEvent executeCommand(Session session, String cmd, String args) throws IllegalArgumentException;
 
     /**
      * Scroll to an element or a text

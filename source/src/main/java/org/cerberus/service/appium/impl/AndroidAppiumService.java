@@ -163,7 +163,7 @@ public class AndroidAppiumService extends AppiumService {
     }
 
     @Override
-    public MessageEvent executeShell(Session session, String cmd, String args) throws IllegalArgumentException {
+    public MessageEvent executeCommand(Session session, String cmd, String args) throws IllegalArgumentException {
         try {
             AndroidDriver driver = ((AndroidDriver) session.getAppiumDriver());
 
@@ -173,10 +173,10 @@ public class AndroidAppiumService extends AppiumService {
 
             String message = driver.executeScript("mobile: shell", argss).toString();
 
-            return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_EXECUTESHELL).resolveDescription("LOG", message);
+            return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_EXECUTECOMMAND).resolveDescription("LOG", message);
         } catch (Exception e) {
             LOG.warn("Unable to swipe screen due to " + e.getMessage(), e);
-            return new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTESHELL)
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTECOMMAND)
                     .resolveDescription("EXCEPTION", e.getMessage());
         }
     }

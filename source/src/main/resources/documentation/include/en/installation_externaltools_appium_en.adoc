@@ -196,17 +196,6 @@ appium --default-capabilities /path/to/common.caps
 
 The following section will show different use cases to connect to the Appium server.
 
-===== Application specific seetings
-
-You have the possibility to use application environment variable1 & variable2 to execute shell (adb) on mobile (Android) before a test stop (just before the drivers disconnect):
-* `variable1` : command (ex : "am start")
-* `variable2` : args (ex : "-p 60")
-
-It can be usefull to change a status on application before it remove.
-
-`variable3` : package application. If available, call appiumDriver to force remove application from the phone before stop the test
-
-image:appium_android_application_environment.png[Environment seetings]
 
 ===== Execute mobile test case with Cerberus
 

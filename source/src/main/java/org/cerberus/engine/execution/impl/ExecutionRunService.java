@@ -217,7 +217,10 @@ public class ExecutionRunService implements IExecutionRunService {
                     LOG.error(logPrefix + "Exception on selenium getting Used Capabilities :" + ex.toString());
                 }
                 LOG.debug(logPrefix + "Selenium capabitities loaded.");
-            } else {
+            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK) || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA) ) {
+                //do nothing, and keep the robot name
+            }
+            else {
                 // If Selenium is not needed, the selenium and browser info is set to empty.
                 tCExecution.setSeleniumIP("");
                 tCExecution.setSeleniumPort("");

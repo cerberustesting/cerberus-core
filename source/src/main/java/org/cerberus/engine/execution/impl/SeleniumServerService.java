@@ -527,11 +527,13 @@ public class SeleniumServerService implements ISeleniumServerService {
                 LOG.error(ex.toString());
             }
 
-            // possibility to use application environment variable1 & variable2 to execute shell (adb) on mobile (Android)
+            // FIXME (with issue ##1709)
+            // Decathlon Specific possibility to use application environment variable1 & variable2 to execute shell (adb) on mobile (Android)
             // variable1 : command (ex : "am start")
             // variable2 : args (ex : "-p 60")
             // variable3 : package application. If available, call apiumDriver to force remove application from the phone
-            if(session.getAppiumDriver() != null && tce.getCountryEnvironmentParameters() != null) {
+            boolean activate = parameterService.getParameterBooleanByKey("cerberus_featureflipping_activatecallShellOnEndOfTestCase", "", false);
+            if(activate && session.getAppiumDriver() != null && tce.getCountryEnvironmentParameters() != null) {
                 AppiumDriver driver = session.getAppiumDriver();
 
                 if(!StringUtil.isNullOrEmpty(tce.getCountryEnvironmentParameters().getVar1())) {

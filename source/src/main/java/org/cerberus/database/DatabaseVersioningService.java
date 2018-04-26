@@ -7671,7 +7671,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 
         // add an action
         // 1333
-        a.add("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('ACTION', 'executeShell', '6551', 'Execute 1 command shell. Value1 is the command (ex : \"grep\"), Value2 is the arguments (ex : \"-name toto\")', 'Execute 1 command shell');");
+        a.add("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('ACTION', 'executeCommand', '6551', 'Execute 1 command shell. Value1 is the command (ex : \"grep\"), Value2 is the arguments (ex : \"-name toto\")', 'Execute 1 command shell');");
 
         // add an action
         // 1333

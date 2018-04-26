@@ -177,7 +177,7 @@ public class IOSAppiumService extends AppiumService {
     }
 
     @Override
-    public MessageEvent executeShell(Session session, String cmd, String args) throws IllegalArgumentException {
+    public MessageEvent executeCommand(Session session, String cmd, String args) throws IllegalArgumentException {
         return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
     }
 }

@@ -272,8 +272,8 @@ public class ActionService implements IActionService {
                 case TestCaseStepAction.ACTION_DONOTHING:
                     res = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
                     break;
-                case TestCaseStepAction.ACTION_EXECUTESHELL:
-                    res = this.doActionExecuteShell(tCExecution, value1, value2);
+                case TestCaseStepAction.ACTION_EXECUTECOMMAND:
+                    res = this.doActionExecuteCommand(tCExecution, value1, value2);
                     break;
                 case TestCaseStepAction.ACTION_SCROLLTO:
                     res = this.doActionScrollTo(tCExecution, value1, value2);
@@ -364,13 +364,13 @@ public class ActionService implements IActionService {
         }
     }
 
-    private MessageEvent doActionExecuteShell(TestCaseExecution tCExecution, String command, String args) {
+    private MessageEvent doActionExecuteCommand(TestCaseExecution tCExecution, String command, String args) {
         MessageEvent message;
 
         try {
 
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
-                return androidAppiumService.executeShell(tCExecution.getSession(), command, args);
+                return androidAppiumService.executeCommand(tCExecution.getSession(), command, args);
             }
 
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
@@ -378,7 +378,7 @@ public class ActionService implements IActionService {
             message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
             return message;
         } catch (Exception e) {
-            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTESHELL);
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTECOMMAND);
             String messageString = e.getMessage().split("\n")[0];
             message.setDescription(message.getDescription().replace("%EXCEPTION%", messageString));
             LOG.debug("Exception Running Shell :" + messageString,e);
