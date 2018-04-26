@@ -140,18 +140,18 @@ public class CreateTestDataLib extends HttpServlet {
             String databaseUrl = policy.sanitize(fileData.get("databaseUrl"));
             String databaseCsv = policy.sanitize(fileData.get("databaseCsv"));
             // Parameter that needs to be secured --> We SECURE+DECODE them
-            String name = fileData.get("name"); //this is mandatory
-            String group = fileData.get("group");
-            String description = fileData.get("libdescription");
-            String service = fileData.get("service");
+            String name = ParameterParserUtil.parseStringParamAndDecode(fileData.get("name"), "", charset); //this is mandatory
+            String group = ParameterParserUtil.parseStringParamAndDecode(fileData.get("group"), "", charset);
+            String description = ParameterParserUtil.parseStringParamAndDecode(fileData.get("libdescription"), "", charset);
+            String service = ParameterParserUtil.parseStringParamAndDecode(fileData.get("service"), "", charset);
             // Parameter that we cannot secure as we need the html --> We DECODE them
-            String script = fileData.get("script");
-            String servicePath = fileData.get("servicepath");
-            String method = fileData.get("method");
-            String envelope = fileData.get("envelope");
-            String csvUrl = fileData.get("csvUrl");
-            String separator = fileData.get("separator");
-            String test = fileData.get("subdataCheck");
+            String script = ParameterParserUtil.parseStringParamAndDecode(fileData.get("script"), "", charset);
+            String servicePath = ParameterParserUtil.parseStringParamAndDecode(fileData.get("servicepath"), "", charset);
+            String method = ParameterParserUtil.parseStringParamAndDecode(fileData.get("method"), "", charset);
+            String envelope = ParameterParserUtil.parseStringParamAndDecode(fileData.get("envelope"), "", charset);
+            String csvUrl = ParameterParserUtil.parseStringParamAndDecode(fileData.get("csvUrl"), "", charset);
+            String separator = ParameterParserUtil.parseStringParamAndDecode(fileData.get("separator"), "", charset);
+            String activateAutoSubdata = fileData.get("subdataCheck");
             /**
              * Checking all constrains before calling the services.
              */
@@ -205,10 +205,10 @@ public class CreateTestDataLib extends HttpServlet {
                     tdldList = getSubDataFromParameter(request, appContext, dataLibWithUploadedFile.getTestDataLibID(), objSubDataArray);
                 }
 
-                if (file != null && test.equals("1")) {
+                    if (file != null && activateAutoSubdata != null && activateAutoSubdata.equals("1")) {
                     String firstLine = "";
                     String secondLine = "";
-                    try(BufferedReader reader = new BufferedReader(new FileReader(parameterService.getParameterStringByKey("cerberus_testdatalibCSV_path", "", null) + lib.getCsvUrl()));) {
+                    try (BufferedReader reader = new BufferedReader(new FileReader(parameterService.getParameterStringByKey("cerberus_testdatalibcsv_path", "", null) + lib.getCsvUrl()));) {
                         firstLine = reader.readLine();
                         secondLine = reader.readLine();
                         String[] firstLineSubData = (!dataLibWithUploadedFile.getSeparator().isEmpty()) ? firstLine.split(dataLibWithUploadedFile.getSeparator()) : firstLine.split(",");
@@ -278,12 +278,12 @@ public class CreateTestDataLib extends HttpServlet {
             // Parameter that needs to be secured --> We SECURE+DECODE them
             // NONE
             // Parameter that we cannot secure as we need the html --> We DECODE them
-            String subdata = ParameterParserUtil.parseStringParamAndDecode(objectJson.getString("subData"), "", charset);
-            String value = ParameterParserUtil.parseStringParamAndDecode(objectJson.getString("value"), "", charset);
-            String column = ParameterParserUtil.parseStringParamAndDecode(objectJson.getString("column"), "", charset);
-            String parsingAnswer = ParameterParserUtil.parseStringParamAndDecode(objectJson.getString("parsingAnswer"), "", charset);
-            String columnPosition = ParameterParserUtil.parseStringParamAndDecode(objectJson.getString("columnPosition"), "", charset);
-            String description = ParameterParserUtil.parseStringParamAndDecode(objectJson.getString("description"), "", charset);
+            String subdata = ParameterParserUtil.parseStringParam(objectJson.getString("subData"), "");
+            String value = ParameterParserUtil.parseStringParam(objectJson.getString("value"), "");
+            String column = ParameterParserUtil.parseStringParam(objectJson.getString("column"), "");
+            String parsingAnswer = ParameterParserUtil.parseStringParam(objectJson.getString("parsingAnswer"), "");
+            String columnPosition = ParameterParserUtil.parseStringParam(objectJson.getString("columnPosition"), "");
+            String description = ParameterParserUtil.parseStringParam(objectJson.getString("description"), "");
 
             if (!delete) {
                 TestDataLibData tdld = tdldFactory.create(testDataLibDataId, testDataLibId, subdata, value, column, parsingAnswer, columnPosition, description);

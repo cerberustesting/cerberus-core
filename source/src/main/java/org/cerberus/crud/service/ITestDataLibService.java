@@ -150,6 +150,14 @@ public interface ITestDataLibService {
      * @return
      */
     Answer update(TestDataLib object);
+    
+    /**
+    *
+    * @param oldName
+    * @param newName
+    * @return
+    */
+    List<Answer> bulkRename(String oldName, String newName);
 
     /**
      *

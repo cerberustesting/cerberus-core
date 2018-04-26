@@ -3171,7 +3171,7 @@ function setPlaceholderAction(actionElement) {
             {"type": "openUrlLogin", "object": null, "property": null},
             {"type": "openUrl", "object": "URL à appeler (ex : http://www.domain.com)", "property": null},
             {"type": "executeJS", "object": "JavaScript à executer", "property": null},
-            {"type": "executeCommand", "object": "Commande (ex : \"grep\")", "property": "Arguments (ex : \"--name toto\")"},
+            {"type": "executeShell", "object": "Commande (ex : \"grep\")", "property": "Arguments (ex : \"--name toto\")"},
             {"type": "openApp", "object": "Nom ou chemin de l'application", "property": null},
             {"type": "closeApp", "object": "Nom ou chemin de l'application", "property": null},
             {"type": "select", "object": "Chemin vers l'élement", "property": "Chemin vers l'option"},
@@ -3184,16 +3184,8 @@ function setPlaceholderAction(actionElement) {
             {"type": "callService", "object": "Nom du Service", "property": null},
             {"type": "executeSqlUpdate", "object": "Nom de Base de donnée", "property": "Script à executer"},
             {"type": "scrollTo", "object": "element (id, xpath, ..., et text=)", "property": "Nombre maximum de scroll vers le bas (8 par defaut)"},
-            {
-                "type": "executeSqlStoredProcedure",
-                "object": "Nom de Base de donnée",
-                "property": "Procedure Stoquée à executer"
-            },
-            {
-                "type": "calculateProperty",
-                "object": "Nom d'une Proprieté",
-                "property": "[opt] Nom d'une autre propriété"
-            },
+            {"type": "executeSqlStoredProcedure", "object": "Nom de Base de donnée", "property": "Procedure Stoquée à executer"},
+            {"type": "calculateProperty", "object": "Nom d'une Proprieté", "property": "[opt] Nom d'une autre propriété"},
             {"type": "doNothing", "object": null, "property": null},
             {"type": "mouseOverAndWait", "object": "Action Depreciée", "property": "Action Depreciée"},
             {"type": "removeDifference", "object": "Action Depreciée", "property": "Action Depreciée"}
@@ -3213,7 +3205,7 @@ function setPlaceholderAction(actionElement) {
             {"type": "openUrlLogin", "object": null, "property": null},
             {"type": "openUrl", "object": "URL to call (ex : http://www.domain.com)", "property": null},
             {"type": "executeJS", "object": "JavaScript to execute", "property": null},
-            {"type": "executeCommand", "object": "Command (ex : \"grep\")", "property": "Arguments (ex : \"--name toto\")"},
+            {"type": "executeShell", "object": "Command (ex : \"grep\")", "property": "Arguments (ex : \"--name toto\")"},
             {"type": "openApp", "object": "Application name or path", "property": null},
             {"type": "closeApp", "object": "Application name or path", "property": null},
             {"type": "select", "object": "Element path", "property": "Option path"},
@@ -3227,7 +3219,7 @@ function setPlaceholderAction(actionElement) {
             {"type": "executeSqlUpdate", "object": "Database Name", "property": "Script"},
             {"type": "executeSqlStoredProcedure", "object": "Database Name", "property": "Stored Procedure"},
             {"type": "calculateProperty", "object": "Property Name", "property": "[opt] Name of an other property"},
-            {"type": "scrollTo", "object": "element (id, xpath, ..., and text= to scroll to text)", "property": "number max of scroll down Max (default to 8)"},
+            {"type": "scrollTo", "object": "element ('id=ressource-id'. Empty if you want use text)", "property": "text (empty if you want use element)"},
             {"type": "doNothing", "object": null, "property": null},
             {"type": "mouseOverAndWait", "object": "[Deprecated]", "property": "[Deprecated]"},
             {"type": "removeDifference", "object": "[Deprecated]", "property": "[Deprecated]"}
