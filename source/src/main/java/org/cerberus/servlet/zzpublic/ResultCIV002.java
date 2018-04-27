@@ -212,7 +212,7 @@ public class ResultCIV002 extends HttpServlet {
                 float resultCal = (nbkop1 * pond1) + (nbkop2 * pond2) + (nbkop3 * pond3) + (nbkop4 * pond4);
                 if ((nbtotal > 0) && nbqu + nbne + nbpe > 0) {
                     result = "PE";
-                } else if ((resultCal < 1) && (nbtotal > 0)) {
+                } else if ((resultCal < 1) && (nbtotal > 0) && nbok > 0) {
                     result = "OK";
                 } else {
                     result = "KO";
