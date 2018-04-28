@@ -83,6 +83,15 @@ function initMassActionModal() {
             $("#massActionTestCaseModal #massApplication").prop("disabled", true);
         }
     });
+    $("#massActionTestCaseModal #massPriority").prop("disabled", true);
+    $("#priorityCheckbox").prop("checked", false);
+    $("#priorityCheckbox").change(function () {
+        if ($(this).prop("checked")) {
+            $("#massActionTestCaseModal #massPriority").prop("disabled", false);
+        } else {
+            $("#massActionTestCaseModal #massPriority").prop("disabled", true);
+        }
+    });
 }
 
 function displayPageLabel(doc) {
@@ -330,6 +339,10 @@ function massActionClick() {
             }
         });
 
+        // Load Status.
+        $("[name='massPriority']").empty();
+        displayInvariantList("massPriority", "PRIORITY", false);
+        
         $('#massActionTestCaseModal').modal('show');
     }
 }

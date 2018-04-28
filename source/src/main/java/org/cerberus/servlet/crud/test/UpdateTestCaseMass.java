@@ -91,6 +91,7 @@ public class UpdateTestCaseMass extends HttpServlet {
         String function = request.getParameter("massFunction");
         String status = request.getParameter("massStatus");
         String application = request.getParameter("massApplication");
+        String priority = request.getParameter("massPriority");
         // Parameter that we cannot secure as we need the html --> We DECODE them
 
         String[] myTest = request.getParameterValues("test");
@@ -139,11 +140,12 @@ public class UpdateTestCaseMass extends HttpServlet {
                     massErrorCounter++;
                     output_message.append("<br>id : ").append(cur_test).append("|").append(cur_testcase).append(" - ").append(msg.getDescription());
                 } else // We test that at least a data to update has been defined.
-                if ((function != null) || (status != null) || (application != null)) {
+                if ((function != null) || (status != null) || (application != null) || (priority != null)) {
                     tcData.setUsrModif(request.getRemoteUser());
                     tcData.setFunction(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(function, tcData.getFunction(), charset));
                     tcData.setStatus(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(status, tcData.getStatus(), charset));
                     tcData.setApplication(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(application, tcData.getApplication(), charset));
+                    tcData.setPriority(ParameterParserUtil.parseIntegerParam(priority, tcData.getPriority()));
                     ans = testCaseService.update(tcData.getTest(), tcData.getTestCase(), tcData);
 
                     if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {

@@ -387,8 +387,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append(",('PRIORITY','3',10,15,'Mid Priority',NULL,NULL,NULL)");
         b.append(",('PRIORITY','4',15,15,'Low Priority',NULL,NULL,NULL)");
         b.append(",('PRIORITY','5',20,15,'Lower Priority or cosmetic',NULL,NULL,NULL)");
-        b.append(",('PRIORITY','0',21,15,'No Priority defined',NULL,NULL,NULL)");
-        b.append(",('PRIORITY','99',25,15,'99',NULL,NULL,NULL)");
+        b.append(",('PRIORITY','99',25,15,'No Priority defined',NULL,NULL,NULL)");
         b.append(",('TCACTIVE','Y',1,16,'Yes',NULL,NULL,NULL)");
         b.append(",('TCACTIVE','N',2,16,'No',NULL,NULL,NULL)");
         b.append(",('TCREADONLY','N',1,17,'No',NULL,NULL,NULL)");
