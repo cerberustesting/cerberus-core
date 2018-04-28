@@ -295,7 +295,7 @@ public class ApplicationDAO implements IApplicationDAO {
         query.append("inner join testcase tc on a.application = tc.application ");
         query.append("inner join invariant inv on tc.`Status` = inv.`value` ");
         query.append("where a.system = ? ");
-        query.append("and inv.idname='TCSTATUS' and inv.gp1='Y' ");
+        query.append("and inv.idname='TCSTATUS' and inv.gp1<>'N' ");
         query.append("group by a.application, inv.`value` ");
 
         HashMap<String, HashMap<String, Integer>> result = new HashMap<String, HashMap<String, Integer>>();

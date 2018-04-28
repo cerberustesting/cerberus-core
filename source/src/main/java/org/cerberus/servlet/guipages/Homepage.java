@@ -113,7 +113,7 @@ public class Homepage extends HttpServlet {
 
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem()!=null) {
             IInvariantService invariantService = appContext.getBean(InvariantService.class);
-            AnswerList<Invariant> answerList = invariantService.readByIdnameGp1("TCSTATUS", "Y");
+            AnswerList<Invariant> answerList = invariantService.readByIdnameNotGp1("TCSTATUS", "N");
             List<Invariant> myInvariants = answerList.getDataList();
             for (String application : totalMap.keySet()) {
                 JSONObject row = extractRow(application, totalMap, myInvariants);

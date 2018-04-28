@@ -92,6 +92,11 @@ public class InvariantService implements IInvariantService {
     }
 
     @Override
+    public AnswerList readByIdnameNotGp1(String idName, String gp) {
+        return invariantDao.readByIdnameByNotGp1(idName, gp);
+    }
+
+    @Override
     public AnswerList readCountryListEnvironmentLastChanges(String system, Integer nbDays) {
         return invariantDao.readCountryListEnvironmentLastChanges(system, nbDays);
     }

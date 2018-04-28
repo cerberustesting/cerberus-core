@@ -59,6 +59,13 @@ public interface IInvariantDAO {
     AnswerList readByIdnameByGp1(String idName, String gp);
 
     /**
+     * @param idName
+     * @param gp
+     * @return
+     */
+    AnswerList readByIdnameByNotGp1(String idName, String gp);
+
+    /**
      * @param start
      * @param amount
      * @param column

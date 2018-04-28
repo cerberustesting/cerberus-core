@@ -59,6 +59,8 @@ public interface IInvariantService {
 
     AnswerList readByIdnameGp1(String idName, String gp);
 
+    AnswerList readByIdnameNotGp1(String idName, String gp);
+
     AnswerList readCountryListEnvironmentLastChanges(String system, Integer nbDays);
 
     AnswerList<Invariant> readByPublicByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);

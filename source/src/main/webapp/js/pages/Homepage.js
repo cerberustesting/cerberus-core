@@ -320,14 +320,16 @@ function aoColumnsFunc() {
     ];
 
     for (var s = 0; s < statusLen; s++) {
-        var obj = {
-            "data": status[s].value,
-            "bSortable": true,
-            "sWidth": "10px",
-            "sName": status[s].value,
-            "title": status[s].value
-        };
-        aoColumns.push(obj);
+        if (status[s].gp1 !== "N") {
+            var obj = {
+                "data": status[s].value,
+                "bSortable": true,
+                "sWidth": "10px",
+                "sName": status[s].value,
+                "title": status[s].value
+            };
+            aoColumns.push(obj);
+        }
     }
 
     return aoColumns;

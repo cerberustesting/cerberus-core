@@ -78,6 +78,9 @@ public class FindInvariantByID extends HttpServlet {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("value", myInvariant.getValue());
             jsonObject.put("description", myInvariant.getDescription());
+            jsonObject.put("gp1", myInvariant.getGp1());
+            jsonObject.put("gp2", myInvariant.getGp2());
+            jsonObject.put("gp3", myInvariant.getGp3());
             array.put(jsonObject);
         }
 
