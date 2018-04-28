@@ -341,7 +341,7 @@ function generateBarTooltip(data, statusOrder) {
 
 function buildBar(obj) {
     var buildBar;
-    var statusOrder = ["OK", "KO", "FA", "NA", "NE", "PE", "QU", "CA"];
+    var statusOrder = ["OK", "KO", "FA", "NA", "NE", "PE", "QU", "QE", "CA"];
     var len = statusOrder.length;
     //Build the title to show at the top of the bar by checking the value of the checkbox
     var params = $("#splitFilter input");
@@ -379,7 +379,7 @@ function buildBar(obj) {
 
 function buildLabelBar(obj) {
     var buildBar;
-    var statusOrder = ["OK", "KO", "FA", "NA", "NE", "PE", "QU", "CA"];
+    var statusOrder = ["OK", "KO", "FA", "NA", "NE", "PE", "QU", "QE", "CA"];
     var len = statusOrder.length;
     //Build the title to show at the top of the bar by checking the value of the checkbox
     var params = $("#splitLabelFilter input");
@@ -892,6 +892,7 @@ function createRow(row, isTotalRow) {
             $('<td>').text(row.NE).css("text-align", "right"),
             $('<td>').text(row.PE).css("text-align", "right"),
             $('<td>').text(row.QU).css("text-align", "right"),
+            $('<td>').text(row.QE).css("text-align", "right"),
             $('<td>').text(row.CA).css("text-align", "right"),
             $('<td>').text(row.notOKTotal).css("text-align", "right"),
             $('<td>').text(row.total).css("text-align", "right"),
@@ -902,6 +903,7 @@ function createRow(row, isTotalRow) {
             $('<td>').text(row.percNE + "%").css("text-align", "right"),
             $('<td>').text(row.percPE + "%").css("text-align", "right"),
             $('<td>').text(row.percQU + "%").css("text-align", "right"),
+            $('<td>').text(row.percQE + "%").css("text-align", "right"),
             $('<td>').text(row.percCA + "%").css("text-align", "right"),
             $('<td>').text(row.percNotOKTotal + "%").css("text-align", "right")
             );
@@ -933,6 +935,7 @@ function createHeaderRow() {
             $('<td>').text("NE").css("text-align", "center"),
             $('<td>').text("PE").css("text-align", "center"),
             $('<td>').text("QU").css("text-align", "center"),
+            $('<td>').text("QE").css("text-align", "center"),
             $('<td>').text("CA").css("text-align", "center"),
             $('<td>').text("NOT OK").css("text-align", "center"),
             $('<td>').text("TOTAL").css("text-align", "center"),
@@ -943,6 +946,7 @@ function createHeaderRow() {
             $('<td>').text("% NE").css("text-align", "center"),
             $('<td>').text("% PE").css("text-align", "center"),
             $('<td>').text("% QU").css("text-align", "center"),
+            $('<td>').text("% QE").css("text-align", "center"),
             $('<td>').text("% CA").css("text-align", "center"), /*.class("width80")*/
             $('<td>').text("% NOT OK").css("text-align", "center")
             );

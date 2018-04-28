@@ -64,6 +64,7 @@ public class CIService implements ICIService {
             int nbna = 0;
             int nbca = 0;
             int nbqu = 0;
+            int nbqe = 0;
             int nbtotal = 0;
 
             int nbkop1 = 0;
@@ -120,6 +121,9 @@ public class CIService implements ICIService {
                         case TestCaseExecution.CONTROLSTATUS_QU:
                             nbqu++;
                             break;
+                        case TestCaseExecution.CONTROLSTATUS_QE:
+                            nbqe++;
+                            break;
                     }
 
                     if (!curExe.getControlStatus().equals("OK") && !curExe.getControlStatus().equals("NE")
@@ -153,7 +157,7 @@ public class CIService implements ICIService {
             float pond4 = parameterService.getParameterFloatByKey("cerberus_ci_okcoefprio4", "", 0);
             String result;
             float resultCal = (nbkop1 * pond1) + (nbkop2 * pond2) + (nbkop3 * pond3) + (nbkop4 * pond4);
-            if ((nbtotal > 0) && nbqu + nbne + nbpe > 0) {
+            if ((nbtotal > 0) && nbqu + nbpe > 0) {
                 result = "PE";
             } else if ((resultCal < 1) && (nbtotal > 0) && nbok > 0) {
                 result = "OK";
@@ -181,6 +185,7 @@ public class CIService implements ICIService {
             jsonResponse.put("status_CA_nbOfExecution", nbca);
             jsonResponse.put("status_NE_nbOfExecution", nbne);
             jsonResponse.put("status_QU_nbOfExecution", nbqu);
+            jsonResponse.put("status_QE_nbOfExecution", nbqe);
             jsonResponse.put("TOTAL_nbOfExecution", nbtotal);
             jsonResponse.put("result", result);
             jsonResponse.put("ExecutionStart", String.valueOf(new Timestamp(longStart)));

@@ -101,6 +101,10 @@
                                             QU
                                         </label>
                                         <label class="checkbox-inline">
+                                            <input type="checkbox" name="QE" checked/>
+                                            QE
+                                        </label>
+                                        <label class="checkbox-inline">
                                             <input type="checkbox" name="PE" checked/>
                                             PE
                                         </label>

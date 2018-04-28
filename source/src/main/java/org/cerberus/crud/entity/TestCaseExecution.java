@@ -137,13 +137,15 @@ public class TestCaseExecution {
     /**
      * Invariant PROPERTY TYPE String.
      */
-    public static final String CONTROLSTATUS_OK = "OK";
-    public static final String CONTROLSTATUS_KO = "KO";
-    public static final String CONTROLSTATUS_NA = "NA";
-    public static final String CONTROLSTATUS_PE = "PE";
-    public static final String CONTROLSTATUS_CA = "CA";
-    public static final String CONTROLSTATUS_FA = "FA";
-    public static final String CONTROLSTATUS_QU = "QU";
+    public static final String CONTROLSTATUS_OK = "OK"; // Test executed and everything was fine.
+    public static final String CONTROLSTATUS_KO = "KO"; // Test executed and 1 control has reported a bug. --> Ticket to be open for dev team.
+    public static final String CONTROLSTATUS_FA = "FA"; // Test failed to be executed. --> Problem is in the test itself.
+    public static final String CONTROLSTATUS_NA = "NA"; // Test could not be executed because no data could be retreive for testing.
+    public static final String CONTROLSTATUS_NE = "NE"; // Test was not executed yet Waiting for manual testing.
+    public static final String CONTROLSTATUS_PE = "PE"; // Test is currently beeing executed.
+    public static final String CONTROLSTATUS_CA = "CA"; // Test has been cancelled by user.
+    public static final String CONTROLSTATUS_QU = "QU"; // Test is still waiting in queue.
+    public static final String CONTROLSTATUS_QE = "QE"; // Test is stuck in Queue.
 
     public String getSystem() {
         return system;
@@ -248,7 +250,6 @@ public class TestCaseExecution {
     public void setTestCaseExecutionDataMap(TreeMap<String, TestCaseExecutionData> testCaseExecutionDataMap) {
         this.testCaseExecutionDataMap = testCaseExecutionDataMap;
     }
-    public static final String CONTROLSTATUS_NE = "NE";
 
     public AppService getLastServiceCalled() {
         return lastServiceCalled;
