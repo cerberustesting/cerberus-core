@@ -9,6 +9,6 @@ SET DTBSRVHOST=localhost
 SET DTBSRVPORT=3306
 SET DTBNAME=cerberus
 SET DTBUSER=cerberus
-SET DTBPASSWD=toto
+SET DTBPASSWD=cerberus
 SET GLASSFISHPATH="C:\glassfish4\glassfish\bin\"
 
