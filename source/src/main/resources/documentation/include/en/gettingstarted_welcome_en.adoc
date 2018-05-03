@@ -36,17 +36,17 @@ NB : If the list of tag is defined, the search Text will be ignored.
 
 You will find below definitions of Cerberus common terms.
 
-* *Application* : Technical component
-* *Battery* : Group of TestCase to be executed together. This feature should be replaced by labels soon.
-* *Campaign* : One or several batteries with execution parameters (country - environment - browser). Can also be created with labels instead of batteries.
-* *TestCase* : Test scénario made of steps, actions and controls. (User story)
+* *System* : Business Application or CI (Configuration Item)
+* *Application* : Technical component. Applications are linked to a single System.
+* *Battery* : (obsolete since 3.0 release) Group of TestCase to be executed together.
+* *Campaign* : Group of testcases (selected using labels) all linked to execution parameters (country - environment - browser - robot (optionnal)). Batteries were used instead of labels in release before 3.0
+* *TestCase* : Test scénario made of steps, actions and controls. (User story implementation in Cerberus)
 * *Label* : Mark to describe TestCases, so you can group and filter easily.
-* *System* : Business Application ou CI
 * *Test* : Group of TestCases, Test is also considered as an application function. Executions can be sorted by Test.
 
-==== Représentation
+==== Representation
 
-You will find in this section a grphical representation of the main Cerberus elements.
+You will find in this section a graphical representation of the main Cerberus elements.
 
 Below the system :
 
