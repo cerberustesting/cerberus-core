@@ -968,14 +968,14 @@ public class TestDataLibDAO implements ITestDataLibDAO {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
             	int i = 1;
-                preStat.setString(i++, oldName);
                 preStat.setString(i++, newName);
+                preStat.setString(i++, oldName);
 
                 int rowsUpdated = preStat.executeUpdate();
 
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                 // Message to customize : X datalib updated using the rowsUpdated variable
-                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE").replace("success!", "success! - Row(s) updated : "+String.valueOf(rowsUpdated)));
 
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());

@@ -20,6 +20,8 @@
 package org.cerberus.servlet.crud.testdata;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -61,31 +63,38 @@ public class BulkRenameDataLib extends HttpServlet {
 
 		JSONObject jsonResponse = new JSONObject();
 		response.setContentType("application/json");
+		response.setCharacterEncoding("utf8");
 
 		Answer ans = new Answer();
+		List<Answer> ansList = new ArrayList<Answer>();
 
-		/**
-		 * Parsing and securing all required parameters.
-		 */
+		boolean error = true;
+
 		try {
-			if (request.getParameter("oldname") != null || !request.getParameter("newname").isEmpty()) {
-				// if any element is null, an error message is displayed and no operation is performed
+			/**
+			 * Parsing and securing all required parameters.
+			 */
+			if ( (request.getParameter("oldname") != null && !request.getParameter("oldname").isEmpty()) && (request.getParameter("newname") != null && !request.getParameter("newname").isEmpty())) {				
+				error = false;
+			} 
+		} finally {
+			if (error) {
 				MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_VALIDATIONS_ERROR);
+				msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "at least one of the two required parameter is empty"));
 				ans.setResultMessage(msg);
-			}
-			else {
-				//tdls.bulkRename(request.getParameter("oldname"), request.getParameter("newname"));
+			} else {
+				ansList = tdls.bulkRename(request.getParameter("oldname"), request.getParameter("newname"));
 				MessageEvent msg = new MessageEvent(MessageEventEnum.GENERIC_OK);
 				ans.setResultMessage(msg);
 			}
-
-		} catch (NumberFormatException ex) {
-			LOG.warn(ex);
-		} finally {
 			try {
 				//sets the message returned by the operations
 				jsonResponse.put("messageType", ans.getResultMessage().getMessage().getCodeString());
 				jsonResponse.put("message", ans.getResultMessage().getDescription());
+				if (!error) {
+				jsonResponse.put("DataLibAnswer", ansList.get(0).getResultMessage().getDescription());
+				jsonResponse.put("TestCasePropertiesAnswer", ansList.get(1).getResultMessage().getDescription());
+				}
 				response.getWriter().print(jsonResponse);
 				response.getWriter().flush();
 			} catch (JSONException ex) {
@@ -93,12 +102,23 @@ public class BulkRenameDataLib extends HttpServlet {
 				response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
 				response.getWriter().flush();
 			}
-		} 
+		}
+	} 
+
+	@Override
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		processRequest(request, response);
 	}
-	
-	 @Override
-	    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-	            throws ServletException, IOException {
-	        processRequest(request, response);
-	    }
+
+	@Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		processRequest(request, response);
+	}
+
+	@Override
+	public String getServletInfo() {
+		return "Process a bulk rename for a Datalib name in the Datalib and TestCaseCountryProperties";
+	}
 }
