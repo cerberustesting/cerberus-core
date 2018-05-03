@@ -28,22 +28,44 @@ image:testcaseshortcutduplicate.png[TestCaseDuplicate,200,200]
 
 | Test | Test name on which testcase is linked.
 
-| Testcase | An ID.
+| Testcase | An ID (alphanumeric caracter).
 
-| Description | Define if the test is active.
+| Status | Used to implement a workflow and gives way to filter Testcase.
+
+| Active | Boolean that defines if the Testcase can be launched.
+
+| Short Description | Provide a brief introduction about the Testcase.
 
 | Application | The application for which the testcase is defined.
 
+| Function | Another categorization field.
+
+| Priority | Assign to any of its execution a certain importance to calculate the CI score.
+
+| Detailed Description | Provide more detail about the Testcase. Isn't visible in reports.
+
+| Comment | Should be use in addition with the short description to give temporary comment.
+
 |=== 
+
+The Activation Criterias defines condition to enable/block the Testcase to be launched in specific context (countries, environment...). This level of specification is the most important (override all the others conditions)
+
+A Testcase can be linked to multiple Labels depending on their assigned system (see labels section)
 
 === Create TestCase 
 
-. Go to *[red]#TestCase -> TestCase List#*. image:testcasecreate.png[CreateTestCase,250,250,float="right",align="center"]
+. Go to *[red]#TestCase -> TestCase List#*.
 . Click on *[red]#Create TestCase#*.
-.. Feed the *[red]#Test#* field with the test name.
-.. Feed the *[red]#Description#* field with a short description of this test.
-.. Continue to describe.
-.. Click on *[red]#Save#*.
+
+image:testcasecreate.png[CreateTestCase,250,250,float="right",align="center"]
+
+Only the following field are mandatory:
+
+.. Feed the *[red]#Test#* field with the test name. (a default value should be selected)
+.. Modify the *[red]#Testcase ID#* if necessary (it can be modified after, but the according execution history will be lost)
+.. Select the *[red]#Application#*
+.. Continue to describe
+.. Click on *[red]#Save#* as soon as you're done.
 
 === Implement TestCase
 
@@ -76,34 +98,34 @@ image:testcasemovestep1.png[testcaseusestep] image:testcasemovestep2.png[testcas
 |=== 
 
 | *Action* | *Description* | *Example* 
-| Unknown | Unknown action. Default Action when creating a new action | 
+| Unknown | Unknown action. Default Action when creating a new action. Warning: make the execution fail. | 
 | click | will allow you to click on an element inside the current page. 
 *[red]#Value1#*	Identifier and name of the element to click in the form of : identifier=html_reference. Example : id=html_reference | 
-| mouseLeftButtonPress |TBD | 
-| mouseLeftButtonRelease | TBD | 
+| mouseLeftButtonPress | allow to press and keep the button pressed until the next ButtonRelease action | 
+| mouseLeftButtonRelease | release the mouse button. Usefull with ButtonPress to perform drag & drop | 
 | doubleClick |  will allow you to double click on an element inside the current page. 
 *[red]#Value1#*	Identifier and name of the element to click in the form of : identifier=html_reference. Example : id=html_reference | 
 | rightClick |  will allow you to right click on an element inside the current page. 
 *[red]#Value1#*	Identifier and name of the element to click in the form of : identifier=html_reference. Example : id=html_reference | 
-| mouseOver | Mouse cursor over an object *[red]#Element path#* : the id of the element | 
+| mouseOver | mouse cursor over an object *[red]#Element path#* : the id of the element | 
 | focustoIframe | TBD | 
 | focustoDefaultIframe | TBD | 
-| switchToWindow | When the Test case need to switch to another window (like popup dialog) this action is used. Just specify the title or the URL of the other window to switch to this window. | title=titleOfThisNewWindow or url=http://url_of_this_new_window
+| switchToWindow | when the Test case need to switch to another window (like popup dialog) this action is used. Just specify the title or the URL of the other window to switch to this window. | title=titleOfThisNewWindow or url=http://url_of_this_new_window
 | manageDialog | TBD | 
-| OpenUrlWithBase | TBD | 
-| OpenUrlLogin | TBD | 
-| OpenUrl | TBD | 
-| executeJS | TBD | 
+| OpenUrlWithBase | OpenUrl action using the based defined in the environment section | /cerberustesting
+| OpenUrlLogin | OpenUrl action using credential | 
+| OpenUrl | Open a specified url | https://github.com
+| executeJS | execute a JS script (no output can be retrieved) | 
 | openApp | TBD | 
 | closeApp | TBD | 
-| select | TBD | 
+| select | select an option in a <select> tag. this 'text' must be defined : <option value="text"> | 
 | keypress | will allow you to press any key in the current web page. *[red]#Value1#* : Location of the element from which press the key. *[red]#Value2#* : Keycode of the key to press Example : ENTER |
 | type | Write a data in a field. *[red]#Element path#* : the id of the field  *[red]#Property Name#* : the property containing the value to type (can be a property or text. | 
 | hidekeyboard | Hide the currently visible keyboard | 
 | swipe | The action simulates a user pressing down on the screen, sliding to another position, and removing their finger from the screen. Swipe action can be used neither with unique parameter *[red]#UP#*,*[red]#DOWN#*,*[red]#LEFT#*,*[red]#RIGHT#*, or with combination of parameter *[red]#CUSTOM#* and *[red]#x1;y1;x2;y2#*, which are coordinates of origin point (x1;y1) and #relatives# coodinates of destination point (x2;y2) | swipe UP : will swipe from the 2/3 to the 1/3 of the screen. swipe CUSTOM 100;100;0;100 : will swipe from the point (100;100) to the point (100;200)
-| wait | Wait for a certain amount of time Feed a number (ms) or wait for element present feed an element (xpath) | 
+| wait | Wait for a certain amount of time Feed a number (ms) or wait for element present feed an element (xpath) |
 | waitVanish | TBD | 
-| callService | TBD | 
+| callService | call a service defined the Service Library and provide the output within the execution | 
 | executeSqlUpdate |  will allow you to execute SQL update (insert,delete,update). Feed the *[red]#Database Name#* and the *[red]#Script#* to execute. Database has to be declared to your system and environment. | 
 | executeSqlStoredProcedure | will allow you to execute SQL stored procedure. Feed the *[red]#Database Name#* and the *[red]#Stored Procedure#* to execute. Database has to be declared to your system and environment. | 
 | calculateProperty | will allow you to calculate a *[red]#Property#* defined in the property section of the test case.
@@ -125,8 +147,8 @@ image:testcasemovestep1.png[testcaseusestep] image:testcasemovestep2.png[testcas
 | verifyElementinElement | TBD | 
 | verifyElementEquals | TBD | 
 | verifyElementNotClickable | TBD | 
-| verifyElementNotPresent | TBD | 
-| verifyElementNotVisible | TBD | 
+| verifyElementNotPresent | *[green]#OK#* if *[red]#Element#* is  not found (from the source code) on the current page. | 
+| verifyElementNotVisible | *[green]#OK#* if *[red]#Element#* is found and visible (according to rendering) on the current page. | 
 | verifyElementPresent | *[green]#OK#* if *[red]#Element#* is found on the current page. | 
 | verifyElementVisible | *[green]#OK#* if *[red]#Element#* is visible on the current page. | 
 | verifyElementDifferent | TBD | 
@@ -150,10 +172,9 @@ image:testcasemovestep1.png[testcaseusestep] image:testcasemovestep2.png[testcas
 
 ==== Property
 
-When Clicking on Button image:buttonmanageproperties.png[buttonManageProperties], the Window "Manage Properties" will open.
-From there you can :
+When Clicking on Tab image:buttonmanageproperties.png[buttonManageProperties], the Property menu will appear.
+From there you can manage your TestCase properties.
 
-* either manage your TestCase properties
 * or see your inherited properties - coming from the step libraries of your use steps.
 
 image:windowmanageproperties.png[windowManageProperties]
