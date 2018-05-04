@@ -172,10 +172,8 @@ image:testcasemovestep1.png[testcaseusestep] image:testcasemovestep2.png[testcas
 
 ==== Property
 
-When Clicking on Tab image:buttonmanageproperties.png[buttonManageProperties], the Property menu will appear.
-From there you can manage your TestCase properties.
-
-* or see your inherited properties - coming from the step libraries of your use steps.
+When clicking on Tab image:buttonmanageproperties.png[buttonManageProperties], the Property menu will appear.
+From there you can manage your TestCase properties or see your Inherited Properties - coming from the step libraries of your use steps.
 
 image:windowmanageproperties.png[windowManageProperties]
 
@@ -202,6 +200,45 @@ image:windowmanageproperties.png[windowManageProperties]
 | Countries | Countries for which the property will be calculated (environment parameter).
 
 |=== 
+
+==== Property Types
+
+|=== 
+
+| *Field* | *Description* | *Example*  
+
+| text | assign the property an alphanumeric value. Can invoke other properties | `%system.EXECUTIONID%_test`
+
+| getFromDataLib | query the corresponding datalib (identified by its name) | `Datalib_Name`
+
+| getFromSQL | run a specific query an get the first, and only the first, result. The DB must be specified | `select TestCase from testcasestepactioncontrol where Control = 'verifyElementInElement'`
+
+| getFromJS | Execute the specified JavaScript script without getting any output | `var xPathRes = document.evaluate ("//*[@data-cerberus='button_basket_ProductBloc_modifyProduct1']", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null); xPathRes.singleNodeValue.click();`
+
+| getFromJson | JSON path to get a certain element from a service call | `$.status`
+
+| getFromXml | Xpath to get a certain element from a service call | `//OrderId/text()`
+
+| getFromGroovy | Execute the specified Groovy script and get the last defined variable | `'%property.date%'.replace('\','-').substring(0,10)`
+
+|===
+
+===== SQL queries management:
+
+- queries can be stored inside the test case and launched using getFromSQL. Only one value of the first row can be retrieved.
+
+- queries can be stored inside a Datalib, according to its DB. Several values of the first row can be retrieved.
+
+We recommend the Datalib since its simplifies the modification of any request, if some queries can be re-used.
+
+===== Service management:
+
+A service must be referenced in Service Library
+
+- it can be called using the callService property, parsing will be performed using properties (getFromJson, getFromXml)
+
+- it can be stored in a datalib and all the field will be parsed using the Subdatas.
+
 
 ==== Variables
 
