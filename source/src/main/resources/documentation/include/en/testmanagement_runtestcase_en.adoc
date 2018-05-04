@@ -1,8 +1,55 @@
-In this section, you will find information on test execution in Cerberus.
+The run options are accessible using the menu Run > Run Test Case
+
+image:runtestcasemenubutton.png[RunTestCaseMenu]
+
+The differents sections let the user select the test case(s) to launch and choose its execution parameters.
+
+* Selection type
+* Environment & Country
+* Robot settings
+* Execution settings
+
+## Selection Type
 
 image:runtestselection.png[RunTestSelection]
 
-image:runrobotsettings.png[RunRobotSettings, 500, 500]
+Manual selection let the user select one or several test cases using the filters.
+
+image:extendedtestcasefilters.png[ExtendedTestCaseFilters]
+
+Campaign selection let the user select a campaign from a dropdown menu. Clicking 'load' button display the selected test cases in the section below.
+
+image:campaignselection.png[CampaignSelection]
+
+## Environment & Country
+
+For manual selection, no country and environment are selected. 
+
+For campaign selection, some environments and countries can be checked if they are configured in the Test Campaigns
+
+image:envcountries.png[EnvironmentCountries]
+
+Warning: the environment and countries must be configured for the related applications. Besides, the testcase attributes override the configuration (e.g. Active in PROD)
+
+## Robots settings
+
+image:runrobotsettings.png[RunRobotSettings]
+
+The robots settings can be linked to a campaign. If so, the robot(s) will be automatically selected when the corresponding campaign is loaded.
+
+However, if the user changes this value, it will be overriden by his selection.
+
+'Save Robot Preferencies' button save these settings in the browser cache of the device.
+
+The selected robot can be edited using the left button. A new robot can be created using the right one. 
+
+## Execution settings
 
 image:runexecutionsettings.png[RunExecutionSettings, 500, 500]
 
+* Tag : regroup all the execution in the same tag. It help identify this execution for reporting sake. If no value, the tag will be a timestamp.
+* Screenshot : define if screenshots have to be taken and the frequency.
+* Timeout : define the maximum time to spent in an action or control. Can be defined elsewhere for specific actions (SQL query)
+* Retries : Defined the number of retries for each test cases. A retry is a re submission of a testcase (in the queue) if its status is different from OK.
+* Priority : define the priority for all the test cases (reminder: the lowest (=0) the most important). Default value is 1000. Tips: Use 0 priority only when relaunching manually a test case. 
+* Manual Execution : define the test case execution type: automatic or manual. default value is 'automatic'
