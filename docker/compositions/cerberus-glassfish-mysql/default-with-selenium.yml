@@ -85,7 +85,7 @@ services:
   selenium-node-firefox:
     image: selenium/node-firefox-debug:latest
     environment:
-      HUB_PORT_4444_TCP_ADDR: selenium-hub
+      HUB_HOST: selenium-hub
     expose:
       - "5900"
     ports:
@@ -96,7 +96,7 @@ services:
   selenium-node-chrome:
     image: selenium/node-chrome-debug:latest
     environment:
-      HUB_PORT_4444_TCP_ADDR: selenium-hub
+      HUB_HOST: selenium-hub
     expose:
       - "5900"
     ports:
