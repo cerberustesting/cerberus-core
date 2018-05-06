@@ -70,7 +70,6 @@ public class ExecutionCheckService implements IExecutionCheckService {
              */
             if (this.checkTestCaseActive(tCExecution.getTestCaseObj())
                     && this.checkTestActive(tCExecution.getTestObj())
-                    && this.checkTestCaseNotManual(tCExecution)
                     && this.checkCountry(tCExecution)
                     && this.checkMaintenanceTime(tCExecution)) {
                 LOG.debug("Execution is checked and can proceed.");

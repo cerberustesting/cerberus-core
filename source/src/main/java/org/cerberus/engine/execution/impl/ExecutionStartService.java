@@ -370,6 +370,19 @@ public class ExecutionStartService implements IExecutionStartService {
         LOG.debug("Checks performed -- > OK to continue.");
 
         /**
+         * Changing Automatic execution flag depending on test case information.
+         */
+        if (tCExecution.getManualExecution().equals(TestCaseExecution.MANUAL_A)) {
+            if (tCExecution.getTestCaseObj().getGroup().equals(TestCase.GROUP_AUTOMATED)
+                    || tCExecution.getTestCaseObj().getGroup().equals(TestCase.GROUP_PRIVATE)) {
+                tCExecution.setManualExecution(TestCaseExecution.MANUAL_N);
+
+            } else {
+                tCExecution.setManualExecution(TestCaseExecution.MANUAL_Y);
+            }
+        }
+
+        /**
          * For GUI application, check if Browser is supported.
          */
         if (!tCExecution.getManualExecution().equals("Y") && tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {

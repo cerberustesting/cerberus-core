@@ -82,6 +82,10 @@ public class TestCase {
     private List<TestCaseStepBatch> testCaseStepBatch;
     private List<TestCaseLabel> testCaseLabel;
 
+    public static final String GROUP_MANUAL = "MANUAL";
+    public static final String GROUP_AUTOMATED = "AUTOMATED";
+    public static final String GROUP_PRIVATE = "PRIVATE";
+
     private static final Logger LOG = LogManager.getLogger(TestCase.class);
 
     public String getScreenSize() {
@@ -427,7 +431,7 @@ public class TestCase {
     public void setDateModif(Timestamp dateModif) {
         this.dateModif = dateModif;
     }
-    
+
     public int getTestCaseVersion() {
         return testCaseVersion;
     }

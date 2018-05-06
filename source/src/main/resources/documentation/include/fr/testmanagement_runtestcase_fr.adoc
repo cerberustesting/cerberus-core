@@ -27,20 +27,34 @@ image:runrobotsettings.png[RunRobotSettings, 500, 500]
 
 image:runexecutionsettings.png[RunExecutionSettings, 500, 500]
 
-|=== 
-
-| *Field* | *Description*  
-
-| Select Robot Config | Permet de charger la configuration d'un robot, ou de selectionner la personalisation d'un robot.
-
-| Selenium Server IP | Cell in column 2, row 3
-
-| Selenium Server Port | Cell in column 2, row 3
-
-| Browser | Le ou les navigateurs sur lesquel les cas de tests seront lancé.
-
-| Version    | This correspond to the URL that points to the page where a new bug can be created on the Bug system of the application. More detail in the <<New Bug URL>> section.
+* Tag : regroup all the execution in the same tag. It help identify this execution for reporting sake. If no value, the tag will be a timestamp.
+* Screenshot : define if screenshots have to be taken and the frequency.
+* Timeout : define the maximum time (in ms) to spent in an action or control. Correspond to the time Cerberus will wait until it consider that a field or object is not available.
+* Retries : Defined the number of retries for each test cases. A retry is a re submission of a testcase (in the queue) if its status is different from OK.
+* Priority : define the priority for all the test cases (reminder: the lowest (=0) the most important). Default value is 1000. Tips: Use 0 priority only when relaunching manually a test case. 
+* Manual Execution : define the test case execution type: Y : manual, N : Automatic, A : Automaticly determined from test case. default value is 'N'
 
 |=== 
 
+| *Execution parameter \ Test Case Group* | *AUTOMATED* | *MANUAL*  | *PRIVATE*   
+| N | Automated execution | Automated execution | Automated execution
+| Y | Manual execution | Manual execution | Manual execution
+| A | Automated execution | Manual Execution | Automated execution
 
+|=== 
+
+=== Execution result status
+
+image:executionstatus.png[ExecutionStatus]
+
+Here is a summary of all execution status with their corresponding meanings.
+
+* OK : The execution was performed correctly and all controls were OK.
+* KO : The execution was performed correcly and at least one control failed resulting a global KO. That means that a bug needs to be reported to development teams.
+* FA : The execution did not performed correctly and needs a correction from the team that is in charge of managing the testcases. It couls be a failed SQL or action during the test.
+* NA : Test could not be executed as a data could not be retreived. That probably means that the test is not possible in the current environment/status.
+* NE : Test Case was not yet executed (waiting a manual execution).
+* PE : Test Case is currently running.
+* QU : Test Case is still waiting in the queue for ressources or constrains to be released.
+* QE : Test Case failed in the queue and will not be triggered.
+* CA : Test Case has been cancelled by user.

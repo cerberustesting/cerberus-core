@@ -9,7 +9,8 @@
 * Added new system variables : "TOMORROW-yyyy", "TOMORROW-MM", "TOMORROW-dd", "TOMORROW-doy".
 * New Interactive tutorial available from Documentation menu.
 * For Application Services, GET Query String is also feed from active Request details (key/value). Just like Postman does.
-
+* Various documentation improvements.
+* New QE execution status in order to split execution still in queue from the ones that will not be processed (because in ERROR). #1707
 
 * For Mobile devices (Appium)
 ** *Android* : Fix a Bug on webview with Android devices : can't type correctly a field.

@@ -147,6 +147,10 @@ public class TestCaseExecution {
     public static final String CONTROLSTATUS_QU = "QU"; // Test is still waiting in queue.
     public static final String CONTROLSTATUS_QE = "QE"; // Test is stuck in Queue.
 
+    public static final String MANUAL_Y = "Y";
+    public static final String MANUAL_N = "N";
+    public static final String MANUAL_A = "A";
+
     public String getSystem() {
         return system;
     }
@@ -838,13 +842,13 @@ public class TestCaseExecution {
     public void setCapabilities(List<RobotCapability> capabilities) {
         this.capabilities = capabilities;
     }
-    
+
     public int getTestCaseVersion() {
-    	return this.testCaseVersion;
+        return this.testCaseVersion;
     }
-    
+
     public void setTestCaseVersion(int testCaseVersion) {
-    	this.testCaseVersion = testCaseVersion;
+        this.testCaseVersion = testCaseVersion;
     }
 
     /**

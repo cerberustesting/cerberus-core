@@ -7676,6 +7676,11 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // 1333
         a.add("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('ACTION', 'scrollTo', '13003', 'Scroll to element or text', 'Scroll to element or text');");
 
+        // add Execution parameter entry for Manual Execution.
+        // 1334
+        a.add("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('MANUALEXECUTION', 'A', '10', 'Determined from Test Case Group value.', '');");
+        
+        
         return a;
     }
 
