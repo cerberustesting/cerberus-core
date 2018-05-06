@@ -78,39 +78,39 @@
                                     <div class="form-group marginBottom20" id="statusFilter">
                                         <label class="checkbox-inline">
                                             <input type="checkbox" name="OK" checked/>
-                                            OK
+                                            <span class="fontOK">OK</span>
                                         </label>
                                         <label class="checkbox-inline">
                                             <input type="checkbox" name="KO" checked/>
-                                            KO
+                                            <span class="fontKO">KO</span>
                                         </label>
                                         <label class="checkbox-inline">
                                             <input type="checkbox" name="FA" checked/>
-                                            FA
+                                            <span class="fontFA">FA</span>
                                         </label>
                                         <label class="checkbox-inline">
                                             <input type="checkbox" name="NA" checked/>
-                                            NA
+                                            <span class="fontNA">NA</span>
                                         </label>
                                         <label class="checkbox-inline">
                                             <input type="checkbox" name="NE" checked/>
-                                            NE
-                                        </label>
-                                        <label class="checkbox-inline">
-                                            <input type="checkbox" name="QU" checked/>
-                                            QU
-                                        </label>
-                                        <label class="checkbox-inline">
-                                            <input type="checkbox" name="QE" checked/>
-                                            QE
+                                            <span class="fontNE">NE</span>
                                         </label>
                                         <label class="checkbox-inline">
                                             <input type="checkbox" name="PE" checked/>
-                                            PE
+                                            <span class="fontPE">PE</span>
+                                        </label>
+                                        <label class="checkbox-inline">
+                                            <input type="checkbox" name="QU" checked/>
+                                            <span class="fontQU">QU</span>
+                                        </label>
+                                        <label class="checkbox-inline">
+                                            <input type="checkbox" name="QE" checked/>
+                                            <span class="fontQE">QE</span>
                                         </label>
                                         <label class="checkbox-inline">
                                             <input type="checkbox" name="CA" checked/>
-                                            CA
+                                            <span class="fontCA">CA</span>
                                         </label>
                                     </div>
                                 </div>

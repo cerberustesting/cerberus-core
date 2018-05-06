@@ -53,15 +53,159 @@
     font-size: 1.5em;
 }
 
+/* OK */
+
 .panelOK {
     border-color: #5CB85C;
 }
-
+.fontOK {
+    color: #5CB85C;
+}
 .panelOK .panel-heading {
     border-color: #5CB85C;
     color: #FFF;
     background-color: #5CB85C;
 }
+.statusOK {
+    background-color: #5CB85C;
+}
+
+/* KO */
+
+.panelKO {
+    border-color: #D9534F;
+}
+.fontKO {
+    color: #D9534F;
+}
+.panelKO .panel-heading {
+    border-color: #D9534F;
+    color: #FFF;
+    background-color: #D9534F;
+}
+.statusKO {
+    background-color: #D9534F; 
+}
+
+/* FA */
+
+.panelFA {
+    border-color: #F0AD4E;
+}
+.fontFA {
+    color: #F0AD4E;
+}
+.panelFA .panel-heading {
+    border-color: #F0AD4E;
+    color: #FFF;
+    background-color: #F0AD4E;
+}
+.statusFA {
+    background-color: #F0AD4E; 
+}
+
+/* CA */
+
+.panelCA {
+    border-color: #F0AD4E;
+}
+.fontCA {
+    color: #F0AD4E;
+}
+.panelCA .panel-heading {
+    border-color: #F0AD4E;
+    color: #FFF;
+    background-color: #F0AD4E;
+}
+.statusCA {
+    background-color: #F0AD4E; 
+}
+
+/* NA */
+
+.panelNA {
+    border-color: #F1C40F;
+}
+.fontNA {
+    color: #F1C40F;
+}
+.panelNA .panel-heading {
+    border-color: #F1C40F;
+    color: #FFF;
+    background-color: #F1C40F;
+}
+.statusNA {
+    background-color: #F1C40F; 
+}
+
+/* NE */
+
+.panelNE {
+    border-color: #34495E;
+}
+.fontNE {
+    color: #34495E;
+}
+.panelNE .panel-heading {
+    border-color: #34495E;
+    color: #FFF;
+    background-color: #34495E;
+}
+.statusNE {
+    background-color: #34495E; 
+}
+
+/* PE */
+
+.panelPE {
+    border-color: #3498DB;
+}
+.fontPE {
+    color: #3498DB;
+}
+.panelPE .panel-heading {
+    border-color: #3498DB;
+    color: #FFF;
+    background-color: #3498DB;
+}
+.statusPE {
+    background-color: #3498DB; 
+}
+
+/* QU */
+
+.panelQU {
+    border-color: #BF00BF;
+}
+.fontQU {
+    color: #BF00BF;
+}
+.panelQU .panel-heading {
+    border-color: #BF00BF;
+    color: #FFF;
+    background-color: #BF00BF;
+}
+.statusQU {
+    background-color: #BF00BF; 
+}
+
+/* QE */
+
+.panelQE {
+    border-color: #5C025C;
+}
+.fontQE {
+    color: #5C025C;
+}
+.panelQE .panel-heading {
+    border-color: #5C025C;
+    color: #FFF;
+    background-color: #5C025C;
+}
+.statusQE {
+    background-color: #5C025C; 
+}
+
 
 .panelTOCLEAN {
     border-color: #C5C200;
@@ -73,75 +217,6 @@
     background-color: #C5C200;
 }
 
-.panelKO {
-    border-color: #D9534F;
-}
-
-.panelKO .panel-heading {
-    border-color: #D9534F;
-    color: #FFF;
-    background-color: #D9534F;
-}
-
-.panelFA {
-    border-color: #F0AD4E;
-}
-
-.panelFA .panel-heading {
-    border-color: #F0AD4E;
-    color: #FFF;
-    background-color: #F0AD4E;
-}
-
-.panelCA {
-    border-color: #F0AD4E;
-}
-
-.panelCA .panel-heading {
-    border-color: #F0AD4E;
-    color: #FFF;
-    background-color: #F0AD4E;
-}
-
-.panelNA {
-    border-color: #F1C40F;
-}
-
-.panelNA .panel-heading {
-    border-color: #F1C40F;
-    color: #FFF;
-    background-color: #F1C40F;
-}
-
-.panelNE {
-    border-color: #34495E;
-}
-
-.panelNE .panel-heading {
-    border-color: #34495E;
-    color: #FFF;
-    background-color: #34495E;
-}
-
-.panelPE {
-    border-color: #3498DB;
-}
-
-.panelPE .panel-heading {
-    border-color: #3498DB;
-    color: #FFF;
-    background-color: #3498DB;
-}
-
-.panelQU {
-    border-color: #BF00BF;
-}
-
-.panelQU .panel-heading {
-    border-color: #BF00BF;
-    color: #FFF;
-    background-color: #BF00BF;
-}
 
 .status {
     font-weight: 900;
@@ -176,45 +251,8 @@ text {
     text-overflow: ellipsis;
 }
 
-/*.table > tbody > tr > td {
-    border-top: 0px;
-    border-style: none;
-}*/
-
 .total {
     font-size: 20px;
-}
-
-.statusOK {
-    background-color: #5CB85C;
-}
-
-.statusKO {
-    background-color: #D9534F; 
-}
-
-.statusNA {
-    background-color: #F1C40F; 
-}
-
-.statusNE {
-    background-color: #34495E; 
-}
-
-.statusPE {
-    background-color: #3498DB; 
-}
-
-.statusFA {
-    background-color: #F0AD4E; 
-}
-
-.statusCA {
-    background-color: #F0AD4E; 
-}
-
-.statusQU {
-    background-color: #BF00BF; 
 }
 
 #statusByEnvCountryBrowser span {

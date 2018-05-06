@@ -608,7 +608,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         } else if ("QU".equals(controlStatus)) {
             color = "#BF00BF";
         } else if ("QE".equals(controlStatus)) {
-            color = "#BF00BF";
+            color = "#5C025C";
         } else {
             color = "#000000";
         }

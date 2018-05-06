@@ -17,6 +17,9 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+var statusOrder = ["OK", "KO", "FA", "NA", "NE", "PE", "QU", "QE", "CA"];
+
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
         displayPageLabel();
@@ -94,8 +97,6 @@ $.when($.getScript("js/global/global.js")).then(function () {
         });
 
         //configure and create the dataTable
-        //var configurations = new TableConfigurationsServerSide("homePageTable", "Homepage?system=" + getSys(), "aaData", aoColumnsFunc());
-        //var configurations = new TableConfigurationsServerSide("homePageTable", "Homepage?system=" + getSys(), "aaData", aoColumnsFunc());
         var jqxhr = $.getJSON("Homepage", "system=" + getSys());
 
         $.when(jqxhr).then(function (result) {
@@ -189,7 +190,7 @@ function generateTagLink(tagName) {
     return link;
 }
 
-function generateTooltip(data, statusOrder, tag) {
+function generateTooltip(data, tag) {
     var htmlRes;
     var len = statusOrder.length;
 
@@ -197,7 +198,7 @@ function generateTooltip(data, statusOrder, tag) {
     for (var index = 0; index < len; index++) {
         var status = statusOrder[index];
 
-        if (data.hasOwnProperty(status)) {
+        if ((data.hasOwnProperty(status)) && (data[status] > 0)) {
             htmlRes += "<div>\n\
                         <span class='color-box status" + status + "'></span>\n\
                         <strong> " + status + " : </strong>" + data[status] + "</div>";
@@ -210,9 +211,8 @@ function generateTooltip(data, statusOrder, tag) {
 function generateTagReport(data, tag, rowId) {
     var divId = "#tagExecStatusRow" + rowId;
     var reportArea = $(divId);
-    var statusOrder = ["OK", "KO", "FA", "NA", "NE", "PE", "QU", "CA"];
     var buildBar;
-    var tooltip = generateTooltip(data, statusOrder, tag);
+    var tooltip = generateTooltip(data, tag);
     var len = statusOrder.length;
 
     buildBar = '<div>' + generateTagLink(tag) + '</div><div class="xs-only" style="display: inline;">Total executions : ' + data.total + '</div>\n\
@@ -220,7 +220,7 @@ function generateTagReport(data, tag, rowId) {
     for (var index = 0; index < len; index++) {
         var status = statusOrder[index];
 
-        if (data.hasOwnProperty(status)) {
+        if ((data.hasOwnProperty(status)) && (data[status] > 0)) {
             var percent = (data[status] / data.total) * 100;
             var roundPercent = Math.round(percent * 10) / 10;
 
