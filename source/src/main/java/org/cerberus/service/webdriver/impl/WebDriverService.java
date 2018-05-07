@@ -413,9 +413,13 @@ public class WebDriverService implements IWebDriverService {
     public boolean isElementInElement(Session session, Identifier identifier, Identifier childIdentifier) {
         By elementLocator = this.getBy(identifier);
         By childElementLocator = this.getBy(childIdentifier);
-
-        return (session.getDriver().findElement(elementLocator) != null
-                && session.getDriver().findElement(elementLocator).findElement(childElementLocator) != null);
+        
+        try {
+        	return (session.getDriver().findElement(elementLocator) != null
+                    && session.getDriver().findElement(elementLocator).findElement(childElementLocator) != null);
+        }catch(NoSuchElementException e) {
+        	return false;
+        }        
     }
 
     @Override
