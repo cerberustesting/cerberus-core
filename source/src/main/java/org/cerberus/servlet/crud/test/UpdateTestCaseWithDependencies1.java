@@ -214,9 +214,10 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
 
                 List<TestCaseStepActionControl> tcsacFromDtb = new ArrayList<>(tcsacService.findControlByTestTestCase(initialTest, initialTestCase));
                 tcsacService.compareListAndUpdateInsertDeleteElements(tcsacFromPage, tcsacFromDtb, duplicate);
-                
+
+                tc.setUsrModif(request.getUserPrincipal().getName());
                 tc.setTestCaseVersion(tc.getTestCaseVersion() + 1);
-                
+
                 testCaseService.updateTestCase(tc);
 
                 /**
@@ -227,7 +228,7 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
                      * Update was successful. Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createForPrivateCalls("/UpdateTestCaseWithDependencies1", "UPDATE", "Update testcase : ['" + tc.getTest() + "'|'" + tc.getTestCase() + "'] version : "+tc.getTestCaseVersion(), request);
+                    logEventService.createForPrivateCalls("/UpdateTestCaseWithDependencies1", "UPDATE", "Update testcase : ['" + tc.getTest() + "'|'" + tc.getTestCase() + "'] version : " + tc.getTestCaseVersion(), request);
                 }
 
             }
