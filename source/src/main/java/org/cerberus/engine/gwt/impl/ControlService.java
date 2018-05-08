@@ -678,25 +678,29 @@ public class ControlService implements IControlService {
                 try {
                     Identifier identifier = identifierService.convertStringToIdentifier(element);
                     Identifier childIdentifier = identifierService.convertStringToIdentifier(childElement);
-                    if (this.webdriverService.isElementInElement(tCExecution.getSession(), identifier, childIdentifier)) {
-                        mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_ELEMENTINELEMENT);
-                        mes.setDescription(mes.getDescription().replace("%STRING2%", element).replace("%STRING1%", childElement));
-                        return mes;
-                    } else {
-                        mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENTINELEMENT);
-                        mes.setDescription(mes.getDescription().replace("%STRING2%", element).replace("%STRING1%", childElement));
+                    if(this.webdriverService.isElementPresent(tCExecution.getSession(), identifier)) {
+                    	if (this.webdriverService.isElementInElement(tCExecution.getSession(), identifier, childIdentifier)) {
+                            mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_ELEMENTINELEMENT);
+                            mes.setDescription(mes.getDescription().replace("%STRING2%", element).replace("%STRING1%", childElement));
+                            return mes;
+                        } else {
+                            mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENTINELEMENT);
+                            mes.setDescription(mes.getDescription().replace("%STRING2%", element).replace("%STRING1%", childElement));
+                            return mes;
+                        }
+                    }else {
+                    	mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NO_SUCH_ELEMENT);
+                        mes.setDescription(mes.getDescription().replace("%SELEX%", new NoSuchElementException("").toString()).replace("%ELEMENT%", element));
                         return mes;
                     }
                 } catch (WebDriverException exception) {
                     return parseWebDriverException(exception);
-                }
-
+                } 
             } else {
                 mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENTINELEMENT);
                 mes.setDescription(mes.getDescription().replace("%STRING2%", element).replace("%STRING1%", childElement));
                 return mes;
             }
-
         } else {
             mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             mes.setDescription(mes.getDescription().replace("%CONTROL%", "verifyElementInElement"));
