@@ -20,16 +20,14 @@
 
 package org.cerberus.service.ftp.impl;
 
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PushbackInputStream;
-import java.io.StringWriter;
+import java.net.InetSocketAddress;
+import java.net.PasswordAuthentication;
+import java.net.Proxy;
+import java.net.SocketAddress;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -42,16 +40,18 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.AppService;
 import org.cerberus.crud.factory.IFactoryAppService;
+import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ITestCaseExecutionFileService;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.execution.IRecorderService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.service.ftp.IFtpService;
+import org.cerberus.service.proxy.IProxyService;
 import org.cerberus.util.answer.AnswerItem;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jmx.support.RegistrationPolicy;
 import org.springframework.stereotype.Service;
-
+import java.net.Authenticator;
+import org.cerberus.util.StringUtil;
 /**
 *
 * @author ryltar
@@ -67,6 +67,21 @@ public class FtpService implements IFtpService{
     private IRecorderService recorderService;
 	@Autowired
     ITestCaseExecutionFileService testCaseExecutionFileService;
+	@Autowired
+    IParameterService parameterService;
+    @Autowired
+    IProxyService proxyService;
+	
+	/**
+     * Proxy default config. (Should never be used as default config is inserted
+     * into database)
+     */
+    private static final boolean DEFAULT_PROXY_ACTIVATE = false;
+    private static final String DEFAULT_PROXY_HOST = "proxy";
+    private static final int DEFAULT_PROXY_PORT = 80;
+    private static final boolean DEFAULT_PROXYAUTHENT_ACTIVATE = false;
+    private static final String DEFAULT_PROXYAUTHENT_USER = "squid";
+    private static final String DEFAULT_PROXYAUTHENT_PASSWORD = "squid";
 	
 	@Override
 	public HashMap<String, String> fromFtpStringToHashMap(String ftpChain) {
@@ -96,7 +111,33 @@ public class FtpService implements IFtpService{
 	}
 	
 	@Override
-	public AnswerItem<AppService> getFTP(String chain) {
+	public void setProxy(FTPClient client, String system) {
+		String proxyHost = parameterService.getParameterStringByKey("cerberus_proxy_host", "",
+                 DEFAULT_PROXY_HOST);
+		int proxyPort = parameterService.getParameterIntegerByKey("cerberus_proxy_port", "",
+                DEFAULT_PROXY_PORT);
+		
+		SocketAddress proxyAddr = new InetSocketAddress(proxyHost, proxyPort);
+		Proxy proxy = new Proxy(Proxy.Type.HTTP, proxyAddr);
+		if (parameterService.getParameterBooleanByKey("cerberus_proxyauthentification_active", system,
+                DEFAULT_PROXYAUTHENT_ACTIVATE)) {
+			Authenticator.setDefault(
+				new Authenticator() {
+					public PasswordAuthentication getPasswordAuthentication() {
+						String proxyUser = parameterService.getParameterStringByKey("cerberus_proxyauthentification_user", "", DEFAULT_PROXYAUTHENT_USER);
+				        String proxyPassword = parameterService.getParameterStringByKey("cerberus_proxyauthentification_password", "", DEFAULT_PROXYAUTHENT_PASSWORD);
+						return new PasswordAuthentication(
+							proxyUser, proxyPassword.toCharArray()
+						);
+					}
+				}
+			);
+		}
+		client.setProxy(proxy);
+	}
+	
+	@Override
+	public AnswerItem<AppService> getFTP(String chain, String system) {
 		MessageEvent message = null;
 		AnswerItem result = new AnswerItem<>();
 		HashMap<String, String> informations = this.fromFtpStringToHashMap(chain);
@@ -115,8 +156,11 @@ public class FtpService implements IFtpService{
                 AppService.METHOD_HTTPGET, "", "", informations.get("path"), "", "", "", "", "", null, "", null);
 		 
 		try{
+			if(proxyService.useProxy(StringUtil.getURLFromString(informations.get("host"),"","","ftp://"), system)) {
+				 this.setProxy(ftp,system);
+			 }
 			ftp.connect(informations.get("host"),Integer.valueOf(informations.get("port")));
-			boolean logged = ftp.login(informations.get("pseudo"),informations.get("password"));
+			boolean logged = ftp.login(informations.get("pseudo"),informations.get("password"));						
             if (!logged) {
             	 LOG.error("Exception when logging to ftp server.");
                  message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);

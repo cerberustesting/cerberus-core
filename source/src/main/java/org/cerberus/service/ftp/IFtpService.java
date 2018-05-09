@@ -20,8 +20,10 @@
 
 package org.cerberus.service.ftp;
 
-import java.util.HashMap;
 
+import java.util.Map;
+
+import org.apache.commons.net.ftp.FTPClient;
 import org.cerberus.crud.entity.AppService;
 import org.cerberus.util.answer.AnswerItem;
 
@@ -36,14 +38,22 @@ public interface IFtpService {
 	 * @param ftpChain
 	 * @return
 	 */
-	public HashMap<String, String> fromFtpStringToHashMap(String ftpChain);
+	public Map<String, String> fromFtpStringToHashMap(String ftpChain);
 	
 	/**
-	 * this method is used to retrieve a file from ftp server
+	 * this method is used to retrieve a file from FTP server
 	 * @param chain
+	 * @param system
 	 * @return
 	 */
-	public AnswerItem<AppService> getFTP(String chain);
+	public AnswerItem<AppService> getFTP(String chain, String system);
+	
+	/**
+	 * this auxiliary method allow to set a PROXY to a FTPClient
+	 * @param ftpClient
+	 * @param system
+	 */
+	public void setProxy(FTPClient ftpClient, String system);
 	
 
 }
