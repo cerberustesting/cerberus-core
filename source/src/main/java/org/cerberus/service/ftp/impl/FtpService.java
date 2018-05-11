@@ -213,7 +213,7 @@ public class FtpService implements IFtpService{
                 }
                 done.close();
             }else {
-            	LOG.error("Impossible to retrieve the file, or the file is empty. Please check the FTP path");
+            	LOG.error("The file is not present on FTP server. Please check the FTP path");
                 message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
                 message.setDescription(message.getDescription().replace("%SERVICE%", remoteFile));
                 message.setDescription(message.getDescription().replace("%DESCRIPTION%",
