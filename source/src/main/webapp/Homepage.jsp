@@ -128,7 +128,7 @@
                     </div>
                     <div id="ChangelogPanel">
                         <div class="panel panel-default">
-                            <div class="panel-heading card" data-toggle="collapse" data-target="#Changelog33">
+                            <div class="panel-heading card" data-toggle="collapse" data-target="#Changelog34">
                                 <span class="fa fa-pie-chart fa-fw"></span>
                                 <label id="changelogLabel">Changelog</label>
                                 <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
