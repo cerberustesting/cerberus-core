@@ -3555,9 +3555,9 @@ function setPlaceholderProperty(propertyElement, property) {
                 "value1EditorMode": "ace/mode/cerberus",
                 "value2": null,
                 "database": null,
-                "length": "[opt] Length",
+                "length": "Length (nb of rows)",
                 "cacheExpire": "[opt] cache Expire (s)",
-                "rowLimit": "Row Limit",
+                "rowLimit": "[opt] Row Limit",
                 "nature": "Nature",
                 "retry": "Number of retry (until non-empty result)",
                 "period": "Retry period (ms)"
@@ -3752,9 +3752,9 @@ function setPlaceholderProperty(propertyElement, property) {
                 "value1EditorMode": "ace/mode/cerberus",
                 "value2": null,
                 "database": null,
-                "length": "[opt] Length",
+                "length": "Length (nb of rows)",
                 "cacheExpire": "[opt] cache Expire (s)",
-                "rowLimit": "Row Limit",
+                "rowLimit": "[opt] Row Limit",
                 "nature": "Nature",
                 "retry": "Number of retry (until non-empty result)",
                 "period": "Retry period (ms)"

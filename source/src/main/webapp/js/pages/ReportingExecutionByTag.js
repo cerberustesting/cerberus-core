@@ -1105,7 +1105,7 @@ function renderOptionsForExeList(selectTag) {
         var doc = new Doc();
         var contentToAdd = "<div class='marginBottom10'>";
         contentToAdd += "<label>Select all/none :</label>";
-        contentToAdd += "<label class='checkbox-inline'><input id='selectAllQueueQUERROR' type='checkbox'></input>QU (ERROR)</label>";
+        contentToAdd += "<label class='checkbox-inline'><input id='selectAllQueueQEERROR' type='checkbox'></input>QE (ERROR)</label>";
         contentToAdd += "<label class='checkbox-inline'><input id='selectAllQueueFA' type='checkbox'></input>FA</label>";
         contentToAdd += "<label class='checkbox-inline'><input id='selectAllQueueKO' type='checkbox'></input>KO</label>";
         contentToAdd += "<label class='checkbox-inline'><input id='selectAllQueueNA' type='checkbox'></input>NA</label>";
@@ -1116,8 +1116,8 @@ function renderOptionsForExeList(selectTag) {
 
         $("#listTable_length").before(contentToAdd);
 
-        $('#selectAllQueueQUERROR').click(function () {
-            selectAllQueue("QUERROR");
+        $('#selectAllQueueQEERROR').click(function () {
+            selectAllQueue("QEERROR");
         });
         $('#selectAllQueueFA').click(function () {
             selectAllQueue("FA");
