@@ -1011,18 +1011,39 @@ function createStepList(data, stepList) {
     $("#stepList").empty();
 
     for (var i = 0; i < data.length; i++) {
-
-        var step = data[i];
-        var stepObj = new Step(step, stepList, i);
-
-        $(stepObj).data("id", {stepId: i, actionId: -1, controlId: -1});
-
-        stepObj.addElements();
-        stepObj.draw();
-
-        stepList.push(stepObj);
-
+        if (data[i].test === "Pre Testing") {
+            var step = data[i];
+            var stepObj = new Step(step, stepList, i);
+            $(stepObj).data("id", {stepId: i, actionId: -1, controlId: -1});
+            stepObj.addElements();
+            stepObj.draw();
+            stepList.push(stepObj);
+        }
     }
+
+    for (var i = 0; i < data.length; i++) {
+        if ((data[i].test !== "Pre Testing") && (data[i].test !== "Post Testing")) {
+            var step = data[i];
+            var stepObj = new Step(step, stepList, i);
+            $(stepObj).data("id", {stepId: i, actionId: -1, controlId: -1});
+            stepObj.addElements();
+            stepObj.draw();
+            stepList.push(stepObj);
+        }
+    }
+
+    for (var i = 0; i < data.length; i++) {
+        if (data[i].test === "Post Testing") {
+            var step = data[i];
+            var stepObj = new Step(step, stepList, i);
+            $(stepObj).data("id", {stepId: i, actionId: -1, controlId: -1});
+            stepObj.addElements();
+            stepObj.draw();
+            stepList.push(stepObj);
+        }
+    }
+
+
     if (stepList.length > 0) {
         $("#stepList a:last-child").trigger("click");
     }
@@ -1069,6 +1090,8 @@ function Step(json, stepList, id) {
     $(this.html).data("index", id)
     if (this.test === "Pre Testing") {
         var stepDesc = "[PRE]  " + this.description + "  (" + this.timeElapsed + ")";
+    } else if (this.test === "Post Testing") {
+        var stepDesc = "[POST]  " + this.description + "  (" + this.timeElapsed + ")";
     } else {
         var stepDesc = "[" + this.sort + "." + +this.index + "]  " + this.description + "  (" + this.timeElapsed + ")";
     }

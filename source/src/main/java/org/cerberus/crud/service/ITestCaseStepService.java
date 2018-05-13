@@ -42,14 +42,6 @@ public interface ITestCaseStepService {
     List<TestCaseStep> getListOfSteps(String test, String testcase);
 
     /**
-     *
-     * @param countryCode
-     * @param application
-     * @return
-     */
-    List<String> getLoginStepFromTestCase(String countryCode, String application);
-
-    /**
      * FindTestCaseStep
      *
      * @param test

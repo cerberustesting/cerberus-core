@@ -26,21 +26,17 @@ import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseCountry;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
-import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.crud.entity.TestCaseStepAction;
 import org.cerberus.crud.entity.TestCaseStepActionControl;
-import org.cerberus.crud.factory.IFactoryTestCaseCountry;
 import org.cerberus.crud.factory.IFactoryTestCaseStep;
 import org.cerberus.crud.service.ILoadTestCaseService;
 import org.cerberus.crud.service.ITestCaseCountryPropertiesService;
 import org.cerberus.crud.service.ITestCaseStepActionControlService;
 import org.cerberus.crud.service.ITestCaseStepActionService;
 import org.cerberus.crud.service.ITestCaseStepService;
-import org.cerberus.engine.execution.impl.RunTestCaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.cerberus.crud.factory.IFactoryTestCase;
 
 /**
  * @author bcivel
@@ -49,7 +45,7 @@ import org.cerberus.crud.factory.IFactoryTestCase;
 public class LoadTestCaseService implements ILoadTestCaseService {
 
     private static final Logger LOG = LogManager.getLogger(TestCaseStepActionService.class);
-    
+
     @Autowired
     private ITestCaseCountryPropertiesService testCaseCountryPropertiesService;
     @Autowired
@@ -59,71 +55,7 @@ public class LoadTestCaseService implements ILoadTestCaseService {
     @Autowired
     private ITestCaseStepActionControlService testCaseStepActionControlService;
     @Autowired
-    private IFactoryTestCaseCountry factoryTestCaseCountry;
-    @Autowired
-    private IFactoryTestCase factoryTCase;
-    @Autowired
     private IFactoryTestCaseStep factoryTCS;
-
-    @Override
-    public void loadTestCase(TestCaseExecution tCExecution) {
-
-        TestCase testCase = tCExecution.getTestCaseObj();
-
-        String test = testCase.getTest();
-        String testcase = testCase.getTestCase();
-
-        List<TestCaseCountry> testCaseCountry = new ArrayList<TestCaseCountry>();
-        List<TestCaseCountryProperties> testCaseCountryProperty = new ArrayList<TestCaseCountryProperties>();
-        List<TestCaseStep> testCaseStep = new ArrayList<TestCaseStep>();
-        List<TestCaseStep> PretestCaseStep = new ArrayList<TestCaseStep>();
-
-        /**
-         * Get List of PreTest for selected TestCase
-         */
-        LOG.debug("Loading pretests for " + tCExecution.getCountry() + tCExecution.getTestCaseObj().getApplication());
-        List<String> login = this.testCaseStepService.getLoginStepFromTestCase(tCExecution.getCountry(), tCExecution.getTestCaseObj().getApplication());
-
-        /**
-         * Load Steps of PreTest
-         */
-        if (login != null) {
-            for (String tsCase : login) {
-
-                TestCaseCountry preTestCaseCountry = factoryTestCaseCountry.create("Pre Tests", tsCase, tCExecution.getCountry());
-                preTestCaseCountry.setTestCaseCountryProperty(this.loadProperties(preTestCaseCountry));
-                testCaseCountry.add(preTestCaseCountry);
-
-                TestCase preTestCase = factoryTCase.create("Pre Tests", tsCase);
-                LOG.debug("add all pretest");
-                PretestCaseStep.addAll(loadTestCaseStep(preTestCase));
-
-            }
-        }
-
-        /**
-         * Load Information of TestCase
-         */
-        TestCase testCaseToAdd = factoryTCase.create(test, testcase);
-        LOG.debug("add all step");
-        testCaseStep.addAll(loadTestCaseStep(testCaseToAdd));
-        LOG.debug("search all countryprop");
-        List<TestCaseCountryProperties> testCaseCountryPropertyToAdd = this.testCaseCountryPropertiesService.findListOfPropertyPerTestTestCaseCountry(test, testcase, tCExecution.getCountry());
-        LOG.debug("add all countryprop");
-        if (testCaseCountryPropertyToAdd != null) {
-            testCaseCountryProperty.addAll(testCaseCountryPropertyToAdd);
-        }
-        /**
-         * Set Execution Object
-         */
-        testCase.setTestCaseCountry(testCaseCountry);
-        LOG.debug("set testcasestep");
-        testCase.setTestCaseStep(testCaseStep);
-        LOG.debug("setTestCaseCountryProperties");
-        testCase.setTestCaseCountryProperties(testCaseCountryProperty);
-        LOG.debug("settCase");
-        tCExecution.setTestCaseObj(testCase);
-    }
 
     //@Override
     public List<TestCaseCountryProperties> loadProperties(TestCaseCountry testCaseCountry) {
@@ -135,10 +67,8 @@ public class LoadTestCaseService implements ILoadTestCaseService {
 
     @Override
     public List<TestCaseStep> loadTestCaseStep(TestCase testCase) {
-        List<TestCaseStep> result = new ArrayList<TestCaseStep>();
+        List<TestCaseStep> result = new ArrayList<>();
         for (TestCaseStep testCaseStep : this.testCaseStepService.getListOfSteps(testCase.getTest(), testCase.getTestCase())) {
-            LOG.debug("set list of step :" + testCaseStep.getStep());
-
             /**
              * If use Step, load action and control of used step
              */
@@ -149,7 +79,7 @@ public class LoadTestCaseService implements ILoadTestCaseService {
                 }
             } else {
                 // Step is used from another testcase.
-                List<TestCaseStepAction> tcsa = this.loadTestCaseStepAction(testCaseStep, factoryTCS.create(testCaseStep.getUseStepTest(), 
+                List<TestCaseStepAction> tcsa = this.loadTestCaseStepAction(testCaseStep, factoryTCS.create(testCaseStep.getUseStepTest(),
                         testCaseStep.getUseStepTestCase(), testCaseStep.getUseStepStep(), testCaseStep.getSort(), null, null, null, null, null, null, null, null, 0, null));
                 if (tcsa != null) {
                     testCaseStep.setTestCaseStepAction(tcsa);
@@ -157,120 +87,61 @@ public class LoadTestCaseService implements ILoadTestCaseService {
                 // Copy the usedStep property to main step. Loop and conditionoper are taken from used step.
                 testCaseStep = testCaseStepService.modifyTestCaseStepDataFromUsedStep(testCaseStep);
             }
-            LOG.debug("adding testCaseStep");
             result.add(testCaseStep);
         }
 
-        LOG.debug("return List<TestCaseStep>");
         return result;
     }
 
     public List<TestCaseStepAction> loadTestCaseStepAction(TestCaseStep testCaseStep, TestCaseStep UsedTestCaseStep) {
-        List<TestCaseStepAction> result = new ArrayList<TestCaseStepAction>();
+        List<TestCaseStepAction> result = new ArrayList<>();
         List<TestCaseStepAction> tcsaToAdd;
         /**
          * If use Step, take the List of action and control of the used step
          */
         boolean useStep = (UsedTestCaseStep != null);
         if (!useStep) {
-            tcsaToAdd = this.testCaseStepActionService.getListOfAction(
-                    testCaseStep.getTest(), testCaseStep.getTestCase(), testCaseStep.getStep());
+            tcsaToAdd = this.testCaseStepActionService.getListOfAction(testCaseStep.getTest(), testCaseStep.getTestCase(), testCaseStep.getStep());
         } else {
-            tcsaToAdd = this.testCaseStepActionService.getListOfAction(
-                    UsedTestCaseStep.getTest(), UsedTestCaseStep.getTestCase(), UsedTestCaseStep.getStep());
+            tcsaToAdd = this.testCaseStepActionService.getListOfAction(UsedTestCaseStep.getTest(), UsedTestCaseStep.getTestCase(), UsedTestCaseStep.getStep());
         }
 
         /**
-         * Iterate on the list of action to get the control
-         * In case of useStep, print the test,testcase,step of the executed test instead of the used step
+         * Iterate on the list of action to get the control In case of useStep,
+         * print the test,testcase,step of the executed test instead of the used
+         * step
          */
         for (TestCaseStepAction testCaseStepAction : tcsaToAdd) {
-            LOG.debug("set list of action :" + testCaseStepAction.getAction());
 
-            /**
-             * 
-             */
-            List<TestCaseStepActionControl> tcsacList = this.loadTestCaseStepActionControl(testCaseStep,testCaseStepAction);
+            List<TestCaseStepActionControl> tcsacList = this.loadTestCaseStepActionControl(testCaseStep, testCaseStepAction);
             if (tcsacList != null) {
                 testCaseStepAction.setTestCaseStepActionControl(tcsacList);
             }
+
             /**
              * Update the test, Testcase, Step in case of useStep
              */
             testCaseStepAction.setTest(testCaseStep.getTest());
             testCaseStepAction.setTestCase(testCaseStep.getTestCase());
             testCaseStepAction.setStep(testCaseStep.getStep());
-            LOG.debug("adding testCaseStepAction" + testCaseStepAction.getAction());
             result.add(testCaseStepAction);
-            LOG.debug("added testCaseStepAction" + testCaseStepAction.getAction());
 
         }
-        LOG.debug("return List<TestCaseStepAction>");
         return result;
     }
 
     public List<TestCaseStepActionControl> loadTestCaseStepActionControl(TestCaseStep testCaseStep, TestCaseStepAction testCaseAction) {
-        List<TestCaseStepActionControl> result = new ArrayList<TestCaseStepActionControl>();
-        LOG.debug("get list of control");
+        List<TestCaseStepActionControl> result = new ArrayList<>();
         List<TestCaseStepActionControl> controlList = testCaseStepActionControlService.findControlByTestTestCaseStepSequence(testCaseAction.getTest(), testCaseAction.getTestCase(), testCaseAction.getStep(), testCaseAction.getSequence());
         if (controlList != null) {
             for (TestCaseStepActionControl testCaseStepActionControl : controlList) {
-                LOG.debug("set control :" + testCaseStepActionControl.getControl());
                 testCaseStepActionControl.setTest(testCaseStep.getTest());
                 testCaseStepActionControl.setTestCase(testCaseStep.getTestCase());
                 testCaseStepActionControl.setStep(testCaseStep.getStep());
                 result.add(testCaseStepActionControl);
             }
         }
-        LOG.debug("return List<TestCaseStepActionControl>");
         return result;
     }
-//    @Override
-//    public List<TestCaseStep> loadAllStepSequences(String test, String testCase) {
-//        List<TestCaseStep> steps = new ArrayList<TestCaseStep>();
-//
-//        for (TestCaseStep testCaseStep : this.testCaseStepService.getListOfSteps(test, testCase)) {
-//            List<TestCaseStepAction> actions = testCaseStepActionService.getListOfAction(test, testCase, testCaseStep.getStep());
-//            List<TestCaseStepActionControl> controls = this.testCaseStepActionControlService.findControlByTestTestCaseStep(test, testCase, testCaseStep.getStep());
-//            step.setSequences(this.mergeActionControl(actions, controls));
-//            for (String batch : testCaseStepBatchDAO.getBatchFromStep(test, testCase, step.getNumber())) {
-//                switch (batch) {
-//                    case 'D':
-//                        step.setDailyChain(true);
-//                        break;
-//
-//                    case 'F':
-//                        step.setFastChain(true);
-//                        break;
-//
-//                    case 'M':
-//                        step.setMorningChain(true);
-//                        break;
-//
-//                    default:
-//                        break;
-//                }
-//            }
-//            step.setMessageResult(Message.GENERIC_OK);
-//            steps.add(step);
-//        }
-//        return steps;
-//    }
-//
-//    private List<Sequence> mergeActionControl(List<Action> actions, List<Control> controls) {
-//        List<Sequence> sequences = new ArrayList<Sequence>();
-//
-//        for (Action action : actions) {
-//            sequences.add(action);
-//            for (Control control : controls) {
-//                if (action.getSequence() == control.getSequence()) {
-//                    sequences.add(control);
-//                    controls.remove(control);
-//                    break;
-//                }
-//            }
-//        }
-//
-//        return sequences;
-//    }
+
 }

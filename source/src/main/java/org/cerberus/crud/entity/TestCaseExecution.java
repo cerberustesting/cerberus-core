@@ -107,7 +107,6 @@ public class TestCaseExecution {
     private Invariant CountryObj;
     private Test testObj;
     private TestCase testCaseObj;
-    private List<TestCase> preTestCaseList;
     private CountryEnvParam countryEnvParam;
     private CountryEnvironmentParameters countryEnvironmentParameters;
     private Invariant environmentDataObj;
@@ -809,14 +808,6 @@ public class TestCaseExecution {
 
     public void setVerbose(int verbose) {
         this.verbose = verbose;
-    }
-
-    public List<TestCase> getPreTestCaseList() {
-        return preTestCaseList;
-    }
-
-    public void setPreTestCaseList(List<TestCase> PreTCase) {
-        this.preTestCaseList = PreTCase;
     }
 
     public String getExecutor() {

@@ -50,6 +50,7 @@ import org.cerberus.dto.TestCaseListDTO;
 import org.cerberus.dto.TestListDTO;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.MessageGeneral;
+import org.cerberus.engine.execution.IExecutionCheckService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
@@ -88,6 +89,8 @@ public class TestCaseService implements ITestCaseService {
     private ICampaignParameterService campaignParameterService;
     @Autowired
     private IParameterService parameterService;
+    @Autowired
+    private IExecutionCheckService executionCheckService;
 
     @Override
     public TestCase findTestCaseByKey(String test, String testCase) throws CerberusException {
@@ -179,8 +182,16 @@ public class TestCaseService implements ITestCaseService {
     }
 
     @Override
-    public List<TestCase> findTestCaseActiveByCriteria(String test, String application, String country) {
-        return testCaseDao.findTestCaseByCriteria(test, application, country, "Y");
+    public List<TestCase> getTestCaseForPrePostTesting(String test, String application, String country, String system, String build, String revision) {
+        List<TestCase> tmpTests = testCaseDao.findTestCaseByCriteria(test, application, country, "Y");
+        List<TestCase> resultTests = new ArrayList<>();
+        for (TestCase tmpTest : tmpTests) {
+            // We check here if build/revision is compatible.
+            if (executionCheckService.checkRangeBuildRevision(tmpTest, build, revision, system)) {
+                resultTests.add(tmpTest);
+            }
+        }
+        return resultTests;
     }
 
     @Override
@@ -296,9 +307,9 @@ public class TestCaseService implements ITestCaseService {
         Integer maxReturn = parameterService.getParameterIntegerByKey("cerberus_campaign_maxtestcase", "", 1000);
 
         if (ifLabel) {
-            return this.testCaseDao.findTestCaseByCampaignNameAndCountries(campaign, countries, true, status, system, application, priority, group ,maxReturn);
+            return this.testCaseDao.findTestCaseByCampaignNameAndCountries(campaign, countries, true, status, system, application, priority, group, maxReturn);
         } else {
-            return this.testCaseDao.findTestCaseByCampaignNameAndCountries(campaign, countries, false, status, system, application, priority, group ,maxReturn);
+            return this.testCaseDao.findTestCaseByCampaignNameAndCountries(campaign, countries, false, status, system, application, priority, group, maxReturn);
         }
     }
 

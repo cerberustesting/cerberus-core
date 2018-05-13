@@ -30,6 +30,7 @@ import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.CountryEnvLink;
 import org.cerberus.crud.entity.CountryEnvParam;
 import org.cerberus.crud.entity.Tag;
+import org.cerberus.crud.entity.Test;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.crud.entity.TestCaseExecution;
@@ -227,24 +228,57 @@ public class ExecutionRunService implements IExecutionRunService {
                 tCExecution.setVersion("");
                 tCExecution.setPlatform("");
                 tCExecution.setRobotDecli("");
-                LOG.debug(logPrefix + "No Selenium capabitities loaded because application not GUI : " + tCExecution.getApplicationObj().getType());
+                LOG.debug(logPrefix + "No Selenium capabitities loaded because application not (GUI,IPA,APK) : " + tCExecution.getApplicationObj().getType());
             }
             tCExecution.setRobotDecli(tCExecution.getRobotDecli().replace("%BROWSER%", tCExecution.getBrowser()));
             tCExecution.setRobotDecli(tCExecution.getRobotDecli().replace("%BROWSERVERSION%", tCExecution.getVersion()));
             tCExecution.setRobotDecli(tCExecution.getRobotDecli().replace("%PLATFORM%", tCExecution.getPlatform()));
 
             /**
-             * Load PreTestCase information and set PreTCase to the
-             * TestCaseExecution object
+             * Load Pre TestCase information
              */
             tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_LOADINGDETAILEDDATA));
             LOG.debug(logPrefix + "Loading Pre-testcases.");
-            List<TestCase> preTests = testCaseService.findTestCaseActiveByCriteria("Pre Testing", tCExecution.getTestCaseObj().getApplication(), tCExecution.getCountry());
-            tCExecution.setPreTestCaseList(preTests);
+            List<TestCase> preTests = testCaseService.getTestCaseForPrePostTesting(Test.TEST_PRETESTING, tCExecution.getTestCaseObj().getApplication(), tCExecution.getCountry(),
+                    tCExecution.getSystem(), tCExecution.getCountryEnvParam().getBuild(), tCExecution.getCountryEnvParam().getRevision());
             if (!(preTests == null)) {
-                LOG.debug(logPrefix + "Loaded PreTest List. " + tCExecution.getPreTestCaseList().size() + " found.");
+                LOG.debug(logPrefix + "Loaded PreTest List. " + preTests.size() + " found.");
             }
             LOG.debug(logPrefix + "Pre-testcases Loaded.");
+
+            /**
+             * Load Pre TestCase with Step dependencies (Actions/Control)
+             */
+            LOG.debug(logPrefix + "Loading all Steps information (Actions & Controls) of all Pre-testcase.");
+            List<TestCaseStep> preTestCaseStepList = new ArrayList<>();
+            for (TestCase myTCase : preTests) {
+                preTestCaseStepList.addAll(this.loadTestCaseService.loadTestCaseStep(myTCase));
+                LOG.debug(logPrefix + "Pre testcase : " + myTCase.getTest() + "-" + myTCase.getTestCase() + " Loaded With all Step(s) found.");
+            }
+            LOG.debug(logPrefix + "All Steps information (Actions & Controls) of all Pre-testcase Loaded.");
+
+            /**
+             * Load Post TestCase information
+             */
+            tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_LOADINGDETAILEDDATA));
+            LOG.debug(logPrefix + "Loading Post-testcases.");
+            List<TestCase> postTests = testCaseService.getTestCaseForPrePostTesting(Test.TEST_POSTTESTING, tCExecution.getTestCaseObj().getApplication(), tCExecution.getCountry(),
+                    tCExecution.getSystem(), tCExecution.getCountryEnvParam().getBuild(), tCExecution.getCountryEnvParam().getRevision());
+            if (!(postTests == null)) {
+                LOG.debug(logPrefix + "Loaded PostTest List. " + postTests.size() + " found.");
+            }
+            LOG.debug(logPrefix + "Post-testcases Loaded.");
+
+            /**
+             * Load Post TestCase with Step dependencies (Actions/Control)
+             */
+            LOG.debug(logPrefix + "Loading all Steps information (Actions & Controls) of all Post-testcase.");
+            List<TestCaseStep> postTestCaseStepList = new ArrayList<>();
+            for (TestCase myTCase : postTests) {
+                postTestCaseStepList.addAll(this.loadTestCaseService.loadTestCaseStep(myTCase));
+                LOG.debug(logPrefix + "Post testcase : " + myTCase.getTest() + "-" + myTCase.getTestCase() + " Loaded With all Step(s) found.");
+            }
+            LOG.debug(logPrefix + "All Steps information (Actions & Controls) of all Post-testcase Loaded.");
 
             /**
              * Load Main TestCase with Step dependencies (Actions/Control)
@@ -256,27 +290,13 @@ public class ExecutionRunService implements IExecutionRunService {
             LOG.debug(logPrefix + "Steps information of Main testcase Loaded : " + tCExecution.getTestCaseObj().getTestCaseStep().size() + " Step(s) found.");
 
             /**
-             * Load Pre TestCase with Step dependencies (Actions/Control)
-             */
-            LOG.debug(logPrefix + "Loading all Steps information (Actions & Controls) of all Pre-testcase.");
-            List<TestCaseStep> preTestCaseStepList = new ArrayList<TestCaseStep>();
-            List<TestCase> preTestCase = new ArrayList<TestCase>();
-            for (TestCase myTCase : tCExecution.getPreTestCaseList()) {
-                myTCase.setTestCaseStep(this.loadTestCaseService.loadTestCaseStep(myTCase));
-                preTestCaseStepList.addAll(myTCase.getTestCaseStep());
-                preTestCase.add(myTCase);
-                LOG.debug(logPrefix + "Pre testcase : " + myTCase.getTest() + "-" + myTCase.getTestCase() + " Loaded With " + myTCase.getTestCaseStep().size() + " Step(s) found.");
-            }
-            tCExecution.setPreTestCaseList(preTestCase);
-            LOG.debug(logPrefix + "All Steps information (Actions & Controls) of all Pre-testcase Loaded.");
-
-            /**
              * Load All properties of the testcase
              */
             LOG.debug(logPrefix + "Loading all Properties.");
             List<TestCaseCountryProperties> tcProperties = new ArrayList<>();
             try {
-                tcProperties = testCaseCountryPropertiesService.findAllWithDependencies(tCExecution.getTest(), tCExecution.getTestCase(), tCExecution.getCountry());
+                tcProperties = testCaseCountryPropertiesService.findAllWithDependencies(tCExecution.getTest(), tCExecution.getTestCase(), tCExecution.getCountry(),
+                         tCExecution.getSystem(), tCExecution.getCountryEnvParam().getBuild(), tCExecution.getCountryEnvParam().getRevision());
                 tCExecution.setTestCaseCountryPropertyList(tcProperties);
             } catch (CerberusException ex) {
                 LOG.warn("Exception getting all the properties : " + ex);
@@ -297,6 +317,7 @@ public class ExecutionRunService implements IExecutionRunService {
             mainExecutionTestCaseStepList = new ArrayList<>();
             mainExecutionTestCaseStepList.addAll(preTestCaseStepList);
             mainExecutionTestCaseStepList.addAll(testCaseStepList);
+            mainExecutionTestCaseStepList.addAll(postTestCaseStepList);
 
             /**
              * Initialize the global TestCaseExecution Data List.

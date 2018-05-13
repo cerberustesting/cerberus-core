@@ -51,11 +51,6 @@ public class TestCaseStepService implements ITestCaseStepService {
     }
 
     @Override
-    public List<String> getLoginStepFromTestCase(String countryCode, String application) {
-        return testCaseStepDAO.getLoginStepFromTestCase(countryCode, application);
-    }
-
-    @Override
     public TestCaseStep findTestCaseStep(String test, String testcase, Integer step) {
         return testCaseStepDAO.findTestCaseStep(test, testcase, step);
     }

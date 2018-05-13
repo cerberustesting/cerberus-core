@@ -32,6 +32,7 @@ import java.util.List;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.ITestCaseStepActionExecutionDAO;
+import org.cerberus.crud.entity.Test;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
@@ -258,7 +259,7 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
         query.append("substr(StartLong,5,2),'-',substr(StartLong,7,2),' ',");
         query.append("substr(StartLong,9,2),':',substr(StartLong,11,2),':',");
         query.append("substr(StartLong,13,2),'.',substr(StartLong,15,3)) as testStart, a.`action` as ctrl ");
-        query.append(" from testcasestepactionexecution a join testcaseexecution b on a.id=b.id where step != '0' and a.test!='Pre Testing' and a.id in (?)");
+        query.append(" from testcasestepactionexecution a join testcaseexecution b on a.id=b.id where step != '0' and a.test!='" + Test.TEST_PRETESTING + "' and a.id in (?)");
         query.append(" union select c.ID, c.Step, c.Sequence, 'Control', d.Start,");
         query.append("concat(substr(EndLong,1,4),'-',");
         query.append("substr(EndLong,5,2),'-',substr(EndLong,7,2),' ',substr(EndLong,9,2),");
@@ -267,7 +268,7 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
         query.append("substr(StartLong,5,2),'-',substr(StartLong,7,2),' ',");
         query.append("substr(StartLong,9,2),':',substr(StartLong,11,2),':',");
         query.append("substr(StartLong,13,2),'.',substr(StartLong,15,3)) as testStart, c.`control` as ctrl ");
-        query.append(" from testcasestepactioncontrolexecution c join testcaseexecution d on c.id=d.id where step != '0' and c.test!='Pre Testing' and c.id in (?)");
+        query.append(" from testcasestepactioncontrolexecution c join testcaseexecution d on c.id=d.id where step != '0' and c.test!='" + Test.TEST_PRETESTING + "' and c.id in (?)");
         query.append(" order by step, sequence,ctrl,  type, ID");
 
         Connection connection = this.databaseSpring.connect();
@@ -501,7 +502,7 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
         long endlong = resultSet.getLong("exa.endlong");
         String description = resultSet.getString("exa.description");
         return factoryTestCaseStepActionExecution.create(id, test, testCase, step, index, seq, sort, returnCode, returnMessage,
-                 conditionOper, conditionVal1Init, conditionVal2Init, conditionVal1, conditionVal2, action, value1Init, value2Init, value1, value2, forceExeStatus, start, end, startlong, endlong, null, description, null, null);
+                conditionOper, conditionVal1Init, conditionVal2Init, conditionVal1, conditionVal2, action, value1Init, value2Init, value1, value2, forceExeStatus, start, end, startlong, endlong, null, description, null, null);
 
     }
 

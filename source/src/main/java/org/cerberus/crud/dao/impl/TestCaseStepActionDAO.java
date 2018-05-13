@@ -166,6 +166,14 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
     public List<TestCaseStepAction> findActionByTestTestCaseStep(String test, String testcase, int stepNumber) {
         List<TestCaseStepAction> list = null;
         final String query = "SELECT * FROM testcasestepaction tca WHERE tca.test = ? AND tca.testcase = ? AND tca.step = ? ORDER BY tca.sort";
+        
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.test : " + test);
+            LOG.debug("SQL.param.testcase : " + testcase);
+            LOG.debug("SQL.param.step : " + stepNumber);
+        }
 
         Connection connection = this.databaseSpring.connect();
         try {

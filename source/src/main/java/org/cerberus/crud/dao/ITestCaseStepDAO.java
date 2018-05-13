@@ -35,7 +35,6 @@ import org.cerberus.util.answer.AnswerList;
  */
 public interface ITestCaseStepDAO {
 
-    List<String> getLoginStepFromTestCase(String countryCode, String application);
 
     List<TestCaseStep> findTestCaseStepByTestCase(String test, String testcase);
 

@@ -30,6 +30,13 @@ public class Test {
     private String automated;
     private String tDateCrea;
 
+    /**
+     * Invariant PROPERTY TYPE String.
+     */
+    public static final String TEST_PRETESTING = "Pre Testing"; // Test that contain all testcases that will automaticly executed before the testcase.
+    public static final String TEST_POSTTESTING = "Post Testing"; // Test that contain all testcases that will be automaticly executed after the testcase.
+    
+    
     public String getActive() {
         return this.active;
     }

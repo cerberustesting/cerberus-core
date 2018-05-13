@@ -110,6 +110,15 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
         List<TestCaseStepActionControl> list = null;
         final String query = "SELECT * FROM testcasestepactioncontrol WHERE test = ? AND testcase = ? AND step = ? AND sequence = ? ORDER BY sort";
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.test : " + test);
+            LOG.debug("SQL.param.testcase : " + testcase);
+            LOG.debug("SQL.param.step : " + stepNumber);
+            LOG.debug("SQL.param.sequence : " + sequence);
+        }
+        
         try(Connection connection = this.databaseSpring.connect();
         		PreparedStatement preStat = connection.prepareStatement(query);) {
             

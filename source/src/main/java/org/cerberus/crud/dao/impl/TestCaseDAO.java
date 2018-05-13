@@ -843,7 +843,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                 preStat.setString(4, active);
 
                 ResultSet resultSet = preStat.executeQuery();
-                list = new ArrayList<TestCase>();
+                list = new ArrayList<>();
                 try {
                     while (resultSet.next()) {
                         list.add(this.loadFromResultSet(resultSet));

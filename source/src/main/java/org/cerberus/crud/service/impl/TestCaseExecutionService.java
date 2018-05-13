@@ -28,6 +28,7 @@ import java.util.Map;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.ITestCaseExecutionDAO;
+import org.cerberus.crud.entity.Test;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionData;
@@ -248,12 +249,15 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
             }
         }
 
-        // We frist add the 'Pres Testing' testcase execution steps.
-        AnswerList preTestCaseSteps = testCaseStepExecutionService.readByVarious1WithDependency(executionId, "Pre Testing", null);
+        // We first add the 'Pres Testing' testcase execution steps.
+        AnswerList preTestCaseSteps = testCaseStepExecutionService.readByVarious1WithDependency(executionId, Test.TEST_PRETESTING, null);
         testCaseExecution.setTestCaseStepExecutionList(preTestCaseSteps.getDataList());
         // Then we add the steps from the main testcase.
         AnswerList steps = testCaseStepExecutionService.readByVarious1WithDependency(executionId, testCaseExecution.getTest(), testCaseExecution.getTestCase());
         testCaseExecution.addTestCaseStepExecutionList(steps.getDataList());
+        // Then we add the Post steps .
+        AnswerList postTestCaseSteps = testCaseStepExecutionService.readByVarious1WithDependency(executionId, Test.TEST_POSTTESTING, null);
+        testCaseExecution.addTestCaseStepExecutionList(postTestCaseSteps.getDataList());
 
         AnswerList files = testCaseExecutionFileService.readByVarious(executionId, "");
         testCaseExecution.setFileList((List<TestCaseExecutionFile>) files.getDataList());
