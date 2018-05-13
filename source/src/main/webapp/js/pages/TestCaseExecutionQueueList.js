@@ -795,7 +795,7 @@ function aoColumnsFunc_followUp() {
         {"data": "7", "sName": "nbPoolSize", "sWidth": "50px", "title": doc.getDocLabel("page_testcaseexecutionqueue", "nbPoolSize")},
         {"data": "8", "sName": "nbInQueue", "sWidth": "50px", "title": doc.getDocLabel("page_testcaseexecutionqueue", "nbInQueue")},
         {
-            "data": null, "sName": "saturation", "title": doc.getDocLabel("page_testcaseexecutionqueue", "saturation"),
+            "data": null, "sName": "saturation", "sWidth": "50px", "title": doc.getDocLabel("page_testcaseexecutionqueue", "saturation"),
             "mRender": function (data, type, obj) {
                 var saturation_level;
                 var satcolor;
@@ -814,7 +814,7 @@ function aoColumnsFunc_followUp() {
             }
         },
         {
-            "data": null, "sName": "oversaturation", "title": doc.getDocLabel("page_testcaseexecutionqueue", "oversaturation"),
+            "data": null, "sName": "oversaturation", "sWidth": "50px", "title": doc.getDocLabel("page_testcaseexecutionqueue", "oversaturation"),
             "mRender": function (data, type, obj) {
                 if ((obj[7] > 0) && ((obj[6] >= obj[7]))) {
                     return obj[8];
