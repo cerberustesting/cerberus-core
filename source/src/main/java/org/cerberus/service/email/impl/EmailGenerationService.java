@@ -20,6 +20,7 @@
 package org.cerberus.service.email.impl;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -339,7 +340,7 @@ public class EmailGenerationService implements IEmailGenerationService {
         if (StringUtil.isNullOrEmpty(cerberusUrl)) {
             cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", system, "");
         }
-        
+
         StringBuilder urlreporttag = new StringBuilder();
         urlreporttag.append(cerberusUrl);
         urlreporttag.append("/ReportingExecutionByTag.jsp?Tag=");
@@ -362,7 +363,7 @@ public class EmailGenerationService implements IEmailGenerationService {
         List<TestCaseExecution> testCaseExecutions = testCaseExecutionService.readLastExecutionAndExecutionInQueueByTag(tag);
         StringBuilder globalStatus = new StringBuilder();
         globalStatus.append("<table><thead><tr style=\"background-color:#cad3f1; font-style:bold\"><td>Status</td><td>Number</td><td>%</td></tr></thead><tbody>");
-        Map<String, Integer> axisMap = new HashMap<String, Integer>();
+        Map<String, Integer> axisMap = new HashMap<>();
         Integer total;
         total = testCaseExecutions.size();
         for (TestCaseExecution execution : testCaseExecutions) {
@@ -374,14 +375,27 @@ public class EmailGenerationService implements IEmailGenerationService {
         }
         float per = 0;
         DecimalFormat df = new DecimalFormat("#.##");
-        for (Map.Entry<String, Integer> entry : axisMap.entrySet()) {
-            globalStatus.append("<tr>");
-            globalStatus.append("<td>").append(entry.getKey()).append("</td>");
-            globalStatus.append("<td>").append(entry.getValue()).append("</td>");
-            per = (float) entry.getValue() / (float) total;
-            per = per * 100;
-            globalStatus.append("<td>").append(String.format("%.2f", per)).append("</td>");
-            globalStatus.append("</tr>");
+        // Build the status list in the correct order.
+        List<String> statList = new ArrayList<>();
+        statList.add("OK");
+        statList.add("KO");
+        statList.add("FA");
+        statList.add("NA");
+        statList.add("NE");
+        statList.add("PE");
+        statList.add("QU");
+        statList.add("QE");
+        statList.add("CA");
+        for (String string : statList) {
+            if (axisMap.containsKey(string)) {
+                globalStatus.append("<tr>");
+                globalStatus.append("<td>").append(string).append("</td>");
+                globalStatus.append("<td>").append(axisMap.get(string)).append("</td>");
+                per = (float) axisMap.get(string) / (float) total;
+                per = per * 100;
+                globalStatus.append("<td>").append(String.format("%.2f", per)).append("</td>");
+                globalStatus.append("</tr>");
+            }
         }
         globalStatus.append("<tr style=\"background-color:#cad3f1; font-style:bold\"><td>TOTAL</td>");
         globalStatus.append("<td>").append(total).append("</td>");
