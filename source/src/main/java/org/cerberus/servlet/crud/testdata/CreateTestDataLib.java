@@ -140,17 +140,17 @@ public class CreateTestDataLib extends HttpServlet {
             String databaseUrl = policy.sanitize(fileData.get("databaseUrl"));
             String databaseCsv = policy.sanitize(fileData.get("databaseCsv"));
             // Parameter that needs to be secured --> We SECURE+DECODE them
-            String name = ParameterParserUtil.parseStringParamAndDecode(fileData.get("name"), "", charset); //this is mandatory
-            String group = ParameterParserUtil.parseStringParamAndDecode(fileData.get("group"), "", charset);
-            String description = ParameterParserUtil.parseStringParamAndDecode(fileData.get("libdescription"), "", charset);
-            String service = ParameterParserUtil.parseStringParamAndDecode(fileData.get("service"), "", charset);
+            String name = fileData.get("name"); //this is mandatory
+            String group = fileData.get("group");
+            String description = fileData.get("libdescription");
+            String service = fileData.get("service");
             // Parameter that we cannot secure as we need the html --> We DECODE them
-            String script = ParameterParserUtil.parseStringParamAndDecode(fileData.get("script"), "", charset);
-            String servicePath = ParameterParserUtil.parseStringParamAndDecode(fileData.get("servicepath"), "", charset);
-            String method = ParameterParserUtil.parseStringParamAndDecode(fileData.get("method"), "", charset);
-            String envelope = ParameterParserUtil.parseStringParamAndDecode(fileData.get("envelope"), "", charset);
-            String csvUrl = ParameterParserUtil.parseStringParamAndDecode(fileData.get("csvUrl"), "", charset);
-            String separator = ParameterParserUtil.parseStringParamAndDecode(fileData.get("separator"), "", charset);
+            String script = fileData.get("script");
+            String servicePath = fileData.get("servicepath");
+            String method = fileData.get("method");
+            String envelope =fileData.get("envelope");
+            String csvUrl =fileData.get("csvUrl");
+            String separator = fileData.get("separator");
             String activateAutoSubdata = fileData.get("subdataCheck");
             /**
              * Checking all constrains before calling the services.

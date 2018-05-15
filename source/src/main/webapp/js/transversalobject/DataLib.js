@@ -337,7 +337,7 @@ function confirmDataLibModalHandler(element, mode, id) {
 
     formData.append("file", file.prop("files")[0]);
 
-    formData.append("subDataList", JSON.stringify(table_subdata));
+    formData.append("subDataList", encodeURIComponent(JSON.stringify(table_subdata)));
 
     $.ajax({
         async: true,
