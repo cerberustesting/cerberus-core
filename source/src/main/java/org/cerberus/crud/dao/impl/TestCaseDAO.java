@@ -808,8 +808,8 @@ public class TestCaseDAO implements ITestCaseDAO {
                 final PreparedStatement statement = connection.prepareStatement(Query.FIND_BY_APPLICATION)) {
             statement.setString(1, application);
             testCases = new ArrayList<>();
-            try(ResultSet resultSet = statement.executeQuery();) {
-            	while(resultSet.next()) {
+            try (ResultSet resultSet = statement.executeQuery();) {
+                while (resultSet.next()) {
                     testCases.add(loadFromResultSet(resultSet));
                 }
             }
@@ -1090,13 +1090,13 @@ public class TestCaseDAO implements ITestCaseDAO {
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
         }
-        
-        try(Connection connection = this.databaseSpring.connect();
-        		PreparedStatement preStat = connection.prepareStatement(query);
-        		ResultSet resultSet = preStat.executeQuery();) {
-            
+
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query);
+                ResultSet resultSet = preStat.executeQuery();) {
+
             list = new ArrayList<String>();
-            while (resultSet.next()){
+            while (resultSet.next()) {
                 list.add(resultSet.getString(1));
             }
         } catch (SQLException exception) {
@@ -1258,6 +1258,7 @@ public class TestCaseDAO implements ITestCaseDAO {
 
     @Override
     public AnswerItem<List<TestCase>> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries, boolean withLabelOrBattery, String[] status, String[] system, String[] application, String[] priority, String[] group, Integer maxReturn) {
+
         List<TestCase> list = null;
         AnswerItem answer = new AnswerItem<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -1323,6 +1324,7 @@ public class TestCaseDAO implements ITestCaseDAO {
 
                 if (withLabelOrBattery) {
                     preStat.setString(i++, campaign);
+                    LOG.debug("SQL.param : " + campaign);
                 }
 
                 for (Entry<String, String[]> entry : tcParameters.entrySet()) {
@@ -1330,14 +1332,16 @@ public class TestCaseDAO implements ITestCaseDAO {
                     if (valeur != null && valeur.length > 0) {
                         for (String c : valeur) {
                             preStat.setString(i++, c);
+                            LOG.debug("SQL.param : " + c);
                         }
                     }
                 }
 
                 preStat.setInt(i++, maxReturn);
+                LOG.debug("SQL.param : " + maxReturn);
 
                 ResultSet resultSet = preStat.executeQuery();
-                list = new ArrayList<TestCase>();
+                list = new ArrayList<>();
                 try {
                     while (resultSet.next()) {
                         list.add(this.loadFromResultSet(resultSet));
@@ -1377,7 +1381,6 @@ public class TestCaseDAO implements ITestCaseDAO {
                 LOG.warn(e.toString());
             }
         }
-
         return answer;
     }
 
@@ -1625,12 +1628,12 @@ public class TestCaseDAO implements ITestCaseDAO {
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
         }
-        
-        try(Connection connection = this.databaseSpring.connect();
-        		PreparedStatement preStat = connection.prepareStatement(query);) {
+
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query);) {
             preStat.setString(1, test);
             preStat.setString(2, testCase);
-            try(ResultSet resultSet = preStat.executeQuery();) {
+            try (ResultSet resultSet = preStat.executeQuery();) {
                 if (resultSet.first()) {
                     result = loadFromResultSet(resultSet);
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -1643,12 +1646,12 @@ public class TestCaseDAO implements ITestCaseDAO {
                 LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-            } 
+            }
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : " + exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-        } 
+        }
         //sets the message
         ans.setResultMessage(msg);
         return ans;
@@ -1714,7 +1717,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         }
         try (Connection connection = databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(query.toString());
-        		Statement stm = connection.createStatement();) {
+                Statement stm = connection.createStatement();) {
 
             int i = 1;
             if (!StringUtil.isNullOrEmpty(system)) {
@@ -1741,9 +1744,9 @@ public class TestCaseDAO implements ITestCaseDAO {
                 preStat.setString(i++, individualColumnSearchValue);
             }
 
-            try(ResultSet resultSet = preStat.executeQuery();
-            		ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
-            	//gets the data
+            try (ResultSet resultSet = preStat.executeQuery();
+                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+                //gets the data
                 while (resultSet.next()) {
                     distinctValues.add(resultSet.getString("distinctValues") == null ? "" : resultSet.getString("distinctValues"));
                 }
@@ -1768,13 +1771,12 @@ public class TestCaseDAO implements ITestCaseDAO {
                     msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
                     answer = new AnswerList<>(distinctValues, nrTotalRows);
                 }
-            }catch (SQLException exception) {
+            } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-            } 
+            }
 
-            
         } catch (Exception e) {
             LOG.warn("Unable to execute query : " + e.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
@@ -1958,7 +1960,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionOper(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionVal1(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getConditionVal2(), ""));
-                preStat.setInt(i++, ParameterParserUtil.parseIntegerParam(testCase.getTestCaseVersion(),0));
+                preStat.setInt(i++, ParameterParserUtil.parseIntegerParam(testCase.getTestCaseVersion(), 0));
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);

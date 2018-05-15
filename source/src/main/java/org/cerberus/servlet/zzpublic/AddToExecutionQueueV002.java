@@ -344,7 +344,7 @@ public class AddToExecutionQueueV002 extends HttpServlet {
         boolean tagAlreadyAdded = false;
 
         int nbbrowser = 0;
-        if (browsers.isEmpty()) {
+        if (browsers == null || browsers.isEmpty()) {
             nbbrowser = 1;
         } else {
             nbbrowser = browsers.size();

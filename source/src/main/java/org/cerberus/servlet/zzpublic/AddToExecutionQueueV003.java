@@ -299,14 +299,21 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                 }
             }
             if ((countries != null) && (selectTest == null || selectTest.isEmpty())) {
-                // If no countries are found, there is no need to get the testcase list. None will be returned.
+                // If no countries are found, there is no need to get the testcase list. None will be returned. We will report an error later on.
                 selectTest = new ArrayList<>();
                 selectTestCase = new ArrayList<>();
                 testcases = testCaseService.findTestCaseByCampaignNameAndCountries(campaign, countries.toArray(new String[countries.size()]));
 
-                for (TestCase campaignTestCase : testcases.getItem()) {
-                    selectTest.add(campaignTestCase.getTest());
-                    selectTestCase.add(campaignTestCase.getTestCase());
+                if (testcases != null) {
+                    if (testcases.getItem() != null) {
+                        for (TestCase campaignTestCase : testcases.getItem()) {
+                            selectTest.add(campaignTestCase.getTest());
+                            selectTestCase.add(campaignTestCase.getTestCase());
+                        }
+                    } else {
+                        errorMessage.append("Error - ").append(testcases.getMessageDescription()).append("\n");
+                        error = true;
+                    }
                 }
             }
         }

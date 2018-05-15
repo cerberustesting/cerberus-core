@@ -79,6 +79,7 @@ public interface ITestCaseDAO {
      * @param system of test case
      * @param application of test case
      * @param priority of test case
+     * @param group
      * @param maxReturn
      * @return the list of TCase used in the campaign
      * @since 1.0.2
@@ -155,20 +156,19 @@ public interface ITestCaseDAO {
      * @see FactoryTestCase
      */
     public TestCase loadFromResultSet(ResultSet resultSet) throws SQLException;
-    
+
     /**
-     * 
+     *
      * @param service
      * @return
      */
     public AnswerList<TestListDTO> findTestCaseByService(String service);
-    
+
     /**
-     * 
+     *
      * @param service
      * @return
      */
     public AnswerList<TestListDTO> findTestCaseByServiceByDataLib(String service);
-    
-    
+
 }

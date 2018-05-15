@@ -53,7 +53,9 @@ public interface ITestCaseService {
     List<TestCase> findTestCaseByApplication(String application);
 
     /**
-     * Retreive all testcase that match testFilter value, are active, exist for country, match applicationFilter and inside build/revision range.
+     * Retreive all testcase that match testFilter value, are active, exist for
+     * country, match applicationFilter and inside build/revision range.
+     *
      * @param testFilter
      * @param applicationFilter
      * @param country
@@ -268,9 +270,9 @@ public interface ITestCaseService {
      * @return
      */
     public boolean hasPermissionsCreate(TestCase testCase, HttpServletRequest request);
-    
+
     /**
-     * 
+     *
      * @param service
      * @return
      */

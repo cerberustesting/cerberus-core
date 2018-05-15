@@ -964,7 +964,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
         }
         try (Connection connection = databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(query.toString());
-        		Statement stm = connection.createStatement();) {
+                Statement stm = connection.createStatement();) {
 
             int i = 1;
             if (!StringUtil.isNullOrEmpty(searchTerm)) {
@@ -981,15 +981,14 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                 preStat.setString(i++, individualColumnSearchValue);
             }
 
-            try(ResultSet resultSet = preStat.executeQuery();
-            		ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");){
-            	//gets the data
+            try (ResultSet resultSet = preStat.executeQuery();
+                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+                //gets the data
                 while (resultSet.next()) {
                     distinctValues.add(resultSet.getString("distinctValues") == null ? "" : resultSet.getString("distinctValues"));
                 }
 
                 //get the total number of rows
-                
                 int nrTotalRows = 0;
 
                 if (rowSet != null && rowSet.next()) {
@@ -1009,7 +1008,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                     msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
                     answer = new AnswerList<>(distinctValues, nrTotalRows);
                 }
-            }catch (SQLException e) {
+            } catch (SQLException e) {
                 LOG.warn("Unable to execute query : " + e.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
                         e.toString());
@@ -1416,15 +1415,15 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
         try (Connection connection = this.databaseSpring.connect();
                 PreparedStatement selectStatement = connection.prepareStatement(query);) {
             selectStatement.setLong(1, id);
-            try(ResultSet result = selectStatement.executeQuery();){
-            	if (!result.next()) {
+            try (ResultSet result = selectStatement.executeQuery();) {
+                if (!result.next()) {
                     throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
                 }
                 return loadWithDependenciesFromResultSet(result);
-            }catch (SQLException exception) {
+            } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
                 throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
-            } 
+            }
         } catch (SQLException | FactoryCreationException e) {
             LOG.warn("Unable to find test case execution in queue " + id, e);
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
@@ -1453,10 +1452,10 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
             LOG.debug("SQL.param.comment : " + object.getComment());
             LOG.debug("SQL.param.state : " + object.getState());
         }
-        
-        try(Connection connection = this.databaseSpring.connect();
-        		PreparedStatement preStat = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);) {
-            
+
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);) {
+
             int i = 1;
             preStat.setString(i++, object.getSystem());
             preStat.setString(i++, object.getTest());
@@ -1464,7 +1463,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
             preStat.setString(i++, object.getCountry());
             preStat.setString(i++, object.getEnvironment());
             preStat.setString(i++, object.getRobot());
-            preStat.setString(i++, object.getRobotDecli());
+            preStat.setString(i++, object.getRobotDecli() == null ? "" : object.getRobotDecli());
             preStat.setString(i++, object.getRobotIP());
             preStat.setString(i++, object.getRobotPort());
             preStat.setString(i++, object.getBrowser());
@@ -1522,7 +1521,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
             }
-        } 
+        }
         return new AnswerItem<>(newObject, msg);
     }
 
