@@ -117,7 +117,7 @@ public class CreateTestDataLib extends HttpServlet {
                 FileItem fileItem = it.next();
                 boolean isFormField = fileItem.isFormField();
                 if (isFormField) {
-                    fileData.put(fileItem.getFieldName(), ParameterParserUtil.parseStringParamAndDecode(fileItem.getString("UTF-8"), "", charset));
+                    fileData.put(fileItem.getFieldName(), ParameterParserUtil.parseStringParam(fileItem.getString("UTF-8"), ""));
                 } else {
                     file = fileItem;
                 }
