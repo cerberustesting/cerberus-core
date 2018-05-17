@@ -26,6 +26,9 @@ import java.util.concurrent.Future;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.service.IInvariantService;
+import org.cerberus.engine.execution.IExecutionRunService;
+import org.cerberus.engine.execution.IRetriesService;
+import org.cerberus.engine.execution.impl.ExecutionRunService;
 import org.cerberus.engine.threadpool.entity.TestCaseExecutionQueueToTreat;
 import org.cerberus.crud.service.IMyVersionService;
 import org.cerberus.crud.service.IParameterService;
@@ -63,6 +66,8 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
     ExecutionQueueThreadPool threadQueuePool;
     @Autowired
     private ITestCaseExecutionQueueService queueService;
+    @Autowired
+    private IRetriesService retriesService;
 
     @Override
     public HashMap<String, Integer> getCurrentlyRunning() throws CerberusException {
@@ -302,6 +307,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                                 task.setQueueId(exe.getId());
                                 task.setToExecuteTimeout(queueTimeout);
                                 task.setQueueService(queueService);
+                                task.setRetriesService(retriesService);
                                 task.setExecThreadPool(threadQueuePool);
                                 Future<?> future = threadQueuePool.getExecutor().submit(task);
                                 task.setFuture(future);

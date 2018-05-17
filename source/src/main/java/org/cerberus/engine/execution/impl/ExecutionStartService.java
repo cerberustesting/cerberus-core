@@ -28,6 +28,7 @@ import org.cerberus.crud.entity.CountryEnvironmentParameters;
 import org.cerberus.engine.entity.ExecutionUUID;
 import org.cerberus.crud.entity.Invariant;
 import org.cerberus.engine.entity.MessageGeneral;
+import org.cerberus.engine.execution.IRecorderService;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseExecution;
@@ -82,6 +83,7 @@ public class ExecutionStartService implements IExecutionStartService {
     private IParameterService parameterService;
     @Autowired
     private ITestCaseExecutionQueueService inQueueService;
+
 
     private static final Logger LOG = LogManager.getLogger(ExecutionStartService.class);
 
@@ -263,6 +265,12 @@ public class ExecutionStartService implements IExecutionStartService {
                     tCExecution.setCountryEnvironmentParameters(cea);
 //                    tCExecution.setUrl(cea.getIp()+ cea.getUrl());
                     tCExecution.setUrl(StringUtil.getURLFromString(cea.getIp(), cea.getUrl(), "", ""));
+
+                    // add possiblity to override URL with MyHost if MyHost is available
+                    if(!StringUtil.isNullOrEmpty(tCExecution.getMyHost())) {
+                        String contextRoot = !StringUtil.isNullOrEmpty(tCExecution.getMyContextRoot()) ? tCExecution.getMyContextRoot() : "";
+                        tCExecution.setUrl(StringUtil.getURLFromString(tCExecution.getMyHost(), contextRoot, "", ""));
+                    }
                 } else {
                     MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_COUNTRYENVAPP_NOT_FOUND);
                     mes.setDescription(mes.getDescription().replace("%COUNTRY%", tCExecution.getCountry()));
@@ -425,7 +433,6 @@ public class ExecutionStartService implements IExecutionStartService {
                     throw new CerberusException(ex.getMessageError());
                 }
                 LOG.debug("Server Started.");
-
             }
         }
 

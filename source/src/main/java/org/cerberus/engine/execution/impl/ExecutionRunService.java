@@ -63,10 +63,7 @@ import org.cerberus.crud.service.ITestCaseStepExecutionService;
 import org.cerberus.engine.entity.ExecutionUUID;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.MessageGeneral;
-import org.cerberus.engine.execution.IConditionService;
-import org.cerberus.engine.execution.IExecutionRunService;
-import org.cerberus.engine.execution.IRecorderService;
-import org.cerberus.engine.execution.ISeleniumServerService;
+import org.cerberus.engine.execution.*;
 import org.cerberus.engine.gwt.IActionService;
 import org.cerberus.engine.gwt.IControlService;
 import org.cerberus.engine.gwt.IVariableService;
@@ -152,6 +149,8 @@ public class ExecutionRunService implements IExecutionRunService {
     private ITagService tagService;
     @Autowired
     private IEmailService emailService;
+    @Autowired
+    private IRetriesService retriesService;
 
     @Override
     public TestCaseExecution executeTestCase(TestCaseExecution tCExecution) throws CerberusException {
@@ -716,36 +715,7 @@ public class ExecutionRunService implements IExecutionRunService {
              * Retry management, in case the result is not (OK or NE), we
              * execute the job again reducing the retry to 1.
              */
-            if (tCExecution.getNumberOfRetries() > 0
-                    && !tCExecution.getResultMessage().getCodeString().equals("OK")
-                    && !tCExecution.getResultMessage().getCodeString().equals("NE")) {
-                TestCaseExecutionQueue newExeQueue = new TestCaseExecutionQueue();
-                if (tCExecution.getQueueID() > 0) {
-                    // If QueueId exist, we try to get the original execution queue.
-                    try {
-                        newExeQueue = executionQueueService.convert(executionQueueService.readByKey(tCExecution.getQueueID()));
-                    } catch (Exception e) {
-                        // Unfortunatly the execution no longuer exist so we pick initial value.
-                        newExeQueue = tCExecution.getTestCaseExecutionQueue();
-                    }
-                } else {
-                    // Initial Execution does not come from the queue so we pick the value created at the beginning of the execution.
-                    newExeQueue = tCExecution.getTestCaseExecutionQueue();
-                }
-                // Forcing init value for that new queue execution : exeid=0, no debugflag and State = QUEUED
-                int newRetry = tCExecution.getNumberOfRetries() - 1;
-                newExeQueue.setId(0);
-                newExeQueue.setDebugFlag("N");
-                if (newRetry <= 0) {
-                    newExeQueue.setComment("Added from Retry. Last attempt to go.");
-                } else {
-                    newExeQueue.setComment("Added from Retry. Still " + newRetry + " attempt(s) to go.");
-                }
-                newExeQueue.setState(TestCaseExecutionQueue.State.QUEUED);
-                newExeQueue.setRetries(newRetry);
-                // Insert execution to the Queue.
-                executionQueueService.create(newExeQueue);
-            }
+            retriesService.manageRetries(tCExecution);
 
             /**
              * After every execution finished, <br>

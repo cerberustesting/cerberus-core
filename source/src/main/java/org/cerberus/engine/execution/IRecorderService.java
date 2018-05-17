@@ -124,4 +124,9 @@ public interface IRecorderService {
      * @return
      */
     public String getStorageSubFolder(long exeID);
+
+
+    void beginRecordVideo(TestCaseExecution testCaseExecution);
+
+    void endRecordVideo(TestCaseExecution testCaseExecution);
 }

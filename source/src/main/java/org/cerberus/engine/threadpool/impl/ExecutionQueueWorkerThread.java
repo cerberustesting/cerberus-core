@@ -24,6 +24,7 @@ import java.net.URLEncoder;
 import java.util.concurrent.Future;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.config.RequestConfig;
@@ -34,10 +35,12 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.cerberus.crud.entity.TestCaseExecutionQueue;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
+import org.cerberus.engine.execution.IRetriesService;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.servlet.zzpublic.RunTestCase;
 import org.cerberus.util.ParamRequestMaker;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.StringUtil;
 
 /**
  *
@@ -48,6 +51,8 @@ public class ExecutionQueueWorkerThread implements Runnable {
     private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(ExecutionQueueWorkerThread.class);
 
     private ITestCaseExecutionQueueService queueService;
+    private IRetriesService retriesService;
+
     private ExecutionQueueThreadPool execThreadPool;
 
     private long queueId;
@@ -76,12 +81,17 @@ public class ExecutionQueueWorkerThread implements Runnable {
             paramRequestMaker.addParam(RunTestCase.PARAMETER_BROWSER_VERSION, getToExecute().getBrowserVersion());
             paramRequestMaker.addParam(RunTestCase.PARAMETER_PLATFORM, getToExecute().getPlatform());
             paramRequestMaker.addParam(RunTestCase.PARAMETER_SCREEN_SIZE, getToExecute().getScreenSize());
+
+            if(!StringUtil.isNullOrEmpty(getToExecute().getManualHost())) {
+                paramRequestMaker.addParam(RunTestCase.PARAMETER_MANUAL_HOST, URLEncoder.encode(getToExecute().getManualHost(), "UTF-8"));
+            }
+            if(!StringUtil.isNullOrEmpty(getToExecute().getManualContextRoot())) {
+                paramRequestMaker.addParam(RunTestCase.PARAMETER_MANUAL_CONTEXT_ROOT, URLEncoder.encode(getToExecute().getManualContextRoot(), "UTF-8"));
+            }
             if (getToExecute().getManualURL() >= 1) {
                 paramRequestMaker.addParam(RunTestCase.PARAMETER_MANUAL_URL, ParameterParserUtil.DEFAULT_BOOLEAN_TRUE_VALUE);
-                paramRequestMaker.addParam(RunTestCase.PARAMETER_MANUAL_HOST, URLEncoder.encode(getToExecute().getManualHost(), "UTF-8"));
-                paramRequestMaker.addParam(RunTestCase.PARAMETER_MANUAL_CONTEXT_ROOT, URLEncoder.encode(getToExecute().getManualContextRoot(), "UTF-8"));
-                paramRequestMaker.addParam(RunTestCase.PARAMETER_MANUAL_LOGIN_RELATIVE_URL, URLEncoder.encode(getToExecute().getManualLoginRelativeURL(), "UTF-8"));
-                paramRequestMaker.addParam(RunTestCase.PARAMETER_MANUAL_ENV_DATA, getToExecute().getManualEnvData());
+                paramRequestMaker.addParam(RunTestCase.PARAMETER_MANUAL_LOGIN_RELATIVE_URL, URLEncoder.encode(getToExecute().getManualLoginRelativeURL() != null ? getToExecute().getManualLoginRelativeURL() : "", "UTF-8"));
+                paramRequestMaker.addParam(RunTestCase.PARAMETER_MANUAL_ENV_DATA, getToExecute().getManualEnvData() != null ? getToExecute().getManualEnvData() : "");
             }
             paramRequestMaker.addParam(RunTestCase.PARAMETER_TAG, URLEncoder.encode(getToExecute().getTag(), "UTF-8"));
             paramRequestMaker.addParam(RunTestCase.PARAMETER_SCREENSHOT, Integer.toString(getToExecute().getScreenshot()));
@@ -133,6 +143,10 @@ public class ExecutionQueueWorkerThread implements Runnable {
         this.queueService = queueService;
     }
 
+    public void setRetriesService(IRetriesService retriesService) {
+        this.retriesService = retriesService;
+    }
+
     public void setCerberusExecutionUrl(String url) {
         this.cerberusExecutionUrl = url;
     }
@@ -179,17 +193,22 @@ public class ExecutionQueueWorkerThread implements Runnable {
             // Make the http call and parse the output.
             runParseAnswer(runExecution(url), cerberusExecutionUrl + RunTestCase.SERVLET_URL, url.toString());
 
-        } catch (RunQueueProcessException e) {
+        } catch (Exception e) {
             LOG.warn("Execution in queue " + queueId + " has finished with error");
             try {
                 queueService.updateToError(queueId, e.getMessage());
-
             } catch (CerberusException again) {
                 LOG.error("Unable to mark execution in queue " + queueId + " as in error", again);
             }
-        } catch (Exception ex) {
-            LOG.error(ex);
-        } finally {
+
+            try {
+                TestCaseExecutionQueue tce = queueService.convert(queueService.readByKey(queueId));
+                if(tce != null)
+                    retriesService.manageRetries(tce);
+            } catch (Exception again) {
+                LOG.error("Unable to retry execution " + queueId, again);
+            }
+
         }
     }
 

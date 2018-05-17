@@ -162,13 +162,13 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
             response.getWriter().print(jsonResponse.toString());
 
         } catch (ParseException ex) {
-            LOG.error("Error on main call : " + ex);
+            LOG.error("Error on main call : " + ex, ex);
         } catch (CerberusException ex) {
-            LOG.error("Error on main call : " + ex);
+            LOG.error("Error on main call : " + ex, ex);
         } catch (JSONException ex) {
-            LOG.error("Error on main call : " + ex);
+            LOG.error("Error on main call : " + ex, ex);
         } catch (Exception ex) {
-            LOG.error("Error on main call : " + ex);
+            LOG.error("Error on main call : " + ex, ex);
         }
     }
 
