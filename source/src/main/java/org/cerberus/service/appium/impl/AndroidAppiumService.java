@@ -165,19 +165,26 @@ public class AndroidAppiumService extends AppiumService {
     @Override
     public MessageEvent executeCommand(Session session, String cmd, String args) throws IllegalArgumentException {
         try {
-            AndroidDriver driver = ((AndroidDriver) session.getAppiumDriver());
-
-            Map<String, Object> argss = new HashMap<>();
-            argss.put("command", cmd);
-            argss.put("args", Lists.newArrayList(args));
-
-            String message = driver.executeScript("mobile: shell", argss).toString();
+            String message = executeCommandString(session,cmd,args);
 
             return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_EXECUTECOMMAND).resolveDescription("LOG", message);
         } catch (Exception e) {
-            LOG.warn("Unable to swipe screen due to " + e.getMessage(), e);
+            LOG.warn("Unable to execute command screen due to " + e.getMessage(), e);
             return new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTECOMMAND)
                     .resolveDescription("EXCEPTION", e.getMessage());
         }
+    }
+
+    @Override
+    public String executeCommandString(Session session, String cmd, String args) throws IllegalArgumentException {
+        AndroidDriver driver = ((AndroidDriver) session.getAppiumDriver());
+
+        Map<String, Object> argss = new HashMap<>();
+        argss.put("command", cmd);
+        argss.put("args", Lists.newArrayList(args));
+
+        String value = driver.executeScript("mobile: shell", argss).toString();
+
+        return value;
     }
 }

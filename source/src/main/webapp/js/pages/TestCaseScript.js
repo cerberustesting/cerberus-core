@@ -3689,6 +3689,20 @@ function setPlaceholderProperty(propertyElement, property) {
                 "period": null
             },
             {
+                "type": "getFromCommand",
+                "value1": "Executer une commande shell",
+                "value1Class": "col-sm-8",
+                "value1EditorMode": "ace/mode/shell",
+                "value2": null,
+                "database": null,
+                "length": null,
+                "cacheExpire": "[opt] cache Expire (s)",
+                "rowLimit": null,
+                "nature": null,
+                "retry": null,
+                "period": null
+            },
+            {
                 "type": "executeSoapFromLib",
                 "value1": "Service lib name",
                 "value1Class": "col-sm-8",
@@ -3876,6 +3890,20 @@ function setPlaceholderProperty(propertyElement, property) {
                 "value1": "Groovy command",
                 "value1Class": "col-sm-8",
                 "value1EditorMode": "ace/mode/groovy",
+                "value2": null,
+                "database": null,
+                "length": null,
+                "cacheExpire": "[opt] cache Expire (s)",
+                "rowLimit": null,
+                "nature": null,
+                "retry": null,
+                "period": null
+            },
+            {
+                "type": "getFromCommand",
+                "value1": "Execute a shell command",
+                "value1Class": "col-sm-8",
+                "value1EditorMode": "ace/mode/shell",
                 "value2": null,
                 "database": null,
                 "length": null,

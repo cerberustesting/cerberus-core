@@ -381,4 +381,6 @@ public abstract class AppiumService implements IAppiumService {
         touchAction.longPress(fromX, fromY).moveTo(toX, toY).release().perform();
 
     }
+
+    public abstract String executeCommandString(Session session, String cmd, String args) throws IllegalArgumentException;
 }

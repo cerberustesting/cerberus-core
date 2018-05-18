@@ -65,6 +65,8 @@ public class TestCaseCountryProperties {
     public static final String TYPE_GETDIFFERENCESFROMXML = "getDifferencesFromXml";
     public static final String TYPE_GETFROMJSON = "getFromJson";
     public static final String TYPE_GETFROMGROOVY = "getFromGroovy";
+    public static final String TYPE_GETFROMCOMMAND = "getFromCommand";
+
     // DEPRECATED
     public static final String TYPE_EXECUTESQLFROMLIB = "executeSqlFromLib";
     public static final String TYPE_EXECUTESOAPFROMLIB = "executeSoapFromLib";

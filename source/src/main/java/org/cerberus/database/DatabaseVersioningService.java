@@ -7689,6 +7689,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append(" ('INVARIANTPRIVATE','MNTACTIVE', '810','Maintenance Activation flag', '')");
         a.add(b.toString());
 
+        // Add the getFromGroovy property type.
+        // 1337
+        b = new StringBuilder();
+        b.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('PROPERTYTYPE', 'getFromCommand', '80', 'Getting value from a Shell command', '');");
+        a.add(b.toString());
+
         return a;
     }
 

@@ -54,6 +54,8 @@ import org.cerberus.engine.gwt.IVariableService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.service.appium.IAppiumService;
+import org.cerberus.service.appium.impl.AndroidAppiumService;
 import org.cerberus.service.datalib.IDataLibService;
 import org.cerberus.service.groovy.IGroovyService;
 import org.cerberus.service.json.IJsonService;
@@ -120,6 +122,9 @@ public class PropertyService implements IPropertyService {
     private ILogEventService logEventService;
     @Autowired
     private IVariableService variableService;
+    @Autowired
+    private AndroidAppiumService androidAppiumService;
+
 
     @Override
     public AnswerItem<String> decodeStringWithExistingProperties(String stringToDecode, TestCaseExecution tCExecution,
@@ -258,7 +263,7 @@ public class PropertyService implements IPropertyService {
     /**
      * Auxiliary method that returns the execution data for a property.
      *
-     * @param dataList list of execution data
+     * @param hashTemp1 list of execution data
      * @param eachTccp property to be calculated
      * @param forceCalculation indicates whether a property must be
      * re-calculated if it was already computed in previous steps
@@ -712,6 +717,9 @@ public class PropertyService implements IPropertyService {
                         case TestCaseCountryProperties.TYPE_GETFROMGROOVY:
                             testCaseExecutionData = this.property_getFromGroovy(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
                             break;
+                        case TestCaseCountryProperties.TYPE_GETFROMCOMMAND:
+                            testCaseExecutionData = this.property_getFromCommand(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
+                            break;
 
                         // DEPRECATED Property types.
                         case TestCaseCountryProperties.TYPE_EXECUTESOAPFROMLIB: // DEPRECATED
@@ -812,6 +820,40 @@ public class PropertyService implements IPropertyService {
             LOG.debug("Finished to calculate Property : '" + testCaseCountryProperty.getProperty() + "'");
         }
 
+    }
+
+    private TestCaseExecutionData property_getFromCommand(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty, boolean forceRecalculation) {
+        // Check if script has been correctly defined
+        String script = testCaseExecutionData.getValue1();
+        if (script == null || script.isEmpty()) {
+            testCaseExecutionData.setPropertyResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMCOMMAND_NULL));
+            return testCaseExecutionData;
+        }
+
+        // Try to evaluate Command script
+        try {
+            if (tCExecution.getApplicationObj().getType().equals(Application.TYPE_APK)) {
+                String message = androidAppiumService.executeCommandString(tCExecution.getSession(),script,"");
+
+                String value="";
+                if(!StringUtil.isNullOrEmpty(message)) {
+                    value=message;
+                }
+                testCaseExecutionData.setValue(value);
+                testCaseExecutionData.setPropertyResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMCOMMAND)
+                        .resolveDescription("VALUE", value));
+            }
+            else {
+                MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_FEATURENOTSUPPORTED);
+                res.setDescription(res.getDescription().replace("%APPTYPE%", tCExecution.getApplicationObj().getType()));
+                res.setDescription(res.getDescription().replace("%PROPTYPE%", testCaseExecutionData.getType()));
+            }
+        } catch (Exception e) {
+            LOG.debug("Exception Running Command Script :" + e.getMessage());
+            testCaseExecutionData.setPropertyResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMCOMMAND_EXCEPTION).resolveDescription("REASON", e.getMessage()));
+        }
+
+        return testCaseExecutionData;
     }
 
     private TestCaseExecutionData property_executeSqlFromLib(TestCaseExecutionData testCaseExecutionData, TestCaseCountryProperties testCaseCountryProperty, TestCaseExecution tCExecution, boolean forceCalculation) {
@@ -925,7 +967,6 @@ public class PropertyService implements IPropertyService {
             }
 
         } else {
-
             MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_FEATURENOTSUPPORTED);
             res.setDescription(res.getDescription().replace("%APPTYPE%", tCExecution.getApplicationObj().getType()));
             res.setDescription(res.getDescription().replace("%PROPTYPE%", testCaseExecutionData.getType()));
