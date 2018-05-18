@@ -304,6 +304,12 @@
             <groupId>org.asciidoctor</groupId>
             <artifactId>asciidoctorj</artifactId>
             <version>${asciidoctor.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.jruby</groupId>
+                    <artifactId>jruby-complete</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.tika</groupId>
