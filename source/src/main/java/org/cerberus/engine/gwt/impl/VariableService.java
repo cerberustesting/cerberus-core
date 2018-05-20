@@ -210,10 +210,12 @@ public class VariableService implements IVariableService {
             stringToDecode = stringToDecode.replace("%SYS_BROWSER%", tCExecution.getBrowser());
             stringToDecode = stringToDecode.replace("%SYS_APP_DOMAIN%", tCExecution.getCountryEnvironmentParameters().getDomain());
             stringToDecode = stringToDecode.replace("%SYS_APP_HOST%", tCExecution.getCountryEnvironmentParameters().getIp());
+            stringToDecode = stringToDecode.replace("%SYS_APP_CONTEXTROOT%", tCExecution.getCountryEnvironmentParameters().getUrl());
             stringToDecode = stringToDecode.replace("%SYS_APP_VAR1%", tCExecution.getCountryEnvironmentParameters().getVar1());
             stringToDecode = stringToDecode.replace("%SYS_APP_VAR2%", tCExecution.getCountryEnvironmentParameters().getVar2());
             stringToDecode = stringToDecode.replace("%SYS_APP_VAR3%", tCExecution.getCountryEnvironmentParameters().getVar3());
             stringToDecode = stringToDecode.replace("%SYS_APP_VAR4%", tCExecution.getCountryEnvironmentParameters().getVar4());
+            stringToDecode = stringToDecode.replace("%SYS_EXEURL%", tCExecution.getUrl());
             stringToDecode = stringToDecode.replace("%SYS_ENV%", tCExecution.getEnvironmentData());
             stringToDecode = stringToDecode.replace("%SYS_ENVGP%", tCExecution.getEnvironmentDataObj().getGp1());
             stringToDecode = stringToDecode.replace("%SYS_COUNTRY%", tCExecution.getCountry());
@@ -243,10 +245,12 @@ public class VariableService implements IVariableService {
             stringToDecode = stringToDecode.replace("%system.BROWSER%", tCExecution.getBrowser());
             stringToDecode = stringToDecode.replace("%system.APP_DOMAIN%", tCExecution.getCountryEnvironmentParameters().getDomain());
             stringToDecode = stringToDecode.replace("%system.APP_HOST%", tCExecution.getCountryEnvironmentParameters().getIp());
+            stringToDecode = stringToDecode.replace("%system.APP_CONTEXTROOT%", tCExecution.getCountryEnvironmentParameters().getUrl());
             stringToDecode = stringToDecode.replace("%system.APP_VAR1%", tCExecution.getCountryEnvironmentParameters().getVar1());
             stringToDecode = stringToDecode.replace("%system.APP_VAR2%", tCExecution.getCountryEnvironmentParameters().getVar2());
             stringToDecode = stringToDecode.replace("%system.APP_VAR3%", tCExecution.getCountryEnvironmentParameters().getVar3());
             stringToDecode = stringToDecode.replace("%system.APP_VAR4%", tCExecution.getCountryEnvironmentParameters().getVar4());
+            stringToDecode = stringToDecode.replace("%system.EXEURL%", tCExecution.getUrl());
             stringToDecode = stringToDecode.replace("%system.ENV%", tCExecution.getEnvironmentData());
             stringToDecode = stringToDecode.replace("%system.ENVGP%", tCExecution.getEnvironmentDataObj().getGp1());
             stringToDecode = stringToDecode.replace("%system.COUNTRY%", tCExecution.getCountry());

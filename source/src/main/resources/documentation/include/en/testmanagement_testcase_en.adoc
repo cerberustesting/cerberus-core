@@ -314,6 +314,8 @@ Below you will find useful properties :
 | %system.BROWSER% |	Browser name of the current execution.
 | %system.APP_DOMAIN% |	Domain of the Application
 | %system.APP_HOST% |	Host of the tested Application
+| %system.APP_CONTEXTROOT% |	Context Root of the tested Application
+| %system.EXEURL% |	Full Url of the tested Application
 | %system.APP_VAR1% |	VAR1 of the application on the environment.
 | %system.APP_VAR2% |	VAR2 of the application on the environment.
 | %system.APP_VAR3% |	VAR3 of the application on the environment.

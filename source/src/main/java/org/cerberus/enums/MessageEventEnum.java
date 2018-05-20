@@ -264,7 +264,7 @@ public enum MessageEventEnum {
     ACTION_FAILED_SIKULI_FILE_NOT_FOUND(289, "FA", "File %FILE% not found. Please verify that url defined in object field is correct and accessible from Cerberus Server.", true, true, false, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_SIKULI_ELEMENT_NOT_FOUND(289, "FA", "Failed to perform the action %ACTION% probably due to Element %ELEMENT% not found.", true, true, false, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_CALCULATEPROPERTY_MISSINGPROPERTY(289, "FA", "Failed to perform the action %ACTION% due to missing property to calculate.", true, true, false, MessageGeneralEnum.EXECUTION_FA_ACTION),
-    ACTION_FAILED_CALCULATEPROPERTY_PROPERTYNOTFOUND(289, "FA", "Failed to perform the action %ACTION% bacause property %PROP% does not exist.", true, true, false, MessageGeneralEnum.EXECUTION_FA_ACTION),
+    ACTION_FAILED_CALCULATEPROPERTY_PROPERTYNOTFOUND(289, "FA", "Failed to perform the action %ACTION% because property %PROP% does not exist.", true, true, false, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_EXECUTEJS(289, "FA", "Javascript failed with error : %EXCEPTION%.", true, true, false, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_NOTEXECUTED_NO_PROPERTY_DEFINITION(290, "NA", "Not executed because Property '%PROP%' is not defined for the country '%COUNTRY%'.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION(291, "FA", "Not executed because Action '%ACTION%' is not supported for application type '%APPLICATIONTYPE%'.", true, true, false, MessageGeneralEnum.EXECUTION_FA_ACTION),
