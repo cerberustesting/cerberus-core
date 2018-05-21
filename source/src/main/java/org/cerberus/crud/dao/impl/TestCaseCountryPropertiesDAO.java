@@ -555,10 +555,8 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
             LOG.debug("SQL : " + query);
         }
 
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
+        try ( Connection connection = this.databaseSpring.connect() ) {        
+            try ( PreparedStatement preStat = connection.prepareStatement(query) ) {
             	int i = 1;
                 preStat.setString(i++, newName);
                 preStat.setString(i++, oldName);
@@ -577,28 +575,13 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
                 }
-            } finally {
-                if (preStat != null) {
-                    preStat.close();
-                }
-            }
+            } 
         } catch (SQLException exception) {
             LOG.error("Unable to execute query : " + exception.toString(), exception);
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
 
-        } finally {
-            try {
-                if (!this.databaseSpring.isOnTransaction()) {
-                    if (connection != null) {
-                        connection.close();
-                    }
-                }
-            } catch (SQLException ex) {
-                LOG.warn("Unable to close connection : " + ex.toString(), ex);
-            }
         }
-
         answer.setResultMessage(msg);
         return answer;
     }
