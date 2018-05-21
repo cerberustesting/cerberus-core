@@ -978,7 +978,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
                 msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE").replace("success!", "success! - Row(s) updated : "+String.valueOf(rowsUpdated)));
 
             } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
+                LOG.error("Unable to execute query : " + exception.toString(), exception);
                 if (exception.getSQLState().equals(SQL_DUPLICATED_CODE)) { //23000 is the sql state for duplicate entries
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_DUPLICATE);
                     msg.setDescription(msg.getDescription().replace("%ITEM%", "Test data lib ").replace("%OPERATION%", "UPDATE").replace("%REASON%", exception.toString()));
@@ -992,7 +992,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
                 }
             }
         } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
+            LOG.error("Unable to execute query : " + exception.toString(), exception);
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
 
@@ -1004,7 +1004,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
                     }
                 }
             } catch (SQLException ex) {
-                LOG.warn("Unable to close connection : " + ex.toString());
+                LOG.warn("Unable to close connection : " + ex.toString(), ex);
             }
         }
 
