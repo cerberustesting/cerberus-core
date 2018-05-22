@@ -270,6 +270,10 @@ public class ExecutionStartService implements IExecutionStartService {
                     if(!StringUtil.isNullOrEmpty(tCExecution.getMyHost())) {
                         String contextRoot = !StringUtil.isNullOrEmpty(tCExecution.getMyContextRoot()) ? tCExecution.getMyContextRoot() : "";
                         tCExecution.setUrl(StringUtil.getURLFromString(tCExecution.getMyHost(), contextRoot, "", ""));
+
+                    }
+                    if(!StringUtil.isNullOrEmpty(tCExecution.getMyLoginRelativeURL())) {
+                        cea.setUrlLogin(tCExecution.getMyLoginRelativeURL());
                     }
                 } else {
                     MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_COUNTRYENVAPP_NOT_FOUND);
