@@ -25,9 +25,9 @@ Installation
 
 - create a user and associated schema inside mysql
 
-CREATE USER 'cerberus'@'%' IDENTIFIED BY 'toto';
-GRANT USAGE ON * . * TO 'cerberus'@'%' IDENTIFIED BY 'toto';
-GRANT USAGE ON * . * TO 'cerberus'@'localhost' IDENTIFIED BY 'toto';
+CREATE USER 'cerberus'@'%' IDENTIFIED BY 'cerberus';
+GRANT USAGE ON * . * TO 'cerberus'@'%' IDENTIFIED BY 'cerberus';
+GRANT USAGE ON * . * TO 'cerberus'@'localhost' IDENTIFIED BY 'cerberus';
 CREATE DATABASE IF NOT EXISTS `cerberus` ;
 GRANT ALL PRIVILEGES ON `cerberus` . * TO 'cerberus'@'%';
 
