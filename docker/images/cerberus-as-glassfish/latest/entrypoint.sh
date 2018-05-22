@@ -91,11 +91,12 @@ function main() {
 
     echo "AS_ADMIN_PASSWORD=${GLASSFISH_ADMIN_PASSWORD}" > /tmp/glassfishpwd
 
-    if [ ! -f ${INIT_MARKER_DEPLOY} ]; then
+    # always redeploy 
+    #if [ ! -f ${INIT_MARKER_DEPLOY} ]; then
         deploy
-    else
-        echo "* Cerberus is already deployed to the Glassfish instance. Skip installation."
-    fi
+    #else
+    #    echo "* Cerberus is already deployed to the Glassfish instance. Skip installation."
+    #fi
 }
 
 # Execute the main entry point
