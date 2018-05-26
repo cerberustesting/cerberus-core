@@ -28,7 +28,6 @@ import org.cerberus.crud.entity.CountryEnvironmentParameters;
 import org.cerberus.engine.entity.ExecutionUUID;
 import org.cerberus.crud.entity.Invariant;
 import org.cerberus.engine.entity.MessageGeneral;
-import org.cerberus.engine.execution.IRecorderService;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseExecution;
@@ -83,7 +82,6 @@ public class ExecutionStartService implements IExecutionStartService {
     private IParameterService parameterService;
     @Autowired
     private ITestCaseExecutionQueueService inQueueService;
-
 
     private static final Logger LOG = LogManager.getLogger(ExecutionStartService.class);
 
@@ -267,12 +265,12 @@ public class ExecutionStartService implements IExecutionStartService {
                     tCExecution.setUrl(StringUtil.getURLFromString(cea.getIp(), cea.getUrl(), "", ""));
 
                     // add possiblity to override URL with MyHost if MyHost is available
-                    if(!StringUtil.isNullOrEmpty(tCExecution.getMyHost())) {
+                    if (!StringUtil.isNullOrEmpty(tCExecution.getMyHost())) {
                         String contextRoot = !StringUtil.isNullOrEmpty(tCExecution.getMyContextRoot()) ? tCExecution.getMyContextRoot() : "";
                         tCExecution.setUrl(StringUtil.getURLFromString(tCExecution.getMyHost(), contextRoot, "", ""));
 
                     }
-                    if(!StringUtil.isNullOrEmpty(tCExecution.getMyLoginRelativeURL())) {
+                    if (!StringUtil.isNullOrEmpty(tCExecution.getMyLoginRelativeURL())) {
                         cea.setUrlLogin(tCExecution.getMyLoginRelativeURL());
                     }
                 } else {
@@ -405,38 +403,6 @@ public class ExecutionStartService implements IExecutionStartService {
                 mes.setDescription(mes.getDescription().replace("%BROWSER%", tCExecution.getBrowser()));
                 LOG.debug(mes.getDescription());
                 throw new CerberusException(mes);
-            }
-        }
-
-        /**
-         * Start server if execution is not manual
-         */
-        if (!tCExecution.getManualExecution().equals("Y")) {
-            tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_STARTINGROBOTSERVER));
-            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
-                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
-                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)
-                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
-
-                if (tCExecution.getIp().equalsIgnoreCase("")) {
-                    MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_EMPTYORBADIP);
-                    mes.setDescription(mes.getDescription().replace("%IP%", tCExecution.getIp()));
-                    LOG.debug(mes.getDescription());
-                    throw new CerberusException(mes);
-                }
-
-                /**
-                 * Start Selenium server
-                 */
-                LOG.debug("Starting Server.");
-                tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_CREATINGRUNID));
-                try {
-                    this.serverService.startServer(tCExecution);
-                } catch (CerberusException ex) {
-                    LOG.debug(ex.getMessageError().getDescription());
-                    throw new CerberusException(ex.getMessageError());
-                }
-                LOG.debug("Server Started.");
             }
         }
 

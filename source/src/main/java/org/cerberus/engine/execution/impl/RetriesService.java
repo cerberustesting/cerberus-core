@@ -27,15 +27,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class RetriesService implements IRetriesService{
+public class RetriesService implements IRetriesService {
 
     @Autowired
     private ITestCaseExecutionQueueService executionQueueService;
 
     /**
-     * Retry management, in case the result is not (OK or NE), we
-     * execute the job again reducing the retry to 1.
-     * */
+     * Retry management, in case the result is not (OK or NE), we execute the
+     * job again reducing the retry to 1.
+     *
+     */
     @Override
     public void manageRetries(TestCaseExecution tCExecution) {
         if (tCExecution.getNumberOfRetries() > 0
@@ -65,8 +66,9 @@ public class RetriesService implements IRetriesService{
 
         // Forcing init value for that new queue execution : exeid=0, no debugflag and State = QUEUED
         int newRetry = newExeQueue.getRetries() - 1;
-        if (newRetry < 0) return; // no automatic retry if newRetry <=0
-
+        if (newRetry < 0) {
+            return; // no automatic retry if newRetry <=0
+        }
         newExeQueue.setId(0);
         newExeQueue.setDebugFlag("N");
         newExeQueue.setComment("Added from Retry. Still " + newRetry + " attempt(s) to go.");

@@ -110,7 +110,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 preStat.setString(i++, tCExecution.getStatus());
                 preStat.setTimestamp(i++, new Timestamp(tCExecution.getStart()));
                 preStat.setString(i++, tCExecution.getControlStatus());
-                preStat.setString(i++, StringUtil.getLeftString(tCExecution.getControlMessage(), 500));
+                preStat.setString(i++, StringUtil.getLeftString(tCExecution.getControlMessage(), 65000));
                 preStat.setString(i++, tCExecution.getCrbVersion());
                 preStat.setString(i++, tCExecution.getBrowserFullVersion());
                 preStat.setString(i++, tCExecution.getExecutor());
@@ -206,7 +206,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                     preStat.setString(i++, "1970-01-01 01:01:01");
                 }
                 preStat.setString(i++, tCExecution.getControlStatus());
-                preStat.setString(i++, StringUtil.getLeftString(tCExecution.getControlMessage(), 500));
+                preStat.setString(i++, StringUtil.getLeftString(tCExecution.getControlMessage(), 65000));
                 preStat.setString(i++, tCExecution.getCrbVersion());
                 preStat.setString(i++, tCExecution.getBrowserFullVersion());
                 preStat.setString(i++, tCExecution.getVersion());

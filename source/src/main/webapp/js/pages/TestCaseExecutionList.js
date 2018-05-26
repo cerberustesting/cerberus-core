@@ -20,7 +20,7 @@
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
         initPage();
-        
+
         $('[data-toggle="popover"]').popover({
             'placement': 'auto',
             'container': 'body'}
@@ -153,7 +153,7 @@ function aoColumnsFunc() {
         {
             "data": "id",
             "sName": "exe.id",
-            "like":true,
+            "like": true,
             "title": doc.getDocOnline("page_executiondetail", "id"),
             "sWidth": "50px",
             "sDefaultContent": ""
@@ -167,7 +167,7 @@ function aoColumnsFunc() {
         },
         {
             "data": "testcase",
-            "like":true,
+            "like": true,
             "sName": "exe.testcase",
             "title": doc.getDocOnline("testcase", "TestCase"),
             "sWidth": "70px",
@@ -203,10 +203,9 @@ function aoColumnsFunc() {
         },
         {
             "data": "description",
-            "like":true,
+            "like": true,
             "sName": "exe.description",
             "bSearchable": true,
-            "like":true,
             "title": doc.getDocOnline("testcase", "Description"),
             "sWidth": "150px",
             "sDefaultContent": ""
@@ -263,7 +262,7 @@ function aoColumnsFunc() {
         {
             "data": "start",
             "sName": "exe.start",
-            "like":true,
+            "like": true,
             "title": doc.getDocOnline("page_executiondetail", "start"),
             "sWidth": "70px",
             "sDefaultContent": "",
@@ -275,7 +274,7 @@ function aoColumnsFunc() {
         {
             "data": "end",
             "sName": "exe.end",
-            "like":true,
+            "like": true,
             "title": doc.getDocOnline("page_executiondetail", "end"),
             "sWidth": "70px",
             "sDefaultContent": "",
@@ -287,7 +286,7 @@ function aoColumnsFunc() {
         {
             "data": "controlMessage",
             "sName": "exe.controlmessage",
-            "like":true,
+            "like": true,
             "title": doc.getDocOnline("page_executiondetail", "controlmessage"),
             "sWidth": "70px",
             "sDefaultContent": ""
@@ -316,7 +315,7 @@ function aoColumnsFunc() {
         {
             "data": "tag",
             "sName": "exe.tag",
-            "like":true,
+            "like": true,
             "title": doc.getDocOnline("page_executiondetail", "tag"),
             "sWidth": "70px",
             "sDefaultContent": "",
@@ -339,7 +338,7 @@ function aoColumnsFunc() {
         {
             "data": "crbVersion",
             "sName": "exe.crbVersion",
-            "like":true,
+            "like": true,
             "title": doc.getDocOnline("page_executiondetail", "cerberusversion"),
             "sWidth": "70px",
             "sDefaultContent": ""
@@ -411,14 +410,17 @@ function getRowClass(status) {
  */
 function generateTooltip(data) {
     var htmlRes;
-
-    htmlRes = '<div><span class=\'bold\'>Execution ID :</span> ' + data.id + '</div>' +
+    var ctrlmessage = data.controlMessage;
+    if (data.controlMessage.length > 200) {
+        ctrlmessage = data.controlMessage.substring(0, 200) + '...';
+    }
+    htmlRes = '<div><span class=\'bold\'>Execution IDs :</span> ' + data.id + '</div>' +
             '<div><span class=\'bold\'>Country : </span>' + data.country + '</div>' +
             '<div><span class=\'bold\'>Environment : </span>' + data.environment + '</div>' +
             '<div><span class=\'bold\'>Browser : </span>' + data.browser + '</div>' +
             '<div><span class=\'bold\'>Start : </span>' + new Date(data.start) + '</div>' +
             '<div><span class=\'bold\'>End : </span>' + new Date(data.end) + '</div>' +
-            '<div>' + data.controlMessage + '</div>';
+            '<div>' + ctrlmessage + '</div>';
 
     return htmlRes;
 }

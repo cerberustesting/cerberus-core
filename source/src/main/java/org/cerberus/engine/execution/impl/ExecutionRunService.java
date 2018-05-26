@@ -151,6 +151,8 @@ public class ExecutionRunService implements IExecutionRunService {
     private IEmailService emailService;
     @Autowired
     private IRetriesService retriesService;
+    @Autowired
+    private ISeleniumServerService serverService;
 
     @Override
     public TestCaseExecution executeTestCase(TestCaseExecution tCExecution) throws CerberusException {
@@ -161,6 +163,7 @@ public class ExecutionRunService implements IExecutionRunService {
          * testcaseexecutionsysver table. Only if execution is not manual.
          */
         try {
+
             if (!(tCExecution.isManualURL())) {
                 /**
                  * Insert SystemVersion in Database
@@ -201,6 +204,38 @@ public class ExecutionRunService implements IExecutionRunService {
                     LOG.debug(logPrefix + "No Linked environment found.");
                 }
                 LOG.debug(logPrefix + "Linked System Version Registered.");
+            }
+
+            /**
+             * Start robot server if execution is not manual
+             */
+            if (!tCExecution.getManualExecution().equals("Y")) {
+                tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_STARTINGROBOTSERVER));
+                if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
+                        || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
+                        || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)
+                        || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
+
+                    if (tCExecution.getIp().equalsIgnoreCase("")) {
+                        MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_EMPTYORBADIP);
+                        mes.setDescription(mes.getDescription().replace("%IP%", tCExecution.getIp()));
+                        LOG.debug(mes.getDescription());
+                        throw new CerberusException(mes);
+                    }
+
+                    /**
+                     * Start Selenium server
+                     */
+                    LOG.debug("Starting Server.");
+                    tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_CREATINGRUNID));
+                    try {
+                        this.serverService.startServer(tCExecution);
+                    } catch (CerberusException ex) {
+                        LOG.debug(ex.getMessageError().getDescription());
+                        throw new CerberusException(ex.getMessageError());
+                    }
+                    LOG.debug("Server Started.");
+                }
             }
 
             /**
@@ -295,7 +330,7 @@ public class ExecutionRunService implements IExecutionRunService {
             List<TestCaseCountryProperties> tcProperties = new ArrayList<>();
             try {
                 tcProperties = testCaseCountryPropertiesService.findAllWithDependencies(tCExecution.getTest(), tCExecution.getTestCase(), tCExecution.getCountry(),
-                         tCExecution.getSystem(), tCExecution.getCountryEnvParam().getBuild(), tCExecution.getCountryEnvParam().getRevision());
+                        tCExecution.getSystem(), tCExecution.getCountryEnvParam().getBuild(), tCExecution.getCountryEnvParam().getRevision());
                 tCExecution.setTestCaseCountryPropertyList(tcProperties);
             } catch (CerberusException ex) {
                 LOG.warn("Exception getting all the properties : " + ex);
@@ -661,12 +696,24 @@ public class ExecutionRunService implements IExecutionRunService {
                     tCExecution.setResultMessage(mes);
                 }
             }
+        } catch (CerberusException ex) {
+            /**
+             * If an exception is found, set the execution to FA and print the
+             * exception
+             */
+            MessageGeneral toto = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA);
+            toto.resolveDescription("DETAILMESSAGE", ex.getMessageError().getDescription());
+            tCExecution.setResultMessage(toto);
+            tCExecution.setControlMessage(tCExecution.getControlMessage() + " Exception: " + ex);
+            LOG.error(logPrefix + "Exception found Executing Test " + tCExecution.getId() + " Exception :" + ex.toString());
         } catch (Exception ex) {
             /**
              * If an exception is found, set the execution to FA and print the
              * exception
              */
-            tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA));
+            MessageGeneral messageFin = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA);
+            messageFin.resolveDescription("DETAILMESSAGE", ex.getMessage());
+            tCExecution.setResultMessage(messageFin);
             tCExecution.setControlMessage(tCExecution.getControlMessage() + " Exception: " + ex);
             LOG.error(logPrefix + "Exception found Executing Test " + tCExecution.getId() + " Exception :" + ex.toString());
         } finally {
@@ -743,7 +790,7 @@ public class ExecutionRunService implements IExecutionRunService {
                                 LOG.debug("Still executions in queue on tag : " + tCExecution.getTag() + " - " + answerListQueue.getDataList().size() + " " + answerListQueue.getMessageCodeString());
                             }
                         } else {
-                            LOG.debug("Tag is already flaged with recent timstamp. " + currentTag.getDateEndQueue());
+                            LOG.debug("Tag is already flaged with recent timestamp. " + currentTag.getDateEndQueue());
                         }
 
                     }

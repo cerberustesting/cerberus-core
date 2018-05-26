@@ -83,14 +83,14 @@ public class ExecutionQueueWorkerThread implements Runnable {
             paramRequestMaker.addParam(RunTestCase.PARAMETER_SCREEN_SIZE, getToExecute().getScreenSize());
 
             if (getToExecute().getManualURL() >= 1) { // 1 (Activate) or 2 (Override)
-                if( getToExecute().getManualURL() == 1 ) { // set manual url only if 1. if 2, manual url == false and, we ovveride host, contextroot, login and env data if attributs available
+                if (getToExecute().getManualURL() == 1) { // set manual url only if 1. if 2, manual url == false and, we ovveride host, contextroot, login and env data if attributs available
                     paramRequestMaker.addParam(RunTestCase.PARAMETER_MANUAL_URL, ParameterParserUtil.DEFAULT_BOOLEAN_TRUE_VALUE);
                 }
 
-                addIfNotNullOrEmpty(paramRequestMaker, RunTestCase.PARAMETER_MANUAL_HOST,getToExecute().getManualHost(), true);
-                addIfNotNullOrEmpty(paramRequestMaker, RunTestCase.PARAMETER_MANUAL_CONTEXT_ROOT,getToExecute().getManualContextRoot(), true);
-                addIfNotNullOrEmpty(paramRequestMaker, RunTestCase.PARAMETER_MANUAL_LOGIN_RELATIVE_URL,getToExecute().getManualLoginRelativeURL(), true);
-                addIfNotNullOrEmpty(paramRequestMaker, RunTestCase.PARAMETER_MANUAL_ENV_DATA,getToExecute().getManualEnvData(), false);
+                addIfNotNullOrEmpty(paramRequestMaker, RunTestCase.PARAMETER_MANUAL_HOST, getToExecute().getManualHost(), true);
+                addIfNotNullOrEmpty(paramRequestMaker, RunTestCase.PARAMETER_MANUAL_CONTEXT_ROOT, getToExecute().getManualContextRoot(), true);
+                addIfNotNullOrEmpty(paramRequestMaker, RunTestCase.PARAMETER_MANUAL_LOGIN_RELATIVE_URL, getToExecute().getManualLoginRelativeURL(), true);
+                addIfNotNullOrEmpty(paramRequestMaker, RunTestCase.PARAMETER_MANUAL_ENV_DATA, getToExecute().getManualEnvData(), false);
             }
 
             paramRequestMaker.addParam(RunTestCase.PARAMETER_TAG, URLEncoder.encode(getToExecute().getTag(), "UTF-8"));
@@ -197,16 +197,9 @@ public class ExecutionQueueWorkerThread implements Runnable {
             LOG.warn("Execution in queue " + queueId + " has finished with error");
             try {
                 queueService.updateToError(queueId, e.getMessage());
+                
             } catch (CerberusException again) {
                 LOG.error("Unable to mark execution in queue " + queueId + " as in error", again);
-            }
-
-            try {
-                TestCaseExecutionQueue tce = queueService.convert(queueService.readByKey(queueId));
-                if(tce != null)
-                    retriesService.manageRetries(tce);
-            } catch (Exception again) {
-                LOG.error("Unable to retry execution " + queueId, again);
             }
 
         }
@@ -217,7 +210,8 @@ public class ExecutionQueueWorkerThread implements Runnable {
      * {@link RunTestCase} servlet
      *
      * @return the execution answer from the {@link RunTestCase} servlet
-     * @throws RunQueueProcessException if an error occurred during request execution
+     * @throws RunQueueProcessException if an error occurred during request
+     * execution
      * @see #run()
      */
     private String runExecution(StringBuilder url) {
@@ -296,9 +290,8 @@ public class ExecutionQueueWorkerThread implements Runnable {
         return this.cerberusExecutionUrl;
     }
 
-
     private void addIfNotNullOrEmpty(ParamRequestMaker paramRequestMaker, String key, String value, boolean encode) throws UnsupportedEncodingException {
-        if(!StringUtil.isNullOrEmpty(value)) {
+        if (!StringUtil.isNullOrEmpty(value)) {
             paramRequestMaker.addParam(key, encode ? URLEncoder.encode(value, "UTF-8") : value);
         }
     }

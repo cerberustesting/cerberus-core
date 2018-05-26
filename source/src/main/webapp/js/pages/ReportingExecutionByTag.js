@@ -333,9 +333,11 @@ function generateBarTooltip(data) {
         var status = statusOrder[index];
 
         if (data.hasOwnProperty(status)) {
-            htmlRes += "<div>\n\
+            if (data[status] > 0) {
+                htmlRes += "<div>\n\
                         <span class='color-box status" + status + "'></span>\n\
                         <strong> " + status + " : </strong>" + data[status] + "</div>";
+            }
         }
     }
     htmlRes += '</div>';
@@ -344,7 +346,7 @@ function generateBarTooltip(data) {
 
 function buildBar(obj) {
     var buildBar;
-//    var statusOrder = ["OK", "KO", "FA", "NA", "NE", "PE", "QE", "QU", "CA"];
+
     var len = statusOrder.length;
     //Build the title to show at the top of the bar by checking the value of the checkbox
     var params = $("#splitFilter input");
@@ -382,7 +384,7 @@ function buildBar(obj) {
 
 function buildLabelBar(obj) {
     var buildBar;
-//    var statusOrder = ["OK", "KO", "FA", "NA", "NE", "PE", "QE", "QU", "CA"];
+
     var len = statusOrder.length;
     //Build the title to show at the top of the bar by checking the value of the checkbox
     var params = $("#splitLabelFilter input");
@@ -1048,6 +1050,10 @@ function createShortDescRow(row, data, index) {
 
 function generateTooltip(data) {
     var htmlRes;
+    var ctrlmessage = data.controlMessage;
+    if (data.controlMessage.length > 200) {
+        ctrlmessage = data.controlMessage.substring(0, 200) + '...';
+    }
     if (!isEmpty(data.NbExecutions) && (data.NbExecutions >= 2)) {
         htmlRes = '<div><span class=\'bold\'>Execution ID :</span> ' + data.ID + ' - (' + data.NbExecutions + ' Exe(s))</div>';
     } else {
@@ -1058,7 +1064,7 @@ function generateTooltip(data) {
             '<div><span class=\'bold\'>Browser : </span>' + data.RobotDecli + '</div>' +
             '<div><span class=\'bold\'>Start : </span>' + new Date(data.Start) + '</div>' +
             '<div><span class=\'bold\'>End : </span>' + new Date(data.End) + '</div>' +
-            '<div>' + data.ControlMessage + '</div>';
+            '<div>' + ctrlmessage + '</div>';
 
     return htmlRes;
 }

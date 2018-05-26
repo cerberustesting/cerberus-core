@@ -67,11 +67,11 @@
                                     <span name="Separator"> </span>
                                     <span id="controlstatus" style="font-weight: 900"></span>
                                 </div>
-                                <div class="text-nowrap">
+                                <div class="text-wrap">
                                     <span id="tcDescription" style="font-size:.9em;margin:0px;line-height:1;height:.95em;"></span>
                                 </div>
-                                <div class="text-nowrap">
-                                    <span id="exReturnMessage" style="font-size:.9em;margin:0px;line-height:1;height:.95em;"></span>
+                                <div class="text-wrap">
+                                    <span id="exReturnMessage" style="font-size:.9em;margin:0px;line-height:1;height:.95em;font-weight: 900;"></span>
                                 </div>
                             </div>
                             <div class="col-lg-6" style="padding: 0px;">

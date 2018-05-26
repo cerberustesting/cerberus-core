@@ -7695,6 +7695,10 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('PROPERTYTYPE', 'getFromCommand', '80', 'Getting value from a Shell command', '');");
         a.add(b.toString());
 
+        // Enlarge execution message.
+        // 1338
+        a.add("ALTER TABLE `testcaseexecution` CHANGE COLUMN `ControlMessage` `ControlMessage` TEXT NULL DEFAULT NULL ;");
+
         return a;
     }
 

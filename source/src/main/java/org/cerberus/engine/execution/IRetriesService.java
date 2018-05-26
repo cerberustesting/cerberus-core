@@ -28,12 +28,14 @@ public interface IRetriesService {
     /**
      * Retry management, in case the result is not (OK or NE), we
      * execute the job again reducing the retry to 1.
-     * */
+     *
+     * @param tCExecution */
     void manageRetries(TestCaseExecution tCExecution);
 
     /**
      * Retry management, in case the result is not (OK or NE), we
      * execute the job again reducing the retry to 1.
-     * */
+     *
+     * @param tCExecutionQueue */
     void manageRetries(final TestCaseExecutionQueue tCExecutionQueue);
 }
