@@ -389,7 +389,7 @@ table.display thead th div.DataTables_sort_wrapper span {
     position: absolute;
     top: 100%;
     left: 0;
-    z-index: 1000;
+    z-index: 99999999999999;
     float: left;
     display: none;
     min-width: 160px;
@@ -731,10 +731,6 @@ img.selectedPicture{
         width: 90%;
         max-width: 1200px;
     }
-}
-/*This is to force autocomplete to display on top of modal*/
-.ui-autocomplete {
-    z-index: 5000;
 }
 
 .logo-login {

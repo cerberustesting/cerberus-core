@@ -622,19 +622,13 @@ function loadReportByStatusTable(data, selectTag) {
     }
 
     // create a panel for each control status
-    console.info(total);
-    console.info(statusOrder);
 
-//    var statusOrder = ["OK", "KO", "FA", "NA", "NE", "PE", "QE", "QU", "CA"];
     var len = statusOrder.length;
     //Build the title to show at the top of the bar by checking the value of the checkbox
 
     for (var i = 0; i < len; i++) {
         var status = statusOrder[i];
-        console.info(status);
         if (total.hasOwnProperty(status)) {
-            console.info("append");
-
             appendPanelStatus(status, total, selectTag);
         }
     }
@@ -1051,7 +1045,7 @@ function createShortDescRow(row, data, index) {
 function generateTooltip(data) {
     var htmlRes;
     var ctrlmessage = data.controlMessage;
-    if (data.controlMessage.length > 200) {
+    if (ctrlmessage !== undefined && ctrlmessage.length > 200) {
         ctrlmessage = data.controlMessage.substring(0, 200) + '...';
     }
     if (!isEmpty(data.NbExecutions) && (data.NbExecutions >= 2)) {
@@ -1073,7 +1067,7 @@ function openModalTestCase_FromRepTag(element, test, testcase, mode) {
     openModalTestCase(test, testcase, mode);
     $('#editTestCaseModal').on("hidden.bs.modal", function (e) {
         $('#editTestCaseModal').unbind("hidden.bs.modal");
-        console.info("DONE - " + element);
+
         var testcaseobj = $('#editTestCaseModal').data("testcase");
         if ((!(testcaseobj === undefined)) && ($('#editTestCaseModal').data("Saved"))) {
             // when modal is closed, we check that testcase object exist and has been saved in order to update the comment and bugid on reportbytag screen.
