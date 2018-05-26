@@ -2032,6 +2032,8 @@ function getRowClass(status) {
     } else if (status === "PE") {
         rowClass["glyph"] = "fa fa-hourglass-half";
     } else if (status === "NE") {
+        rowClass["glyph"] = "glyphicon glyphicon-remove";
+    } else if (status === "WE") {
         rowClass["glyph"] = "fa fa-hand-lizard-o";
     } else if (status === "NA") {
         rowClass["glyph"] = "fa fa-question";

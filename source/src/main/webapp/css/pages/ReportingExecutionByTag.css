@@ -141,17 +141,34 @@
 /* NE */
 
 .panelNE {
-    border-color: #34495E;
+    border-color: #aaa;
 }
 .fontNE {
-    color: #34495E;
+    color: #aaa;
 }
 .panelNE .panel-heading {
+    border-color: #aaa;
+    color: #FFF;
+    background-color: #aaa;
+}
+.statusNE {
+    background-color: #aaa; 
+}
+
+/* WE */
+
+.panelWE {
+    border-color: #34495E;
+}
+.fontWE {
+    color: #34495E;
+}
+.panelWE .panel-heading {
     border-color: #34495E;
     color: #FFF;
     background-color: #34495E;
 }
-.statusNE {
+.statusWE {
     background-color: #34495E; 
 }
 

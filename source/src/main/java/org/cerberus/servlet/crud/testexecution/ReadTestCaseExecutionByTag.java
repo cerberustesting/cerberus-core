@@ -237,6 +237,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
             statusList.put("KO", ParameterParserUtil.parseStringParam(request.getParameter("KO"), "off"));
             statusList.put("NA", ParameterParserUtil.parseStringParam(request.getParameter("NA"), "off"));
             statusList.put("NE", ParameterParserUtil.parseStringParam(request.getParameter("NE"), "off"));
+            statusList.put("WE", ParameterParserUtil.parseStringParam(request.getParameter("WE"), "off"));
             statusList.put("PE", ParameterParserUtil.parseStringParam(request.getParameter("PE"), "off"));
             statusList.put("FA", ParameterParserUtil.parseStringParam(request.getParameter("FA"), "off"));
             statusList.put("CA", ParameterParserUtil.parseStringParam(request.getParameter("CA"), "off"));
@@ -602,6 +603,8 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         } else if ("NA".equals(controlStatus)) {
             color = "#F1C40F";
         } else if ("NE".equals(controlStatus)) {
+            color = "#aaa";
+        } else if ("WE".equals(controlStatus)) {
             color = "#34495E";
         } else if ("PE".equals(controlStatus)) {
             color = "#3498DB";

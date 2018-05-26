@@ -765,6 +765,7 @@ public class ReadTestCaseExecution extends HttpServlet {
                 dataList.add(TestCaseExecution.CONTROLSTATUS_KO);
                 dataList.add(TestCaseExecution.CONTROLSTATUS_NA);
                 dataList.add(TestCaseExecution.CONTROLSTATUS_NE);
+                dataList.add(TestCaseExecution.CONTROLSTATUS_WE);
                 dataList.add(TestCaseExecution.CONTROLSTATUS_OK);
                 dataList.add(TestCaseExecution.CONTROLSTATUS_PE);
                 values.setDataList(dataList);

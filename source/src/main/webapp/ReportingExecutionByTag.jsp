@@ -97,6 +97,10 @@
                                             <span class="fontNE">NE</span>
                                         </label>
                                         <label class="checkbox-inline">
+                                            <input type="checkbox" name="WE" checked/>
+                                            <span class="fontWE">WE</span>
+                                        </label>
+                                        <label class="checkbox-inline">
                                             <input type="checkbox" name="PE" checked/>
                                             <span class="fontPE">PE</span>
                                         </label>

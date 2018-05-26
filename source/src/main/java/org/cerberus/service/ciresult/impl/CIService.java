@@ -61,6 +61,7 @@ public class CIService implements ICIService {
             int nbfa = 0;
             int nbpe = 0;
             int nbne = 0;
+            int nbwe = 0;
             int nbna = 0;
             int nbca = 0;
             int nbqu = 0;
@@ -117,6 +118,9 @@ public class CIService implements ICIService {
                             break;
                         case TestCaseExecution.CONTROLSTATUS_NE:
                             nbne++;
+                            break;
+                        case TestCaseExecution.CONTROLSTATUS_WE:
+                            nbwe++;
                             break;
                         case TestCaseExecution.CONTROLSTATUS_QU:
                             nbqu++;
@@ -184,6 +188,7 @@ public class CIService implements ICIService {
             jsonResponse.put("status_NA_nbOfExecution", nbna);
             jsonResponse.put("status_CA_nbOfExecution", nbca);
             jsonResponse.put("status_NE_nbOfExecution", nbne);
+            jsonResponse.put("status_WE_nbOfExecution", nbwe);
             jsonResponse.put("status_QU_nbOfExecution", nbqu);
             jsonResponse.put("status_QE_nbOfExecution", nbqe);
             jsonResponse.put("TOTAL_nbOfExecution", nbtotal);

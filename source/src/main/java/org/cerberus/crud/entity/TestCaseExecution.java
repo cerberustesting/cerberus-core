@@ -140,7 +140,8 @@ public class TestCaseExecution {
     public static final String CONTROLSTATUS_KO = "KO"; // Test executed and 1 control has reported a bug. --> Ticket to be open for dev team.
     public static final String CONTROLSTATUS_FA = "FA"; // Test failed to be executed. --> Problem is in the test itself.
     public static final String CONTROLSTATUS_NA = "NA"; // Test could not be executed because no data could be retreive for testing.
-    public static final String CONTROLSTATUS_NE = "NE"; // Test was not executed yet Waiting for manual testing.
+    public static final String CONTROLSTATUS_NE = "NE"; // Test was not executed.
+    public static final String CONTROLSTATUS_WE = "WE"; // Test is waiting for a manual testing.
     public static final String CONTROLSTATUS_PE = "PE"; // Test is currently beeing executed.
     public static final String CONTROLSTATUS_CA = "CA"; // Test has been cancelled by user.
     public static final String CONTROLSTATUS_QU = "QU"; // Test is still waiting in queue.

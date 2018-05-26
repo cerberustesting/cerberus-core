@@ -217,24 +217,24 @@ public class RunTestCase extends HttpServlet {
         // -- Checking the parameter validity. --
         // test, testcase and country parameters are mandatory
         if (StringUtils.isBlank(test)) {
-            errorMessage += "Error - Parameter test is mandatory. ";
+            errorMessage += "Error - Parameter Test is mandatory. ";
             error = true;
         }
         if (StringUtils.isBlank(testCase)) {
-            errorMessage += "Error - Parameter testCase is mandatory. ";
+            errorMessage += "Error - Parameter TestCase is mandatory. ";
             error = true;
         }
         if (!StringUtils.isBlank(tag) && tag.length() > 255) {
-            errorMessage += "Error - Parameter tag value is too big. Tag cannot be larger than 255 Characters. Currently has : " + tag.length();
+            errorMessage += "Error - Parameter Tag value is too big. Tag cannot be larger than 255 Characters. Currently has : " + tag.length();
             error = true;
         }
         if (StringUtils.isBlank(country)) {
-            errorMessage += "Error - Parameter country is mandatory. ";
+            errorMessage += "Error - Parameter Country is mandatory. ";
             error = true;
         }
         // environment is mandatory when manualURL is not activated.
         if (StringUtils.isBlank(environment) && !manualURL) {
-            errorMessage += "Error - Parameter environment is mandatory (or use the manualURL parameter). ";
+            errorMessage += "Error - Parameter Environment is mandatory (or use the manualURL parameter). ";
             error = true;
         }
 

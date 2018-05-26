@@ -687,7 +687,7 @@ public class ExecutionRunService implements IExecutionRunService {
                      * Update Execution status from condition
                      */
                     if (conditionAnswerTc.getResultMessage().getMessage().getCodeString().equals("PE")) {
-                        mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_NA_CONDITION);
+                        mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_NE_CONDITION);
                     } else {
                         mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_CONDITION);
                     }
@@ -1078,8 +1078,8 @@ public class ExecutionRunService implements IExecutionRunService {
             /**
              * If execution manual, set Action result message as notExecuted
              */
-            testCaseStepActionExecution.setActionResultMessage(new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED));
-            testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_NE));
+            testCaseStepActionExecution.setActionResultMessage(new MessageEvent(MessageEventEnum.ACTION_WAITINGFORMANUALEXECUTION));
+            testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_WE));
             testCaseStepActionExecution.setEnd(new Date().getTime());
         }
 
@@ -1318,8 +1318,8 @@ public class ExecutionRunService implements IExecutionRunService {
             /**
              * If execution manual, set Control result message as notExecuted
              */
-            testCaseStepActionControlExecution.setControlResultMessage(new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED));
-            testCaseStepActionControlExecution.setExecutionResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_NE));
+            testCaseStepActionControlExecution.setControlResultMessage(new MessageEvent(MessageEventEnum.CONTROL_WAITINGEXECUTION));
+            testCaseStepActionControlExecution.setExecutionResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_WE));
             testCaseStepActionControlExecution.setEnd(new Date().getTime());
         }
 

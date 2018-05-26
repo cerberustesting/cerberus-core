@@ -23,18 +23,18 @@
 
 
 #NavtabsScriptEdit{
-	height:40px;
-	background-color:white;
+    height:40px;
+    background-color:white;
 }
 
 @media (max-width: 768px){
     #NavtabsScriptEdit{
-		height:80px;
+        height:80px;
     }
 }
 
 #dropzoneText{
-	word-wrap:break-word;
+    word-wrap:break-word;
 }
 
 
@@ -153,29 +153,29 @@
 }
 
 .step-action:hover {
-                background-color: #f8f8f8;
+    background-color: #f8f8f8;
 }
 .step-action:hover input{
-                background-color: #f8f8f8;
+    background-color: #f8f8f8;
 }
 .step-action:hover select{
-                background-color: #f8f8f8;
+    background-color: #f8f8f8;
 }
 
 .step-action input::-webkit-input-placeholder {
-color: red !important;
+    color: red !important;
 }
- 
+
 .step-action input:-moz-placeholder { /* Firefox 18- */
-color: red !important;  
+    color: red !important;  
 }
- 
+
 .step-action input::-moz-placeholder {  /* Firefox 19+ */
-color: red !important;  
+    color: red !important;  
 }
- 
+
 .step-action input:-ms-input-placeholder {  
-color: red !important;  
+    color: red !important;  
 }
 
 .lib-info {
@@ -212,6 +212,28 @@ color: red !important;
 .step-list li.list-group-item-success:hover {
     background-color: #3c763d;
     color: #FFFFFF;
+}
+
+.step-list .list-group-item-grey {
+    color: #666666;
+    background-color: #cccccc;
+}
+
+.step-list .list-group-item-grey:hover {
+    background-color: #aaa;
+    color: #FFFFFF;
+}
+
+.list-group-item-grey.active {
+    background-color: #aaa;
+    color: #FFFFFF;
+    border-color : #aaa;
+}
+
+.list-group-item-grey.active:hover {
+    background-color: #999999;
+    color: #FFFFFF;
+    border-color : #aaa;
 }
 
 .list-group-item-danger.active {
@@ -252,6 +274,10 @@ textarea { resize:vertical ; }
     background-color: #34495E; 
 }
 
+.progress-bar-grey{
+    background-color: #aaa; 
+}
+
 .list-group-item-black{
     color: #34495E;
     background-color: #fff;
@@ -263,9 +289,9 @@ textarea { resize:vertical ; }
 }
 
 h4{
-	white-space: inherit!important;
-	overflow: initial!important;
-	text-overflow: initial!important;
-	word-wrap:break-word!important;
-	height:inherit!important;
+    white-space: inherit!important;
+    overflow: initial!important;
+    text-overflow: initial!important;
+    word-wrap:break-word!important;
+    height:inherit!important;
 }

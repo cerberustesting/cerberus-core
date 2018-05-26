@@ -19,7 +19,7 @@
  */
 /* global handleErrorAjaxAfterTimeout */
 
-var statusOrder = ["OK", "KO", "FA", "NA", "NE", "PE", "QU", "QE", "CA"];
+var statusOrder = ["OK", "KO", "FA", "NA", "NE", "WE", "PE", "QU", "QE", "CA"];
 
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
@@ -906,6 +906,7 @@ function createRow(row, isTotalRow) {
             $('<td>').text(row.FA).css("text-align", "right"),
             $('<td>').text(row.NA).css("text-align", "right"),
             $('<td>').text(row.NE).css("text-align", "right"),
+            $('<td>').text(row.WE).css("text-align", "right"),
             $('<td>').text(row.PE).css("text-align", "right"),
             $('<td>').text(row.QU).css("text-align", "right"),
             $('<td>').text(row.QE).css("text-align", "right"),
@@ -917,6 +918,7 @@ function createRow(row, isTotalRow) {
             $('<td>').text(row.percFA + "%").css("text-align", "right"),
             $('<td>').text(row.percNA + "%").css("text-align", "right"),
             $('<td>').text(row.percNE + "%").css("text-align", "right"),
+            $('<td>').text(row.percWE + "%").css("text-align", "right"),
             $('<td>').text(row.percPE + "%").css("text-align", "right"),
             $('<td>').text(row.percQU + "%").css("text-align", "right"),
             $('<td>').text(row.percQE + "%").css("text-align", "right"),
@@ -949,6 +951,7 @@ function createHeaderRow() {
             $('<td>').text("FA").css("text-align", "center"),
             $('<td>').text("NA").css("text-align", "center"),
             $('<td>').text("NE").css("text-align", "center"),
+            $('<td>').text("WE").css("text-align", "center"),
             $('<td>').text("PE").css("text-align", "center"),
             $('<td>').text("QU").css("text-align", "center"),
             $('<td>').text("QE").css("text-align", "center"),
@@ -960,6 +963,7 @@ function createHeaderRow() {
             $('<td>').text("% FA").css("text-align", "center"),
             $('<td>').text("% NA").css("text-align", "center"),
             $('<td>').text("% NE").css("text-align", "center"),
+            $('<td>').text("% WE").css("text-align", "center"),
             $('<td>').text("% PE").css("text-align", "center"),
             $('<td>').text("% QU").css("text-align", "center"),
             $('<td>').text("% QE").css("text-align", "center"),

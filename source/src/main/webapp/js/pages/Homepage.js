@@ -18,7 +18,7 @@
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-var statusOrder = ["OK", "KO", "FA", "NA", "NE", "PE", "QU", "QE", "CA"];
+var statusOrder = ["OK", "KO", "FA", "NA", "NE", "WE", "PE", "QU", "QE", "CA"];
 
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {

@@ -382,6 +382,7 @@ public class EmailGenerationService implements IEmailGenerationService {
         statList.add("FA");
         statList.add("NA");
         statList.add("NE");
+        statList.add("WE");
         statList.add("PE");
         statList.add("QU");
         statList.add("QE");
