@@ -14,7 +14,7 @@
 
 * For Mobile devices (Appium)
 ** *Android* : Fix a Bug on webview with Android devices : can't type correctly a field.
-** *Android* : New action `executeShell` to execute a shell command (adb shell) on android devices
+** *Android* : New action `executeCommand` to execute a shell command (adb shell) on android devices
 ** *Android and iOS* : New action `scrollTo` to scroll to an element or a text
 
 

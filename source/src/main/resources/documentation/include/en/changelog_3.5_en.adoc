@@ -1,11 +1,20 @@
 *Bug fixes*
 [square]
-* bla bla
+* Fix Critical issue when using glassfish 5 : (java.lang.ClassNotFoundException: org.joda.time.ReadableInstant)
+* Fixed Issue when creating or duplicating a datalib that has a special character.
+* Put back the Maintenance Activation flag combobox.
 
 *Improvements / New features*
 [square]
-* bla bla
+* AddToExecutionQueueV003 servlet have now new option for manualUrl (2) that overwrid application definition url/contextroot/loginurl and envdata.
+* New system variable : %system.APP_CONTEXTROOT% and %system.EXEURL%
+* New property type `getFromCommand`. Available for appium android devices
+* Execution Retry now also cover the case where robot is not available (or connection is not always working).
+* Order of status in reportingbytag page and notification email is now always the same.
+* Added 'Post Testing' Support. All active testcase that are created inside 'Post Testing' Test will be automatically triggered at the end of any testcase that belong to the same application. That allow to quickly add some actions that will be systematicly done for a given application.
+* 'Pre Testing' and 'Post Testing' tescase are now also filtered depending on From/To Sprint/Rev Activation Criterias.
+* Service now support FTP GET in order to retreive xml, json or any files on FTP.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
-* bla bla
+* nothing
