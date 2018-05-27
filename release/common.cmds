@@ -44,23 +44,23 @@
 #   runcmds.sh
 #       -e RELEASE_VERSION <release version> \
 #       -e NEXT_DEVELOPMENT_VERSION <next development version> \
-#       -e RUNCMDS_PATH <runcmds command path> \
+#       -e DATABASE_VERSION <current database version> \
 #       -s ./common.cmds
 #
 #   Where:
 #       - <release version> is the needed release version
 #       - <next development version> is the next needed development version
-#       - <runcmds command path> is the path to the runcmds command line (usually <runcmds root>/runcmds.sh)
+#       - <current database version> is the current version fo the database
 
 # Release of the cerberus-source project
 rm -rf cerberus-source
 git clone https://github.com/cerberustesting/cerberus-source.git
 cd cerberus-source/release
-${RUNCMDS_PATH} -e RELEASE_VERSION ${RELEASE_VERSION} -e NEXT_DEVELOPMENT_VERSION ${NEXT_DEVELOPMENT_VERSION} -s release.cmds
+./runcmds.sh -e RELEASE_VERSION ${RELEASE_VERSION} -e NEXT_DEVELOPMENT_VERSION ${NEXT_DEVELOPMENT_VERSION} -e DATABASE_VERSION ${DATABASE_VERSION} -s release.cmds
 
 # Waiting for cerberus-source's artifact availability from Sourceforge
 # while [[ `curl -s -o /dev/null -w "%{http_code}" https://sourceforge.net/projects/cerberus-source/files/Cerberus-${RELEASE_VERSION}.zip/download` != '302' ]]; do echo 'Artifact Cerberus-${RELEASE_VERSION}.zip is not yet ready to be downloaded from Sourceforge. Sleeping 10s and retry.' && sleep 10; done
 
 # Release of the cerberus-as-glassfish project
 cd ../docker/images/cerberus-as-glassfish
-${RUNCMDS_PATH} -e RELEASE_VERSION ${RELEASE_VERSION} -s release.cmds
+../../../release/runcmds.sh -e RELEASE_VERSION ${RELEASE_VERSION} -s release.cmds
