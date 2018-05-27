@@ -7699,6 +7699,10 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // 1338
         a.add("ALTER TABLE `testcaseexecution` CHANGE COLUMN `ControlMessage` `ControlMessage` TEXT NULL DEFAULT NULL ;");
 
+        // Adding 'Post Testing' test if does not already exist.
+        // 1339
+        a.add("INSERT INTO test (test, description, active, automated) VALUES ('Post Testing', 'Post Tests', 'Y', 'Y') ON DUPLICATE KEY UPDATE test = 'Post Testing';");
+
         return a;
     }
 
