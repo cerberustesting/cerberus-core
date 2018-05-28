@@ -158,6 +158,21 @@ function prepareAppServiceModal() {
     $("#editSoapLibraryModal #type").change(function () {
         refreshDisplayOnTypeChange($(this).val());
     });
+    
+    $("#editSoapLibraryModal #method").change(function () {
+        if($("#editSoapLibraryModal #type").val() == "FTP"){
+        	if($(this).val() == "GET" ){
+        		$("#editSoapLibraryModal #srvRequest textarea").hide();
+        	}else{
+        		$("#editSoapLibraryModal #srvRequest").parent().parent().find("label").html("File Content");
+        		$("#editSoapLibraryModal #srvRequest textarea").show();
+        	}               	
+        }else{
+        	$("#editSoapLibraryModal #srvRequest textarea").show();
+        	$("#editSoapLibraryModal #srvRequest").parent().parent().find("label").html("Service Request");
+        }
+    });
+
 
     // Adding rows in edit Modal.
     $('#addContent').off("click");
@@ -276,37 +291,23 @@ function refreshDisplayOnTypeChange(newValue) {
         $('#editSoapLibraryModal #method').prop("disabled", true);
         $('#editSoapLibraryModal #operation').prop("readonly", false);
         $('#editSoapLibraryModal #attachementurl').prop("readonly", false);
-        $('#editSoapLibraryModal #host').prop("disabled", true);
-		$('#editSoapLibraryModal #port').prop("disabled", true);
-		$('#editSoapLibraryModal #user').prop("disabled", true);
-		$('#editSoapLibraryModal #password').prop("disabled", true);
     }else if(newValue === "FTP"){
     	$('#editSoapLibraryModal #method').prop("disabled", false);
         $('#editSoapLibraryModal #operation').prop("readonly", true);
         $('#editSoapLibraryModal #attachementurl').prop("readonly", true);
         $('#editSoapLibraryModal #addContent').prop("disabled", true);
         $('#editSoapLibraryModal #addHeader').prop("disabled", true);
-        $('#editSoapLibraryModal #host').prop("disabled", false);
- 		$('#editSoapLibraryModal #port').prop("disabled", false);
- 		$('#editSoapLibraryModal #user').prop("disabled", false);
- 		$('#editSoapLibraryModal #password').prop("disabled", false);
  		$('#editSoapLibraryModal #method option[value="DELETE"]').css("display","none");
  		$('#editSoapLibraryModal #method option[value="PUT"]').css("display","none");
  		$('#editSoapLibraryModal #method option[value="PATCH"]').css("display","none");
- 		$('#editSoapLibraryModal #method option[value="POST"]').css("display","none");
  		$('#editSoapLibraryModal #method').prop("disabled", false);
     }else {
         $('#editSoapLibraryModal #method').prop("disabled", false);
         $('#editSoapLibraryModal #operation').prop("readonly", true);
         $('#editSoapLibraryModal #attachementurl').prop("readonly", true);
-        $('#editSoapLibraryModal #host').prop("disabled", true);
-		$('#editSoapLibraryModal #port').prop("disabled", true);
-		$('#editSoapLibraryModal #user').prop("disabled", true);
-		$('#editSoapLibraryModal #password').prop("disabled", true);
 		$('#editSoapLibraryModal #method option[value="DELETE"]').css("display","block");
  		$('#editSoapLibraryModal #method option[value="PUT"]').css("display","block");
  		$('#editSoapLibraryModal #method option[value="PATCH"]').css("display","block");
- 		$('#editSoapLibraryModal #method option[value="POST"]').css("display","block");
     }
 }
 
@@ -446,14 +447,12 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
     });
 
     //On ADD, try to autodetect Ace mode until it is defined
-    if (mode === "ADD") {
-        $($("#editSoapLibraryModal #srvRequest").get(0)).keyup(function () {
-            if (editor.getSession().getMode().$id === "ace/mode/text") {
-                editor.getSession().setMode(defineAceMode(editor.getSession().getDocument().getValue()));
-            }
-        });
 
-    }
+    $($("#editSoapLibraryModal #srvRequest").get(0)).keyup(function () {
+        if (editor.getSession().getMode().$id === "ace/mode/text") {
+            editor.getSession().setMode(defineAceMode(editor.getSession().getDocument().getValue()));
+        }
+    });
 
     // Authorities
     if (mode === "EDIT") {
