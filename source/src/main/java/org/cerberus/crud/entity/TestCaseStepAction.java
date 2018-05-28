@@ -86,6 +86,8 @@ public class TestCaseStepAction {
     public static final String ACTION_DONOTHING = "doNothing";
     public static final String ACTION_EXECUTECOMMAND = "executeCommand";
     public static final String ACTION_SCROLLTO = "scrollTo";
+    public static final String ACTION_INSTALLAPP = "installApp";
+    public static final String ACTION_REMOVEAPP = "removeApp";
 
 
     // DEPRECATED

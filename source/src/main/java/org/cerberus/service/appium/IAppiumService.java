@@ -57,4 +57,31 @@ public interface IAppiumService {
      */
     MessageEvent scrollTo(Session session, Identifier element, String text) throws IllegalArgumentException;
 
+
+    /**
+     * install an application on mobile devices
+     * @param session
+     * @param appPath
+     * @return
+     * @throws IllegalArgumentException
+     */
+    MessageEvent installApp(Session session, String appPath) throws IllegalArgumentException;
+
+    /**
+     * uninstall an application on mobile devices
+     * @param session
+     * @param appPackage
+     * @return
+     * @throws IllegalArgumentException
+     */
+    MessageEvent removeApp(Session session, String appPackage) throws IllegalArgumentException;
+
+    /**
+     * Open application
+     * @param session
+     * @param appPackage
+     * @param appActivity
+     * @return
+     */
+    MessageEvent openApp(Session session, String appPackage, String appActivity);
 }

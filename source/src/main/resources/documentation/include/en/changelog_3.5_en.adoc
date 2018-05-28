@@ -6,9 +6,11 @@
 
 *Improvements / New features*
 [square]
-* AddToExecutionQueueV003 servlet have now new option for manualUrl (2) that overwrid application definition url/contextroot/loginurl and envdata.
+* AddToExecutionQueueV003 servlet have now new option for manualUrl (2) that override application definition url/contextroot/loginurl and envdata.
 * New system variable : %system.APP_CONTEXTROOT% and %system.EXEURL%
 * New property type `getFromCommand`. Available for appium android devices
+* Add action installApp and removeApp for Android to authorize Cross App on android devices
+* Implements action openApp (package,activity) for Android
 * Execution Retry now also cover the case where robot is not available (or connection is not always working).
 * Order of status in reportingbytag page and notification email is now always the same.
 * Added 'Post Testing' Support. All active testcase that are created inside 'Post Testing' Test will be automatically added at the end of any testcase that belong to the same application.

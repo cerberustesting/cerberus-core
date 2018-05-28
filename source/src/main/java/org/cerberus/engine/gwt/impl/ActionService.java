@@ -231,7 +231,7 @@ public class ActionService implements IActionService {
                     res = this.doActionExecuteJS(tCExecution, value1, value2);
                     break;
                 case TestCaseStepAction.ACTION_OPENAPP:
-                    res = this.doActionOpenApp(tCExecution, value1);
+                    res = this.doActionOpenApp(tCExecution, value1, value2);
                     break;
                 case TestCaseStepAction.ACTION_CLOSEAPP:
                     res = this.doActionCloseApp(tCExecution, value1);
@@ -277,6 +277,12 @@ public class ActionService implements IActionService {
                     break;
                 case TestCaseStepAction.ACTION_SCROLLTO:
                     res = this.doActionScrollTo(tCExecution, value1, value2);
+                    break;
+                case TestCaseStepAction.ACTION_INSTALLAPP:
+                    res = this.doActionInstallApp(tCExecution, value1);
+                    break;
+                case TestCaseStepAction.ACTION_REMOVEAPP:
+                    res = this.doActionRemoveApp(tCExecution, value1);
                     break;
                 /**
                  * DEPRECATED ACTIONS FROM HERE.
@@ -336,6 +342,57 @@ public class ActionService implements IActionService {
         testCaseStepActionExecution.setEnd(new Date().getTime());
         return testCaseStepActionExecution;
     }
+
+
+
+
+    private MessageEvent doActionInstallApp(TestCaseExecution tCExecution, String appPath) {
+        MessageEvent message;
+
+        try {
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
+                return androidAppiumService.installApp(tCExecution.getSession(), appPath);
+            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
+                return iosAppiumService.installApp(tCExecution.getSession(), appPath);
+            }
+
+            message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+            message.setDescription(message.getDescription().replace("%ACTION%", "scrollTo"));
+            message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
+            return message;
+        } catch (Exception e) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_GENERIC);
+            String messageString = e.getMessage().split("\n")[0];
+            message.setDescription(message.getDescription().replace("%DETAIL%", messageString));
+            LOG.debug("Exception Running install app  :" + messageString, e);
+            return message;
+        }
+    }
+
+
+    private MessageEvent doActionRemoveApp(TestCaseExecution tCExecution, String appPackage) {
+        MessageEvent message;
+
+        try {
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
+                return androidAppiumService.removeApp(tCExecution.getSession(), appPackage);
+            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
+                return iosAppiumService.removeApp(tCExecution.getSession(), appPackage);
+            }
+
+            message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+            message.setDescription(message.getDescription().replace("%ACTION%", "scrollTo"));
+            message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
+            return message;
+        } catch (Exception e) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_GENERIC);
+            String messageString = e.getMessage().split("\n")[0];
+            message.setDescription(message.getDescription().replace("%DETAIL%", messageString));
+            LOG.debug("Exception Running remove app  :" + messageString, e);
+            return message;
+        }
+    }
+
 
     private MessageEvent doActionScrollTo(TestCaseExecution tCExecution, String element, String text) {
         MessageEvent message;
@@ -929,7 +986,7 @@ public class ActionService implements IActionService {
         }
     }
 
-    private MessageEvent doActionOpenApp(TestCaseExecution tCExecution, String value1) {
+    private MessageEvent doActionOpenApp(TestCaseExecution tCExecution, String value1, String value2) {
         MessageEvent message;
 
         /**
@@ -942,6 +999,9 @@ public class ActionService implements IActionService {
         if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)
                 || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
             return sikuliService.doSikuliActionOpenApp(tCExecution.getSession(), value1);
+        }
+        else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
+            return androidAppiumService.openApp(tCExecution.getSession(), value1, value2);
         }
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
         message.setDescription(message.getDescription().replace("%ACTION%", "OpenApp"));

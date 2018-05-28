@@ -185,4 +185,19 @@ public class IOSAppiumService extends AppiumService {
     public MessageEvent executeCommand(Session session, String cmd, String args) throws IllegalArgumentException {
         return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
     }
+
+    @Override
+    public MessageEvent installApp(Session session, String appPath) throws IllegalArgumentException {
+        return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+    }
+
+    @Override
+    public MessageEvent removeApp(Session session, String appPackage) throws IllegalArgumentException {
+        return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+    }
+
+    @Override
+    public MessageEvent openApp(Session session, String appPackage, String appActivity) {
+        return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+    }
 }

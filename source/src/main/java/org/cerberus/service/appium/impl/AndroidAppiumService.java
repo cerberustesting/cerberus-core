@@ -63,7 +63,7 @@ public class AndroidAppiumService extends AppiumService {
     
     /**
      * The default Appium swipe duration if no
-     * {@link AppiumService#APPIUM_SWIPE_DURATION_PARAMETER} has been defined
+     * {@link AppiumService#CERBERUS_APPIUM_SWIPE_DURATION_PARAMETER} has been defined
      */
     private static final int DEFAULT_CERBERUS_APPIUM_SWIPE_DURATION = 2000;
 
@@ -187,4 +187,42 @@ public class AndroidAppiumService extends AppiumService {
 
         return value;
     }
+
+
+    @Override
+    public MessageEvent installApp(Session session, String appPath) throws IllegalArgumentException {
+        try {
+            AndroidDriver driver = ((AndroidDriver) session.getAppiumDriver());
+
+            driver.installApp(appPath);
+
+            return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_INSTALLAPP);
+        } catch (Exception e) {
+            LOG.warn("Unable to install app " + e.getMessage(), e);
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED_GENERIC)
+                    .resolveDescription("DETAIL", "Unable to install app " + e.getMessage());
+        }
+    }
+
+    @Override
+    public MessageEvent removeApp(Session session, String appPackage) throws IllegalArgumentException {
+        try {
+            AndroidDriver driver = ((AndroidDriver) session.getAppiumDriver());
+
+            if(driver.isAppInstalled(appPackage)) {
+                driver.removeApp(appPackage);
+            }
+
+            return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_REMOVEAPP);
+        } catch (Exception e) {
+            LOG.warn("Unable to remove app " + e.getMessage(), e);
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED_GENERIC)
+                    .resolveDescription("DETAIL", "Unable to remove app " + e.getMessage());
+        }    }
+
+    @Override
+    public MessageEvent openApp(Session session, String appPackage, String appActivity) {
+        return executeCommand(session, "am start", "-n " + appPackage + "/" + appActivity + "\n");
+    }
+
 }

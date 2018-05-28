@@ -7703,6 +7703,14 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // 1339
         a.add("INSERT INTO test (test, description, active, automated) VALUES ('Post Testing', 'Post Tests', 'Y', 'Y') ON DUPLICATE KEY UPDATE test = 'Post Testing';");
 
+        // Add an action
+        // 1340
+        b = new StringBuilder();
+        b.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ");
+        b.append("('ACTION', 'installApp', '13005', 'Install mobile application', ''),");
+        b.append("('ACTION', 'removeApp', '13006', 'Remove mobile application', '')");
+        a.add(b.toString());
+
         return a;
     }
 

@@ -197,6 +197,8 @@ public enum MessageEventEnum {
     ACTION_SUCCESS_EXECUTESQLSTOREDPROCEDURE(200, "OK", "SQL '%SQL%' Executed against %JDBC% - %NBROWS% row(s) affected.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_EXECUTEJS(200, "OK", "Javascript executed successfuly and returned Value '%VALUE%'.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_SCROLLTO(200, "OK", "Scroll to '%VALUE%' sucessfull.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    ACTION_SUCCESS_INSTALLAPP(200, "OK", "Install application with success", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    ACTION_SUCCESS_REMOVEAPP(200, "OK", "Remove applcation with success", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
 
     ACTION_FAILED(250, "FA", "Unknown Action Error.", true, true, false, MessageGeneralEnum.EXECUTION_FA),
     ACTION_FAILED_CLICK(251, "FA", "Failed to click on '%ELEMENT%'. %MESS%", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
@@ -282,6 +284,7 @@ public enum MessageEventEnum {
     ACTION_FAILED_GENERIC(298, "FA", "Action Failed. %DETAIL%", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_PENDING(299, "PE", "Doing Action...", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_WAITINGFORMANUALEXECUTION(240, "WE", "", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+
     // *********** EXECUTION CONTROLS ***********
     CONTROL_SUCCESS(300, "OK", "", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     CONTROL_SUCCESS_EQUAL(300, "OK", "'%STRING1%' is equal to '%STRING2%'.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
