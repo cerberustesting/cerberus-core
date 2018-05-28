@@ -382,7 +382,8 @@ public class ServiceService implements IServiceService {
                     	 */
                     	switch(appService.getMethod()) {
                     		case AppService.METHOD_HTTPGET:
-                    			result = ftpService.getFTP(decodedServicePath, system);
+                    		case AppService.METHOD_HTTPPOST:
+                    			result = ftpService.callFTP(decodedServicePath, system, appService.getServiceRequest() ,appService.getMethod());
                     			message = result.getResultMessage();
                                 break;
                     		default:

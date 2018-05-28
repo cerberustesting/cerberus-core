@@ -21,6 +21,8 @@
 package org.cerberus.service.ftp;
 
 
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.net.ftp.FTPClient;
@@ -41,13 +43,34 @@ public interface IFtpService {
 	public Map<String, String> fromFtpStringToHashMap(String ftpChain);
 	
 	/**
+	 * this method is used to interact with the ftp server
+	 * @param chain
+	 * @param system
+	 * @param content
+	 * @param method
+	 * @return AppService
+	 */
+	public AnswerItem<AppService> callFTP(String chain, String system, String content, String method);
+	
+	
+	/**
 	 * this method is used to retrieve a file from FTP server
 	 * @param chain
 	 * @param system
-	 * @return
+	 * @return AppService
 	 */
-	public AnswerItem<AppService> getFTP(String chain, String system);
+	public AnswerItem<AppService> getFTP( HashMap<String, String> informations, FTPClient ftp, AppService myResponse) throws IOException;
 	
+	/**
+	 * this method is used to post a file from FTP server
+	 * @param informations
+	 * @param ftp
+	 * @param myResponse
+	 * @param content
+	 * @return AppService
+	 */
+	public AnswerItem<AppService> postFTP(HashMap<String, String> informations, FTPClient ftp, AppService myResponse, String content) throws IOException;
+
 	/**
 	 * this auxiliary method allow to set a PROXY to a FTPClient
 	 * @param ftpClient

@@ -22,12 +22,14 @@ package org.cerberus.service.ftp.impl;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.PasswordAuthentication;
 import java.net.Proxy;
 import java.net.SocketAddress;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -88,7 +90,7 @@ public class FtpService implements IFtpService{
 		HashMap<String, String> map = new HashMap<String, String>();
 		String tmp;
 		Matcher accountMatcher = Pattern.compile("(\\/\\/|\\\\\\\\)(.*)@").matcher(ftpChain);
-		Matcher hostMatcher = Pattern.compile("@(.*)[\\/|\\\\]").matcher(ftpChain);
+		Matcher hostMatcher = Pattern.compile("\\@([^\\/|\\\\]*)").matcher(ftpChain);
 		Matcher pathMatcher = Pattern.compile("(\\/|\\\\)([^:]+)$").matcher(ftpChain);
 	
  		if(accountMatcher.find() && hostMatcher.find() && pathMatcher.find()) {
@@ -136,8 +138,7 @@ public class FtpService implements IFtpService{
 		client.setProxy(proxy);
 	}
 	
-	@Override
-	public AnswerItem<AppService> getFTP(String chain, String system) {
+	public AnswerItem<AppService> callFTP(String chain, String system, String content, String method){
 		MessageEvent message = null;
 		AnswerItem result = new AnswerItem<>();
 		HashMap<String, String> informations = this.fromFtpStringToHashMap(chain);
@@ -175,51 +176,14 @@ public class FtpService implements IFtpService{
 			ftp.enterLocalPassiveMode();
 			ftp.setFileType(FTP.BINARY_FILE_TYPE);
 			ftp.setFileTransferMode(FTP.BINARY_FILE_TYPE);
-            String remoteFile = informations.get("path");
-            LOG.info("Start retrieving ftp file");
-            FTPFile[] ftpFile = ftp.listFiles(informations.get("path"));
-            if(ftpFile.length != 0 && ftpFile[0].getSize() != 0) {
-            	InputStream done = ftp.retrieveFileStream(remoteFile);
-                boolean success = ftp.completePendingCommand();
-                myResponse.setResponseHTTPCode(ftp.getReplyCode());
-                if(success && FTPReply.isPositiveCompletion(myResponse.getResponseHTTPCode())) {
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-             		byte[] buf = new byte[1024];
-             		int n = 0;
-             		while ((n = done.read(buf)) >= 0)
-             		    baos.write(buf, 0, n);
-             		byte[] content = baos.toByteArray();
-             		myResponse.setFile(content);
-                	LOG.info("ftp file successfully retrieve");
-                    message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CALLSERVICE);
-                    message.setDescription(message.getDescription().replace("%SERVICEMETHOD%", "GET"));
-                    message.setDescription(message.getDescription().replace("%SERVICEPATH%", remoteFile));
-                    result.setResultMessage(message);
-                    String expectedContent =  IOUtils.toString(new ByteArrayInputStream(content), "UTF-8");
-                    String extension = testCaseExecutionFileService.checkExtension(informations.get("path"), "");
-                    if(extension == "JSON" || extension == "XML" || extension == "TXT") {
-                        myResponse.setResponseHTTPBody(expectedContent);
-                    }
-                    myResponse.setResponseHTTPBodyContentType(extension);
-                    result.setItem(myResponse);
-                    baos.close();
-                }else {
-                	LOG.error("Error when downloading the file. Something went wrong");
-                    message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
-                    message.setDescription(message.getDescription().replace("%SERVICE%", remoteFile));
-                    message.setDescription(message.getDescription().replace("%DESCRIPTION%",
-                            "Error when downloading the file. Something went wrong"));
-                    result.setResultMessage(message);
-                }
-                done.close();
-            }else {
-            	LOG.error("The file is not present on FTP server. Please check the FTP path");
-                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
-                message.setDescription(message.getDescription().replace("%SERVICE%", remoteFile));
-                message.setDescription(message.getDescription().replace("%DESCRIPTION%",
-                        "Impossible to retrieve the file, or the file is empty. Please check the FTP path"));
-                result.setResultMessage(message);
-            }
+            
+			if(method.equals("GET")) {
+				result = this.getFTP(informations,ftp,myResponse);
+			}else {
+				result = this.postFTP(informations,ftp,myResponse,content);
+			}
+			
+
 		}catch(Exception e) {
 			message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
             message.setDescription(message.getDescription().replace("%SERVICE%", informations.get("path")));
@@ -238,4 +202,92 @@ public class FtpService implements IFtpService{
 		}
 		return result;
 	}
+	
+	
+	@Override
+	public AnswerItem<AppService> getFTP(HashMap<String, String> informations, FTPClient ftp, AppService myResponse) throws IOException {
+		MessageEvent message = null;
+		AnswerItem result = new AnswerItem<>();
+        LOG.info("Start retrieving ftp file");
+        FTPFile[] ftpFile = ftp.listFiles(informations.get("path"));
+        if(ftpFile.length != 0 && ftpFile[0].getSize() != 0) {
+        	InputStream done = ftp.retrieveFileStream(informations.get("path"));
+            boolean success = ftp.completePendingCommand();
+            myResponse.setResponseHTTPCode(ftp.getReplyCode());
+            if(success && FTPReply.isPositiveCompletion(myResponse.getResponseHTTPCode())) {
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+         		byte[] buf = new byte[1024];
+         		int n = 0;
+         		while ((n = done.read(buf)) >= 0)
+         		    baos.write(buf, 0, n);
+         		byte[] content = baos.toByteArray();
+         		myResponse.setFile(content);
+            	LOG.info("ftp file successfully retrieve");
+                message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CALLSERVICE);
+                message.setDescription(message.getDescription().replace("%SERVICEMETHOD%", "GET"));
+                message.setDescription(message.getDescription().replace("%SERVICEPATH%", informations.get("path")));
+                result.setResultMessage(message);
+                String expectedContent =  IOUtils.toString(new ByteArrayInputStream(content), "UTF-8");
+                String extension = testCaseExecutionFileService.checkExtension(informations.get("path"), "");
+                if(extension == "JSON" || extension == "XML" || extension == "TXT") {
+                    myResponse.setResponseHTTPBody(expectedContent);
+                }
+                myResponse.setResponseHTTPBodyContentType(extension);
+                result.setItem(myResponse);
+                baos.close();
+            }else {
+            	LOG.error("Error when downloading the file. Something went wrong");
+                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
+                message.setDescription(message.getDescription().replace("%SERVICE%", informations.get("path")));
+                message.setDescription(message.getDescription().replace("%DESCRIPTION%",
+                        "Error when downloading the file. Something went wrong"));
+                result.setResultMessage(message);
+            }
+            done.close();
+        }else {
+        	LOG.error("The file is not present on FTP server. Please check the FTP path");
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
+            message.setDescription(message.getDescription().replace("%SERVICE%", informations.get("path")));
+            message.setDescription(message.getDescription().replace("%DESCRIPTION%",
+                    "Impossible to retrieve the file, or the file is empty. Please check the FTP path"));
+            result.setResultMessage(message);
+        }
+        
+        return result;
+	}
+	
+	@Override
+	public AnswerItem<AppService> postFTP(HashMap<String, String> informations, FTPClient ftp, AppService myResponse, String content)  throws IOException {
+		MessageEvent message = null;
+		AnswerItem result = new AnswerItem<>();
+        LOG.info("Start retrieving ftp file");
+        InputStream inputStream = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
+  		byte[] byteContent = IOUtils.toByteArray(inputStream);
+    	boolean done = ftp.storeFile(informations.get("path"), inputStream);
+        myResponse.setResponseHTTPCode(ftp.getReplyCode());
+        if(done) {
+     		myResponse.setFile(byteContent);
+        	LOG.info("ftp file successfully sending");
+            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CALLSERVICE);
+            message.setDescription(message.getDescription().replace("%SERVICEMETHOD%", "POST"));
+            message.setDescription(message.getDescription().replace("%SERVICEPATH%", informations.get("path")));
+            result.setResultMessage(message);
+            String expectedContent =  IOUtils.toString(inputStream, "UTF-8");
+            String extension = testCaseExecutionFileService.checkExtension(informations.get("path"), "");
+            if(extension == "JSON" || extension == "XML" || extension == "TXT") {
+                myResponse.setResponseHTTPBody(expectedContent);
+            }
+            myResponse.setResponseHTTPBodyContentType(extension);
+            result.setItem(myResponse);
+        }else {
+        	LOG.error("Error when uploading the file. Something went wrong");
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
+            message.setDescription(message.getDescription().replace("%SERVICE%", informations.get("path")));
+            message.setDescription(message.getDescription().replace("%DESCRIPTION%",
+                    "Error when uploading the file. Something went wrong"));
+            result.setResultMessage(message);
+        }
+        inputStream.close();     
+        return result;
+	}	
 }
