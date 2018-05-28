@@ -6,28 +6,7 @@
 #   1. Have Git 2.7+ installed
 #   2. Have Maven 3.3+ installed
 #   3. Be able to push, by using SSH, to [Cerberus Testing's repositories](https://github.com/cerberustesting)
-#   4. Be able to push to [Cerberus Testing's Sourceforge space](https://sourceforge.net/projects/cerberus-source)
-#      To do that, fill your Maven's settings file with the following information:
-#       <profiles>
-#           <profile>
-#               <id>default</id>
-#               <properties>
-#                   <cerberus.sourceforge.username>USERNAME,cerberus-source</cerberus.sourceforge.username>
-#                   <cerberus.sourceforge.password>PASSWORD</cerberus.sourceforge.password>
-#               </properties>
-#           </profile>
-#       </profiles>
-#
-#       <activeProfiles>
-#           <activeProfile>default</activeProfile>
-#       </activeProfiles>
-#
-#       Where:
-#           - USERNAME is your Cerberus' Sourceforge username
-#           - PASSWORD is your Cerberus' Sourceforge password
-#       Note that user Maven's settings file is usually located at ~/.m2/settings.xml
-#   5. Have the [runcmds](https://github.com/abourdon/runcmds) command execution tool installed
-#   6. If you have not read it yet, read the runcmds's README file :-)
+#   4. If you have not read it yet, read the runcmds's README file :-)
 #
 # How to run it
 # -------------
@@ -46,9 +25,12 @@
 #       - <current database version> is the current database version
 
 # Prepare the release version
+
+# Update database version 
 database_version=$((${DATABASE_VERSION}+1))
 sqlLimit="Integer SQLLimit = "$database_version"; // "${RELEASE_VERSION}" Version LEVEL."
-awk -v sqlLimit="$sqlLimit" '{gsub(/Integer SQLLimit = (.*)/,sqlLimit,$0); print }' ./../source/src/main/webapp/DatabaseMaintenance.jsp > ./../source/src/main/webapp/DatabaseMaintenance.jsp.back && mv ./../source/src/main/webapp/DatabaseMaintenance.jsp.back ./../source/src/main/webapp/DatabaseMaintenance.jsp
+awk -v sqlLimit="$sqlLimit" '{gsub(/Integer SQLLimit = (.*)/,sqlLimit,$0); print }' ../source/src/main/webapp/DatabaseMaintenance.jsp > ../source/src/main/webapp/DatabaseMaintenance.jsp.back && mv ../source/src/main/webapp/DatabaseMaintenance.jsp.back ../source/src/main/webapp/DatabaseMaintenance.jsp
+
 awk '/asadmin deploy/{print "$GLASSFISHPATH/asadmin undeploy --target server --cascade=true Cerberus-${RELEASE_VERSION}"}1' bin/02DeployApp.sh > bin/02DeployApp.sh.back && mv bin/02DeployApp.sh.back bin/02DeployApp.sh
 awk '/asadmin deploy/ {$0="$GLASSFISHPATH/asadmin deploy --target server --contextroot Cerberus --availabilityenabled=true $MYPATH/../Cerberus-${RELEASE_VERSION}.war"} {print}' bin/02DeployApp.sh > bin/02DeployApp.sh.back && mv bin/02DeployApp.sh.back bin/02DeployApp.sh
 awk '/asadmin.bat deploy/{print "CALL %GLASSFISHPATH%asadmin.bat undeploy --target server --cascade=true Cerberus-${RELEASE_VERSION}"}1' bin/02DeployApp.bat > bin/02DeployApp.bat.back && mv bin/02DeployApp.bat.back bin/02DeployApp.bat
