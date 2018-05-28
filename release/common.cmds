@@ -59,3 +59,7 @@ awk -v filenameHtml="$filenameHtml" '{gsub(/changelog_.+.html/,filenameHtml,$0);
 changelogTitle="Changelog "$nextRelease
 awk -v changelogTitle="$changelogTitle" '{gsub(/Changelog.+[1-9]/,changelogTitle,$0); print }' source/src/main/webapp/js/pages/Homepage.js > source/src/main/webapp/js/pages/Homepage.js.back && mv source/src/main/webapp/js/pages/Homepage.js.back source/src/main/webapp/js/pages/Homepage.js
 
+git add source/src/main/webapp/Homepage.jsp source\src\main\webapp\js\pages\Homepage.js
+git commit -m 'create a new changelog file for the next version'
+git push origin master
+
