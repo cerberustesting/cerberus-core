@@ -33,7 +33,7 @@ INIT_MARKER_DEPLOY=${GLASSFISH_HOME}/glassfish/domains/${GLASSFISH_DOMAIN}/.cerb
 function deploy() {
     echo "* Starting Cerberus Glassfish deployment..."
     ${ASADMIN} start-domain ${GLASSFISH_DOMAIN}
-    ${ASADMIN} deploy --target server --contextroot ${CERBERUS_NAME} --availabilityenabled=true /tmp/${CERBERUS_PACKAGE_NAME}/${CERBERUS_PACKAGE_NAME}.war
+    ${ASADMIN} deploy --force=true --target server --contextroot ${CERBERUS_NAME} --availabilityenabled=true /tmp/${CERBERUS_PACKAGE_NAME}/${CERBERUS_PACKAGE_NAME}.war
     ${ASADMIN} stop-domain ${GLASSFISH_DOMAIN}
     touch ${INIT_MARKER_DEPLOY}
 echo "* Starting Cerberus Glassfish deployment... Done."
