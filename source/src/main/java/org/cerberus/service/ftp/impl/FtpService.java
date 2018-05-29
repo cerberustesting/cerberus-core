@@ -210,7 +210,7 @@ public class FtpService implements IFtpService{
 		AnswerItem result = new AnswerItem<>();
         LOG.info("Start retrieving ftp file");
         FTPFile[] ftpFile = ftp.listFiles(informations.get("path"));
-        if(ftpFile.length != 0 && ftpFile[0].getSize() != 0) {
+        if(ftpFile.length != 0) {
         	InputStream done = ftp.retrieveFileStream(informations.get("path"));
             boolean success = ftp.completePendingCommand();
             myResponse.setResponseHTTPCode(ftp.getReplyCode());
@@ -249,7 +249,7 @@ public class FtpService implements IFtpService{
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
             message.setDescription(message.getDescription().replace("%SERVICE%", informations.get("path")));
             message.setDescription(message.getDescription().replace("%DESCRIPTION%",
-                    "Impossible to retrieve the file, or the file is empty. Please check the FTP path"));
+                    "Impossible to retrieve the file. Please check the FTP path"));
             result.setResultMessage(message);
         }
         
@@ -272,7 +272,7 @@ public class FtpService implements IFtpService{
             message.setDescription(message.getDescription().replace("%SERVICEMETHOD%", "POST"));
             message.setDescription(message.getDescription().replace("%SERVICEPATH%", informations.get("path")));
             result.setResultMessage(message);
-            String expectedContent =  IOUtils.toString(inputStream, "UTF-8");
+            String expectedContent =  IOUtils.toString(byteContent, "UTF-8");
             String extension = testCaseExecutionFileService.checkExtension(informations.get("path"), "");
             if(extension == "JSON" || extension == "XML" || extension == "TXT") {
                 myResponse.setResponseHTTPBody(expectedContent);
