@@ -34,6 +34,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
@@ -291,21 +293,19 @@ public class ReadTestCaseExecutionMedia extends HttpServlet {
     }
 
     private void returnFile(HttpServletRequest request, HttpServletResponse response, TestCaseExecutionFile tc, String filePath) {
-
         String everything = "";
         filePath = StringUtil.addSuffixIfNotAlready(filePath, File.separator);
-
+        File file = new File(filePath + tc.getFileName());
         LOG.debug("Accessing File : " + filePath + tc.getFileName());
-        try (FileInputStream inputStream = new FileInputStream(filePath + tc.getFileName())) {
-            Charset charset = StandardCharsets.UTF_8;
-            everything = IOUtils.toString(inputStream, charset);
+        try (FileInputStream inputStream = FileUtils.openInputStream(file);) {
+            everything = IOUtils.toString(inputStream, "UTF-8");
+            response.setCharacterEncoding("UTF-8");
             response.getWriter().print(everything);
         } catch (FileNotFoundException e) {
 
         } catch (IOException e) {
 
         }
-
         SimpleDateFormat sdf = new SimpleDateFormat();
         sdf.setTimeZone(new SimpleTimeZone(0, "GMT"));
         sdf.applyPattern("dd MMM yyyy HH:mm:ss z");

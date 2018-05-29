@@ -261,9 +261,9 @@ public class FtpService implements IFtpService{
 		MessageEvent message = null;
 		AnswerItem result = new AnswerItem<>();
         LOG.info("Start retrieving ftp file");
-        InputStream inputStream = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
+        InputStream inputStream = new ByteArrayInputStream(content.getBytes("UTF-8"));
   		byte[] byteContent = IOUtils.toByteArray(inputStream);
-    	boolean done = ftp.storeFile(informations.get("path"), inputStream);
+    	boolean done = ftp.storeFile(informations.get("path"), new ByteArrayInputStream(byteContent));
         myResponse.setResponseHTTPCode(ftp.getReplyCode());
         if(done) {
      		myResponse.setFile(byteContent);
