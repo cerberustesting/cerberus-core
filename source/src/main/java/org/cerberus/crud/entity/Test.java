@@ -19,6 +19,8 @@
  */
 package org.cerberus.crud.entity;
 
+import java.sql.Timestamp;
+
 /**
  * @author bcivel
  */
@@ -27,30 +29,23 @@ public class Test {
     private String test;
     private String description;
     private String active;
-    private String automated;
-    private String tDateCrea;
+    private String usrCreated;
+    private Timestamp dateCreated;
+    private String usrModif;
+    private Timestamp dateModif;
 
     /**
      * Invariant PROPERTY TYPE String.
      */
     public static final String TEST_PRETESTING = "Pre Testing"; // Test that contain all testcases that will automaticly executed before the testcase.
     public static final String TEST_POSTTESTING = "Post Testing"; // Test that contain all testcases that will be automaticly executed after the testcase.
-    
-    
+
     public String getActive() {
         return this.active;
     }
 
     public void setActive(String active) {
         this.active = active;
-    }
-
-    public String getAutomated() {
-        return this.automated;
-    }
-
-    public void setAutomated(String automated) {
-        this.automated = automated;
     }
 
     public String getDescription() {
@@ -61,12 +56,12 @@ public class Test {
         this.description = description;
     }
 
-    public String gettDateCrea() {
-        return this.tDateCrea;
+    public Timestamp getDateCreated() {
+        return this.dateCreated;
     }
 
-    public void settDateCrea(String tDateCrea) {
-        this.tDateCrea = tDateCrea;
+    public void setDateCreated(Timestamp dateCreated) {
+        this.dateCreated = dateCreated;
     }
 
     public String getTest() {
@@ -76,4 +71,29 @@ public class Test {
     public void setTest(String test) {
         this.test = test;
     }
+
+    public String getUsrCreated() {
+        return usrCreated;
+    }
+
+    public void setUsrCreated(String usrCreated) {
+        this.usrCreated = usrCreated;
+    }
+
+    public String getUsrModif() {
+        return usrModif;
+    }
+
+    public void setUsrModif(String usrModif) {
+        this.usrModif = usrModif;
+    }
+
+    public Timestamp getDateModif() {
+        return dateModif;
+    }
+
+    public void setDateModif(Timestamp dateModif) {
+        this.dateModif = dateModif;
+    }
+
 }

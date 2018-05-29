@@ -124,6 +124,7 @@ public interface IFactoryTestCase {
      * @param userAgent
      * @param screenSize
      * @param dateModif
+     * @param testCaseVersion
      * @return
      */
     TestCase create(String test, String testCase, String origine, String refOrigine, String usrCreated,

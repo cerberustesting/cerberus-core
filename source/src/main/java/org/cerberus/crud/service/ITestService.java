@@ -36,26 +36,11 @@ import org.cerberus.util.answer.AnswerList;
  */
 public interface ITestService {
 
-    /**
-     * @return List of Tests name
-     */
-    List<String> getListOfTests();
-
-    /**
-     * @return List of Test
-     */
-    List<Test> getListOfTest();
 
 
 
-    /**
-     *
-     * @param test Key of the table Test
-     * @return Test object
-     */
-    Test findTestByKey(String test);
 
-    List<Test> findTestBySystems(List<String> systems);
+
 
     public AnswerItem readByKey(String test);
 

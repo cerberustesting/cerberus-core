@@ -25,6 +25,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -73,30 +74,19 @@ public class TestDAO implements ITestDAO {
     private final String SQL_DUPLICATED_CODE = "23000";
     private final int MAX_ROW_SELECTED = 100000;
 
-    /**
-     * Short one line description.
-     * <p/>
-     * Longer description. If there were any, it would be here.
-     * <p>
-     * And even more explanations to follow in consecutive paragraphs separated
-     * by HTML paragraph breaks.
-     *
-     * @param variable Description text text text.
-     * @return Description text text text.
-     */
-    @Override
-    public List<Test> findAllTest() {
-
-        return findTestByCriteria(new Test());
-    }
-
     @Override
     public AnswerItem readByKey(String test) {
         AnswerItem ans = new AnswerItem<>();
         Test result;
-        final String query = "SELECT * FROM `test` WHERE `test` = ?";
+        final String query = "SELECT * FROM `test` tes WHERE tes.`test` = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.test : " + test);
+        }
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -147,144 +137,27 @@ public class TestDAO implements ITestDAO {
     }
 
     @Override
-    public List<Test> findTestByCriteria(Test test) {
-        List<Test> result = null;
-        StringBuilder query = new StringBuilder("SELECT Test, Description, Active, Automated, TDateCrea FROM test ");
-
-        StringBuilder whereClause = new StringBuilder("WHERE 1=1 ");
-
-        List<String> parameters = new ArrayList<String>();
-
-        Connection connection = this.databaseSpring.connect();
-        try {
-            if (test.getTest() != null && !"".equals(test.getTest().trim())) {
-                whereClause.append("AND Test LIKE ? ");
-                parameters.add(test.getTest());
-            }
-
-            if (test.getDescription() != null && !"".equals(test.getDescription().trim())) {
-                whereClause.append("AND Description LIKE ? ");
-                parameters.add(test.getDescription());
-            }
-
-            if (test.getActive() != null && !"".equals(test.getActive().trim())) {
-                whereClause.append("AND Active LIKE ? ");
-                parameters.add(test.getActive());
-            }
-
-            if (test.getAutomated() != null && !"".equals(test.getAutomated().trim())) {
-                whereClause.append("AND Automated LIKE ? ");
-                parameters.add(test.getAutomated());
-            }
-
-            if (test.gettDateCrea() != null && !"".equals(test.gettDateCrea().trim())) {
-                whereClause.append("AND TDateCrea LIKE ? ");
-                parameters.add(test.gettDateCrea());
-            }
-            if (parameters.size() > 0) {
-                query.append(whereClause);
-            }
-
-            LOG.debug("Query : Test.findTestByCriteria : " + query.toString());
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
-            if (parameters.size() > 0) {
-                int index = 0;
-                for (String parameter : parameters) {
-                    index++;
-                    preStat.setString(index, ParameterParserUtil.wildcardIfEmpty(parameter));
-                }
-            }
-            try {
-
-                ResultSet resultSet = preStat.executeQuery();
-                result = new ArrayList<Test>();
-                try {
-                    while (resultSet.next()) {
-                        if (resultSet != null) {
-                            result.add(this.loadFromResultSet(resultSet));
-                        }
-                    }
-                } catch (SQLException exception) {
-                    LOG.warn("Unable to execute query : " + exception.toString());
-                } finally {
-                    resultSet.close();
-                }
-            } catch (SQLException exception) {
-                LOG.warn("Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            LOG.warn("Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-            }
-        }
-        return result;
-    }
-
-    @Override
-    public boolean createTest(Test test) throws CerberusException {
-        boolean res = false;
-        final String sql = "INSERT INTO test (Test, Description, Active, Automated, TDateCrea) VALUES (?, ?, ?, ?, ?)";
-
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(sql);
-            try {
-                preStat.setString(1, test.getTest());
-                preStat.setString(2, test.getDescription());
-                preStat.setString(3, test.getActive());
-                preStat.setString(4, test.getAutomated());
-                preStat.setString(5, DateUtil.getMySQLTimestampTodayDeltaMinutes(0));
-
-                res = preStat.executeUpdate() > 0;
-            } catch (SQLException exception) {
-                LOG.warn("Unable to execute query : " + exception.toString());
-                MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.GUI_ERROR_INSERTING_DATA);
-                mes.setDescription(mes.getDescription().replace("%DETAILS%", exception.toString()));
-                throw new CerberusException(mes);
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            LOG.warn("Unable to execute query : " + exception.toString());
-            MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.GUI_ERROR_INSERTING_DATA);
-            mes.setDescription(mes.getDescription().replace("%DETAILS%", exception.toString()));
-            throw new CerberusException(mes);
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-            }
-        }
-
-        return res;
-    }
-
-    @Override
     public Answer create(Test test) {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO test (test, description, active, automated) ");
+        query.append("INSERT INTO test (test, description, active, UsrCreated) ");
         query.append("VALUES (?, ?, ?, ?)");
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.test : " + test);
+        }
 
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
-                preStat.setString(1, test.getTest());
-                preStat.setString(2, test.getDescription());
-                preStat.setString(3, test.getActive());
-                preStat.setString(4, test.getAutomated());
+                int i = 1;
+                preStat.setString(i++, test.getTest());
+                preStat.setString(i++, test.getDescription());
+                preStat.setString(i++, test.getActive());
+                preStat.setString(i++, test.getUsrCreated());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -324,6 +197,12 @@ public class TestDAO implements ITestDAO {
         MessageEvent msg = null;
         final String query = "DELETE FROM test WHERE test = ? ";
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.test : " + test);
+        }
+
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
@@ -359,14 +238,13 @@ public class TestDAO implements ITestDAO {
     @Override
     public Answer update(String keyTest, Test test) {
         MessageEvent msg = null;
-        final String query = "UPDATE test SET test = ?, description = ?, active = ?, automated = ? WHERE test = ?";
+        final String query = "UPDATE test SET test = ?, description = ?, active = ?, usrModif = ?, DateModif = CURRENT_TIMESTAMP WHERE test = ?";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
             LOG.debug("SQL.param.test : " + keyTest);
         }
-
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -376,7 +254,7 @@ public class TestDAO implements ITestDAO {
                 preStat.setString(i++, test.getTest());
                 preStat.setString(i++, test.getDescription());
                 preStat.setString(i++, test.getActive());
-                preStat.setString(i++, test.getAutomated());
+                preStat.setString(i++, test.getUsrModif());
                 preStat.setString(i++, keyTest);
 
                 preStat.executeUpdate();
@@ -410,98 +288,15 @@ public class TestDAO implements ITestDAO {
             return null;
         }
 
-        String test = resultSet.getString("test") == null ? "" : resultSet.getString("test");
-        String description = resultSet.getString("description") == null ? "" : resultSet.getString("description");
-        String active = resultSet.getString("active") == null ? "" : resultSet.getString("active");
-        String automated = resultSet.getString("automated") == null ? "" : resultSet.getString("automated");
+        String test = resultSet.getString("tes.test") == null ? "" : resultSet.getString("tes.test");
+        String description = resultSet.getString("tes.description") == null ? "" : resultSet.getString("tes.description");
+        String active = resultSet.getString("tes.active") == null ? "" : resultSet.getString("tes.active");
+        String usrCreated = resultSet.getString("tes.UsrCreated");
+        Timestamp dateCreated = resultSet.getTimestamp("tes.DateCreated");
+        String usrModif = resultSet.getString("tes.UsrModif");
+        Timestamp dateModif = resultSet.getTimestamp("tes.DateModif");
 
-        String tcactive;
-        try {
-            tcactive = resultSet.getString("tdatecrea") == null ? "" : resultSet.getString("tdatecrea");
-        } catch (java.sql.SQLException e) {
-            LOG.warn(e.toString());
-            tcactive = DateUtil.getMySQLTimestampTodayDeltaMinutes(0);
-        }
-
-        return factoryTest.create(test, description, active, automated, tcactive);
-    }
-
-    @Override
-    public Test findTestByKey(String test) {
-        Test result = null;
-        StringBuilder query = new StringBuilder("SELECT Test, Description, Active, Automated, TDateCrea FROM test ");
-        query.append(" where test = ?");
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
-
-            try {
-                preStat.setString(1, test);
-                ResultSet resultSet = preStat.executeQuery();
-
-                try {
-                    if (resultSet.next()) {
-                        result = loadFromResultSet(resultSet);
-                    }
-
-                } catch (SQLException exception) {
-                    LOG.warn("Unable to execute query : " + exception.toString());
-                } finally {
-                    resultSet.close();
-                }
-            } catch (SQLException exception) {
-                LOG.warn("Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            LOG.warn("Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-            }
-        }
-        return result;
-    }
-
-    @Override
-    public List<Test> findListOfTestBySystems(List<String> systems) {
-        List<Test> result = null;
-        StringBuilder query = new StringBuilder("SELECT t.Test, t.Description, t.Active, t.Automated, t.TDateCrea FROM test t ");
-        query.append("JOIN testcase tc ON t.test=tc.test ");
-        query.append("JOIN application a ON tc.application=a.application ");
-        query.append("WHERE a.system IN (");
-
-        
-        for (int a = 0; a < systems.size(); a++) {
-            if (a != systems.size() - 1) {
-                query.append(" ? , ");
-            }
-            query.append("? ) GROUP BY t.test");
-        }
-        try(Connection connection = this.databaseSpring.connect();
-        		PreparedStatement preStat = connection.prepareStatement(query.toString());) {
-            
-            
-            for (int a = 0; a < systems.size(); a++) {
-                preStat.setString(a + 1, ParameterParserUtil.wildcardIfEmpty(systems.get(a)));
-            }
-            try(ResultSet resultSet = preStat.executeQuery();) {
-                result = new ArrayList<Test>();
-                while (resultSet.next()) {
-                    result.add(this.loadFromResultSet(resultSet));
-                }
-            } catch (SQLException exception) {
-                LOG.warn("Unable to execute query : " + exception.toString());
-            } 
-        } catch (SQLException exception) {
-            LOG.warn("Unable to execute query : " + exception.toString());
-        } 
-        return result;
+        return factoryTest.create(test, description, active, usrCreated, dateCreated, usrModif, dateModif);
     }
 
     @Override
@@ -514,9 +309,9 @@ public class TestDAO implements ITestDAO {
         StringBuilder query = new StringBuilder();
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
         //were applied -- used for pagination p
-        query.append("SELECT SQL_CALC_FOUND_ROWS DISTINCT(t.test), t.* FROM test t ");
-        query.append("LEFT JOIN testcase tc ON t.test = tc.test ");
-        query.append("LEFT JOIN application app ON tc.application = app.application ");
+        query.append("SELECT SQL_CALC_FOUND_ROWS DISTINCT(tes.test), tes.* FROM test tes ");
+        query.append("LEFT JOIN testcase tec ON tes.test = tec.test ");
+        query.append("LEFT JOIN application app ON tec.application = app.application ");
         query.append("WHERE app.system = ?");
 
         Connection connection = this.databaseSpring.connect();
@@ -606,7 +401,7 @@ public class TestDAO implements ITestDAO {
         StringBuilder query = new StringBuilder();
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
         //were applied -- used for pagination p
-        query.append("SELECT SQL_CALC_FOUND_ROWS * FROM test ");
+        query.append("SELECT SQL_CALC_FOUND_ROWS * FROM test tes ");
 
         searchSQL.append(" where 1=1 ");
 
@@ -614,8 +409,7 @@ public class TestDAO implements ITestDAO {
             searchSQL.append(" and (`test` like ?");
             searchSQL.append(" or `description` like ?");
             searchSQL.append(" or `active` like ?");
-            searchSQL.append(" or `automated` like ?");
-            searchSQL.append(" or `tdatecrea` like ?)");
+            searchSQL.append(" or `datecreated` like ?)");
         }
         if (individualSearch != null && !individualSearch.isEmpty()) {
             searchSQL.append(" and ( 1=1 ");
@@ -636,7 +430,12 @@ public class TestDAO implements ITestDAO {
         } else {
             query.append(" limit ").append(start).append(" , ").append(amount);
         }
-        
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -744,8 +543,7 @@ public class TestDAO implements ITestDAO {
             searchSQL.append(" and (tes.`test` like ?");
             searchSQL.append(" or tes.`description` like ?");
             searchSQL.append(" or tes.`active` like ?");
-            searchSQL.append(" or tes.`automated` like ?");
-            searchSQL.append(" or tes.`tdatecrea` like ?)");
+            searchSQL.append(" or tes.`datecreated` like ?)");
         }
         if (individualSearch != null && !individualSearch.isEmpty()) {
             searchSQL.append(" and ( 1=1 ");
@@ -765,11 +563,10 @@ public class TestDAO implements ITestDAO {
         }
         try (Connection connection = databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(query.toString());
-        		Statement stm = connection.createStatement();) {
+                Statement stm = connection.createStatement();) {
 
             int i = 1;
             if (!Strings.isNullOrEmpty(searchTerm)) {
-                preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
@@ -779,15 +576,14 @@ public class TestDAO implements ITestDAO {
                 preStat.setString(i++, individualColumnSearchValue);
             }
 
-            try(ResultSet resultSet = preStat.executeQuery();
-            		ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");){
-            	//gets the data
+            try (ResultSet resultSet = preStat.executeQuery();
+                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+                //gets the data
                 while (resultSet.next()) {
                     distinctValues.add(resultSet.getString("distinctValues") == null ? "" : resultSet.getString("distinctValues"));
                 }
 
                 //get the total number of rows
-                
                 int nrTotalRows = 0;
 
                 if (rowSet != null && rowSet.next()) {
@@ -807,7 +603,7 @@ public class TestDAO implements ITestDAO {
                     msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
                     answer = new AnswerList<>(distinctValues, nrTotalRows);
                 }
-            }catch (Exception e) {
+            } catch (Exception e) {
                 LOG.warn("Unable to execute query : " + e.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
                         e.toString());

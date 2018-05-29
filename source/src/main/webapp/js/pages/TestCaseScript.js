@@ -709,7 +709,7 @@ function saveScript(property) {
     var saveProp = function () {
         showLoaderInModal('#propertiesModal');
         $.ajax({
-            url: "UpdateTestCaseWithDependencies1",
+            url: "UpdateTestCaseWithDependencies",
             async: true,
             method: "POST",
             contentType: 'application/json; charset=utf-8',
@@ -3102,7 +3102,7 @@ function editPropertiesModalSaveHandler() {
     var saveProp = function () {
         showLoaderInModal('#propertiesModal');
         $.ajax({
-            url: "UpdateTestCaseProperties1",
+            url: "UpdateTestCaseProperties",
             async: true,
             method: "POST",
             data: {

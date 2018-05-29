@@ -53,7 +53,8 @@ Here is a summary of all execution status with their corresponding meanings.
 * KO : The execution was performed correcly and at least one control failed resulting a global KO. That means that a bug needs to be reported to development teams.
 * FA : The execution did not performed correctly and needs a correction from the team that is in charge of managing the testcases. It couls be a failed SQL or action during the test.
 * NA : Test could not be executed as a data could not be retreived. That probably means that the test is not possible in the current environment/status.
-* NE : Test Case was not yet executed (waiting a manual execution).
+* NE : Test Case was not executed (following a condition execution).
+* WE : Test Case was not yet executed (waiting a manual execution).
 * PE : Test Case is currently running.
 * QU : Test Case is still waiting in the queue for ressources or constrains to be released.
 * QE : Test Case failed in the queue and will not be triggered.
