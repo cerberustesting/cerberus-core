@@ -7711,6 +7711,11 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append("('ACTION', 'removeApp', '13006', 'Remove mobile application', '')");
         a.add(b.toString());
 
+        // Add 2 column to countryenvironmentparameters
+        // 1341-1342
+        a.add("ALTER TABLE `countryenvironmentparameters` ADD column mobileActivity varchar(255);");
+        a.add("ALTER TABLE `countryenvironmentparameters`  ADD column mobilePackage varchar(255);");
+
         return a;
     }
 

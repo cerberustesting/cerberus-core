@@ -70,7 +70,7 @@ public class CountryEnvParamService implements ICountryEnvParamService {
     public List<JSONObject> findActiveEnvironmentBySystemCountryApplication(String system, String country, String application) throws CerberusException {
         List<JSONObject> result = new ArrayList<>();
         CountryEnvParam countryEnvParam = countryEnvParamFactory.create(system, country, true);
-        CountryEnvironmentParameters countryEnvironmentParameters = countryEnvironmentParametersFactory.create(system, country, null, application, null, null, null, null, null, null, null, null, CountryEnvironmentParameters.DEFAULT_POOLSIZE);
+        CountryEnvironmentParameters countryEnvironmentParameters = countryEnvironmentParametersFactory.create(system, country, null, application, null, null, null, null, null, null, null, null, CountryEnvironmentParameters.DEFAULT_POOLSIZE,null,null);
 
         List<CountryEnvironmentParameters> ceaList = countryEnvironmentParametersService.findCountryEnvironmentParametersByCriteria(countryEnvironmentParameters);
         List<CountryEnvParam> ceList = this.findCountryEnvParamByCriteria(countryEnvParam);

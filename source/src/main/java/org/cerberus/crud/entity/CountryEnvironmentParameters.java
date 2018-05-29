@@ -36,6 +36,8 @@ public class CountryEnvironmentParameters {
     private String var2;
     private String var3;
     private String var4;
+    private String mobileActivity;
+    private String mobilePackage;
     private int poolSize;
 
     /**
@@ -170,6 +172,22 @@ public class CountryEnvironmentParameters {
         return true;
     }
 
+    public String getMobileActivity() {
+        return mobileActivity;
+    }
+
+    public void setMobileActivity(String mobileActivity) {
+        this.mobileActivity = mobileActivity;
+    }
+
+    public String getMobilePackage() {
+        return mobilePackage;
+    }
+
+    public void setMobilePackage(String mobilePackage) {
+        this.mobilePackage = mobilePackage;
+    }
+
     @Override
     public int hashCode() {
         int hash = 3;
@@ -232,6 +250,12 @@ public class CountryEnvironmentParameters {
             return false;
         }
         if ((this.var4 == null) ? (other.var4 != null) : !this.var4.equals(other.var4)) {
+            return false;
+        }
+        if ((this.mobileActivity == null) ? (other.mobileActivity != null) : !this.mobileActivity.equals(other.mobileActivity)) {
+            return false;
+        }
+        if ((this.mobilePackage == null) ? (other.mobilePackage != null) : !this.mobilePackage.equals(other.mobilePackage)) {
             return false;
         }
         if (this.poolSize != other.poolSize) {

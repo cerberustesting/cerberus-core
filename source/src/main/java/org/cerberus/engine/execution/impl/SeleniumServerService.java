@@ -370,24 +370,24 @@ public class SeleniumServerService implements ISeleniumServerService {
 
         } catch (CerberusException exception) {
             LOG.error(logPrefix + exception.toString(), exception);
-            throw new CerberusException(exception.getMessageError());
+            throw new CerberusException(exception.getMessageError(), exception);
         } catch (MalformedURLException exception) {
             LOG.error(logPrefix + exception.toString(), exception);
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_URL_MALFORMED);
             mes.setDescription(mes.getDescription().replace("%URL%", tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort()));
-            throw new CerberusException(mes);
+            throw new CerberusException(mes, exception);
         } catch (UnreachableBrowserException exception) {
             LOG.error(logPrefix + exception.toString(), exception);
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_COULDNOTCONNECT);
             mes.setDescription(mes.getDescription().replace("%SSIP%", tCExecution.getSeleniumIP()));
             mes.setDescription(mes.getDescription().replace("%SSPORT%", tCExecution.getSeleniumPort()));
             mes.setDescription(mes.getDescription().replace("%ERROR%", exception.toString()));
-            throw new CerberusException(mes);
+            throw new CerberusException(mes, exception);
         } catch (Exception exception) {
             LOG.error(logPrefix + exception.toString(), exception);
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
             mes.setDescription(mes.getDescription().replace("%MES%", exception.toString()));
-            throw new CerberusException(mes);
+            throw new CerberusException(mes, exception);
         } finally {
             executionThreadPoolService.executeNextInQueueAsynchroneously(false);
         }
@@ -450,6 +450,9 @@ public class SeleniumServerService implements ISeleniumServerService {
                 caps.setCapability("app", tCExecution.getMyHost());
             } else {
                 caps.setCapability("app", tCExecution.getCountryEnvironmentParameters().getIp());
+            }
+            if(!StringUtil.isNullOrEmpty(tCExecution.getCountryEnvironmentParameters().getMobileActivity()) && tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
+                caps.setCapability("appWaitActivity", tCExecution.getCountryEnvironmentParameters().getMobileActivity());
             }
         }
 
@@ -577,33 +580,10 @@ public class SeleniumServerService implements ISeleniumServerService {
                 LOG.error(ex.toString());
             }
 
-            //recorderService.endRecordVideo(tce);
-
-            // FIXME (with issue ##1709)
-            // Decathlon Specific possibility to use application environment variable1 & variable2 to execute shell (adb) on mobile (Android)
-            // variable1 : command (ex : "am start")
-            // variable2 : args (ex : "-p 60")
-            // variable3 : package application. If available, call apiumDriver to force remove application from the phone
-            boolean activate = parameterService.getParameterBooleanByKey("cerberus_featureflipping_activatecallShellOnEndOfTestCase", "", false);
-            if(activate && session.getAppiumDriver() != null && tce.getCountryEnvironmentParameters() != null) {
-                AppiumDriver driver = session.getAppiumDriver();
-
-                if(!StringUtil.isNullOrEmpty(tce.getCountryEnvironmentParameters().getVar1())) {
-                    // init shell executor
-                    Map<String, Object> args = new HashMap<>();
-                    args.put("command", tce.getCountryEnvironmentParameters().getVar1());
-                    args.put("args", Lists.newArrayList(tce.getCountryEnvironmentParameters().getVar2()));
-
-                    LOG.info("Execute shell with appium : " + tce.getCountryEnvironmentParameters().getVar1() + " " + tce.getCountryEnvironmentParameters().getVar2());
-                    LOG.info(driver.executeScript("mobile: shell", args));
-                }
-                if(session.getAppiumDriver() != null && tce.getCountryEnvironmentParameters() != null &&
-                        !StringUtil.isNullOrEmpty(tce.getCountryEnvironmentParameters().getVar3())) {
-                    driver.removeApp(tce.getCountryEnvironmentParameters().getVar3()); // remove manually app after execute a shell
-                }
-
+            if(session.getAppiumDriver() != null && tce.getCountryEnvironmentParameters() != null &&
+                    !StringUtil.isNullOrEmpty(tce.getCountryEnvironmentParameters().getMobilePackage())) {
+                session.getAppiumDriver().removeApp(tce.getCountryEnvironmentParameters().getMobilePackage()); // remove manually if package is defined
             }
-
 
             LOG.info("Stop execution session");
             session.quit();
