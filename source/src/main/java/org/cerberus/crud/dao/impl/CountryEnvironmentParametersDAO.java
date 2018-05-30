@@ -427,7 +427,7 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
     public Answer create(CountryEnvironmentParameters object) {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO `countryenvironmentparameters` (`system`, `country`, `environment`, `application`, `ip`, `domain`, `url`, `urllogin`, `Var1`, `Var2`, `Var3`, `Var4`, `poolSize`, `mobileActivity`, `mobilePackage) ");
+        query.append("INSERT INTO `countryenvironmentparameters` (`system`, `country`, `environment`, `application`, `ip`, `domain`, `url`, `urllogin`, `Var1`, `Var2`, `Var3`, `Var4`, `poolSize`, `mobileActivity`, `mobilePackage`) ");
         query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
         // Debug message on SQL.
@@ -459,7 +459,7 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
                 msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT"));
 
             } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
+                LOG.error("Unable to execute query : " + exception.toString(),exception);
 
                 if (exception.getSQLState().equals(SQL_DUPLICATED_CODE)) { //23000 is the sql state for duplicate entries
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_DUPLICATE);
