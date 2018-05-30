@@ -177,6 +177,20 @@ From there you can manage your TestCase properties or see your Inherited Propert
 
 image:windowmanageproperties.png[windowManageProperties]
 
+Properties are the key element of your TestCase to manage different variables in the same scenario. A property is identified by its name and the country for which it's defined (e.g. you cannot have two properties defined for the same country with the same name).
+
+Properties can be called by their name using the follwing syntaxes:
+
+- `%property.property_name%` : the execution will **stop** if any problem in the property calculation
+- `%property_name_here%` : the execution will **not stop** if any problem in the property calculation
+
+When handling Datalib, the syntaxes to call the subdata are :
+
+- `%property.property_name.sub_data_name%` or `%property_name.sub_data_name%`
+- `%property.property_name(sub_data_name)%` or `%property_name(sub_data_name)%`
+
+Properties can be called in action or control values field or in another property.
+
 |=== 
 
 | *Field* | *Description*  
