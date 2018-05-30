@@ -21,7 +21,10 @@ package org.cerberus.crud.service.impl;
 
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.fileupload.FileItem;
 import org.cerberus.crud.dao.IAppServiceDAO;
+import org.cerberus.crud.dao.impl.AppServiceDAO;
 import org.cerberus.crud.entity.AppService;
 import org.cerberus.crud.entity.AppServiceContent;
 import org.cerberus.crud.entity.AppServiceHeader;
@@ -193,6 +196,11 @@ public class AppServiceService implements IAppServiceService {
         }
         result = StringUtil.removeLastChar(result, 1);
         return result;
+    }
+    
+    @Override
+    public Answer uploadFile(String service, FileItem file) {
+        return appServiceDao.uploadFile(service, file);
     }
 
 }

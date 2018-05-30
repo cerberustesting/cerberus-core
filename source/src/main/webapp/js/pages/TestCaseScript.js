@@ -2762,7 +2762,6 @@ function objectIntoTagToUseExist(tagToUse, label) {
 function loadGuiProperties() {
 
     let propArr = new Object();
-    let info = new Object();
 
     $("div.list-group-item").each(function () {
         var editor = ace.edit($(this).find("pre").attr("id"));
@@ -2770,9 +2769,10 @@ function loadGuiProperties() {
         info["name"] = $(this).find("#propName").val()
         info["type"] = $(this).find("select").val();
         info["value"] = editor.getValue();
-        propArr[$(this).find("#propName").val()] = info;
+        if(!($(this).find("#propName").val() in propArr)){
+        	propArr[$(this).find("#propName").val()] = info;
+        }     
     })
-
     return propArr;
 }
 
@@ -2790,7 +2790,6 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
     setTags = function (tags) {
         TagsToUse = tags;
     };
-
     testUI = function (test) {
 
     };
