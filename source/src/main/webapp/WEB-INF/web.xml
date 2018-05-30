@@ -239,10 +239,6 @@
         <servlet-class>org.cerberus.servlet.crud.test.GetCountryForTestCase</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>GetShortTests</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.test.GetShortTests</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>ReadLogEvent</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.usermanagement.ReadLogEvent</servlet-class>
     </servlet>
@@ -563,16 +559,12 @@
         <servlet-class>org.cerberus.servlet.crud.test.ImportTestCaseFromJson</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>UpdateTestCaseWithDependencies</servlet-name>
+        <servlet-name>UpdateTestCaseWithDependencies1</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.test.UpdateTestCaseWithDependencies</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>UpdateTestCaseWithDependencies1</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.test.UpdateTestCaseWithDependencies1</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>UpdateTestCaseProperties1</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.test.UpdateTestCaseProperties1</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.test.UpdateTestCaseProperties</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DeleteTestCaseFromTestPage</servlet-name>
@@ -1026,10 +1018,6 @@
         <url-pattern>/DeleteCampaign</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>GetShortTests</servlet-name>
-        <url-pattern>/GetShortTests</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>GetInvariantsForTest</servlet-name>
         <url-pattern>/GetInvariantsForTest</url-pattern>
     </servlet-mapping>
@@ -1356,10 +1344,6 @@
     <servlet-mapping>
         <servlet-name>ImportTestCaseFromJson</servlet-name>
         <url-pattern>/ImportTestCaseFromJson</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>UpdateTestCaseWithDependencies</servlet-name>
-        <url-pattern>/UpdateTestCaseWithDependencies</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>UpdateTestCaseWithDependencies1</servlet-name>

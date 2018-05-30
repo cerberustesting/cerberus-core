@@ -232,7 +232,7 @@ public class ExecutionRunService implements IExecutionRunService {
                         this.serverService.startServer(tCExecution);
                     } catch (CerberusException ex) {
                         LOG.debug(ex.getMessageError().getDescription());
-                        throw new CerberusException(ex.getMessageError());
+                        throw new CerberusException(ex.getMessageError(), ex);
                     }
                     LOG.debug("Server Started.");
                 }
@@ -249,7 +249,7 @@ public class ExecutionRunService implements IExecutionRunService {
                     tCExecution.setVersion(caps.getVersion());
                     tCExecution.setPlatform(caps.getPlatform().toString());
                 } catch (Exception ex) {
-                    LOG.error(logPrefix + "Exception on selenium getting Used Capabilities :" + ex.toString());
+                    LOG.error(logPrefix + "Exception on selenium getting Used Capabilities :" + ex.toString(), ex);
                 }
                 LOG.debug(logPrefix + "Selenium capabitities loaded.");
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK) || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
@@ -705,7 +705,7 @@ public class ExecutionRunService implements IExecutionRunService {
             toto.resolveDescription("DETAILMESSAGE", ex.getMessageError().getDescription());
             tCExecution.setResultMessage(toto);
             tCExecution.setControlMessage(tCExecution.getControlMessage() + " Exception: " + ex);
-            LOG.error(logPrefix + "Exception found Executing Test " + tCExecution.getId() + " Exception :" + ex.toString());
+            LOG.error(logPrefix + "Exception found Executing Test " + tCExecution.getId() + " Exception :" + ex.toString(), ex);
         } catch (Exception ex) {
             /**
              * If an exception is found, set the execution to FA and print the
@@ -715,7 +715,7 @@ public class ExecutionRunService implements IExecutionRunService {
             messageFin.resolveDescription("DETAILMESSAGE", ex.getMessage());
             tCExecution.setResultMessage(messageFin);
             tCExecution.setControlMessage(tCExecution.getControlMessage() + " Exception: " + ex);
-            LOG.error(logPrefix + "Exception found Executing Test " + tCExecution.getId() + " Exception :" + ex.toString());
+            LOG.error(logPrefix + "Exception found Executing Test " + tCExecution.getId() + " Exception :" + ex.toString(), ex);
         } finally {
 
             /**

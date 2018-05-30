@@ -36,21 +36,11 @@ import org.cerberus.util.answer.AnswerList;
  */
 public interface ITestDAO {
 
-    List<Test> findAllTest();
-
-    List<Test> findTestByCriteria(Test test);
-
-    boolean createTest(Test test) throws CerberusException;
 
 
-    /**
-     *
-     * @param test Name of the test
-     * @return Test Object
-     */
-    Test findTestByKey(String test);
 
-    List<Test> findListOfTestBySystems(List<String> systems);
+
+
 
     public AnswerItem readByKey(String test);
 

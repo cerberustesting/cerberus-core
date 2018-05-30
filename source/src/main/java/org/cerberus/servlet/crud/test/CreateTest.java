@@ -50,11 +50,11 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author cerberus
  */
-@WebServlet(name = "CreateTest1", urlPatterns = {"/CreateTest1"})
+@WebServlet(name = "CreateTest", urlPatterns = {"/CreateTest"})
 public class CreateTest extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(CreateTest.class);
-    
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -67,7 +67,7 @@ public class CreateTest extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, JSONException {
-                JSONObject jsonResponse = new JSONObject();
+        JSONObject jsonResponse = new JSONObject();
         Answer ans = new Answer();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -78,13 +78,12 @@ public class CreateTest extends HttpServlet {
 
         // Calling Servlet Transversal Util.
         ServletUtil.servletStart(request);
-        
+
         /**
          * Parsing and securing all required parameters.
          */
         String test = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("test"), "");
         String active = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("Active"), "");
-        String automated = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("Automated"), "");
         String description = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("Description"), "");
 
         /**
@@ -104,7 +103,7 @@ public class CreateTest extends HttpServlet {
             ITestService testService = appContext.getBean(ITestService.class);
             IFactoryTest factoryTest = appContext.getBean(IFactoryTest.class);
 
-            Test testData = factoryTest.create(test, description, active, automated, "");
+            Test testData = factoryTest.create(test, description, active, request.getUserPrincipal().getName(), null, null, null);
             ans = testService.create(testData);
 
             if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {

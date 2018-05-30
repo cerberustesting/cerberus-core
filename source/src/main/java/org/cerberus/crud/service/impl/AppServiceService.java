@@ -89,7 +89,7 @@ public class AppServiceService implements IAppServiceService {
             appService.setHeaderList((List<AppServiceHeader>) header.getDataList());
             answerAppService.setItem(appService);
         } catch (Exception e) {
-            LOG.error(e);
+            LOG.error(e,e);
         }
         return answerAppService;
     }

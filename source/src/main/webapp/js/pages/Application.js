@@ -368,6 +368,9 @@ function appendEnvironmentRow(env) {
     var var3Input = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "var3") + " --\">").addClass("form-control input-sm").val(env.var3);
     var var4Input = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "var4") + " --\">").addClass("form-control input-sm").val(env.var4);
     var poolSizeInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "poolSize") + " --\">").addClass("form-control input-sm").val(env.poolSize);
+    var mobileActivity = $("<input  maxlength=\"254\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "mobileActivity") + " --\">").addClass("form-control input-sm").val(env.mobileActivity);
+    var mobilePackage = $("<input  maxlength=\"254\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "mobilePackage") + " --\">").addClass("form-control input-sm").val(env.mobilePackage);
+
     var table = $("#environmentTableBody");
 
     var row = $("<tr></tr>");
@@ -380,6 +383,8 @@ function appendEnvironmentRow(env) {
     var var1Name = $("<td></td>").append(var1Input).append(var2Input);
     var var3Name = $("<td></td>").append(var3Input).append(var4Input);
     var poolSize = $("<td></td>").append(poolSizeInput);
+    var mobileData = $("<td></td>").append(mobileActivity).append(mobilePackage);
+
     deleteBtn.click(function () {
         env.toDelete = (env.toDelete) ? false : true;
         if (env.toDelete) {
@@ -421,6 +426,12 @@ function appendEnvironmentRow(env) {
     poolSizeInput.change(function () {
         env.poolSize = $(this).val();
     });
+    mobileActivity.change(function () {
+        env.mobileActivity = $(this).val();
+    });
+    mobilePackage.change(function () {
+        env.mobilePackage = $(this).val();
+    });
     row.append(deleteBtnRow);
     row.append(environment);
     row.append(country);
@@ -429,6 +440,7 @@ function appendEnvironmentRow(env) {
     row.append(var1Name);
     row.append(var3Name);
     row.append(poolSize);
+    row.append(mobileData);
     env.environment = selectEnvironment.prop("value"); // Value that has been requested by dtb parameter may not exist in combo vlaues so we take the real selected value.
     env.country = selectCountry.prop("value"); // Value that has been requested by dtb parameter may not exist in combo vlaues so we take the real selected value.
     row.data("environment", env);
@@ -448,6 +460,8 @@ function addNewEnvironmentRow() {
         var3: "",
         var4: "",
         poolSize: "",
+        mobileActivity : "",
+        mobilePackage : "",
         toDelete: false
     };
     appendEnvironmentRow(newEnvironment);

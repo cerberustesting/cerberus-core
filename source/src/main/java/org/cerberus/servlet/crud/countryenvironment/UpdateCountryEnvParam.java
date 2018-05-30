@@ -284,6 +284,8 @@ public class UpdateCountryEnvParam extends HttpServlet {
             String var3 = tcsaJson.getString("var3");
             String var4 = tcsaJson.getString("var4");
             String strPoolSize = tcsaJson.getString("poolSize");
+            String mobileActivity = tcsaJson.getString("mobileActivity");
+            String mobilePackage = tcsaJson.getString("mobilePackage");
             int poolSize;
             if (strPoolSize.isEmpty()) {
                 poolSize = CountryEnvironmentParameters.DEFAULT_POOLSIZE;
@@ -298,7 +300,7 @@ public class UpdateCountryEnvParam extends HttpServlet {
             }
 
             if (!delete) {
-                CountryEnvironmentParameters cea = ceaFactory.create(system, country, environment, application, ip, domain, url, urlLogin, var1, var2, var3, var4, poolSize);
+                CountryEnvironmentParameters cea = ceaFactory.create(system, country, environment, application, ip, domain, url, urlLogin, var1, var2, var3, var4, poolSize, mobileActivity, mobilePackage);
                 ceaList.add(cea);
             }
         }

@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.factory.impl;
 
+import java.sql.Timestamp;
 import org.cerberus.crud.entity.Test;
 import org.cerberus.crud.factory.IFactoryTest;
 import org.springframework.stereotype.Service;
@@ -30,13 +31,15 @@ import org.springframework.stereotype.Service;
 public class FactoryTest implements IFactoryTest {
 
     @Override
-    public Test create(String test, String description, String active, String automated, String tDateCrea) {
+    public Test create(String test, String description, String active, String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif) {
         Test newTest = new Test();
         newTest.setTest(test);
         newTest.setDescription(description);
         newTest.setActive(active);
-        newTest.setAutomated(automated);
-        newTest.settDateCrea(tDateCrea);
+        newTest.setUsrCreated(usrCreated);
+        newTest.setDateCreated(dateCreated);
+        newTest.setUsrModif(usrModif);
+        newTest.setDateModif(dateModif);
 
         return newTest;
 

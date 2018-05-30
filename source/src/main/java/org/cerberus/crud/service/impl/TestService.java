@@ -49,34 +49,6 @@ public class TestService implements ITestService {
     private ITestDAO testDao;
 
     @Override
-    public List<String> getListOfTests() {
-        List<String> result = new ArrayList<String>();
-
-        List<Test> listOfTests = this.testDao.findAllTest();
-
-        for (Test lot : listOfTests) {
-            result.add(lot.getTest());
-        }
-
-        return result;
-    }
-
-    @Override
-    public List<Test> getListOfTest() {
-        return testDao.findAllTest();
-    }
-
-    @Override
-    public Test findTestByKey(String test) {
-        return testDao.findTestByKey(test);
-    }
-
-    @Override
-    public List<Test> findTestBySystems(List<String> systems) {
-        return testDao.findListOfTestBySystems(systems);
-    }
-
-    @Override
     public AnswerItem readByKey(String test) {
         return testDao.readByKey(test);
     }

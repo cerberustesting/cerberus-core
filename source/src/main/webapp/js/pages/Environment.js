@@ -685,7 +685,9 @@ function appendApplicationRow(app) {
     var variable3 = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "Var3") + " --\">").addClass("form-control input-sm").val(app.var3);
     var variable4 = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "Var4") + " --\">").addClass("form-control input-sm").val(app.var4);
     var poolSizeInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "poolSize") + " --\">").addClass("form-control input-sm").val(app.poolSize);
-    
+    var mobileActivity = $("<input  maxlength=\"254\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "mobileActivity") + " --\">").addClass("form-control input-sm").val(env.mobileActivity);
+    var mobilePackage = $("<input  maxlength=\"254\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "mobilePackage") + " --\">").addClass("form-control input-sm").val(env.mobilePackage);
+
     var table = $("#applicationTableBody");
 
     var row = $("<tr></tr>");
@@ -696,7 +698,8 @@ function appendApplicationRow(app) {
     var vars1 = $("<td></td>").append(variable1).append(variable2);
     var vars2 = $("<td></td>").append(variable3).append(variable4);
     var poolSize = $("<td></td>").append(poolSizeInput);
-    
+    var mobileData = $("<td></td>").append(mobileActivity).append(mobilePackage);
+
     deleteBtn.click(function () {
         app.toDelete = (app.toDelete) ? false : true;
         if (app.toDelete) {
@@ -735,6 +738,12 @@ function appendApplicationRow(app) {
     poolSizeInput.change(function () {
         app.poolSize = $(this).val();
     });
+    mobileActivity.change(function () {
+        env.mobileActivity = $(this).val();
+    });
+    mobilePackage.change(function () {
+        env.mobilePackage = $(this).val();
+    });
     row.append(deleteBtnRow);
     row.append(application);
     row.append(ipName);
@@ -742,6 +751,8 @@ function appendApplicationRow(app) {
     row.append(vars1);
     row.append(vars2);
     row.append(poolSize);
+    row.append(mobileData);
+
     app.application = selectApplication.prop("value"); // Value that has been requested by dtb parameter may not exist in combo vlaues so we take the real selected value.
     row.data("application", app);
     table.append(row);
@@ -759,6 +770,8 @@ function addNewApplicationRow() {
         var3: "",
         var4: "",
         poolSize: "",
+        mobileActivity: "",
+        mobilePackage: "",
         toDelete: false
     };
     appendApplicationRow(newApplication);
