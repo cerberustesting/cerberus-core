@@ -7729,7 +7729,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // Add column file path
         // 1344
         b = new StringBuilder();
-        b.append("ALTER TABLE `appservice` ADD COLUMN FileName VARCHAR(100) AFTER `ServicePath` DEFAULT NULL");
+        b.append("ALTER TABLE `appservice` ADD COLUMN FileName VARCHAR(100) DEFAULT NULL AFTER `ServicePath`");
         a.add(b.toString());
         
         // Add ftp file path parameter
