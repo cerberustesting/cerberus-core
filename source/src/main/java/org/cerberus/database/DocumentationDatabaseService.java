@@ -847,6 +847,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_global','unexpected_error_message','','fr','Impossible de finaliser l\\'operation. Une erreur inattendue est survenue','',NULL)");
         b.append(",('page_global','warning','','en','Warning','',NULL)");
         b.append(",('page_global','warning','','fr','Attention','',NULL)");
+        b.append(",('page_global','btn_bulkrename','','en','Bulk Rename','',NULL)");
+        b.append(",('page_global','btn_bulkrename','','fr','Renommer massivement','',NULL)");
         b.append(",('page_header','logout','','en','Logout','',NULL)");
         b.append(",('page_header','logout','','fr','Déconnexion','',NULL)");
         b.append(",('page_header','menuAdmin','','en','Administration','',NULL)");
@@ -1743,6 +1745,12 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_testdatalib','tooltip_gettestcases','','fr','Voir la liste des cas de tests qui utilisent cette entrée',NULL,NULL)");
         b.append(",('page_testdatalib','tooltip_viewsubdata','','en','View sub-data entries','',NULL)");
         b.append(",('page_testdatalib','tooltip_viewsubdata','','fr','Voir les entrées des sous données',NULL,NULL)");
+        b.append(",('page_testdatalib','btn_bulkrename','','en','Bulk Rename','',NULL)");
+        b.append(",('page_testdatalib','btn_bulkrename','','fr','Renommer massivement','',NULL)");
+        b.append(",('page_testdatalib','wrong_name_message','','en','The Data Library name isn\\'t correctly formated','',NULL)");
+        b.append(",('page_testdatalib','wrong_name_message','','fr','Le nom de la Data Lib n\\'est pas correct','',NULL)");
+        b.append(",('page_testdatalib','bulk_rename_success_message','','en','WARNING: please refresh the page','',NULL)");
+        b.append(",('page_testdatalib','bulk_rename_success_message','','fr','ATTENTION : rafraichir la page','',NULL)");
         b.append(",('page_testdatalib_delete','title','','en','Delete Test Data Library Entry','',NULL)");
         b.append(",('page_testdatalib_m_createlib','title','','en','Create New Test Data Library Entry','',NULL)");
         b.append(",('page_testdatalib_m_duplicatelib','title','','en','Duplicate Test Data Library','',NULL)");
@@ -2200,6 +2208,10 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('testdatalib','testdatalibid','','fr','Identifiant','<p>Identifiant unique de librairie de donnée</p>','_librairie_de_données')");
         b.append(",('testdatalib','type','','en','Type','<p>Entry Type - Cerberus allows the definition of 4 types: INTERNAL, SQL, CSV and SERVICE.</p><table border=\\'1\\'> <tr><th class=\\'ex\\'>Type</th><th class=\\'ex\\'>Description</th></tr> <tr><td>INTERNAL</td><td>Static test data - in each execution the values used by the test cases are statically definied directly in Cerberus.</td></tr> <tr><td>SQL</td><td> Test data obtained from a SQL execution – values depend on what the SQL return on the corresponding environment.</td></tr><tr><td>SERVICE</td><td>Test data obtained from a SERVICE call – values depend on the result of the service call. Service needs to be configured on Service screen inside application menu.</td></tr><tr><td>CSV</td><td>Test data obtained from a CSV file structure privided by a URL. Values depend on the result of the service call to CSV file.</td></tr></table>','_data_library')");
         b.append(",('testdatalib','type','','fr','Type',NULL,'_librairie_de_données')");
+        b.append(",('testdatalib','currentname','','en','Current name','This corresponds to the Datalib name that needs to be updated',NULL)");
+        b.append(",('testdatalib','currentname','','fr','Nom actuel','Correspond au nom des Datalib qui seront modifiees massivement',NULL)");
+        b.append(",('testdatalib','newname','','en','New Name','Corresponds to the new name of the targeted datalib(s)',NULL)");
+        b.append(",('testdatalib','newname','','fr','Nouveau Nom','Correspond au nouveau nom que vous souhaitez donner aux Datalibs',NULL)");
         b.append(",('testdatalibdata','column','','en','Column','<p>Column name representing the value that should be obtained after executing a SQL instruction (select).</p>','_data_library')");
         b.append(",('testdatalibdata','column','','fr','Colonne','<p>Nom de la colonne représentant la vakeur qui devrait être obtenu après l\\'execution du SQL</p>','_librairie_de_données')");
         b.append(",('testdatalibdata','columnPosition','','en','Column Position','<p>Column position [1,2,3…] representing the value that should be obtained after parsing a CSV file.</p>','_data_library')");

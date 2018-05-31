@@ -95,12 +95,9 @@ public class BulkRenameDataLib extends HttpServlet {
 				// Datalib answer management
 				String DataLibAnswer = ansList.get(0).getResultMessage().getDescription();
 				jsonResponse.put("DataLibAnswer", DataLibAnswer);
-				jsonResponse.put("DataLibNumberOfRowsUpdated", DataLibAnswer.substring(DataLibAnswer.length()-1));
 				// Testcase Country Properties answer management
 				String TestCaseCountryPropertiesAnswer = ansList.get(1).getResultMessage().getDescription();
-				jsonResponse.put("TestCasePropertiesAnswer", TestCaseCountryPropertiesAnswer);
-				jsonResponse.put("TestCaseCountryPropertiesNumberOfRowsUpdated", TestCaseCountryPropertiesAnswer.substring(TestCaseCountryPropertiesAnswer.length()-1));
-				
+				jsonResponse.put("TestCasePropertiesAnswer", TestCaseCountryPropertiesAnswer);			
 				}
 				response.getWriter().print(jsonResponse);
 				response.getWriter().flush();
