@@ -22,6 +22,7 @@ package org.cerberus.crud.service;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.fileupload.FileItem;
 import org.cerberus.crud.entity.AppService;
 import org.cerberus.crud.entity.AppServiceContent;
 import org.cerberus.exception.CerberusException;
@@ -148,5 +149,13 @@ public interface IAppServiceService {
      * @return
      */
     String convertContentListToQueryString(List<AppServiceContent> serviceContent);
+    
+    /**
+     * this method will store local file into application server
+     * @param service
+     * @param file
+     * @return
+     */
+    Answer uploadFile(String service, FileItem file);
 
 }
