@@ -2924,6 +2924,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
                     viewEntry.find("button").off("click").on("click", function () {
                         let firstRow = $('<p style="text-align:center" > Type : ' + data[$(e).val()].type + '</p>');
                         let secondRow = $('<p style="text-align:center"> Value : ' + data[$(e).val()].value + '</p>');
+                        $("#modalProperty").find("h5").text("test");
                         $("#modalProperty").find("#firstRowProperty").find("p").remove();
                         $("#modalProperty").find("#secondRowProperty").find("p").remove();
                         $("#modalProperty").find("#firstRowProperty").append(firstRow);

@@ -48,9 +48,11 @@ public interface IFtpService {
 	 * @param system
 	 * @param content
 	 * @param method
+	 * @param ftpPath
+	 * @param service
 	 * @return AppService
 	 */
-	public AnswerItem<AppService> callFTP(String chain, String system, String content, String method);
+	public AnswerItem<AppService> callFTP(String chain, String system, String content, String method, String ftpPath, String service);
 	
 	
 	/**
@@ -66,17 +68,17 @@ public interface IFtpService {
 	 * @param informations
 	 * @param ftp
 	 * @param myResponse
-	 * @param content
 	 * @return AppService
 	 */
-	public AnswerItem<AppService> postFTP(HashMap<String, String> informations, FTPClient ftp, AppService myResponse, String content) throws IOException;
+	public AnswerItem<AppService> postFTP(HashMap<String, String> informations, FTPClient ftp, AppService myResponse) throws IOException;
 
 	/**
 	 * this auxiliary method allow to set a PROXY to a FTPClient
 	 * @param ftpClient
 	 * @param system
+	 * @param appService
 	 */
-	public void setProxy(FTPClient ftpClient, String system);
+	public void setProxy(FTPClient ftpClient, String system, AppService myResponse);
 	
 
 }

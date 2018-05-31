@@ -24,6 +24,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.fileupload.FileItem;
 import org.cerberus.crud.entity.AppService;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
@@ -98,4 +99,6 @@ public interface IAppServiceDAO {
      * @param rs the {@link ResultSet}
      */
     AppService loadFromResultSet(ResultSet rs) throws SQLException;
+    
+    Answer uploadFile(String service, FileItem file);
 }

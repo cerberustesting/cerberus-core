@@ -95,7 +95,7 @@ public class ServiceService implements IServiceService {
             if (StringUtil.isNullOrEmpty(service)) {
                 LOG.debug("Creating AppService from parameters.");
                 appService = factoryAppService.create("null", AppService.TYPE_SOAP, "", "", "", request, "Automatically created Service from datalib.",
-                        servicePathParam, "", operation, null, null, null, null);
+                        servicePathParam, "", operation, null, null, null, null, null);
                 service = "null";
 
             } else {
@@ -383,12 +383,13 @@ public class ServiceService implements IServiceService {
                     	switch(appService.getMethod()) {
                     		case AppService.METHOD_HTTPGET:
                     		case AppService.METHOD_HTTPPOST:
-                    			result = ftpService.callFTP(decodedServicePath, system, appService.getServiceRequest() ,appService.getMethod());
+                    			result = ftpService.callFTP(decodedServicePath, system, appService.getServiceRequest(),
+                    					appService.getMethod(), appService.getFileName(), appService.getService());
                     			message = result.getResultMessage();
                                 break;
                     		default:
                                 message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
-                                message.setDescription(message.getDescription().replace("%DESCRIPTION%", "Method : '" + appService.getMethod() + "' for REST Service is not supported by the engine."));
+                                message.setDescription(message.getDescription().replace("%DESCRIPTION%", "Method : '" + appService.getMethod() + "' for FTP Service is not supported by the engine."));
                                 result.setResultMessage(message);
                     	}
                     	break;

@@ -51,6 +51,7 @@ public class AppService {
     private Timestamp DateCreated;
     private String UsrModif;
     private Timestamp DateModif;
+    private String fileName;
     /**
      * From here are data outside database model.
      */
@@ -313,6 +314,14 @@ public class AppService {
     public void setApplication(String application) {
         this.application = application;
     }
+    
+    public String getFileName() {
+    	return fileName;
+    }
+    
+    public void setFileName(String fileName) {
+    	this.fileName = fileName;
+    }
 
     public JSONObject toJSONOnExecution() {
         JSONObject jsonMain = new JSONObject();
@@ -365,6 +374,65 @@ public class AppService {
             jsonMyResponse.put("HTTP-Version", this.getResponseHTTPVersion());
             jsonMyResponse.put("HTTP-ResponseBody", this.getResponseHTTPBody());
             jsonMyResponse.put("HTTP-ResponseContentType", this.getResponseHTTPBodyContentType());
+            if (!(this.getResponseHeaderList().isEmpty())) {
+                JSONObject jsonHeaders = new JSONObject();
+                for (AppServiceHeader header : this.getResponseHeaderList()) {
+                    jsonHeaders.put(header.getKey(), header.getValue());
+                }
+                jsonMyResponse.put("Header", jsonHeaders);
+            }
+            jsonMain.put("Response", jsonMyResponse);
+
+        } catch (JSONException ex) {
+            Logger LOG = LogManager.getLogger(RecorderService.class);
+            LOG.warn(ex);
+        }
+        return jsonMain;
+    }
+    
+    public JSONObject toFTPJSONOnExecution() {
+        JSONObject jsonMain = new JSONObject();
+        JSONObject jsonMyRequest = new JSONObject();
+        JSONObject jsonMyResponse = new JSONObject();
+        try {
+            // Request Information.
+            if (!(this.getTimeoutms() == 0)) {
+                jsonMyRequest.put("FTP-TimeOutMs", this.getTimeoutms());
+            }
+            jsonMyRequest.put("CalledURL", this.getServicePath());
+            if (!StringUtil.isNullOrEmpty(this.getMethod())) {
+                jsonMyRequest.put("FTP-Method", this.getMethod());
+            }
+            jsonMyRequest.put("ServiceType", this.getType());
+            if (!(this.getContentList().isEmpty())) {
+                JSONObject jsonContent = new JSONObject();
+                for (AppServiceContent content : this.getContentList()) {
+                    jsonContent.put(content.getKey(), content.getValue());
+                }
+                jsonMyRequest.put("Content", jsonContent);
+            }
+
+            JSONObject jsonProxy = new JSONObject();
+            jsonProxy.put("FTP-Proxy", this.isProxy());
+            if (this.isProxy()) {
+                jsonProxy.put("FTP-ProxyHost", this.getProxyHost());
+                if (!(this.getProxyPort() == 0)) {
+                    jsonProxy.put("FTP-ProxyPort", this.getProxyPort());
+                }
+                jsonProxy.put("FTP-ProxyAuthentification", this.isProxyWithCredential());
+                if (this.isProxyWithCredential()) {
+                    jsonProxy.put("FTP-ProxyUser", this.getProxyUser());
+                }
+            }
+            jsonMyRequest.put("FTP-Proxy", jsonProxy);
+
+            jsonMain.put("Request", jsonMyRequest);
+
+            // Response Information.
+            jsonMyResponse.put("FTP-ReturnCode", this.getResponseHTTPCode());
+            jsonMyResponse.put("FTP-Version", this.getResponseHTTPVersion());
+            jsonMyResponse.put("FTP-ResponseBody", this.getResponseHTTPBody());
+            jsonMyResponse.put("FTP-ResponseContentType", this.getResponseHTTPBodyContentType());
             if (!(this.getResponseHeaderList().isEmpty())) {
                 JSONObject jsonHeaders = new JSONObject();
                 for (AppServiceHeader header : this.getResponseHeaderList()) {

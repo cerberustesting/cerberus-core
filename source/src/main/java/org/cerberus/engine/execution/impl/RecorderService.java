@@ -20,6 +20,7 @@
 package org.cerberus.engine.execution.impl;
 
 import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -29,6 +30,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -461,7 +464,11 @@ public class RecorderService implements IRecorderService {
 
             // Service Call META data information.
             Recorder recorderRequest = this.initFilenames(runId, test, testCase, step, index, sequence, controlString, property, propertyIndex, "call", "json", false);
-            recordFile(recorderRequest.getFullPath(), recorderRequest.getFileName(), se.toJSONOnExecution().toString());
+            if(se.getType().equals("FTP")) {
+            	recordFile(recorderRequest.getFullPath(), recorderRequest.getFileName(), se.toFTPJSONOnExecution().toString());
+            }else {
+            	recordFile(recorderRequest.getFullPath(), recorderRequest.getFileName(), se.toJSONOnExecution().toString());
+            }
             // Index file created to database.
             object = testCaseExecutionFileFactory.create(0, runId, recorderRequest.getLevel(), "Service Call", recorderRequest.getRelativeFilenameURL(), "JSON", "", null, "", null);
             testCaseExecutionFileService.save(object);
@@ -485,12 +492,10 @@ public class RecorderService implements IRecorderService {
                 testCaseExecutionFileService.save(object);
                 objectFileList.add(object);
             }
-
             // RESPONSE if exists.
             if (!(StringUtil.isNullOrEmpty(se.getResponseHTTPBody()))) {
                 String messageFormatExt = "txt";
                 String messageFormat = TestCaseExecutionFile.FILETYPE_TXT;
-
                 switch (se.getResponseHTTPBodyContentType()) {
                     case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON:
                         messageFormatExt = "json";
@@ -505,15 +510,13 @@ public class RecorderService implements IRecorderService {
                         messageFormat = TestCaseExecutionFile.FILETYPE_TXT;
                         break;
                 }
-
                 Recorder recorderResponse = this.initFilenames(runId, test, testCase, step, index, sequence, controlString, property, propertyIndex, "response", messageFormatExt, false);
                 recordFile(recorderResponse.getFullPath(), recorderResponse.getFileName(), se.getResponseHTTPBody());
                 // Index file created to database.
                 object = testCaseExecutionFileFactory.create(0, runId, recorderResponse.getLevel(), "Response", recorderResponse.getRelativeFilenameURL(), messageFormat, "", null, "", null);
                 testCaseExecutionFileService.save(object);
                 objectFileList.add(object);
-            }else {
-            	if(se.getFile() != null) {
+            }else if(se.getFile() != null){
                     Recorder recorderResponse = this.initFilenames(runId, test, testCase, step, index, sequence, controlString, property, propertyIndex, "response", se.getResponseHTTPBodyContentType().toLowerCase(), false);
             		File file = new File(recorderResponse.getFullPath());
             		OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(new File(file.getAbsolutePath() + File.separator + recorderResponse.getFileName())));
@@ -526,7 +529,6 @@ public class RecorderService implements IRecorderService {
                     object = testCaseExecutionFileFactory.create(0, runId, recorderResponse.getLevel(), "Response", recorderResponse.getRelativeFilenameURL(), se.getResponseHTTPBodyContentType(), "", null, "", null);
                     testCaseExecutionFileService.save(object);
                     objectFileList.add(object);
-            	}
             }
         } catch (Exception ex) {
             LOG.error(logPrefix + ex.toString());
@@ -712,9 +714,10 @@ public class RecorderService implements IRecorderService {
         if (!dir.exists()) {
             dir.mkdirs();
         }
-        try(FileOutputStream fileOutputStream = new FileOutputStream(dir.getAbsolutePath() + File.separator + fileName);) {
-            fileOutputStream.write(content.getBytes());
-            fileOutputStream.close();
+ 
+        try( BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(dir.getAbsolutePath() + File.separator + fileName), StandardCharsets.UTF_8));) {
+        	writer.write(content);
+        	writer.close();
             LOG.debug("File saved : " + path + File.separator + fileName);
         } catch (FileNotFoundException ex) {
             LOG.debug("Unable to save : " + path + File.separator + fileName + " ex: " + ex);

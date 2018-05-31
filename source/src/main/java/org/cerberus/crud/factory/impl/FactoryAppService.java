@@ -37,7 +37,7 @@ public class FactoryAppService implements IFactoryAppService {
 
     @Override
     public AppService create(String service, String type, String method, String application, String group, String serviceRequest, String description,
-            String servicePath, String attachementURL, String operation, String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif) {
+            String servicePath, String attachementURL, String operation, String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif, String fileName) {
         AppService s = new AppService();
         s.setService(service);
         s.setServiceRequest(serviceRequest);
@@ -53,6 +53,7 @@ public class FactoryAppService implements IFactoryAppService {
         s.setUsrModif(usrModif);
         s.setDateCreated(dateCreated);
         s.setDateModif(dateModif);
+        s.setFileName(fileName);
         List<AppServiceContent> objectContentList = new ArrayList<>();
         s.setContentList(objectContentList);
         List<AppServiceHeader> objectHeaderList = new ArrayList<>();

@@ -113,7 +113,7 @@ public class RestService implements IRestService {
                 public AppService handleResponse(final HttpResponse response)
                         throws ClientProtocolException, IOException {
                     AppService myResponse = factoryAppService.create("", AppService.TYPE_REST,
-                            AppService.METHOD_HTTPGET, "", "", "", "", "", "", "", "", null, "", null);
+                            AppService.METHOD_HTTPGET, "", "", "", "", "", "", "", "", null, "", null, null);
                     int responseCode = response.getStatusLine().getStatusCode();
                     myResponse.setResponseHTTPCode(responseCode);
                     myResponse.setResponseHTTPVersion(response.getProtocolVersion().toString());
@@ -145,7 +145,7 @@ public class RestService implements IRestService {
             String system) {
         AnswerItem result = new AnswerItem<>();
         AppService serviceREST = factoryAppService.create("", AppService.TYPE_REST, method, "", "", "", "", "", "", "",
-                "", null, "", null);
+                "", null, "", null, null);
         serviceREST.setProxy(false);
         serviceREST.setProxyHost(null);
         serviceREST.setProxyPort(0);

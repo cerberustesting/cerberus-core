@@ -30,6 +30,9 @@ import java.net.PasswordAuthentication;
 import java.net.Proxy;
 import java.net.SocketAddress;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -41,6 +44,7 @@ import org.apache.commons.net.ftp.FTPReply;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.AppService;
+import org.cerberus.crud.entity.Parameter;
 import org.cerberus.crud.factory.IFactoryAppService;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ITestCaseExecutionFileService;
@@ -113,11 +117,15 @@ public class FtpService implements IFtpService{
 	}
 	
 	@Override
-	public void setProxy(FTPClient client, String system) {
+	public void setProxy(FTPClient client, String system, AppService myResponse) {
 		String proxyHost = parameterService.getParameterStringByKey("cerberus_proxy_host", "",
                  DEFAULT_PROXY_HOST);
 		int proxyPort = parameterService.getParameterIntegerByKey("cerberus_proxy_port", "",
                 DEFAULT_PROXY_PORT);
+		
+		myResponse.setProxy(true);
+		myResponse.setProxyHost(proxyHost);
+		myResponse.setProxyPort(proxyPort);
 		
 		SocketAddress proxyAddr = new InetSocketAddress(proxyHost, proxyPort);
 		Proxy proxy = new Proxy(Proxy.Type.HTTP, proxyAddr);
@@ -127,7 +135,9 @@ public class FtpService implements IFtpService{
 				new Authenticator() {
 					public PasswordAuthentication getPasswordAuthentication() {
 						String proxyUser = parameterService.getParameterStringByKey("cerberus_proxyauthentification_user", "", DEFAULT_PROXYAUTHENT_USER);
-				        String proxyPassword = parameterService.getParameterStringByKey("cerberus_proxyauthentification_password", "", DEFAULT_PROXYAUTHENT_PASSWORD);
+				        String proxyPassword = parameterService.getParameterStringByKey("cerberus_proxyauthentification_password", "", DEFAULT_PROXYAUTHENT_PASSWORD);			        
+				        myResponse.setProxyWithCredential(true);
+				        myResponse.setProxyUser(proxyUser);				        
 						return new PasswordAuthentication(
 							proxyUser, proxyPassword.toCharArray()
 						);
@@ -138,7 +148,7 @@ public class FtpService implements IFtpService{
 		client.setProxy(proxy);
 	}
 	
-	public AnswerItem<AppService> callFTP(String chain, String system, String content, String method){
+	public AnswerItem<AppService> callFTP(String chain, String system, String content, String method, String filePath, String service){
 		MessageEvent message = null;
 		AnswerItem result = new AnswerItem<>();
 		HashMap<String, String> informations = this.fromFtpStringToHashMap(chain);
@@ -153,12 +163,12 @@ public class FtpService implements IFtpService{
 		}
 		
 		FTPClient ftp = new FTPClient();
-		AppService myResponse = factoryAppService.create("", AppService.TYPE_FTP,
-                AppService.METHOD_HTTPGET, "", "", informations.get("path"), "", "", "", "", "", null, "", null);
+		AppService myResponse = factoryAppService.create(service, AppService.TYPE_FTP,
+                method, "", "", content, "", informations.get("path"), "", "", "", null, "", null, filePath);
 		 
 		try{
 			if(proxyService.useProxy(StringUtil.getURLFromString(informations.get("host"),"","","ftp://"), system)) {
-				 this.setProxy(ftp,system);
+				this.setProxy(ftp,system, myResponse);
 			 }
 			ftp.connect(informations.get("host"),Integer.valueOf(informations.get("port")));
 			boolean logged = ftp.login(informations.get("pseudo"),informations.get("password"));						
@@ -180,9 +190,8 @@ public class FtpService implements IFtpService{
 			if(method.equals("GET")) {
 				result = this.getFTP(informations,ftp,myResponse);
 			}else {
-				result = this.postFTP(informations,ftp,myResponse,content);
-			}
-			
+				result = this.postFTP(informations,ftp,myResponse);
+			}		
 
 		}catch(Exception e) {
 			message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
@@ -257,12 +266,36 @@ public class FtpService implements IFtpService{
 	}
 	
 	@Override
-	public AnswerItem<AppService> postFTP(HashMap<String, String> informations, FTPClient ftp, AppService myResponse, String content)  throws IOException {
+	public AnswerItem<AppService> postFTP(HashMap<String, String> informations, FTPClient ftp, AppService myResponse)  throws IOException {
 		MessageEvent message = null;
 		AnswerItem result = new AnswerItem<>();
+		InputStream inputStream = null;
+		byte[] byteContent = null;
         LOG.info("Start retrieving ftp file");
-        InputStream inputStream = new ByteArrayInputStream(content.getBytes("UTF-8"));
-  		byte[] byteContent = IOUtils.toByteArray(inputStream);
+        if(!myResponse.getFileName().isEmpty()) {
+        	 MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                     "cerberus_ftpfile_path Parameter not found");
+             AnswerItem a = parameterService.readByKey("", "cerberus_ftpfile_path");
+             if (a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            	 Parameter p = (Parameter) a.getItem();
+                 String uploadPath = p.getValue();
+                 Path path = Paths.get(uploadPath + File.separator + myResponse.getService() + File.separator + myResponse.getFileName());            	 
+            	 byteContent = Files.readAllBytes(path);
+             }else {
+            	 result.setResultMessage(msg);
+            	 return result;
+             }  	
+        }else if(!myResponse.getServiceRequest().isEmpty()) {
+        	inputStream = new ByteArrayInputStream(myResponse.getServiceRequest().getBytes("UTF-8"));
+        	byteContent = IOUtils.toByteArray(inputStream);
+        	inputStream.close(); 
+        }else {
+        	MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                    "file path and service request are null ! you need to specify one of this field");
+        	result.setResultMessage(msg);
+       	 	return result;
+        }
+        	 		
     	boolean done = ftp.storeFile(informations.get("path"), new ByteArrayInputStream(byteContent));
         myResponse.setResponseHTTPCode(ftp.getReplyCode());
         if(done) {
@@ -286,8 +319,7 @@ public class FtpService implements IFtpService{
             message.setDescription(message.getDescription().replace("%DESCRIPTION%",
                     "Error when uploading the file. Something went wrong"));
             result.setResultMessage(message);
-        }
-        inputStream.close();     
+        }            
         return result;
 	}	
 }

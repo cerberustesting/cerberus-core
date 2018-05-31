@@ -1,3 +1,5 @@
+<!--addApplicationObject custom css-->
+<link rel="stylesheet" type="text/css" href="css/pages/AppService.css">
 <!--Edit soapLibrary page-->
 <div data-backdrop="static" class="modal fade center" id="editSoapLibraryModal" tabindex="-1" role="dialog"
      aria-labelledby="editSoapLibraryModalLabel" aria-hidden="true">
@@ -66,6 +68,17 @@
                                         <label for="servicepath" name="servicePathField">ServicePath</label>
                                         <input type="text" class="form-control" name="servicePath" id="servicePath"
                                                aria-describedby="basic-editon1">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-xs-12">
+										<label for="screenshotfilenameLabel" name="screenshotfilenameField">FTP File</label>	             
+	                                    <label  for="Filename" id="dropzone" class="upload-drop-zone" >
+		                                    <h3 id ="dropzoneText"> Drag and drop Files  <span class="glyphicon glyphicon-download-alt"></span></h3>
+		                                    <label for="Filename" class="btn btn-primary browseFile">Browse Files </label>
+                                		</label>
+                                		<input type="file" name="Filename" id="Filename" class="hidden"/> 
+										</form>
                                     </div>
                                 </div>
                                 <div class="row">

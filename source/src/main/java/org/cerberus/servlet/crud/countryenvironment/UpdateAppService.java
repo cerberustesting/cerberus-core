@@ -22,11 +22,21 @@ package org.cerberus.servlet.crud.countryenvironment;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileItemFactory;
+import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.AppService;
@@ -86,20 +96,49 @@ public class UpdateAppService extends HttpServlet {
 
         response.setContentType("text/html;charset=UTF-8");
         String charset = request.getCharacterEncoding();
+        
+        Map<String, String> fileData = new HashMap<String, String>();
+        FileItem file = null;
+
+        FileItemFactory factory = new DiskFileItemFactory();
+        ServletFileUpload upload = new ServletFileUpload(factory);
+        try {
+            List<FileItem> fields = upload.parseRequest(request);
+            Iterator<FileItem> it = fields.iterator();
+            if (!it.hasNext()) {
+                return;
+            }
+            while (it.hasNext()) {
+                FileItem fileItem = it.next();
+                boolean isFormField = fileItem.isFormField();
+                if (isFormField) {
+                    fileData.put(fileItem.getFieldName(), fileItem.getString("UTF-8"));
+                } else {
+                    file = fileItem;
+                }
+            }
+        } catch (FileUploadException e) {
+            e.printStackTrace();
+        }
+        
+        String fileName = null;
+        if(file != null) {
+        	fileName = file.getName();
+        }
 
         // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
         // Parameter that needs to be secured --> We SECURE+DECODE them
-        String service = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("service"), null, charset);
-        String application = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("application"), null, charset);
-        String type = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("type"), null, charset);
-        String method = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("method"), "", charset);
-        String operation = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("operation"), null, charset);
-        String attachementurl = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("attachementurl"), null, charset);
-        String group = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("group"), null, charset);
-        String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("description"), null, charset);
+        String service = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("service"), null, charset);
+        String application = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("application"), null, charset);
+        String type = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("type"), null, charset);
+        String method = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("method"), "", charset);
+        String operation = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("operation"), null, charset);
+        String attachementurl = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("attachementurl"), null, charset);
+        String group = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("group"), null, charset);
+        String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("description"), null, charset);
         // Parameter that we cannot secure as we need the html --> We DECODE them
-        String servicePath = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("servicePath"), null, charset);
-        String serviceRequest = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("serviceRequest"), null, charset);
+        String servicePath = ParameterParserUtil.parseStringParamAndDecode(fileData.get("servicePath"), null, charset);
+        String serviceRequest = ParameterParserUtil.parseStringParamAndDecode(fileData.get("serviceRequest"), null, charset);
 
         // Prepare the final answer.
         MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
@@ -136,7 +175,15 @@ public class UpdateAppService extends HttpServlet {
                  * The service was able to perform the query and confirm the
                  * object exist, then we can update it.
                  */
-                AppService appService = (AppService) resp.getItem();
+            	AppService appService = (AppService) resp.getItem();
+            	
+            	if(file != null) {
+            		ans = appServiceService.uploadFile(appService.getService(), file);
+            		if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                        appService.setFileName(file.getName());
+                    }
+                }                                    
+                
                 appService.setGroup(group);
                 appService.setAttachementURL(attachementurl);
                 appService.setDescription(description);
@@ -155,7 +202,7 @@ public class UpdateAppService extends HttpServlet {
                      * Update was successful. Adding Log entry.
                      */
                     logEventService = appContext.getBean(ILogEventService.class);
-                    logEventService.createForPrivateCalls("/UpdateAppService", "UPDATE", "Updated AppService : ['" + service + "']", request);
+                    logEventService.createForPrivateCalls("/UpdateAppService", "UPDATE", "Updated AppService : ['" + service + "']", request);                                       
                 }
 
                 // Update content

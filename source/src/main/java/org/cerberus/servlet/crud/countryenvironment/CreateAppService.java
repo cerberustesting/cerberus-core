@@ -22,16 +22,27 @@ package org.cerberus.servlet.crud.countryenvironment;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileItemFactory;
+import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.AppService;
 import org.cerberus.crud.entity.AppServiceContent;
 import org.cerberus.crud.entity.AppServiceHeader;
+import org.cerberus.crud.entity.ApplicationObject;
 import org.cerberus.crud.factory.IFactoryAppService;
 import org.cerberus.crud.factory.IFactoryAppServiceContent;
 import org.cerberus.crud.factory.IFactoryAppServiceHeader;
@@ -45,6 +56,7 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -87,20 +99,48 @@ public class CreateAppService extends HttpServlet {
 
         response.setContentType("text/html;charset=UTF-8");
         String charset = request.getCharacterEncoding();
+        
+        Map<String, String> fileData = new HashMap<String, String>();
+        FileItem file = null;
+
+        FileItemFactory factory = new DiskFileItemFactory();
+        ServletFileUpload upload = new ServletFileUpload(factory);
+        try {
+            List<FileItem> fields = upload.parseRequest(request);
+            Iterator<FileItem> it = fields.iterator();
+            if (!it.hasNext()) {
+                return;
+            }
+            while (it.hasNext()) {
+                FileItem fileItem = it.next();
+                boolean isFormField = fileItem.isFormField();
+                if (isFormField) {
+                    fileData.put(fileItem.getFieldName(), fileItem.getString("UTF-8"));
+                } else {
+                    file = fileItem;
+                }
+            }
+        } catch (FileUploadException e) {
+            e.printStackTrace();
+        }
 
         // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
         // Parameter that needs to be secured --> We SECURE+DECODE them
-        String service = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("service"), null, charset);
-        String group = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("group"), "", charset);
-        String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("description"), "", charset);
-        String attachementurl = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("attachementurl"), "", charset);
-        String operation = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("operation"), "", charset);
-        String application = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("application"), null, charset);
-        String type = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("type"), "", charset);
-        String method = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("method"), "", charset);
+        String service = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("service"), null, charset);
+        String group = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("group"), "", charset);
+        String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("description"), "", charset);
+        String attachementurl = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("attachementurl"), "", charset);
+        String operation = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("operation"), "", charset);
+        String application = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("application"), null, charset);
+        String type = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("type"), "", charset);
+        String method = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("method"), "", charset);
         // Parameter that we cannot secure as we need the html --> We DECODE them
-        String servicePath = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("servicePath"), "", charset);
-        String serviceRequest = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("serviceRequest"), null, charset);
+        String servicePath = ParameterParserUtil.parseStringParamAndDecode(fileData.get("servicePath"), "", charset);
+        String serviceRequest = ParameterParserUtil.parseStringParamAndDecode(fileData.get("serviceRequest"), null, charset);
+        String fileName = null;
+        if(file != null) {
+        	fileName = file.getName();
+        }
 
         // Prepare the final answer.
         MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
@@ -127,7 +167,7 @@ public class CreateAppService extends HttpServlet {
             appServiceContentFactory = appContext.getBean(IFactoryAppServiceContent.class);
             appServiceHeaderFactory = appContext.getBean(IFactoryAppServiceHeader.class);
 
-            AppService appService = appServiceFactory.create(service, type, method, application, group, serviceRequest, description, servicePath, attachementurl, operation, request.getRemoteUser(), null, null, null);
+            AppService appService = appServiceFactory.create(service, type, method, application, group, serviceRequest, description, servicePath, attachementurl, operation, request.getRemoteUser(), null, null, null, fileName);
             ans = appServiceService.create(appService);
             finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
 
@@ -137,8 +177,14 @@ public class CreateAppService extends HttpServlet {
                  */
                 logEventService = appContext.getBean(ILogEventService.class);
                 logEventService.createForPrivateCalls("/CreateAppService", "CREATE", "Create AppService : " + service, request);
+                              
+                if(file != null) {
+                	AppService an = appServiceService.findAppServiceByKey(service);
+                    if (an != null) {
+                        appServiceService.uploadFile(an.getService(), file);
+                    }
+                }               
             }
-
             // Update content
             if (request.getParameter("contentList") != null) {
                 JSONArray objContentArray = new JSONArray(request.getParameter("contentList"));
@@ -149,7 +195,6 @@ public class CreateAppService extends HttpServlet {
                 ans = appServiceContentService.compareListAndUpdateInsertDeleteElements(service, contentList);
                 finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
             }
-
             // Update header
             if (request.getParameter("headerList") != null) {
                 JSONArray objHeaderArray = new JSONArray(request.getParameter("headerList"));
@@ -159,8 +204,7 @@ public class CreateAppService extends HttpServlet {
                 // Update the Database with the new list.
                 ans = appServiceHeaderService.compareListAndUpdateInsertDeleteElements(service, headerList);
                 finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
-            }
-
+            }         
         }
 
         /**

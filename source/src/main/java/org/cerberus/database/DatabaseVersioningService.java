@@ -7725,6 +7725,19 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append(" ADD COLUMN `UsrCreated` VARCHAR(45) NOT NULL DEFAULT '' AFTER `Active`,");
         b.append(" ADD COLUMN `UsrModif` VARCHAR(45) NOT NULL DEFAULT '' AFTER `DateCreated`;");
         a.add(b.toString());
+        
+        // Add column file path
+        // 1344
+        b = new StringBuilder();
+        b.append("ALTER TABLE `appservice` ADD COLUMN FileName VARCHAR(100) AFTER `ServicePath` DEFAULT NULL");
+        a.add(b.toString());
+        
+        // Add ftp file path parameter
+        // 1345
+        b = new StringBuilder();
+        b.append("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ");
+        b.append("('', 'cerberus_ftpfile_path', '', 'Path to store local files which will be stored into ftpServer');");
+        a.add(b.toString());
 
         return a;
     }
