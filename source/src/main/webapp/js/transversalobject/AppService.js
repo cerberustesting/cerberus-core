@@ -355,7 +355,7 @@ function feedAppServiceModal(serviceName, modalId, mode) {
 	}else{
 		var serviceObj1 = {};
 		var hasPermissions = true;
-		serviceObj1.service = " ";
+		serviceObj1.service = "";
 		serviceObj1.application = "";
 		serviceObj1.type = "REST";
 		serviceObj1.method = "GET";

@@ -16,8 +16,8 @@
 * Added 'Post Testing' Support. All active testcase that are created inside 'Post Testing' Test will be automatically added at the end of any testcase that belong to the same application.
 * 'Pre Testing' and 'Post Testing' tescase are now also filtered depending on From/To Sprint/Rev Activation Criterias.
 * Service now support FTP GET in order to retreive xml, json or any files on FTP.
+* Service now support FTP POST In order to send xml, json or any files on FTP.
 * NE status that was used for manual execution not yet executed has been renamed to WE (Waiting Execution). NE status is now used for execution that are desactivated by condition. Step, Actions and Controls now also appear as NE in grey color that better correspond to a non executed status. #1712
-* You can now send a file to FTP Server using POST method and srvRequest ace editor. #1562 
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
