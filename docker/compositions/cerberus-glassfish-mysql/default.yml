@@ -58,8 +58,6 @@ services:
       - "18080:8080"
       - "14848:4848"
     volumes:
-      - ./localdata/glassfish/cerberus:/usr/local/glassfish4/glassfish/domains/cerberus
-      - ./localdata/glassfish/lib:/usr/local/glassfish4/glassfish/lib
       - /etc/localtime:/etc/localtime:ro
     restart: always
     depends_on:
