@@ -54,9 +54,8 @@ filenameAdoc="source/src/main/resources/documentation/include/en/changelog_"$nex
 cp source/src/main/resources/documentation/include/en/changelog_template_en.adoc $filenameAdoc
 
 # Modify Homepage.jsp to display new changelog
-changelog="ChangeLog"${nextRelease/./}
-echo $changelog
-awk -v changelog="$changelog" '{gsub(/ChangeLog[1-9]+/,changelog,$0); print }' source/src/main/webapp/Homepage.jsp > source/src/main/webapp/Homepage.jsp.back && mv source/src/main/webapp/Homepage.jsp.back source/src/main/webapp/Homepage.jsp
+changelog="Changelog"${nextRelease/./}
+awk -v changelog="$changelog" '{gsub(/Changelog[1-9]+/,changelog,$0); print }' source/src/main/webapp/Homepage.jsp > source/src/main/webapp/Homepage.jsp.back && mv source/src/main/webapp/Homepage.jsp.back source/src/main/webapp/Homepage.jsp
 
 # Modify Homepage.js to display new changelog
 filenameHtml="changelog_"$nextRelease"_en.html"
@@ -64,6 +63,6 @@ awk -v filenameHtml="$filenameHtml" '{gsub(/changelog_.+.html/,filenameHtml,$0);
 changelogTitle="Changelog "$nextRelease
 awk -v changelogTitle="$changelogTitle" '{gsub(/Changelog.+[1-9]/,changelogTitle,$0); print }' source/src/main/webapp/js/pages/Homepage.js > source/src/main/webapp/js/pages/Homepage.js.back && mv source/src/main/webapp/js/pages/Homepage.js.back source/src/main/webapp/js/pages/Homepage.js
 
-git add source/src/main/webapp/Homepage.jsp source\src\main\webapp\js\pages\Homepage.js
+git add source/src/main/webapp/Homepage.jsp source/src/main/webapp/js/pages/Homepage.js "source/src/main/resources/documentation/include/en/changelog_"$nextRelease"_en.adoc"
 git commit -m 'create a new changelog file for the next version'
 git push origin master
