@@ -71,12 +71,12 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  * @version 1.0, 25/01/2013
  * @since 0.9.0
  */
-@WebServlet(name = "RunTestCase", urlPatterns = {"/RunTestCase"})
-public class RunTestCase extends HttpServlet {
+@WebServlet(name = "RunTestCaseV001", urlPatterns = {"/RunTestCaseV001"})
+public class RunTestCaseV001 extends HttpServlet {
 
-    private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(RunTestCase.class);
+    private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(RunTestCaseV001.class);
 
-    public static final String SERVLET_URL = "/RunTestCase";
+    public static final String SERVLET_URL = "/RunTestCaseV001";
 
     public static final String PARAMETER_TEST = "Test";
     public static final String PARAMETER_TEST_CASE = "TestCase";
@@ -122,7 +122,7 @@ public class RunTestCase extends HttpServlet {
          * Adding Log entry.
          */
         ILogEventService logEventService = appContext.getBean(ILogEventService.class);
-        logEventService.createForPublicCalls("/RunTestCase", "CALL", "RunTestCase called : " + request.getRequestURL(), request);
+        logEventService.createForPublicCalls("/RunTestCaseV001", "CALL", "RunTestCaseV001 called : " + request.getRequestURL(), request);
 
         //Tool
         String ss_ip = ""; // Selenium IP
@@ -431,12 +431,12 @@ public class RunTestCase extends HttpServlet {
                 case "verbose-txt":
                     response.setContentType("text/plain");
                     String separator = " = ";
-                    out.println("RunID" + separator + runID);
-                    out.println("QueueID" + separator + idFromQueue);
-                    out.println("Test" + separator + test);
-                    out.println("TestCase" + separator + testCase);
-                    out.println("Country" + separator + country);
-                    out.println("Environment" + separator + environment);
+                    out.println("id" + separator + runID);
+                    out.println("queueID" + separator + idFromQueue);
+                    out.println("test" + separator + test);
+                    out.println("testcase" + separator + testCase);
+                    out.println("country" + separator + country);
+                    out.println("environment" + separator + environment);
                     out.println("Time Start" + separator + new Timestamp(tCExecution.getStart()));
                     out.println("Time End" + separator + new Timestamp(tCExecution.getEnd()));
                     out.println("OutputFormat" + separator + outputFormat);
@@ -460,7 +460,7 @@ public class RunTestCase extends HttpServlet {
                     out.println("MyLoginRelativeURL" + separator + tCExecution.getMyLoginRelativeURL());
                     out.println("myEnvironmentData" + separator + tCExecution.getEnvironmentData());
                     out.println("ReturnCode" + separator + tCExecution.getResultMessage().getCode());
-                    out.println("ReturnCodeDescription" + separator + tCExecution.getResultMessage().getDescription());
+                    out.println("controlMessage" + separator + tCExecution.getResultMessage().getDescription());
                     out.println("ControlStatus" + separator + tCExecution.getResultMessage().getCodeString());
                     break;
                 case "verbose-json":
@@ -473,13 +473,6 @@ public class RunTestCase extends HttpServlet {
                             TestCaseExecution t = (TestCaseExecution) tces.readByKeyWithDependency(tCExecution.getId()).getItem();
                             out.print(tCExecution.toJson(true).toString());
                         } else { // Execution was not even created.
-                            jsonResponse.put("RunID", 0);
-                            jsonResponse.put("id", 0);
-                            jsonResponse.put("QueueID", idFromQueue);
-                            jsonResponse.put("Test", test);
-                            jsonResponse.put("TestCase", testCase);
-                            jsonResponse.put("Country", country);
-                            jsonResponse.put("Environment", environment);
                             jsonResponse.put("Time Start", new Timestamp(tCExecution.getStart()));
                             jsonResponse.put("Time End", new Timestamp(tCExecution.getEnd()));
                             jsonResponse.put("OutputFormat", outputFormat);
@@ -503,9 +496,18 @@ public class RunTestCase extends HttpServlet {
                             jsonResponse.put("MyLoginRelativeURL", myLoginRelativeURL);
                             jsonResponse.put("myEnvironmentData", myEnvData);
                             jsonResponse.put("ReturnCode", tCExecution.getResultMessage().getCode());
-                            jsonResponse.put("ReturnCodeDescription", tCExecution.getResultMessage().getDescription());
-                            jsonResponse.put("ControlStatus", tCExecution.getResultMessage().getCodeString());
                             jsonResponse.put("helpMessage", helpMessage);
+
+                            // Correct format. Previous entries will have to be removed in an earlier version.
+                            jsonResponse.put("id", 0);
+                            jsonResponse.put("queueID", idFromQueue);
+                            jsonResponse.put("test", test);
+                            jsonResponse.put("testcase", testCase);
+                            jsonResponse.put("country", country);
+                            jsonResponse.put("environment", environment);
+                            jsonResponse.put("controlStatus", tCExecution.getResultMessage().getCodeString());
+                            jsonResponse.put("controlMessage", tCExecution.getResultMessage().getDescription());
+
                         }
 
                         response.setContentType("application/json");
@@ -540,12 +542,12 @@ public class RunTestCase extends HttpServlet {
                 case "verbose-txt":
                     response.setContentType("text/plain");
                     String separator = " = ";
-                    out.println("RunID" + separator + 0);
-                    out.println("QueueID" + separator + idFromQueue);
-                    out.println("Test" + separator + test);
-                    out.println("TestCase" + separator + testCase);
-                    out.println("Country" + separator + country);
-                    out.println("Environment" + separator + environment);
+                    out.println("id" + separator + 0);
+                    out.println("queueID" + separator + idFromQueue);
+                    out.println("test" + separator + test);
+                    out.println("testcase" + separator + testCase);
+                    out.println("country" + separator + country);
+                    out.println("environment" + separator + environment);
                     out.println("OutputFormat" + separator + outputFormat);
                     out.println("Verbose" + separator + verbose);
                     out.println("Screenshot" + separator + screenshot);
@@ -567,19 +569,13 @@ public class RunTestCase extends HttpServlet {
                     out.println("MyLoginRelativeURL" + separator + myLoginRelativeURL);
                     out.println("myEnvironmentData" + separator + myEnvData);
                     out.println("ReturnCode" + separator + MessageGeneralEnum.EXECUTION_FA_SERVLETVALIDATONS.getCode());
-                    out.println("ReturnCodeDescription" + separator + MessageGeneralEnum.EXECUTION_FA_SERVLETVALIDATONS.getDescription() + " " + errorMessage);
-                    out.println("ControlStatus" + separator + MessageGeneralEnum.EXECUTION_FA_SERVLETVALIDATONS.getCodeString());
+                    out.println("controlMessage" + separator + MessageGeneralEnum.EXECUTION_FA_SERVLETVALIDATONS.getDescription() + " " + errorMessage);
+                    out.println("controlStatus" + separator + MessageGeneralEnum.EXECUTION_FA_SERVLETVALIDATONS.getCodeString());
                     break;
                 case "json":
                 case "verbose-json":
                     try {
                         JSONObject jsonResponse = new JSONObject();
-                        jsonResponse.put("RunID", 0);
-                        jsonResponse.put("QueueID", idFromQueue);
-                        jsonResponse.put("Test", test);
-                        jsonResponse.put("TestCase", testCase);
-                        jsonResponse.put("Country", country);
-                        jsonResponse.put("Environment", environment);
                         jsonResponse.put("OutputFormat", outputFormat);
                         jsonResponse.put("Verbose", verbose);
                         jsonResponse.put("Screenshot", screenshot);
@@ -601,9 +597,17 @@ public class RunTestCase extends HttpServlet {
                         jsonResponse.put("MyLoginRelativeURL", myLoginRelativeURL);
                         jsonResponse.put("myEnvironmentData", myEnvData);
                         jsonResponse.put("ReturnCode", MessageGeneralEnum.EXECUTION_FA_SERVLETVALIDATONS.getCode());
-                        jsonResponse.put("ReturnCodeDescription", MessageGeneralEnum.EXECUTION_FA_SERVLETVALIDATONS.getDescription() + " " + errorMessage);
-                        jsonResponse.put("ControlStatus", MessageGeneralEnum.EXECUTION_FA_SERVLETVALIDATONS.getCodeString());
                         jsonResponse.put("helpMessage", helpMessage);
+
+                        // Correct format. Previous entries will have to be removed in an earlier version.
+                        jsonResponse.put("id", 0);
+                        jsonResponse.put("queueID", idFromQueue);
+                        jsonResponse.put("test", test);
+                        jsonResponse.put("testcase", testCase);
+                        jsonResponse.put("country", country);
+                        jsonResponse.put("environment", environment);
+                        jsonResponse.put("controlStatus", MessageGeneralEnum.EXECUTION_FA_SERVLETVALIDATONS.getCodeString());
+                        jsonResponse.put("controlMessage", MessageGeneralEnum.EXECUTION_FA_SERVLETVALIDATONS.getDescription() + " " + errorMessage);
 
                         response.setContentType("application/json");
                         response.setCharacterEncoding("utf8");

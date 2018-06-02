@@ -45,6 +45,10 @@
         <servlet-class>org.cerberus.servlet.zzpublic.RunTestCase</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>RunTestCaseV001</servlet-name>
+        <servlet-class>org.cerberus.servlet.zzpublic.RunTestCaseV001</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>GetTestCaseList</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.test.GetTestCaseList</servlet-class>
     </servlet>
@@ -559,12 +563,16 @@
         <servlet-class>org.cerberus.servlet.crud.test.ImportTestCaseFromJson</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>UpdateTestCaseWithDependencies1</servlet-name>
+        <servlet-name>UpdateTestCaseWithDependencies</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.test.UpdateTestCaseWithDependencies</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>UpdateTestCaseProperties1</servlet-name>
+        <servlet-name>UpdateTestCaseProperties</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.test.UpdateTestCaseProperties</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>BulkRenameDataLib</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.testdata.BulkRenameDataLib</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DeleteTestCaseFromTestPage</servlet-name>
@@ -812,6 +820,10 @@
     <servlet-mapping>
         <servlet-name>RunTestCase</servlet-name>
         <url-pattern>/RunTestCase</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>RunTestCaseV001</servlet-name>
+        <url-pattern>/RunTestCaseV001</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>DocumentationField</servlet-name>
@@ -1346,12 +1358,16 @@
         <url-pattern>/ImportTestCaseFromJson</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>UpdateTestCaseWithDependencies1</servlet-name>
-        <url-pattern>/UpdateTestCaseWithDependencies1</url-pattern>
+        <servlet-name>UpdateTestCaseWithDependencies</servlet-name>
+        <url-pattern>/UpdateTestCaseWithDependencies</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>UpdateTestCaseProperties1</servlet-name>
-        <url-pattern>/UpdateTestCaseProperties1</url-pattern>
+        <servlet-name>UpdateTestCaseProperties</servlet-name>
+        <url-pattern>/UpdateTestCaseProperties</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>BulkRenameDataLib</servlet-name>
+        <url-pattern>/BulkRenameDataLib</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>DeleteTestCaseFromTestPage</servlet-name>
@@ -1713,8 +1729,7 @@
             <url-pattern>/PictureConnector</url-pattern>
             <url-pattern>/UseTestCaseStep</url-pattern>
             <url-pattern>/UpdateTestCaseWithDependencies</url-pattern>
-            <url-pattern>/UpdateTestCaseWithDependencies1</url-pattern>
-            <url-pattern>/UpdateTestCaseProperties1</url-pattern>
+            <url-pattern>/UpdateTestCaseProperties</url-pattern>
             <url-pattern>/Thumbnailer</url-pattern>
             <url-pattern>/UpdateTestCaseField</url-pattern>
             <url-pattern>/ReadLabel</url-pattern>
@@ -1810,6 +1825,7 @@
             <url-pattern>/DeleteTestDataLib</url-pattern>
             <url-pattern>/UpdateTestDataLibData</url-pattern>
             <url-pattern>/UpdateTestDataLib</url-pattern>
+            <url-pattern>/BulkRenameDataLib</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>TestDataManager</description>
@@ -1987,8 +2003,7 @@
             <web-resource-name>servlet</web-resource-name>
             <description>servlet</description>
             <url-pattern>/RunTestCase</url-pattern>
-            <url-pattern>/RunTestCaseManually</url-pattern>
-            <url-pattern>/SaveStatistic</url-pattern>
+            <url-pattern>/RunTestCaseV001</url-pattern>
             <url-pattern>/GetNumberOfExecutions</url-pattern>
             <url-pattern>/ResultCI</url-pattern>
             <url-pattern>/ResultCIV001</url-pattern>
