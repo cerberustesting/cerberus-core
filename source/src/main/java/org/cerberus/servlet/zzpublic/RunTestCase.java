@@ -476,6 +476,7 @@ public class RunTestCase extends HttpServlet {
                             out.print(tCExecution.toJson(true).toString());
                         } else { // Execution was not even created.
                             jsonResponse.put("RunID", 0);
+                            jsonResponse.put("id", 0);
                             jsonResponse.put("QueueID", idFromQueue);
                             jsonResponse.put("Test", test);
                             jsonResponse.put("TestCase", testCase);
@@ -507,6 +508,17 @@ public class RunTestCase extends HttpServlet {
                             jsonResponse.put("ReturnCodeDescription", tCExecution.getResultMessage().getDescription());
                             jsonResponse.put("ControlStatus", tCExecution.getResultMessage().getCodeString());
                             jsonResponse.put("helpMessage", helpMessage);
+
+                            // Correct format. Previous entries will have to be removed in an earlier version.
+                            jsonResponse.put("id", 0);
+                            jsonResponse.put("queueID", idFromQueue);
+                            jsonResponse.put("test", test);
+                            jsonResponse.put("testcase", testCase);
+                            jsonResponse.put("country", country);
+                            jsonResponse.put("environment", environment);
+                            jsonResponse.put("controlStatus", tCExecution.getResultMessage().getCodeString());
+                            jsonResponse.put("controlMessage", tCExecution.getResultMessage().getDescription());
+
                         }
 
                         response.setContentType("application/json");
@@ -535,6 +547,7 @@ public class RunTestCase extends HttpServlet {
             }
 
         } else {
+            // An error occured when parsing the parameters.
 
             switch (outputFormat) {
                 case "verbose-txt":
@@ -604,6 +617,16 @@ public class RunTestCase extends HttpServlet {
                         jsonResponse.put("ReturnCodeDescription", MessageGeneralEnum.EXECUTION_FA_SERVLETVALIDATONS.getDescription() + " " + errorMessage);
                         jsonResponse.put("ControlStatus", MessageGeneralEnum.EXECUTION_FA_SERVLETVALIDATONS.getCodeString());
                         jsonResponse.put("helpMessage", helpMessage);
+
+                        // Correct format. Previous entries will have to be removed in an earlier version.
+                        jsonResponse.put("id", 0);
+                        jsonResponse.put("queueID", idFromQueue);
+                        jsonResponse.put("test", test);
+                        jsonResponse.put("testcase", testCase);
+                        jsonResponse.put("country", country);
+                        jsonResponse.put("environment", environment);
+                        jsonResponse.put("controlStatus", MessageGeneralEnum.EXECUTION_FA_SERVLETVALIDATONS.getCodeString());
+                        jsonResponse.put("controlMessage", MessageGeneralEnum.EXECUTION_FA_SERVLETVALIDATONS.getDescription() + " " + errorMessage);
 
                         response.setContentType("application/json");
                         response.setCharacterEncoding("utf8");
