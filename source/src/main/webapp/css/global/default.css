@@ -21,6 +21,10 @@
     Author     : FNogueira
 */
 
+.tooltip {
+    position: fixed;
+}
+
 .separator {
     border-top: 1px solid #E3E3E3;
     margin-top:20px;  

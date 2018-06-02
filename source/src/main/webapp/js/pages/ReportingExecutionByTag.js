@@ -1048,9 +1048,9 @@ function createShortDescRow(row, data, index) {
 
 function generateTooltip(data) {
     var htmlRes;
-    var ctrlmessage = data.controlMessage;
+    var ctrlmessage = data.ControlMessage;
     if (ctrlmessage !== undefined && ctrlmessage.length > 200) {
-        ctrlmessage = data.controlMessage.substring(0, 200) + '...';
+        ctrlmessage = data.ControlMessage.substring(0, 200) + '...';
     }
     if (!isEmpty(data.NbExecutions) && (data.NbExecutions >= 2)) {
         htmlRes = '<div><span class=\'bold\'>Execution ID :</span> ' + data.ID + ' - (' + data.NbExecutions + ' Exe(s))</div>';
@@ -1229,7 +1229,7 @@ function aoColumnsFunc(Columns) {
                 }
             },
             "sClass": "center",
-            "mRender": function (data) {
+            "mRender": function (data, type, row, meta) {
                 if (data !== "") {
                     // Getting selected Tag;
                     var executionLink = generateExecutionLink(data.ControlStatus, data.ID, tag);
