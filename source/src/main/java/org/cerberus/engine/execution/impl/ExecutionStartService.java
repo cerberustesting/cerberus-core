@@ -186,13 +186,13 @@ public class ExecutionStartService implements IExecutionStartService {
             tCExecution.setApplication(tCExecution.getTestCaseObj().getApplication());
             tCExecution.setApplicationObj(applicationService.convert(this.applicationService.readByKey(tCExecution.getTestCaseObj().getApplication())));
             tCExecution.getTestCaseExecutionQueue().setSystem(tCExecution.getApplicationObj().getSystem());
+            LOG.debug("Application Information Loaded - " + tCExecution.getApplicationObj().getApplication() + " - " + tCExecution.getApplicationObj().getDescription());
         } catch (CerberusException ex) {
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_APPLICATION_NOT_FOUND);
             mes.setDescription(mes.getDescription().replace("%APPLI%", tCExecution.getTestCaseObj().getApplication()));
             LOG.debug(mes.getDescription());
             throw new CerberusException(mes);
         }
-        LOG.debug("Application Information Loaded - " + tCExecution.getApplicationObj().getApplication() + " - " + tCExecution.getApplicationObj().getDescription());
 
         /**
          * Init System from Application.
@@ -205,13 +205,20 @@ public class ExecutionStartService implements IExecutionStartService {
         LOG.debug("Loading Country Information");
         try {
             tCExecution.setCountryObj(invariantService.convert(invariantService.readByKey("COUNTRY", tCExecution.getCountry())));
+            if (tCExecution.getCountryObj() != null) {
+                LOG.debug("Country Information Loaded - " + tCExecution.getCountryObj().getValue() + " - " + tCExecution.getCountryObj().getDescription());
+            } else {
+                MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_COUNTRY_NOT_FOUND);
+                mes.setDescription(mes.getDescription().replace("%COUNTRY%", tCExecution.getCountry()));
+                LOG.debug(mes.getDescription());
+                throw new CerberusException(mes);
+            }
         } catch (CerberusException ex) {
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_COUNTRY_NOT_FOUND);
             mes.setDescription(mes.getDescription().replace("%COUNTRY%", tCExecution.getCountry()));
             LOG.debug(mes.getDescription());
             throw new CerberusException(mes);
         }
-        LOG.debug("Country Information Loaded - " + tCExecution.getCountryObj().getValue() + " - " + tCExecution.getCountryObj().getDescription());
 
         /**
          * Checking if execution is manual or automaticaly configured. If
