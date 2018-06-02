@@ -376,6 +376,7 @@ public class RunTestCaseV001 extends HttpServlet {
             long runID = tCExecution.getId();
 
             switch (outputFormat) {
+
                 case "gui":
                     if (runID > 0) { // Execution has been created.
                         response.sendRedirect("TestCaseExecution.jsp?executionId=" + runID);
@@ -428,6 +429,7 @@ public class RunTestCaseV001 extends HttpServlet {
                         out.println("</html>");
                     }
                     break;
+
                 case "verbose-txt":
                     response.setContentType("text/plain");
                     String separator = " = ";
@@ -461,11 +463,11 @@ public class RunTestCaseV001 extends HttpServlet {
                     out.println("myEnvironmentData" + separator + tCExecution.getEnvironmentData());
                     out.println("ReturnCode" + separator + tCExecution.getResultMessage().getCode());
                     out.println("controlMessage" + separator + tCExecution.getResultMessage().getDescription());
-                    out.println("ControlStatus" + separator + tCExecution.getResultMessage().getCodeString());
+                    out.println("controlStatus" + separator + tCExecution.getResultMessage().getCodeString());
                     break;
+
                 case "verbose-json":
                 case "json":
-
                     try {
                         JSONObject jsonResponse = new JSONObject();
 
@@ -520,8 +522,8 @@ public class RunTestCaseV001 extends HttpServlet {
                         response.setCharacterEncoding("utf8");
                         response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
                     }
-
                     break;
+
                 default:
                     response.setContentType("text/plain");
                     DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_DISPLAY);
@@ -539,6 +541,7 @@ public class RunTestCaseV001 extends HttpServlet {
             // An error occured when parsing the parameters.
 
             switch (outputFormat) {
+
                 case "verbose-txt":
                     response.setContentType("text/plain");
                     String separator = " = ";
@@ -572,6 +575,7 @@ public class RunTestCaseV001 extends HttpServlet {
                     out.println("controlMessage" + separator + MessageGeneralEnum.EXECUTION_FA_SERVLETVALIDATONS.getDescription() + " " + errorMessage);
                     out.println("controlStatus" + separator + MessageGeneralEnum.EXECUTION_FA_SERVLETVALIDATONS.getCodeString());
                     break;
+
                 case "json":
                 case "verbose-json":
                     try {
@@ -620,6 +624,7 @@ public class RunTestCaseV001 extends HttpServlet {
                         response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
                     }
                     break;
+
                 default:
                     // In case of errors, we display the help message.
                     response.setContentType("text/plain");
