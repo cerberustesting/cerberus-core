@@ -1379,7 +1379,8 @@ function initStep() {
         "loop": "onceIfConditionTrue",
         "conditionOper": "always",
         "conditionVal1": "",
-        "conditionVal2": ""
+        "conditionVal2": "",
+        "forceExe": "N"
     };
 }
 
@@ -1786,6 +1787,7 @@ function Step(json, stepList, canUpdate, hasPermissionsStepLibrary) {
     this.conditionVal1 = json.conditionVal1;
     this.conditionVal2 = json.conditionVal2;
     this.inLibrary = json.inLibrary;
+    this.forceExe = json.forceExe;
     this.isStepInUseByOtherTestCase = json.isStepInUseByOtherTestCase;
     this.actionList = [];
     if (canUpdate) {
@@ -1917,6 +1919,11 @@ Step.prototype.show = function () {
         object.loop = $(this).val();
     });
 
+    $("#stepForceExe").replaceWith(getSelectInvariant("STEPFORCEEXE", true, true).css("width", "100%").addClass("form-control input-sm").attr("id", "stepForceExe"));
+    $("#stepForceExe").unbind("change").change(function () {
+        setModif(true);
+        object.forceExe = $(this).val();
+    });
 
     $("#stepConditionVal1").unbind("change").change(function () {
         setModif(true);
@@ -1967,6 +1974,7 @@ Step.prototype.show = function () {
     $("#stepConditionVal1").val(object.conditionVal1);
     $("#stepConditionVal2").val(object.conditionVal2);
     $("#stepDescription").val(object.description);
+    $("#stepForceExe").val(object.forceExe);
     $("#stepId").text(object.sort);
     $("#stepInfo").show();
     $("#addActionContainer").show();
@@ -2080,6 +2088,7 @@ Step.prototype.getJsonData = function () {
     json.conditionOper = this.conditionOper;
     json.conditionVal1 = this.conditionVal1;
     json.conditionVal2 = this.conditionVal2;
+    json.forceExe = this.forceExe;
 
     return json;
 };
@@ -2250,34 +2259,55 @@ Action.prototype.generateContent = function () {
     var secondRow = $("<div></div>").addClass("fieldRow row secondRow input-group").css("width", "100%");
     var thirdRow = $("<div></div>").addClass("fieldRow row thirdRow").hide();
 
-    var actionList = $("<select></select>").addClass("form-control input-sm");
     var descContainer = $("<div class='input-group'></div>");
-    var descField = $("<input class='description form-control' placeholder='" + doc.getDocLabel("page_testcasescript", "describe_action") + "'>");
+    var descriptionField = $("<input class='description form-control' placeholder='" + doc.getDocLabel("page_testcasescript", "describe_action") + "'>");
     descContainer.append($("<span class='input-group-addon' style='font-weight: 700;' id='labelDiv'></span>"));
-    descContainer.append(descField);
-    var objectField = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control input-sm");
+    descContainer.append(descriptionField);
 
-    var propertyField = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control input-sm");
+    var actionList = $("<select></select>").addClass("form-control input-sm");
 
+    var value1Field = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control input-sm");
+    var value2Field = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control input-sm");
+
+    var actionconditionoper = $("<select></select>").addClass("form-control input-sm");
     var actionconditionval1 = $("<input>").attr("type", "text").addClass("form-control input-sm");
     var actionconditionval2 = $("<input>").attr("type", "text").addClass("form-control input-sm");
-    var actionconditionoper = $("<select></select>").addClass("form-control input-sm");
+
     var forceExeStatusList = $("<select></select>").addClass("form-control input-sm");
 
-    descField.val(this.description);
-    descField.css("width", "100%");
-    descField.on("change", function () {
-        obj.description = descField.val();
+    descriptionField.val(this.description);
+    descriptionField.css("width", "100%");
+    descriptionField.on("change", function () {
+        setModif(true);
+        obj.description = descriptionField.val();
     });
+
+    actionconditionoper = getSelectInvariant("ACTIONCONDITIONOPER", false, true).css("width", "100%");
+    actionconditionoper.on("change", function () {
+        if (obj.conditionOper !== actionconditionoper.val()) {
+            setModif(true);
+        }
+        obj.conditionOper = actionconditionoper.val();
+        if ((obj.conditionOper === "always") || (obj.conditionOper === "never")) {
+            actionconditionval1.parent().hide();
+            actionconditionval2.parent().hide();
+        } else {
+            actionconditionval1.parent().show();
+            actionconditionval2.parent().show();
+        }
+    });
+    actionconditionoper.val(this.conditionOper).trigger("change");
 
     actionconditionval1.css("width", "100%");
     actionconditionval1.on("change", function () {
+        setModif(true);
         obj.conditionVal1 = actionconditionval1.val();
     });
     actionconditionval1.val(this.conditionVal1);
 
     actionconditionval2.css("width", "100%");
     actionconditionval2.on("change", function () {
+        setModif(true);
         obj.conditionVal2 = actionconditionval2.val();
     });
     actionconditionval2.val(this.conditionVal2);
@@ -2285,6 +2315,7 @@ Action.prototype.generateContent = function () {
     actionList = getSelectInvariant("ACTION", false, true).css("width", "100%").attr("id", "actionSelect");
     actionList.val(this.action);
     actionList.off("change").on("change", function () {
+        setModif(true);
         obj.action = actionList.val();
 
         setPlaceholderAction($(this).parents(".action"));
@@ -2296,42 +2327,33 @@ Action.prototype.generateContent = function () {
     forceExeStatusList = getSelectInvariant("ACTIONFORCEEXESTATUS", false, true).css("width", "100%");
     forceExeStatusList.val(this.forceExeStatus);
     forceExeStatusList.on("change", function () {
+        setModif(true);
         obj.forceExeStatus = forceExeStatusList.val();
     });
 
-    actionconditionoper = getSelectInvariant("ACTIONCONDITIONOPER", false, true).css("width", "100%");
-    actionconditionoper.on("change", function () {
-        obj.conditionOper = actionconditionoper.val();
-        if ((obj.conditionOper === "always") || (obj.conditionOper === "never")) {
-            actionconditionval1.parent().hide();
-            actionconditionval2.parent().hide();
-        } else {
-            actionconditionval1.parent().show();
-            actionconditionval2.parent().show();
-        }
-    });
-    actionconditionoper.val(this.conditionOper).trigger("change");
-    objectField.val(this.value1);
-    objectField.css("width", "100%");
-    objectField.on("change", function () {
-        obj.value1 = objectField.val();
+    value1Field.val(this.value1);
+    value1Field.css("width", "100%");
+    value1Field.on("change", function () {
+        setModif(true);
+        obj.value1 = value1Field.val();
     });
 
-    propertyField.val(this.value2);
-    propertyField.css("width", "100%");
-    propertyField.on("change", function () {
-        obj.value2 = propertyField.val();
+    value2Field.val(this.value2);
+    value2Field.css("width", "100%");
+    value2Field.on("change", function () {
+        setModif(true);
+        obj.value2 = value2Field.val();
     });
 
 
     firstRow.append(descContainer);
     secondRow.append($("<div></div>").addClass("col-lg-2 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "action_field"))).append(actionList));
-    secondRow.append($("<div></div>").addClass("col-lg-5").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value1_field"))).append(objectField));
+    secondRow.append($("<div></div>").addClass("col-lg-5").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value1_field"))).append(value1Field));
     /*
      * if(secondRow.find("col-lg-6").find("label").text() === "Chemin vers
      * l'élement" ){ console.log(".append(choiceField)") }
      */
-    secondRow.append($("<div></div>").addClass("col-lg-5 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value2_field"))).append(propertyField));
+    secondRow.append($("<div></div>").addClass("col-lg-5 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value2_field"))).append(value2Field));
     thirdRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_operation_field"))).append(actionconditionoper));
     thirdRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_parameter_field"))).append(actionconditionval1));
     thirdRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_parameter_field"))).append(actionconditionval2));
@@ -2340,9 +2362,9 @@ Action.prototype.generateContent = function () {
     actionconditionoper.trigger("change");
 
     if ((this.parentStep.useStep === "Y") || (!obj.hasPermissionsUpdate)) {
-        descField.prop("readonly", true);
-        objectField.prop("readonly", true);
-        propertyField.prop("readonly", true);
+        descriptionField.prop("readonly", true);
+        value1Field.prop("readonly", true);
+        value2Field.prop("readonly", true);
         actionList.prop("disabled", "disabled");
         forceExeStatusList.prop("disabled", "disabled");
         actionconditionoper.prop("disabled", "disabled");
@@ -2547,77 +2569,31 @@ Control.prototype.generateContent = function () {
 
     var controlList = $("<select></select>").addClass("form-control input-sm").css("width", "100%");
     var descContainer = $("<div class='input-group'></div>");
-    var descField = $("<input class='description form-control' placeholder='" + doc.getDocLabel("page_testcasescript", "describe_control") + "'>");
+    var descriptionField = $("<input class='description form-control' placeholder='" + doc.getDocLabel("page_testcasescript", "describe_control") + "'>");
     descContainer.append($("<span class='input-group-addon' style='font-weight: 700;' id='labelDiv'></span>"));
     descContainer.append($("<span class='input-group-addon' style='font-weight: 700;' id='labelControlDiv'></span>"));
-    descContainer.append(descField);
-    var controlValueField = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").addClass("form-control input-sm").css("width", "100%");
-    var controlPropertyField = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").addClass("form-control input-sm").css("width", "100%");
+    descContainer.append(descriptionField);
+    var controlValue1Field = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").addClass("form-control input-sm").css("width", "100%");
+    var controlValue2Field = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").addClass("form-control input-sm").css("width", "100%");
 
 
+    var controlconditionoper = $("<select></select>").addClass("form-control input-sm");
     var controlconditionval1 = $("<input>").attr("type", "text").addClass("form-control input-sm");
     var controlconditionval2 = $("<input>").attr("type", "text").addClass("form-control input-sm");
-    var controlconditionoper = $("<select></select>").addClass("form-control input-sm");
     var fatalList = $("<select></select>").addClass("form-control input-sm");
 
-    descField.val(this.description);
-    descField.css("width", "100%");
-    descField.on("change", function () {
-        obj.description = descField.val();
+    descriptionField.val(this.description);
+    descriptionField.css("width", "100%");
+    descriptionField.on("change", function () {
+        setModif(true);
+        obj.description = descriptionField.val();
     });
-
-    controlconditionval1.val(this.conditionVal1);
-    controlconditionval1.css("width", "100%");
-    controlconditionval1.on("change", function () {
-        obj.conditionVal1 = controlconditionval1.val();
-    });
-
-    controlconditionval2.val(this.conditionVal2);
-    controlconditionval2.css("width", "100%");
-    controlconditionval2.on("change", function () {
-        obj.conditionVal2 = controlconditionval2.val();
-    });
-
-
-    controlList = getSelectInvariant("CONTROL", false, true).attr("id", "controlSelect");
-    controlList.val(this.control);
-    controlList.css("width", "100%");
-    controlList.on("change", function () {
-        obj.control = controlList.val();
-        setPlaceholderControl($(this).parents(".control"));
-    });
-
-    controlValueField.val(this.value1);
-    controlValueField.css("width", "84%")
-    controlValueField.on("change", function () {
-        obj.value1 = controlValueField.val();
-    });
-
-    controlPropertyField.val(this.value2);
-    controlPropertyField.css("width", "84%");
-    controlPropertyField.on("change", function () {
-        obj.value2 = controlPropertyField.val();
-    });
-
-    fatalList = getSelectInvariant("CTRLFATAL", false, true);
-    fatalList.val(this.fatal);
-    fatalList.css("width", "100%");
-    fatalList.on("change", function () {
-        obj.fatal = fatalList.val();
-    });
-
-    firstRow.append(descContainer);
-    secondRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "control_field"))).append(controlList));
-    secondRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value1_field"))).append(controlValueField));
-    secondRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value2_field"))).append(controlPropertyField));
-
-    thirdRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_parameter_field"))).append(controlconditionval1));
-    thirdRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_parameter_field"))).append(controlconditionval2));
-    thirdRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "fatal_field"))).append(fatalList));
-
 
     controlconditionoper = getSelectInvariant("CONTROLCONDITIONOPER", false, true).css("width", "100%");
     controlconditionoper.on("change", function () {
+        if (obj.conditionOper !== controlconditionoper.val()) {
+            setModif(true);
+        }
         obj.conditionOper = controlconditionoper.val();
         if ((obj.conditionOper === "always") || (obj.conditionOper === "never")) {
             controlconditionval1.parent().hide();
@@ -2628,14 +2604,70 @@ Control.prototype.generateContent = function () {
         }
     });
     controlconditionoper.val(this.conditionOper).trigger("change");
+    
+    controlconditionval1.val(this.conditionVal1);
+    controlconditionval1.css("width", "100%");
+    controlconditionval1.on("change", function () {
+        setModif(true);
+        obj.conditionVal1 = controlconditionval1.val();
+    });
+
+    controlconditionval2.val(this.conditionVal2);
+    controlconditionval2.css("width", "100%");
+    controlconditionval2.on("change", function () {
+        setModif(true);
+        obj.conditionVal2 = controlconditionval2.val();
+    });
+
+
+    controlList = getSelectInvariant("CONTROL", false, true).attr("id", "controlSelect");
+    controlList.val(this.control);
+    controlList.css("width", "100%");
+    controlList.on("change", function () {
+        setModif(true);
+        obj.control = controlList.val();
+        setPlaceholderControl($(this).parents(".control"));
+    });
+
+    controlValue1Field.val(this.value1);
+    controlValue1Field.css("width", "84%")
+    controlValue1Field.on("change", function () {
+        setModif(true);
+        obj.value1 = controlValue1Field.val();
+    });
+
+    controlValue2Field.val(this.value2);
+    controlValue2Field.css("width", "84%");
+    controlValue2Field.on("change", function () {
+        setModif(true);
+        obj.value2 = controlValue2Field.val();
+    });
+
+    fatalList = getSelectInvariant("CTRLFATAL", false, true);
+    fatalList.val(this.fatal);
+    fatalList.css("width", "100%");
+    fatalList.on("change", function () {
+        setModif(true);
+        obj.fatal = fatalList.val();
+    });
+
+    firstRow.append(descContainer);
+    
+    secondRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "control_field"))).append(controlList));
+    secondRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value1_field"))).append(controlValue1Field));
+    secondRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value2_field"))).append(controlValue2Field));
+
+    thirdRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_parameter_field"))).append(controlconditionval1));
+    thirdRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_parameter_field"))).append(controlconditionval2));
+    thirdRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "fatal_field"))).append(fatalList));
 
     thirdRow.prepend($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_operation_field"))).append(controlconditionoper));
 
 
     if ((this.parentStep.useStep === "Y") || (!obj.hasPermissionsUpdate)) {
-        descField.prop("readonly", true);
-        controlValueField.prop("readonly", true);
-        controlPropertyField.prop("readonly", true);
+        descriptionField.prop("readonly", true);
+        controlValue1Field.prop("readonly", true);
+        controlValue2Field.prop("readonly", true);
         controlList.prop("disabled", "disabled");
         fatalList.prop("disabled", "disabled");
         controlconditionoper.prop("disabled", "disabled");
@@ -2769,9 +2801,9 @@ function loadGuiProperties() {
         info["name"] = $(this).find("#propName").val()
         info["type"] = $(this).find("select").val();
         info["value"] = editor.getValue();
-        if(!($(this).find("#propName").val() in propArr)){
-        	propArr[$(this).find("#propName").val()] = info;
-        }     
+        if (!($(this).find("#propName").val() in propArr)) {
+            propArr[$(this).find("#propName").val()] = info;
+        }
     })
     return propArr;
 }
@@ -3208,7 +3240,7 @@ function setPlaceholderAction(actionElement) {
             {"type": "openUrl", "object": "URL to call (ex : http://www.domain.com)", "property": null},
             {"type": "executeJS", "object": "JavaScript to execute", "property": null},
             {"type": "executeCommand", "object": "Command (ex : \"grep\")", "property": "Arguments (ex : \"--name toto\")"},
-            {"type": "openApp", "object": "Application name or path or package for Android",  "property": "[Optional, required for Android] Activity"},
+            {"type": "openApp", "object": "Application name or path or package for Android", "property": "[Optional, required for Android] Activity"},
             {"type": "closeApp", "object": "Application name or path", "property": null},
             {"type": "select", "object": "Element path", "property": "Option path"},
             {"type": "keypress", "object": "[opt] Target element path", "property": "Key to press"},

@@ -423,7 +423,7 @@ public class ExecutionRunService implements IExecutionRunService {
                     for (TestCaseStep testCaseStep : mainExecutionTestCaseStepList) {
 
                         // exeMod management : We trigger Forced Step no matter if previous step execution asked to stop.
-                        if ((!doStepStopExecution) || (testCaseStep.getDescription().contains("FORCEDSTEP"))) {
+                        if ((!doStepStopExecution) || (testCaseStep.getForceExe().equalsIgnoreCase("Y"))) {
 
                             // init the index of the step in case we loop.
                             int step_index = 1;
@@ -658,7 +658,7 @@ public class ExecutionRunService implements IExecutionRunService {
                             } while (execute_Next_Step && step_index <= maxloop);
 
                             // Step execution boolean is considered for next step execution only if current step was not forced or forced and failed.
-                            if (!testCaseStep.getDescription().contains("FORCEDSTEP") || testCaseStepExecution.isStopExecution()) {
+                            if (!testCaseStep.getForceExe().equalsIgnoreCase("Y") || testCaseStepExecution.isStopExecution()) {
                                 doStepStopExecution = testCaseStepExecution.isStopExecution();
                             }
                         }

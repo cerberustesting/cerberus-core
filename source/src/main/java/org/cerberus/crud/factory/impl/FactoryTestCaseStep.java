@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.factory.impl;
 
+import java.sql.Timestamp;
 import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.crud.factory.IFactoryTestCaseStep;
 import org.springframework.stereotype.Service;
@@ -31,7 +32,7 @@ public class FactoryTestCaseStep implements IFactoryTestCaseStep {
 
     @Override
     public TestCaseStep create(String test, String testCase, int step, int sort, String loop, String conditionOper, String conditionVal1, String conditionVal2, String description, String useStep,
-            String useStepTest, String useStepTestCase, Integer useStepStep, String inLibrary) {
+            String useStepTest, String useStepTestCase, Integer useStepStep, String inLibrary, String forceExe, String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif) {
         TestCaseStep testCaseStep = new TestCaseStep();
         testCaseStep.setDescription(description);
         testCaseStep.setStep(step);
@@ -47,6 +48,12 @@ public class FactoryTestCaseStep implements IFactoryTestCaseStep {
         testCaseStep.setUseStepTestCase(useStepTestCase);
         testCaseStep.setUseStepStep(useStepStep);
         testCaseStep.setInLibrary(inLibrary);
+        testCaseStep.setForceExe(forceExe);
+        testCaseStep.setUsrCreated(usrCreated);
+        testCaseStep.setDateCreated(usrCreated);
+        testCaseStep.setUsrModif(usrModif);
+        testCaseStep.setDateModif(dateModif);
+
         return testCaseStep;
     }
 

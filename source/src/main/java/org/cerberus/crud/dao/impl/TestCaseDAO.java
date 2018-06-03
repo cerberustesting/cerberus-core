@@ -2037,15 +2037,6 @@ public class TestCaseDAO implements ITestCaseDAO {
         return new Answer(msg);
     }
 
-    /**
-     * Uses data of ResultSet to create object {@link TestCase}
-     *
-     * @param resultSet ResultSet relative to select from table TestCase
-     * @return object {@link TestCase}
-     * @throws SQLException when trying to get value from
-     * {@link java.sql.ResultSet#getString(String)}
-     * @see FactoryTestCase
-     */
     @Override
     public TestCase loadFromResultSet(ResultSet resultSet) throws SQLException {
         String test = resultSet.getString("tec.Test");

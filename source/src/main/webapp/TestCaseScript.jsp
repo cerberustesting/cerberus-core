@@ -178,21 +178,29 @@
                                                 <input aria-describedby="stepId" class="description form-control" id="stepDescription" placeholder="Step" style="width: 100%; font-size: 20px; font-weight: 900;">
                                             </div>
                                             <div class="fieldRow row marginTop25" id="stepHiddenRow" style="display: none;">
-                                                <div class="col-lg-3 form-group">
-                                                    <label>Step Loop:</label>
-                                                    <select class="form-control input-sm" id="stepLoop"></select>
+                                                <div class="row">
+                                                    <div class="col-lg-3 form-group">
+                                                        <label>Step Loop:</label>
+                                                        <select class="form-control input-sm" id="stepLoop"></select>
+                                                    </div>
+                                                    <div class="col-lg-3 form-group">
+                                                        <label>Step Condition Operation:</label>
+                                                        <select class="form-control input-sm" id="stepConditionOper"></select>
+                                                    </div>
+                                                    <div class="col-lg-3 form-group">
+                                                        <label>Step Condition Parameter:</label>
+                                                        <input class="form-control input-sm" id="stepConditionVal1">
+                                                    </div>
+                                                    <div class="col-lg-3 form-group">
+                                                        <label>Step Condition Parameter:</label>
+                                                        <input class="form-control input-sm" id="stepConditionVal2">
+                                                    </div>
                                                 </div>
-                                                <div class="col-lg-3 form-group">
-                                                    <label>Step Condition Operation:</label>
-                                                    <select class="form-control input-sm" id="stepConditionOper"></select>
-                                                </div>
-                                                <div class="col-lg-3 form-group">
-                                                    <label>Step Condition Parameter:</label>
-                                                    <input class="form-control input-sm" id="stepConditionVal1">
-                                                </div>
-                                                <div class="col-lg-3 form-group">
-                                                    <label>Step Condition Parameter:</label>
-                                                    <input class="form-control input-sm" id="stepConditionVal2">
+                                                <div class="row">
+                                                    <div class="col-lg-3 form-group">
+                                                        <label>Force Exe:</label>
+                                                        <select class="form-control input-sm" id="stepForceExe"></select>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>

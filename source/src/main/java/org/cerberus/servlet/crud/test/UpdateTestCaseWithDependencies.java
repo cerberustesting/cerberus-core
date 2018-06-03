@@ -325,7 +325,8 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                 for (int j = 0; j < countries.length(); j++) {
                     String country = countries.getString(j);
 
-                    testCaseCountryProp.add(testCaseCountryPropertiesFactory.create(test, testCase, country, property, description, type, database, value, value2, length, rowLimit, nature, retryNb, retryPeriod, cacheExpire));
+                    testCaseCountryProp.add(testCaseCountryPropertiesFactory.create(test, testCase, country, property, description, type, database, value, value2, length, rowLimit, nature,
+                            retryNb, retryPeriod, cacheExpire));
                 }
             }
         }
@@ -353,10 +354,12 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             String useStepTestCase = step.getString("useStepTestCase");
             int useStepStep = step.getInt("useStepStep");
             String inLibrary = step.getString("inLibrary");
+            String forceExe = step.getString("forceExe");
             JSONArray stepActions = step.getJSONArray("actionArr");
 
             if (!delete) {
-                TestCaseStep tcStep = testCaseStepFactory.create(test, testCase, stepNumber, sort, loop, conditionOper, conditionVal1, conditionVal2, description, useStep, useStepTest, useStepTestCase, useStepStep, inLibrary);
+                TestCaseStep tcStep = testCaseStepFactory.create(test, testCase, stepNumber, sort, loop, conditionOper, conditionVal1, conditionVal2, description, useStep, useStepTest,
+                        useStepTestCase, useStepStep, inLibrary, forceExe, null, null, request.getUserPrincipal().getName(), null);
 
                 if (useStep.equals("N")) {
                     tcStep.setTestCaseStepAction(getTestCaseStepActionFromParameter(request, appContext, test, testCase, stepActions));
