@@ -7740,7 +7740,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // Add forceExe to Step.
         // 1346-1347
         a.add("ALTER TABLE `testcasestep` ADD COLUMN `ForceExe` VARCHAR(1) NOT NULL DEFAULT 'N' AFTER `inlibrary`;");
-        a.add("UPDATE cerberus.testcasestep SET ForceExe='Y' where Description like '%FORCEDSTEP%';");
+        a.add("UPDATE testcasestep SET ForceExe='Y' where Description like '%FORCEDSTEP%';");
 
         // ForceExe invariant.
         // 1348
@@ -7750,6 +7750,11 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append(" ('STEPFORCEEXE', 'Y', '20', '', ''),");
         b.append(" ('INVARIANTPRIVATE','STEPFORCEEXE', '820','Step Force Exe Flag.', '')");
         a.add(b.toString());
+
+        // Prevent delete of a label if links still exist to testcases.
+        // 1349
+        a.add("ALTER TABLE `testcaselabel` DROP FOREIGN KEY `FK_testcaselabel_02`;");
+        a.add("ALTER TABLE `testcaselabel` ADD CONSTRAINT `FK_testcaselabel_02` FOREIGN KEY (`LabelId`)   REFERENCES `label` (`Id`) ON DELETE RESTRICT ON UPDATE CASCADE;");
 
         return a;
     }
