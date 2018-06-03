@@ -282,7 +282,7 @@ public class RestService implements IRestService {
                         serviceREST.setServiceRequest(requestString);
                     } else {
                         // If requestString is not defined, we POST the list of key/value request.
-                        List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+                        List<NameValuePair> nvps = new ArrayList<>();
                         for (AppServiceContent contentVal : contentList) {
                             nvps.add(new BasicNameValuePair(contentVal.getKey(), contentVal.getValue()));
                         }

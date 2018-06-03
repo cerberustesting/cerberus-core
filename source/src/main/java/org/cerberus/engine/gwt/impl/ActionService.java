@@ -1368,8 +1368,8 @@ public class ActionService implements IActionService {
             message.setDescription(message.getDescription().replace("%TIME%", String.valueOf(timeToWaitMs)));
             return message;
         } catch (InterruptedException exception) {
-            LOG.info(exception.toString());
-            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_WAIT);
+            LOG.warn(exception.toString());
+            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAIT_TIME_WITHWARNINGS);
             message.setDescription(message.getDescription()
                     .replace("%TIME%", String.valueOf(timeToWaitMs))
                     .replace("%MESSAGE%", exception.toString()));
