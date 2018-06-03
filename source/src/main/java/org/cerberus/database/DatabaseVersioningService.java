@@ -7751,6 +7751,11 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append(" ('INVARIANTPRIVATE','STEPFORCEEXE', '820','Step Force Exe Flag.', '')");
         a.add(b.toString());
 
+        // Prevent delete of a label if links still exist to testcases.
+        // 1349
+        a.add("ALTER TABLE `testcaselabel` DROP FOREIGN KEY `FK_testcaselabel_02`;");
+        a.add("ALTER TABLE `testcaselabel` ADD CONSTRAINT `FK_testcaselabel_02` FOREIGN KEY (`LabelId`)   REFERENCES `label` (`Id`) ON DELETE RESTRICT ON UPDATE CASCADE;");
+
         return a;
     }
 
