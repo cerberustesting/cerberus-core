@@ -23,7 +23,7 @@
 set -e
 
 # Use asadmin with credentials
-ASADMIN="asadmin --user ${GLASSFISH_ADMIN_USER} --passwordfile /tmp/glassfish_admin_password.txt"
+ASADMIN="asadmin --user ${GLASSFISH_ADMIN_USER} --passwordfile /tmp/glassfishpwd"
 
 # Initialization marker file
 INIT_MARKER_FILE=${GLASSFISH_HOME}/glassfish/domains/${GLASSFISH_DOMAIN}/.cerberus
@@ -54,8 +54,9 @@ function setup() {
     local ASADMIN_DEFAULT=asadmin
     ${ASADMIN_DEFAULT} start-domain ${GLASSFISH_DOMAIN}
 
+    echo "AS_ADMIN_NEWPASSWORD=${GLASSFISH_ADMIN_PASSWORD}" > /tmp/glassfishpwd
     cat /tmp/glassfish_admin_set_password.txt > /tmp/glassfishpwd
-    
+
     ${ASADMIN_DEFAULT} --user ${GLASSFISH_ADMIN_USER} --passwordfile /tmp/glassfishpwd change-admin-password --domain_name ${GLASSFISH_DOMAIN}
     rm /tmp/glassfishpwd
     echo "AS_ADMIN_PASSWORD=${GLASSFISH_ADMIN_PASSWORD}" > /tmp/glassfishpwd
@@ -79,7 +80,7 @@ function setup() {
 # Main entry point
 function main() {
     if [ ! -f ${GLASSFISH_HOME}/glassfish/domains/${GLASSFISH_DOMAIN}/config/domain.xml ]; then
-        echo "AS_ADMIN_PASSWORD=" > /tmp/glassfishpwd
+        echo "AS_ADMIN_PASSWORD=admin" > /tmp/glassfishpwd
         ${ASADMIN} create-domain --adminport 4848 ${GLASSFISH_DOMAIN}
     fi
     # Check if setup has already been done, and if not, then execute it
