@@ -136,7 +136,7 @@ public class CreateAppService extends HttpServlet {
         String method = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("method"), "", charset);
         // Parameter that we cannot secure as we need the html --> We DECODE them
         String servicePath = ParameterParserUtil.parseStringParamAndDecode(fileData.get("servicePath"), "", charset);
-        String serviceRequest = ParameterParserUtil.parseStringParamAndDecode(fileData.get("serviceRequest"), null, charset);
+        String serviceRequest = ParameterParserUtil.parseStringParamAndDecode(fileData.get("srvRequest"), null, charset);
         String fileName = null;
         if(file != null) {
         	fileName = file.getName();
@@ -186,8 +186,8 @@ public class CreateAppService extends HttpServlet {
                 }               
             }
             // Update content
-            if (request.getParameter("contentList") != null) {
-                JSONArray objContentArray = new JSONArray(request.getParameter("contentList"));
+            if (fileData.get("contentList") != null) {
+                JSONArray objContentArray = new JSONArray(fileData.get("contentList"));
                 List<AppServiceContent> contentList = new ArrayList<>();
                 contentList = getContentListFromRequest(request, appContext, service, objContentArray);
 
@@ -196,8 +196,8 @@ public class CreateAppService extends HttpServlet {
                 finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
             }
             // Update header
-            if (request.getParameter("headerList") != null) {
-                JSONArray objHeaderArray = new JSONArray(request.getParameter("headerList"));
+            if (fileData.get("headerList") != null) {
+                JSONArray objHeaderArray = new JSONArray(fileData.get("headerList"));
                 List<AppServiceHeader> headerList = new ArrayList<>();
                 headerList = getHeaderListFromRequest(request, appContext, service, objHeaderArray);
 

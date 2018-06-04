@@ -215,10 +215,10 @@ function confirmAppServiceModalHandler(mode,page) {
 
     // Get the header data from the form.
     var data = formEdit.serializeArray();
+    data.servicePath = encodeURIComponent(data.servicePath);
     
     //Add envelope, not in the form
     var editor = ace.edit($("#editSoapLibraryModal #srvRequest")[0]);
-    data.srvRequest = encodeURIComponent(editor.getSession().getDocument().getValue());
 
     // Getting Data from Content TAB
     var table1 = $("#contentTableBody tr");
@@ -242,6 +242,8 @@ function confirmAppServiceModalHandler(mode,page) {
     
     formData.append("contentList", JSON.stringify(table_content));
     formData.append("headerList", JSON.stringify(table_header));
+    formData.append("srvRequest", encodeURIComponent(editor.getSession().getDocument().getValue()));
+    formData.set("servicePath", encodeURIComponent(formData.get("servicePath")))
     
     if(file.prop("files").length != 0){
     	formData.append("file", file.prop("files")[0]);

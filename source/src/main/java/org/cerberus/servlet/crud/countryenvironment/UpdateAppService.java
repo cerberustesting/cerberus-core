@@ -138,7 +138,7 @@ public class UpdateAppService extends HttpServlet {
         String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileData.get("description"), null, charset);
         // Parameter that we cannot secure as we need the html --> We DECODE them
         String servicePath = ParameterParserUtil.parseStringParamAndDecode(fileData.get("servicePath"), null, charset);
-        String serviceRequest = ParameterParserUtil.parseStringParamAndDecode(fileData.get("serviceRequest"), null, charset);
+        String serviceRequest = ParameterParserUtil.parseStringParamAndDecode(fileData.get("srvRequest"), null, charset);
 
         // Prepare the final answer.
         MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
@@ -206,8 +206,8 @@ public class UpdateAppService extends HttpServlet {
                 }
 
                 // Update content
-                if (request.getParameter("contentList") != null) {
-                    JSONArray objContentArray = new JSONArray(request.getParameter("contentList"));
+                if (fileData.get("contentList") != null) {
+                    JSONArray objContentArray = new JSONArray(fileData.get("contentList"));
                     List<AppServiceContent> contentList = new ArrayList<>();
                     contentList = getContentListFromRequest(request, appContext, service, objContentArray);
 
@@ -217,8 +217,8 @@ public class UpdateAppService extends HttpServlet {
                 }
 
                 // Update header
-                if (request.getParameter("headerList") != null) {
-                    JSONArray objHeaderArray = new JSONArray(request.getParameter("headerList"));
+                if (fileData.get("headerList") != null) {
+                    JSONArray objHeaderArray = new JSONArray(fileData.get("headerList"));
                     List<AppServiceHeader> headerList = new ArrayList<>();
                     headerList = getHeaderListFromRequest(request, appContext, service, objHeaderArray);
 
