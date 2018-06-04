@@ -2876,12 +2876,10 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
             }
         })
 
-        $(document).on('input', "div.step-action .content div.fieldRow:nth-child(2) input:visible", function (e, state) {
+        $(document).on('input', "div.step-action .content div.fieldRow:nth-child(2) input", function (e, state) {
             e = e.currentTarget;
             var doc = new Doc();
-
             if ($(e).parent().parent().find("select").val() === "callService") {
-
                 if (state !== "first") {
                     // prevent multiple autocomplete handler on $(e)
                     $(e).autocomplete('option', 'source', function (request, response) {
@@ -2898,14 +2896,12 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
                                             value: item.service
                                         };
                                     });
-
                                     response($.ui.autocomplete.filter(MyArray, request.term));
                                 }
                             })
                         }
                     })
                 }
-
                 $.ajax({
                     url: "ReadAppService?service=" + $(e).val(),
                     dataType: "json",
@@ -2927,8 +2923,6 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
                         }
                     }
                 });
-
-
             } else if ($(e).parent().parent().find("select").val() === "calculateProperty") {
 
                 var data = loadGuiProperties()
@@ -3049,7 +3043,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
             }
 
         })
-        $("div.step-action .content div.fieldRow:nth-child(2) input:visible").trigger("input", ['first'])
+        $("div.step-action .content div.fieldRow:nth-child(2) input").trigger("input", ['first'])
     }
 })();
 
@@ -4145,13 +4139,10 @@ function CompleterForAllDataLib() {
                     return {name: ea.name, value: ea.name, meta: "DataLib"}
                 }));
             })
-
         }
-
     }
 
     langTools.addCompleter(staticWordCompleter);
-
 }
 
 
@@ -4180,7 +4171,6 @@ function configureAceEditor(editor, mode, property) {
                 editor.setOptions({maxLines: 15, enableBasicAutocompletion: true, enableLiveAutocompletion: false});
             } else {
                 editor.setOptions({maxLines: 15, enableBasicAutocompletion: true, enableLiveAutocompletion: false});
-
                 var allKeyword = createAllKeywordList(getKeywordList("object"), getKeywordList("property"));
                 // editor.completers = [allKeyword]
                 if (e.command.name != "backspace") {
@@ -4188,21 +4178,15 @@ function configureAceEditor(editor, mode, property) {
                     editor.commands.exec(commandNameForAutoCompletePopup);// set
                     // autocomplete
                     // popup*/
-
                 } else {
                     addCommandToDetectKeywordIssue(editor, allKeyword, commandNameForIssueDetection);
                     editor.commands.exec(commandNameForIssueDetection);// set
                     // annotation
                 }
-
-
             }
-
         }
-
         createGuterCellListenner(editor);
         property.value1 = editor.session.getValue();
-
 
     });
 
