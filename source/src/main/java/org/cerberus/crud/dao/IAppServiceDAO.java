@@ -32,7 +32,7 @@ import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 
 /**
- * Accès aux données de la table SoapLibrary
+ * Accès aux données de la table AppService
  *
  * @author cte
  */
@@ -94,7 +94,7 @@ public interface IAppServiceDAO {
     Answer delete(AppService object);
 
     /*
-     *  Load a {@link SoapLibrary} of a ResultSet
+     *  Load a {@link AppService} of a ResultSet
      *
      * @param rs the {@link ResultSet}
      */

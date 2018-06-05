@@ -70,7 +70,7 @@ public class ReadAppService extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        //Get SoapLibrarys
+        //Get AppServices
 
         String echo = request.getParameter("sEcho");
         String columnName = ParameterParserUtil.parseStringParam(request.getParameter("columnName"), "");
@@ -170,7 +170,7 @@ public class ReadAppService extends HttpServlet {
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
             for (AppService param : (List<AppService>) resp.getDataList()) {
-                jsonArray.put(convertSoapLibraryToJSONObject(param));
+                jsonArray.put(convertAppServiceToJSONObject(param));
             }
         }
 
@@ -194,7 +194,7 @@ public class ReadAppService extends HttpServlet {
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
             p = (AppService) resp.getItem();
         }
-        JSONObject item = convertSoapLibraryToJSONObject(p);
+        JSONObject item = convertAppServiceToJSONObject(p);
         response.put("contentTable", item);
         item.put("hasPermissions", userHasPermissions);
         resp.setItem(response);
@@ -211,7 +211,7 @@ public class ReadAppService extends HttpServlet {
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
             for (AppService appService : (List<AppService>) resp.getDataList()) {
-                jsonArray.put(convertSoapLibraryToJSONObject(appService));
+                jsonArray.put(convertAppServiceToJSONObject(appService));
             }
         }
 
@@ -309,7 +309,7 @@ public class ReadAppService extends HttpServlet {
         return answer;
     }
 
-    private JSONObject convertSoapLibraryToJSONObject(AppService appservice) throws JSONException {
+    private JSONObject convertAppServiceToJSONObject(AppService appservice) throws JSONException {
 
         Gson gson = new Gson();
         JSONObject result = new JSONObject(gson.toJson(appservice));

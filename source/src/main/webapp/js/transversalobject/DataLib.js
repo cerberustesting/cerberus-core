@@ -80,10 +80,12 @@ function openModalAppServiceFromHere() {
 }
 
 function openModalDataLib(element, dataLibEntry, mode, id) {
-    if ($('#editTestDataLibModal').data("initLabel") === undefined) {
-        initModalDataLib(id);
-        $('#editTestDataLibModal').data("initLabel", true);
-    }
+    
+//    Modal is now init on master page load #1748
+//    if ($('#editTestDataLibModal').data("initLabel") === undefined) {
+//        initModalDataLib();
+//        $('#editTestDataLibModal').data("initLabel", true);
+//    }
 
     $('[data-toggle="popover"]').popover()
 
@@ -114,7 +116,7 @@ function openModalDataLib(element, dataLibEntry, mode, id) {
 
 }
 
-function initModalDataLib(id) {
+function initModalDataLib() {
 
     $('[data-toggle="popover"]').popover({
         'placement': 'auto',
