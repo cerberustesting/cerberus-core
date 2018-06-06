@@ -349,3 +349,10 @@ include::include/en/{file-to-include}[]
 :file-to-include: changelog_3.4_en.adoc
 include::include/en/{file-to-include}[]
 
+=== 3.5
+:file-to-include: changelog_3.5_en.adoc
+include::include/en/{file-to-include}[]
+=== 3.6
+:file-to-include: changelog_3.6_en.adoc
+include::include/en/{file-to-include}[]
+
