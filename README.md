@@ -9,6 +9,10 @@ User-friendly automated testing framework.
 
 Check out all information about Cerberus from its [dedicated web site](http://www.cerberus-testing.org/)!
 
+Full Documentation is available [here](https://cerberustesting.github.io/documentation_en.html)
+
+A Jenkins Plugin is also available directly from Jenkins. Corresponding repo is [here](https://github.com/jenkinsci/cerberus-testing-plugin)
+
 # License
 
 Cerberus Copyright (C) 2013 - 2017 cerberustesting
