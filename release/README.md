@@ -12,57 +12,29 @@ A `.cmds` file gathers all necessary commands to be executed in order to apply a
  
 Finally, each `.cmds` file contains a documentation header part to describe how to use it.
 
-### Step 1 : Database Version update
+### Cerberus github release
 
-Go to your cerberus/source/src/main/webapp folder and modify the file DatabaseMaintenance.jsp. The variable `Integer SQLLimit` must be set to the current version of database + 1 :
 
- * `cd <path_to_cerberusclone>/source/src/main/webapp`
- * `vim DatabaseMaintenance.jsp (modify the file)`
- * `git commit -m "Change target automatic database version SQL execution to <database_version>`
- * `git push origin master`
- 
- Where:
-  - <database_version> is the current database version
-
-### Step 2 : Docker Login
-
-You need to be logged in to docker registry to perform the docker's release
-`
-    docker login -p <password> -u <username>
-`
-
-Where:
- - <password> is your docker hub password
- - <username> is your docker hub username
- 
-**/!\ you need to have the right on cerberus repository for sourceforge and docker hub**
-
-### Step 3 : Get runcmds.sh Utility
-
-Clone runcmds.sh somewhere on your computer : `git clone https://github.com/abourdon/runcmds`
-
-### Step 4 : Run the script that perform the release
+### Step 1 : Run the script that perform the release
 
 Go to your cerberus/release folder
 `
     cd <path_to_cerberusclone>/release/
 `
-
 And run the release cmd :
 `
- <path_to_runcmds>/runcmds.sh
+ ./runcmds.sh
        -e RELEASE_VERSION <release version> 
        -e NEXT_DEVELOPMENT_VERSION <next development version> 
-       -e RUNCMDS_PATH <runcmds command path> 
-       -s ./common.cmds
+       -e DATABASE_VERSION <current database version>
+       -s ./release.cmds
 `
 
-`common.cmds` will clone a cerberus on release/cerberus-testing, change some version on bin/*.sh script and make a `mvn release`.
-After that, common.cmds will create new docker version.
+`release.cmds` will clone a cerberus on release/cerberus-testing, change some version on bin/*.sh script and make a `mvn release`.
 
 NB : If under Windows, you can submit the command from docker bash.
 
-### Step 5 : Copy paste changelog on github
+### Step 2 : Copy paste changelog on github
 
 * Click on 'Draft new release'.
 * Choose xnew.ynew branch
@@ -71,65 +43,36 @@ NB : If under Windows, you can submit the command from docker bash.
 * Upload Cerberus-xnew.ynew.zip and Cerberus-xnew.ynew.war
 * Press 'Create Release'
 
-### Step 6 : Create a new changelog entry file and make it displayed in homepage for next developpement version
+### Cerberus docker release
 
- * `cd <path_to_cerberusclone>/source/source/src/main/resources/documentation/include/en/`
- * `cp changelog_template_en.adoc changelog_xdev.ydev_en.adoc`
- * `cd <path_to_cerberusclone>/source/source/src/main/webapp/js/pages/`
- * `vim Homepage.js`
+### Step 1 : Docker Login
 
-change
-
+You need to be logged in to docker registry to perform the docker's release
 `
-        $("#documentationFrame").attr("src", "./documentation/changelog_xnew.ynew_en.html");
+    docker login -p <password> -u <username>
 `
-
-to
-`
-        $("#documentationFrame").attr("src", "./documentation/changelog_xdev.ydev_en.html");
-`
-
-and
-
-`
-        $("#changelogLabel").html("Changelog xnew.ynew");
-`
-
-to
-`
-        $("#changelogLabel").html("Changelog xdev.ydev");
-`
+Where:
+ - <password> is your docker hub password
+ - <username> is your docker hub username
  
- 
- * `cd <path_to_cerberusclone>/source/source/src/main/webapp/`
- * `vim Homepage.jsp`
- 
-change
+ **/!\ you need to have the right on cerberus repository for docker hub**
 
-`
-                            <div class="panel-body collapse in" id="Changelogxnewynew">
-`
+### Step 2 : Run the script that perform the release
 
-to
+Go to your cerberus/docker folder
 `
-                            <div class="panel-body collapse in" id="Changelogxdevydev">
+    cd <path_to_cerberusclone>/release/cerberus-source/docker/images/cerberus-as-glassfish
 `
-
-and
-
+And run the release cmd :
 `
-                             <div class="panel-heading card" data-toggle="collapse" data-target="#Changelogxnewynew">
+ ../../../../runcmds.sh
+       -e RELEASE_VERSION <release version> 
+       -s ./release.cmds
 `
 
-to
-`
-                             <div class="panel-heading card" data-toggle="collapse" data-target="#Changelogxdevydev">
-`
+`release.cmds` will make a `docker build`.
 
-
-
- * `git commit -m "Added New Changelog`
- * `git push origin master`
+NB : If under Windows, you can submit the command from docker bash.
 
 
 ## List of available release processes
