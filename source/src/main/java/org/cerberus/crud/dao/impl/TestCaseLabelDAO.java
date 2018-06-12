@@ -412,6 +412,9 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
         if (testCase != null) {
             query.append(" AND tel.testcase = ?");
         }
+        
+        query.append(" ORDER BY Label ASC ");
+        
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
