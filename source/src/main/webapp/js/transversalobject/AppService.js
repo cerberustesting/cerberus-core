@@ -237,13 +237,12 @@ function confirmAppServiceModalHandler(mode,page) {
     var file = $("#editSoapLibraryModal input[type=file]");
 
     for (var i in data) {
-        formData.append(data[i].name, data[i].value);
+        formData.append(data[i].name, encodeURIComponent(data[i].value));
     }
     
     formData.append("contentList", JSON.stringify(table_content));
     formData.append("headerList", JSON.stringify(table_header));
     formData.append("srvRequest", encodeURIComponent(editor.getSession().getDocument().getValue()));
-    formData.set("servicePath", encodeURIComponent(formData.get("servicePath")))
     
     if(file.prop("files").length != 0){
     	formData.append("file", file.prop("files")[0]);
