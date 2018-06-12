@@ -261,7 +261,6 @@ public class FtpService implements IFtpService{
                     "Impossible to retrieve the file. Please check the FTP path"));
             result.setResultMessage(message);
         }
-        
         return result;
 	}
 	
@@ -271,31 +270,30 @@ public class FtpService implements IFtpService{
 		AnswerItem result = new AnswerItem<>();
 		InputStream inputStream = null;
 		byte[] byteContent = null;
-        LOG.info("Start retrieving ftp file");
-        if(!myResponse.getFileName().isEmpty()) {
-        	 MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
-                     "cerberus_ftpfile_path Parameter not found");
-             AnswerItem a = parameterService.readByKey("", "cerberus_ftpfile_path");
-             if (a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-            	 Parameter p = (Parameter) a.getItem();
-                 String uploadPath = p.getValue();
-                 Path path = Paths.get(uploadPath + File.separator + myResponse.getService() + File.separator + myResponse.getFileName());            	 
-            	 byteContent = Files.readAllBytes(path);
-             }else {
-            	 result.setResultMessage(msg);
-            	 return result;
-             }  	
-        }else if(!myResponse.getServiceRequest().isEmpty()) {
+        LOG.info("Start retrieving ftp file"); 
+        if(!myResponse.getServiceRequest().isEmpty()) {
         	inputStream = new ByteArrayInputStream(myResponse.getServiceRequest().getBytes("UTF-8"));
         	byteContent = IOUtils.toByteArray(inputStream);
-        	inputStream.close(); 
+        	inputStream.close();
+        }else if(!myResponse.getFileName().isEmpty()) {
+        	MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                    "cerberus_ftpfile_path Parameter not found");
+            AnswerItem a = parameterService.readByKey("", "cerberus_ftpfile_path");
+            if (a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+           	 	Parameter p = (Parameter) a.getItem();
+                String uploadPath = p.getValue();
+                Path path = Paths.get(uploadPath + File.separator + myResponse.getService() + File.separator + myResponse.getFileName());            	 
+           	 	byteContent = Files.readAllBytes(path);
+            }else {
+           	 	result.setResultMessage(msg);
+           	 	return result;
+            }  	 
         }else {
         	MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
                     "file path and service request are null ! you need to specify one of this field");
         	result.setResultMessage(msg);
        	 	return result;
-        }
-        	 		
+        } 		
     	boolean done = ftp.storeFile(informations.get("path"), new ByteArrayInputStream(byteContent));
         myResponse.setResponseHTTPCode(ftp.getReplyCode());
         if(done) {
