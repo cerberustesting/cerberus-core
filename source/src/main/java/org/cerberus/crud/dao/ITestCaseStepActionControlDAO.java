@@ -51,7 +51,15 @@ public interface ITestCaseStepActionControlDAO {
 
     public AnswerList readByTestTestCase(String test, String testcase);
 
-    public AnswerList readByVarious1(String test, String testcase, int step, int sequence);
+    /**
+     *
+     * @param test
+     * @param testcase
+     * @param step
+     * @param sequence
+     * @return
+     */
+    public AnswerList<TestCaseStepActionControl> readByVarious1(String test, String testcase, int step, int sequence);
 
     Answer create(TestCaseStepActionControl testCaseStepActionControl);
 }

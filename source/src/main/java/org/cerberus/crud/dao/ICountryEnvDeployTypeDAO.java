@@ -41,7 +41,7 @@ public interface ICountryEnvDeployTypeDAO {
      * @param string
      * @return
      */
-    AnswerList readByVariousByCriteria(String system, String country, String environment, String deployType, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
+    AnswerList<CountryEnvDeployType> readByVariousByCriteria(String system, String country, String environment, String deployType, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
 
     /**
      *

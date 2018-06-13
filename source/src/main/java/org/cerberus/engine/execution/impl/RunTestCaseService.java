@@ -40,14 +40,14 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class RunTestCaseService implements IRunTestCaseService {
-
+    
     @Autowired
     private IExecutionStartService executionStartService;
     @Autowired
     private IExecutionRunService executionRunService;
-
+    
     private static final Logger LOG = LogManager.getLogger(RunTestCaseService.class);
-
+    
     @Override
     public TestCaseExecution runTestCase(TestCaseExecution tCExecution) {
 
@@ -59,7 +59,7 @@ public class RunTestCaseService implements IRunTestCaseService {
             LOG.debug("Start Execution " + "__ID=" + tCExecution.getId());
             tCExecution = executionStartService.startExecution(tCExecution);
             LOG.info("Execution Started : UUID=" + tCExecution.getExecutionUUID() + "__ID=" + tCExecution.getId());
-
+            
         } catch (CerberusException ex) {
             tCExecution.setResultMessage(ex.getMessageError());
             LOG.info("Execution not Launched : UUID=" + tCExecution.getExecutionUUID() + "__causedBy=" + ex.getMessageError().getDescription());
@@ -78,6 +78,7 @@ public class RunTestCaseService implements IRunTestCaseService {
                 }
             } catch (CerberusException ex) {
                 tCExecution.setResultMessage(ex.getMessageError());
+                LOG.warn("Execution stopped due to exception. " + ex.getMessageError().getDescription());
             } catch (Exception ex) {
                 LOG.warn("Execution stopped due to exception : UUID=" + tCExecution.getExecutionUUID() + "__causedBy=" + ex.toString());
                 tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.GENERIC_ERROR));

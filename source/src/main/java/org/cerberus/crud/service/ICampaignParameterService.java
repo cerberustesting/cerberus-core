@@ -54,8 +54,20 @@ public interface ICampaignParameterService {
 
     Answer compareListAndUpdateInsertDeleteElements(String campaign, List<CampaignParameter> newList);
 
-    CampaignParameter convert(AnswerItem answerItem) throws CerberusException;
+    /**
+     *
+     * @param answerItem
+     * @return
+     * @throws CerberusException
+     */
+    CampaignParameter convert(AnswerItem<CampaignParameter> answerItem) throws CerberusException;
 
-    List<CampaignParameter> convert(AnswerList answerList) throws CerberusException;
+    /**
+     *
+     * @param answerList
+     * @return
+     * @throws CerberusException
+     */
+    List<CampaignParameter> convert(AnswerList<CampaignParameter> answerList) throws CerberusException;
 
     }

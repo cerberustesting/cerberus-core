@@ -113,7 +113,7 @@ public class RestService implements IRestService {
                 public AppService handleResponse(final HttpResponse response)
                         throws ClientProtocolException, IOException {
                     AppService myResponse = factoryAppService.create("", AppService.TYPE_REST,
-                            AppService.METHOD_HTTPGET, "", "", "", "", "", "", "", "", null, "", null);
+                            AppService.METHOD_HTTPGET, "", "", "", "", "", "", "", "", null, "", null, null);
                     int responseCode = response.getStatusLine().getStatusCode();
                     myResponse.setResponseHTTPCode(responseCode);
                     myResponse.setResponseHTTPVersion(response.getProtocolVersion().toString());
@@ -143,9 +143,9 @@ public class RestService implements IRestService {
     public AnswerItem<AppService> callREST(String servicePath, String requestString, String method,
             List<AppServiceHeader> headerList, List<AppServiceContent> contentList, String token, int timeOutMs,
             String system) {
-        AnswerItem result = new AnswerItem();
+        AnswerItem result = new AnswerItem<>();
         AppService serviceREST = factoryAppService.create("", AppService.TYPE_REST, method, "", "", "", "", "", "", "",
-                "", null, "", null);
+                "", null, "", null, null);
         serviceREST.setProxy(false);
         serviceREST.setProxyHost(null);
         serviceREST.setProxyPort(0);
@@ -165,9 +165,8 @@ public class RestService implements IRestService {
             return result;
         }
         // If token is defined, we add 'cerberus-token' on the http header.
-        if (token != null) {
-            headerList
-                    .add(factoryAppServiceHeader.create(null, "cerberus-token", token, "Y", 0, "", "", null, "", null));
+        if (!StringUtil.isNullOrEmpty(token)) {
+            headerList.add(factoryAppServiceHeader.create(null, "cerberus-token", token, "Y", 0, "", "", null, "", null));
         }
 
         CloseableHttpClient httpclient;
@@ -187,17 +186,14 @@ public class RestService implements IRestService {
             if (parameterService.getParameterBooleanByKey("cerberus_proxyauthentification_active", system,
                     DEFAULT_PROXYAUTHENT_ACTIVATE)) {
 
-                String proxyUser = parameterService.getParameterStringByKey("cerberus_proxyauthentification_user",
-                        system, DEFAULT_PROXYAUTHENT_USER);
-                String proxyPassword = parameterService.getParameterStringByKey(
-                        "cerberus_proxyauthentification_password", system, DEFAULT_PROXYAUTHENT_PASSWORD);
+                String proxyUser = parameterService.getParameterStringByKey("cerberus_proxyauthentification_user", system, DEFAULT_PROXYAUTHENT_USER);
+                String proxyPassword = parameterService.getParameterStringByKey("cerberus_proxyauthentification_password", system, DEFAULT_PROXYAUTHENT_PASSWORD);
 
                 serviceREST.setProxyWithCredential(true);
                 serviceREST.setProxyUser(proxyUser);
 
                 CredentialsProvider credsProvider = new BasicCredentialsProvider();
-                credsProvider.setCredentials(new AuthScope(proxyHost, proxyPort),
-                        new UsernamePasswordCredentials(proxyUser, proxyPassword));
+                credsProvider.setCredentials(new AuthScope(proxyHost, proxyPort), new UsernamePasswordCredentials(proxyUser, proxyPassword));
 
                 LOG.debug("Activating Proxy With Authentification.");
                 httpclient = HttpClientBuilder.create().setProxy(proxyHostObject)
@@ -245,8 +241,10 @@ public class RestService implements IRestService {
                     httpGet.setConfig(requestConfig);
 
                     // Header.
-                    for (AppServiceHeader contentHeader : headerList) {
-                        httpGet.addHeader(contentHeader.getKey(), contentHeader.getValue());
+                    if (headerList != null) {
+                        for (AppServiceHeader contentHeader : headerList) {
+                            httpGet.addHeader(contentHeader.getKey(), contentHeader.getValue());
+                        }
                     }
                     serviceREST.setHeaderList(headerList);
 
@@ -284,7 +282,7 @@ public class RestService implements IRestService {
                         serviceREST.setServiceRequest(requestString);
                     } else {
                         // If requestString is not defined, we POST the list of key/value request.
-                        List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+                        List<NameValuePair> nvps = new ArrayList<>();
                         for (AppServiceContent contentVal : contentList) {
                             nvps.add(new BasicNameValuePair(contentVal.getKey(), contentVal.getValue()));
                         }
@@ -467,8 +465,7 @@ public class RestService implements IRestService {
 
             // Get result Content Type.
             if (responseHttp != null) {
-                serviceREST.setResponseHTTPBodyContentType(
-                        AppServiceService.guessContentType(serviceREST, AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON));
+                serviceREST.setResponseHTTPBodyContentType(AppServiceService.guessContentType(serviceREST, AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON));
             }
 
             result.setItem(serviceREST);
@@ -485,7 +482,7 @@ public class RestService implements IRestService {
             result.setResultMessage(message);
             return result;
         } catch (Exception ex) {
-            LOG.error("Exception when performing the REST Call. " + ex.toString());
+            LOG.error("Exception when performing the REST Call. " + ex.toString(), ex);
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
             message.setDescription(message.getDescription().replace("%SERVICE%", servicePath));
             message.setDescription(

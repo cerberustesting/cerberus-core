@@ -93,7 +93,7 @@ public class CreateTestDataLib extends HttpServlet {
 
         JSONObject jsonResponse = new JSONObject();
         Answer ans = new Answer();
-        AnswerItem ansItem = new AnswerItem();
+        AnswerItem ansItem = new AnswerItem<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         ans.setResultMessage(msg);
@@ -148,10 +148,10 @@ public class CreateTestDataLib extends HttpServlet {
             String script = fileData.get("script");
             String servicePath = fileData.get("servicepath");
             String method = fileData.get("method");
-            String envelope = fileData.get("envelope");
-            String csvUrl = fileData.get("csvUrl");
+            String envelope =fileData.get("envelope");
+            String csvUrl =fileData.get("csvUrl");
             String separator = fileData.get("separator");
-            String test = fileData.get("subdataCheck");
+            String activateAutoSubdata = fileData.get("subdataCheck");
             /**
              * Checking all constrains before calling the services.
              */
@@ -188,7 +188,7 @@ public class CreateTestDataLib extends HttpServlet {
                     logEventService.createForPrivateCalls("/CreateTestDataLib", "CREATE", "Create TestDataLib  : " + request.getParameter("name"), request);
                 }
 
-                List<TestDataLibData> tdldList = new ArrayList();
+                List<TestDataLibData> tdldList = new ArrayList<>();
                 TestDataLib dataLibWithUploadedFile = (TestDataLib) ansItem.getItem();
 
                 if (file != null) {
@@ -205,10 +205,10 @@ public class CreateTestDataLib extends HttpServlet {
                     tdldList = getSubDataFromParameter(request, appContext, dataLibWithUploadedFile.getTestDataLibID(), objSubDataArray);
                 }
 
-                if (file != null && test.equals("1")) {
+                    if (file != null && activateAutoSubdata != null && activateAutoSubdata.equals("1")) {
                     String firstLine = "";
                     String secondLine = "";
-                    try(BufferedReader reader = new BufferedReader(new FileReader(parameterService.getParameterStringByKey("cerberus_testdatalibCSV_path", "", null) + lib.getCsvUrl()));) {
+                    try (BufferedReader reader = new BufferedReader(new FileReader(parameterService.getParameterStringByKey("cerberus_testdatalibcsv_path", "", null) + lib.getCsvUrl()));) {
                         firstLine = reader.readLine();
                         secondLine = reader.readLine();
                         String[] firstLineSubData = (!dataLibWithUploadedFile.getSeparator().isEmpty()) ? firstLine.split(dataLibWithUploadedFile.getSeparator()) : firstLine.split(",");
@@ -216,7 +216,7 @@ public class CreateTestDataLib extends HttpServlet {
                         int i = 0;
                         int y = 1;
                         TestDataLibData firstLineLibData = tdldList.get(0);
-                        tdldList = new ArrayList();
+                        tdldList = new ArrayList<>();
                         if (StringUtil.isNullOrEmpty(firstLineLibData.getColumnPosition())) {
                             firstLineLibData.setColumnPosition("1");
                         }
@@ -264,7 +264,7 @@ public class CreateTestDataLib extends HttpServlet {
     }
 
     private List<TestDataLibData> getSubDataFromParameter(HttpServletRequest request, ApplicationContext appContext, int testDataLibId, JSONArray json) throws JSONException {
-        List<TestDataLibData> tdldList = new ArrayList();
+        List<TestDataLibData> tdldList = new ArrayList<>();
         IFactoryTestDataLibData tdldFactory = appContext.getBean(IFactoryTestDataLibData.class);
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
         String charset = request.getCharacterEncoding();
@@ -278,12 +278,12 @@ public class CreateTestDataLib extends HttpServlet {
             // Parameter that needs to be secured --> We SECURE+DECODE them
             // NONE
             // Parameter that we cannot secure as we need the html --> We DECODE them
-            String subdata = ParameterParserUtil.parseStringParamAndDecode(objectJson.getString("subData"), "", charset);
-            String value = ParameterParserUtil.parseStringParamAndDecode(objectJson.getString("value"), "", charset);
-            String column = ParameterParserUtil.parseStringParamAndDecode(objectJson.getString("column"), "", charset);
-            String parsingAnswer = ParameterParserUtil.parseStringParamAndDecode(objectJson.getString("parsingAnswer"), "", charset);
-            String columnPosition = ParameterParserUtil.parseStringParamAndDecode(objectJson.getString("columnPosition"), "", charset);
-            String description = ParameterParserUtil.parseStringParamAndDecode(objectJson.getString("description"), "", charset);
+            String subdata = ParameterParserUtil.parseStringParam(objectJson.getString("subData"), "");
+            String value = ParameterParserUtil.parseStringParam(objectJson.getString("value"), "");
+            String column = ParameterParserUtil.parseStringParam(objectJson.getString("column"), "");
+            String parsingAnswer = ParameterParserUtil.parseStringParam(objectJson.getString("parsingAnswer"), "");
+            String columnPosition = ParameterParserUtil.parseStringParam(objectJson.getString("columnPosition"), "");
+            String description = ParameterParserUtil.parseStringParam(objectJson.getString("description"), "");
 
             if (!delete) {
                 TestDataLibData tdld = tdldFactory.create(testDataLibDataId, testDataLibId, subdata, value, column, parsingAnswer, columnPosition, description);

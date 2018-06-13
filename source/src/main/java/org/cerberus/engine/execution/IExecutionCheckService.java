@@ -19,6 +19,7 @@
  */
 package org.cerberus.engine.execution;
 
+import org.cerberus.crud.entity.TestCase;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.crud.entity.TestCaseExecution;
 
@@ -31,5 +32,23 @@ import org.cerberus.crud.entity.TestCaseExecution;
  */
 public interface IExecutionCheckService {
 
+    /**
+     * Global method that checks if Execution can be triggered.
+     *
+     * @param tCExecution
+     * @return
+     */
     MessageGeneral checkTestCaseExecution(TestCaseExecution tCExecution);
+
+    /**
+     * Method that checks if testCase match the range of build revision on the
+     * corresponding environment.
+     *
+     * @param tc
+     * @param envBuild
+     * @param envRevision
+     * @param envSystem
+     * @return
+     */
+    boolean checkRangeBuildRevision(TestCase tc, String envBuild, String envRevision, String envSystem);
 }

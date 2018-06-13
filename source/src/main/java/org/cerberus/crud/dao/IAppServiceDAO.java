@@ -24,6 +24,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.fileupload.FileItem;
 import org.cerberus.crud.entity.AppService;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
@@ -31,7 +32,7 @@ import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 
 /**
- * Accès aux données de la table SoapLibrary
+ * Accès aux données de la table AppService
  *
  * @author cte
  */
@@ -93,9 +94,11 @@ public interface IAppServiceDAO {
     Answer delete(AppService object);
 
     /*
-     *  Load a {@link SoapLibrary} of a ResultSet
+     *  Load a {@link AppService} of a ResultSet
      *
      * @param rs the {@link ResultSet}
      */
     AppService loadFromResultSet(ResultSet rs) throws SQLException;
+    
+    Answer uploadFile(String service, FileItem file);
 }

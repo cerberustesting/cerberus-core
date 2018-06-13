@@ -107,7 +107,6 @@ public class TestCaseExecution {
     private Invariant CountryObj;
     private Test testObj;
     private TestCase testCaseObj;
-    private List<TestCase> preTestCaseList;
     private CountryEnvParam countryEnvParam;
     private CountryEnvironmentParameters countryEnvironmentParameters;
     private Invariant environmentDataObj;
@@ -137,13 +136,20 @@ public class TestCaseExecution {
     /**
      * Invariant PROPERTY TYPE String.
      */
-    public static final String CONTROLSTATUS_OK = "OK";
-    public static final String CONTROLSTATUS_KO = "KO";
-    public static final String CONTROLSTATUS_NA = "NA";
-    public static final String CONTROLSTATUS_PE = "PE";
-    public static final String CONTROLSTATUS_CA = "CA";
-    public static final String CONTROLSTATUS_FA = "FA";
-    public static final String CONTROLSTATUS_QU = "QU";
+    public static final String CONTROLSTATUS_OK = "OK"; // Test executed and everything was fine.
+    public static final String CONTROLSTATUS_KO = "KO"; // Test executed and 1 control has reported a bug. --> Ticket to be open for dev team.
+    public static final String CONTROLSTATUS_FA = "FA"; // Test failed to be executed. --> Problem is in the test itself.
+    public static final String CONTROLSTATUS_NA = "NA"; // Test could not be executed because no data could be retreive for testing.
+    public static final String CONTROLSTATUS_NE = "NE"; // Test was not executed.
+    public static final String CONTROLSTATUS_WE = "WE"; // Test is waiting for a manual testing.
+    public static final String CONTROLSTATUS_PE = "PE"; // Test is currently beeing executed.
+    public static final String CONTROLSTATUS_CA = "CA"; // Test has been cancelled by user.
+    public static final String CONTROLSTATUS_QU = "QU"; // Test is still waiting in queue.
+    public static final String CONTROLSTATUS_QE = "QE"; // Test is stuck in Queue.
+
+    public static final String MANUAL_Y = "Y";
+    public static final String MANUAL_N = "N";
+    public static final String MANUAL_A = "A";
 
     public String getSystem() {
         return system;
@@ -248,7 +254,6 @@ public class TestCaseExecution {
     public void setTestCaseExecutionDataMap(TreeMap<String, TestCaseExecutionData> testCaseExecutionDataMap) {
         this.testCaseExecutionDataMap = testCaseExecutionDataMap;
     }
-    public static final String CONTROLSTATUS_NE = "NE";
 
     public AppService getLastServiceCalled() {
         return lastServiceCalled;
@@ -806,14 +811,6 @@ public class TestCaseExecution {
         this.verbose = verbose;
     }
 
-    public List<TestCase> getPreTestCaseList() {
-        return preTestCaseList;
-    }
-
-    public void setPreTestCaseList(List<TestCase> PreTCase) {
-        this.preTestCaseList = PreTCase;
-    }
-
     public String getExecutor() {
         return executor;
     }
@@ -837,13 +834,13 @@ public class TestCaseExecution {
     public void setCapabilities(List<RobotCapability> capabilities) {
         this.capabilities = capabilities;
     }
-    
+
     public int getTestCaseVersion() {
-    	return this.testCaseVersion;
+        return this.testCaseVersion;
     }
-    
+
     public void setTestCaseVersion(int testCaseVersion) {
-    	this.testCaseVersion = testCaseVersion;
+        this.testCaseVersion = testCaseVersion;
     }
 
     /**

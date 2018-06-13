@@ -68,9 +68,9 @@ public class CountryEnvParamService implements ICountryEnvParamService {
 
     @Override
     public List<JSONObject> findActiveEnvironmentBySystemCountryApplication(String system, String country, String application) throws CerberusException {
-        List<JSONObject> result = new ArrayList();
+        List<JSONObject> result = new ArrayList<>();
         CountryEnvParam countryEnvParam = countryEnvParamFactory.create(system, country, true);
-        CountryEnvironmentParameters countryEnvironmentParameters = countryEnvironmentParametersFactory.create(system, country, null, application, null, null, null, null, null, null, null, null, CountryEnvironmentParameters.DEFAULT_POOLSIZE);
+        CountryEnvironmentParameters countryEnvironmentParameters = countryEnvironmentParametersFactory.create(system, country, null, application, null, null, null, null, null, null, null, null, CountryEnvironmentParameters.DEFAULT_POOLSIZE,null,null);
 
         List<CountryEnvironmentParameters> ceaList = countryEnvironmentParametersService.findCountryEnvironmentParametersByCriteria(countryEnvironmentParameters);
         List<CountryEnvParam> ceList = this.findCountryEnvParamByCriteria(countryEnvParam);
@@ -98,12 +98,12 @@ public class CountryEnvParamService implements ICountryEnvParamService {
     }
 
     @Override
-    public AnswerItem readByKey(String system, String country, String environment) {
+    public AnswerItem<CountryEnvParam> readByKey(String system, String country, String environment) {
         return countryEnvParamDao.readByKey(system, country, environment);
     }
 
     @Override
-    public AnswerList readActiveBySystem(String system) {
+    public AnswerList<CountryEnvParam> readActiveBySystem(String system) {
         return countryEnvParamDao.readActiveBySystem(system);
     }
 
@@ -149,7 +149,7 @@ public class CountryEnvParamService implements ICountryEnvParamService {
     }
 
     @Override
-    public CountryEnvParam convert(AnswerItem answerItem) throws CerberusException {
+    public CountryEnvParam convert(AnswerItem<CountryEnvParam> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (CountryEnvParam) answerItem.getItem();
@@ -158,7 +158,7 @@ public class CountryEnvParamService implements ICountryEnvParamService {
     }
 
     @Override
-    public List<CountryEnvParam> convert(AnswerList answerList) throws CerberusException {
+    public List<CountryEnvParam> convert(AnswerList<CountryEnvParam> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (List<CountryEnvParam>) answerList.getDataList();

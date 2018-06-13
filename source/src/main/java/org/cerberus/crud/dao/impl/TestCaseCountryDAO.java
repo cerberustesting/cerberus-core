@@ -236,7 +236,7 @@ public class TestCaseCountryDAO implements ITestCaseCountryDAO {
 
     @Override
     public AnswerItem readByKey(String test, String testCase, String country) {
-        AnswerItem answer = new AnswerItem();
+        AnswerItem answer = new AnswerItem<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         TestCaseCountry result = new TestCaseCountry();
@@ -299,8 +299,8 @@ public class TestCaseCountryDAO implements ITestCaseCountryDAO {
     }
 
     @Override
-    public AnswerList readByVarious1(String system, String test, String testCase) {
-        AnswerList answer = new AnswerList();
+    public AnswerList<TestCaseCountry> readByVarious1(String system, String test, String testCase) {
+        AnswerList<TestCaseCountry> answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<TestCaseCountry> testCaseCountryList = new ArrayList<TestCaseCountry>();
@@ -355,7 +355,7 @@ public class TestCaseCountryDAO implements ITestCaseCountryDAO {
 
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                     msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                    answer = new AnswerList(testCaseCountryList, testCaseCountryList.size());
+                    answer = new AnswerList<>(testCaseCountryList, testCaseCountryList.size());
 
                 } catch (SQLException exception) {
                     LOG.error("Unable to execute query : " + exception.toString());

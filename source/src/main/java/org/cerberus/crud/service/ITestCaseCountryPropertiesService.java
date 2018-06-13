@@ -33,7 +33,7 @@ public interface ITestCaseCountryPropertiesService {
     List<TestCaseCountryProperties> findListOfPropertyPerTestTestCaseCountry(String test, String testCase, String country);
 
     List<TestCaseCountryProperties> findListOfPropertyPerTestTestCase(String test, String testcase);
-    
+
     List<TestCaseCountryProperties> findOnePropertyPerTestTestCase(String test, String testcase, String oneproperty);
 
     List<TestCaseCountryProperties> findDistinctPropertiesOfTestCase(String test, String testcase);
@@ -55,17 +55,20 @@ public interface ITestCaseCountryPropertiesService {
     void deleteTestCaseCountryProperties(TestCaseCountryProperties tccp) throws CerberusException;
 
     /**
-     * Find all the properties of a testcase including those of the pretests and
-     * the use steps
+     * Find all the properties of a testcase including those of the preTests,
+     * postTests and the use steps
      *
      * @param test
      * @param testcase
      * @param country
+     * @param system
+     * @param build
+     * @param revision
      * @return List of unique testcasecountryproperties (from tc first, use step
      * if not found in tc and then, in pretest if not found)
      * @throws CerberusException
      */
-    public List<TestCaseCountryProperties> findAllWithDependencies(String test, String testcase, String country) throws CerberusException;
+    public List<TestCaseCountryProperties> findAllWithDependencies(String test, String testcase, String country, String system, String build, String revision) throws CerberusException;
 
     /**
      * Method that check if a determined property is used in the value1 of a
@@ -93,6 +96,6 @@ public interface ITestCaseCountryPropertiesService {
     Answer deleteList(List<TestCaseCountryProperties> objectList);
 
     Answer compareListAndUpdateInsertDeleteElements(String test, String testCase, List<TestCaseCountryProperties> newList);
-    
+
     Answer duplicateList(List<TestCaseCountryProperties> objectList, String targetTest, String targetTestCase);
 }

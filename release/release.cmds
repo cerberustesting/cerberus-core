@@ -1,0 +1,68 @@
+# List of commands to execute in order to release this project
+#
+# Prerequisities
+# --------------
+#
+#   1. Have Git 2.7+ installed
+#   2. Have Maven 3.3+ installed
+#   3. Be able to push, by using SSH, to [Cerberus Testing's repositories](https://github.com/cerberustesting)
+#   4. If you have not read it yet, read the runcmds's README file :-)
+#
+# How to run it
+# -------------
+#
+#   In order to run this command execution flow, use the runcmds tool by executing:
+#
+#   runcmds.sh
+#       -e RELEASE_VERSION <release version> \
+#       -e NEXT_DEVELOPMENT_VERSION <next development version> \
+#       -e DATABASE_VERSION <current database version> \
+#       -s ./release.cmds
+#
+#   Where:
+#       - <release version> is the needed release version
+#       - <next development version> is the next needed development version
+#       - <current database version> is the current database version
+
+
+#clone cerberus repository
+rm -rf cerberus-source
+git clone https://github.com/cerberustesting/cerberus-source.git
+cd cerberus-source
+
+# Prepare the release version
+# Update database version 
+database_version=$((${DATABASE_VERSION}+1))
+sqlLimit="Integer SQLLimit = "$database_version"; // "${RELEASE_VERSION}" Version LEVEL."
+awk -v sqlLimit="$sqlLimit" '{gsub(/Integer SQLLimit = (.*)/,sqlLimit,$0); print }' source/src/main/webapp/DatabaseMaintenance.jsp > source/src/main/webapp/DatabaseMaintenance.jsp.back && mv source/src/main/webapp/DatabaseMaintenance.jsp.back source/src/main/webapp/DatabaseMaintenance.jsp
+
+awk '/asadmin deploy/{print "$GLASSFISHPATH/asadmin undeploy --target server --cascade=true Cerberus-${RELEASE_VERSION}"}1' bin/02DeployApp.sh > bin/02DeployApp.sh.back && mv bin/02DeployApp.sh.back bin/02DeployApp.sh
+awk '/asadmin deploy/ {$0="$GLASSFISHPATH/asadmin deploy --target server --contextroot Cerberus --availabilityenabled=true $MYPATH/../Cerberus-${RELEASE_VERSION}.war"} {print}' bin/02DeployApp.sh > bin/02DeployApp.sh.back && mv bin/02DeployApp.sh.back bin/02DeployApp.sh
+awk '/asadmin.bat deploy/{print "CALL %GLASSFISHPATH%asadmin.bat undeploy --target server --cascade=true Cerberus-${RELEASE_VERSION}"}1' bin/02DeployApp.bat > bin/02DeployApp.bat.back && mv bin/02DeployApp.bat.back bin/02DeployApp.bat
+awk '/asadmin.bat deploy/ {$0="CALL %GLASSFISHPATH%asadmin.bat deploy --target server --contextroot Cerberus --availabilityenabled=true %MYPATH%\\..\\source\\target\\Cerberus-${RELEASE_VERSION}.war"} {print}' bin/02DeployApp.bat > bin/02DeployApp.bat.back && mv bin/02DeployApp.bat.back bin/02DeployApp.bat
+git add bin/02DeployApp.sh bin/02DeployApp.bat source/src/main/webapp/DatabaseMaintenance.jsp
+git commit -m 'chore:source prepare the new ${RELEASE_VERSION} version and update database version to ${DATABASE_VERSION}'
+
+# Execute release
+mvn --batch-mode -Prelease release:prepare -Dtag=cerberus-testing-${RELEASE_VERSION} -DreleaseVersion=${RELEASE_VERSION} -DdevelopmentVersion=${NEXT_DEVELOPMENT_VERSION}
+mvn release:perform
+git push origin master
+
+# Create new changelog file
+nextRelease=$(echo ${NEXT_DEVELOPMENT_VERSION} | grep -P '^.*(?=(\-SNAPSHOT))' -o)
+filenameAdoc="source/src/main/resources/documentation/include/en/changelog_"$nextRelease"_en.adoc"
+cp source/src/main/resources/documentation/include/en/changelog_template_en.adoc $filenameAdoc
+
+# Modify Homepage.jsp to display new changelog
+changelog="Changelog"${nextRelease/./}
+awk -v changelog="$changelog" '{gsub(/Changelog[1-9]+/,changelog,$0); print }' source/src/main/webapp/Homepage.jsp > source/src/main/webapp/Homepage.jsp.back && mv source/src/main/webapp/Homepage.jsp.back source/src/main/webapp/Homepage.jsp
+
+# Modify Homepage.js to display new changelog
+filenameHtml="changelog_"$nextRelease"_en.html"
+awk -v filenameHtml="$filenameHtml" '{gsub(/changelog_.+.html/,filenameHtml,$0); print }' source/src/main/webapp/js/pages/Homepage.js > source/src/main/webapp/js/pages/Homepage.js.back && mv source/src/main/webapp/js/pages/Homepage.js.back source/src/main/webapp/js/pages/Homepage.js
+changelogTitle="Changelog "$nextRelease
+awk -v changelogTitle="$changelogTitle" '{gsub(/Changelog.+[1-9]/,changelogTitle,$0); print }' source/src/main/webapp/js/pages/Homepage.js > source/src/main/webapp/js/pages/Homepage.js.back && mv source/src/main/webapp/js/pages/Homepage.js.back source/src/main/webapp/js/pages/Homepage.js
+
+git add source/src/main/webapp/Homepage.jsp source/src/main/webapp/js/pages/Homepage.js "source/src/main/resources/documentation/include/en/changelog_"$nextRelease"_en.adoc"
+git commit -m 'create a new changelog file for the next version'
+git push origin master

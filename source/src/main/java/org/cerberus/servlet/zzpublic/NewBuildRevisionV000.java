@@ -163,7 +163,7 @@ public class NewBuildRevisionV000 extends HttpServlet {
             MessageEvent msg = new MessageEvent(MessageEventEnum.GENERIC_OK);
             Answer finalAnswer = new Answer(msg);
 
-            AnswerList answerList = new AnswerList();
+            AnswerList answerList = new AnswerList<>();
             if (country.equalsIgnoreCase(PARAMETERALL)) {
                 country = null;
             }
@@ -222,12 +222,12 @@ public class NewBuildRevisionV000 extends HttpServlet {
 
                     if (OutputMessage.equals("")) {
                         msg = new MessageEvent(MessageEventEnum.GENERIC_OK);
-                        Answer answerSMTP = new AnswerList(msg);
+                        Answer answerSMTP = new AnswerList<>(msg);
                         finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, answerSMTP);
                     } else {
                         msg = new MessageEvent(MessageEventEnum.GENERIC_WARNING);
                         msg.setDescription(msg.getDescription().replace("%REASON%", OutputMessage + " when sending email for " + cepData.getSystem() + "/" + cepData.getCountry() + "/" + cepData.getEnvironment()));
-                        Answer answerSMTP = new AnswerList(msg);
+                        Answer answerSMTP = new AnswerList<>(msg);
                         finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, answerSMTP);
                     }
                 }

@@ -139,4 +139,14 @@ public interface ITestDataLibDAO {
      * @return
      */
     public AnswerList<List<String>> readDistinctValuesByCriteria(String searchTerm, Map<String, List<String>> individualSearch, String columnName);
+    
+    
+    /**
+     * Perform a massive rename for DataLib and impacted properties
+     *
+     * @param oldName
+     * @param newName
+     * @return
+     */
+    public Answer bulkRenameDataLib(String oldName, String newName);
 }

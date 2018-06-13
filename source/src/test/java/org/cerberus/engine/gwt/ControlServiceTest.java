@@ -19,7 +19,7 @@
  */
 package org.cerberus.engine.gwt;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.engine.entity.Identifier;
 import org.cerberus.engine.entity.Session;

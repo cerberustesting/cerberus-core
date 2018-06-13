@@ -1,3 +1,5 @@
+=== Application
+
 In this section, you will find information on application configuration in Cerberus.
 
 image:applicationpage.png[ApplicationPage]

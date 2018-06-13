@@ -209,7 +209,7 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
     }
 
     @Override
-    public TestCaseExecutionQueue convert(AnswerItem answerItem) throws CerberusException {
+    public TestCaseExecutionQueue convert(AnswerItem<TestCaseExecutionQueue> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (TestCaseExecutionQueue) answerItem.getItem();
@@ -218,7 +218,7 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
     }
 
     @Override
-    public List<TestCaseExecutionQueue> convert(AnswerList answerList) throws CerberusException {
+    public List<TestCaseExecutionQueue> convert(AnswerList<TestCaseExecutionQueue> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (List<TestCaseExecutionQueue>) answerList.getDataList();
@@ -242,7 +242,7 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
         String environment = testCaseExecutionInQueue.getEnvironment();
         String country = testCaseExecutionInQueue.getCountry();
         String browser = testCaseExecutionInQueue.getBrowser();
-        String robotDecli = testCaseExecutionInQueue.getRobot();
+        String robotDecli = testCaseExecutionInQueue.getRobotDecli();
         if (StringUtil.isNullOrEmpty(robotDecli)) {
             if (!StringUtil.isNullOrEmpty(browser)) {
                 robotDecli = browser;
@@ -256,6 +256,14 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
         long end = 0;
         String controlStatus = TestCaseExecution.CONTROLSTATUS_QU;
         String controlMessage = "Queued with State : " + testCaseExecutionInQueue.getState().name() + " - " + testCaseExecutionInQueue.getComment();
+        if (testCaseExecutionInQueue.getState().name().equals(TestCaseExecutionQueue.State.QUEUED.name())
+                || testCaseExecutionInQueue.getState().name().equals(TestCaseExecutionQueue.State.WAITING.name())
+                || testCaseExecutionInQueue.getState().name().equals(TestCaseExecutionQueue.State.STARTING.name())) {
+            controlStatus = TestCaseExecution.CONTROLSTATUS_QU;
+        } else {
+            controlStatus = TestCaseExecution.CONTROLSTATUS_QE;
+
+        }
         Application applicationObj = testCaseExecutionInQueue.getApplicationObj();
         String application = testCaseExecutionInQueue.getApplicationObj() != null ? testCaseExecutionInQueue.getApplicationObj().getApplication() : "";
         String ip = testCaseExecutionInQueue.getRobotIP();
@@ -285,7 +293,7 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
         TestCaseExecution result = factoryTestCaseExecution.create(0, test, testCase, description, null, null, environment, country, browser, version, platform,
                 browser, start, end, controlStatus, controlMessage, application, applicationObj, ip, "", port, tag, verbose, screenshot, pageSource,
                 seleniumLog, synchroneous, timeout, outputFormat, "", "", tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL,
-                myEnvData, seleniumIP, seleniumPort, null, null, null, retry, "", null, "", "", "", "", "", manualExecution, "",0, "", robotDecli);
+                myEnvData, seleniumIP, seleniumPort, null, null, null, retry, "", null, "", "", "", "", "", manualExecution, "", 0, "", robotDecli);
         result.setQueueID(testCaseExecutionInQueue.getId());
         result.setQueueState(testCaseExecutionInQueue.getState().name());
         result.setId(testCaseExecutionInQueue.getExeId());

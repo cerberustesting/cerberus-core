@@ -1,0 +1,51 @@
+<!-- DataLib Bulk Rename -->
+<div data-backdrop="static" class="modal fade center"
+	id="bulkRenameDataLibModal" tabindex="-1" role="dialog"
+	aria-labelledby="bulkRenameDataLibModalLabel" aria-hidden="true">
+	<div class="modal-dialog nomargintop nomarginbottom modal-l">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"
+					aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<h4 class="modal-title" id="bulkRenameDataLibModalLabel">
+					<span id="bulkRenameDataLibModalTitle">Bulk Rename</span>
+				</h4>
+			</div>
+			<div class="modal-body">
+				<form id="bulkRenameDataLibData" role="form">
+					<!-- messages area-->
+					<div id="DialogMessagesAreaEdit">
+						<div class="alert" id="DialogMessagesAlertBulkRename"
+							style="display: none;">
+							<strong><span class="alert-description"
+								id="DialogAlertDescriptionBulkRename"></span></strong>
+							<button type="button" class="close" data-hide="alert"
+								aria-hidden="true">
+								<span
+									class="glyphicon glyphicon-remove alert-right alert-close pull-right"></span>
+							</button>
+						</div>
+					</div>
+					<!-- current name and old name -->
+					<div class="row">
+						<div class="form-group col-xs-6">
+							<label id="lbl_currentname" for="system" name='lbl_currentname'>Current Name JSP</label>
+							<input id="dl_currentname" name="currentname" class="form-control"/>
+						</div>
+						<div class="form-group col-xs-6">
+							<label id="lbl_newname" for="environment" name='lbl_newname'>New Name JSP</label>
+							<input id="dl_newname" name="newname" class="form-control"/>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal" name="buttonClose">Close</button>
+				<button type="button" id="bulkRenameValidate" class="btn btn-primary" name="bulkRename">Rename</button>
+			</div>
+		</div>
+	</div>
+</div>
+<!--end <!-- DataLib Bulk Rename--> 

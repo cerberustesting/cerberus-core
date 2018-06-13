@@ -84,22 +84,16 @@ public class TestCaseStepAction {
     public static final String ACTION_EXECUTESQLSTOREPROCEDURE = "executeSqlStoredProcedure";
     public static final String ACTION_CALCULATEPROPERTY = "calculateProperty";
     public static final String ACTION_DONOTHING = "doNothing";
-    @Deprecated
+    public static final String ACTION_EXECUTECOMMAND = "executeCommand";
+    public static final String ACTION_SCROLLTO = "scrollTo";
+    public static final String ACTION_INSTALLAPP = "installApp";
+    public static final String ACTION_REMOVEAPP = "removeApp";
+
+
+    // DEPRECATED
     public static final String ACTION_REMOVEDIFFERENCE = "removeDifference";
-    @Deprecated
     public static final String ACTION_MOUSEOVERANDWAIT = "mouseOverAndWait";
-    @Deprecated
-    public static final String ACTION_GETPAGESOURCE = "getPageSource";
-    @Deprecated
-    public static final String ACTION_CICKANDWAIT = "clickAndWait";
-    @Deprecated
-    public static final String ACTION_ENTER = "enter";
-    @Deprecated
-    public static final String ACTION_SELECTANDWAIT = "selectAndWait";
-    @Deprecated
-    public static final String ACTION_TAKESCREENSHOT = "takeScreenshot";
-    @Deprecated
-    public static final String ACTION_CLICKANDWAIT = "clickAndWait";
+
     /**
      * Invariant FORCEEXESTATUS String.
      */

@@ -74,7 +74,7 @@ services:
        - cerberus-db-mysql
   # Selenium-related services
   selenium-hub:
-    image: selenium/hub:2.53.0
+    image: selenium/hub:latest
     expose:
       - "4444"
     ports:
@@ -83,9 +83,9 @@ services:
       - /etc/localtime:/etc/localtime:ro
     restart: always
   selenium-node-firefox:
-    image: selenium/node-firefox-debug:2.53.0
+    image: selenium/node-firefox-debug:latest
     environment:
-      HUB_PORT_4444_TCP_ADDR: selenium-hub
+      HUB_HOST: selenium-hub
     expose:
       - "5900"
     ports:
@@ -94,9 +94,9 @@ services:
       - /etc/localtime:/etc/localtime:ro
     restart: always
   selenium-node-chrome:
-    image: selenium/node-chrome-debug:2.53.0
+    image: selenium/node-chrome-debug:latest
     environment:
-      HUB_PORT_4444_TCP_ADDR: selenium-hub
+      HUB_HOST: selenium-hub
     expose:
       - "5900"
     ports:

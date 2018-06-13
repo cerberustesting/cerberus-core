@@ -11,6 +11,13 @@ Hereafter list of available tags:
 Tag     | Description                        | Source
 --------|------------------------------------|-------------------------------
 latest  | Use the latest Cerberus version    | [latest/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/latest/Dockerfile)
+3.6   | Use the 3.6 Cerberus version     | [3.6/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/3.6/Dockerfile)
+3.5   | Use the 3.5 Cerberus version     | [3.5/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/3.5/Dockerfile)
+${RELEASE_VERSION}   | Use the ${RELEASE_VERSION} Cerberus version     | [${RELEASE_VERSION}/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/${RELEASE_VERSION}/Dockerfile)
+${RELEASE_VERSION}   | Use the ${RELEASE_VERSION} Cerberus version     | [${RELEASE_VERSION}/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/${RELEASE_VERSION}/Dockerfile)
+3.4   | Use the 3.4 Cerberus version     | [3.4/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/3.4/Dockerfile)
+3.4   | Use the 3.4 Cerberus version     | [3.4/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/3.4/Dockerfile)
+3.4   | Use the 3.4 Cerberus version     | [3.4/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/3.4/Dockerfile)
 3.3   | Use the 3.3 Cerberus version     | [3.3/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/3.3/Dockerfile)
 3.2   | Use the 3.2 Cerberus version     | [3.2/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/3.2/Dockerfile)
 3.1.0   | Use the 3.1.0 Cerberus version     | [3.1.0/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/3.1.0/Dockerfile)
@@ -46,6 +53,9 @@ To run image by connecting to a MySQL Cerberus database located at `<database_ho
 
     docker run -d -P -e DATABASE_HOST='<database_host>' -e DATABASE_PORT='<database_port>' cerberustesting/cerberus-as-glassfish:latest
 
+### Docker compose
+An example of docker-compose file is available [here](https://github.com/cerberustesting/cerberus-source/tree/master/docker/compositions/cerberus-glassfish-mysql)
+
 ### Configure the running Cerberus instance
 
 **Important**: Additional runtime configuration has to be made:
@@ -74,8 +84,8 @@ Environment variable                    | Definition                            
 `DATABASE_USER`                         | Cerberus database user                    | `cerberus`
 `DATABASE_PASSWORD`                     | Cerberus database password                | `toto`
 `GLASSFISH_HTTP_THREADPOOL_MAX_SIZE`    | Glassfish HTTP thread pool maximum size   | `500`
-`GLASSFISH_DOMAIN`                      | Glassfish domain name (cerberus by default | `500`
-`GLASSFISH_ADMIN_PASSWORD`              | Glassfish admin password                  | `500`
+`GLASSFISH_DOMAIN`                      | Glassfish domain name (cerberus by default | `domain1`
+`GLASSFISH_ADMIN_PASSWORD`              | Glassfish admin password                  | `admin`
 
 ## Exposed ports
 

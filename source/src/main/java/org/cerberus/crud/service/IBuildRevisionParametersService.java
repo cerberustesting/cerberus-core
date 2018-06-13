@@ -134,7 +134,7 @@ public interface IBuildRevisionParametersService {
      * @return
      * @throws CerberusException
      */
-    BuildRevisionParameters convert(AnswerItem answerItem) throws CerberusException;
+    BuildRevisionParameters convert(AnswerItem<BuildRevisionParameters> answerItem) throws CerberusException;
 
     /**
      *
@@ -142,7 +142,7 @@ public interface IBuildRevisionParametersService {
      * @return
      * @throws CerberusException
      */
-    List<BuildRevisionParameters> convert(AnswerList answerList) throws CerberusException;
+    List<BuildRevisionParameters> convert(AnswerList<BuildRevisionParameters> answerList) throws CerberusException;
 
     /**
      *

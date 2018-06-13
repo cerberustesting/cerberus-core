@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.cerberus.service.xmlunit.impl.XmlUnitService;
 import org.cerberus.service.xmlunit.Differences;

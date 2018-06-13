@@ -304,7 +304,7 @@ public class UserSystemDAO implements IUserSystemDAO {
 
     @Override
     public AnswerList<UserSystem> readByUser(String login) {
-        AnswerList ans = new AnswerList();
+        AnswerList ans = new AnswerList<>();
         MessageEvent msg = null;
 
         try (Connection connection = databaseSpring.connect();

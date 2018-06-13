@@ -44,5 +44,44 @@ public interface IAppiumService {
     MessageEvent swipe(Session session, SwipeAction swipeAction);
     
     Direction getDirectionForSwipe(Session session, SwipeAction action) throws IllegalArgumentException;
-    
+
+    MessageEvent executeCommand(Session session, String cmd, String args) throws IllegalArgumentException;
+
+    /**
+     * Scroll to an element or a text
+     * @param session
+     * @param element if not null or not empty, switch to this element
+     * @param text if not null or not empty, switch to this text
+     * @return
+     * @throws IllegalArgumentException
+     */
+    MessageEvent scrollTo(Session session, Identifier element, String text) throws IllegalArgumentException;
+
+
+    /**
+     * install an application on mobile devices
+     * @param session
+     * @param appPath
+     * @return
+     * @throws IllegalArgumentException
+     */
+    MessageEvent installApp(Session session, String appPath) throws IllegalArgumentException;
+
+    /**
+     * uninstall an application on mobile devices
+     * @param session
+     * @param appPackage
+     * @return
+     * @throws IllegalArgumentException
+     */
+    MessageEvent removeApp(Session session, String appPackage) throws IllegalArgumentException;
+
+    /**
+     * Open application
+     * @param session
+     * @param appPackage
+     * @param appActivity
+     * @return
+     */
+    MessageEvent openApp(Session session, String appPackage, String appActivity);
 }

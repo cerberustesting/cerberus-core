@@ -203,11 +203,11 @@ public class SoapService implements ISoapService {
 
     @Override
     public AnswerItem<AppService> callSOAP(String envelope, String servicePath, String soapOperation, String attachmentUrl, List<AppServiceHeader> header, String token, int timeOutMs, String system) {
-        AnswerItem result = new AnswerItem();
+        AnswerItem result = new AnswerItem<>();
         String unescapedEnvelope = StringEscapeUtils.unescapeXml(envelope);
         boolean is12SoapVersion = SOAP_1_2_NAMESPACE_PATTERN.matcher(unescapedEnvelope).matches();
 
-        AppService serviceSOAP = factoryAppService.create("", AppService.TYPE_SOAP, null, "", "", envelope, "", servicePath, "", soapOperation, "", null, "", null);
+        AppService serviceSOAP = factoryAppService.create("", AppService.TYPE_SOAP, null, "", "", envelope, "", servicePath, "", soapOperation, "", null, "", null, null);
         serviceSOAP.setTimeoutms(timeOutMs);
         ByteArrayOutputStream out = null;
         MessageEvent message = null;

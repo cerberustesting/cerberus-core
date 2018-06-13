@@ -63,7 +63,7 @@ public class VariableService implements IVariableService {
             TestCaseStepActionExecution testCaseStepActionExecution, boolean forceCalculation) throws CerberusEventException {
 
         MessageEvent msg = new MessageEvent(MessageEventEnum.DECODE_SUCCESS);
-        AnswerItem<String> answer = new AnswerItem();
+        AnswerItem<String> answer = new AnswerItem<>();
         answer.setResultMessage(msg);
         answer.setItem(stringToDecode);
 
@@ -210,10 +210,12 @@ public class VariableService implements IVariableService {
             stringToDecode = stringToDecode.replace("%SYS_BROWSER%", tCExecution.getBrowser());
             stringToDecode = stringToDecode.replace("%SYS_APP_DOMAIN%", tCExecution.getCountryEnvironmentParameters().getDomain());
             stringToDecode = stringToDecode.replace("%SYS_APP_HOST%", tCExecution.getCountryEnvironmentParameters().getIp());
+            stringToDecode = stringToDecode.replace("%SYS_APP_CONTEXTROOT%", tCExecution.getCountryEnvironmentParameters().getUrl());
             stringToDecode = stringToDecode.replace("%SYS_APP_VAR1%", tCExecution.getCountryEnvironmentParameters().getVar1());
             stringToDecode = stringToDecode.replace("%SYS_APP_VAR2%", tCExecution.getCountryEnvironmentParameters().getVar2());
             stringToDecode = stringToDecode.replace("%SYS_APP_VAR3%", tCExecution.getCountryEnvironmentParameters().getVar3());
             stringToDecode = stringToDecode.replace("%SYS_APP_VAR4%", tCExecution.getCountryEnvironmentParameters().getVar4());
+            stringToDecode = stringToDecode.replace("%SYS_EXEURL%", tCExecution.getUrl());
             stringToDecode = stringToDecode.replace("%SYS_ENV%", tCExecution.getEnvironmentData());
             stringToDecode = stringToDecode.replace("%SYS_ENVGP%", tCExecution.getEnvironmentDataObj().getGp1());
             stringToDecode = stringToDecode.replace("%SYS_COUNTRY%", tCExecution.getCountry());
@@ -243,10 +245,12 @@ public class VariableService implements IVariableService {
             stringToDecode = stringToDecode.replace("%system.BROWSER%", tCExecution.getBrowser());
             stringToDecode = stringToDecode.replace("%system.APP_DOMAIN%", tCExecution.getCountryEnvironmentParameters().getDomain());
             stringToDecode = stringToDecode.replace("%system.APP_HOST%", tCExecution.getCountryEnvironmentParameters().getIp());
+            stringToDecode = stringToDecode.replace("%system.APP_CONTEXTROOT%", tCExecution.getCountryEnvironmentParameters().getUrl());
             stringToDecode = stringToDecode.replace("%system.APP_VAR1%", tCExecution.getCountryEnvironmentParameters().getVar1());
             stringToDecode = stringToDecode.replace("%system.APP_VAR2%", tCExecution.getCountryEnvironmentParameters().getVar2());
             stringToDecode = stringToDecode.replace("%system.APP_VAR3%", tCExecution.getCountryEnvironmentParameters().getVar3());
             stringToDecode = stringToDecode.replace("%system.APP_VAR4%", tCExecution.getCountryEnvironmentParameters().getVar4());
+            stringToDecode = stringToDecode.replace("%system.EXEURL%", tCExecution.getUrl());
             stringToDecode = stringToDecode.replace("%system.ENV%", tCExecution.getEnvironmentData());
             stringToDecode = stringToDecode.replace("%system.ENVGP%", tCExecution.getEnvironmentDataObj().getGp1());
             stringToDecode = stringToDecode.replace("%system.COUNTRY%", tCExecution.getCountry());
@@ -350,6 +354,10 @@ public class VariableService implements IVariableService {
             stringToDecode = stringToDecode.replace("%SYS_YESTERDAY-HH%", DateUtil.getYesterdayFormat("HH"));
             stringToDecode = stringToDecode.replace("%SYS_YESTERDAY-mm%", DateUtil.getYesterdayFormat("mm"));
             stringToDecode = stringToDecode.replace("%SYS_YESTERDAY-ss%", DateUtil.getYesterdayFormat("ss"));
+            stringToDecode = stringToDecode.replace("%SYS_TOMORROW-yyyy%", DateUtil.getTomorrowFormat("yyyy"));
+            stringToDecode = stringToDecode.replace("%SYS_TOMORROW-MM%", DateUtil.getTomorrowFormat("MM"));
+            stringToDecode = stringToDecode.replace("%SYS_TOMORROW-dd%", DateUtil.getTomorrowFormat("dd"));
+            stringToDecode = stringToDecode.replace("%SYS_TOMORROW-doy%", DateUtil.getTomorrowFormat("D"));
             //New syntax
             stringToDecode = stringToDecode.replace("%system.TODAY-yyyy%", DateUtil.getTodayFormat("yyyy"));
             stringToDecode = stringToDecode.replace("%system.TODAY-MM%", DateUtil.getTodayFormat("MM"));
@@ -365,6 +373,10 @@ public class VariableService implements IVariableService {
             stringToDecode = stringToDecode.replace("%system.YESTERDAY-HH%", DateUtil.getYesterdayFormat("HH"));
             stringToDecode = stringToDecode.replace("%system.YESTERDAY-mm%", DateUtil.getYesterdayFormat("mm"));
             stringToDecode = stringToDecode.replace("%system.YESTERDAY-ss%", DateUtil.getYesterdayFormat("ss"));
+            stringToDecode = stringToDecode.replace("%system.TOMORROW-yyyy%", DateUtil.getTomorrowFormat("yyyy"));
+            stringToDecode = stringToDecode.replace("%system.TOMORROW-MM%", DateUtil.getTomorrowFormat("MM"));
+            stringToDecode = stringToDecode.replace("%system.TOMORROW-dd%", DateUtil.getTomorrowFormat("dd"));
+            stringToDecode = stringToDecode.replace("%system.TOMORROW-doy%", DateUtil.getTomorrowFormat("D"));
 
             return stringToDecode;
 

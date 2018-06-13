@@ -66,11 +66,13 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
     private static final String TABLE_APPLICATION = "application";
 
     private static final String COLUMN_ID = "ID";
+    private static final String COLUMN_SYSTEM = "System";
     private static final String COLUMN_TEST = "Test";
     private static final String COLUMN_TEST_CASE = "TestCase";
     private static final String COLUMN_COUNTRY = "Country";
     private static final String COLUMN_ENVIRONMENT = "Environment";
     private static final String COLUMN_ROBOT = "Robot";
+    private static final String COLUMN_ROBOTDECLI = "RobotDecli";
     private static final String COLUMN_ROBOT_IP = "RobotIP";
     private static final String COLUMN_ROBOT_PORT = "RobotPort";
     private static final String COLUMN_BROWSER = "Browser";
@@ -239,7 +241,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
     @Override
     public AnswerList readByTagByCriteria(String tag, int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-        AnswerList answer = new AnswerList();
+        AnswerList answer = new AnswerList<>();
         List<String> individalColumnSearchValues = new ArrayList<String>();
 
         final StringBuilder query = new StringBuilder();
@@ -318,7 +320,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                     }
 
                     msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCaseExecutionInQueue").replace("%OPERATION%", "SELECT"));
-                    answer = new AnswerList(testCaseExecutionInQueueList, testCaseExecutionInQueueList.size());
+                    answer = new AnswerList<>(testCaseExecutionInQueueList, testCaseExecutionInQueueList.size());
                 } catch (SQLException exception) {
                     LOG.error("Unable to execute query : " + exception.toString());
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -362,7 +364,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
     @Override
     public AnswerList readByVarious1(String tag, List<String> stateList, boolean withDependencies) throws CerberusException {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-        AnswerList answer = new AnswerList();
+        AnswerList answer = new AnswerList<>();
 
         final StringBuilder query = new StringBuilder();
 
@@ -399,7 +401,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                     }
 
                     msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCaseExecutionInQueue").replace("%OPERATION%", "SELECT"));
-                    answer = new AnswerList(testCaseExecutionInQueueList, testCaseExecutionInQueueList.size());
+                    answer = new AnswerList<>(testCaseExecutionInQueueList, testCaseExecutionInQueueList.size());
                 } catch (SQLException exception) {
                     LOG.error("Unable to execute query : " + exception.toString());
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -443,7 +445,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
     @Override
     public AnswerList readByVarious2(List<String> stateList) throws CerberusException {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-        AnswerList answer = new AnswerList();
+        AnswerList answer = new AnswerList<>();
 
         final StringBuilder query = new StringBuilder();
 
@@ -475,7 +477,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                     }
 
                     msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCaseExecutionInQueue").replace("%OPERATION%", "SELECT"));
-                    answer = new AnswerList(testCaseExecutionInQueueList, testCaseExecutionInQueueList.size());
+                    answer = new AnswerList<>(testCaseExecutionInQueueList, testCaseExecutionInQueueList.size());
                 } catch (SQLException exception) {
                     LOG.error("Unable to execute query : " + exception.toString());
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -515,7 +517,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
     @Override
     public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
 
-        AnswerList response = new AnswerList();
+        AnswerList response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<TestCaseExecutionQueue> objectList = new ArrayList<TestCaseExecutionQueue>();
@@ -608,14 +610,14 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                         LOG.error("Partial Result in the query.");
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                        response = new AnswerList(objectList, nrTotalRows);
+                        response = new AnswerList<>(objectList, nrTotalRows);
                     } else if (objectList.size() <= 0) {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                        response = new AnswerList(objectList, nrTotalRows);
+                        response = new AnswerList<>(objectList, nrTotalRows);
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                         msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                        response = new AnswerList(objectList, nrTotalRows);
+                        response = new AnswerList<>(objectList, nrTotalRows);
                     }
 
                 } catch (SQLException exception) {
@@ -729,7 +731,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
 
     @Override
     public AnswerList readDistinctEnvCountryBrowserByTag(String tag) {
-        AnswerList answer = new AnswerList();
+        AnswerList answer = new AnswerList<>();
         StringBuilder query = new StringBuilder();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
 
@@ -750,7 +752,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                         EnvCountryBrowserList.add(this.loadFromResultSet(resultSet));
                     }
                     msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCaseExecutionInQueue").replace("%OPERATION%", "SELECT"));
-                    answer = new AnswerList(EnvCountryBrowserList, EnvCountryBrowserList.size());
+                    answer = new AnswerList<>(EnvCountryBrowserList, EnvCountryBrowserList.size());
                 } catch (SQLException exception) {
                     LOG.warn("Unable to execute query : " + exception.toString());
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -796,7 +798,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
 
     @Override
     public AnswerList readDistinctColumnByTag(String tag, boolean env, boolean country, boolean browser, boolean app) {
-        AnswerList answer = new AnswerList();
+        AnswerList answer = new AnswerList<>();
         StringBuilder query = new StringBuilder();
         StringBuilder distinct = new StringBuilder();
         int prev = 0;
@@ -878,7 +880,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                         column.add(tmp);
                     }
                     msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCaseExecution").replace("%OPERATION%", "SELECT"));
-                    answer = new AnswerList(column, column.size());
+                    answer = new AnswerList<>(column, column.size());
                 } catch (SQLException exception) {
                     LOG.warn("Unable to execute query : " + exception.toString());
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -919,7 +921,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
 
     @Override
     public AnswerList readDistinctValuesByCriteria(String columnName, String sort, String searchTerm, Map<String, List<String>> individualSearch, String column) {
-        AnswerList answer = new AnswerList();
+        AnswerList answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<String> distinctValues = new ArrayList<>();
@@ -962,7 +964,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
         }
         try (Connection connection = databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(query.toString());
-        		Statement stm = connection.createStatement();) {
+                Statement stm = connection.createStatement();) {
 
             int i = 1;
             if (!StringUtil.isNullOrEmpty(searchTerm)) {
@@ -979,15 +981,14 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                 preStat.setString(i++, individualColumnSearchValue);
             }
 
-            try(ResultSet resultSet = preStat.executeQuery();
-            		ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");){
-            	//gets the data
+            try (ResultSet resultSet = preStat.executeQuery();
+                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+                //gets the data
                 while (resultSet.next()) {
                     distinctValues.add(resultSet.getString("distinctValues") == null ? "" : resultSet.getString("distinctValues"));
                 }
 
                 //get the total number of rows
-                
                 int nrTotalRows = 0;
 
                 if (rowSet != null && rowSet.next()) {
@@ -998,16 +999,16 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                     LOG.error("Partial Result in the query.");
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                    answer = new AnswerList(distinctValues, nrTotalRows);
+                    answer = new AnswerList<>(distinctValues, nrTotalRows);
                 } else if (distinctValues.size() <= 0) {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                    answer = new AnswerList(distinctValues, nrTotalRows);
+                    answer = new AnswerList<>(distinctValues, nrTotalRows);
                 } else {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                     msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                    answer = new AnswerList(distinctValues, nrTotalRows);
+                    answer = new AnswerList<>(distinctValues, nrTotalRows);
                 }
-            }catch (SQLException e) {
+            } catch (SQLException e) {
                 LOG.warn("Unable to execute query : " + e.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
                         e.toString());
@@ -1028,7 +1029,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
 
     @Override
     public AnswerList findTagList(int tagnumber) {
-        AnswerList response = new AnswerList();
+        AnswerList response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
         List<String> list = null;
         StringBuilder query = new StringBuilder();
@@ -1088,7 +1089,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
 
     @Override
     public AnswerList readBySystemByVarious(String system, List<String> testList, List<String> applicationList, List<String> projectList, List<String> tcstatusList, List<String> groupList, List<String> tcactiveList, List<String> priorityList, List<String> targetsprintList, List<String> targetrevisionList, List<String> creatorList, List<String> implementerList, List<String> buildList, List<String> revisionList, List<String> environmentList, List<String> countryList, List<String> browserList, List<String> tcestatusList, String ip, String port, String tag, String browserversion, String comment, String bugid, String ticket) {
-        AnswerList answer = new AnswerList();
+        AnswerList answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
         List<TestCaseExecutionQueue> tceList = new ArrayList<TestCaseExecutionQueue>();
         List<String> whereClauses = new LinkedList<String>();
@@ -1414,15 +1415,15 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
         try (Connection connection = this.databaseSpring.connect();
                 PreparedStatement selectStatement = connection.prepareStatement(query);) {
             selectStatement.setLong(1, id);
-            try(ResultSet result = selectStatement.executeQuery();){
-            	if (!result.next()) {
+            try (ResultSet result = selectStatement.executeQuery();) {
+                if (!result.next()) {
                     throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
                 }
                 return loadWithDependenciesFromResultSet(result);
-            }catch (SQLException exception) {
+            } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
                 throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
-            } 
+            }
         } catch (SQLException | FactoryCreationException e) {
             LOG.warn("Unable to find test case execution in queue " + id, e);
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
@@ -1434,13 +1435,13 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
         TestCaseExecutionQueue newObject = object;
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO `" + TABLE + "` (`" + COLUMN_TEST + "`, `" + COLUMN_TEST_CASE + "`, `" + COLUMN_COUNTRY + "`, `" + COLUMN_ENVIRONMENT + "`, `" + COLUMN_ROBOT
-                + "`, `" + COLUMN_ROBOT_IP + "`, `" + COLUMN_ROBOT_PORT + "`, `" + COLUMN_BROWSER + "`, `" + COLUMN_BROWSER_VERSION + "`, `" + COLUMN_PLATFORM
+        query.append("INSERT INTO `" + TABLE + "` (`" + COLUMN_SYSTEM + "`, `" + COLUMN_TEST + "`, `" + COLUMN_TEST_CASE + "`, `" + COLUMN_COUNTRY + "`, `" + COLUMN_ENVIRONMENT + "`, `" + COLUMN_ROBOT
+                + "`, `" + COLUMN_ROBOTDECLI + "`, `" + COLUMN_ROBOT_IP + "`, `" + COLUMN_ROBOT_PORT + "`, `" + COLUMN_BROWSER + "`, `" + COLUMN_BROWSER_VERSION + "`, `" + COLUMN_PLATFORM
                 + "`, `" + COLUMN_SCREENSIZE + "`, `" + COLUMN_MANUAL_URL + "`, `" + COLUMN_MANUAL_HOST + "`, `" + COLUMN_MANUAL_CONTEXT_ROOT + "`, `"
                 + COLUMN_MANUAL_LOGIN_RELATIVE_URL + "`, `" + COLUMN_MANUAL_ENV_DATA + "`, `" + COLUMN_TAG + "`, `" + COLUMN_SCREENSHOT + "`, `" + COLUMN_VERBOSE + "`, `"
                 + COLUMN_TIMEOUT + "`, `" + COLUMN_PAGE_SOURCE + "`, `" + COLUMN_SELENIUM_LOG + "`, `" + COLUMN_RETRIES + "`, `"
                 + COLUMN_MANUAL_EXECUTION + "`, `" + COLUMN_USRCREATED + "`, `" + COLUMN_STATE + "`, `" + COLUMN_COMMENT + "`, `" + COLUMN_DEBUGFLAG + "`, `" + COLUMN_PRIORITY + "`) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -1451,16 +1452,18 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
             LOG.debug("SQL.param.comment : " + object.getComment());
             LOG.debug("SQL.param.state : " + object.getState());
         }
-        
-        try(Connection connection = this.databaseSpring.connect();
-        		PreparedStatement preStat = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);) {
-            
+
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);) {
+
             int i = 1;
+            preStat.setString(i++, object.getSystem());
             preStat.setString(i++, object.getTest());
             preStat.setString(i++, object.getTestCase());
             preStat.setString(i++, object.getCountry());
             preStat.setString(i++, object.getEnvironment());
             preStat.setString(i++, object.getRobot());
+            preStat.setString(i++, object.getRobotDecli() == null ? "" : object.getRobotDecli());
             preStat.setString(i++, object.getRobotIP());
             preStat.setString(i++, object.getRobotPort());
             preStat.setString(i++, object.getBrowser());
@@ -1518,14 +1521,14 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
             }
-        } 
-        return new AnswerItem(newObject, msg);
+        }
+        return new AnswerItem<>(newObject, msg);
     }
 
     @Override
     public Answer update(TestCaseExecutionQueue object) {
         MessageEvent msg = null;
-        String query = "UPDATE testcaseexecutionqueue exq SET `Test` = ?, `TestCase` = ?, `Country` = ?, Environment = ?, Robot = ?, "
+        String query = "UPDATE testcaseexecutionqueue exq SET `System` = ?, `Test` = ?, `TestCase` = ?, `Country` = ?, Environment = ?, Robot = ?, RobotDecli = ?, "
                 + "RobotIP = ?, `RobotPort` = ?, Browser = ?, BrowserVersion = ?, `Platform`= ?, `ScreenSize` = ?, "
                 + "ManualURL = ?, `ManualHost` = ?, ManualContextRoot = ?, `ManualLoginRelativeUrl`= ?, `ManualEnvData` = ?, "
                 + "Tag = ?, `Screenshot` = ?, Verbose = ?, `Timeout`= ?, `PageSource` = ?, `debugFlag` = ?, `priority` = ?, "
@@ -1543,11 +1546,13 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
                 int i = 1;
+                preStat.setString(i++, object.getSystem());
                 preStat.setString(i++, object.getTest());
                 preStat.setString(i++, object.getTestCase());
                 preStat.setString(i++, object.getCountry());
                 preStat.setString(i++, object.getEnvironment());
                 preStat.setString(i++, object.getRobot());
+                preStat.setString(i++, object.getRobotDecli());
                 preStat.setString(i++, object.getRobotIP());
                 preStat.setString(i++, object.getRobotPort());
                 preStat.setString(i++, object.getBrowser());
@@ -2132,11 +2137,13 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
     public TestCaseExecutionQueue loadFromResultSet(ResultSet resultSet) throws FactoryCreationException, SQLException {
         return factoryTestCaseExecutionInQueue.create(
                 resultSet.getLong(COLUMN_ID),
+                resultSet.getString(COLUMN_SYSTEM),
                 resultSet.getString(COLUMN_TEST),
                 resultSet.getString(COLUMN_TEST_CASE),
                 resultSet.getString(COLUMN_COUNTRY),
                 resultSet.getString(COLUMN_ENVIRONMENT),
                 resultSet.getString(COLUMN_ROBOT),
+                resultSet.getString(COLUMN_ROBOTDECLI),
                 resultSet.getString(COLUMN_ROBOT_IP),
                 resultSet.getString(COLUMN_ROBOT_PORT),
                 resultSet.getString(COLUMN_BROWSER),

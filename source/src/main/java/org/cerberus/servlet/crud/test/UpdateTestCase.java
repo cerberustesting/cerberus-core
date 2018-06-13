@@ -171,7 +171,7 @@ public class UpdateTestCase extends HttpServlet {
                         // Update labels
                         if (request.getParameter("labelList") != null) {
                             JSONArray objLabelArray = new JSONArray(request.getParameter("labelList"));
-                            List<TestCaseLabel> labelList = new ArrayList();
+                            List<TestCaseLabel> labelList = new ArrayList<>();
                             labelList = getLabelListFromRequest(request, appContext, test, testCase, objLabelArray);
 
                             // Update the Database with the new list.
@@ -182,7 +182,7 @@ public class UpdateTestCase extends HttpServlet {
                         // Update Countries
                         if (request.getParameter("countryList") != null) {
                             JSONArray objCountryArray = new JSONArray(request.getParameter("countryList"));
-                            List<TestCaseCountry> tccList = new ArrayList();
+                            List<TestCaseCountry> tccList = new ArrayList<>();
                             tccList = getCountryListFromRequest(request, appContext, test, testCase, objCountryArray);
 
                             // Update the Database with the new list.
@@ -312,7 +312,7 @@ public class UpdateTestCase extends HttpServlet {
     }
 
     private List<TestCaseCountry> getCountryListFromRequest(HttpServletRequest request, ApplicationContext appContext, String test, String testCase, JSONArray json) throws CerberusException, JSONException, UnsupportedEncodingException {
-        List<TestCaseCountry> tdldList = new ArrayList();
+        List<TestCaseCountry> tdldList = new ArrayList<>();
 
         for (int i = 0; i < json.length(); i++) {
             JSONObject objectJson = json.getJSONObject(i);
@@ -333,7 +333,7 @@ public class UpdateTestCase extends HttpServlet {
     }
 
     private List<TestCaseLabel> getLabelListFromRequest(HttpServletRequest request, ApplicationContext appContext, String test, String testCase, JSONArray json) throws CerberusException, JSONException, UnsupportedEncodingException {
-        List<TestCaseLabel> labelList = new ArrayList();
+        List<TestCaseLabel> labelList = new ArrayList<>();
 
         for (int i = 0; i < json.length(); i++) {
             JSONObject objectJson = json.getJSONObject(i);

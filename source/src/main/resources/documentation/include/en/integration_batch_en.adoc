@@ -1,3 +1,5 @@
+=== Batch invariant
+
 In this section, you will find information on batch
 
 image:batchpage.png[BatchPage]

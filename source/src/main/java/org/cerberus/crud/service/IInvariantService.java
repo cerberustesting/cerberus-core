@@ -59,17 +59,19 @@ public interface IInvariantService {
 
     AnswerList readByIdnameGp1(String idName, String gp);
 
+    AnswerList readByIdnameNotGp1(String idName, String gp);
+
     AnswerList readCountryListEnvironmentLastChanges(String system, Integer nbDays);
 
-    AnswerList readByPublicByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
+    AnswerList<Invariant> readByPublicByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
-    AnswerList readByPublicByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+    AnswerList<Invariant> readByPublicByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
 
     AnswerList readDistinctValuesByPublicByCriteria(String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, String columnName);
 
-    AnswerList readByPrivateByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
+    AnswerList<Invariant> readByPrivateByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
-    AnswerList readByPrivateByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+    AnswerList<Invariant> readByPrivateByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
 
     AnswerList readDistinctValuesByPrivateByCriteria(String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, String columnName);
 
@@ -166,7 +168,7 @@ public interface IInvariantService {
      * @return
      * @throws CerberusException
      */
-    Invariant convert(AnswerItem answerItem) throws CerberusException;
+    Invariant convert(AnswerItem<Invariant> answerItem) throws CerberusException;
 
     /**
      *
@@ -174,7 +176,7 @@ public interface IInvariantService {
      * @return
      * @throws CerberusException
      */
-    List<Invariant> convert(AnswerList answerList) throws CerberusException;
+    List<Invariant> convert(AnswerList<Invariant> answerList) throws CerberusException;
 
     /**
      *

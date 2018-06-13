@@ -134,7 +134,7 @@ public interface IAppServiceHeaderService {
      * @return
      * @throws CerberusException
      */
-    AppServiceHeader convert(AnswerItem answerItem) throws CerberusException;
+    AppServiceHeader convert(AnswerItem<AppServiceHeader> answerItem) throws CerberusException;
 
     /**
      *
@@ -142,7 +142,7 @@ public interface IAppServiceHeaderService {
      * @return
      * @throws CerberusException
      */
-    List<AppServiceHeader> convert(AnswerList answerList) throws CerberusException;
+    List<AppServiceHeader> convert(AnswerList<AppServiceHeader> answerList) throws CerberusException;
 
     /**
      *

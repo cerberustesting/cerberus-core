@@ -19,18 +19,32 @@
  */
 package org.cerberus.engine.execution.impl;
 
+import com.google.common.collect.Lists;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.ios.IOSDriver;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.security.MessageDigest;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+import io.appium.java_client.remote.AppiumCommandExecutor;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.text.RandomStringGenerator;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
@@ -51,6 +65,8 @@ import org.cerberus.engine.entity.Session;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.IParameterService;
+import org.cerberus.engine.execution.IRecorderService;
+import org.cerberus.engine.threadpool.IExecutionThreadPoolService;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.engine.execution.ISeleniumServerService;
@@ -68,13 +84,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
-import org.openqa.selenium.remote.BrowserType;
-import org.openqa.selenium.remote.CommandInfo;
-import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.remote.HttpCommandExecutor;
-import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.remote.SessionId;
-import org.openqa.selenium.remote.UnreachableBrowserException;
+import org.openqa.selenium.remote.*;
 import org.openqa.selenium.remote.http.HttpClient.Factory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -95,6 +105,14 @@ public class SeleniumServerService implements ISeleniumServerService {
     @Autowired
     IProxyService proxyService;
 
+    @Autowired
+    private IExecutionThreadPoolService executionThreadPoolService;
+    @Autowired
+    private IRecorderService recorderService;
+
+    private static Map<String, Boolean> apkAlreadyPrepare = new HashMap<>();
+    private static int totocpt = 0;
+
     private static final Logger LOG = LogManager.getLogger(SeleniumServerService.class);
     /**
      * Proxy default config. (Should never be used as default config is inserted
@@ -106,6 +124,7 @@ public class SeleniumServerService implements ISeleniumServerService {
     private static final boolean DEFAULT_PROXYAUTHENT_ACTIVATE = false;
     private static final String DEFAULT_PROXYAUTHENT_USER = "squid";
     private static final String DEFAULT_PROXYAUTHENT_PASSWORD = "squid";
+
 
     @Override
     public void startServer(TestCaseExecution tCExecution) throws CerberusException {
@@ -242,11 +261,38 @@ public class SeleniumServerService implements ISeleniumServerService {
                     }
                 }
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
-                if (executor == null) {
-                    appiumDriver = new AndroidDriver(url, caps);
-                } else {
-                    appiumDriver = new AndroidDriver(executor, caps);
+                // add a lock on app path this part of code, because we can't install 2 apk with the same name simultaneously
+                String appUrl = null;
+                if(caps.getCapability("app") != null)
+                    appUrl = caps.getCapability("app").toString();
+
+                String newApkName = null;
+                try {
+                    int toto = totocpt++;
+                    if (appUrl != null) { // FIX : appium can't install 2 apk simultaneously, so implement a litle latency between execution
+                        synchronized (this) {
+                            // with appium 1.7.2, we can't install 2 fresh apk simultaneously. Appium have to prepare the apk (transformation) on the first execution before (see this topic https://discuss.appium.io/t/execute-2-android-test-simultaneously-problem-during-install-apk/22030)
+                            // provoque a latency if first test is already running and apk don't finish to be prepared
+                            if (apkAlreadyPrepare.containsKey(appUrl) && !apkAlreadyPrepare.get(appUrl)) {
+                                Thread.sleep(10000);
+                            }
+                            else {
+                                apkAlreadyPrepare.put(appUrl, false);
+                            }
+                        }
+                    }
+                    if (executor == null) {
+                        appiumDriver = new AndroidDriver(url, caps);
+                    } else {
+                        appiumDriver = new AndroidDriver(executor, caps);
+                    }
+                    if (apkAlreadyPrepare.containsKey(appUrl)) {
+                        apkAlreadyPrepare.put(appUrl, true);
+                    }
+                } finally {
+                    Runtime.getRuntime().exec("rm " + newApkName);
                 }
+
                 driver = (WebDriver) appiumDriver;
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
                 if (executor == null) {
@@ -318,26 +364,32 @@ public class SeleniumServerService implements ISeleniumServerService {
             }
             tCExecution.getSession().setStarted(true);
 
+            // begin to record video
+            //recorderService.beginRecordVideo(tCExecution);
+
+
         } catch (CerberusException exception) {
             LOG.error(logPrefix + exception.toString(), exception);
-            throw new CerberusException(exception.getMessageError());
+            throw new CerberusException(exception.getMessageError(), exception);
         } catch (MalformedURLException exception) {
             LOG.error(logPrefix + exception.toString(), exception);
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_URL_MALFORMED);
             mes.setDescription(mes.getDescription().replace("%URL%", tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort()));
-            throw new CerberusException(mes);
+            throw new CerberusException(mes, exception);
         } catch (UnreachableBrowserException exception) {
             LOG.error(logPrefix + exception.toString(), exception);
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_COULDNOTCONNECT);
             mes.setDescription(mes.getDescription().replace("%SSIP%", tCExecution.getSeleniumIP()));
             mes.setDescription(mes.getDescription().replace("%SSPORT%", tCExecution.getSeleniumPort()));
             mes.setDescription(mes.getDescription().replace("%ERROR%", exception.toString()));
-            throw new CerberusException(mes);
+            throw new CerberusException(mes, exception);
         } catch (Exception exception) {
             LOG.error(logPrefix + exception.toString(), exception);
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
             mes.setDescription(mes.getDescription().replace("%MES%", exception.toString()));
-            throw new CerberusException(mes);
+            throw new CerberusException(mes, exception);
+        } finally {
+            executionThreadPoolService.executeNextInQueueAsynchroneously(false);
         }
     }
 
@@ -394,10 +446,13 @@ public class SeleniumServerService implements ISeleniumServerService {
         if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
                 || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
             // Set the app capability with the application path
-            if (tCExecution.isManualURL()) {
+            if (!StringUtil.isNullOrEmpty(tCExecution.getMyHost())) {
                 caps.setCapability("app", tCExecution.getMyHost());
             } else {
                 caps.setCapability("app", tCExecution.getCountryEnvironmentParameters().getIp());
+            }
+            if(!StringUtil.isNullOrEmpty(tCExecution.getCountryEnvironmentParameters().getMobileActivity()) && tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
+                caps.setCapability("appWaitActivity", tCExecution.getCountryEnvironmentParameters().getMobileActivity());
             }
         }
 
@@ -449,7 +504,7 @@ public class SeleniumServerService implements ISeleniumServerService {
                  */
                 ChromeOptions options = new ChromeOptions();
                 // Maximize windows for chrome browser
-                options.addArguments("--start-fullscreen");
+                options.addArguments("start-maximized");
                 // Set UserAgent if necessary
                 String usedUserAgent = getUserAgentToUse(tCExecution.getTestCaseObj().getUserAgent(), tCExecution.getUserAgent());
                 if (!StringUtil.isNullOrEmpty(usedUserAgent)) {
@@ -515,7 +570,8 @@ public class SeleniumServerService implements ISeleniumServerService {
     }
 
     @Override
-    public boolean stopServer(Session session) {
+    public boolean stopServer(TestCaseExecution tce) {
+        Session session = tce.getSession();
         if (session.isStarted()) {
             try {
                 // Wait 2 sec till HAR is exported
@@ -523,6 +579,12 @@ public class SeleniumServerService implements ISeleniumServerService {
             } catch (InterruptedException ex) {
                 LOG.error(ex.toString());
             }
+
+            if(session.getAppiumDriver() != null && tce.getCountryEnvironmentParameters() != null &&
+                    !StringUtil.isNullOrEmpty(tce.getCountryEnvironmentParameters().getMobilePackage())) {
+                session.getAppiumDriver().removeApp(tce.getCountryEnvironmentParameters().getMobilePackage()); // remove manually if package is defined
+            }
+
             LOG.info("Stop execution session");
             session.quit();
             return true;

@@ -21,7 +21,10 @@ package org.cerberus.crud.service.impl;
 
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.fileupload.FileItem;
 import org.cerberus.crud.dao.IAppServiceDAO;
+import org.cerberus.crud.dao.impl.AppServiceDAO;
 import org.cerberus.crud.entity.AppService;
 import org.cerberus.crud.entity.AppServiceContent;
 import org.cerberus.crud.entity.AppServiceHeader;
@@ -86,7 +89,7 @@ public class AppServiceService implements IAppServiceService {
             appService.setHeaderList((List<AppServiceHeader>) header.getDataList());
             answerAppService.setItem(appService);
         } catch (Exception e) {
-            LOG.error(e);
+            LOG.error(e,e);
         }
         return answerAppService;
     }
@@ -112,7 +115,7 @@ public class AppServiceService implements IAppServiceService {
     }
 
     @Override
-    public AppService convert(AnswerItem answerItem) throws CerberusException {
+    public AppService convert(AnswerItem<AppService> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (AppService) answerItem.getItem();
@@ -121,7 +124,7 @@ public class AppServiceService implements IAppServiceService {
     }
 
     @Override
-    public List<AppService> convert(AnswerList answerList) throws CerberusException {
+    public List<AppService> convert(AnswerList<AppService> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (List<AppService>) answerList.getDataList();
@@ -141,28 +144,39 @@ public class AppServiceService implements IAppServiceService {
     @Override
     public String guessContentType(AppService service, String defaultValue) {
         String result = defaultValue;
-        for (AppServiceHeader object : service.getResponseHeaderList()) {
-            if (object.getKey().equalsIgnoreCase("Content-Type")) {
-                if (object.getValue().contains("application/json")) {
-                    LOG.debug("JSON format guessed from header : " + object.getKey() + " : " + object.getValue());
-                    return AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON;
-                } else if (object.getValue().contains("application/xml")) {
-                    LOG.debug("XML format guessed from header : " + object.getKey() + " : " + object.getValue());
-                    return AppService.RESPONSEHTTPBODYCONTENTTYPE_XML;
+        if (service != null) {
+            for (AppServiceHeader object : service.getResponseHeaderList()) {
+                if ((object != null) && (object.getKey().equalsIgnoreCase("Content-Type"))) {
+                    if (object.getValue().contains("application/json")) {
+                        LOG.debug("JSON format guessed from header : " + object.getKey() + " : " + object.getValue());
+                        return AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON;
+                    } else if (object.getValue().contains("application/xml")) {
+                        LOG.debug("XML format guessed from header : " + object.getKey() + " : " + object.getValue());
+                        return AppService.RESPONSEHTTPBODYCONTENTTYPE_XML;
+                    }
                 }
             }
+            if (!StringUtil.isNullOrEmpty(service.getResponseHTTPBody())) {
+                if (service.getResponseHTTPBody().startsWith("<")) { // TODO find a better solution to guess the format of the request.
+                    LOG.debug("XML format guessed from 1st caracter of body.");
+                    return AppService.RESPONSEHTTPBODYCONTENTTYPE_XML;
+                } else if (service.getResponseHTTPBody().startsWith("{")) {
+                    LOG.debug("JSON format guessed from 1st caracter of body.");
+                    return AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON;
+                }
+            } else {
+                // Body is null so we don't know the format.
+                return AppService.RESPONSEHTTPBODYCONTENTTYPE_UNKNOWN;
+            }
+        } else {
+            // Service is null so we don't know the format.
+            return AppService.RESPONSEHTTPBODYCONTENTTYPE_UNKNOWN;
         }
-        if (service.getResponseHTTPBody().startsWith("<")) { // TODO find a better solution to guess the format of the request.
-            LOG.debug("XML format guessed from 1st caracter of body.");
-            return AppService.RESPONSEHTTPBODYCONTENTTYPE_XML;
-        } else if (service.getResponseHTTPBody().startsWith("{")) {
-            LOG.debug("JSON format guessed from 1st caracter of body.");
-            return AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON;
+        // Header did not define the format and could not guess from file content.
+        if (StringUtil.isNullOrEmpty(defaultValue)) {
+            return AppService.RESPONSEHTTPBODYCONTENTTYPE_TXT;
         }
-        if (StringUtil.isNullOrEmpty(result)) {
-            result = AppService.RESPONSEHTTPBODYCONTENTTYPE_TXT;
-        }
-        return result;
+        return defaultValue;
     }
 
     @Override
@@ -182,6 +196,11 @@ public class AppServiceService implements IAppServiceService {
         }
         result = StringUtil.removeLastChar(result, 1);
         return result;
+    }
+    
+    @Override
+    public Answer uploadFile(String service, FileItem file) {
+        return appServiceDao.uploadFile(service, file);
     }
 
 }

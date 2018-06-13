@@ -43,7 +43,7 @@ public class GeneratePerformanceString {
     public String gps(Connection conn, String test, String testcase, String country) throws SQLException {
         
         StringBuilder data = new StringBuilder();
-        List<String> dates = new ArrayList();
+        List<String> dates = new ArrayList<>();
         StringBuilder datas = new StringBuilder();
         
         try(PreparedStatement stmt = conn.prepareStatement("select id, `Start` as startdate, "
@@ -75,7 +75,7 @@ public class GeneratePerformanceString {
 
             try(ResultSet rs_executiondetail = stmt.executeQuery();
             		ResultSet rs_executiondetail2 = stmt2.executeQuery();){
-            	List<Float> maxList = new ArrayList();
+            	List<Float> maxList = new ArrayList<>();
                 if (rs_executiondetail.first()) {
                     do {
                         maxList.add(rs_executiondetail.getFloat("duration"));

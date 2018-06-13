@@ -98,7 +98,7 @@ public class UserService implements IUserService {
 
     @Override
     public AnswerItem<User> updateUserPassword(User user, String currentPassword, String newPassword, String confirmPassword, String resetPasswordToken) {
-        AnswerItem answUpdate = new AnswerItem();
+        AnswerItem answUpdate = new AnswerItem<>();
         MessageEvent msg;
         //First check if both new password are the same
         if (newPassword.equals(confirmPassword)) {
@@ -144,7 +144,7 @@ public class UserService implements IUserService {
 
     @Override
     public AnswerItem<User> updateUserPasswordAdmin(User user, String newPassword) {
-        AnswerItem answUpdate = new AnswerItem();
+        AnswerItem answUpdate = new AnswerItem<>();
         MessageEvent msg;
         //verifications succeed, update password
         answUpdate = userDAO.updateUserPassword(user, newPassword, user.getRequest());
@@ -231,7 +231,7 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public User convert(AnswerItem answerItem) throws CerberusException {
+    public User convert(AnswerItem<User> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (User) answerItem.getItem();
@@ -240,7 +240,7 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public List<User> convert(AnswerList answerList) throws CerberusException {
+    public List<User> convert(AnswerList<User> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (List<User>) answerList.getDataList();
@@ -259,7 +259,7 @@ public class UserService implements IUserService {
 
     @Override
     public Answer requestResetPassword(User user) throws CerberusException {
-        Answer answUpdate = new AnswerItem();
+        Answer answUpdate = new AnswerItem<>();
         MessageEvent msg;
 
         /**

@@ -20,15 +20,28 @@
     Created on : May 18, 2015, 2:18:04 PM
     Author     : FNogueira
 */
+
+.tooltip {
+    position: fixed;
+}
+
 .separator {
     border-top: 1px solid #E3E3E3;
     margin-top:20px;  
     margin-bottom:30px;  
 }
 
+#confirmationModal{
+	z-index: 10000001 !important
+}
+
 .modal {
     overflow: auto !important;
-    z-index: 999999997 !important;
+    z-index: 9999 !important;
+}
+
+.select2-dropdown{
+	z-index: 10000 !important;
 }
 
 td
@@ -380,7 +393,7 @@ table.display thead th div.DataTables_sort_wrapper span {
     position: absolute;
     top: 100%;
     left: 0;
-    z-index: 1000;
+    z-index: 99999999999999;
     float: left;
     display: none;
     min-width: 160px;
@@ -645,6 +658,11 @@ img.selectedPicture{
     color: #8B0404;
 }
 
+.popover{
+	z-index: 10000 !important;
+	word-wrap: break-word;
+}
+
 .tooltip-inner {
     max-width: 1000px;
     overflow-wrap: break-word; 
@@ -717,10 +735,6 @@ img.selectedPicture{
         width: 90%;
         max-width: 1200px;
     }
-}
-/*This is to force autocomplete to display on top of modal*/
-.ui-autocomplete {
-    z-index: 5000;
 }
 
 .logo-login {

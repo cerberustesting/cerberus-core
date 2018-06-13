@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.fileupload.FileItem;
+import org.cerberus.crud.dao.ITestCaseCountryPropertiesDAO;
 import org.cerberus.crud.dao.ITestDataLibDAO;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.MessageGeneral;
@@ -57,6 +58,8 @@ public class TestDataLibService implements ITestDataLibService {
     private ITestDataLibDataService testDataLibDataService;
     @Autowired
     private IParameterService parameterService;
+    @Autowired
+    private ITestCaseCountryPropertiesDAO testCaseCountryProperties;
 
     private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(TestDataLibService.class);
 
@@ -97,8 +100,8 @@ public class TestDataLibService implements ITestDataLibService {
 
     @Override
     public AnswerList<HashMap<String, String>> readINTERNALWithSubdataByCriteria(String dataName, String dataSystem, String dataCountry, String dataEnvironment, int rowLimit, String system) {
-        AnswerList answer = new AnswerList();
-        AnswerList answerData = new AnswerList();
+        AnswerList answer = new AnswerList<>();
+        AnswerList answerData = new AnswerList<>();
         MessageEvent msg;
 
         List<HashMap<String, String>> result = new ArrayList<HashMap<String, String>>();
@@ -155,9 +158,21 @@ public class TestDataLibService implements ITestDataLibService {
     public Answer update(TestDataLib object) {
         return testDataLibDAO.update(object);
     }
+    
+    @Override
+    public List<Answer> bulkRename(String oldName, String newName) {
+    	// Call the 2 DAO updates
+    	Answer answerDataLib = testDataLibDAO.bulkRenameDataLib(oldName,newName);
+    	Answer answerProperties = testCaseCountryProperties.bulkRenameProperties(oldName,newName);
+    	List<Answer> ansList = new ArrayList<Answer>();
+    	ansList.add(answerDataLib);
+    	ansList.add(answerProperties);
+    	return ansList;
+       // TO DO : get the updated numbers of datalib and properties
+    }
 
     @Override
-    public TestDataLib convert(AnswerItem answerItem) throws CerberusException {
+    public TestDataLib convert(AnswerItem<TestDataLib> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (TestDataLib) answerItem.getItem();
@@ -166,7 +181,7 @@ public class TestDataLibService implements ITestDataLibService {
     }
 
     @Override
-    public List<TestDataLib> convert(AnswerList answerList) throws CerberusException {
+    public List<TestDataLib> convert(AnswerList<TestDataLib> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (List<TestDataLib>) answerList.getDataList();

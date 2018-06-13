@@ -6,7 +6,13 @@
 ```
 docker run --name mysql-cerberus -p 3306:3306 -e MYSQL_ROOT_PASSWORD=root -d mysql:5.6
 ```
-
+#### Launch the mysql console (via Docker)
+```
+docker exec -ti mysql-cerberus bash
+mysql --password
+```
+Enter the root password ('root')
+#### Create the Cerberus DB
 Create a database `cerberus` and a user `cerberus`
 
 ```
@@ -44,7 +50,7 @@ asadmin stop-domain
 
 
 
-problem : imossible to login : password incorect,
+problem : impossible to login : password incorrect,
 
 Verify realm-name is fill into web.xml :
 

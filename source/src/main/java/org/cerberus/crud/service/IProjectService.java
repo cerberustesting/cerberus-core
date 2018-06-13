@@ -92,7 +92,7 @@ public interface IProjectService {
      * @return
      * @throws CerberusException
      */
-    Project convert(AnswerItem answerItem) throws CerberusException;
+    Project convert(AnswerItem<Project> answerItem) throws CerberusException;
 
     /**
      *
@@ -100,7 +100,7 @@ public interface IProjectService {
      * @return
      * @throws CerberusException
      */
-    List<Project> convert(AnswerList answerList) throws CerberusException;
+    List<Project> convert(AnswerList<Project> answerList) throws CerberusException;
 
     /**
      *

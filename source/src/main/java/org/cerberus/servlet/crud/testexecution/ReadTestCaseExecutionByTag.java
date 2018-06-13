@@ -99,7 +99,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         response.setCharacterEncoding("utf8");
         String echo = request.getParameter("sEcho");
 
-        AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+        AnswerItem answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
 
         testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
         tagService = appContext.getBean(ITagService.class);
@@ -108,7 +108,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         try {
             // Data/Filter Parameters.
             String Tag = ParameterParserUtil.parseStringParam(request.getParameter("Tag"), "");
-            List<String> outputReport = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("outputReport"), new ArrayList(), "UTF-8");
+            List<String> outputReport = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("outputReport"), new ArrayList<>(), "UTF-8");
 
             JSONObject jsonResponse = new JSONObject();
             JSONObject statusFilter = getStatusList(request);
@@ -162,13 +162,13 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
             response.getWriter().print(jsonResponse.toString());
 
         } catch (ParseException ex) {
-            LOG.error("Error on main call : " + ex);
+            LOG.error("Error on main call : " + ex, ex);
         } catch (CerberusException ex) {
-            LOG.error("Error on main call : " + ex);
+            LOG.error("Error on main call : " + ex, ex);
         } catch (JSONException ex) {
-            LOG.error("Error on main call : " + ex);
+            LOG.error("Error on main call : " + ex, ex);
         } catch (Exception ex) {
-            LOG.error("Error on main call : " + ex);
+            LOG.error("Error on main call : " + ex, ex);
         }
     }
 
@@ -237,10 +237,12 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
             statusList.put("KO", ParameterParserUtil.parseStringParam(request.getParameter("KO"), "off"));
             statusList.put("NA", ParameterParserUtil.parseStringParam(request.getParameter("NA"), "off"));
             statusList.put("NE", ParameterParserUtil.parseStringParam(request.getParameter("NE"), "off"));
+            statusList.put("WE", ParameterParserUtil.parseStringParam(request.getParameter("WE"), "off"));
             statusList.put("PE", ParameterParserUtil.parseStringParam(request.getParameter("PE"), "off"));
             statusList.put("FA", ParameterParserUtil.parseStringParam(request.getParameter("FA"), "off"));
             statusList.put("CA", ParameterParserUtil.parseStringParam(request.getParameter("CA"), "off"));
             statusList.put("QU", ParameterParserUtil.parseStringParam(request.getParameter("QU"), "off"));
+            statusList.put("QE", ParameterParserUtil.parseStringParam(request.getParameter("QE"), "off"));
         } catch (JSONException ex) {
             LOG.error("Error on getStatusList : " + ex);
         }
@@ -601,11 +603,15 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         } else if ("NA".equals(controlStatus)) {
             color = "#F1C40F";
         } else if ("NE".equals(controlStatus)) {
+            color = "#aaa";
+        } else if ("WE".equals(controlStatus)) {
             color = "#34495E";
         } else if ("PE".equals(controlStatus)) {
             color = "#3498DB";
         } else if ("QU".equals(controlStatus)) {
             color = "#BF00BF";
+        } else if ("QE".equals(controlStatus)) {
+            color = "#5C025C";
         } else {
             color = "#000000";
         }

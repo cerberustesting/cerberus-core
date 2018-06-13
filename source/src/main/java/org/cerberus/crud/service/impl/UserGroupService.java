@@ -129,7 +129,7 @@ public class UserGroupService implements IUserGroupService {
     }
 
     @Override
-    public UserGroup convert(AnswerItem answerItem) throws CerberusException {
+    public UserGroup convert(AnswerItem<UserGroup> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (UserGroup) answerItem.getItem();
@@ -138,7 +138,7 @@ public class UserGroupService implements IUserGroupService {
     }
 
     @Override
-    public List<UserGroup> convert(AnswerList answerList) throws CerberusException {
+    public List<UserGroup> convert(AnswerList<UserGroup> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (List<UserGroup>) answerList.getDataList();

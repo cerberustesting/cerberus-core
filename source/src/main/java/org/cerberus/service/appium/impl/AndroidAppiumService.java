@@ -19,6 +19,7 @@
  */
 package org.cerberus.service.appium.impl;
 
+import com.google.common.collect.Lists;
 import io.appium.java_client.TouchAction;
 import io.appium.java_client.android.AndroidKeyCode;
 import io.appium.java_client.android.AndroidDriver;
@@ -30,6 +31,8 @@ import org.cerberus.engine.entity.Session;
 import org.cerberus.enums.MessageEventEnum;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Pattern;
 import org.cerberus.crud.entity.Parameter;
 import org.cerberus.crud.service.impl.ParameterService;
@@ -60,7 +63,7 @@ public class AndroidAppiumService extends AppiumService {
     
     /**
      * The default Appium swipe duration if no
-     * {@link AppiumService#APPIUM_SWIPE_DURATION_PARAMETER} has been defined
+     * {@link AppiumService#CERBERUS_APPIUM_SWIPE_DURATION_PARAMETER} has been defined
      */
     private static final int DEFAULT_CERBERUS_APPIUM_SWIPE_DURATION = 2000;
 
@@ -157,6 +160,69 @@ public class AndroidAppiumService extends AppiumService {
                     .resolveDescription("DIRECTION", action.getActionType().name())
                     .resolveDescription("REASON", e.getMessage());
         }
+    }
+
+    @Override
+    public MessageEvent executeCommand(Session session, String cmd, String args) throws IllegalArgumentException {
+        try {
+            String message = executeCommandString(session,cmd,args);
+
+            return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_EXECUTECOMMAND).resolveDescription("LOG", message);
+        } catch (Exception e) {
+            LOG.warn("Unable to execute command screen due to " + e.getMessage(), e);
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTECOMMAND)
+                    .resolveDescription("EXCEPTION", e.getMessage());
+        }
+    }
+
+    @Override
+    public String executeCommandString(Session session, String cmd, String args) throws IllegalArgumentException {
+        AndroidDriver driver = ((AndroidDriver) session.getAppiumDriver());
+
+        Map<String, Object> argss = new HashMap<>();
+        argss.put("command", cmd);
+        argss.put("args", Lists.newArrayList(args));
+
+        String value = driver.executeScript("mobile: shell", argss).toString();
+
+        return value;
+    }
+
+
+    @Override
+    public MessageEvent installApp(Session session, String appPath) throws IllegalArgumentException {
+        try {
+            AndroidDriver driver = ((AndroidDriver) session.getAppiumDriver());
+
+            driver.installApp(appPath);
+
+            return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_INSTALLAPP);
+        } catch (Exception e) {
+            LOG.warn("Unable to install app " + e.getMessage(), e);
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED_GENERIC)
+                    .resolveDescription("DETAIL", "Unable to install app " + e.getMessage());
+        }
+    }
+
+    @Override
+    public MessageEvent removeApp(Session session, String appPackage) throws IllegalArgumentException {
+        try {
+            AndroidDriver driver = ((AndroidDriver) session.getAppiumDriver());
+
+            if(driver.isAppInstalled(appPackage)) {
+                driver.removeApp(appPackage);
+            }
+
+            return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_REMOVEAPP);
+        } catch (Exception e) {
+            LOG.warn("Unable to remove app " + e.getMessage(), e);
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED_GENERIC)
+                    .resolveDescription("DETAIL", "Unable to remove app " + e.getMessage());
+        }    }
+
+    @Override
+    public MessageEvent openApp(Session session, String appPackage, String appActivity) {
+        return executeCommand(session, "am start", "-n " + appPackage + "/" + appActivity + "\n");
     }
 
 }

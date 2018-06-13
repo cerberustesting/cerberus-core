@@ -20,7 +20,7 @@
 package org.cerberus.service.xmlunit;
 
 import org.cerberus.service.xmlunit.Difference;
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.junit.Test;
 

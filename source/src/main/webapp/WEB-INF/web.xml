@@ -45,6 +45,10 @@
         <servlet-class>org.cerberus.servlet.zzpublic.RunTestCase</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>RunTestCaseV001</servlet-name>
+        <servlet-class>org.cerberus.servlet.zzpublic.RunTestCaseV001</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>GetTestCaseList</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.test.GetTestCaseList</servlet-class>
     </servlet>
@@ -237,10 +241,6 @@
     <servlet>
         <servlet-name>GetCountryForTestCase</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.test.GetCountryForTestCase</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>GetShortTests</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.test.GetShortTests</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ReadLogEvent</servlet-name>
@@ -567,12 +567,12 @@
         <servlet-class>org.cerberus.servlet.crud.test.UpdateTestCaseWithDependencies</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>UpdateTestCaseWithDependencies1</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.test.UpdateTestCaseWithDependencies1</servlet-class>
+        <servlet-name>UpdateTestCaseProperties</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.test.UpdateTestCaseProperties</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>UpdateTestCaseProperties1</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.test.UpdateTestCaseProperties1</servlet-class>
+        <servlet-name>BulkRenameDataLib</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.testdata.BulkRenameDataLib</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DeleteTestCaseFromTestPage</servlet-name>
@@ -633,10 +633,6 @@
         <description>Add a test case to the execution queue.</description>
         <servlet-name>AddToExecutionQueueV003</servlet-name>
         <servlet-class>org.cerberus.servlet.zzpublic.AddToExecutionQueueV003</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>GetExecutionQueue</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.testexecution.GetExecutionQueue</servlet-class>
     </servlet>
     <servlet>
         <description>Execute the next record from the execution queue.</description>
@@ -801,6 +797,10 @@
         <servlet-class>org.cerberus.servlet.dummy.DummyRESTCall</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>DummyRESTCallEmpty</servlet-name>
+        <servlet-class>org.cerberus.servlet.dummy.DummyRESTCallEmpty</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>UpdateTestCaseExecutionQueue</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.testexecution.UpdateTestCaseExecutionQueue</servlet-class>
     </servlet>
@@ -813,7 +813,6 @@
         <servlet-name>springrest</servlet-name>
         <url-pattern>/api/*</url-pattern>
     </servlet-mapping>
-
     <servlet-mapping>
         <servlet-name>ReadCerberusDetailInformation</servlet-name>
         <url-pattern>/ReadCerberusDetailInformation</url-pattern>
@@ -821,6 +820,10 @@
     <servlet-mapping>
         <servlet-name>RunTestCase</servlet-name>
         <url-pattern>/RunTestCase</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>RunTestCaseV001</servlet-name>
+        <url-pattern>/RunTestCaseV001</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>DocumentationField</servlet-name>
@@ -1025,10 +1028,6 @@
     <servlet-mapping>
         <servlet-name>DeleteCampaign</servlet-name>
         <url-pattern>/DeleteCampaign</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>GetShortTests</servlet-name>
-        <url-pattern>/GetShortTests</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>GetInvariantsForTest</servlet-name>
@@ -1363,12 +1362,12 @@
         <url-pattern>/UpdateTestCaseWithDependencies</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>UpdateTestCaseWithDependencies1</servlet-name>
-        <url-pattern>/UpdateTestCaseWithDependencies1</url-pattern>
+        <servlet-name>UpdateTestCaseProperties</servlet-name>
+        <url-pattern>/UpdateTestCaseProperties</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>UpdateTestCaseProperties1</servlet-name>
-        <url-pattern>/UpdateTestCaseProperties1</url-pattern>
+        <servlet-name>BulkRenameDataLib</servlet-name>
+        <url-pattern>/BulkRenameDataLib</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>DeleteTestCaseFromTestPage</servlet-name>
@@ -1401,10 +1400,6 @@
     <servlet-mapping>
         <servlet-name>AddToExecutionQueueV003</servlet-name>
         <url-pattern>/AddToExecutionQueueV003</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>GetExecutionQueue</servlet-name>
-        <url-pattern>/GetExecutionQueue</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ExecuteNextInQueue</servlet-name>
@@ -1572,6 +1567,11 @@
         <url-pattern>/DummyRESTCall/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>DummyRESTCallEmpty</servlet-name>
+        <url-pattern>/DummyRESTCallEmpty</url-pattern>
+        <url-pattern>/DummyRESTCallEmpty/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>UpdateTestCaseExecutionQueue</servlet-name>
         <url-pattern>/UpdateTestCaseExecutionQueue</url-pattern>
     </servlet-mapping>
@@ -1729,8 +1729,7 @@
             <url-pattern>/PictureConnector</url-pattern>
             <url-pattern>/UseTestCaseStep</url-pattern>
             <url-pattern>/UpdateTestCaseWithDependencies</url-pattern>
-            <url-pattern>/UpdateTestCaseWithDependencies1</url-pattern>
-            <url-pattern>/UpdateTestCaseProperties1</url-pattern>
+            <url-pattern>/UpdateTestCaseProperties</url-pattern>
             <url-pattern>/Thumbnailer</url-pattern>
             <url-pattern>/UpdateTestCaseField</url-pattern>
             <url-pattern>/ReadLabel</url-pattern>
@@ -1826,6 +1825,7 @@
             <url-pattern>/DeleteTestDataLib</url-pattern>
             <url-pattern>/UpdateTestDataLibData</url-pattern>
             <url-pattern>/UpdateTestDataLib</url-pattern>
+            <url-pattern>/BulkRenameDataLib</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>TestDataManager</description>
@@ -2003,8 +2003,7 @@
             <web-resource-name>servlet</web-resource-name>
             <description>servlet</description>
             <url-pattern>/RunTestCase</url-pattern>
-            <url-pattern>/RunTestCaseManually</url-pattern>
-            <url-pattern>/SaveStatistic</url-pattern>
+            <url-pattern>/RunTestCaseV001</url-pattern>
             <url-pattern>/GetNumberOfExecutions</url-pattern>
             <url-pattern>/ResultCI</url-pattern>
             <url-pattern>/ResultCIV001</url-pattern>
@@ -2040,7 +2039,6 @@
             <url-pattern>/NewBuildRevisionV000</url-pattern>
             <url-pattern>/DisableEnvironmentV000</url-pattern>
             <url-pattern>/NewEnvironmentEventV000</url-pattern>
-            <url-pattern>/DummySoap</url-pattern>
             <url-pattern>/ForgotPassword</url-pattern>
             <url-pattern>/ForgotPasswordEmailConfirmation</url-pattern>
             <url-pattern>/ChangeUserPassword</url-pattern>
@@ -2050,7 +2048,9 @@
             <url-pattern>/AddToExecutionQueueV003</url-pattern>
             <url-pattern>/ReadApplicationObjectImage</url-pattern>
             <url-pattern>/GetTestCasesV000</url-pattern>
+            <url-pattern>/DummySoap</url-pattern>
             <url-pattern>/DummyRESTCall</url-pattern>
+            <url-pattern>/DummyRESTCallEmpty</url-pattern>
         </web-resource-collection>
     </security-constraint>
     <security-constraint>

@@ -56,10 +56,10 @@ import org.cerberus.crud.service.ITestCaseService;
  *
  * @author bcivel
  */
-@WebServlet(name = "UpdateTestCaseWithDependencies1", urlPatterns = {"/UpdateTestCaseWithDependencies1"})
-public class UpdateTestCaseProperties1 extends HttpServlet {
+@WebServlet(name = "UpdateTestCaseProperties", urlPatterns = {"/UpdateTestCaseProperties"})
+public class UpdateTestCaseProperties extends HttpServlet {
 
-    private static final Logger LOG = LogManager.getLogger(UpdateTestCaseProperties1.class);
+    private static final Logger LOG = LogManager.getLogger(UpdateTestCaseProperties.class);
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -149,7 +149,7 @@ public class UpdateTestCaseProperties1 extends HttpServlet {
                          * Update was successful. Adding Log entry.
                          */
                         ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                        logEventService.createForPrivateCalls("/UpdateTestCaseWithDependencies1", "UPDATE", "Update testcase : ['" + tc.getTest() + "'|'" + tc.getTestCase() + "']", request);
+                        logEventService.createForPrivateCalls("/UpdateTestCaseProperties", "UPDATE", "Update testcaseProperties : ['" + tc.getTest() + "'|'" + tc.getTestCase() + "']", request);
                     }
 
                 }
@@ -167,7 +167,7 @@ public class UpdateTestCaseProperties1 extends HttpServlet {
     }
 
     private List<TestCaseCountryProperties> getTestCaseCountryPropertiesFromParameter(HttpServletRequest request, ApplicationContext appContext, String test, String testCase) throws JSONException {
-        List<TestCaseCountryProperties> testCaseCountryProp = new ArrayList();
+        List<TestCaseCountryProperties> testCaseCountryProp = new ArrayList<>();
 //        String[] testcase_properties_increment = getParameterValuesIfExists(request, "property_increment");
         IFactoryTestCaseCountryProperties testCaseCountryPropertiesFactory = appContext.getBean(IFactoryTestCaseCountryProperties.class);
         JSONArray properties = new JSONArray(request.getParameter("propArr"));

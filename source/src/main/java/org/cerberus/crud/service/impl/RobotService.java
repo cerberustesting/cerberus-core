@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.service.impl;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
@@ -33,6 +34,7 @@ import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
@@ -71,6 +73,18 @@ public class RobotService implements IRobotService {
     @Override
     public AnswerList<Robot> readAll() {
         return readByCriteria(0, 0, "robot", "asc", null, null);
+    }
+
+    @Override
+    public HashMap<String, String> readToHashMapRobotDecli() {
+        HashMap<String, String> result = new HashMap<>();
+
+        AnswerList<Robot> answer = readAll(); //TODO: handle if the response does not turn ok
+        for (Robot rob : (List<Robot>) answer.getDataList()) {
+            String robotDecli = ParameterParserUtil.parseStringParam(rob.getRobotDecli(), "");
+            result.put(rob.getRobot(), robotDecli);
+        }
+        return result;
     }
 
     @Override

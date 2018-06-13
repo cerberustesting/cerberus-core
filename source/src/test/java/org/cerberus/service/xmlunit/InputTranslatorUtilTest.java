@@ -20,7 +20,7 @@
 package org.cerberus.service.xmlunit;
 
 import org.cerberus.service.xmlunit.InputTranslatorUtil;
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.junit.Test;
 

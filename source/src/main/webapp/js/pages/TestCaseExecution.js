@@ -17,6 +17,9 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
+var paramActivatewebsocketpush = "N";
+var paramWebsocketpushperiod = 5000;
+
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
         var stepList = [];
@@ -27,6 +30,8 @@ $.when($.getScript("js/global/global.js")).then(function () {
 
         var executionId = GetURLParameter("executionId");
         var executionQueueId = GetURLParameter("executionQueueId");
+        paramActivatewebsocketpush = getParameterString("cerberus_featureflipping_activatewebsocketpush", "", true);
+        paramWebsocketpushperiod = getParameterString("cerberus_featureflipping_websocketpushperiod", "", true);
 
         if (isEmpty(executionId)) {
             // executionId parameter is not feed so we probably want to see the queue status.
@@ -114,7 +119,7 @@ function loadExecutionQueue(executionQueueId, bTriggerAgain) {
                             loadExecutionQueue(executionQueueId, true);
                         }, 5000);
                     }
-                    
+
                 } else {
                     configPanel.find("#tcDescription").html("");
                 }
@@ -151,35 +156,44 @@ function loadExecutionInformation(executionId, stepList, sockets) {
             updatePage(tce, stepList);
 
             if (tce.controlStatus === "PE") {
+                if (paramActivatewebsocketpush === "Y") {
+                    var parser = document.createElement('a');
+                    parser.href = window.location.href;
 
-                var parser = document.createElement('a');
-                parser.href = window.location.href;
+                    var protocol = "ws:";
+                    if (parser.protocol === "https:") {
+                        protocol = "wss:";
+                    }
+                    var path = parser.pathname.split("TestCaseExecution")[0];
+                    var new_uri = protocol + parser.host + path + "execution/" + executionId;
 
-                var protocol = "ws:";
-                if (parser.protocol === "https:") {
-                    protocol = "wss:";
-                }
-                var path = parser.pathname.split("ExecutionDetail2")[0];
-                var new_uri = protocol + parser.host + path + "execution/" + executionId;
+                    var socket = new WebSocket(new_uri);
 
-                var socket = new WebSocket(new_uri);
+                    socket.onopen = function (e) {
+                    } //on "écoute" pour savoir si la connexion vers le serveur websocket s'est bien faite
+                    socket.onmessage = function (e) {
+                        var data = JSON.parse(e.data);
+                        updatePage(data, stepList);
+                    } //on récupère les messages provenant du serveur websocket
+                    socket.onclose = function (e) {
+                    } //on est informé lors de la fermeture de la connexion vers le serveur
+                    socket.onerror = function (e) {
+                        setTimeout(function () {
+                            loadExecutionInformation(executionId, stepList);
+                        }, 5000);
+                    } //on traite les cas d'erreur*/
 
-                socket.onopen = function (e) {
-                } //on "écoute" pour savoir si la connexion vers le serveur websocket s'est bien faite
-                socket.onmessage = function (e) {
-                    var data = JSON.parse(e.data);
-                    updatePage(data, stepList);
-                } //on récupère les messages provenant du serveur websocket
-                socket.onclose = function (e) {
-                } //on est informé lors de la fermeture de la connexion vers le serveur
-                socket.onerror = function (e) {
+                    // Remain in memory
+                    sockets.push(socket);
+
+                } else {
+
                     setTimeout(function () {
                         loadExecutionInformation(executionId, stepList);
-                    }, 5000);
-                } //on traite les cas d'erreur*/
+                    }, paramWebsocketpushperiod);
 
-                // Remain in memory
-                sockets.push(socket);
+                }
+
             }
             $("#seeProperties").click(function () {
                 $("#propertiesModal").modal('show');
@@ -288,6 +302,7 @@ function displayPageLabel(doc) {
     $("#runTestCase").html("<span class='glyphicon glyphicon-play'></span> " + doc.getDocLabel("page_executiondetail", "runtc"));
     $("#rerunTestCase").html("<span class='glyphicon glyphicon-forward'></span> " + doc.getDocLabel("page_executiondetail", "reruntc"));
     $("#rerunFromQueue").html("<span class='glyphicon glyphicon-forward'></span> " + doc.getDocLabel("page_executiondetail", "reruntcqueue"));
+    $("#rerunFromQueueandSee").html("<span class='glyphicon glyphicon-forward'></span> " + doc.getDocLabel("page_executiondetail", "reruntcqueueandsee"));
     $("#editTcInfo").html("<span class='glyphicon glyphicon-new-window'></span> " + doc.getDocLabel("page_executiondetail", "edittc"));
     $("#editTcHeader").html("<span class='glyphicon glyphicon-pencil'></span> " + doc.getDocLabel("page_executiondetail", "edittch"));
     $("#editTcStepInfo").html("<span class='glyphicon glyphicon-new-window'></span> " + doc.getDocLabel("page_executiondetail", "edittcstep"));
@@ -321,7 +336,7 @@ function updatePage(data, stepList) {
         $("#runTestCase").attr("disabled", false);
         $("#runTestCase").parent().attr("href", "RunTests.jsp?test=" + data.test + "&testcase=" + data.testcase);
         $("#rerunTestCase").attr("disabled", false);
-        $("#rerunTestCase").parent().attr("href", "RunTests.jsp?test=" + data.test + "&testcase=" + data.testcase + "&country=" + data.country + "&environment=" + data.environment + "&browser=" + data.browser + "&tag=" + data.tag);
+        $("#rerunTestCase").parent().attr("href", "RunTests.jsp?test=" + data.test + "&testcase=" + data.testcase + "&country=" + data.country + "&environment=" + data.environment + "&tag=" + data.tag);
     }
 
     $("#lastExecution").attr("disabled", false);
@@ -341,14 +356,23 @@ function updatePage(data, stepList) {
         $("#ExecutionQueue").unbind("click");
         $("#rerunFromQueue").attr("disabled", "disabled");
         $("#rerunFromQueue").unbind("click");
+        $("#rerunFromQueueandSee").attr("disabled", "disabled");
+        $("#rerunFromQueueandSee").unbind("click");
     } else {
         $("#ExecutionQueue").attr("disabled", false);
+        $("#ExecutionQueue").unbind("click");
         $("#ExecutionQueue").click(function () {
             openModalTestCaseExecutionQueue(data.queueId, 'EDIT');
         });
         $("#rerunFromQueue").attr("disabled", false);
+        $("#rerunFromQueue").unbind("click");
         $("#rerunFromQueue").click(function () {
             openModalTestCaseExecutionQueue(data.queueId, 'DUPLICATE');
+        });
+        $("#rerunFromQueueandSee").attr("disabled", false);
+        $("#rerunFromQueueandSee").unbind("click");
+        $("#rerunFromQueueandSee").click(function () {
+            triggerTestCaseExecutionQueueandSee(data.queueId);
         });
     }
 
@@ -404,6 +428,31 @@ function updatePage(data, stepList) {
     createStepList(data.testCaseStepExecutionList, stepList);
     createProperties(data.testCaseExecutionDataList);
     setUpClickFunctionToSaveTestCaseExecutionButton(data);
+}
+
+
+function triggerTestCaseExecutionQueueandSee(queueId) {
+    $.ajax({
+        url: "CreateTestCaseExecutionQueue",
+        async: true,
+        method: "POST",
+        data: {
+            id: queueId,
+            actionState: "toQUEUED",
+            actionSave: "save"
+        },
+        success: function (data) {
+            if (getAlertType(data.messageType) === "success") {
+                showMessageMainPage(getAlertType(data.messageType), data.message, false, 60000);
+                var url = "./TestCaseExecution.jsp?executionQueueId=" + data.testCaseExecutionQueueList[0].id;
+                console.info("redir : " + url);
+                window.location.replace(url);
+            } else {
+                showMessageMainPage(getAlertType(data.messageType), data.message, false, 60000);
+            }
+        },
+        error: showUnexpectedError
+    });
 }
 
 
@@ -553,7 +602,9 @@ function updateDataBarVisual(controlStatus, progress = 100) {
             $("#progress-bar").addClass("progress-bar-success");
         } else if (controlStatus === "KO") {
             $("#progress-bar").addClass("progress-bar-danger");
-        } else if (controlStatus === "NE" && isTheExecutionManual) {
+        } else if (controlStatus === "NE") {
+            $("#progress-bar").addClass("progress-bar-grey");
+        } else if (controlStatus === "WE" && isTheExecutionManual) {
             $("#progress-bar").addClass("progress-bar-black");
         } else {
             $("#progress-bar").addClass("progress-bar-warning");
@@ -962,18 +1013,39 @@ function createStepList(data, stepList) {
     $("#stepList").empty();
 
     for (var i = 0; i < data.length; i++) {
-
-        var step = data[i];
-        var stepObj = new Step(step, stepList, i);
-
-        $(stepObj).data("id", {stepId: i, actionId: -1, controlId: -1});
-
-        stepObj.addElements();
-        stepObj.draw();
-
-        stepList.push(stepObj);
-
+        if (data[i].test === "Pre Testing") {
+            var step = data[i];
+            var stepObj = new Step(step, stepList, i);
+            $(stepObj).data("id", {stepId: i, actionId: -1, controlId: -1});
+            stepObj.addElements();
+            stepObj.draw();
+            stepList.push(stepObj);
+        }
     }
+
+    for (var i = 0; i < data.length; i++) {
+        if ((data[i].test !== "Pre Testing") && (data[i].test !== "Post Testing")) {
+            var step = data[i];
+            var stepObj = new Step(step, stepList, i);
+            $(stepObj).data("id", {stepId: i, actionId: -1, controlId: -1});
+            stepObj.addElements();
+            stepObj.draw();
+            stepList.push(stepObj);
+        }
+    }
+
+    for (var i = 0; i < data.length; i++) {
+        if (data[i].test === "Post Testing") {
+            var step = data[i];
+            var stepObj = new Step(step, stepList, i);
+            $(stepObj).data("id", {stepId: i, actionId: -1, controlId: -1});
+            stepObj.addElements();
+            stepObj.draw();
+            stepList.push(stepObj);
+        }
+    }
+
+
     if (stepList.length > 0) {
         $("#stepList a:last-child").trigger("click");
     }
@@ -1020,6 +1092,8 @@ function Step(json, stepList, id) {
     $(this.html).data("index", id)
     if (this.test === "Pre Testing") {
         var stepDesc = "[PRE]  " + this.description + "  (" + this.timeElapsed + ")";
+    } else if (this.test === "Post Testing") {
+        var stepDesc = "[POST]  " + this.description + "  (" + this.timeElapsed + ")";
     } else {
         var stepDesc = "[" + this.sort + "." + +this.index + "]  " + this.description + "  (" + this.timeElapsed + ")";
     }
@@ -1056,10 +1130,13 @@ Step.prototype.draw = function () {
     } else if (object.returnCode === "NA") {
         htmlElement.append($("<span>").addClass("glyphicon glyphicon-alert pull-left"));
         object.html.addClass("list-group-item-info");
+    } else if (object.returnCode === "NE") {
+        htmlElement.append($("<span>").addClass("pull-left"));
+        object.html.addClass("list-group-item-grey");
     } else if (object.returnCode === "FA") {
         htmlElement.append($("<span>").addClass("glyphicon glyphicon-alert pull-left"));
         object.html.addClass("list-group-item-warning");
-    } else if (object.returnCode === "NE" && isTheExecutionManual) {
+    } else if (object.returnCode === "WE" && isTheExecutionManual) {
         htmlElement.append($("<span>").addClass("glyphicon glyphicon-question-sign pull-left"));
         object.html.addClass("list-group-item-black");
     } else {
@@ -1128,18 +1205,16 @@ Step.prototype.show = function () {
     $(this).addClass("active");
     if (object.returnCode === "OK") {
         $("#stepInfo").prepend($("<div>").addClass("col-xs-1").append($("<h2>").addClass("glyphicon glyphicon-ok pull-left text-success").attr("style", "font-size:3em")));
-        // $("#stepContent").addClass("col-lg-9");
     } else if (object.returnCode === "PE") {
         $("#stepInfo").prepend($("<div>").addClass("col-xs-1").append($("<h2>").addClass("glyphicon glyphicon-refresh spin pull-left text-info").attr("style", "font-size:3em")));
-        // $("#stepContent").addClass("col-lg-9");
     } else if (object.returnCode === "KO") {
         $("#stepInfo").prepend($("<div>").addClass("col-xs-1").append($("<h2>").addClass("glyphicon glyphicon-remove pull-left text-danger").attr("style", "font-size:3em")));
-        // $("#stepContent").addClass("col-lg-9");
-    } else if (object.returnCode === "NE" && isTheExecutionManual) {
+    } else if (object.returnCode === "NE") {
+        $("#stepInfo").prepend($("<div>").addClass("col-xs-1").append($("<h2>").addClass("pull-left").attr("style", "font-size:3em")));
+    } else if (object.returnCode === "WE" && isTheExecutionManual) {
         $("#stepInfo").prepend($("<div>").addClass("col-xs-1").append($("<h2>").addClass("glyphicon glyphicon-question-sign pull-left text-black").attr("style", "font-size:3em")));
     } else {
         $("#stepInfo").prepend($("<div>").addClass("col-xs-1").append($("<h2>").addClass("glyphicon glyphicon-alert pull-left text-warning").attr("style", "font-size:3em")));
-        // $("#stepContent").addClass("col-lg-9");
     }
 
 
@@ -1224,7 +1299,7 @@ function returnMessageWritableForStep(object, field) {
     field.data("currentStep", object);
 
     field.prop("readonly", true);
-    if (object.returnCode === "NE" && isTheExecutionManual) {
+    if (object.returnCode === "WE" && isTheExecutionManual) {
         field.prop("readonly", false);
         field.change(function () {
             var currentObject = field.data("currentStep");
@@ -1381,7 +1456,11 @@ Action.prototype.draw = function (idMotherStep, id) {
         htmlElement.prepend($("<div>").addClass("col-xs-1").append($("<span>").addClass("glyphicon glyphicon-alert").attr("style", "font-size:1.5em")));
         htmlElement.addClass("row list-group-item list-group-item-info");
         content.hide();
-    } else if (action.returnCode === "NE" && isTheExecutionManual) {
+    } else if (action.returnCode === "NE") {
+        htmlElement.prepend($("<div>").addClass("col-xs-1").append($("<span>").attr("style", "font-size:1.5em")));
+        htmlElement.addClass("row list-group-item list-group-item-grey");
+        content.hide();
+    } else if (action.returnCode === "WE" && isTheExecutionManual) {
         htmlElement.prepend($("<div>").addClass("col-xs-1").append($("<span>").addClass("glyphicon glyphicon-question-sign").attr("style", "font-size:1.5em")));
         htmlElement.addClass("row list-group-item list-group-item-black");
         content.hide();
@@ -1450,7 +1529,7 @@ function returnMessageWritable(object, field) {
 
     field.empty();
     field.prop("readonly", true);
-    if (object.returnCode === "NE" && isTheExecutionManual) {
+    if (object.returnCode === "WE" && isTheExecutionManual) {
         field.prop("readonly", false);
         field.change(function () {
             object.setReturnMessage(field.val());
@@ -1546,7 +1625,7 @@ Action.prototype.generateHeader = function (id) {
 
 function triggerActionExecution(element, id, status) {
     var currentElement = $($(element).closest(".action")[0]);
-    var newReturnCode = "NE";
+    var newReturnCode = "WE";
     if (status === "OK") {
         currentElement.removeClass(function (index, className) {
             return (className.match(/(^|\s)list-group-item-\S+/g) || []).join(' ');
@@ -1641,7 +1720,7 @@ function updateActionControlReturnCode(idElementTriggers, returnCodeElementTrigg
             }
             if (isBeforeTheElementTrigger) {
                 //change the returnCode if it's untouched
-                if (currentActionControlReturnCode === "NE") {
+                if (currentActionControlReturnCode === "WE") {
                     //change the return code
                     $(this).data("item").returnCode = "OK";
                     $(this).parent().next("div").find("input[id='returncode']").val("OK").change();
@@ -1656,7 +1735,7 @@ function updateActionControlReturnCode(idElementTriggers, returnCodeElementTrigg
                 for (var idStep = 0; idStep < idElementTriggers.stepId; idStep++) {// update all the step below the element trigger
                     var currentStep = $("#stepList").data("listOfStep")[ idStep ];
                     //if previous element are untouch
-                    if (currentStep.returnCode === "NE") {
+                    if (currentStep.returnCode === "WE") {
                         updateStepExecutionReturnCode(idStep, "OK", false);
                     }
                 }
@@ -1703,7 +1782,7 @@ function updateStepExecutionReturnCode(stepId, returnCodeActionControlTrigger, i
                         newStepReturnCode = "FA";
                         everyActionAndControlOK = false;
                         returnMessageCanBeReset = false;
-                    } else if (newStepReturnCode !== "KO" && newStepReturnCode !== "FA" && $(this).data("item").returnCode === "NE") {
+                    } else if (newStepReturnCode !== "KO" && newStepReturnCode !== "FA" && $(this).data("item").returnCode === "WE") {
                         everyActionAndControlOK = false;
                     }
                 }
@@ -1713,7 +1792,7 @@ function updateStepExecutionReturnCode(stepId, returnCodeActionControlTrigger, i
                 newStepReturnCode = "OK";
                 //reset to defaut
             } else if (returnMessageCanBeReset) {
-                newStepReturnCode = "NE";
+                newStepReturnCode = "WE";
             }
         }
         if (newStepReturnCode !== null) {
@@ -1774,9 +1853,9 @@ function updateTestCaseReturnCode() {
     for (var idStep = 0; idStep < $("#stepList").data("listOfStep").length; idStep++) {
         var currentStep = $("#stepList").data("listOfStep")[idStep];
         //a step is not complete no need to go further in the list of step
-        if (currentStep.returnCode === "NE") {
+        if (currentStep.returnCode === "WE") {
             if (testCaseNewReturnCode !== "FA" && testCaseNewReturnCode !== "KO")
-                testCaseNewReturnCode = "NE";
+                testCaseNewReturnCode = "WE";
             break;//no need to continue
         } else if (currentStep.returnCode === "OK" && testCaseNewReturnCode === null) {
             testCaseNewReturnCode = "OK";
@@ -1806,7 +1885,7 @@ function updateTestCaseReturnCode() {
             configPanel.find("#controlstatus").addClass("text-danger");
             configPanel.find("#exReturnMessage").addClass("text-danger");
             controlMessage = "The test case failed on validations."
-        } else if (testCaseNewReturnCode === "NE") {
+        } else if (testCaseNewReturnCode === "WE") {
             configPanel.find("#controlstatus").addClass("text-black");
             configPanel.find("#exReturnMessage").addClass("text-black");
             controlMessage = "The test case has not been executed.";
@@ -2062,7 +2141,11 @@ Control.prototype.draw = function (idMotherStep, idMotherAction, idControl) {
         htmlElement.prepend($("<div>").addClass("col-xs-1").append($("<span>").addClass("glyphicon glyphicon-alert").attr("style", "font-size:1.5em")));
         htmlElement.addClass("row list-group-item list-group-item-info");
         content.hide();
-    } else if (this.returnCode === "NE" && isTheExecutionManual) {
+    } else if (this.returnCode === "NE") {
+        htmlElement.prepend($("<div>").addClass("col-xs-1").append($("<span>").attr("style", "font-size:1.5em")));
+        htmlElement.addClass("row list-group-item list-group-item-grey");
+        content.hide();
+    } else if (this.returnCode === "WE" && isTheExecutionManual) {
         htmlElement.prepend($("<div>").addClass("marginLeft-15 col-xs-1").append($("<span>").addClass("glyphicon glyphicon-question-sign").attr("style", "font-size:1.5em")));
         htmlElement.addClass("row list-group-item list-group-item-black");
         content.hide();

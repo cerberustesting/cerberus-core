@@ -81,7 +81,7 @@ public class ProjectService implements IProjectService {
     }
 
     @Override
-    public Project convert(AnswerItem answerItem) throws CerberusException {
+    public Project convert(AnswerItem<Project> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (Project) answerItem.getItem();
@@ -90,7 +90,7 @@ public class ProjectService implements IProjectService {
     }
 
     @Override
-    public List<Project> convert(AnswerList answerList) throws CerberusException {
+    public List<Project> convert(AnswerList<Project> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (List<Project>) answerList.getDataList();

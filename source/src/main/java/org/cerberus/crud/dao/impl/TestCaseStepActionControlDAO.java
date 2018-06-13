@@ -110,6 +110,15 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
         List<TestCaseStepActionControl> list = null;
         final String query = "SELECT * FROM testcasestepactioncontrol WHERE test = ? AND testcase = ? AND step = ? AND sequence = ? ORDER BY sort";
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.test : " + test);
+            LOG.debug("SQL.param.testcase : " + testcase);
+            LOG.debug("SQL.param.step : " + stepNumber);
+            LOG.debug("SQL.param.sequence : " + sequence);
+        }
+        
         try(Connection connection = this.databaseSpring.connect();
         		PreparedStatement preStat = connection.prepareStatement(query);) {
             
@@ -346,7 +355,7 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
 
     @Override
     public AnswerList readByTestTestCase(String test, String testcase) {
-        AnswerList response = new AnswerList();
+        AnswerList response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<TestCaseStepActionControl> controlList = new ArrayList<TestCaseStepActionControl>();
@@ -380,14 +389,14 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
                         LOG.error("Partial Result in the query.");
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                        response = new AnswerList(controlList, controlList.size());
+                        response = new AnswerList<>(controlList, controlList.size());
                     } else if (controlList.size() <= 0) {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                        response = new AnswerList(controlList, controlList.size());
+                        response = new AnswerList<>(controlList, controlList.size());
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                         msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                        response = new AnswerList(controlList, controlList.size());
+                        response = new AnswerList<>(controlList, controlList.size());
                     }
                 } catch (SQLException exception) {
                     LOG.error("Unable to execute query : " + exception.toString());
@@ -404,8 +413,8 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
     }
 
     @Override
-    public AnswerList readByVarious1(String test, String testcase, int step, int sequence) {
-        AnswerList response = new AnswerList();
+    public AnswerList<TestCaseStepActionControl> readByVarious1(String test, String testcase, int step, int sequence) {
+        AnswerList response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<TestCaseStepActionControl> controlList = new ArrayList<TestCaseStepActionControl>();
@@ -441,14 +450,14 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
                     LOG.error("Partial Result in the query.");
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                    response = new AnswerList(controlList, controlList.size());
+                    response = new AnswerList<>(controlList, controlList.size());
                 } else if (controlList.size() <= 0) {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                    response = new AnswerList(controlList, controlList.size());
+                    response = new AnswerList<>(controlList, controlList.size());
                 } else {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                     msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                    response = new AnswerList(controlList, controlList.size());
+                    response = new AnswerList<>(controlList, controlList.size());
                 }
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());

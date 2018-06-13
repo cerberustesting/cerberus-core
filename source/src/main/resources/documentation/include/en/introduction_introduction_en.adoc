@@ -1,1 +1,9 @@
-In this section, you will find information on Cerberus.
+Cerberus is a user-friendly automated testing framework. The development of this web application has started in 2010 and became open source in 2013.
+
+Cerberus provides :
+
+* a user friendly and intuitive interface
+* a complete set of solutions to organize your test library
+* the possibility to run your tests, grouped in campaigns, easily and at a specific frequence
+* a reporting tool to visualize quickly and efficently the result of a campaign
+* much more... 

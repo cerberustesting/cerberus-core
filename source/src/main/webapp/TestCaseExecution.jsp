@@ -67,11 +67,11 @@
                                     <span name="Separator"> </span>
                                     <span id="controlstatus" style="font-weight: 900"></span>
                                 </div>
-                                <div class="text-nowrap">
+                                <div class="text-wrap">
                                     <span id="tcDescription" style="font-size:.9em;margin:0px;line-height:1;height:.95em;"></span>
                                 </div>
-                                <div class="text-nowrap">
-                                    <span id="exReturnMessage" style="font-size:.9em;margin:0px;line-height:1;height:.95em;"></span>
+                                <div class="text-wrap">
+                                    <span id="exReturnMessage" style="font-size:.9em;margin:0px;line-height:1;height:.95em;font-weight: 900;"></span>
                                 </div>
                             </div>
                             <div class="col-lg-6" style="padding: 0px;">
@@ -104,6 +104,7 @@
                                                 <a><button class="btn btn-default pull-left" id="runTestCase" style="margin-left: 5px; margin-left: 5px;" data-toggle="tooltip" ><span class="glyphicon glyphicon-play"></span>Run</button></a>
                                                 <a><button class="btn btn-default pull-left" id="rerunTestCase" style="margin-left: 5px; margin-left: 5px;"><span class="glyphicon glyphicon-forward"></span>ReRun</button></a>
                                                 <a><button class="btn btn-default pull-left" id="rerunFromQueue" style="margin-left: 5px; margin-left: 5px;"><span class="glyphicon glyphicon-forward"></span>From Queue</button></a>
+                                                <a><button class="btn btn-default pull-left" id="rerunFromQueueandSee" style="margin-left: 5px; margin-left: 5px;"><span class="glyphicon glyphicon-forward"></span>From Queue & See</button></a>
                                             </div>
                                         </div>
 

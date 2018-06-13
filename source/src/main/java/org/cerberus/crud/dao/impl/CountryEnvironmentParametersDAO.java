@@ -72,7 +72,7 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
 
     @Override
     public AnswerItem<CountryEnvironmentParameters> readByKey(String system, String country, String environment, String application) {
-        AnswerItem ans = new AnswerItem();
+        AnswerItem ans = new AnswerItem<>();
         CountryEnvironmentParameters result = null;
         final String query = "SELECT * FROM countryenvironmentparameters cea WHERE cea.`system` = ? AND cea.country = ? AND cea.environment = ? AND cea.application = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -263,7 +263,7 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
 
     @Override
     public AnswerList readByVariousByCriteria(String system, String country, String environment, String application, int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
-        AnswerList response = new AnswerList();
+        AnswerList response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<CountryEnvironmentParameters> objectList = new ArrayList<CountryEnvironmentParameters>();
@@ -371,14 +371,14 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
                         LOG.error("Partial Result in the query.");
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                        response = new AnswerList(objectList, nrTotalRows);
+                        response = new AnswerList<>(objectList, nrTotalRows);
                     } else if (objectList.size() <= 0) {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                        response = new AnswerList(objectList, nrTotalRows);
+                        response = new AnswerList<>(objectList, nrTotalRows);
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                         msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                        response = new AnswerList(objectList, nrTotalRows);
+                        response = new AnswerList<>(objectList, nrTotalRows);
                     }
 
                 } catch (SQLException exception) {
@@ -427,8 +427,8 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
     public Answer create(CountryEnvironmentParameters object) {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO `countryenvironmentparameters` (`system`, `country`, `environment`, `application`, `ip`, `domain`, `url`, `urllogin`, `Var1`, `Var2`, `Var3`, `Var4`, `poolSize`) ");
-        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)");
+        query.append("INSERT INTO `countryenvironmentparameters` (`system`, `country`, `environment`, `application`, `ip`, `domain`, `url`, `urllogin`, `Var1`, `Var2`, `Var3`, `Var4`, `poolSize`, `mobileActivity`, `mobilePackage`) ");
+        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -451,13 +451,15 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
                 preStat.setString(11, object.getVar3());
                 preStat.setString(12, object.getVar4());
                 preStat.setInt(13, object.getPoolSize());
+                preStat.setString(14, object.getMobileActivity());
+                preStat.setString(15, object.getMobilePackage());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                 msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT"));
 
             } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
+                LOG.error("Unable to execute query : " + exception.toString(),exception);
 
                 if (exception.getSQLState().equals(SQL_DUPLICATED_CODE)) { //23000 is the sql state for duplicate entries
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_DUPLICATE);
@@ -532,7 +534,7 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
     @Override
     public Answer update(CountryEnvironmentParameters object) {
         MessageEvent msg = null;
-        final String query = "UPDATE `countryenvironmentparameters` SET `IP`=?, `URL`=?, `URLLOGIN`=?, `domain`=?, Var1=?, Var2=?, Var3=?, Var4=?, poolSize=?  where `system`=? and `country`=? and `environment`=? and `application`=? ";
+        final String query = "UPDATE `countryenvironmentparameters` SET `IP`=?, `URL`=?, `URLLOGIN`=?, `domain`=?, Var1=?, Var2=?, Var3=?, Var4=?, poolSize=?, mobileActivity=?, mobilePackage=?  where `system`=? and `country`=? and `environment`=? and `application`=? ";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -542,19 +544,23 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
-                preStat.setString(1, object.getIp());
-                preStat.setString(2, object.getUrl());
-                preStat.setString(3, object.getUrlLogin());
-                preStat.setString(4, object.getDomain());
-                preStat.setString(5, object.getVar1());
-                preStat.setString(6, object.getVar2());
-                preStat.setString(7, object.getVar3());
-                preStat.setString(8, object.getVar4());
-                preStat.setInt(9, object.getPoolSize());
-                preStat.setString(10, object.getSystem());
-                preStat.setString(11, object.getCountry());
-                preStat.setString(12, object.getEnvironment());
-                preStat.setString(13, object.getApplication());
+                int i=1;
+                preStat.setString(i++, object.getIp());
+                preStat.setString(i++, object.getUrl());
+                preStat.setString(i++, object.getUrlLogin());
+                preStat.setString(i++, object.getDomain());
+                preStat.setString(i++, object.getVar1());
+                preStat.setString(i++, object.getVar2());
+                preStat.setString(i++, object.getVar3());
+                preStat.setString(i++, object.getVar4());
+                preStat.setInt(i++, object.getPoolSize());
+                preStat.setString(i++, object.getMobileActivity());
+                preStat.setString(i++, object.getMobilePackage());
+                preStat.setString(i++, object.getSystem());
+                preStat.setString(i++, object.getCountry());
+                preStat.setString(i++, object.getEnvironment());
+                preStat.setString(i++, object.getApplication());
+
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -595,8 +601,13 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
         String var2 = resultSet.getString("cea.Var2");
         String var3 = resultSet.getString("cea.Var3");
         String var4 = resultSet.getString("cea.Var4");
+        String mobileActivity = resultSet.getString("cea.mobileActivity");
+        if(mobileActivity == null) mobileActivity="";
+        String mobilePackage = resultSet.getString("cea.mobilePackage");
+        if(mobilePackage == null) mobilePackage="";
+
         int poolSize = resultSet.getInt("cea.poolSize");
-        return factoryCountryEnvironmentParameters.create(system, count, env, application, ip, domain, url, urllogin, var1, var2, var3, var4, poolSize);
+        return factoryCountryEnvironmentParameters.create(system, count, env, application, ip, domain, url, urllogin, var1, var2, var3, var4, poolSize, mobileActivity, mobilePackage);
     }
 
 }

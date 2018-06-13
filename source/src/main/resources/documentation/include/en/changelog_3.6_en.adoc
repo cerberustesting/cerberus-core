@@ -1,0 +1,13 @@
+*Bug fixes*
+[square]
+* Execution pop in ReportByTag was not always correctly displayed.
+* Service libraries didn't work as expected when you wanted to update or create them (special chars and empty field). 
+
+*Improvements / New features*
+[square]
+* Steps can now be forced to be executed by setting Y to the Force Exe data. This is useful in order to perform some end of session/logout operation at the end of every testcase even if the test failed somewhere during the execution. #1709
+* Trying to delete a label that still have links to testcases will now generate an error message. You need to remove the links using mass Action before. #1688
+
+*Warning to be considered before applying the version (deprecated features)*
+[square]
+* Nothing 

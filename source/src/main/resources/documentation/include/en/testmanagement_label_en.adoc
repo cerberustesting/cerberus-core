@@ -1,3 +1,5 @@
+=== Label
+
 In this section, you will find the bla bla
 
 image:labelpage.png[Logo]

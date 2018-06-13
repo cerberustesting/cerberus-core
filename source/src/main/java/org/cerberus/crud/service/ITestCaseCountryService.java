@@ -71,7 +71,7 @@ public interface ITestCaseCountryService {
      * @param testCase
      * @return
      */
-    AnswerList readByTestTestCase(String system, String test, String testCase);
+    AnswerList<TestCaseCountry> readByTestTestCase(String system, String test, String testCase);
 
     /**
      *
@@ -132,7 +132,7 @@ public interface ITestCaseCountryService {
      * @return
      * @throws CerberusException
      */
-    TestCaseCountry convert(AnswerItem answerItem) throws CerberusException;
+    TestCaseCountry convert(AnswerItem<TestCaseCountry> answerItem) throws CerberusException;
 
     /**
      *
@@ -140,7 +140,7 @@ public interface ITestCaseCountryService {
      * @return
      * @throws CerberusException
      */
-    List<TestCaseCountry> convert(AnswerList answerList) throws CerberusException;
+    List<TestCaseCountry> convert(AnswerList<TestCaseCountry> answerList) throws CerberusException;
 
     /**
      *

@@ -150,6 +150,14 @@ public interface ITestDataLibService {
      * @return
      */
     Answer update(TestDataLib object);
+    
+    /**
+    *
+    * @param oldName
+    * @param newName
+    * @return
+    */
+    List<Answer> bulkRename(String oldName, String newName);
 
     /**
      *
@@ -157,7 +165,7 @@ public interface ITestDataLibService {
      * @return
      * @throws CerberusException
      */
-    TestDataLib convert(AnswerItem answerItem) throws CerberusException;
+    TestDataLib convert(AnswerItem<TestDataLib> answerItem) throws CerberusException;
 
     /**
      *
@@ -165,7 +173,7 @@ public interface ITestDataLibService {
      * @return
      * @throws CerberusException
      */
-    List<TestDataLib> convert(AnswerList answerList) throws CerberusException;
+    List<TestDataLib> convert(AnswerList<TestDataLib> answerList) throws CerberusException;
 
     /**
      *

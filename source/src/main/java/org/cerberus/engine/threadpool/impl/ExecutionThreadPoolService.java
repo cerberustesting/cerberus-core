@@ -26,6 +26,9 @@ import java.util.concurrent.Future;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.service.IInvariantService;
+import org.cerberus.engine.execution.IExecutionRunService;
+import org.cerberus.engine.execution.IRetriesService;
+import org.cerberus.engine.execution.impl.ExecutionRunService;
 import org.cerberus.engine.threadpool.entity.TestCaseExecutionQueueToTreat;
 import org.cerberus.crud.service.IMyVersionService;
 import org.cerberus.crud.service.IParameterService;
@@ -63,10 +66,12 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
     ExecutionQueueThreadPool threadQueuePool;
     @Autowired
     private ITestCaseExecutionQueueService queueService;
+    @Autowired
+    private IRetriesService retriesService;
 
     @Override
     public HashMap<String, Integer> getCurrentlyRunning() throws CerberusException {
-        AnswerList answer = new AnswerList();
+        AnswerList answer = new AnswerList<>();
         HashMap<String, Integer> constrains_current = new HashMap<String, Integer>();
 
         // Getting all executions already running in the queue.
@@ -100,7 +105,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
 
     @Override
     public HashMap<String, Integer> getCurrentlyPoolSizes() throws CerberusException {
-        AnswerList answer = new AnswerList();
+        AnswerList answer = new AnswerList<>();
         HashMap<String, Integer> constrains_current = new HashMap<String, Integer>();
 
         String const01_key = TestCaseExecutionQueueToTreat.CONSTRAIN1_GLOBAL;
@@ -137,7 +142,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
 
     @Override
     public HashMap<String, Integer> getCurrentlyToTreat() throws CerberusException {
-        AnswerList answer = new AnswerList();
+        AnswerList answer = new AnswerList<>();
         HashMap<String, Integer> constrains_current = new HashMap<String, Integer>();
 
         // Getting all executions to be treated.
@@ -207,10 +212,8 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                 myVersionService.UpdateMyVersionString("queueprocessingjobrunning", "Y");
                 myVersionService.UpdateMyVersionString("queueprocessingjobstart", String.valueOf(new Date()));
 
-                String cerberus_url = parameterService.getParameterStringByKey("cerberus_url", "", "");
-
                 // Getting all executions to be treated.
-                AnswerList answer = new AnswerList();
+                AnswerList answer = new AnswerList<>();
                 answer = tceiqService.readQueueToTreat();
                 List<TestCaseExecutionQueueToTreat> executionsInQueue = (List<TestCaseExecutionQueueToTreat>) answer.getDataList();
 
@@ -300,10 +303,11 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                         if (queueService.updateToWaiting(exe.getId())) {
                             try {
                                 ExecutionQueueWorkerThread task = new ExecutionQueueWorkerThread();
-                                task.setCerberusExecutionUrl(cerberus_url);
+                                task.setCerberusExecutionUrl(parameterService.getParameterStringByKey("cerberus_url", exe.getSystem(), ""));
                                 task.setQueueId(exe.getId());
                                 task.setToExecuteTimeout(queueTimeout);
                                 task.setQueueService(queueService);
+                                task.setRetriesService(retriesService);
                                 task.setExecThreadPool(threadQueuePool);
                                 Future<?> future = threadQueuePool.getExecutor().submit(task);
                                 task.setFuture(future);

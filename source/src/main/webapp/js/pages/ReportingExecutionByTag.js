@@ -19,8 +19,11 @@
  */
 /* global handleErrorAjaxAfterTimeout */
 
+var statusOrder = ["OK", "KO", "FA", "NA", "NE", "WE", "PE", "QU", "QE", "CA"];
+
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
+
         initPage();
 
         bindToggleCollapse();
@@ -322,7 +325,7 @@ function  filterLabelReport(selectTag) {
 
 }
 
-function generateBarTooltip(data, statusOrder) {
+function generateBarTooltip(data) {
     var htmlRes = "";
     var len = statusOrder.length;
 
@@ -330,9 +333,11 @@ function generateBarTooltip(data, statusOrder) {
         var status = statusOrder[index];
 
         if (data.hasOwnProperty(status)) {
-            htmlRes += "<div>\n\
+            if (data[status] > 0) {
+                htmlRes += "<div>\n\
                         <span class='color-box status" + status + "'></span>\n\
                         <strong> " + status + " : </strong>" + data[status] + "</div>";
+            }
         }
     }
     htmlRes += '</div>';
@@ -341,7 +346,7 @@ function generateBarTooltip(data, statusOrder) {
 
 function buildBar(obj) {
     var buildBar;
-    var statusOrder = ["OK", "KO", "FA", "NA", "NE", "PE", "QU", "CA"];
+
     var len = statusOrder.length;
     //Build the title to show at the top of the bar by checking the value of the checkbox
     var params = $("#splitFilter input");
@@ -357,7 +362,7 @@ function buildBar(obj) {
     if (key === "")//if no spliter if selected
         key = "Total";
 
-    var tooltip = generateBarTooltip(obj, statusOrder);
+    var tooltip = generateBarTooltip(obj);
     buildBar = '<div class="row"><div class="col-sm-6">' + key + '</div><div class="col-sm-6 pull-right" style="display: inline;">Total executions : ' + obj.total + '</div>';
     buildBar += '</div><div class="progress" data-toggle="tooltip" data-html="true" title="' + tooltip + '">';
 
@@ -379,13 +384,13 @@ function buildBar(obj) {
 
 function buildLabelBar(obj) {
     var buildBar;
-    var statusOrder = ["OK", "KO", "FA", "NA", "NE", "PE", "QU", "CA"];
+
     var len = statusOrder.length;
     //Build the title to show at the top of the bar by checking the value of the checkbox
     var params = $("#splitLabelFilter input");
     var key = '<div class="pull-left"><span class="label label-primary" style="background-color:' + obj.label.map.color + '" data-toggle="tooltip" title="' + obj.label.map.description + '">' + obj.label.map.name + '</span></div>';
 
-    var tooltip = generateBarTooltip(obj, statusOrder);
+    var tooltip = generateBarTooltip(obj);
     buildBar = '<div>' + key + '<div class="pull-right" style="display: inline;margin-bottom:5px">Total executions : ' + obj.total + '</div>\n\
                                                         </div><div class="progress" style="width:100%;" data-toggle="tooltip" data-html="true" title="' + tooltip + '">';
 
@@ -500,7 +505,6 @@ function loadBugReportByStatusTable(data, selectTag) {
             var $tr = $('<tr>');
             $tr.append($('<td>').html(bugLink).css("text-align", "center"));
             if (data.BugTrackerStat[index].exeIdLast !== 0) {
-//            $tr.append($('<td>').text(data.BugTrackerStat[index].exeIdLast).css("text-align", "center"));
                 $tr.append($('<td>').html(exeLink).css("text-align", "center"));
             } else {
                 $tr.append($('<td>'));
@@ -567,8 +571,8 @@ function loadBugReportByStatusTable(data, selectTag) {
 
 function appendPanelStatus(status, total, selectTag) {
     var rowClass = getRowClass(status);
-    if (rowClass.panel === "panelQU") {
-        // When we display the QU status, we add a link to all executions in the queue on the queue page.
+    if ((rowClass.panel === "panelQU") || (rowClass.panel === "panelQE")) {
+        // When we display the QU or QE status, we add a link to all executions in the queue on the queue page.
         $("#ReportByStatusTable").append(
                 $("<a href='./TestCaseExecutionQueueList.jsp?tag=" + selectTag + "'></a>").append(
                 $("<div class='panel " + rowClass.panel + "'></div>").append(
@@ -618,12 +622,24 @@ function loadReportByStatusTable(data, selectTag) {
     }
 
     // create a panel for each control status
-    for (var label in total) {
-        if (label !== "test") {
-            appendPanelStatus(label, total, selectTag);
+
+    var len = statusOrder.length;
+    //Build the title to show at the top of the bar by checking the value of the checkbox
+
+    for (var i = 0; i < len; i++) {
+        var status = statusOrder[i];
+        if (total.hasOwnProperty(status)) {
+            appendPanelStatus(status, total, selectTag);
         }
     }
-// add a panel for the total
+
+
+//    for (var label in total) {
+//        if (label !== "test") {
+//            appendPanelStatus(label, total, selectTag);
+//        }
+//    }
+    // add a panel for the total
     $("#ReportByStatusTable").append(
             $("<div class='panel panel-primary'></div>").append(
             $('<div class="panel-heading"></div>').append(
@@ -890,8 +906,10 @@ function createRow(row, isTotalRow) {
             $('<td>').text(row.FA).css("text-align", "right"),
             $('<td>').text(row.NA).css("text-align", "right"),
             $('<td>').text(row.NE).css("text-align", "right"),
+            $('<td>').text(row.WE).css("text-align", "right"),
             $('<td>').text(row.PE).css("text-align", "right"),
             $('<td>').text(row.QU).css("text-align", "right"),
+            $('<td>').text(row.QE).css("text-align", "right"),
             $('<td>').text(row.CA).css("text-align", "right"),
             $('<td>').text(row.notOKTotal).css("text-align", "right"),
             $('<td>').text(row.total).css("text-align", "right"),
@@ -900,8 +918,10 @@ function createRow(row, isTotalRow) {
             $('<td>').text(row.percFA + "%").css("text-align", "right"),
             $('<td>').text(row.percNA + "%").css("text-align", "right"),
             $('<td>').text(row.percNE + "%").css("text-align", "right"),
+            $('<td>').text(row.percWE + "%").css("text-align", "right"),
             $('<td>').text(row.percPE + "%").css("text-align", "right"),
             $('<td>').text(row.percQU + "%").css("text-align", "right"),
+            $('<td>').text(row.percQE + "%").css("text-align", "right"),
             $('<td>').text(row.percCA + "%").css("text-align", "right"),
             $('<td>').text(row.percNotOKTotal + "%").css("text-align", "right")
             );
@@ -931,8 +951,10 @@ function createHeaderRow() {
             $('<td>').text("FA").css("text-align", "center"),
             $('<td>').text("NA").css("text-align", "center"),
             $('<td>').text("NE").css("text-align", "center"),
+            $('<td>').text("WE").css("text-align", "center"),
             $('<td>').text("PE").css("text-align", "center"),
             $('<td>').text("QU").css("text-align", "center"),
+            $('<td>').text("QE").css("text-align", "center"),
             $('<td>').text("CA").css("text-align", "center"),
             $('<td>').text("NOT OK").css("text-align", "center"),
             $('<td>').text("TOTAL").css("text-align", "center"),
@@ -941,9 +963,11 @@ function createHeaderRow() {
             $('<td>').text("% FA").css("text-align", "center"),
             $('<td>').text("% NA").css("text-align", "center"),
             $('<td>').text("% NE").css("text-align", "center"),
+            $('<td>').text("% WE").css("text-align", "center"),
             $('<td>').text("% PE").css("text-align", "center"),
             $('<td>').text("% QU").css("text-align", "center"),
-            $('<td>').text("% CA").css("text-align", "center"), /*.class("width80")*/
+            $('<td>').text("% QE").css("text-align", "center"),
+            $('<td>').text("% CA").css("text-align", "center"),
             $('<td>').text("% NOT OK").css("text-align", "center")
             );
     return $tr;
@@ -1024,6 +1048,10 @@ function createShortDescRow(row, data, index) {
 
 function generateTooltip(data) {
     var htmlRes;
+    var ctrlmessage = data.ControlMessage;
+    if (ctrlmessage !== undefined && ctrlmessage.length > 200) {
+        ctrlmessage = data.ControlMessage.substring(0, 200) + '...';
+    }
     if (!isEmpty(data.NbExecutions) && (data.NbExecutions >= 2)) {
         htmlRes = '<div><span class=\'bold\'>Execution ID :</span> ' + data.ID + ' - (' + data.NbExecutions + ' Exe(s))</div>';
     } else {
@@ -1034,7 +1062,7 @@ function generateTooltip(data) {
             '<div><span class=\'bold\'>Browser : </span>' + data.RobotDecli + '</div>' +
             '<div><span class=\'bold\'>Start : </span>' + new Date(data.Start) + '</div>' +
             '<div><span class=\'bold\'>End : </span>' + new Date(data.End) + '</div>' +
-            '<div>' + data.ControlMessage + '</div>';
+            '<div>' + ctrlmessage + '</div>';
 
     return htmlRes;
 }
@@ -1043,7 +1071,7 @@ function openModalTestCase_FromRepTag(element, test, testcase, mode) {
     openModalTestCase(test, testcase, mode);
     $('#editTestCaseModal').on("hidden.bs.modal", function (e) {
         $('#editTestCaseModal').unbind("hidden.bs.modal");
-        console.info("DONE - " + element);
+
         var testcaseobj = $('#editTestCaseModal').data("testcase");
         if ((!(testcaseobj === undefined)) && ($('#editTestCaseModal').data("Saved"))) {
             // when modal is closed, we check that testcase object exist and has been saved in order to update the comment and bugid on reportbytag screen.
@@ -1081,7 +1109,7 @@ function renderOptionsForExeList(selectTag) {
         var doc = new Doc();
         var contentToAdd = "<div class='marginBottom10'>";
         contentToAdd += "<label>Select all/none :</label>";
-        contentToAdd += "<label class='checkbox-inline'><input id='selectAllQueueQUERROR' type='checkbox'></input>QU (ERROR)</label>";
+        contentToAdd += "<label class='checkbox-inline'><input id='selectAllQueueQEERROR' type='checkbox'></input>QE (ERROR)</label>";
         contentToAdd += "<label class='checkbox-inline'><input id='selectAllQueueFA' type='checkbox'></input>FA</label>";
         contentToAdd += "<label class='checkbox-inline'><input id='selectAllQueueKO' type='checkbox'></input>KO</label>";
         contentToAdd += "<label class='checkbox-inline'><input id='selectAllQueueNA' type='checkbox'></input>NA</label>";
@@ -1092,8 +1120,8 @@ function renderOptionsForExeList(selectTag) {
 
         $("#listTable_length").before(contentToAdd);
 
-        $('#selectAllQueueQUERROR').click(function () {
-            selectAllQueue("QUERROR");
+        $('#selectAllQueueQEERROR').click(function () {
+            selectAllQueue("QEERROR");
         });
         $('#selectAllQueueFA').click(function () {
             selectAllQueue("FA");
@@ -1150,7 +1178,6 @@ function aoColumnsFunc(Columns) {
         {
             "data": "test",
             "sName": "tec.test",
-//            "sWidth": testCaseInfoWidth + "%",
             "sWidth": "80px",
             "title": doc.getDocOnline("test", "Test"),
             "sClass": "bold",
@@ -1164,7 +1191,6 @@ function aoColumnsFunc(Columns) {
             "data": "testCase",
             "sName": "tec.testCase",
             "sWidth": "60px",
-//            "sWidth": testCaseInfoWidth + "%",
             "title": doc.getDocOnline("testcase", "TestCase"),
             "mRender": function (data, type, obj, meta) {
                 var result = "<a href='./TestCaseScript.jsp?test=" + encodeURIComponent(obj.test) + "&testcase=" + encodeURIComponent(obj.testCase) + "'>" + obj.testCase + "</a>";
@@ -1174,7 +1200,6 @@ function aoColumnsFunc(Columns) {
                                 <span class="glyphicon glyphicon-pencil"></span></button>';
                 if (obj.testExist) {
                     return editEntry + result;
-//                    return result;
                 } else {
                     return obj.testCase;
                 }
@@ -1184,7 +1209,6 @@ function aoColumnsFunc(Columns) {
             "data": "application",
             "sName": "app.application",
             "sWidth": "60px",
-//            "sWidth": testCaseInfoWidth + "%",
             "title": doc.getDocOnline("application", "Application")
         }
     ];
@@ -1195,7 +1219,6 @@ function aoColumnsFunc(Columns) {
             "title": title,
             "bSortable": true,
             "bSearchable": true,
-//            "sWidth": testExecWidth + "%",
             "sWidth": "40px",
             "data": function (row, type, val, meta) {
                 var dataTitle = meta.settings.aoColumns[meta.col].sTitle;
@@ -1206,32 +1229,30 @@ function aoColumnsFunc(Columns) {
                 }
             },
             "sClass": "center",
-            "mRender": function (data) {
+            "mRender": function (data, type, row, meta) {
                 if (data !== "") {
                     // Getting selected Tag;
                     var executionLink = generateExecutionLink(data.ControlStatus, data.ID, tag);
                     var glyphClass = getRowClass(data.ControlStatus);
                     var tooltip = generateTooltip(data);
                     var cell = "";
-                    //cell += '<table class="table"><tr>';
                     cell += '<div class="input-group"><span style="border:0px;border-radius:0px;box-shadow: inset 0 -1px 0 rgba(0,0,0,.15);" class="input-group-addon status' + data.ControlStatus + '">';
                     var state = data.ControlStatus;
                     if (!isEmpty(data.QueueState)) {
                         state += data.QueueState;
                     }
                     if ((data.QueueID !== undefined) && (data.QueueID !== "0")) {
-                        //cell += '<td><input id="selectLine" name="id" value=' + data.QueueID + ' onclick="refreshNbChecked()" data-select="id" data-line="select' + state + '" data-id="' + data.QueueID + '" title="Select for Action" type="checkbox"></input></td>';
                         cell += '<input id="selectLine" name="id" value=' + data.QueueID + ' onclick="refreshNbChecked()" data-select="id" data-line="select' + state + '" data-id="' + data.QueueID + '" title="Select for Action" type="checkbox"></input>';
                     }
                     cell += '</span>';
-                    if (data.ControlStatus === "QU") {
+                    if ((data.ControlStatus === "QU") || (data.ControlStatus === "QE")) {
                         cell += '<div class="progress-bar progress-bar-queue status' + data.ControlStatus + '" ';
                     } else {
                         cell += '<div class="progress-bar status' + data.ControlStatus + '" ';
                     }
                     cell += 'role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;cursor: pointer; height: 40px;"';
                     cell += 'data-toggle="tooltip" data-html="true" title="' + tooltip + '"';
-                    if (data.ControlStatus === "QU") {
+                    if ((data.ControlStatus === "QU") || (data.ControlStatus === "QE")) {
                         cell += ' onclick="openModalTestCaseExecutionQueue(' + data.QueueID + ', \'EDIT\');">\n\' ';
                     } else {
                         cell += ' onclick="window.open(\'' + executionLink + '\')">';
@@ -1243,7 +1264,6 @@ function aoColumnsFunc(Columns) {
                     }
                     cell += '</div>';
                     cell += '</div>';
-                    //cell += "</td></tr></table>";
                     return cell;
                 } else {
                     return data;
@@ -1258,7 +1278,6 @@ function aoColumnsFunc(Columns) {
                 "sName": "tec.priority",
                 "sClass": "priority",
                 "sWidth": "20px",
-//                "sWidth": testCaseInfoWidth + "%",
                 "title": doc.getDocOnline("invariant", "PRIORITY")
             };
     aoColumns.push(col);
@@ -1268,7 +1287,6 @@ function aoColumnsFunc(Columns) {
                 "sName": "tec.comment",
                 "sClass": "comment",
                 "sWidth": "60px",
-//                "sWidth": testCaseInfoWidth + "%",
                 "title": doc.getDocOnline("testcase", "Comment")
             };
     aoColumns.push(col);
@@ -1286,7 +1304,6 @@ function aoColumnsFunc(Columns) {
                 "sName": "tec.bugId",
                 "sClass": "bugid",
                 "sWidth": "40px",
-//                "sWidth": testCaseInfoWidth + "%",
                 "title": doc.getDocOnline("testcase", "BugID")
             };
     aoColumns.push(col);
@@ -1327,29 +1344,6 @@ function customConfig(config) {
 
 }
 
-function getRowClass(status) {
-    var rowClass = [];
-
-    rowClass["panel"] = "panel" + status;
-    if (status === "OK") {
-        rowClass["glyph"] = "glyphicon glyphicon-ok";
-    } else if (status === "KO") {
-        rowClass["glyph"] = "glyphicon glyphicon-remove";
-    } else if (status === "FA") {
-        rowClass["glyph"] = "fa fa-bug";
-    } else if (status === "CA") {
-        rowClass["glyph"] = "fa fa-life-ring";
-    } else if (status === "PE") {
-        rowClass["glyph"] = "fa fa-hourglass-half";
-    } else if (status === "NE") {
-        rowClass["glyph"] = "fa fa-clock-o";
-    } else if (status === "NA") {
-        rowClass["glyph"] = "fa fa-question";
-    } else {
-        rowClass["glyph"] = "";
-    }
-    return rowClass;
-}
 
 function wrap(text, width) {
     text.each(function () {

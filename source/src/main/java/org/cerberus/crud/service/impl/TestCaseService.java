@@ -50,6 +50,7 @@ import org.cerberus.dto.TestCaseListDTO;
 import org.cerberus.dto.TestListDTO;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.MessageGeneral;
+import org.cerberus.engine.execution.IExecutionCheckService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
@@ -88,6 +89,8 @@ public class TestCaseService implements ITestCaseService {
     private ICampaignParameterService campaignParameterService;
     @Autowired
     private IParameterService parameterService;
+    @Autowired
+    private IExecutionCheckService executionCheckService;
 
     @Override
     public TestCase findTestCaseByKey(String test, String testCase) throws CerberusException {
@@ -103,7 +106,7 @@ public class TestCaseService implements ITestCaseService {
             LOG.warn("test case is null - test: " + test + " testcase: " + testCase);
         } else {
             List<TestCaseCountry> testCaseCountry = testCaseCountryService.findTestCaseCountryByTestTestCase(test, testCase);
-            List<TestCaseCountry> testCaseCountryToAdd = new ArrayList();
+            List<TestCaseCountry> testCaseCountryToAdd = new ArrayList<>();
             for (TestCaseCountry tcc : testCaseCountry) {
                 List<TestCaseCountryProperties> properties = testCaseCountryPropertiesService.findListOfPropertyPerTestTestCaseCountry(test, testCase, tcc.getCountry());
                 tcc.setTestCaseCountryProperty(properties);
@@ -114,7 +117,7 @@ public class TestCaseService implements ITestCaseService {
             String initialTest = test;
             String initialTc = testCase;
             List<TestCaseStep> tcs = testCaseStepService.getListOfSteps(test, testCase);
-            List<TestCaseStep> tcsToAdd = new ArrayList();
+            List<TestCaseStep> tcsToAdd = new ArrayList<>();
             for (TestCaseStep step : tcs) {
                 int stepNumber = step.getStep();
                 int initialStep = step.getStep();
@@ -124,10 +127,10 @@ public class TestCaseService implements ITestCaseService {
                     stepNumber = step.getUseStepStep();
                 }
                 List<TestCaseStepAction> tcsa = testCaseStepActionService.getListOfAction(test, testCase, stepNumber);
-                List<TestCaseStepAction> tcsaToAdd = new ArrayList();
+                List<TestCaseStepAction> tcsaToAdd = new ArrayList<>();
                 for (TestCaseStepAction action : tcsa) {
                     List<TestCaseStepActionControl> tcsac = testCaseStepActionControlService.findControlByTestTestCaseStepSequence(test, testCase, stepNumber, action.getSequence());
-                    List<TestCaseStepActionControl> tcsacToAdd = new ArrayList();
+                    List<TestCaseStepActionControl> tcsacToAdd = new ArrayList<>();
                     for (TestCaseStepActionControl control : tcsac) {
                         control.setTest(initialTest);
                         control.setTestCase(initialTc);
@@ -179,8 +182,16 @@ public class TestCaseService implements ITestCaseService {
     }
 
     @Override
-    public List<TestCase> findTestCaseActiveByCriteria(String test, String application, String country) {
-        return testCaseDao.findTestCaseByCriteria(test, application, country, "Y");
+    public List<TestCase> getTestCaseForPrePostTesting(String test, String application, String country, String system, String build, String revision) {
+        List<TestCase> tmpTests = testCaseDao.findTestCaseByCriteria(test, application, country, "Y");
+        List<TestCase> resultTests = new ArrayList<>();
+        for (TestCase tmpTest : tmpTests) {
+            // We check here if build/revision is compatible.
+            if (executionCheckService.checkRangeBuildRevision(tmpTest, build, revision, system)) {
+                resultTests.add(tmpTest);
+            }
+        }
+        return resultTests;
     }
 
     @Override
@@ -210,15 +221,15 @@ public class TestCaseService implements ITestCaseService {
                 null, null, null, null, -1, null, null, null, null, null, "Y", null, null,
                 null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 
-        List<String> result = new ArrayList();
+        List<String> result = new ArrayList<>();
         List<TestCase> testCases = findTestCaseByAllCriteria(tCase, null, system);
         for (TestCase testCase : testCases) {
             if (!testCase.getGroup().equals("PRIVATE")) {
                 result.add(testCase.getTest());
             }
         }
-        Set<String> uniqueResult = new HashSet<String>(result);
-        result = new ArrayList();
+        Set<String> uniqueResult = new HashSet<>(result);
+        result = new ArrayList<>();
         result.addAll(uniqueResult);
         Collections.sort(result);
         return result;
@@ -230,7 +241,7 @@ public class TestCaseService implements ITestCaseService {
                 null, null, null, null, -1, null, null, null, null, null, "Y", null, null,
                 null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 
-        List<TestCase> result = new ArrayList();
+        List<TestCase> result = new ArrayList<>();
         List<TestCase> testCases = findTestCaseByAllCriteria(tCase, null, system);
         for (TestCase testCase : testCases) {
             if (!testCase.getGroup().equals("PRIVATE")) {
@@ -257,6 +268,7 @@ public class TestCaseService implements ITestCaseService {
 
     @Override
     public AnswerItem<List<TestCase>> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries) {
+        AnswerItem<List<TestCase>> result = new AnswerItem<>();
         String[] status = null;
         String[] system = null;
         String[] application = null;
@@ -290,21 +302,22 @@ public class TestCaseService implements ITestCaseService {
 
         AnswerList label = campaignLabelService.readByVarious(campaign);
         //AnswerList battery = campaignContentService.readByCampaign(campaign);
-        boolean ifLabel = (label.getTotalRows() > 0) ? true : false;
+        boolean ifLabel = (label.getTotalRows() > 0);
         //boolean ifBattery = (battery.getTotalRows() > 0) ? true : false;
 
         Integer maxReturn = parameterService.getParameterIntegerByKey("cerberus_campaign_maxtestcase", "", 1000);
 
         if (ifLabel) {
-            return this.testCaseDao.findTestCaseByCampaignNameAndCountries(campaign, countries, true, status, system, application, priority, group ,maxReturn);
+            result = testCaseDao.findTestCaseByCampaignNameAndCountries(campaign, countries, true, status, system, application, priority, group, maxReturn);
         } else {
-            return this.testCaseDao.findTestCaseByCampaignNameAndCountries(campaign, countries, false, status, system, application, priority, group ,maxReturn);
+            result = testCaseDao.findTestCaseByCampaignNameAndCountries(campaign, countries, false, status, system, application, priority, group, maxReturn);
         }
+        return result;
     }
 
     @Override
     public List<TestCase> findUseTestCaseList(String test, String testCase) throws CerberusException {
-        List<TestCase> result = new ArrayList();
+        List<TestCase> result = new ArrayList<>();
         List<TestCaseStep> tcsList = testCaseStepService.getListOfSteps(test, testCase);
         for (TestCaseStep tcs : tcsList) {
             if (("Y").equals(tcs.getUseStep())) {
@@ -336,8 +349,8 @@ public class TestCaseService implements ITestCaseService {
     @Override
     public AnswerList findTestCasesThatUseService(String service) {
 
-        AnswerList testCaseByServiceByDataLib = testCaseDao.findTestCaseByServiceByDataLib(service);
-        AnswerList testCaseByService = testCaseDao.findTestCaseByService(service);
+        AnswerList<TestListDTO> testCaseByServiceByDataLib = testCaseDao.findTestCaseByServiceByDataLib(service);
+        AnswerList<TestListDTO> testCaseByService = testCaseDao.findTestCaseByService(service);
         List<TestListDTO> listOfTestCaseByDataLib = testCaseByServiceByDataLib.getDataList();
         List<TestListDTO> listOfTestCaseByService = testCaseByService.getDataList();
         List<TestListDTO> newTestCase = new ArrayList<TestListDTO>();
@@ -382,11 +395,11 @@ public class TestCaseService implements ITestCaseService {
 
     @Override
     public AnswerItem readByKeyWithDependency(String test, String testCase) {
-        AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
+        AnswerItem answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
         AnswerItem ai = testCaseDao.readByKey(test, testCase);
         if (ai.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && ai.getItem() != null) {
             TestCase tc = (TestCase) ai.getItem();
-            AnswerList al = testCaseStepService.readByTestTestCaseWithDependency(tc.getTest(), tc.getTestCase());
+            AnswerList<TestCaseStep> al = testCaseStepService.readByTestTestCaseWithDependency(tc.getTest(), tc.getTestCase());
             if (al.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && al.getDataList() != null) {
                 tc.setTestCaseStep(al.getDataList());
             }
@@ -417,7 +430,7 @@ public class TestCaseService implements ITestCaseService {
     }
 
     @Override
-    public TestCase convert(AnswerItem answerItem) throws CerberusException {
+    public TestCase convert(AnswerItem<TestCase> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (TestCase) answerItem.getItem();
@@ -426,7 +439,7 @@ public class TestCaseService implements ITestCaseService {
     }
 
     @Override
-    public List<TestCase> convert(AnswerList answerList) throws CerberusException {
+    public List<TestCase> convert(AnswerList<TestCase> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (List<TestCase>) answerList.getDataList();

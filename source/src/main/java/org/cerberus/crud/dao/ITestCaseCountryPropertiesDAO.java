@@ -64,5 +64,7 @@ public interface ITestCaseCountryPropertiesDAO {
     Answer delete(TestCaseCountryProperties object);
 
     Answer update(TestCaseCountryProperties object);
+    
+    Answer bulkRenameProperties(String oldName, String newName);
 
 }

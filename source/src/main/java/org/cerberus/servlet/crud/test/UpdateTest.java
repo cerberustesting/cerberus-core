@@ -123,7 +123,6 @@ public class UpdateTest extends HttpServlet {
                 testData.setTest(test);
                 testData.setDescription(description);
                 testData.setActive(active);
-                testData.setAutomated(automated);
                 ans = testService.update(originalTest, testData);
                 
                   if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {

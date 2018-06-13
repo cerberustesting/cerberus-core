@@ -45,14 +45,14 @@ public interface ICountryEnvParamService {
      * @param environment
      * @return
      */
-    AnswerItem readByKey(String system, String country, String environment);
+    AnswerItem<CountryEnvParam> readByKey(String system, String country, String environment);
 
     /**
      *
      * @param system
      * @return
      */
-    public AnswerList readActiveBySystem(String system);
+    public AnswerList<CountryEnvParam> readActiveBySystem(String system);
 
     /**
      *
@@ -146,7 +146,7 @@ public interface ICountryEnvParamService {
      * @return
      * @throws CerberusException
      */
-    CountryEnvParam convert(AnswerItem answerItem) throws CerberusException;
+    CountryEnvParam convert(AnswerItem<CountryEnvParam> answerItem) throws CerberusException;
 
     /**
      *
@@ -154,7 +154,7 @@ public interface ICountryEnvParamService {
      * @return
      * @throws CerberusException
      */
-    List<CountryEnvParam> convert(AnswerList answerList) throws CerberusException;
+    List<CountryEnvParam> convert(AnswerList<CountryEnvParam> answerList) throws CerberusException;
 
     /**
      *

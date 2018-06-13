@@ -39,6 +39,7 @@
             <%@ include file="include/utils/modal-upload.html"%>
             <%@ include file="include/transversalobject/TestDataLib.html"%>              
             <%@ include file="include/pages/testdatalib/listTestCase.html"%> 
+            <%@ include file="include/pages/testdatalib/bulkRename.html"%> 
             <%@ include file="include/transversalobject/AppService.html"%>      
             <h1 class="page-title-line" id="title">Test Data Library</h1>
             <div class="panel panel-default">

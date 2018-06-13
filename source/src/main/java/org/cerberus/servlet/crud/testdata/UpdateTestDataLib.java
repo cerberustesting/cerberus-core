@@ -249,7 +249,7 @@ public class UpdateTestDataLib extends HttpServlet {
                                 + system + " environment: " + environment + " country: " + country, request);
                     }
 
-                    List<TestDataLibData> tdldList = new ArrayList();
+                    List<TestDataLibData> tdldList = new ArrayList<>();
 
                     // Getting list of SubData from JSON Call
                     if (fileData.get("subDataList") != null) {
@@ -258,15 +258,15 @@ public class UpdateTestDataLib extends HttpServlet {
                     }
 
                     // When File has just been uploaded to servlet and flag to load the subdata value has been checked, we will parse it in order to automatically feed the subdata.
-                    if (file != null && activateAutoSubdata.equals("1")) {
+                    if (file != null && activateAutoSubdata != null && activateAutoSubdata.equals("1")) {
                         String str = "";
-                        try(BufferedReader reader = new BufferedReader(new FileReader(parameterService.getParameterStringByKey("cerberus_testdatalibcsv_path", "", null) + lib.getCsvUrl()));) {
+                        try (BufferedReader reader = new BufferedReader(new FileReader(parameterService.getParameterStringByKey("cerberus_testdatalibcsv_path", "", null) + lib.getCsvUrl()));) {
                             // First line of the file is split by separator.
                             str = reader.readLine();
                             String[] subData = (!lib.getSeparator().isEmpty()) ? str.split(lib.getSeparator()) : str.split(",");
                             // We take the subdata from the servlet input.
                             TestDataLibData firstLine = tdldList.get(0);
-                            tdldList = new ArrayList();
+                            tdldList = new ArrayList<>();
                             firstLine.setColumnPosition("1");
                             tdldList.add(firstLine);
                             int i = 1;
@@ -304,7 +304,7 @@ public class UpdateTestDataLib extends HttpServlet {
     }
 
     private List<TestDataLibData> getSubDataFromParameter(HttpServletRequest request, ApplicationContext appContext, int testDataLibId, JSONArray json) throws JSONException {
-        List<TestDataLibData> tdldList = new ArrayList();
+        List<TestDataLibData> tdldList = new ArrayList<>();
         IFactoryTestDataLibData tdldFactory = appContext.getBean(IFactoryTestDataLibData.class);
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
         String charset = request.getCharacterEncoding();
@@ -318,12 +318,12 @@ public class UpdateTestDataLib extends HttpServlet {
             // Parameter that needs to be secured --> We SECURE+DECODE them
             // NONE
             // Parameter that we cannot secure as we need the html --> We DECODE them
-            String subdata = ParameterParserUtil.parseStringParamAndDecode(objectJson.getString("subData"), "", charset);
-            String value = ParameterParserUtil.parseStringParamAndDecode(objectJson.getString("value"), "", charset);
-            String column = ParameterParserUtil.parseStringParamAndDecode(objectJson.getString("column"), "", charset);
+            String subdata = ParameterParserUtil.parseStringParam(objectJson.getString("subData"), "");
+            String value = ParameterParserUtil.parseStringParam(objectJson.getString("value"), "");
+            String column = ParameterParserUtil.parseStringParam(objectJson.getString("column"), "");
             String parsingAnswer = ParameterParserUtil.parseStringParam(objectJson.getString("parsingAnswer"), "");
-            String columnPosition = ParameterParserUtil.parseStringParamAndDecode(objectJson.getString("columnPosition"), "", charset);
-            String description = ParameterParserUtil.parseStringParamAndDecode(objectJson.getString("description"), "", charset);
+            String columnPosition = ParameterParserUtil.parseStringParam(objectJson.getString("columnPosition"), "");
+            String description = ParameterParserUtil.parseStringParam(objectJson.getString("description"), "");
 
             if (!delete) {
                 TestDataLibData tdld = tdldFactory.create(testDataLibDataId, testDataLibId, subdata, value, column, parsingAnswer, columnPosition, description);

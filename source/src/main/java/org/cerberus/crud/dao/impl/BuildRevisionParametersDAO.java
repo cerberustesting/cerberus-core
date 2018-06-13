@@ -58,7 +58,7 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
 
     @Override
     public AnswerItem readByKeyTech(int id) {
-        AnswerItem ans = new AnswerItem();
+        AnswerItem ans = new AnswerItem<>();
         BuildRevisionParameters result = null;
         final String query = "SELECT * FROM `buildrevisionparameters` WHERE `id` = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -118,7 +118,7 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
 
     @Override
     public AnswerItem readLastBySystem(String system) {
-        AnswerItem ans = new AnswerItem();
+        AnswerItem ans = new AnswerItem<>();
         BuildRevisionParameters result = null;
         StringBuilder query = new StringBuilder();
 
@@ -189,7 +189,7 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
 
     @Override
     public AnswerItem readByVarious2(String build, String revision, String release, String application) {
-        AnswerItem ans = new AnswerItem();
+        AnswerItem ans = new AnswerItem<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         BuildRevisionParameters result = null;
@@ -254,7 +254,7 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
     @Override
     public AnswerList readByVarious1ByCriteria(String system, String application, String build, String revision, int start, int amount,
             String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
-        AnswerList response = new AnswerList();
+        AnswerList response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<BuildRevisionParameters> brpList = new ArrayList<BuildRevisionParameters>();
@@ -380,14 +380,14 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
                         LOG.error("Partial Result in the query.");
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                        response = new AnswerList(brpList, nrTotalRows);
+                        response = new AnswerList<>(brpList, nrTotalRows);
                     } else if (brpList.size() <= 0) {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                        response = new AnswerList(brpList, nrTotalRows);
+                        response = new AnswerList<>(brpList, nrTotalRows);
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                         msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                        response = new AnswerList(brpList, nrTotalRows);
+                        response = new AnswerList<>(brpList, nrTotalRows);
                     }
 
                 } catch (SQLException exception) {
@@ -434,7 +434,7 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
 
     @Override
     public AnswerList readMaxSVNReleasePerApplication(String system, String build, String revision, String lastBuild, String lastRevision) {
-        AnswerList response = new AnswerList();
+        AnswerList response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<BuildRevisionParameters> brpList = new ArrayList<BuildRevisionParameters>();
@@ -521,14 +521,14 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
                         LOG.error("Partial Result in the query.");
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                        response = new AnswerList(brpList, nrTotalRows);
+                        response = new AnswerList<>(brpList, nrTotalRows);
                     } else if (brpList.size() <= 0) {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                        response = new AnswerList(brpList, nrTotalRows);
+                        response = new AnswerList<>(brpList, nrTotalRows);
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                         msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                        response = new AnswerList(brpList, nrTotalRows);
+                        response = new AnswerList<>(brpList, nrTotalRows);
                     }
 
                 } catch (SQLException exception) {
@@ -575,7 +575,7 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
 
     @Override
     public AnswerList readNonSVNRelease(String system, String build, String revision, String lastBuild, String lastRevision) {
-        AnswerList response = new AnswerList();
+        AnswerList response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<BuildRevisionParameters> brpList = new ArrayList<BuildRevisionParameters>();
@@ -666,14 +666,14 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
                         LOG.error("Partial Result in the query.");
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                        response = new AnswerList(brpList, nrTotalRows);
+                        response = new AnswerList<>(brpList, nrTotalRows);
                     } else if (brpList.size() <= 0) {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                        response = new AnswerList(brpList, nrTotalRows);
+                        response = new AnswerList<>(brpList, nrTotalRows);
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                         msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                        response = new AnswerList(brpList, nrTotalRows);
+                        response = new AnswerList<>(brpList, nrTotalRows);
                     }
 
                 } catch (SQLException exception) {
@@ -908,7 +908,7 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
 
     @Override
     public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
-        AnswerList answer = new AnswerList();
+        AnswerList answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<String> distinctValues = new ArrayList<>();
@@ -1007,14 +1007,14 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
                     LOG.error("Partial Result in the query.");
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                    answer = new AnswerList(distinctValues, nrTotalRows);
+                    answer = new AnswerList<>(distinctValues, nrTotalRows);
                 } else if (distinctValues.size() <= 0) {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                    answer = new AnswerList(distinctValues, nrTotalRows);
+                    answer = new AnswerList<>(distinctValues, nrTotalRows);
                 } else {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                     msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                    answer = new AnswerList(distinctValues, nrTotalRows);
+                    answer = new AnswerList<>(distinctValues, nrTotalRows);
                 }
             }catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());

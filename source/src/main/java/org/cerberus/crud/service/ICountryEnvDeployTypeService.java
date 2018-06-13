@@ -52,7 +52,7 @@ public interface ICountryEnvDeployTypeService {
      * @param deployType
      * @return
      */
-    public AnswerList readByVarious(String system, String country, String environment, String deployType);
+    public AnswerList<CountryEnvDeployType> readByVarious(String system, String country, String environment, String deployType);
 
     /**
      *
@@ -109,7 +109,7 @@ public interface ICountryEnvDeployTypeService {
      * @return
      * @throws CerberusException
      */
-    CountryEnvDeployType convert(AnswerItem answerItem) throws CerberusException;
+    CountryEnvDeployType convert(AnswerItem<CountryEnvDeployType> answerItem) throws CerberusException;
 
     /**
      *
@@ -117,7 +117,7 @@ public interface ICountryEnvDeployTypeService {
      * @return
      * @throws CerberusException
      */
-    List<CountryEnvDeployType> convert(AnswerList answerList) throws CerberusException;
+    List<CountryEnvDeployType> convert(AnswerList<CountryEnvDeployType> answerList) throws CerberusException;
 
     /**
      *

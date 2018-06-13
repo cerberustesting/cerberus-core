@@ -1,4 +1,4 @@
-In this section, you will find the bla bla
+=== Label
 
 image:labelpage.png[Logo]
 

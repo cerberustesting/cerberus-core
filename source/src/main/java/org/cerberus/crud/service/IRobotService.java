@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
@@ -45,6 +46,7 @@ public interface IRobotService {
      *
      * @param robot
      * @return
+     * @throws org.cerberus.exception.CerberusException
      */
     Robot readByKey(String robot) throws CerberusException;
 
@@ -53,6 +55,12 @@ public interface IRobotService {
      * @return
      */
     AnswerList<Robot> readAll();
+
+    /**
+     *
+     * @return
+     */
+    HashMap<String, String> readToHashMapRobotDecli();
 
     /**
      *
@@ -143,11 +151,11 @@ public interface IRobotService {
     void convert(Answer answer) throws CerberusException;
 
     /**
-     * 
+     *
      * @param searchParameter
      * @param individualSearch
      * @param columnName
-     * @return 
+     * @return
      */
     public AnswerList<List<String>> readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 }

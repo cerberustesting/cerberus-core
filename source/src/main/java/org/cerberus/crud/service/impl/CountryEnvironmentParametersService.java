@@ -111,7 +111,7 @@ public class CountryEnvironmentParametersService implements ICountryEnvironmentP
         MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
         Answer finalAnswer = new Answer(msg1);
 
-        List<CountryEnvironmentParameters> oldList = new ArrayList();
+        List<CountryEnvironmentParameters> oldList = new ArrayList<>();
         try {
             oldList = this.convert(this.readByVarious(system, country, environement, null));
         } catch (CerberusException ex) {
@@ -121,9 +121,9 @@ public class CountryEnvironmentParametersService implements ICountryEnvironmentP
         /**
          * Update and Create all objects database Objects from newList
          */
-        List<CountryEnvironmentParameters> listToUpdateOrInsert = new ArrayList(newList);
+        List<CountryEnvironmentParameters> listToUpdateOrInsert = new ArrayList<>(newList);
         listToUpdateOrInsert.removeAll(oldList);
-        List<CountryEnvironmentParameters> listToUpdateOrInsertToIterate = new ArrayList(listToUpdateOrInsert);
+        List<CountryEnvironmentParameters> listToUpdateOrInsertToIterate = new ArrayList<>(listToUpdateOrInsert);
 
         for (CountryEnvironmentParameters objectDifference : listToUpdateOrInsertToIterate) {
             for (CountryEnvironmentParameters objectInDatabase : oldList) {
@@ -138,9 +138,9 @@ public class CountryEnvironmentParametersService implements ICountryEnvironmentP
         /**
          * Delete all objects database Objects that do not exist from newList
          */
-        List<CountryEnvironmentParameters> listToDelete = new ArrayList(oldList);
+        List<CountryEnvironmentParameters> listToDelete = new ArrayList<>(oldList);
         listToDelete.removeAll(newList);
-        List<CountryEnvironmentParameters> listToDeleteToIterate = new ArrayList(listToDelete);
+        List<CountryEnvironmentParameters> listToDeleteToIterate = new ArrayList<>(listToDelete);
 
         for (CountryEnvironmentParameters tcsDifference : listToDeleteToIterate) {
             for (CountryEnvironmentParameters tcsInPage : newList) {
@@ -169,7 +169,7 @@ public class CountryEnvironmentParametersService implements ICountryEnvironmentP
         MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
         Answer finalAnswer = new Answer(msg1);
 
-        List<CountryEnvironmentParameters> oldList = new ArrayList();
+        List<CountryEnvironmentParameters> oldList = new ArrayList<>();
         try {
             oldList = this.convert(this.readByVarious(system, null, null, application));
         } catch (CerberusException ex) {
@@ -179,9 +179,9 @@ public class CountryEnvironmentParametersService implements ICountryEnvironmentP
         /**
          * Update and Create all objects database Objects from newList
          */
-        List<CountryEnvironmentParameters> listToUpdateOrInsert = new ArrayList(newList);
+        List<CountryEnvironmentParameters> listToUpdateOrInsert = new ArrayList<>(newList);
         listToUpdateOrInsert.removeAll(oldList);
-        List<CountryEnvironmentParameters> listToUpdateOrInsertToIterate = new ArrayList(listToUpdateOrInsert);
+        List<CountryEnvironmentParameters> listToUpdateOrInsertToIterate = new ArrayList<>(listToUpdateOrInsert);
 
         for (CountryEnvironmentParameters objectDifference : listToUpdateOrInsertToIterate) {
             for (CountryEnvironmentParameters objectInDatabase : oldList) {
@@ -196,9 +196,9 @@ public class CountryEnvironmentParametersService implements ICountryEnvironmentP
         /**
          * Delete all objects database Objects that do not exist from newList
          */
-        List<CountryEnvironmentParameters> listToDelete = new ArrayList(oldList);
+        List<CountryEnvironmentParameters> listToDelete = new ArrayList<>(oldList);
         listToDelete.removeAll(newList);
-        List<CountryEnvironmentParameters> listToDeleteToIterate = new ArrayList(listToDelete);
+        List<CountryEnvironmentParameters> listToDeleteToIterate = new ArrayList<>(listToDelete);
 
         for (CountryEnvironmentParameters tcsDifference : listToDeleteToIterate) {
             for (CountryEnvironmentParameters tcsInPage : newList) {
@@ -221,7 +221,7 @@ public class CountryEnvironmentParametersService implements ICountryEnvironmentP
     }
 
     @Override
-    public CountryEnvironmentParameters convert(AnswerItem answerItem) throws CerberusException {
+    public CountryEnvironmentParameters convert(AnswerItem<CountryEnvironmentParameters> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (CountryEnvironmentParameters) answerItem.getItem();
@@ -230,7 +230,7 @@ public class CountryEnvironmentParametersService implements ICountryEnvironmentP
     }
 
     @Override
-    public List<CountryEnvironmentParameters> convert(AnswerList answerList) throws CerberusException {
+    public List<CountryEnvironmentParameters> convert(AnswerList<CountryEnvironmentParameters> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (List<CountryEnvironmentParameters>) answerList.getDataList();

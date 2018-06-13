@@ -48,7 +48,7 @@ public class CountryEnvDeployTypeService implements ICountryEnvDeployTypeService
     private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(CountryEnvDeployTypeService.class);
 
     @Override
-    public AnswerList readByVarious(String system, String country, String environment, String deployType) {
+    public AnswerList<CountryEnvDeployType> readByVarious(String system, String country, String environment, String deployType) {
         return countryEnvDeployTypeDAO.readByVariousByCriteria(system, country, environment, deployType, 0, 0, null, null, null, null);
     }
 
@@ -97,7 +97,7 @@ public class CountryEnvDeployTypeService implements ICountryEnvDeployTypeService
         MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
         Answer finalAnswer = new Answer(msg1);
 
-        List<CountryEnvDeployType> oldList = new ArrayList();
+        List<CountryEnvDeployType> oldList = new ArrayList<>();
         try {
             oldList = this.convert(this.readByVarious(system, country, environement, null));
         } catch (CerberusException ex) {
@@ -109,9 +109,9 @@ public class CountryEnvDeployTypeService implements ICountryEnvDeployTypeService
          * TestCaseStep in Database has same key : Update and remove from the
          * list. If TestCaseStep in database does ot exist : Insert it.
          */
-        List<CountryEnvDeployType> listToUpdateOrInsert = new ArrayList(newList);
+        List<CountryEnvDeployType> listToUpdateOrInsert = new ArrayList<>(newList);
         listToUpdateOrInsert.removeAll(oldList);
-        List<CountryEnvDeployType> listToUpdateOrInsertToIterate = new ArrayList(listToUpdateOrInsert);
+        List<CountryEnvDeployType> listToUpdateOrInsertToIterate = new ArrayList<>(listToUpdateOrInsert);
 
         for (CountryEnvDeployType objectDifference : listToUpdateOrInsertToIterate) {
             for (CountryEnvDeployType objectInDatabase : oldList) {
@@ -128,9 +128,9 @@ public class CountryEnvDeployTypeService implements ICountryEnvDeployTypeService
          * TestCaseStep in Page has same key : remove from the list. Then delete
          * the list of TestCaseStep
          */
-        List<CountryEnvDeployType> listToDelete = new ArrayList(oldList);
+        List<CountryEnvDeployType> listToDelete = new ArrayList<>(oldList);
         listToDelete.removeAll(newList);
-        List<CountryEnvDeployType> listToDeleteToIterate = new ArrayList(listToDelete);
+        List<CountryEnvDeployType> listToDeleteToIterate = new ArrayList<>(listToDelete);
 
         for (CountryEnvDeployType tcsDifference : listToDeleteToIterate) {
             for (CountryEnvDeployType tcsInPage : newList) {
@@ -153,7 +153,7 @@ public class CountryEnvDeployTypeService implements ICountryEnvDeployTypeService
     }
 
     @Override
-    public CountryEnvDeployType convert(AnswerItem answerItem) throws CerberusException {
+    public CountryEnvDeployType convert(AnswerItem<CountryEnvDeployType> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (CountryEnvDeployType) answerItem.getItem();
@@ -162,7 +162,7 @@ public class CountryEnvDeployTypeService implements ICountryEnvDeployTypeService
     }
 
     @Override
-    public List<CountryEnvDeployType> convert(AnswerList answerList) throws CerberusException {
+    public List<CountryEnvDeployType> convert(AnswerList<CountryEnvDeployType> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (List<CountryEnvDeployType>) answerList.getDataList();

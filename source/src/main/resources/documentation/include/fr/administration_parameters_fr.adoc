@@ -1,3 +1,5 @@
+=== Parameter attributes
+
 In this section, you will find information about Cerberus parameters.
 
 WARNING: The tunning of the parameters is necessary to unlock all the features, 
@@ -5,7 +7,6 @@ as described in the <<Cerberus configuration>> section.
 
 image:parameter.png[Logo]
 
-=== Parameter attributes
 |=== 
 
 | *Field* | *Description*  

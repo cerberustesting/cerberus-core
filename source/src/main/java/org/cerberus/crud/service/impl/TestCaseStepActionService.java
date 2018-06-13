@@ -26,6 +26,7 @@ import org.apache.logging.log4j.Logger;
 
 import org.cerberus.crud.dao.ITestCaseStepActionDAO;
 import org.cerberus.crud.entity.TestCaseStepAction;
+import org.cerberus.crud.entity.TestCaseStepActionControl;
 import org.cerberus.crud.service.ITestCaseStepActionControlService;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
@@ -120,9 +121,9 @@ public class TestCaseStepActionService implements ITestCaseStepActionService {
          * remove from the list. If TestCaseStepAction in database does ot exist
          * : Insert it.
          */
-        List<TestCaseStepAction> tcsaToUpdateOrInsert = new ArrayList(newList);
+        List<TestCaseStepAction> tcsaToUpdateOrInsert = new ArrayList<>(newList);
         tcsaToUpdateOrInsert.removeAll(oldList);
-        List<TestCaseStepAction> tcsaToUpdateOrInsertToIterate = new ArrayList(tcsaToUpdateOrInsert);
+        List<TestCaseStepAction> tcsaToUpdateOrInsertToIterate = new ArrayList<>(tcsaToUpdateOrInsert);
 
         for (TestCaseStepAction tcsaDifference : tcsaToUpdateOrInsertToIterate) {
             for (TestCaseStepAction tcsaInDatabase : oldList) {
@@ -139,9 +140,9 @@ public class TestCaseStepActionService implements ITestCaseStepActionService {
          * the list. Then delete the list of TestCaseStepAction
          */
         if (!duplicate) {
-            List<TestCaseStepAction> tcsaToDelete = new ArrayList(oldList);
+            List<TestCaseStepAction> tcsaToDelete = new ArrayList<>(oldList);
             tcsaToDelete.removeAll(newList);
-            List<TestCaseStepAction> tcsaToDeleteToIterate = new ArrayList(tcsaToDelete);
+            List<TestCaseStepAction> tcsaToDeleteToIterate = new ArrayList<>(tcsaToDelete);
 
             for (TestCaseStepAction tcsaDifference : tcsaToDeleteToIterate) {
                 for (TestCaseStepAction tcsaInPage : newList) {
@@ -163,17 +164,17 @@ public class TestCaseStepActionService implements ITestCaseStepActionService {
     }
 
     @Override
-    public AnswerList readByVarious1WithDependency(String test, String testcase, int step) {
-        AnswerList actions = testCaseStepActionDAO.readByVarious1(test, testcase, step);
-        AnswerList response = null;
-        List<TestCaseStepAction> tcseList = new ArrayList();
+    public AnswerList<TestCaseStepAction> readByVarious1WithDependency(String test, String testcase, int step) {
+        AnswerList<TestCaseStepAction> actions = testCaseStepActionDAO.readByVarious1(test, testcase, step);
+        AnswerList<TestCaseStepAction> response = null;
+        List<TestCaseStepAction> tcsaList = new ArrayList<>();
         for (Object action : actions.getDataList()) {
             TestCaseStepAction tces = (TestCaseStepAction) action;
-            AnswerList controls = testCaseStepActionControlService.readByVarious1(test, testcase, step, tces.getSequence());
-            tces.setTestCaseStepActionControl(controls.getDataList());
-            tcseList.add(tces);
+            AnswerList<TestCaseStepActionControl> controls = testCaseStepActionControlService.readByVarious1(test, testcase, step, tces.getSequence());
+            tces.setTestCaseStepActionControl((List<TestCaseStepActionControl>) controls.getDataList());
+            tcsaList.add(tces);
         }
-        response = new AnswerList(tcseList, actions.getTotalRows(), new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+        response = new AnswerList<>(tcsaList, actions.getTotalRows(), new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
         return response;
     }
 
@@ -194,7 +195,7 @@ public class TestCaseStepActionService implements ITestCaseStepActionService {
     @Override
     public Answer duplicateList(List<TestCaseStepAction> objectList, String targetTest, String targetTestCase) {
         Answer ans = new Answer(null);
-        List<TestCaseStepAction> listToCreate = new ArrayList();
+        List<TestCaseStepAction> listToCreate = new ArrayList<>();
         for (TestCaseStepAction objectToDuplicate : objectList) {
             objectToDuplicate.setTest(targetTest);
             objectToDuplicate.setTestCase(targetTestCase);

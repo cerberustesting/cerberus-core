@@ -21,15 +21,14 @@ package org.cerberus.crud.service.impl;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.ITestCaseExecutionDAO;
+import org.cerberus.crud.entity.Test;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionData;
@@ -186,13 +185,11 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
         return testCaseExecutionDao.readByTag(tag);
     }
 
-    @Deprecated
     @Override
     public AnswerList readDistinctEnvCoutnryBrowserByTag(String tag) {
         return testCaseExecutionDao.readDistinctEnvCoutnryBrowserByTag(tag);
     }
 
-    @Deprecated
     @Override
     public AnswerList readDistinctColumnByTag(String tag, boolean env, boolean country, boolean browser, boolean app) {
         return testCaseExecutionDao.readDistinctColumnByTag(tag, env, country, browser, app);
@@ -252,22 +249,25 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
             }
         }
 
-        // We frist add the 'Pres Testing' testcase execution steps.
-        AnswerList preTestCaseSteps = testCaseStepExecutionService.readByVarious1WithDependency(executionId, "Pre Testing", null);
+        // We first add the 'Pres Testing' testcase execution steps.
+        AnswerList preTestCaseSteps = testCaseStepExecutionService.readByVarious1WithDependency(executionId, Test.TEST_PRETESTING, null);
         testCaseExecution.setTestCaseStepExecutionList(preTestCaseSteps.getDataList());
         // Then we add the steps from the main testcase.
         AnswerList steps = testCaseStepExecutionService.readByVarious1WithDependency(executionId, testCaseExecution.getTest(), testCaseExecution.getTestCase());
         testCaseExecution.addTestCaseStepExecutionList(steps.getDataList());
+        // Then we add the Post steps .
+        AnswerList postTestCaseSteps = testCaseStepExecutionService.readByVarious1WithDependency(executionId, Test.TEST_POSTTESTING, null);
+        testCaseExecution.addTestCaseStepExecutionList(postTestCaseSteps.getDataList());
 
         AnswerList files = testCaseExecutionFileService.readByVarious(executionId, "");
         testCaseExecution.setFileList((List<TestCaseExecutionFile>) files.getDataList());
 
-        AnswerItem response = new AnswerItem(testCaseExecution, tce.getResultMessage());
+        AnswerItem response = new AnswerItem<>(testCaseExecution, tce.getResultMessage());
         return response;
     }
 
     @Override
-    public TestCaseExecution convert(AnswerItem answerItem) throws CerberusException {
+    public TestCaseExecution convert(AnswerItem<TestCaseExecution> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (TestCaseExecution) answerItem.getItem();
@@ -276,7 +276,7 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     }
 
     @Override
-    public List<TestCaseExecution> convert(AnswerList answerList) throws CerberusException {
+    public List<TestCaseExecution> convert(AnswerList<TestCaseExecution> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (List<TestCaseExecution>) answerList.getDataList();

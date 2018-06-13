@@ -61,9 +61,14 @@ public class ApplicationObjectVariableService implements IApplicationObjectVaria
 
     @Override
     public String decodeStringWithApplicationObject(String stringToDecode, TestCaseExecution tCExecution, boolean forceCalculation) throws CerberusEventException {
-        String application = tCExecution.getApplicationObj().getApplication();
-
         String stringToDecodeInit = stringToDecode;
+        String application = "";
+        String system = "";
+        
+        if (tCExecution != null) {
+            system = tCExecution.getApplicationObj().getSystem();
+            application = tCExecution.getApplicationObj().getApplication();
+        }
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Starting to decode string (application Object) : " + stringToDecode);
@@ -97,7 +102,7 @@ public class ApplicationObjectVariableService implements IApplicationObjectVaria
                     if ("picturepath".equals(valueA[2])) {
                         val = parameterService.getParameterStringByKey("cerberus_applicationobject_path", "", "") + File.separator + ao.getID() + File.separator + ao.getScreenShotFileName();
                     } else if ("pictureurl".equals(valueA[2])) {
-                        val = parameterService.getParameterStringByKey("cerberus_url", "", "") + "/ReadApplicationObjectImage?application=" + ao.getApplication() + "&object=" + ao.getObject();
+                        val = parameterService.getParameterStringByKey("cerberus_url", system, "") + "/ReadApplicationObjectImage?application=" + ao.getApplication() + "&object=" + ao.getObject();
                     } else if ("value".equals(valueA[2])) {
                         val = ao.getValue();
                     }

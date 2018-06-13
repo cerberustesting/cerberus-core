@@ -207,11 +207,20 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
     var fctClearIndividualFilter="clearIndividualFilter";
 
     if(clientSide) {
-        var fctClearIndividualFilter="clearIndividualFilterForClientSide";
+        fctClearIndividualFilter="clearIndividualFilterForClientSide";
+    }
+    
+    //Build the Message that appear when filter is fed
+    var showFilteredColumnsAlertMessage = "<div id='filterAlertDiv' class='col-sm-12 alert alert-warning' style='padding:0px'><div class='col-sm-11' id='activatedFilters'></div><div class='col-sm-1  filterMessageButtons'><span id='clearFilterButton' data-toggle='tooltip' title='Clear filters' class='pull-right glyphicon glyphicon-remove-sign'  style='cursor:pointer;padding:15px'></span></div>";
+    $("#filterAlertDiv").remove();
+    if ($("#" + tableId + "_paginate").length !== 0) {
+        //Hide filtered alert message displayed when filtered column
+        $("#" + tableId + "_paginate").parent().after($(showFilteredColumnsAlertMessage).hide());
+    } else {
+        //Hide filtered alert message displayed when filtered column
+        $("#showHideColumnsButton").parent().after($(showFilteredColumnsAlertMessage).hide());
     }
 
-    //Hide filtered alert message displayed when filtered column
-    $("#" + tableId + "_wrapper #filterAlertDiv").hide();
     //Load the table
     var table = $("#" + tableId).dataTable().api();
     var columnVisibleIndex = 0;//Used to Match visible column with columns available
@@ -270,7 +279,7 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
         }
         
         if(columnSearchValues != undefined){
-        	if(columnSearchValues[0] === ""){
+        	if(columnSearchValues[0] == "" || columnSearchValues[0] === undefined ){
         		allcolumnSearchValues[value] = undefined
         	}else{
         		allcolumnSearchValues[value] = columnSearchValues
@@ -406,7 +415,6 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
 
         	         },
         	          success: function (response, newValue) {
-
         	               if(clientSide) {
         	                   columnSearchValuesForClientSide[index] = newValue;
         	                   var filterForFnFilter = "";//create the filter list that will be used by fnFilter
@@ -442,6 +450,7 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
         for (var l = 0; l < filteredInformation.length; l++) {
             filteredStringToDisplay += filteredInformation[l];
         }
+        
         $("#" + tableId + "_wrapper #activatedFilters").html(filteredStringToDisplay);
         $("#" + tableId + "_wrapper #clearFilterButton").off("click").click(function () {
             if(clientSide) {
@@ -496,6 +505,7 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
         	}
     	}
 
+    	
         //Add an input field to search specific checkbox (search ignore case)
 
         $.extend($.expr[":"], {

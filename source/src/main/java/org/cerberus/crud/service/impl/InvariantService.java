@@ -76,7 +76,7 @@ public class InvariantService implements IInvariantService {
 
     @Override
     public HashMap<String, String> readToHashMapGp1StringByIdname(String idName, String defaultValue) {
-        HashMap<String, String> result = new HashMap<String, String>();
+        HashMap<String, String> result = new HashMap<>();
 
         AnswerList answer = readByIdname(idName); //TODO: handle if the response does not turn ok
         for (Invariant inv : (List<Invariant>) answer.getDataList()) {
@@ -92,12 +92,17 @@ public class InvariantService implements IInvariantService {
     }
 
     @Override
+    public AnswerList readByIdnameNotGp1(String idName, String gp) {
+        return invariantDao.readByIdnameByNotGp1(idName, gp);
+    }
+
+    @Override
     public AnswerList readCountryListEnvironmentLastChanges(String system, Integer nbDays) {
         return invariantDao.readCountryListEnvironmentLastChanges(system, nbDays);
     }
 
     @Override
-    public AnswerList readByPublicByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
+    public AnswerList<Invariant> readByPublicByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
         // We first get the list of all Public invariant from the invariant table.
         String searchSQL = this.getPublicPrivateFilter("INVARIANTPUBLIC");
         // Then, we build the list of invariant entry based on the filter.
@@ -109,7 +114,7 @@ public class InvariantService implements IInvariantService {
     }
 
     @Override
-    public AnswerList readByPublicByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+    public AnswerList<Invariant> readByPublicByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
         // We first get the list of all Public invariant from the invariant table.
         String searchSQL = this.getPublicPrivateFilter("INVARIANTPUBLIC");
         // Then, we build the list of invariant entry based on the filter.
@@ -133,7 +138,7 @@ public class InvariantService implements IInvariantService {
     }
 
     @Override
-    public AnswerList readByPrivateByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
+    public AnswerList<Invariant> readByPrivateByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
         // We first get the list of all Private invariant from the invariant table.
         String searchSQL = this.getPublicPrivateFilter("INVARIANTPRIVATE");
         // Then, we build the list of invariant entry based on the filter.
@@ -144,7 +149,7 @@ public class InvariantService implements IInvariantService {
     }
 
     @Override
-    public AnswerList readByPrivateByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+    public AnswerList<Invariant> readByPrivateByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
         // We first get the list of all Private invariant from the invariant table.
         String searchSQL = this.getPublicPrivateFilter("INVARIANTPRIVATE");
         // Then, we build the list of invariant entry based on the filter.
@@ -241,7 +246,7 @@ public class InvariantService implements IInvariantService {
     }
 
     @Override
-    public Invariant convert(AnswerItem answerItem) throws CerberusException {
+    public Invariant convert(AnswerItem<Invariant> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (Invariant) answerItem.getItem();
@@ -250,7 +255,7 @@ public class InvariantService implements IInvariantService {
     }
 
     @Override
-    public List<Invariant> convert(AnswerList answerList) throws CerberusException {
+    public List<Invariant> convert(AnswerList<Invariant> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (List<Invariant>) answerList.getDataList();

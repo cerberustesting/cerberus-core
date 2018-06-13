@@ -58,6 +58,9 @@ public final class ServletUtil {
                     case "/FindInvariantByID":
                         timeToWait = 30;
                         break;
+                    case "/ReadAppService":
+                        timeToWait = 30;
+                        break;
                     default:
                 }
                 LOG.debug("Servlet " + request.getServletPath() + " - Waiting : " + timeToWait);

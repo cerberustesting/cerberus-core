@@ -51,11 +51,11 @@ public class EnvironmentStatisticsDAOImpl implements IEnvironmentStatisticsDAO {
     private final int MAX_ROW_SELECTED = 1000;
 
     @Override
-    public AnswerList getEnvironmentStatistics(String system) {
-        AnswerList response = new AnswerList();
+    public AnswerList<BuildRevisionStatisticsEnv> getEnvironmentStatistics(String system) {
+        AnswerList response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<BuildRevisionStatisticsEnv> objectList = new ArrayList<BuildRevisionStatisticsEnv>();
+        List<BuildRevisionStatisticsEnv> objectList = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
 
         StringBuilder query = new StringBuilder();
@@ -115,14 +115,14 @@ public class EnvironmentStatisticsDAOImpl implements IEnvironmentStatisticsDAO {
                         LOG.error("Partial Result in the query.");
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                        response = new AnswerList(objectList, nrTotalRows);
+                        response = new AnswerList<>(objectList, nrTotalRows);
                     } else if (objectList.size() <= 0) {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                        response = new AnswerList(objectList, nrTotalRows);
+                        response = new AnswerList<>(objectList, nrTotalRows);
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                         msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                        response = new AnswerList(objectList, nrTotalRows);
+                        response = new AnswerList<>(objectList, nrTotalRows);
                     }
 
                 } catch (SQLException exception) {

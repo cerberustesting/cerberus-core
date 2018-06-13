@@ -70,7 +70,7 @@ public class ReadAppService extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        //Get SoapLibrarys
+        //Get AppServices
 
         String echo = request.getParameter("sEcho");
         String columnName = ParameterParserUtil.parseStringParam(request.getParameter("columnName"), "");
@@ -97,7 +97,7 @@ public class ReadAppService extends HttpServlet {
         boolean userHasPermissions = request.isUserInRole("TestAdmin");
 
         // Init Answer with potencial error from Parsing soapLibrary.
-        AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+        AnswerItem answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
         boolean testcase = ParameterParserUtil.parseBooleanParam(request.getParameter("testcase"), false);
 
         try {
@@ -137,7 +137,7 @@ public class ReadAppService extends HttpServlet {
 
     private AnswerItem findAppServiceList(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
-        AnswerItem item = new AnswerItem();
+        AnswerItem item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         appServiceService = appContext.getBean(AppServiceService.class);
 
@@ -151,12 +151,12 @@ public class ReadAppService extends HttpServlet {
         String columnToSort[] = sColumns.split(",");
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
-        List<String> individualLike = new ArrayList(Arrays.asList(ParameterParserUtil.parseStringParam(request.getParameter("sLike"), "").split(",")));
+        List<String> individualLike = new ArrayList<>(Arrays.asList(ParameterParserUtil.parseStringParam(request.getParameter("sLike"), "").split(",")));
 
         Map<String, List<String>> individualSearch = new HashMap<>();
         for (int a = 0; a < columnToSort.length; a++) {
             if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
-                List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
+                List<String> search = new ArrayList<>(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
                 if(individualLike.contains(columnToSort[a])) {
                 	individualSearch.put(columnToSort[a]+":like", search);
                 }else {
@@ -170,7 +170,7 @@ public class ReadAppService extends HttpServlet {
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
             for (AppService param : (List<AppService>) resp.getDataList()) {
-                jsonArray.put(convertSoapLibraryToJSONObject(param));
+                jsonArray.put(convertAppServiceToJSONObject(param));
             }
         }
 
@@ -194,7 +194,7 @@ public class ReadAppService extends HttpServlet {
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
             p = (AppService) resp.getItem();
         }
-        JSONObject item = convertSoapLibraryToJSONObject(p);
+        JSONObject item = convertAppServiceToJSONObject(p);
         response.put("contentTable", item);
         item.put("hasPermissions", userHasPermissions);
         resp.setItem(response);
@@ -203,7 +203,7 @@ public class ReadAppService extends HttpServlet {
     }
 
     private AnswerItem findAppServiceByLikeName(String key, ApplicationContext appContext, int limit) throws JSONException {
-        AnswerItem answerItem = new AnswerItem();
+        AnswerItem answerItem = new AnswerItem<>();
         JSONObject response = new JSONObject();
         appServiceService = appContext.getBean(AppServiceService.class);
         AnswerList resp = appServiceService.readByLikeName(key, limit);
@@ -211,7 +211,7 @@ public class ReadAppService extends HttpServlet {
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
             for (AppService appService : (List<AppService>) resp.getDataList()) {
-                jsonArray.put(convertSoapLibraryToJSONObject(appService));
+                jsonArray.put(convertAppServiceToJSONObject(appService));
             }
         }
 
@@ -237,7 +237,7 @@ public class ReadAppService extends HttpServlet {
     private AnswerItem getTestCasesUsingService(String service,ApplicationContext appContext) throws JSONException {
         JSONObject object = new JSONObject();
         JSONArray objectArray = new JSONArray();
-        AnswerItem ansItem = new AnswerItem();
+        AnswerItem ansItem = new AnswerItem<>();
         ITestCaseService tcService = appContext.getBean(ITestCaseService.class);
 
         AnswerList ansList = tcService.findTestCasesThatUseService(service);
@@ -277,7 +277,7 @@ public class ReadAppService extends HttpServlet {
     }
 
     private AnswerItem findDistinctValuesOfColumn(ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
-        AnswerItem answer = new AnswerItem();
+        AnswerItem answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
         appServiceService = appContext.getBean(IAppServiceService.class);
@@ -286,12 +286,12 @@ public class ReadAppService extends HttpServlet {
         String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "para,valC,valS,descr");
         String columnToSort[] = sColumns.split(",");
 
-        List<String> individualLike = new ArrayList(Arrays.asList(ParameterParserUtil.parseStringParam(request.getParameter("sLike"), "").split(",")));
+        List<String> individualLike = new ArrayList<>(Arrays.asList(ParameterParserUtil.parseStringParam(request.getParameter("sLike"), "").split(",")));
 
         Map<String, List<String>> individualSearch = new HashMap<>();
         for (int a = 0; a < columnToSort.length; a++) {
             if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
-            	List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
+            	List<String> search = new ArrayList<>(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
             	if(individualLike.contains(columnToSort[a])) {
                 	individualSearch.put(columnToSort[a]+":like", search);
                 }else {
@@ -309,7 +309,7 @@ public class ReadAppService extends HttpServlet {
         return answer;
     }
 
-    private JSONObject convertSoapLibraryToJSONObject(AppService appservice) throws JSONException {
+    private JSONObject convertAppServiceToJSONObject(AppService appservice) throws JSONException {
 
         Gson gson = new Gson();
         JSONObject result = new JSONObject(gson.toJson(appservice));

@@ -22,7 +22,7 @@ package org.cerberus.service.xmlunit;
 import org.cerberus.service.xmlunit.InputTranslatorManager;
 import org.cerberus.service.xmlunit.AInputTranslator;
 import org.cerberus.service.xmlunit.InputTranslatorException;
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.junit.Before;
 import org.junit.Test;

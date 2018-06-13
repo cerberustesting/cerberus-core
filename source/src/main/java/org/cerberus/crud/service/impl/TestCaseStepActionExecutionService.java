@@ -138,7 +138,7 @@ public class TestCaseStepActionExecutionService implements ITestCaseStepActionEx
     public AnswerList readByVarious1WithDependency(long executionId, String test, String testcase, int step, int index) {
         AnswerList actions = this.readByVarious1(executionId, test, testcase, step, index);
         AnswerList response = null;
-        List<TestCaseStepActionExecution> tcsaeList = new ArrayList();
+        List<TestCaseStepActionExecution> tcsaeList = new ArrayList<>();
         for (Object action : actions.getDataList()) {
 
             TestCaseStepActionExecution tcsae = (TestCaseStepActionExecution) action;
@@ -151,7 +151,7 @@ public class TestCaseStepActionExecutionService implements ITestCaseStepActionEx
 
             tcsaeList.add(tcsae);
         }
-        response = new AnswerList(tcsaeList, actions.getTotalRows());
+        response = new AnswerList<>(tcsaeList, actions.getTotalRows());
         return response;
     }
 }

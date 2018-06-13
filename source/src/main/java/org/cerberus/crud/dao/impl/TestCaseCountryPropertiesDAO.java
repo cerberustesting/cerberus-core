@@ -541,6 +541,50 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
         }
     }
+    
+    @Override
+    public Answer bulkRenameProperties(String oldName, String newName) {
+    	Answer answer = new Answer();
+        MessageEvent msg;
+        
+        String query ="UPDATE testcasecountryproperties SET `Value1`=? ";
+        query += "WHERE `Type` = 'getFromDataLib' AND `Value1`=?";
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+
+        try ( Connection connection = this.databaseSpring.connect() ) {        
+            try ( PreparedStatement preStat = connection.prepareStatement(query) ) {
+            	int i = 1;
+                preStat.setString(i++, newName);
+                preStat.setString(i++, oldName);
+                int rowsUpdated = preStat.executeUpdate();
+
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                // Message to customize : X properties updated using the rowsUpdated variable
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE").replace("success!", "success! - Row(s) updated : "+String.valueOf(rowsUpdated)));
+
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString(), exception);
+                if (exception.getSQLState().equals(SQL_DUPLICATED_CODE)) { //23000 is the sql state for duplicate entries
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_DUPLICATE);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", "Test data lib ").replace("%OPERATION%", "UPDATE").replace("%REASON%", exception.toString()));
+                } else {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+                }
+            } 
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString(), exception);
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+
+        }
+        answer.setResultMessage(msg);
+        return answer;
+    }
 
     @Override
     public List<String> findCountryByPropertyNameAndTestCase(String test, String testcase, String property) {
@@ -635,7 +679,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
 
     @Override
     public AnswerList findTestCaseCountryPropertiesByValue1(int testDataLib, String name, String country, String propertyType) {
-        AnswerList ansList = new AnswerList();
+        AnswerList ansList = new AnswerList<>();
         MessageEvent rs;
         List<TestListDTO> listOfTests = new ArrayList<TestListDTO>();
         StringBuilder query = new StringBuilder();

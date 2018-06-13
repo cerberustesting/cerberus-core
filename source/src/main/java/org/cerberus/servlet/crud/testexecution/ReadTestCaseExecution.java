@@ -111,7 +111,7 @@ public class ReadTestCaseExecution extends HttpServlet {
 
         try {
             JSONObject jsonResponse = new JSONObject();
-            AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+            AnswerItem answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
             // Data/Filter Parameters.
             String Tag = ParameterParserUtil.parseStringParam(request.getParameter("Tag"), "");
             String value = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
@@ -227,11 +227,11 @@ public class ReadTestCaseExecution extends HttpServlet {
     }// </editor-fold>
 
     private AnswerItem findExecutionColumns(ApplicationContext appContext, HttpServletRequest request, String Tag) throws CerberusException, ParseException, JSONException {
-        AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+        AnswerItem answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
         JSONObject jsonResponse = new JSONObject();
 
-        AnswerList testCaseExecutionList = new AnswerList();
-        AnswerList testCaseExecutionListInQueue = new AnswerList();
+        AnswerList testCaseExecutionList = new AnswerList<>();
+        AnswerList testCaseExecutionListInQueue = new AnswerList<>();
 
         testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
         testCaseExecutionInQueueService = appContext.getBean(ITestCaseExecutionQueueService.class);
@@ -295,7 +295,7 @@ public class ReadTestCaseExecution extends HttpServlet {
 
     private AnswerItem findExecutionListByTag(ApplicationContext appContext, HttpServletRequest request, String Tag)
             throws CerberusException, ParseException, JSONException {
-        AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+        AnswerItem answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
         testCaseLabelService = appContext.getBean(ITestCaseLabelService.class);
 
         int startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"), "0"));
@@ -324,7 +324,7 @@ public class ReadTestCaseExecution extends HttpServlet {
         Map<String, List<String>> individualSearch = new HashMap<String, List<String>>();
         for (int a = 0; a < columnToSort.length; a++) {
             if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
-                List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
+                List<String> search = new ArrayList<>(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
                 individualSearch.put(columnToSort[a], search);
             }
         }
@@ -429,8 +429,8 @@ public class ReadTestCaseExecution extends HttpServlet {
     }
 
     private AnswerItem findTestCaseExecutionList(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException, CerberusException {
-        AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
-        AnswerList testCaseExecutionList = new AnswerList();
+        AnswerItem answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
+        AnswerList testCaseExecutionList = new AnswerList<>();
         JSONObject object = new JSONObject();
 
         testCaseExecutionService = appContext.getBean(TestCaseExecutionService.class);
@@ -446,11 +446,11 @@ public class ReadTestCaseExecution extends HttpServlet {
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
 
         Map<String, List<String>> individualSearch = new HashMap<>();
-        List<String> individualLike = new ArrayList(Arrays.asList(ParameterParserUtil.parseStringParam(request.getParameter("sLike"), "").split(",")));
+        List<String> individualLike = new ArrayList<>(Arrays.asList(ParameterParserUtil.parseStringParam(request.getParameter("sLike"), "").split(",")));
         
         for (int a = 0; a < columnToSort.length; a++) {
             if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
-                List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
+                List<String> search = new ArrayList<>(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
                 if(individualLike.contains(columnToSort[a])) {
                 	individualSearch.put(columnToSort[a]+":like", search);
                 }else {
@@ -607,7 +607,7 @@ public class ReadTestCaseExecution extends HttpServlet {
 
     private AnswerItem findExecutionListBySystem(String system, ApplicationContext appContext, HttpServletRequest request)
             throws ParseException, JSONException {
-        AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+        AnswerItem answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
 
         /**
          * Parse all parameters used in the search.
@@ -743,9 +743,9 @@ public class ReadTestCaseExecution extends HttpServlet {
      * @throws JSONException
      */
     private AnswerItem findValuesForColumnFilter(String system, String test, ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
-        AnswerItem answer = new AnswerItem();
+        AnswerItem answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
-        AnswerList values = new AnswerList();
+        AnswerList values = new AnswerList<>();
         Map<String, List<String>> individualSearch = new HashMap<>();
 
         testCaseService = appContext.getBean(TestCaseService.class);
@@ -765,6 +765,7 @@ public class ReadTestCaseExecution extends HttpServlet {
                 dataList.add(TestCaseExecution.CONTROLSTATUS_KO);
                 dataList.add(TestCaseExecution.CONTROLSTATUS_NA);
                 dataList.add(TestCaseExecution.CONTROLSTATUS_NE);
+                dataList.add(TestCaseExecution.CONTROLSTATUS_WE);
                 dataList.add(TestCaseExecution.CONTROLSTATUS_OK);
                 dataList.add(TestCaseExecution.CONTROLSTATUS_PE);
                 values.setDataList(dataList);
@@ -792,7 +793,7 @@ public class ReadTestCaseExecution extends HttpServlet {
                      */
                     AnswerList<Invariant> invariants = invariantService.readByIdname(columnName.replace("exe.", ""));
                     List<Invariant> invariantList = invariantService.convert(invariants);
-                    List<String> stringResult = new ArrayList();
+                    List<String> stringResult = new ArrayList<>();
                     for (Invariant inv : invariantList) {
                         stringResult.add(inv.getValue());
                     }
@@ -811,7 +812,7 @@ public class ReadTestCaseExecution extends HttpServlet {
             case "exe.build":
             case "exe.revision":
             	individualSearch = new HashMap<>();
-                individualSearch.put("level", new ArrayList(Arrays.asList(columnName.equals("exe.build") ? "1" : "2")));
+                individualSearch.put("level", new ArrayList<>(Arrays.asList(columnName.equals("exe.build") ? "1" : "2")));
                 values = buildRevisionInvariantService.readDistinctValuesByCriteria(system, "", individualSearch, "versionName");
                 break;
             /**
@@ -828,12 +829,12 @@ public class ReadTestCaseExecution extends HttpServlet {
                 String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "tec.test,tec.testcase,application,project,ticket,description,behaviororvalueexpected,readonly,bugtrackernewurl,deploytype,mavengroupid");
                 String columnToSort[] = sColumns.split(",");
 
-                List<String> individualLike = new ArrayList(Arrays.asList(ParameterParserUtil.parseStringParam(request.getParameter("sLike"), "").split(",")));
+                List<String> individualLike = new ArrayList<>(Arrays.asList(ParameterParserUtil.parseStringParam(request.getParameter("sLike"), "").split(",")));
 
                 individualSearch = new HashMap<>();
                 for (int a = 0; a < columnToSort.length; a++) {
                     if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
-                    	List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
+                    	List<String> search = new ArrayList<>(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
                     	if(individualLike.contains(columnToSort[a])) {
                         	individualSearch.put(columnToSort[a]+":like", search);
                         }else {

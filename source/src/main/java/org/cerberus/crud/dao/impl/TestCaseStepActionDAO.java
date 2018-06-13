@@ -166,6 +166,14 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
     public List<TestCaseStepAction> findActionByTestTestCaseStep(String test, String testcase, int stepNumber) {
         List<TestCaseStepAction> list = null;
         final String query = "SELECT * FROM testcasestepaction tca WHERE tca.test = ? AND tca.testcase = ? AND tca.step = ? ORDER BY tca.sort";
+        
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.test : " + test);
+            LOG.debug("SQL.param.testcase : " + testcase);
+            LOG.debug("SQL.param.step : " + stepNumber);
+        }
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -210,8 +218,8 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
     }
 
     @Override
-    public AnswerList readByTestTestCase(String test, String testcase) {
-        AnswerList response = new AnswerList();
+    public AnswerList<TestCaseStepAction> readByTestTestCase(String test, String testcase) {
+        AnswerList<TestCaseStepAction> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<TestCaseStepAction> actionList = new ArrayList<TestCaseStepAction>();
@@ -243,14 +251,14 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
                         LOG.error("Partial Result in the query.");
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                        response = new AnswerList(actionList, actionList.size());
+                        response = new AnswerList<>(actionList, actionList.size());
                     } else if (actionList.size() <= 0) {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                        response = new AnswerList(actionList, actionList.size());
+                        response = new AnswerList<>(actionList, actionList.size());
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                         msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                        response = new AnswerList(actionList, actionList.size());
+                        response = new AnswerList<>(actionList, actionList.size());
                     }
 
                 } catch (SQLException exception) {
@@ -295,8 +303,8 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
     }
 
     @Override
-    public AnswerList readByVarious1(String test, String testcase, int step) {
-        AnswerList response = new AnswerList();
+    public AnswerList<TestCaseStepAction> readByVarious1(String test, String testcase, int step) {
+        AnswerList<TestCaseStepAction> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<TestCaseStepAction> actionList = new ArrayList<TestCaseStepAction>();
@@ -329,14 +337,14 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
                         LOG.error("Partial Result in the query.");
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                        response = new AnswerList(actionList, actionList.size());
+                        response = new AnswerList<>(actionList, actionList.size());
                     } else if (actionList.size() <= 0) {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                        response = new AnswerList(actionList, actionList.size());
+                        response = new AnswerList<>(actionList, actionList.size());
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                         msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                        response = new AnswerList(actionList, actionList.size());
+                        response = new AnswerList<>(actionList, actionList.size());
                     }
 
                 } catch (SQLException exception) {

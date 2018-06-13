@@ -25,11 +25,13 @@ import java.util.Date;
 public class TestCaseExecutionQueue {
 
     private long id;
+    private String system;
     private String test;
     private String testCase;
     private String country;
     private String environment;
     private String robot;
+    private String robotDecli;
     private String robotIP;
     private String robotPort;
     private String browser;
@@ -67,7 +69,7 @@ public class TestCaseExecutionQueue {
     private TestCase testCaseObj;
 
     public static final int PRIORITY_DEFAULT = 1000;
-    
+
     public enum State {
         QUEUED,
         WAITING,
@@ -76,6 +78,22 @@ public class TestCaseExecutionQueue {
         CANCELLED,
         ERROR,
         DONE
+    }
+
+    public String getSystem() {
+        return system;
+    }
+
+    public void setSystem(String system) {
+        this.system = system;
+    }
+
+    public String getRobotDecli() {
+        return robotDecli;
+    }
+
+    public void setRobotDecli(String robotDecli) {
+        this.robotDecli = robotDecli;
     }
 
     public int getPriority() {

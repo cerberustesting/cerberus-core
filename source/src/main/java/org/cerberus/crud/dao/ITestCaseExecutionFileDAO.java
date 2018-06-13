@@ -67,7 +67,7 @@ public interface ITestCaseExecutionFileDAO {
      * @param individualSearch
      * @return
      */
-    AnswerList<List<TestCaseExecutionFile>> readByVariousByCriteria(long ExeId, String level, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
+    AnswerList<TestCaseExecutionFile> readByVariousByCriteria(long ExeId, String level, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
     /**
      *

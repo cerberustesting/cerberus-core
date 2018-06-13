@@ -70,7 +70,6 @@ public class ExecutionCheckService implements IExecutionCheckService {
              */
             if (this.checkTestCaseActive(tCExecution.getTestCaseObj())
                     && this.checkTestActive(tCExecution.getTestObj())
-                    && this.checkTestCaseNotManual(tCExecution)
                     && this.checkCountry(tCExecution)
                     && this.checkMaintenanceTime(tCExecution)) {
                 LOG.debug("Execution is checked and can proceed.");
@@ -80,7 +79,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
          * Automatic application connectivity parameter (from database)
          */
         if (this.checkEnvironmentActive(tCExecution.getCountryEnvParam())
-                && this.checkRangeBuildRevision(tCExecution)
+                && this.checkRangeBuildRevision(tCExecution.getTestCaseObj(), tCExecution.getCountryEnvParam().getBuild(), tCExecution.getCountryEnvParam().getRevision(), tCExecution.getCountryEnvParam().getSystem())
                 && this.checkTargetBuildRevision(tCExecution)
                 && this.checkActiveEnvironmentGroup(tCExecution)
                 && this.checkTestCaseActive(tCExecution.getTestCaseObj())
@@ -139,18 +138,17 @@ public class ExecutionCheckService implements IExecutionCheckService {
         return true;
     }
 
-    private boolean checkRangeBuildRevision(TestCaseExecution tCExecution) {
+    public boolean checkRangeBuildRevision(TestCase tc, String envBuild, String envRevision, String envSystem) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Checking if test can be executed in this build and revision");
         }
-        TestCase tc = tCExecution.getTestCaseObj();
-        CountryEnvParam env = tCExecution.getCountryEnvParam();
         String tcFromSprint = ParameterParserUtil.parseStringParam(tc.getFromBuild(), "");
         String tcToSprint = ParameterParserUtil.parseStringParam(tc.getToBuild(), "");
         String tcFromRevision = ParameterParserUtil.parseStringParam(tc.getFromRev(), "");
         String tcToRevision = ParameterParserUtil.parseStringParam(tc.getToRev(), "");
-        String sprint = ParameterParserUtil.parseStringParam(env.getBuild(), "");
-        String revision = ParameterParserUtil.parseStringParam(env.getRevision(), "");
+        String sprint = ParameterParserUtil.parseStringParam(envBuild, "");
+        String revision = ParameterParserUtil.parseStringParam(envRevision, "");
+        String system = envSystem;
         int dif = -1;
 
         if (!tcFromSprint.isEmpty() && sprint != null) {
@@ -159,14 +157,14 @@ public class ExecutionCheckService implements IExecutionCheckService {
                     message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_RANGE_ENVIRONMENT_BUILDREVISION_NOTDEFINED);
                     return false;
                 } else {
-                    dif = this.compareBuild(sprint, tcFromSprint, env.getSystem());
+                    dif = this.compareBuild(sprint, tcFromSprint, system);
                 }
                 if (dif == 0) {
                     if (!tcFromRevision.isEmpty() && revision != null) {
                         if (revision.isEmpty()) {
                             message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_RANGE_ENVIRONMENT_BUILDREVISION_NOTDEFINED);
                             return false;
-                        } else if (this.compareRevision(revision, tcFromRevision, env.getSystem()) < 0) {
+                        } else if (this.compareRevision(revision, tcFromRevision, system) < 0) {
                             message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_RANGE_DIFFERENT);
                             return false;
                         }
@@ -190,14 +188,14 @@ public class ExecutionCheckService implements IExecutionCheckService {
                     message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_RANGE_ENVIRONMENT_BUILDREVISION_NOTDEFINED);
                     return false;
                 } else {
-                    dif = this.compareBuild(tcToSprint, sprint, env.getSystem());
+                    dif = this.compareBuild(tcToSprint, sprint, system);
                 }
                 if (dif == 0) {
                     if (!tcToRevision.isEmpty() && revision != null) {
                         if (revision.isEmpty()) {
                             message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_RANGE_ENVIRONMENT_BUILDREVISION_NOTDEFINED);
                             return false;
-                        } else if (this.compareRevision(tcToRevision, revision, env.getSystem()) < 0) {
+                        } else if (this.compareRevision(tcToRevision, revision, system) < 0) {
                             message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_RANGE_DIFFERENT);
                             return false;
                         }

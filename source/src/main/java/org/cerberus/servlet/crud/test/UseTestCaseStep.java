@@ -90,7 +90,7 @@ public class UseTestCaseStep extends HttpServlet {
             importProperty = request.getParameter("ImportProperty");
         }
 
-        TestCaseStep tcs = testCaseStepFactory.create(test, testCase, step, step, loop, conditionOper, conditionVal1, conditionVal2, description, "Y", fromTest, fromTestCase, fromStep, null);
+        TestCaseStep tcs = testCaseStepFactory.create(test, testCase, step, step, loop, conditionOper, conditionVal1, conditionVal2, description, "Y", fromTest, fromTestCase, fromStep, null, null, null, null, null, null);
 
         /**
          * Import Step, properties
@@ -115,7 +115,7 @@ public class UseTestCaseStep extends HttpServlet {
              * properties of the origine testcase
              */
             // retrieve list of property name used in the step
-            List<String> propertyNamesOfStep = new ArrayList<String>();
+            List<String> propertyNamesOfStep = new ArrayList<>();
             List<TestCaseStepAction> testCaseStepActions = testCaseStepActionService.getListOfAction(fromTest, fromTestCase, fromStep);
             for (TestCaseStepAction action : testCaseStepActions) {
                 if (!propertyNamesOfStep.contains(action.getValue2())) {
@@ -127,7 +127,7 @@ public class UseTestCaseStep extends HttpServlet {
             if (tccListString != null) {
                 tccListString.retainAll(tccFromListString);
                 if (tccListString.size() > 0 && propertyNamesOfStep.size() > 0) {
-                    List<TestCaseCountryProperties> tccpToImport = new ArrayList();
+                    List<TestCaseCountryProperties> tccpToImport = new ArrayList<>();
                     for (String country : tccListString) {
                         tccpList = testCaseCountryProperties.findListOfPropertyPerTestTestCaseCountry(fromTest, fromTestCase, country);
                         for (TestCaseCountryProperties tccp : tccpList) {

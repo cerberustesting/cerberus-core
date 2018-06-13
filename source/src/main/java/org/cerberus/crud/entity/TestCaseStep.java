@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.entity;
 
+import java.sql.Timestamp;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -46,6 +47,14 @@ public class TestCaseStep {
     private String useStepTestCase;  // The testcase of the used step
     private Integer useStepStep;   //  the step used
     private String inLibrary;
+    private String forceExe;
+    private String usrCreated;
+    private String dateCreated;
+    private String usrModif;
+    private Timestamp dateModif;
+    /**
+     * Not included in table.
+     */
     private List<TestCaseStepAction> testCaseStepAction;
     private boolean isStepInUseByOtherTestCase;
     private int initialStep;
@@ -60,6 +69,46 @@ public class TestCaseStep {
     public static final String LOOP_DOWHILECONDITIONFALSE = "doWhileConditionFalse";
     public static final String LOOP_WHILECONDITIONTRUEDO = "whileConditionTrueDo";
     public static final String LOOP_WHILECONDITIONFALSEDO = "whileConditionFalseDo";
+
+    public String getForceExe() {
+        return forceExe;
+    }
+
+    public void setForceExe(String forceExe) {
+        this.forceExe = forceExe;
+    }
+
+    public String getUsrCreated() {
+        return usrCreated;
+    }
+
+    public void setUsrCreated(String usrCreated) {
+        this.usrCreated = usrCreated;
+    }
+
+    public String getDateCreated() {
+        return dateCreated;
+    }
+
+    public void setDateCreated(String dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+
+    public String getUsrModif() {
+        return usrModif;
+    }
+
+    public void setUsrModif(String usrModif) {
+        this.usrModif = usrModif;
+    }
+
+    public Timestamp getDateModif() {
+        return dateModif;
+    }
+
+    public void setDateModif(Timestamp dateModif) {
+        this.dateModif = dateModif;
+    }
 
     public TestCase getTestCaseObj() {
         return testCaseObj;
@@ -241,6 +290,7 @@ public class TestCaseStep {
         hash = 29 * hash + (this.useStepTest != null ? this.useStepTest.hashCode() : 0);
         hash = 29 * hash + (this.useStepTestCase != null ? this.useStepTestCase.hashCode() : 0);
         hash = 29 * hash + (this.useStepStep != null ? this.useStepStep.hashCode() : 0);
+        hash = 29 * hash + (this.forceExe != null ? this.forceExe.hashCode() : 0);
         return hash;
     }
 
@@ -295,6 +345,9 @@ public class TestCaseStep {
         if (this.inLibrary != other.inLibrary && (this.inLibrary == null || !this.inLibrary.equals(other.inLibrary))) {
             return false;
         }
+        if (this.forceExe != other.forceExe && (this.forceExe == null || !this.forceExe.equals(other.forceExe))) {
+            return false;
+        }
         return true;
     }
 
@@ -321,6 +374,7 @@ public class TestCaseStep {
             result.put("inLibrary", this.getInLibrary());
             result.put("initialStep", this.getInitialStep());
             result.put("loop", this.getLoop());
+            result.put("forceExe", this.getForceExe());
             JSONArray array = new JSONArray();
             if (this.getTestCaseStepAction() != null) {
                 for (Object testCaseStepExecution : this.getTestCaseStepAction()) {

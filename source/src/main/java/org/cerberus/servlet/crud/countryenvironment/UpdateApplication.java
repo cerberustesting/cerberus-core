@@ -119,7 +119,7 @@ public class UpdateApplication extends HttpServlet {
 
         // Getting list of application from JSON Call
         JSONArray objApplicationArray = new JSONArray(request.getParameter("environmentList"));
-        List<CountryEnvironmentParameters> ceaList = new ArrayList();
+        List<CountryEnvironmentParameters> ceaList = new ArrayList<>();
         ceaList = getCountryEnvironmentApplicationFromParameter(request, appContext, system, application, objApplicationArray);
 
         // Prepare the final answer.
@@ -208,7 +208,7 @@ public class UpdateApplication extends HttpServlet {
     }
 
     private List<CountryEnvironmentParameters> getCountryEnvironmentApplicationFromParameter(HttpServletRequest request, ApplicationContext appContext, String system, String application, JSONArray json) throws JSONException {
-        List<CountryEnvironmentParameters> cedList = new ArrayList();
+        List<CountryEnvironmentParameters> cedList = new ArrayList<>();
         ICountryEnvironmentParametersService ceaService = appContext.getBean(ICountryEnvironmentParametersService.class);
         IFactoryCountryEnvironmentParameters cedFactory = appContext.getBean(IFactoryCountryEnvironmentParameters.class);
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
@@ -232,6 +232,9 @@ public class UpdateApplication extends HttpServlet {
             String var3 = tcsaJson.getString("var3");
             String var4 = tcsaJson.getString("var4");
             String strPoolSize = tcsaJson.getString("poolSize");
+            String mobileActivity = tcsaJson.getString("mobileActivity");
+            String mobilePackage = tcsaJson.getString("mobilePackage");
+
             int poolSize;
             if (strPoolSize.isEmpty()) {
                 poolSize = CountryEnvironmentParameters.DEFAULT_POOLSIZE;
@@ -245,7 +248,7 @@ public class UpdateApplication extends HttpServlet {
             }
 
             if (!delete) {
-                CountryEnvironmentParameters ced = cedFactory.create(system, country, environment, application, ip, domain, url, urlLogin, var1, var2, var3, var4, poolSize);
+                CountryEnvironmentParameters ced = cedFactory.create(system, country, environment, application, ip, domain, url, urlLogin, var1, var2, var3, var4, poolSize, mobileActivity, mobilePackage);
                 cedList.add(ced);
             }
         }
@@ -267,10 +270,8 @@ public class UpdateApplication extends HttpServlet {
         try {
             processRequest(request, response);
 
-        } catch (CerberusException ex) {
-            LOG.warn(ex);
-        } catch (JSONException ex) {
-            LOG.warn(ex);
+        } catch (CerberusException | JSONException ex) {
+            LOG.warn(ex, ex);
         }
     }
 
@@ -288,10 +289,8 @@ public class UpdateApplication extends HttpServlet {
         try {
             processRequest(request, response);
 
-        } catch (CerberusException ex) {
-            LOG.warn(ex);
-        } catch (JSONException ex) {
-            LOG.warn(ex);
+        } catch (CerberusException | JSONException ex) {
+            LOG.warn(ex, ex);
         }
     }
 

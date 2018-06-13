@@ -75,7 +75,7 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
 
     @Override
     public AnswerItem<TestCaseExecutionData> readByKey(long id, String property, int index) {
-        AnswerItem ans = new AnswerItem();
+        AnswerItem ans = new AnswerItem<>();
         TestCaseExecutionData result = null;
         final String query = "SELECT * FROM testcaseexecutiondata exd WHERE id = ? AND property = ? AND `index` = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -141,7 +141,7 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
 
     @Override
     public AnswerList<TestCaseExecutionData> readByIdByCriteria(long id, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
-        AnswerList response = new AnswerList();
+        AnswerList response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<TestCaseExecutionData> objectList = new ArrayList<TestCaseExecutionData>();
@@ -234,14 +234,14 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
                         LOG.error("Partial Result in the query.");
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                        response = new AnswerList(objectList, nrTotalRows);
+                        response = new AnswerList<>(objectList, nrTotalRows);
                     } else if (objectList.size() <= 0) {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                        response = new AnswerList(objectList, nrTotalRows);
+                        response = new AnswerList<>(objectList, nrTotalRows);
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                         msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                        response = new AnswerList(objectList, nrTotalRows);
+                        response = new AnswerList<>(objectList, nrTotalRows);
                     }
 
                 } catch (SQLException exception) {
@@ -288,7 +288,7 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
 
     @Override
     public AnswerItem<TestCaseExecutionData> readLastCacheEntry(String system, String environment, String country, String property, int cacheExpire) {
-        AnswerItem ans = new AnswerItem();
+        AnswerItem ans = new AnswerItem<>();
         TestCaseExecutionData result = null;
         final String query = "select * from testcaseexecutiondata exd WHERE System=? and Environment=? and Country=? and FromCache='N' and Property=? and Start >= NOW()- INTERVAL ? SECOND and `index`=1 and jsonResult is not null and RC = 'OK' order by id desc;";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);

@@ -18,6 +18,8 @@
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+var imagePasteFromClipboard = undefined;//stock the picture if the user chose to upload it from his clipboard
+
 function openModalAppService(service,mode,page=undefined){
 	if ($('#editSoapLibraryModal').data("initLabel") === undefined){
 		initModalAppService()		
@@ -38,7 +40,7 @@ function initModalAppService(){
 	console.info("init");
 	var doc = new Doc();
 	
-    displayInvariantList("type", "SRVTYPE", false, "SOAP");
+    displayInvariantList("type", "SRVTYPE", false, "REST");
     displayInvariantList("method", "SRVMETHOD", false, "GET");
     displayApplicationList("application", "", "");
 	
@@ -53,7 +55,7 @@ function initModalAppService(){
     $("[name='soapLibraryField']").html(doc.getDocLabel("appservice", "service"));
     $("[name='typeField']").html(doc.getDocLabel("appservice", "type"));
     $("[name='descriptionField']").html(doc.getDocLabel("appservice", "description"));
-    $("[name='servicePathField']").html(doc.getDocLabel("appservice", "servicePath"));
+    $("[name='servicePathField']").html(doc.getDocOnline("appservice", "servicePath"));
     $("[name='methodField']").html(doc.getDocLabel("appservice", "method"));
     $("[name='buttonClose']").html(doc.getDocLabel("page_appservice", "close_btn"));
     $("[name='buttonAdd']").html(doc.getDocLabel("page_appservice", "save_btn"));
@@ -62,6 +64,14 @@ function initModalAppService(){
     $("[name='lbl_creator']").html(doc.getDocOnline("transversal", "UsrCreated"));
     $("[name='lbl_lastModified']").html(doc.getDocOnline("transversal", "DateModif"));
     $("[name='lbl_lastModifier']").html(doc.getDocOnline("transversal", "UsrModif"));
+    
+    $('[data-toggle="popover"]').popover({
+        'placement': 'auto',
+        'container': 'body'}
+    );
+    
+    setUpDragAndDrop('#editSoapLibraryModal');
+    
 }
 
 /***
@@ -90,6 +100,8 @@ function editAppServiceClick(service, page) {
     $('#addSoapLibraryButton').attr('hidden', 'hidden');
 
     feedAppServiceModal(service, "editSoapLibraryModal", "EDIT");
+    listennerForInputTypeFile('#editSoapLibraryModal')
+	pasteListennerForClipboardPicture('#editSoapLibraryModal');
 }
 
 /***
@@ -112,9 +124,10 @@ function duplicateAppServiceClick(service) {
     $('#duplicateSoapLibraryButton').removeProp('hidden');
     $('#addSoapLibraryButton').attr('class', '');
     $('#addSoapLibraryButton').attr('hidden', 'hidden');
-    
-    
+     
     feedAppServiceModal(service, "editSoapLibraryModal", "DUPLICATE");
+    listennerForInputTypeFile('#editSoapLibraryModal')
+	pasteListennerForClipboardPicture('#editSoapLibraryModal');
 }
 
 /***
@@ -137,8 +150,9 @@ function addAppServiceClick(service, page) {
     $('#addSoapLibraryButton').attr('class', 'btn btn-primary');
     $('#addSoapLibraryButton').removeProp('hidden');
     
-
     feedAppServiceModal(service, "editSoapLibraryModal", "ADD");
+    listennerForInputTypeFile('#editSoapLibraryModal')
+	pasteListennerForClipboardPicture('#editSoapLibraryModal');
 }
 
 /***
@@ -152,6 +166,21 @@ function prepareAppServiceModal() {
     $("#editSoapLibraryModal #type").change(function () {
         refreshDisplayOnTypeChange($(this).val());
     });
+    
+    $("#editSoapLibraryModal #method").change(function () {
+        if($("#editSoapLibraryModal #type").val() == "FTP"){
+        	if($(this).val() == "GET" ){
+        		$("#editSoapLibraryModal #srvRequest textarea").hide();
+        	}else{
+        		$("#editSoapLibraryModal #srvRequest").parent().parent().find("label").html("File Content");
+        		$("#editSoapLibraryModal #srvRequest textarea").show();
+        	}               	
+        }else{
+        	$("#editSoapLibraryModal #srvRequest textarea").show();
+        	$("#editSoapLibraryModal #srvRequest").parent().parent().find("label").html("Service Request");
+        }
+    });
+
 
     // Adding rows in edit Modal.
     $('#addContent').off("click");
@@ -185,11 +214,11 @@ function confirmAppServiceModalHandler(mode,page) {
     }
 
     // Get the header data from the form.
-    var data = convertSerialToJSONObject(formEdit.serialize());
-
+    var data = formEdit.serializeArray();
+    data.servicePath = encodeURIComponent(data.servicePath);
+    
     //Add envelope, not in the form
     var editor = ace.edit($("#editSoapLibraryModal #srvRequest")[0]);
-    data.srvRequest = encodeURIComponent(editor.getSession().getDocument().getValue());
 
     // Getting Data from Content TAB
     var table1 = $("#contentTableBody tr");
@@ -202,31 +231,32 @@ function confirmAppServiceModalHandler(mode,page) {
     var table_header = [];
     for (var i = 0; i < table2.length; i++) {
         table_header.push($(table2[i]).data("header"));
-        
-        var toto = [];
     }
     
-    var temp = data.service;
+    var formData = new FormData();
+    var file = $("#editSoapLibraryModal input[type=file]");
 
+    for (var i in data) {
+        formData.append(data[i].name, encodeURIComponent(data[i].value));
+    }
+    
+    formData.append("contentList", JSON.stringify(table_content));
+    formData.append("headerList", JSON.stringify(table_header));
+    formData.append("srvRequest", encodeURIComponent(editor.getSession().getDocument().getValue()));
+    
+    if(file.prop("files").length != 0){
+    	formData.append("file", file.prop("files")[0]);
+    }
+
+    var temp = data.service;
 
     $.ajax({
         url: myServlet,
         async: true,
         method: "POST",
-        data: {
-            service: data.service,
-            application: data.application,
-            type: data.type,
-            method: data.method,
-            servicePath: data.servicePath,
-            operation: data.operation,
-            attachementurl: data.attachementurl,
-            description: data.description,
-            group: data.group,
-            serviceRequest: data.srvRequest,
-            contentList: JSON.stringify(table_content),
-            headerList: JSON.stringify(table_header)
-        },
+        data: formData,
+        processData: false,
+        contentType: false,
         success: function (data) {
             data = JSON.parse(data);
             
@@ -237,17 +267,14 @@ function confirmAppServiceModalHandler(mode,page) {
   	                    if(Tags[i].regex == null){
   	                        Tags[i].array.push(temp);
   	                    }
-  	                }
-  	                
+  	                }	                
   	                $("."+temp).parent().find("input").trigger("input", ['first']);
   	            }else{
   	            	var oTable = $("#soapLibrarysTable").dataTable();
   	                oTable.fnDraw(true);
-  	            }
-            	
+  	            }            	
                 $('#editSoapLibraryModal').data("Saved", true);
-                $('#editSoapLibraryModal').modal('hide');
-                
+                $('#editSoapLibraryModal').modal('hide');                
                 showMessage(data);
             } else {
                 showMessage(data, $('#editSoapLibraryModal'));
@@ -264,15 +291,29 @@ function confirmAppServiceModalHandler(mode,page) {
 }
 
 function refreshDisplayOnTypeChange(newValue) {
+		
     if (newValue === "SOAP") {
         // If SOAP service, no need to feed the method.
         $('#editSoapLibraryModal #method').prop("disabled", true);
         $('#editSoapLibraryModal #operation').prop("readonly", false);
         $('#editSoapLibraryModal #attachementurl').prop("readonly", false);
-    } else {
+    }else if(newValue === "FTP"){
+    	$('#editSoapLibraryModal #method').prop("disabled", false);
+        $('#editSoapLibraryModal #operation').prop("readonly", true);
+        $('#editSoapLibraryModal #attachementurl').prop("readonly", true);
+        $('#editSoapLibraryModal #addContent').prop("disabled", true);
+        $('#editSoapLibraryModal #addHeader').prop("disabled", true);
+ 		$('#editSoapLibraryModal #method option[value="DELETE"]').css("display","none");
+ 		$('#editSoapLibraryModal #method option[value="PUT"]').css("display","none");
+ 		$('#editSoapLibraryModal #method option[value="PATCH"]').css("display","none");
+ 		$('#editSoapLibraryModal #method').prop("disabled", false);
+    }else {
         $('#editSoapLibraryModal #method').prop("disabled", false);
         $('#editSoapLibraryModal #operation').prop("readonly", true);
         $('#editSoapLibraryModal #attachementurl').prop("readonly", true);
+		$('#editSoapLibraryModal #method option[value="DELETE"]').css("display","block");
+ 		$('#editSoapLibraryModal #method option[value="PUT"]').css("display","block");
+ 		$('#editSoapLibraryModal #method option[value="PATCH"]').css("display","block");
     }
 }
 
@@ -315,7 +356,7 @@ function feedAppServiceModal(serviceName, modalId, mode) {
 	}else{
 		var serviceObj1 = {};
 		var hasPermissions = true;
-		serviceObj1.service = serviceName;
+		serviceObj1.service = "";
 		serviceObj1.application = "";
 		serviceObj1.type = "REST";
 		serviceObj1.method = "GET";
@@ -327,7 +368,7 @@ function feedAppServiceModal(serviceName, modalId, mode) {
 		serviceObj1.serviceRequest = "";
 		serviceObj1.contentList = "";
 		serviceObj1.headerList = "";
-		
+		serviceObj1.fileName = "Drag and drop Files";
 			
 		feedAppServiceModalData(serviceObj1, modalId, mode, hasPermissions);
 		refreshDisplayOnTypeChange(serviceObj1.type);
@@ -386,6 +427,7 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#group").prop("value", "");
         formEdit.find("#operation").prop("value", "");
         formEdit.find("#description").prop("value", "");
+        formEdit.find("#Filename").val("Drag and drop Files");
     } else {
         formEdit.find("#application").val(service.application);
         formEdit.find("#type").val(service.type);
@@ -396,7 +438,12 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#group").prop("value", service.group);
         formEdit.find("#operation").prop("value", service.operation);
         formEdit.find("#description").prop("value", service.description);
-
+        if(service.fileName == ""){
+			updateDropzone("Drag and drop Files","#" + modalId);
+		}else{
+			updateDropzone(service.fileName,"#" + modalId);
+		}
+        
         // Feed the content table.
         feedAppServiceModalDataContent(service.contentList);
 
@@ -412,14 +459,12 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
     });
 
     //On ADD, try to autodetect Ace mode until it is defined
-    if (mode === "ADD") {
-        $($("#editSoapLibraryModal #srvRequest").get(0)).keyup(function () {
-            if (editor.getSession().getMode().$id === "ace/mode/text") {
-                editor.getSession().setMode(defineAceMode(editor.getSession().getDocument().getValue()));
-            }
-        });
 
-    }
+    $($("#editSoapLibraryModal #srvRequest").get(0)).keyup(function () {
+        if (editor.getSession().getMode().$id === "ace/mode/text") {
+            editor.getSession().setMode(defineAceMode(editor.getSession().getDocument().getValue()));
+        }
+    });
 
     // Authorities
     if (mode === "EDIT") {
@@ -600,3 +645,130 @@ function addNewHeaderRow() {
     };
     appendHeaderRow(newHeader);
 }
+
+/**
+ * get the picture from items and update the label with the name of the 
+ * return a boolean if whether or not it succeed to handle the file 
+ * @param {DataTransferItemList} items 
+ * @returns {boolean}
+ */
+function handlePictureSend(items,idModal){
+    if (!items) return false;
+     //access data directly
+    for (var i = 0; i < items.length; i++) {
+        var blob = items[i].getAsFile();
+        imagePasteFromClipboard =blob;
+        var URLObj = window.URL || window.webkitURL;
+        var source = URLObj.createObjectURL(blob);
+        var nameToDisplay =blob.name;
+        updateDropzone(nameToDisplay, idModal);
+        return true        
+    }
+}
+
+/**
+ * add a listenner for a paste event to catch clipboard if it's a picture
+ * @returns {void}
+ */
+function pasteListennerForClipboardPicture( idModal) {
+    var _self = this;
+    //handlers
+    document.addEventListener('paste', function (e) { _self.paste_auto(e); }, false);
+    //on paste
+    this.paste_auto = function (e) {
+        //handle paste event if the user do not select an input;
+        if (e.clipboardData && !$(e.target).is( "input" )) {
+            var items = e.clipboardData.items;
+            handlePictureSend(items, idModal);
+            e.preventDefault();
+        }
+    };  
+}
+
+
+/**
+ * set up the event listenner to make a drag and drop dropzone
+ * @returns {void}
+ */
+function setUpDragAndDrop(idModal){
+    var dropzone = $(idModal).find("#dropzone")[0];
+    dropzone.addEventListener("dragenter", dragenter, false);
+    dropzone.addEventListener("dragover", dragover, false);
+    dropzone.addEventListener("drop", function(event) { drop(event, idModal); } );
+}
+
+/**
+ * prevent the browser to open the file drag into an other tab
+ * @returns {void}
+ */
+function dragenter(e) {
+    e.stopPropagation();
+    e.preventDefault();
+}
+  
+/**
+ * prevent the browser to open the file drag into an other tab
+ * @returns {void}
+ */
+function dragover(e) {
+  e.stopPropagation();
+  e.preventDefault();
+}
+
+/**
+ * prevent the browser to open the file drag into an other tab and handle the file when the user put his file
+ * @returns {void}
+ */
+function drop(e, idModal) {
+  e.stopPropagation();
+  e.preventDefault();
+  var dt = e.dataTransfer;
+  var items = dt.items;
+  handlePictureSend(items,idModal);
+}
+
+
+/**
+ * add a listenner for an input type file
+ * @returns {void}
+ */
+
+function listennerForInputTypeFile(idModal){
+    
+    var inputs = $(idModal).find("#Filename");
+    inputs[0].addEventListener( 'change', function( e ){
+        //check if the input is an image
+        var fileName = '';
+        if( this.files && this.files.length > 1 )
+            fileName = ( this.getAttribute( 'data-multiple-caption' ) || '' ).replace( '{count}', this.files.length );
+        else
+            fileName = e.target.value.split( '\\' ).pop();
+        if( fileName ){
+            updateDropzone(fileName, idModal);
+        }
+    });
+}
+
+/**
+ * change the text inside the label specified and add the attribute uploadSources
+ * @param {string} id of the input the label link to
+ * @param {string} message that will put inside the label
+ * @param {boolean} is the picture upload should be taken from the clipboard
+ * @returns {void}
+ */
+function updateDropzone(messageToDisplay, idModal){
+    
+    var dropzoneText = $(idModal).find("#dropzoneText");
+    var glyphIconUpload = "<span class='glyphicon glyphicon-download-alt'></span>";
+    dropzoneText.html(messageToDisplay +" "+ glyphIconUpload);
+    if( imagePasteFromClipboard !== undefined ){
+        //reset value inside the input
+        var inputs = $(idModal).find("#Filename")[0];
+        inputs.value = "";
+    }
+    else{
+        //reset value for the var that stock the picture inside the clipboard
+        imagePasteFromClipboard = undefined;
+    }
+}
+	

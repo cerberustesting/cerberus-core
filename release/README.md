@@ -12,124 +12,67 @@ A `.cmds` file gathers all necessary commands to be executed in order to apply a
  
 Finally, each `.cmds` file contains a documentation header part to describe how to use it.
 
-### Step 1 : Database Version update
+### Cerberus github release
 
-Go to your cerberus/source/src/main/webapp folder and modify the file DatabaseMaintenance.jsp. The variable `Integer SQLLimit` must be set to the current version of database + 1 :
 
- * `cd <path_to_cerberusclone>/source/src/main/webapp`
- * `vim DatabaseMaintenance.jsp (modify the file)`
- * `git commit -m "change database version to <database_version>`
- * `git push origin master`
- 
- Where:
-  - <database_version> is the current database version
-
-### Step 2 : Maven config update for SourceForge upload
-
-You need to be able to push cerberus on sourceforge
-To do that, fill your Maven's settings file with the following information:
-
-    <profiles>
-        <profile>
-            <id>default</id>
-            <properties>
-                <cerberus.sourceforge.username>USERNAME,cerberus-source</cerberus.sourceforge.username>
-                <cerberus.sourceforge.password>PASSWORD</cerberus.sourceforge.password>
-            </properties>
-        </profile>
-    </profiles>
-
-    <activeProfiles>
-        <activeProfile>default</activeProfile>
-    </activeProfiles>
-
-Where:
- - USERNAME is your Cerberus' Sourceforge username
- - PASSWORD is your Cerberus' Sourceforge password
-    
-Note that user Maven's settings file is usually located at ~/.m2/settings.xml
-
-### Step 3 : Docker Login
-
-You need to be logged in to docker registry to perform the docker's release
-`
-    docker login -p <password> -u <username>
-`
-
-Where:
- - <password> is your docker hub password
- - <username> is your docker hub username
- 
-**/!\ you need to have the right on cerberus repository for sourceforge and docker hub**
-
-### Step 4 : Get runcmds.sh Utility
-
-Clone runcmds.sh somewhere on your computer : `git clone https://github.com/abourdon/runcmds`
-
-### Step 5 : Run the script that perform the release
+### Step 1 : Run the script that perform the release
 
 Go to your cerberus/release folder
 `
     cd <path_to_cerberusclone>/release/
 `
-
 And run the release cmd :
 `
- <path_to_runcmds>/runcmds.sh
-       -e RELEASE_VERSION <release version> \
-       -e NEXT_DEVELOPMENT_VERSION <next development version> \
-       -e RUNCMDS_PATH <runcmds command path> \
-       -s ./common.cmds
+ ./runcmds.sh
+       -e RELEASE_VERSION <release version> 
+       -e NEXT_DEVELOPMENT_VERSION <next development version> 
+       -e DATABASE_VERSION <current database version>
+       -s ./release.cmds
 `
 
-`common.cmds` will clone a cerberus on release/cerberus-testing, change some version on bin/*.sh script and make a `mvn release`.
-After that, common.cmds will wait new version of cerberus is available on sourceforge, and create new docker version.
+`release.cmds` will clone a cerberus on release/cerberus-testing, change some version on bin/*.sh script and make a `mvn release`.
 
-### Step 6 : Create a new changelog entry file and make is displayed in homepage for next developpement version
+NB : If under Windows, you can submit the command from docker bash.
 
- * `cd <path_to_cerberusclone>/source/source/src/main/resources/documentation/include/en/`
- * `cp changelog_template_en.adoc changelog_xnew.ynew_en.adoc`
- * `cd <path_to_cerberusclone>/source/source/src/main/webapp/js/pages/`
- * `vim Homepage.js`
+### Step 2 : Copy paste changelog on github
 
-change
+* Click on 'Draft new release'.
+* Choose xnew.ynew branch
+* Put in title : cerberus-testing-xnew-ynew
+* copy/paste adoc file under ressource/documentation/include/en/changelog_xdev_ydev.adoc to centent.
+* Upload Cerberus-xnew.ynew.zip and Cerberus-xnew.ynew.war
+* Press 'Create Release'
 
-`
-        $("#documentationFrame").attr("src", "./documentation/changelog_xold.yold_en.html");
-`
+### Cerberus docker release
 
-to
-`
-        $("#documentationFrame").attr("src", "./documentation/changelog_xnew.ynew_en.html");
-`
+### Step 1 : Docker Login
 
-and
-
+You need to be logged in to docker registry to perform the docker's release
 `
-        $("#changelogLabel").html("Changelog xold.yold");
+    docker login -p <password> -u <username>
 `
-
-to
-`
-        $("#changelogLabel").html("Changelog xnew.ynew");
-`
+Where:
+ - <password> is your docker hub password
+ - <username> is your docker hub username
  
- 
- * `cd <path_to_cerberusclone>/source/source/src/main/webapp/`
- * `vim Homepage.jsp`
- 
-change
+ **/!\ you need to have the right on cerberus repository for docker hub**
 
+### Step 2 : Run the script that perform the release
+
+Go to your cerberus/docker folder
 `
-                            <div class="panel-body collapse in" id="Changelogxoldyold">
+    cd <path_to_cerberusclone>/release/cerberus-source/docker/images/cerberus-as-glassfish
+`
+And run the release cmd :
+`
+ ../../../../runcmds.sh
+       -e RELEASE_VERSION <release version> 
+       -s ./release.cmds
 `
 
-to
-`
-                            <div class="panel-body collapse in" id="Changelogxnewynew">
-`
- * `git commit -m "Added New Changelog`
- * `git push origin master`
+`release.cmds` will make a `docker build`.
+
+NB : If under Windows, you can submit the command from docker bash.
 
 
 ## List of available release processes

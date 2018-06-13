@@ -99,7 +99,7 @@ public class DeleteAppService extends HttpServlet {
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
                 msg.setDescription(msg.getDescription().replace("%ITEM%", "AppService")
                         .replace("%OPERATION%", "Delete")
-                        .replace("%REASON%", "SoapLibrary does not exist."));
+                        .replace("%REASON%", "Service does not exist."));
                 ans.setResultMessage(msg);
 
             } else {

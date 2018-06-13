@@ -40,20 +40,20 @@ public interface ITagService {
      * @param tag
      * @return
      */
-    AnswerItem readByKey(String tag);
+    AnswerItem<Tag> readByKey(String tag);
 
     /**
      *
-     * @param tag
+     * @param id
      * @return
      */
-    AnswerItem readByKeyTech(long id);
+    AnswerItem<Tag> readByKeyTech(long id);
 
     /**
      *
      * @return
      */
-    AnswerList readAll();
+    AnswerList<Tag> readAll();
 
     /**
      *
@@ -140,7 +140,7 @@ public interface ITagService {
      * @return
      * @throws CerberusException
      */
-    Tag convert(AnswerItem answerItem) throws CerberusException;
+    Tag convert(AnswerItem<Tag> answerItem) throws CerberusException;
 
     /**
      *
@@ -148,7 +148,7 @@ public interface ITagService {
      * @return
      * @throws CerberusException
      */
-    List<Tag> convert(AnswerList answerList) throws CerberusException;
+    List<Tag> convert(AnswerList<Tag> answerList) throws CerberusException;
 
     /**
      *

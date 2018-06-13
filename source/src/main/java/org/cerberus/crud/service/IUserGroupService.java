@@ -70,7 +70,7 @@ public interface IUserGroupService {
      * @return
      * @throws CerberusException
      */
-    UserGroup convert(AnswerItem answerItem) throws CerberusException;
+    UserGroup convert(AnswerItem<UserGroup> answerItem) throws CerberusException;
 
     /**
      *
@@ -78,7 +78,7 @@ public interface IUserGroupService {
      * @return
      * @throws CerberusException
      */
-    List<UserGroup> convert(AnswerList answerList) throws CerberusException;
+    List<UserGroup> convert(AnswerList<UserGroup> answerList) throws CerberusException;
 
     /**
      *

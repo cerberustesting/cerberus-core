@@ -88,7 +88,7 @@ public class GetEnvironmentsPerBuildRevision extends HttpServlet {
         boolean userHasPermissions = true;
 
         // Init Answer with potencial error from Parsing parameter.
-        AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+        AnswerItem answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
 
         try {
             JSONObject jsonResponse = new JSONObject();
@@ -113,12 +113,12 @@ public class GetEnvironmentsPerBuildRevision extends HttpServlet {
 
     private AnswerItem findBuildRevList(String system, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
-        AnswerItem item = new AnswerItem();
+        AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();
         envService = appContext.getBean(IEnvironmentStatisticsService.class);
         cepService = appContext.getBean(ICountryEnvParamService.class);
 
-        AnswerList resp = envService.getEnvironmentStatistics(system);
+        AnswerList<BuildRevisionStatisticsEnv> resp = envService.getEnvironmentStatistics(system);
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values

@@ -9,13 +9,8 @@
 * [GUI] Queue can now be administered from the GUI. Every queue execution can be CANCELLED or modified and resubmitted to WAITING. State workflow documented in doc folder.
 * [ENGINE] Retry on an execution now generate new execution on the queue. That allow the feature to work on sync and async mode.
 * [GUI] Added 2 buttons on TestCaseExecution page in order to view the prameters of the corresponding Queue and create a new queue from the existing one.
-* [ENGINE] New queueing system that allow 3 level of constrains:
-  1. global Cerberus level --> parameter : _cerberus_queueexecution_global_threadpoolsize_
-  1. Application environment level that can be configured in application modal at environment level (poolsize)
-  1. Robot IP level that can be configured in invariant table ROBOTHOST invariant (gp1 needs to be feeded with integer value) Default value taken from parameter : _cerberus_queueexecution_defaultrobothost_threadpoolsize_
-  * Execution will be taken from the Queue (QUEUED state) and triggered ASAP until any of the constrain are reached.
-  * Queue screen allow to control the result and followup the executions.
-  * 1st tab display the list of queue execution, 2nd tab the list of constrain and level of saturation of every constrain, the 3rd tab display the timing of the last job that analyzed the queue and allow to force a new trigger of that job (should be automatic at the end of every queue successfully submitted).
+* [ENGINE] New queueing system that allow 3 level of constrains: 1) global Cerberus level --> parameter : _cerberus_queueexecution_global_threadpoolsize_ 2) Application environment level that can be configured in application modal at environment level (poolsize) 3) Robot IP level that can be configured in invariant table ROBOTHOST invariant (gp1 needs to be feeded with integer value) Default value taken from parameter : _cerberus_queueexecution_defaultrobothost_threadpoolsize_
+* [ENGINE] Execution will be taken from the Queue (QUEUED state) and triggered ASAP until any of the constrain are reached. Queue screen allow to control the result and followup the executions. 1st tab display the list of queue execution, 2nd tab the list of constrain and level of saturation of every constrain, the 3rd tab display the timing of the last job that analyzed the queue and allow to force a new trigger of that job (should be automatic at the end of every queue successfully submitted).
 * [GUI] Test Cases can now be renamed. When renamed, it loose the execution history.
 * [GUI] in ReportByTag screen, we can now edit the testcase header directly. It allows to modify comment and bugid directly.
 * [GUI] Control are now not Fatal by default.

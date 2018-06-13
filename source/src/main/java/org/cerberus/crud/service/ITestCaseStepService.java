@@ -42,14 +42,6 @@ public interface ITestCaseStepService {
     List<TestCaseStep> getListOfSteps(String test, String testcase);
 
     /**
-     *
-     * @param countryCode
-     * @param application
-     * @return
-     */
-    List<String> getLoginStepFromTestCase(String countryCode, String application);
-
-    /**
      * FindTestCaseStep
      *
      * @param test
@@ -91,11 +83,17 @@ public interface ITestCaseStepService {
 
     List<TestCaseStep> getStepLibraryBySystemTestTestCase(String system, String test, String testCase) throws CerberusException;
 
-    AnswerList readByTestTestCase(String test, String testcase);
+    AnswerList<TestCaseStep> readByTestTestCase(String test, String testcase);
 
     AnswerList readByLibraryUsed(String test, String testcase, int step);
 
-    AnswerList readByTestTestCaseWithDependency(String test, String testcase);
+    /**
+     *
+     * @param test
+     * @param testcase
+     * @return
+     */
+    AnswerList<TestCaseStep> readByTestTestCaseWithDependency(String test, String testcase);
 
     /**
      *

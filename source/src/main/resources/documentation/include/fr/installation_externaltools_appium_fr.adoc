@@ -1,8 +1,8 @@
+==== Sommaire
+
 http://appium.io/[Appium] est un outil libre d'automatisation d'applications native, hybride ou Web, utilisant le protocole https://www.w3.org/TR/webdriver/[WebDriver] pour le rendre compatible iOS, Android et Windows.
 
 Cette procédure couvre l'installation et la configuraiton d'**Appium v1.6.2+**.
-
-==== Sommaire
 
 . <<installation_externaltools_appium_en_appium_server_installation, Installation du serveur Appium>>
 . <<installation_externaltools_appium_en_client_use, Utilisations clientes>>

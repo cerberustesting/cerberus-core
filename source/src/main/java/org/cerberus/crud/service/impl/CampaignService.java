@@ -90,7 +90,7 @@ public class CampaignService implements ICampaignService {
     }
 
     @Override
-    public Campaign convert(AnswerItem answerItem) throws CerberusException {
+    public Campaign convert(AnswerItem<Campaign> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (Campaign) answerItem.getItem();
@@ -99,7 +99,7 @@ public class CampaignService implements ICampaignService {
     }
 
     @Override
-    public List<Campaign> convert(AnswerList answerList) throws CerberusException {
+    public List<Campaign> convert(AnswerList<Campaign> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (List<Campaign>) answerList.getDataList();

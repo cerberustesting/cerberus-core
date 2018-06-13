@@ -52,7 +52,19 @@ public interface ITestCaseService {
 
     List<TestCase> findTestCaseByApplication(String application);
 
-    List<TestCase> findTestCaseActiveByCriteria(String test, String application, String country);
+    /**
+     * Retreive all testcase that match testFilter value, are active, exist for
+     * country, match applicationFilter and inside build/revision range.
+     *
+     * @param testFilter
+     * @param applicationFilter
+     * @param country
+     * @param system system of the main test case.
+     * @param build current build
+     * @param revision current revision
+     * @return
+     */
+    List<TestCase> getTestCaseForPrePostTesting(String testFilter, String applicationFilter, String country, String system, String build, String revision);
 
     boolean updateTestCaseInformation(TestCase testCase);
 
@@ -198,7 +210,7 @@ public interface ITestCaseService {
      * @return
      * @throws CerberusException
      */
-    TestCase convert(AnswerItem answerItem) throws CerberusException;
+    TestCase convert(AnswerItem<TestCase> answerItem) throws CerberusException;
 
     /**
      *
@@ -206,7 +218,7 @@ public interface ITestCaseService {
      * @return
      * @throws CerberusException
      */
-    List<TestCase> convert(AnswerList answerList) throws CerberusException;
+    List<TestCase> convert(AnswerList<TestCase> answerList) throws CerberusException;
 
     /**
      *
@@ -258,9 +270,9 @@ public interface ITestCaseService {
      * @return
      */
     public boolean hasPermissionsCreate(TestCase testCase, HttpServletRequest request);
-    
+
     /**
-     * 
+     *
      * @param service
      * @return
      */

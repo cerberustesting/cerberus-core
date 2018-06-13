@@ -185,13 +185,14 @@ public class ExecutionStartService implements IExecutionStartService {
         try {
             tCExecution.setApplication(tCExecution.getTestCaseObj().getApplication());
             tCExecution.setApplicationObj(applicationService.convert(this.applicationService.readByKey(tCExecution.getTestCaseObj().getApplication())));
+            tCExecution.getTestCaseExecutionQueue().setSystem(tCExecution.getApplicationObj().getSystem());
+            LOG.debug("Application Information Loaded - " + tCExecution.getApplicationObj().getApplication() + " - " + tCExecution.getApplicationObj().getDescription());
         } catch (CerberusException ex) {
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_APPLICATION_NOT_FOUND);
             mes.setDescription(mes.getDescription().replace("%APPLI%", tCExecution.getTestCaseObj().getApplication()));
             LOG.debug(mes.getDescription());
             throw new CerberusException(mes);
         }
-        LOG.debug("Application Information Loaded - " + tCExecution.getApplicationObj().getApplication() + " - " + tCExecution.getApplicationObj().getDescription());
 
         /**
          * Init System from Application.
@@ -204,13 +205,20 @@ public class ExecutionStartService implements IExecutionStartService {
         LOG.debug("Loading Country Information");
         try {
             tCExecution.setCountryObj(invariantService.convert(invariantService.readByKey("COUNTRY", tCExecution.getCountry())));
+            if (tCExecution.getCountryObj() != null) {
+                LOG.debug("Country Information Loaded - " + tCExecution.getCountryObj().getValue() + " - " + tCExecution.getCountryObj().getDescription());
+            } else {
+                MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_COUNTRY_NOT_FOUND);
+                mes.setDescription(mes.getDescription().replace("%COUNTRY%", tCExecution.getCountry()));
+                LOG.debug(mes.getDescription());
+                throw new CerberusException(mes);
+            }
         } catch (CerberusException ex) {
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_COUNTRY_NOT_FOUND);
             mes.setDescription(mes.getDescription().replace("%COUNTRY%", tCExecution.getCountry()));
             LOG.debug(mes.getDescription());
             throw new CerberusException(mes);
         }
-        LOG.debug("Country Information Loaded - " + tCExecution.getCountryObj().getValue() + " - " + tCExecution.getCountryObj().getDescription());
 
         /**
          * Checking if execution is manual or automaticaly configured. If
@@ -230,7 +238,7 @@ public class ExecutionStartService implements IExecutionStartService {
                 throw new CerberusException(mes);
             } else {
                 CountryEnvironmentParameters cea;
-                cea = this.factorycountryEnvironmentParameters.create(tCExecution.getApplicationObj().getSystem(), tCExecution.getCountry(), tCExecution.getEnvironment(), tCExecution.getApplicationObj().getApplication(), tCExecution.getMyHost(), "", tCExecution.getMyContextRoot(), tCExecution.getMyLoginRelativeURL(), "", "", "", "", CountryEnvironmentParameters.DEFAULT_POOLSIZE);
+                cea = this.factorycountryEnvironmentParameters.create(tCExecution.getApplicationObj().getSystem(), tCExecution.getCountry(), tCExecution.getEnvironment(), tCExecution.getApplicationObj().getApplication(), tCExecution.getMyHost(), "", tCExecution.getMyContextRoot(), tCExecution.getMyLoginRelativeURL(), "", "", "", "", CountryEnvironmentParameters.DEFAULT_POOLSIZE, "", "");
                 cea.setIp(tCExecution.getMyHost());
                 cea.setUrl(tCExecution.getMyContextRoot());
                 tCExecution.setUrl(StringUtil.getURLFromString(cea.getIp(), cea.getUrl(), "", ""));
@@ -262,6 +270,16 @@ public class ExecutionStartService implements IExecutionStartService {
                     tCExecution.setCountryEnvironmentParameters(cea);
 //                    tCExecution.setUrl(cea.getIp()+ cea.getUrl());
                     tCExecution.setUrl(StringUtil.getURLFromString(cea.getIp(), cea.getUrl(), "", ""));
+
+                    // add possiblity to override URL with MyHost if MyHost is available
+                    if (!StringUtil.isNullOrEmpty(tCExecution.getMyHost())) {
+                        String contextRoot = !StringUtil.isNullOrEmpty(tCExecution.getMyContextRoot()) ? tCExecution.getMyContextRoot() : "";
+                        tCExecution.setUrl(StringUtil.getURLFromString(tCExecution.getMyHost(), contextRoot, "", ""));
+
+                    }
+                    if (!StringUtil.isNullOrEmpty(tCExecution.getMyLoginRelativeURL())) {
+                        cea.setUrlLogin(tCExecution.getMyLoginRelativeURL());
+                    }
                 } else {
                     MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_COUNTRYENVAPP_NOT_FOUND);
                     mes.setDescription(mes.getDescription().replace("%COUNTRY%", tCExecution.getCountry()));
@@ -369,6 +387,19 @@ public class ExecutionStartService implements IExecutionStartService {
         LOG.debug("Checks performed -- > OK to continue.");
 
         /**
+         * Changing Automatic execution flag depending on test case information.
+         */
+        if (tCExecution.getManualExecution().equals(TestCaseExecution.MANUAL_A)) {
+            if (tCExecution.getTestCaseObj().getGroup().equals(TestCase.GROUP_AUTOMATED)
+                    || tCExecution.getTestCaseObj().getGroup().equals(TestCase.GROUP_PRIVATE)) {
+                tCExecution.setManualExecution(TestCaseExecution.MANUAL_N);
+
+            } else {
+                tCExecution.setManualExecution(TestCaseExecution.MANUAL_Y);
+            }
+        }
+
+        /**
          * For GUI application, check if Browser is supported.
          */
         if (!tCExecution.getManualExecution().equals("Y") && tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
@@ -379,39 +410,6 @@ public class ExecutionStartService implements IExecutionStartService {
                 mes.setDescription(mes.getDescription().replace("%BROWSER%", tCExecution.getBrowser()));
                 LOG.debug(mes.getDescription());
                 throw new CerberusException(mes);
-            }
-        }
-
-        /**
-         * Start server if execution is not manual
-         */
-        if (!tCExecution.getManualExecution().equals("Y")) {
-            tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_STARTINGROBOTSERVER));
-            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
-                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
-                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)
-                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
-
-                if (tCExecution.getIp().equalsIgnoreCase("")) {
-                    MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_EMPTYORBADIP);
-                    mes.setDescription(mes.getDescription().replace("%IP%", tCExecution.getIp()));
-                    LOG.debug(mes.getDescription());
-                    throw new CerberusException(mes);
-                }
-
-                /**
-                 * Start Selenium server
-                 */
-                LOG.debug("Starting Server.");
-                tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_CREATINGRUNID));
-                try {
-                    this.serverService.startServer(tCExecution);
-                } catch (CerberusException ex) {
-                    LOG.debug(ex.getMessageError().getDescription());
-                    throw new CerberusException(ex.getMessageError());
-                }
-                LOG.debug("Server Started.");
-
             }
         }
 
@@ -455,11 +453,11 @@ public class ExecutionStartService implements IExecutionStartService {
             try {
                 if (tCExecution.getId() == 0) {
                     LOG.debug("Starting to Stop the Selenium Server.");
-                    this.serverService.stopServer(tCExecution.getSession());
+                    this.serverService.stopServer(tCExecution);
                     LOG.debug("Selenium Server stopped.");
                 }
             } catch (Exception ex) {
-                LOG.warn(ex.toString());
+                LOG.warn(ex.toString(), ex);
             }
         }
 

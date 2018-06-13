@@ -1,5 +1,3 @@
-In this section, you will find information about Cerberus user management.
-
 === User creation
 
 . Go to *[red]#Administration -> User Management#*.

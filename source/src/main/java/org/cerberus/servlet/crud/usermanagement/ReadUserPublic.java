@@ -97,7 +97,7 @@ public class ReadUserPublic extends HttpServlet {
         }
 
         // Init Answer with potencial error from Parsing parameter.
-        AnswerItem answer = new AnswerItem(msg);
+        AnswerItem answer = new AnswerItem<>(msg);
 
         try {
             JSONObject jsonResponse = new JSONObject();
@@ -123,7 +123,7 @@ public class ReadUserPublic extends HttpServlet {
 
     private AnswerItem findUserList(ApplicationContext appContext, HttpServletRequest request, HttpServletResponse response) throws JSONException {
 
-        AnswerItem item = new AnswerItem();
+        AnswerItem item = new AnswerItem<>();
         JSONObject jsonResponse = new JSONObject();
         userService = appContext.getBean(UserService.class);
 

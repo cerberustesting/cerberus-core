@@ -116,7 +116,7 @@ public class ActionService implements IActionService {
     public TestCaseStepActionExecution doAction(TestCaseStepActionExecution testCaseStepActionExecution) {
         MessageEvent res;
         TestCaseExecution tCExecution = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution();
-        AnswerItem<String> answerDecode = new AnswerItem();
+        AnswerItem<String> answerDecode = new AnswerItem<>();
 
         /**
          * Decode the object field before doing the action.
@@ -124,7 +124,7 @@ public class ActionService implements IActionService {
         try {
 
             // When starting a new action, we reset the property list that was already calculated.
-            tCExecution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList());
+            tCExecution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList<>());
 
             answerDecode = variableService.decodeStringCompletly(testCaseStepActionExecution.getValue1(),
                     tCExecution, testCaseStepActionExecution, false);
@@ -149,7 +149,7 @@ public class ActionService implements IActionService {
         try {
 
             // When starting a new action, we reset the property list that was already calculated.
-            tCExecution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList());
+            tCExecution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList<>());
 
             answerDecode = variableService.decodeStringCompletly(testCaseStepActionExecution.getValue2(),
                     tCExecution, testCaseStepActionExecution, false);
@@ -183,7 +183,7 @@ public class ActionService implements IActionService {
         LOG.debug("Doing Action : " + testCaseStepActionExecution.getAction() + " with value1 : " + value1 + " and value2 : " + value2);
 
         // When starting a new action, we reset the property list that was already calculated.
-        tCExecution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList());
+        tCExecution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList<>());
 
         try {
             switch (testCaseStepActionExecution.getAction()) {
@@ -231,7 +231,7 @@ public class ActionService implements IActionService {
                     res = this.doActionExecuteJS(tCExecution, value1, value2);
                     break;
                 case TestCaseStepAction.ACTION_OPENAPP:
-                    res = this.doActionOpenApp(tCExecution, value1);
+                    res = this.doActionOpenApp(tCExecution, value1, value2);
                     break;
                 case TestCaseStepAction.ACTION_CLOSEAPP:
                     res = this.doActionCloseApp(tCExecution, value1);
@@ -272,7 +272,21 @@ public class ActionService implements IActionService {
                 case TestCaseStepAction.ACTION_DONOTHING:
                     res = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
                     break;
-                // DEPRECATED ACTIONS FROM HERE.
+                case TestCaseStepAction.ACTION_EXECUTECOMMAND:
+                    res = this.doActionExecuteCommand(tCExecution, value1, value2);
+                    break;
+                case TestCaseStepAction.ACTION_SCROLLTO:
+                    res = this.doActionScrollTo(tCExecution, value1, value2);
+                    break;
+                case TestCaseStepAction.ACTION_INSTALLAPP:
+                    res = this.doActionInstallApp(tCExecution, value1);
+                    break;
+                case TestCaseStepAction.ACTION_REMOVEAPP:
+                    res = this.doActionRemoveApp(tCExecution, value1);
+                    break;
+                /**
+                 * DEPRECATED ACTIONS FROM HERE.
+                 */
                 case TestCaseStepAction.ACTION_MOUSEOVERANDWAIT:
                     res = this.doActionMouseOverAndWait(tCExecution, value1, value2);
                     res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
@@ -284,37 +298,6 @@ public class ActionService implements IActionService {
                     res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
                     logEventService.createForPrivateCalls("ENGINE", "removeDifference", MESSAGE_DEPRECATED + " Deprecated Action triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "|" + testCaseStepActionExecution.getTestCase() + "']");
                     LOG.warn(MESSAGE_DEPRECATED + " Deprecated Action removeDifference triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "'|'" + testCaseStepActionExecution.getTestCase() + "']");
-                    break;
-                case TestCaseStepAction.ACTION_GETPAGESOURCE:
-                    res = this.doActionGetPageSource(testCaseStepActionExecution);
-                    res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
-                    logEventService.createForPrivateCalls("ENGINE", "getPageSource", MESSAGE_DEPRECATED + " Deprecated Action triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "|" + testCaseStepActionExecution.getTestCase() + "']");
-                    LOG.warn(MESSAGE_DEPRECATED + " Deprecated Action getPageSource triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "'|'" + testCaseStepActionExecution.getTestCase() + "']");
-                    break;
-                case TestCaseStepAction.ACTION_TAKESCREENSHOT:
-                    res = this.doActionTakeScreenshot(testCaseStepActionExecution);
-                    res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
-                    logEventService.createForPrivateCalls("ENGINE", "takeScreenshot", MESSAGE_DEPRECATED + " Deprecated Action triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "|" + testCaseStepActionExecution.getTestCase() + "']");
-                    LOG.warn(MESSAGE_DEPRECATED + " Deprecated Action takeScreenshot triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "'|'" + testCaseStepActionExecution.getTestCase() + "']");
-                    break;
-                case TestCaseStepAction.ACTION_CLICKANDWAIT:
-                    res = this.doActionClickWait(tCExecution, value1, value2);
-                    res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
-                    logEventService.createForPrivateCalls("ENGINE", "clickAndWait", MESSAGE_DEPRECATED + " Deprecated Action triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "|" + testCaseStepActionExecution.getTestCase() + "']");
-                    LOG.warn(MESSAGE_DEPRECATED + " Deprecated Action clickAndWait triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "'|'" + testCaseStepActionExecution.getTestCase() + "']");
-                    break;
-                case TestCaseStepAction.ACTION_ENTER:
-                    res = this.doActionKeyPress(tCExecution, value1, "RETURN");
-                    res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
-                    logEventService.createForPrivateCalls("ENGINE", "enter", MESSAGE_DEPRECATED + " Deprecated Action triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "|" + testCaseStepActionExecution.getTestCase() + "']");
-                    LOG.warn(MESSAGE_DEPRECATED + " Deprecated Action enter triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "'|'" + testCaseStepActionExecution.getTestCase() + "']");
-                    break;
-                case TestCaseStepAction.ACTION_SELECTANDWAIT:
-                    res = this.doActionSelect(tCExecution, value1, value2);
-                    this.doActionWait(tCExecution, StringUtil.NULL, StringUtil.NULL);
-                    res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
-                    logEventService.createForPrivateCalls("ENGINE", "selectAndWait", MESSAGE_DEPRECATED + " Deprecated Action triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "|" + testCaseStepActionExecution.getTestCase() + "']");
-                    LOG.warn(MESSAGE_DEPRECATED + " Deprecated Action selectAndWait triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "'|'" + testCaseStepActionExecution.getTestCase() + "']");
                     break;
                 default:
                     res = new MessageEvent(MessageEventEnum.ACTION_FAILED_UNKNOWNACTION);
@@ -358,6 +341,107 @@ public class ActionService implements IActionService {
 
         testCaseStepActionExecution.setEnd(new Date().getTime());
         return testCaseStepActionExecution;
+    }
+
+
+
+
+    private MessageEvent doActionInstallApp(TestCaseExecution tCExecution, String appPath) {
+        MessageEvent message;
+
+        try {
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
+                return androidAppiumService.installApp(tCExecution.getSession(), appPath);
+            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
+                return iosAppiumService.installApp(tCExecution.getSession(), appPath);
+            }
+
+            message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+            message.setDescription(message.getDescription().replace("%ACTION%", "scrollTo"));
+            message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
+            return message;
+        } catch (Exception e) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_GENERIC);
+            String messageString = e.getMessage().split("\n")[0];
+            message.setDescription(message.getDescription().replace("%DETAIL%", messageString));
+            LOG.debug("Exception Running install app  :" + messageString, e);
+            return message;
+        }
+    }
+
+
+    private MessageEvent doActionRemoveApp(TestCaseExecution tCExecution, String appPackage) {
+        MessageEvent message;
+
+        try {
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
+                return androidAppiumService.removeApp(tCExecution.getSession(), appPackage);
+            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
+                return iosAppiumService.removeApp(tCExecution.getSession(), appPackage);
+            }
+
+            message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+            message.setDescription(message.getDescription().replace("%ACTION%", "scrollTo"));
+            message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
+            return message;
+        } catch (Exception e) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_GENERIC);
+            String messageString = e.getMessage().split("\n")[0];
+            message.setDescription(message.getDescription().replace("%DETAIL%", messageString));
+            LOG.debug("Exception Running remove app  :" + messageString, e);
+            return message;
+        }
+    }
+
+
+    private MessageEvent doActionScrollTo(TestCaseExecution tCExecution, String element, String text) {
+        MessageEvent message;
+
+        try {
+            Identifier identifier = null;
+            if (!StringUtil.isNullOrEmpty(element)) {
+                identifier = identifierService.convertStringToIdentifier(element);
+            }
+
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
+                return androidAppiumService.scrollTo(tCExecution.getSession(), identifier, text);
+            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
+                return iosAppiumService.scrollTo(tCExecution.getSession(), identifier, text);
+            }
+
+            message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+            message.setDescription(message.getDescription().replace("%ACTION%", "scrollTo"));
+            message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
+            return message;
+        } catch (Exception e) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_GENERIC);
+            String messageString = e.getMessage().split("\n")[0];
+            message.setDescription(message.getDescription().replace("%DETAIL%", messageString));
+            LOG.debug("Exception Running scroll to  :" + messageString, e);
+            return message;
+        }
+    }
+
+    private MessageEvent doActionExecuteCommand(TestCaseExecution tCExecution, String command, String args) {
+        MessageEvent message;
+
+        try {
+
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
+                return androidAppiumService.executeCommand(tCExecution.getSession(), command, args);
+            }
+
+            message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+            message.setDescription(message.getDescription().replace("%ACTION%", "executeJS"));
+            message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
+            return message;
+        } catch (Exception e) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTECOMMAND);
+            String messageString = e.getMessage().split("\n")[0];
+            message.setDescription(message.getDescription().replace("%EXCEPTION%", messageString));
+            LOG.debug("Exception Running Shell :" + messageString, e);
+            return message;
+        }
     }
 
     private MessageEvent doActionClick(TestCaseExecution tCExecution, String value1, String value2) {
@@ -589,30 +673,6 @@ public class ActionService implements IActionService {
             return message;
         } catch (CerberusEventException ex) {
             LOG.fatal("Error doing Action ManageDialog :" + ex);
-            return ex.getMessageError();
-        }
-    }
-
-    private MessageEvent doActionClickWait(TestCaseExecution tCExecution, String string1, String string2) {
-        MessageEvent message;
-        try {
-
-            Identifier identifier = identifierService.convertStringToIdentifier(string1);
-            identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-
-            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
-                message = webdriverService.doSeleniumActionClick(tCExecution.getSession(), identifier, true, true);
-                if (message.getCodeString().equals("OK")) {
-                    message = this.doActionWait(tCExecution, string2, null);
-                }
-                return message;
-            }
-            message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-            message.setDescription(message.getDescription().replace("%ACTION%", "ClickAndWait"));
-            message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", string1));
-            return message;
-        } catch (CerberusEventException ex) {
-            LOG.fatal("Error doing Action ClickAndWait :" + ex);
             return ex.getMessageError();
         }
     }
@@ -926,7 +986,7 @@ public class ActionService implements IActionService {
         }
     }
 
-    private MessageEvent doActionOpenApp(TestCaseExecution tCExecution, String value1) {
+    private MessageEvent doActionOpenApp(TestCaseExecution tCExecution, String value1, String value2) {
         MessageEvent message;
 
         /**
@@ -939,6 +999,9 @@ public class ActionService implements IActionService {
         if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)
                 || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
             return sikuliService.doSikuliActionOpenApp(tCExecution.getSession(), value1);
+        }
+        else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
+            return androidAppiumService.openApp(tCExecution.getSession(), value1, value2);
         }
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
         message.setDescription(message.getDescription().replace("%ACTION%", "OpenApp"));
@@ -1118,42 +1181,6 @@ public class ActionService implements IActionService {
 
     }
 
-    private MessageEvent doActionTakeScreenshot(TestCaseStepActionExecution testCaseStepActionExecution) {
-        MessageEvent message;
-        if (testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
-                || testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
-                || testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
-            recorderService.recordScreenshot(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution(),
-                    testCaseStepActionExecution, 0);
-            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_TAKESCREENSHOT);
-            return message;
-        } else if (testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
-            /**
-             * TODO Implement screenshot for FAT client application
-             */
-            message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-        }
-        message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-        message.setDescription(message.getDescription().replace("%ACTION%", "TakeScreenShot"));
-        message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplicationObj().getType()));
-        return message;
-    }
-
-    private MessageEvent doActionGetPageSource(TestCaseStepActionExecution testCaseStepActionExecution) {
-        MessageEvent message;
-        if (testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
-                || testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
-                || testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
-            recorderService.recordPageSource(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution(), testCaseStepActionExecution, 0);
-            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_GETPAGESOURCE);
-            return message;
-        }
-        message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-        message.setDescription(message.getDescription().replace("%ACTION%", "getPageSource"));
-        message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplicationObj().getType()));
-        return message;
-    }
-
     private MessageEvent doActionRemoveDifference(TestCaseStepActionExecution testCaseStepActionExecution, String object, String property) {
         // Filters differences from the given object pattern
         String filteredDifferences = xmlUnitService.removeDifference(object, property);
@@ -1183,7 +1210,7 @@ public class ActionService implements IActionService {
 
     private MessageEvent doActionCalculateProperty(TestCaseStepActionExecution testCaseStepActionExecution, String value1, String value2) {
         MessageEvent message;
-        AnswerItem<String> answerDecode = new AnswerItem();
+        AnswerItem<String> answerDecode = new AnswerItem<>();
         if (StringUtil.isNullOrEmpty(value1)) {
 
             // Value1 is a mandatory parameter.
@@ -1341,8 +1368,8 @@ public class ActionService implements IActionService {
             message.setDescription(message.getDescription().replace("%TIME%", String.valueOf(timeToWaitMs)));
             return message;
         } catch (InterruptedException exception) {
-            LOG.info(exception.toString());
-            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_WAIT);
+            LOG.warn(exception.toString());
+            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAIT_TIME_WITHWARNINGS);
             message.setDescription(message.getDescription()
                     .replace("%TIME%", String.valueOf(timeToWaitMs))
                     .replace("%MESSAGE%", exception.toString()));

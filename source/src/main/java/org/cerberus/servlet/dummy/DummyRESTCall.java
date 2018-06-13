@@ -42,11 +42,11 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author vertigo
  */
-@WebServlet(name = "GetDummyRESTCall", urlPatterns = {"/GetDummyRESTCall"})
+@WebServlet(name = "DummyRESTCall", urlPatterns = {"/DummyRESTCall"})
 public class DummyRESTCall extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(DummyRESTCall.class);
-    
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -166,7 +166,7 @@ public class DummyRESTCall extends HttpServlet {
             throws ServletException, IOException {
         processRequest(request, response);
     }
-    
+
     /**
      * Handles the HTTP <code>PUT</code> method.
      *
@@ -180,7 +180,7 @@ public class DummyRESTCall extends HttpServlet {
             throws ServletException, IOException {
         processRequest(request, response);
     }
-    
+
     /**
      * Handles the HTTP <code>DELETE</code> method.
      *

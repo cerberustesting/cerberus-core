@@ -47,7 +47,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         LOG.info("Starting Execution of '" + SQLString + "'");
 
         try (Connection connection = this.databaseSpring.connect();
-             Statement preStat = connection.createStatement();) {
+                Statement preStat = connection.createStatement();) {
             preStat.execute(SQLString);
             LOG.info("'" + SQLString + "' Executed successfully.");
         } catch (Exception exception1) {
@@ -382,13 +382,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append(",('CONTROL','verifyContainText',80,13,'Verify Contain Text',NULL,NULL,NULL)");
         b.append(",('CHAIN','0',1,14,'0',NULL,NULL,NULL)");
         b.append(",('CHAIN','1',2,14,'1',NULL,NULL,NULL)");
-        b.append(",('PRIORITY','0',1,15,'No Priority defined',NULL,NULL,NULL)");
-        b.append(",('PRIORITY','1',2,15,'Critical Priority',NULL,NULL,NULL)");
-        b.append(",('PRIORITY','2',3,15,'High Priority',NULL,NULL,NULL)");
-        b.append(",('PRIORITY','3',4,15,'Mid Priority',NULL,NULL,NULL)");
-        b.append(",('PRIORITY','4',5,15,'Low Priority',NULL,NULL,NULL)");
-        b.append(",('PRIORITY','5',6,15,'Lower Priority or cosmetic',NULL,NULL,NULL)");
-        b.append(",('PRIORITY','99',7,15,'99',NULL,NULL,NULL)");
+        b.append(",('PRIORITY','1',1,15,'Critical Priority',NULL,NULL,NULL)");
+        b.append(",('PRIORITY','2',5,15,'High Priority',NULL,NULL,NULL)");
+        b.append(",('PRIORITY','3',10,15,'Mid Priority',NULL,NULL,NULL)");
+        b.append(",('PRIORITY','4',15,15,'Low Priority',NULL,NULL,NULL)");
+        b.append(",('PRIORITY','5',20,15,'Lower Priority or cosmetic',NULL,NULL,NULL)");
+        b.append(",('PRIORITY','99',25,15,'No Priority defined',NULL,NULL,NULL)");
         b.append(",('TCACTIVE','Y',1,16,'Yes',NULL,NULL,NULL)");
         b.append(",('TCACTIVE','N',2,16,'No',NULL,NULL,NULL)");
         b.append(",('TCREADONLY','N',1,17,'No',NULL,NULL,NULL)");
@@ -7386,21 +7385,13 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 
         // New updated Documentation.
         // 1272-1273
-        b = new StringBuilder();
-        b.append("select 1 from DUAL;");
-        a.add(b.toString());
-        b = new StringBuilder();
-        b.append("select 1 from DUAL;");
-        a.add(b.toString());
+        a.add("select 1 from DUAL;");
+        a.add("select 1 from DUAL;");
 
         // New updated Documentation.
         // 1274-1275
-        b = new StringBuilder();
-        b.append("select 1 from DUAL;");
-        a.add(b.toString());
-        b = new StringBuilder();
-        b.append("select 1 from DUAL;");
-        a.add(b.toString());
+        a.add("select 1 from DUAL;");
+        a.add("select 1 from DUAL;");
 
         // ADD a parameter for the path to store manual exe files
         // 1276-1277
@@ -7501,9 +7492,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 
         // Modify table testcasestepexecution
         // 1290
-        b = new StringBuilder();
-        b.append("ALTER TABLE `testcasestepexecution`  CHANGE COLUMN `ReturnMessage` `ReturnMessage` TEXT ;");
-        a.add(b.toString());
+        a.add("ALTER TABLE `testcasestepexecution`  CHANGE COLUMN `ReturnMessage` `ReturnMessage` TEXT ;");
 
         // Modify table testcaseexecutiondata adding cache flag
         // 1291
@@ -7650,7 +7639,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append(")");
         a.add(b.toString());
         a.add("select 1 from DUAL;");
-        
+
         // Alter Documentation table.
         // 1323
         a.add("ALTER TABLE `documentation` MODIFY COLUMN DocLabel varchar(800)");
@@ -7662,9 +7651,112 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add("select 1 from DUAL;");
         a.add("select 1 from DUAL;");
 
+        // Add FTP Service
+        // 1328
+        a.add("INSERT INTO `invariant` (idname, value, sort, description) VALUES ('SRVTYPE', 'FTP', 300, 'FTP Service.')");
+
+        // Add RobotDecli in queue table.
+        // 1329
+        a.add("ALTER TABLE `testcaseexecutionqueue` ADD COLUMN `RobotDecli` VARCHAR(100) NOT NULL DEFAULT '' AFTER `Robot`;");
+
+        // Add System in queue table.
+        // 1330
+        a.add("ALTER TABLE `testcaseexecutionqueue` ADD COLUMN `System` VARCHAR(45) NOT NULL DEFAULT '' AFTER `ID`;");
+
+        // Add and update cerberus_url parameter.
+        // 1331-1332
+        a.add("UPDATE `parameter` SET `description`='URL to Cerberus used in order to trigger executions from the queue. This parameter is mandatory. ex : http://localhost:8080/Cerberus' WHERE `system`='' and`param`='cerberus_url';");
+        a.add("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ('', 'cerberus_gui_url', '', 'URL to Cerberus used inside all GUI links and mail sent by Cerberus. This parameter is not mandatory and takes the value of cerberus_url in case empty. ex : http://localhost:8080/Cerberus');");
+
+        // Add an action
+        // 1333
+        a.add("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('ACTION', 'executeCommand', '6551', 'Execute 1 command shell. Value1 is the command (ex : \"grep\"), Value2 is the arguments (ex : \"-name toto\")', 'Execute 1 command shell');");
+
+        // Add an action
+        // 1334
+        a.add("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('ACTION', 'scrollTo', '13003', 'Scroll to element or text', 'Scroll to element or text');");
+
+        // Add Execution parameter entry for Manual Execution.
+        // 1335
+        a.add("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('MANUALEXECUTION', 'A', '10', 'Determined from Test Case Group value.', '');");
+
+        // Put back MNTACTIVE invariant.
+        // 1336
+        b = new StringBuilder();
+        b.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ");
+        b.append(" ('MNTACTIVE', 'N', '10', '', ''),");
+        b.append(" ('MNTACTIVE', 'Y', '20', '', ''),");
+        b.append(" ('INVARIANTPRIVATE','MNTACTIVE', '810','Maintenance Activation flag', '')");
+        a.add(b.toString());
+
+        // Add the getFromGroovy property type.
+        // 1337
+        b = new StringBuilder();
+        b.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('PROPERTYTYPE', 'getFromCommand', '80', 'Getting value from a Shell command', '');");
+        a.add(b.toString());
+
+        // Enlarge execution message.
+        // 1338
+        a.add("ALTER TABLE `testcaseexecution` CHANGE COLUMN `ControlMessage` `ControlMessage` TEXT NULL DEFAULT NULL ;");
+
+        // Adding 'Post Testing' test if does not already exist.
+        // 1339
+        a.add("INSERT INTO test (test, description, active, automated) VALUES ('Post Testing', 'Post Tests', 'Y', 'Y') ON DUPLICATE KEY UPDATE test = 'Post Testing';");
+
+        // Add an action
+        // 1340
+        b = new StringBuilder();
+        b.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ");
+        b.append("('ACTION', 'installApp', '13005', 'Install mobile application', ''),");
+        b.append("('ACTION', 'removeApp', '13006', 'Remove mobile application', '')");
+        a.add(b.toString());
+
+        // Add 2 column to countryenvironmentparameters
+        // 1341-1342
+        a.add("ALTER TABLE `countryenvironmentparameters` ADD column mobileActivity varchar(255);");
+        a.add("ALTER TABLE `countryenvironmentparameters`  ADD column mobilePackage varchar(255);");
+
+        // Clean Test Table.
+        // 1343
+        b = new StringBuilder();
+        b.append("ALTER TABLE `test` DROP COLUMN `Automated`, ");
+        b.append(" CHANGE COLUMN `TDateCrea` `DateCreated` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,");
+        b.append(" CHANGE COLUMN `last_modified` `DateModif` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01' ,");
+        b.append(" ADD COLUMN `UsrCreated` VARCHAR(45) NOT NULL DEFAULT '' AFTER `Active`,");
+        b.append(" ADD COLUMN `UsrModif` VARCHAR(45) NOT NULL DEFAULT '' AFTER `DateCreated`;");
+        a.add(b.toString());
+
+        // Add column file path
+        // 1344
+        a.add("ALTER TABLE `appservice` ADD COLUMN FileName VARCHAR(100) DEFAULT NULL AFTER `ServicePath`");
+
+        // Add ftp file path parameter
+        // 1345
+        b = new StringBuilder();
+        b.append("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ");
+        b.append("('', 'cerberus_ftpfile_path', '', 'Path to store local files which will be stored into ftpServer');");
+        a.add(b.toString());
+
+        // Add forceExe to Step.
+        // 1346-1347
+        a.add("ALTER TABLE `testcasestep` ADD COLUMN `ForceExe` VARCHAR(1) NOT NULL DEFAULT 'N' AFTER `inlibrary`;");
+        a.add("UPDATE testcasestep SET ForceExe='Y' where Description like '%FORCEDSTEP%';");
+
+        // ForceExe invariant.
+        // 1348
+        b = new StringBuilder();
+        b.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ");
+        b.append(" ('STEPFORCEEXE', 'N', '10', '', ''),");
+        b.append(" ('STEPFORCEEXE', 'Y', '20', '', ''),");
+        b.append(" ('INVARIANTPRIVATE','STEPFORCEEXE', '820','Step Force Exe Flag.', '')");
+        a.add(b.toString());
+
+        // Prevent delete of a label if links still exist to testcases.
+        // 1349
+        a.add("ALTER TABLE `testcaselabel` DROP FOREIGN KEY `FK_testcaselabel_02`;");
+        a.add("ALTER TABLE `testcaselabel` ADD CONSTRAINT `FK_testcaselabel_02` FOREIGN KEY (`LabelId`)   REFERENCES `label` (`Id`) ON DELETE RESTRICT ON UPDATE CASCADE;");
 
         return a;
     }
 
 }
-

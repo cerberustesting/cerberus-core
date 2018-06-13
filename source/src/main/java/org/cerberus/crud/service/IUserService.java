@@ -202,7 +202,7 @@ public interface IUserService {
      * @return
      * @throws CerberusException
      */
-    User convert(AnswerItem answerItem) throws CerberusException;
+    User convert(AnswerItem<User> answerItem) throws CerberusException;
 
     /**
      *
@@ -210,7 +210,7 @@ public interface IUserService {
      * @return
      * @throws CerberusException
      */
-    List<User> convert(AnswerList answerList) throws CerberusException;
+    List<User> convert(AnswerList<User> answerList) throws CerberusException;
 
     /**
      *

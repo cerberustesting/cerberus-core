@@ -54,10 +54,27 @@ public interface IBuildRevisionInvariantService {
 
     Answer update(String system, Integer level, Integer seq, BuildRevisionInvariant buildRevisionInvariant);
 
-    BuildRevisionInvariant convert(AnswerItem answerItem) throws CerberusException;
+    /**
+     *
+     * @param answerItem
+     * @return
+     * @throws CerberusException
+     */
+    BuildRevisionInvariant convert(AnswerItem<BuildRevisionInvariant> answerItem) throws CerberusException;
 
-    List<BuildRevisionInvariant> convert(AnswerList answerList) throws CerberusException;
+    /**
+     *
+     * @param answerList
+     * @return
+     * @throws CerberusException
+     */
+    List<BuildRevisionInvariant> convert(AnswerList<BuildRevisionInvariant> answerList) throws CerberusException;
 
+    /**
+     *
+     * @param answer
+     * @throws CerberusException
+     */
     void convert(Answer answer) throws CerberusException;
 
     /**

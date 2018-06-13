@@ -1,0 +1,24 @@
+*Bug fixes*
+[square]
+* Fix Critical issue when using glassfish 5 : (java.lang.ClassNotFoundException: org.joda.time.ReadableInstant)
+* Fixed Issue when creating or duplicating a datalib that has a special character.
+* Put back the Maintenance Activation flag combobox on environment modal.
+
+*Improvements / New features*
+[square]
+* AddToExecutionQueueV003 servlet have now new option for manualUrl (2) that override application definition url/contextroot/loginurl and envdata.
+* New system variable : %system.APP_CONTEXTROOT% and %system.EXEURL%
+* New property type `getFromCommand`. Available for appium android devices
+* Add action installApp and removeApp for Android to authorize Cross App on android devices
+* Implements action openApp (package,activity) for Android
+* Execution Retry now also cover the case where robot is not available (or connection is not always working).
+* Order of status in reportingbytag page and notification email is now always the same.
+* Added 'Post Testing' Support. All active testcase that are created inside 'Post Testing' Test will be automatically added at the end of any testcase that belong to the same application.
+* 'Pre Testing' and 'Post Testing' tescase are now also filtered depending on From/To Sprint/Rev Activation Criterias.
+* Service now support FTP GET in order to retreive xml, json or any files on FTP.
+* Service now support FTP POST In order to send xml, json or any files on FTP.
+* NE status that was used for manual execution not yet executed has been renamed to WE (Waiting Execution). NE status is now used for execution that are desactivated by condition. Step, Actions and Controls now also appear as NE in grey color that better correspond to a non executed status. #1712
+
+*Warning to be considered before applying the version (deprecated features)*
+[square]
+* nothing

@@ -54,6 +54,8 @@ import org.cerberus.engine.gwt.IVariableService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.service.appium.IAppiumService;
+import org.cerberus.service.appium.impl.AndroidAppiumService;
 import org.cerberus.service.datalib.IDataLibService;
 import org.cerberus.service.groovy.IGroovyService;
 import org.cerberus.service.json.IJsonService;
@@ -120,13 +122,16 @@ public class PropertyService implements IPropertyService {
     private ILogEventService logEventService;
     @Autowired
     private IVariableService variableService;
+    @Autowired
+    private AndroidAppiumService androidAppiumService;
+
 
     @Override
     public AnswerItem<String> decodeStringWithExistingProperties(String stringToDecode, TestCaseExecution tCExecution,
             TestCaseStepActionExecution testCaseStepActionExecution, boolean forceCalculation) throws CerberusEventException {
 
         MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS);
-        AnswerItem<String> answer = new AnswerItem();
+        AnswerItem<String> answer = new AnswerItem<>();
         answer.setResultMessage(msg);
         answer.setItem(stringToDecode);
 
@@ -160,10 +165,10 @@ public class PropertyService implements IPropertyService {
          * Get the list of properties needed to calculate the required property
          */
         List<TestCaseCountryProperties> tcProperties = tCExecution.getTestCaseCountryPropertyList();
-        List<TestCaseCountryProperties> linkedProperties = new ArrayList();
+        List<TestCaseCountryProperties> linkedProperties = new ArrayList<>();
         for (String internalProperty : internalPropertiesFromStringToDecode) { // Looping on potential properties in string to decode.
-            List<TestCaseCountryProperties> newLinkedProperties = new ArrayList();
-            newLinkedProperties = this.getListOfPropertiesLinkedToProperty(country, internalProperty, new ArrayList(), tcProperties);
+            List<TestCaseCountryProperties> newLinkedProperties = new ArrayList<>();
+            newLinkedProperties = this.getListOfPropertiesLinkedToProperty(country, internalProperty, new ArrayList<>(), tcProperties);
             linkedProperties.addAll(newLinkedProperties);
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Property " + internalProperty + " need calculation of these (" + newLinkedProperties.size() + ") property(ies) " + newLinkedProperties);
@@ -258,7 +263,7 @@ public class PropertyService implements IPropertyService {
     /**
      * Auxiliary method that returns the execution data for a property.
      *
-     * @param dataList list of execution data
+     * @param hashTemp1 list of execution data
      * @param eachTccp property to be calculated
      * @param forceCalculation indicates whether a property must be
      * re-calculated if it was already computed in previous steps
@@ -305,7 +310,7 @@ public class PropertyService implements IPropertyService {
      */
     private List<TestCaseCountryProperties> getListOfPropertiesLinkedToProperty(String country, String property, List<String> crossedProperties,
             List<TestCaseCountryProperties> propertiesOfTestcase) {
-        List<TestCaseCountryProperties> result = new ArrayList();
+        List<TestCaseCountryProperties> result = new ArrayList<>();
         TestCaseCountryProperties testCaseCountryProperty = null;
         /*
          * Check if property is not already known (recursive case).
@@ -328,10 +333,10 @@ public class PropertyService implements IPropertyService {
         /* 
          * Check if property value1 and value2 contains internal properties
          */
-        List<String> allProperties = new ArrayList();
+        List<String> allProperties = new ArrayList<>();
 
         // Value1 treatment
-        List<String> propertiesValue1 = new ArrayList();
+        List<String> propertiesValue1 = new ArrayList<>();
         //check the properties specified in the test
         for (String propNameFromValue1 : this.getPropertiesListFromString(testCaseCountryProperty.getValue1())) {
             for (TestCaseCountryProperties pr : propertiesOfTestcase) {
@@ -344,7 +349,7 @@ public class PropertyService implements IPropertyService {
         allProperties.addAll(propertiesValue1);
 
         // Value2 treatment :
-        List<String> propertiesValue2 = new ArrayList();
+        List<String> propertiesValue2 = new ArrayList<>();
         //check the properties specified in the test
         for (String propNameFromValue2 : this.getPropertiesListFromString(testCaseCountryProperty.getValue2())) {
             for (TestCaseCountryProperties pr : propertiesOfTestcase) {
@@ -538,7 +543,7 @@ public class PropertyService implements IPropertyService {
         MessageEvent res;
         String test = tCExecution.getTest();
         String testCase = tCExecution.getTestCase();
-        AnswerItem<String> answerDecode = new AnswerItem();
+        AnswerItem<String> answerDecode = new AnswerItem<>();
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Starting to calculate Property : '" + testCaseCountryProperty.getProperty() + "'");
@@ -712,7 +717,11 @@ public class PropertyService implements IPropertyService {
                         case TestCaseCountryProperties.TYPE_GETFROMGROOVY:
                             testCaseExecutionData = this.property_getFromGroovy(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
                             break;
+                        case TestCaseCountryProperties.TYPE_GETFROMCOMMAND:
+                            testCaseExecutionData = this.property_getFromCommand(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
+                            break;
 
+                        // DEPRECATED Property types.
                         case TestCaseCountryProperties.TYPE_EXECUTESOAPFROMLIB: // DEPRECATED
                             testCaseExecutionData = this.property_executeSoapFromLib(testCaseExecutionData, tCExecution, testCaseStepActionExecution, testCaseCountryProperty, forceRecalculation);
                             res = testCaseExecutionData.getPropertyResultMessage();
@@ -767,7 +776,7 @@ public class PropertyService implements IPropertyService {
 
                     // Convert json to HashMap.
                     List<HashMap<String, String>> result = null;
-                    result = new ArrayList();
+                    result = new ArrayList<>();
                     try {
                         LOG.debug("Converting Json : " + testCaseExecutionDataFromCache.getJsonResult());
 
@@ -811,6 +820,40 @@ public class PropertyService implements IPropertyService {
             LOG.debug("Finished to calculate Property : '" + testCaseCountryProperty.getProperty() + "'");
         }
 
+    }
+
+    private TestCaseExecutionData property_getFromCommand(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty, boolean forceRecalculation) {
+        // Check if script has been correctly defined
+        String script = testCaseExecutionData.getValue1();
+        if (script == null || script.isEmpty()) {
+            testCaseExecutionData.setPropertyResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMCOMMAND_NULL));
+            return testCaseExecutionData;
+        }
+
+        // Try to evaluate Command script
+        try {
+            if (tCExecution.getApplicationObj().getType().equals(Application.TYPE_APK)) {
+                String message = androidAppiumService.executeCommandString(tCExecution.getSession(),script,"");
+
+                String value="";
+                if(!StringUtil.isNullOrEmpty(message)) {
+                    value=message;
+                }
+                testCaseExecutionData.setValue(value);
+                testCaseExecutionData.setPropertyResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMCOMMAND)
+                        .resolveDescription("VALUE", value));
+            }
+            else {
+                MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_FEATURENOTSUPPORTED);
+                res.setDescription(res.getDescription().replace("%APPTYPE%", tCExecution.getApplicationObj().getType()));
+                res.setDescription(res.getDescription().replace("%PROPTYPE%", testCaseExecutionData.getType()));
+            }
+        } catch (Exception e) {
+            LOG.debug("Exception Running Command Script :" + e.getMessage());
+            testCaseExecutionData.setPropertyResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMCOMMAND_EXCEPTION).resolveDescription("REASON", e.getMessage()));
+        }
+
+        return testCaseExecutionData;
     }
 
     private TestCaseExecutionData property_executeSqlFromLib(TestCaseExecutionData testCaseExecutionData, TestCaseCountryProperties testCaseCountryProperty, TestCaseExecution tCExecution, boolean forceCalculation) {
@@ -924,7 +967,6 @@ public class PropertyService implements IPropertyService {
             }
 
         } else {
-
             MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_FEATURENOTSUPPORTED);
             res.setDescription(res.getDescription().replace("%APPTYPE%", tCExecution.getApplicationObj().getType()));
             res.setDescription(res.getDescription().replace("%PROPTYPE%", testCaseExecutionData.getType()));
@@ -1009,7 +1051,7 @@ public class PropertyService implements IPropertyService {
 
     private TestCaseExecutionData property_executeSoapFromLib(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseStepActionExecution testCaseStepActionExecution, TestCaseCountryProperties testCaseCountryProperty, boolean forceCalculation) {
         String result = null;
-        AnswerItem<String> answerDecode = new AnswerItem();
+        AnswerItem<String> answerDecode = new AnswerItem<>();
 
         try {
             AppService appService = this.appServiceService.findAppServiceByKey(testCaseExecutionData.getValue1());
@@ -1266,7 +1308,7 @@ public class PropertyService implements IPropertyService {
 
         TestDataLib testDataLib;
         List<HashMap<String, String>> result = null;
-        AnswerItem<String> answerDecode = new AnswerItem();
+        AnswerItem<String> answerDecode = new AnswerItem<>();
 
         // We get here the correct TestDataLib entry from the Value1 (name) that better match the context on system, environment and country.
         AnswerItem<TestDataLib> answer = testDataLibService.readByNameBySystemByEnvironmentByCountry(testCaseExecutionData.getValue1(),

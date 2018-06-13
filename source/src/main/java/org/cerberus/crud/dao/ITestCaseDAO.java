@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.factory.impl.FactoryTestCase;
+import org.cerberus.dto.TestListDTO;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -78,6 +79,7 @@ public interface ITestCaseDAO {
      * @param system of test case
      * @param application of test case
      * @param priority of test case
+     * @param group
      * @param maxReturn
      * @return the list of TCase used in the campaign
      * @since 1.0.2
@@ -154,20 +156,19 @@ public interface ITestCaseDAO {
      * @see FactoryTestCase
      */
     public TestCase loadFromResultSet(ResultSet resultSet) throws SQLException;
-    
+
     /**
-     * 
+     *
      * @param service
      * @return
      */
-    public AnswerList findTestCaseByService(String service);
-    
+    public AnswerList<TestListDTO> findTestCaseByService(String service);
+
     /**
-     * 
+     *
      * @param service
      * @return
      */
-    public AnswerList findTestCaseByServiceByDataLib(String service);
-    
-    
+    public AnswerList<TestListDTO> findTestCaseByServiceByDataLib(String service);
+
 }

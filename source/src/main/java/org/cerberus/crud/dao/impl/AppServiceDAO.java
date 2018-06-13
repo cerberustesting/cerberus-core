@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.dao.impl;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -29,11 +30,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.apache.logging.log4j.Logger;
+import org.apache.commons.fileupload.FileItem;
 import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.IAppServiceDAO;
 import org.cerberus.crud.entity.AppService;
+import org.cerberus.crud.entity.Parameter;
 import org.cerberus.crud.factory.IFactoryAppService;
 import org.cerberus.crud.factory.impl.FactoryAppService;
+import org.cerberus.crud.service.IParameterService;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.MessageGeneral;
@@ -64,6 +68,8 @@ public class AppServiceDAO implements IAppServiceDAO {
     private DatabaseSpring databaseSpring;
     @Autowired
     private IFactoryAppService factoryAppService;
+    @Autowired
+    private IParameterService parameterService;
 
     private static final Logger LOG = LogManager.getLogger(AppServiceDAO.class);
 
@@ -100,8 +106,9 @@ public class AppServiceDAO implements IAppServiceDAO {
                         String usrCreated = resultSet.getString("UsrCreated");
                         Timestamp dateCreated = resultSet.getTimestamp("DateCreated");
                         Timestamp dateModif = resultSet.getTimestamp("DateModif");
+                        String fileName = resultSet.getString("FileName");
 
-                        result = this.factoryAppService.create(service, type, method, application, group, serviceRequest, description, servicePath, attachementURL, operation, usrCreated, dateCreated, usrModif, dateModif);
+                        result = this.factoryAppService.create(service, type, method, application, group, serviceRequest, description, servicePath, attachementURL, operation, usrCreated, dateCreated, usrModif, dateModif, fileName);
                     } else {
                         throwEx = true;
                     }
@@ -134,7 +141,7 @@ public class AppServiceDAO implements IAppServiceDAO {
 
     @Override
     public AnswerList findAppServiceByLikeName(String service, int limit) {
-        AnswerList response = new AnswerList();
+        AnswerList response = new AnswerList<>();
         boolean throwEx = false;
         AppService result = null;
         final String query = "SELECT * FROM appservice srv WHERE `service` LIKE ? limit ?";
@@ -165,7 +172,7 @@ public class AppServiceDAO implements IAppServiceDAO {
                     if (resultSet != null && resultSet.next()) {
                         nrTotalRows = resultSet.getInt(1);
                     }
-                    response = new AnswerList(objectList, nrTotalRows);
+                    response = new AnswerList<>(objectList, nrTotalRows);
                 } catch (SQLException exception) {
                      LOG.warn("Unable to execute query : " + exception.toString());
                 } finally {
@@ -196,7 +203,7 @@ public class AppServiceDAO implements IAppServiceDAO {
     @Override
     public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
 
-        AnswerList response = new AnswerList();
+        AnswerList response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<AppService> objectList = new ArrayList<AppService>();
@@ -302,14 +309,14 @@ public class AppServiceDAO implements IAppServiceDAO {
                         LOG.error("Partial Result in the query.");
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                        response = new AnswerList(objectList, nrTotalRows);
+                        response = new AnswerList<>(objectList, nrTotalRows);
                     } else if (objectList.size() <= 0) {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                        response = new AnswerList(objectList, nrTotalRows);
+                        response = new AnswerList<>(objectList, nrTotalRows);
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                         msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                        response = new AnswerList(objectList, nrTotalRows);
+                        response = new AnswerList<>(objectList, nrTotalRows);
                     }
 
                 } catch (SQLException exception) {
@@ -356,7 +363,7 @@ public class AppServiceDAO implements IAppServiceDAO {
 
     @Override
     public AnswerItem readByKey(String key) {
-        AnswerItem ans = new AnswerItem();
+        AnswerItem ans = new AnswerItem<>();
         AppService result = null;
         final String query = "SELECT * FROM `appservice` srv WHERE `service` = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -429,15 +436,15 @@ public class AppServiceDAO implements IAppServiceDAO {
         String usrCreated = rs.getString("srv.UsrCreated");
         Timestamp dateCreated = rs.getTimestamp("srv.DateCreated");
         Timestamp dateModif = rs.getTimestamp("srv.DateModif");
-
+        String fileName = ParameterParserUtil.parseStringParam(rs.getString("srv.FileName"), "");
         //TODO remove when working in test with mockito and autowired
         factoryAppService = new FactoryAppService();
-        return factoryAppService.create(service, type, method, application, group, serviceRequest, description, servicePath, attachementURL, operation, usrCreated, dateCreated, usrModif, dateModif);
+        return factoryAppService.create(service, type, method, application, group, serviceRequest, description, servicePath, attachementURL, operation, usrCreated, dateCreated, usrModif, dateModif, fileName);
     }
 
     @Override
     public AnswerList readDistinctValuesByCriteria(String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
-    	AnswerList answer = new AnswerList();
+    	AnswerList answer = new AnswerList<>();
     	MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
     	msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
     	List<String> distinctValues = new ArrayList<>();
@@ -515,14 +522,14 @@ public class AppServiceDAO implements IAppServiceDAO {
         			LOG.error("Partial Result in the query.");
         			msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
         			msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-        			answer = new AnswerList(distinctValues, nrTotalRows);
+        			answer = new AnswerList<>(distinctValues, nrTotalRows);
         		} else if (distinctValues.size() <= 0) {
         			msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-        			answer = new AnswerList(distinctValues, nrTotalRows);
+        			answer = new AnswerList<>(distinctValues, nrTotalRows);
         		} else {
         			msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
         			msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-        			answer = new AnswerList(distinctValues, nrTotalRows);
+        			answer = new AnswerList<>(distinctValues, nrTotalRows);
         		}
     			
     		}catch(SQLException e) {
@@ -546,11 +553,11 @@ public class AppServiceDAO implements IAppServiceDAO {
     public Answer create(AppService object) {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO appservice (`Service`, `Group`, `Application`, `Type`, `Method`, `ServicePath`, `Operation`, `ServiceRequest`, `AttachementURL`, `Description`) ");
+        query.append("INSERT INTO appservice (`Service`, `Group`, `Application`, `Type`, `Method`, `ServicePath`, `Operation`, `ServiceRequest`, `AttachementURL`, `Description`, `FileName`) ");
         if ((object.getApplication() != null) && (!object.getApplication().equals(""))) {
-            query.append("VALUES (?,?,?,?,?,?,?,?,?,?)");
+            query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?)");
         } else {
-            query.append("VALUES (?,?,null,?,?,?,?,?,?,?)");
+            query.append("VALUES (?,?,null,?,?,?,?,?,?,?,?)");
         }
 
         // Debug message on SQL.
@@ -574,6 +581,7 @@ public class AppServiceDAO implements IAppServiceDAO {
                 preStat.setString(i++, object.getServiceRequest());
                 preStat.setString(i++, object.getAttachementURL());
                 preStat.setString(i++, object.getDescription());
+                preStat.setString(i++, object.getFileName());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -612,7 +620,7 @@ public class AppServiceDAO implements IAppServiceDAO {
     public Answer update(String service, AppService object) {
         MessageEvent msg = null;
         String query = "UPDATE appservice srv SET `Service` = ?, `Group` = ?, `ServicePath` = ?, `Operation` = ?, ServiceRequest = ?, AttachementURL = ?, "
-                + "Description = ?, `Type` = ?, Method = ?, `UsrModif`= ?, `DateModif` = NOW()";
+                + "Description = ?, `Type` = ?, Method = ?, `UsrModif`= ?, `DateModif` = NOW(), `FileName` = ?";
         if ((object.getApplication() != null) && (!object.getApplication().equals(""))) {
             query += " ,Application = ?";
         } else {
@@ -640,6 +648,7 @@ public class AppServiceDAO implements IAppServiceDAO {
                 preStat.setString(i++, object.getType());
                 preStat.setString(i++, object.getMethod());
                 preStat.setString(i++, object.getUsrModif());
+                preStat.setString(i++, object.getFileName());                
                 if ((object.getApplication() != null) && (!object.getApplication().equals(""))) {
                     preStat.setString(i++, object.getApplication());
                 }
@@ -710,6 +719,62 @@ public class AppServiceDAO implements IAppServiceDAO {
             }
         }
         return new Answer(msg);
+    }
+    
+    @Override
+    public Answer uploadFile(String service, FileItem file) {
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                "cerberus_ftpfile_path Parameter not found");
+        AnswerItem a = parameterService.readByKey("", "cerberus_ftpfile_path");
+        if (a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            Parameter p = (Parameter) a.getItem();
+            String uploadPath = p.getValue();
+            File appDir = new File(uploadPath + File.separator + service);
+            if (!appDir.exists()) {
+                try {
+                    appDir.mkdirs();
+                } catch (SecurityException se) {
+                    LOG.warn("Unable to create ftp local file dir: " + se.getMessage());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                            se.toString());
+                    a.setResultMessage(msg);
+                }
+            }
+            if (a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                deleteFolder(appDir, false);
+                File picture = new File(uploadPath + File.separator +service + File.separator + file.getName());
+                try {
+                    file.write(picture);
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("DESCRIPTION",
+                            "ftp local file uploaded");
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", "FTP Local File").replace("%OPERATION%", "Upload"));
+                } catch (Exception e) {
+                    LOG.warn("Unable to upload ftp local file: " + e.getMessage());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                            e.toString());
+                }
+            }
+        } else {
+            LOG.warn("cerberus_ftpfile_path Parameter not found");
+        }
+        a.setResultMessage(msg);
+        return a;
+    }
+    
+    private static void deleteFolder(File folder, boolean deleteit) {
+        File[] files = folder.listFiles();
+        if (files != null) {
+            for (File f : files) {
+                if (f.isDirectory()) {
+                    deleteFolder(f, true);
+                } else {
+                    f.delete();
+                }
+            }
+        }
+        if (deleteit) {
+            folder.delete();
+        }
     }
 
 }

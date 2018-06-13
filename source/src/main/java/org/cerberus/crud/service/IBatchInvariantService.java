@@ -35,11 +35,10 @@ public interface IBatchInvariantService {
 
     /**
      *
-     * @param system
      * @param batch
      * @return
      */
-    AnswerItem readByKey(String batch);
+    AnswerItem<BatchInvariant> readByKey(String batch);
     /**
      *
      * @param system
@@ -48,7 +47,6 @@ public interface IBatchInvariantService {
      * @param columnName
      * @param sort
      * @param searchParameter
-     * @param string
      * @return
      */
     AnswerList readBySystemByCriteria(String system, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
@@ -89,7 +87,7 @@ public interface IBatchInvariantService {
      * @return
      * @throws CerberusException
      */
-    BatchInvariant convert(AnswerItem answerItem) throws CerberusException;
+    BatchInvariant convert(AnswerItem<BatchInvariant> answerItem) throws CerberusException;
 
     /**
      *
@@ -97,7 +95,7 @@ public interface IBatchInvariantService {
      * @return
      * @throws CerberusException
      */
-    List<BatchInvariant> convert(AnswerList answerList) throws CerberusException;
+    List<BatchInvariant> convert(AnswerList<BatchInvariant> answerList) throws CerberusException;
 
     /**
      *

@@ -57,6 +57,7 @@ import org.cerberus.crud.factory.IFactoryTestCaseExecutionQueue;
 import org.cerberus.crud.service.IApplicationService;
 import org.cerberus.crud.service.ICountryEnvParamService;
 import org.cerberus.crud.service.IInvariantService;
+import org.cerberus.crud.service.IRobotService;
 import org.cerberus.crud.service.ITagService;
 import org.cerberus.crud.service.ITestCaseCountryService;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
@@ -130,6 +131,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
     private ITestCaseCountryService testCaseCountryService;
     private ICampaignParameterService campaignParameterService;
     private ICountryEnvParamService countryEnvParamService;
+    private IRobotService robotService;
 
     /**
      * Process request for both GET and POST method.
@@ -163,6 +165,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
         testCaseCountryService = appContext.getBean(ITestCaseCountryService.class);
         campaignParameterService = appContext.getBean(ICampaignParameterService.class);
         countryEnvParamService = appContext.getBean(ICountryEnvParamService.class);
+        robotService = appContext.getBean(IRobotService.class);
 
         // Calling Servlet Transversal Util.
         ServletUtil.servletStart(request);
@@ -237,11 +240,11 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                 + "- " + PARAMETER_BROWSER_VERSION + " : Browser Version that will be used for every execution triggered. [" + browserVersion + "]\n"
                 + "- " + PARAMETER_PLATFORM + " : Platform that will be used for every execution triggered. [" + platform + "]\n"
                 + "- " + PARAMETER_SCREENSIZE + " : Size of the screen that will be used for every execution triggered. [" + screenSize + "]\n"
-                + "- " + PARAMETER_MANUAL_URL + " : Activate (1) or not (0) the Manual URL of the application to execute. If activated the 4 parameters after are necessary. [" + manualURL + "]\n"
-                + "- " + PARAMETER_MANUAL_HOST + " : Host of the application to test (only used when " + PARAMETER_MANUAL_URL + " is activated). [" + manualHost + "]\n"
-                + "- " + PARAMETER_MANUAL_CONTEXT_ROOT + " : Context root of the application to test (only used when " + PARAMETER_MANUAL_URL + " is activated). [" + manualContextRoot + "]\n"
-                + "- " + PARAMETER_MANUAL_LOGIN_RELATIVE_URL + " : Relative login URL of the application (only used when " + PARAMETER_MANUAL_URL + " is activated). [" + manualLoginRelativeURL + "]\n"
-                + "- " + PARAMETER_MANUAL_ENV_DATA + " : Environment where to get the test data when a " + PARAMETER_MANUAL_URL + " is defined. (only used when manualURL is active). [" + manualEnvData + "]\n"
+                + "- " + PARAMETER_MANUAL_URL + " : Activate (1) or not (0) or Override (2) the Manual URL of the application to execute. If Activated (1) the 4 parameters after are necessary. If Override (2) at least 1 parameters after are necessary (other parameters will use cerberus values) [" + manualURL + "]\n"
+                + "- " + PARAMETER_MANUAL_HOST + " : Host of the application to test (only used when " + PARAMETER_MANUAL_URL + " is activated or override). [" + manualHost + "]\n"
+                + "- " + PARAMETER_MANUAL_CONTEXT_ROOT + " : Context root of the application to test (only used when " + PARAMETER_MANUAL_URL + " is activated or override). [" + manualContextRoot + "]\n"
+                + "- " + PARAMETER_MANUAL_LOGIN_RELATIVE_URL + " : Relative login URL of the application (only used when " + PARAMETER_MANUAL_URL + " is activated or override). [" + manualLoginRelativeURL + "]\n"
+                + "- " + PARAMETER_MANUAL_ENV_DATA + " : Environment where to get the test data when a " + PARAMETER_MANUAL_URL + " is defined. (only used when manualURL is active or override). [" + manualEnvData + "]\n"
                 + "- " + PARAMETER_TAG + " : Tag that will be used for every execution triggered. [" + tag + "]\n"
                 + "- " + PARAMETER_SCREENSHOT + " : Activate or not the screenshots for every execution triggered. [" + screenshot + "]\n"
                 + "- " + PARAMETER_VERBOSE + " : Verbose level for every execution triggered. [" + verbose + "]\n"
@@ -296,14 +299,21 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                 }
             }
             if ((countries != null) && (selectTest == null || selectTest.isEmpty())) {
-                // If no countries are found, there is no need to get the testcase list. None will be returned.
+                // If no countries are found, there is no need to get the testcase list. None will be returned. We will report an error later on.
                 selectTest = new ArrayList<>();
                 selectTestCase = new ArrayList<>();
                 testcases = testCaseService.findTestCaseByCampaignNameAndCountries(campaign, countries.toArray(new String[countries.size()]));
 
-                for (TestCase campaignTestCase : testcases.getItem()) {
-                    selectTest.add(campaignTestCase.getTest());
-                    selectTestCase.add(campaignTestCase.getTestCase());
+                if (testcases != null) {
+                    if (testcases.getItem() != null) {
+                        for (TestCase campaignTestCase : testcases.getItem()) {
+                            selectTest.add(campaignTestCase.getTest());
+                            selectTestCase.add(campaignTestCase.getTestCase());
+                        }
+                    } else {
+                        errorMessage.append("Error - ").append(testcases.getMessageDescription()).append("\n");
+                        error = true;
+                    }
                 }
             }
         }
@@ -324,7 +334,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
             errorMessage.append("Error - Test list size (").append(selectTest.size()).append(") is not the same as testcase list size (").append(selectTestCase.size()).append("). Please check that both list are consistent.\n");
             error = true;
         }
-        if (manualURL >= 1) {
+        if (manualURL == 1) {
             if (manualHost == null || manualEnvData == null) {
                 errorMessage.append("Error - ManualURL has been activated but no ManualHost or Manual Environment defined.\n");
                 error = true;
@@ -357,8 +367,11 @@ public class AddToExecutionQueueV003 extends HttpServlet {
             int nbenv = environments.size();
             int nbcountries = countries.size();
 
+            // Part 0: Load to memory Environments and robots.
+            Map<String, String> invariantEnvMap = invariantService.readToHashMapGp1StringByIdname("ENVIRONMENT", "");
+            Map<String, String> robotMap = robotService.readToHashMapRobotDecli();
+
             // Part 1: Getting all possible Execution from test cases + countries + environments + browsers which have been sent to this servlet.
-            Map<String, String> invariantEnv = invariantService.readToHashMapGp1StringByIdname("ENVIRONMENT", "");
             List<TestCaseExecutionQueue> toInserts = new ArrayList<TestCaseExecutionQueue>();
             try {
                 HashMap<String, CountryEnvParam> envMap = new HashMap<>();
@@ -381,7 +394,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                             if (countries.contains(country.getCountry())) {
                                 // for each environment we test that correspondng gp1 is compatible with testcase environment flag activation.
                                 for (String environment : environments) {
-                                    String envGp1 = invariantEnv.get(environment);
+                                    String envGp1 = invariantEnvMap.get(environment);
                                     if (((envGp1.equals("PROD")) && (tc.getActivePROD().equalsIgnoreCase("Y")))
                                             || ((envGp1.equals("UAT")) && (tc.getActiveUAT().equalsIgnoreCase("Y")))
                                             || ((envGp1.equals("QA")) && (tc.getActiveQA().equalsIgnoreCase("Y")))
@@ -409,7 +422,12 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                                                 for (String robot : robots) {
                                                     try {
                                                         LOG.debug("Insert Queue Entry.");
-                                                        toInserts.add(inQueueFactoryService.create(test, testCase, country.getCountry(), environment, robot, robotIP, robotPort, browser, browserVersion,
+                                                        // We get here the corresponding robotDecli value from robot.
+                                                        String robotDecli = robotMap.get(robot);
+                                                        if (StringUtil.isNullOrEmpty(robotDecli)) {
+                                                            robotDecli = robot;
+                                                        }
+                                                        toInserts.add(inQueueFactoryService.create(app.getSystem(), test, testCase, country.getCountry(), environment, robot, robotDecli, robotIP, robotPort, browser, browserVersion,
                                                                 platform, screenSize, manualURL, manualHost, manualContextRoot, manualLoginRelativeURL, manualEnvData, tag, screenshot, verbose,
                                                                 timeout, pageSource, seleniumLog, 0, retries, manualExecution, priority, user, null, null, null));
                                                     } catch (FactoryCreationException e) {
@@ -422,7 +440,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                                                 LOG.debug("Forcing Robot to empty value. Application type=" + app.getType());
                                                 try {
                                                     LOG.debug("Insert Queue Entry.");
-                                                    toInserts.add(inQueueFactoryService.create(test, testCase, country.getCountry(), environment, "", "", "", "", "",
+                                                    toInserts.add(inQueueFactoryService.create(app.getSystem(), test, testCase, country.getCountry(), environment, "", "", "", "", "", "",
                                                             "", "", manualURL, manualHost, manualContextRoot, manualLoginRelativeURL, manualEnvData, tag, screenshot, verbose,
                                                             timeout, pageSource, seleniumLog, 0, retries, manualExecution, priority, user, null, null, null));
                                                 } catch (FactoryCreationException e) {
@@ -511,7 +529,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
         }
 
         // Init Answer with potencial error from Parsing parameter.
-        AnswerItem answer = new AnswerItem(msg);
+        AnswerItem answer = new AnswerItem<>(msg);
 
         switch (outputFormat) {
             case "json":

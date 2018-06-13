@@ -41,7 +41,7 @@ public class BatchInvariantService implements IBatchInvariantService {
     private IBatchInvariantDAO batchInvariantDAO;
 
     @Override
-    public AnswerItem readByKey(String batch) {
+    public AnswerItem<BatchInvariant> readByKey(String batch) {
         return batchInvariantDAO.readByKey(batch);
     }
 
@@ -72,7 +72,7 @@ public class BatchInvariantService implements IBatchInvariantService {
     }
 
     @Override
-    public BatchInvariant convert(AnswerItem answerItem) throws CerberusException {
+    public BatchInvariant convert(AnswerItem<BatchInvariant> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (BatchInvariant) answerItem.getItem();
@@ -81,7 +81,7 @@ public class BatchInvariantService implements IBatchInvariantService {
     }
 
     @Override
-    public List<BatchInvariant> convert(AnswerList answerList) throws CerberusException {
+    public List<BatchInvariant> convert(AnswerList<BatchInvariant> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (List<BatchInvariant>) answerList.getDataList();

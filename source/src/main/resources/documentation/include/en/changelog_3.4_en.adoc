@@ -1,11 +1,23 @@
 *Bug fixes*
 [square]
-* 
+* Improved automatic reload of execution detail page when execution still in queue.
+* Fixed filters on ReportByTag page.
+* Fixed nullPointerException when service call provide empty result.
 
 *Improvements / New features*
 [square]
-* 
+* Added new system variables : "TOMORROW-yyyy", "TOMORROW-MM", "TOMORROW-dd", "TOMORROW-doy".
+* New Interactive tutorial available from Documentation menu.
+* For Application Services, GET Query String is also feed from active Request details (key/value). Just like Postman does.
+* Various documentation improvements.
+* New QE execution status in order to split execution still in queue from the ones that will not be processed (because in ERROR). #1707
+
+* For Mobile devices (Appium)
+** *Android* : Fix a Bug on webview with Android devices : can't type correctly a field.
+** *Android* : New action `executeCommand` to execute a shell command (adb shell) on android devices
+** *Android and iOS* : New action `scrollTo` to scroll to an element or a text
+
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
-* Following documentation table structure change, you will have to restart Glassfish instance AFTER the database upgrade script. You will get 'missing' messages until restart has been performed.
+* Removed Opera support following selenium deprecation.

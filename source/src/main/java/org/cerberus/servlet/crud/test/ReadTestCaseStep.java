@@ -77,7 +77,7 @@ public class ReadTestCaseStep extends HttpServlet {
 
             JSONObject jsonResponse = new JSONObject();
 
-            AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+            AnswerItem answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
             String test = request.getParameter("test");
             String testCase = request.getParameter("testcase");
             int step = Integer.parseInt(request.getParameter("step"));

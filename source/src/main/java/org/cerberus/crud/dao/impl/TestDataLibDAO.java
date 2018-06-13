@@ -74,7 +74,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
 
     @Override
     public AnswerItem<TestDataLib> readByKey(int testDataLibID) {
-        AnswerItem answer = new AnswerItem();
+        AnswerItem answer = new AnswerItem<>();
         MessageEvent msg;
         TestDataLib result;
         final String query = "SELECT * FROM testdatalib tdl "
@@ -144,7 +144,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
 
     @Override
     public AnswerItem readByNameBySystemByEnvironmentByCountry(String name, String system, String environment, String country) {
-        AnswerItem answer = new AnswerItem();
+        AnswerItem answer = new AnswerItem<>();
         TestDataLib result = null;
         MessageEvent msg;
 
@@ -280,7 +280,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
 
     @Override
     public AnswerList readNameListByName(String testDataLibName, int limit, boolean like) {
-        AnswerList answer = new AnswerList();
+        AnswerList answer = new AnswerList<>();
         MessageEvent msg;
         List<TestDataLib> list = new ArrayList<TestDataLib>();
 
@@ -375,7 +375,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
 
     @Override
     public AnswerList readAll() {
-        AnswerList answer = new AnswerList();
+        AnswerList answer = new AnswerList<>();
         MessageEvent msg;
 
         List<TestDataLib> list = new ArrayList<TestDataLib>();
@@ -446,7 +446,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
     @Override
     public AnswerList readByVariousByCriteria(String name, String system, String environment, String country, String type, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
 
-        AnswerList answer = new AnswerList();
+        AnswerList answer = new AnswerList<>();
         MessageEvent msg;
         int nrTotalRows = 0;
         List<TestDataLib> objectList = new ArrayList<>();
@@ -638,7 +638,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
 
     @Override
     public AnswerList readDistinctGroups() {
-        AnswerList answerList = new AnswerList();
+        AnswerList answerList = new AnswerList<>();
         ArrayList<String> listOfGroups = new ArrayList<String>();
         MessageEvent msg;
         String query = "SELECT distinct(`Group`) FROM testdatalib  WHERE `Group` <> '' ORDER BY `Group`";
@@ -709,7 +709,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
     @Override
     public AnswerItem create(TestDataLib testDataLib) {
         MessageEvent msg;
-        AnswerItem answer = new AnswerItem();
+        AnswerItem answer = new AnswerItem<>();
         StringBuilder query = new StringBuilder();
         TestDataLib createdTestDataLib;
         query.append("INSERT INTO testdatalib (`name`, `system`, `environment`, `country`, `group`, `type`, `database`, `script`, `databaseUrl`, ");
@@ -949,6 +949,52 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         answer.setResultMessage(msg);
         return answer;
     }
+       
+    @Override
+    public Answer bulkRenameDataLib(String oldName, String newName) {
+        Answer answer = new Answer();
+        MessageEvent msg;
+        
+        String query ="UPDATE testdatalib SET `name`=? ";
+        query += " WHERE `name`=? ";
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+
+        
+        try ( Connection connection = this.databaseSpring.connect() ){   
+            try ( PreparedStatement preStat = connection.prepareStatement(query) ) {
+            	int i = 1;
+                preStat.setString(i++, newName);
+                preStat.setString(i++, oldName);
+
+                int rowsUpdated = preStat.executeUpdate();
+
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                // Message to customize : X datalib updated using the rowsUpdated variable
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE").replace("success!", "success! - Row(s) updated : "+String.valueOf(rowsUpdated)));
+
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString(), exception);
+                if (exception.getSQLState().equals(SQL_DUPLICATED_CODE)) { //23000 is the sql state for duplicate entries
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_DUPLICATE);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", "Test data lib ").replace("%OPERATION%", "UPDATE").replace("%REASON%", exception.toString()));
+                } else {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+                }
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString(), exception);
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+
+        }
+        answer.setResultMessage(msg);
+        return answer;
+    }
 
     @Override
     public TestDataLib loadFromResultSet(ResultSet resultSet) throws SQLException {
@@ -993,7 +1039,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
 
     @Override
     public AnswerList<List<String>> readDistinctValuesByCriteria(String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
-        AnswerList answer = new AnswerList();
+        AnswerList answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<String> distinctValues = new ArrayList<>();
@@ -1087,14 +1133,14 @@ public class TestDataLibDAO implements ITestDataLibDAO {
                     LOG.error("Partial Result in the query.");
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                    answer = new AnswerList(distinctValues, nrTotalRows);
+                    answer = new AnswerList<>(distinctValues, nrTotalRows);
                 } else if (distinctValues.size() <= 0) {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                    answer = new AnswerList(distinctValues, nrTotalRows);
+                    answer = new AnswerList<>(distinctValues, nrTotalRows);
                 } else {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                     msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                    answer = new AnswerList(distinctValues, nrTotalRows);
+                    answer = new AnswerList<>(distinctValues, nrTotalRows);
                 }
             }catch (SQLException e) {
                 LOG.warn("Unable to execute query : " + e.toString());

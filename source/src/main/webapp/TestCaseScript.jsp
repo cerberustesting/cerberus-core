@@ -78,7 +78,7 @@
                                                     <a><button class="btn btn-default pull-left" id="seeLastExec" style="margin-left: 5px; margin-right: 5px;"><span class="glyphicon glyphicon-list"></span> Last Executions</button></a>
                                                     <a><button class="btn btn-default pull-left" id="seeTest" style="margin-left: 5px; margin-right: 5px;"><span class="glyphicon glyphicon-list"></span> Test</button></a>
                                                     <a><button class="btn btn-default pull-left" id="seeLogs" style="margin-left: 5px; margin-right: 5px;"><span class="glyphicon glyphicon-list"></span> Logs</button></a>
-                                                </div>                                    
+                                                </div>
                                             </div>
 
                                             <div class="btn-group">
@@ -89,6 +89,7 @@
                                                     <a><button class="btn btn-default pull-left" id="runTestCase" style="margin-left: 5px; margin-left: 5px;" data-toggle="tooltip" ><span class="glyphicon glyphicon-play"></span>Run</button></a>
                                                     <a><button class="btn btn-default pull-left" id="rerunTestCase" style="margin-left: 5px; margin-left: 5px;"><span class="glyphicon glyphicon-forward"></span>ReRun</button></a>
                                                     <a><button class="btn btn-default pull-left" id="rerunFromQueue" style="margin-left: 5px; margin-left: 5px;"><span class="glyphicon glyphicon-forward"></span>From Queue</button></a>
+                                                    <a><button class="btn btn-default pull-left" id="rerunFromQueueandSee" style="margin-left: 5px; margin-left: 5px;"><span class="glyphicon glyphicon-forward"></span>From Queue and See</button></a>
                                                 </div>
                                             </div>
 
@@ -177,21 +178,29 @@
                                                 <input aria-describedby="stepId" class="description form-control" id="stepDescription" placeholder="Step" style="width: 100%; font-size: 20px; font-weight: 900;">
                                             </div>
                                             <div class="fieldRow row marginTop25" id="stepHiddenRow" style="display: none;">
-                                                <div class="col-lg-3 form-group">
-                                                    <label>Step Loop:</label>
-                                                    <select class="form-control input-sm" id="stepLoop"></select>
+                                                <div class="row">
+                                                    <div class="col-lg-3 form-group">
+                                                        <label>Step Loop:</label>
+                                                        <select class="form-control input-sm" id="stepLoop"></select>
+                                                    </div>
+                                                    <div class="col-lg-3 form-group">
+                                                        <label>Step Condition Operation:</label>
+                                                        <select class="form-control input-sm" id="stepConditionOper"></select>
+                                                    </div>
+                                                    <div class="col-lg-3 form-group">
+                                                        <label>Step Condition Parameter:</label>
+                                                        <input class="form-control input-sm" id="stepConditionVal1">
+                                                    </div>
+                                                    <div class="col-lg-3 form-group">
+                                                        <label>Step Condition Parameter:</label>
+                                                        <input class="form-control input-sm" id="stepConditionVal2">
+                                                    </div>
                                                 </div>
-                                                <div class="col-lg-3 form-group">
-                                                    <label>Step Condition Operation:</label>
-                                                    <select class="form-control input-sm" id="stepConditionOper"></select>
-                                                </div>
-                                                <div class="col-lg-3 form-group">
-                                                    <label>Step Condition Parameter:</label>
-                                                    <input class="form-control input-sm" id="stepConditionVal1">
-                                                </div>
-                                                <div class="col-lg-3 form-group">
-                                                    <label>Step Condition Parameter:</label>
-                                                    <input class="form-control input-sm" id="stepConditionVal2">
+                                                <div class="row">
+                                                    <div class="col-lg-3 form-group">
+                                                        <label>Force Exe:</label>
+                                                        <select class="form-control input-sm" id="stepForceExe"></select>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>

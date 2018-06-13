@@ -814,6 +814,9 @@ function getParameter(param, sys, forceReload) {
     return result;
 }
 
+function getParameterString(param, sys, forceReload) {
+    return getParameter(param, sys, forceReload).value;
+}
 
 /***********************************************Messages/ALERT***************************************/
 
@@ -1375,17 +1378,17 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
     }
     if (tableConfigurations.serverSide) {
 
-
         configs["sAjaxSource"] = tableConfigurations.ajaxSource;
         configs["sAjaxDataProp"] = tableConfigurations.ajaxProp;
 
         configs["fnStateSaveCallback"] = function (settings, data) {
             try {
                 localStorage.setItem(
-                        'DataTables_' + settings.sInstance + '_' + location.pathname,
-                        JSON.stringify(data)
-                        );
+	                'DataTables_' + settings.sInstance + '_' + location.pathname,
+	                JSON.stringify(data)
+                );
             } catch (e) {
+            	console.error("access denied, "+e)
             }
         };
         configs["fnStateLoadCallback"] = function (settings) {
@@ -1412,6 +1415,7 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
         } : false;
         if (filtrableColumns !== undefined) {
             configs["fnServerParams"] = function (aoData) {
+            	
                 var filters = generateFiltersOnMultipleColumns(tableConfigurations.divId, filtrableColumns);
                 for (var f = 0; f < filters.length; f++) {
                     aoData.push(filters[f]);
@@ -1476,14 +1480,47 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
 
     } else {
 
-        configs["fnStateSaveCallback"] = function (oSettings) {
-
+        configs["fnStateSaveCallback"] = function (oSettings,data) {
+        	 try {
+                 localStorage.setItem(
+                     'DataTables_' + oSettings.sInstance + '_' + location.pathname,
+                     JSON.stringify(data)
+                 );
+             } catch (e) {
+            	 console.error("access denied, "+e)
+             }
             afterDatatableFeedsForServerSide(tableConfigurations.aaData, tableConfigurations.divId, oSettings);
-
         };
+        
         configs["data"] = tableConfigurations.aaData;
+        
+        configs["fnStateLoadCallback"] = function (settings) {
+            //Get UserPreferences from user object
+        	
+            var user = null;
+            $.when(getUser()).then(function (data) {
+                user = data;
+            });
+            while (user === null) {
+                //Wait for user information make sure to don't loose it
+            }
+            
+            if ("" !== user.userPreferences && undefined !== user.userPreferences && null !== user.userPreferences) {
+                var userPref = JSON.parse(user.userPreferences);
+                var currentTable = userPref['DataTables_' + settings.sInstance + '_' + location.pathname]
+                if (undefined !== currentTable) {
+                	 for(var i= 0; i < JSON.parse(currentTable)["columns"].length; i++){
+                     	var currentSearch = JSON.parse(currentTable)["columns"][i]["search"]["search"];
+                     	var search = currentSearch.substr(1,currentSearch.length-2)
+                     	search = search.split("|")
+                     	columnSearchValuesForClientSide.push(search)
+                     }
+                    return JSON.parse(currentTable);
+                }
+            }
+        };
     }
-
+    
     var oTable = $("#" + tableConfigurations.divId).DataTable(configs);
 
     var doc = new Doc();
@@ -1520,13 +1557,6 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
 
     $("#" + tableConfigurations.divId + "_filter input[type='search']").addClass("form-control form-control input-sm");
 
-    //Build the Message that appear when filter is fed
-    var showFilteredColumnsAlertMessage = "<div id='filterAlertDiv' class='col-sm-12 alert alert-warning' style='padding:0px'><div class='col-sm-11' id='activatedFilters'></div><div class='col-sm-1  filterMessageButtons'><span id='clearFilterButton' data-toggle='tooltip' title='Clear filters' class='pull-right glyphicon glyphicon-remove-sign'  style='cursor:pointer;padding:15px'></span></div>";
-    if ($("#" + tableConfigurations.divId + "_paginate").length !== 0) {
-        $("#" + tableConfigurations.divId + "_paginate").parent().after($(showFilteredColumnsAlertMessage).hide());
-    } else {
-        $("#showHideColumnsButton").parent().after($(showFilteredColumnsAlertMessage).hide());
-    }
     $("#" + tableConfigurations.divId + "_length").addClass("marginBottom10").addClass("width80").addClass("pull-left");
     $("#" + tableConfigurations.divId + "_filter").addClass("marginBottom10").addClass("width150").addClass("pull-left");
 
@@ -2002,10 +2032,14 @@ function getRowClass(status) {
     } else if (status === "PE") {
         rowClass["glyph"] = "fa fa-hourglass-half";
     } else if (status === "NE") {
+        rowClass["glyph"] = "glyphicon glyphicon-remove";
+    } else if (status === "WE") {
         rowClass["glyph"] = "fa fa-hand-lizard-o";
     } else if (status === "NA") {
         rowClass["glyph"] = "fa fa-question";
     } else if (status === "QU") {
+        rowClass["glyph"] = "fa fa-hourglass-half";
+    } else if (status === "QE") {
         rowClass["glyph"] = "glyphicon glyphicon-tasks";
     } else {
         rowClass["glyph"] = "";

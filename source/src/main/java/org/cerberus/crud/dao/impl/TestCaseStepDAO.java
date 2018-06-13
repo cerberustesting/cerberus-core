@@ -23,11 +23,13 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.ITestCaseStepDAO;
+import org.cerberus.crud.entity.Test;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.engine.entity.MessageGeneral;
@@ -78,6 +80,8 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.test : " + test);
+            LOG.debug("SQL.param.testcase : " + testcase);
         }
         Connection connection = this.databaseSpring.connect();
         try {
@@ -113,39 +117,6 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
                 LOG.warn("Exception Closing the connection : " + e.toString());
             }
         }
-        return list;
-    }
-
-    @Override
-    public List<String> getLoginStepFromTestCase(String countryCode, String application) {
-        List<String> list = null;
-        final String query = "SELECT tc.testcase FROM testcasecountry t, testcase tc WHERE t.country = ? AND t.test = 'Pre Testing' "
-                + "AND tc.application = ? AND tc.tcActive = 'Y' AND t.test = tc.test AND t.testcase = tc.testcase ORDER BY testcase ASC";
-
-        // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query);
-        }
-        
-        try(Connection connection = this.databaseSpring.connect();
-    		PreparedStatement preStat = connection.prepareStatement(query);) {
-        
-            preStat.setString(1, countryCode);
-            preStat.setString(2, application);
-            list = new ArrayList<String>();
-            try(ResultSet resultSet = preStat.executeQuery();) {
-                while (resultSet.next()) {
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("Found active Pretest : " + resultSet.getString("testcase"));
-                    }
-                    list.add(resultSet.getString("testcase"));
-                }
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-            } 
-        } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
-        } 
         return list;
     }
 
@@ -240,7 +211,6 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         StringBuilder query = new StringBuilder();
         query.append("UPDATE testcasestep SET ");
         query.append(" `Description` = ?, `useStep`=? ");
-
         if (!StringUtil.isNullOrEmpty(tcs.getUseStepTest())) {
             query.append(",`useStepTest`=? ");
         }
@@ -250,7 +220,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         if (tcs.getUseStepStep() >= 0) {
             query.append(",`useStepStep`=? ");
         }
-        query.append(",`inlibrary` = ?, `Sort` = ?, `loop` = ?, `conditionOper` = ?, `conditionVal1` = ?, `conditionVal2` = ? WHERE Test = ? AND TestCase = ? AND step = ?");
+        query.append(",`inlibrary` = ?, `Sort` = ?, `loop` = ?, `conditionOper` = ?, `conditionVal1` = ?, `conditionVal2` = ?, `forceExe` = ?, DateModif = CURRENT_TIMESTAMP, UsrModif = ? WHERE Test = ? AND TestCase = ? AND step = ?");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -279,6 +249,8 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
                 preStat.setString(i++, tcs.getConditionOper() == null ? "" : tcs.getConditionOper());
                 preStat.setString(i++, tcs.getConditionVal1() == null ? "" : tcs.getConditionVal1());
                 preStat.setString(i++, tcs.getConditionVal2() == null ? "" : tcs.getConditionVal2());
+                preStat.setString(i++, tcs.getForceExe() == null ? "N" : tcs.getForceExe());
+                preStat.setString(i++, tcs.getUsrModif() == null ? "" : tcs.getUsrModif());
 
                 preStat.setString(i++, tcs.getTest());
                 preStat.setString(i++, tcs.getTestCase());
@@ -407,13 +379,13 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
                 final PreparedStatement statement = connection.prepareStatement("SELECT * FROM testcasestep WHERE usestep='Y' AND usesteptest = ?")) {
             statement.setString(1, test);
 
-            try(ResultSet resultSet = statement.executeQuery();){
-            	final List<TestCaseStep> steps = new ArrayList<>();
+            try (ResultSet resultSet = statement.executeQuery();) {
+                final List<TestCaseStep> steps = new ArrayList<>();
                 while (resultSet.next()) {
                     steps.add(loadFromResultSet(resultSet));
                 }
                 return steps;
-            }catch (SQLException e) {
+            } catch (SQLException e) {
                 LOG.error(e.getMessage(), e);
                 throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
             }
@@ -452,7 +424,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
                         int s = resultSet.getInt("usestepstep");
                         int sort = resultSet.getInt("sort");
                         String description = resultSet.getString("description");
-                        list.add(factoryTestCaseStep.create(t, tc, s, sort, null, null, null, null, description, null, null, null, 0, null));
+                        list.add(factoryTestCaseStep.create(t, tc, s, sort, null, null, null, null, description, null, null, null, 0, null, null, null, null, null, null));
                     }
                 } catch (SQLException exception) {
                     LOG.error("Unable to execute query : " + exception.toString());
@@ -509,7 +481,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
                         int s = resultSet.getInt("step");
                         int sort = resultSet.getInt("sort");
                         String description = resultSet.getString("description");
-                        TestCaseStep tcs = factoryTestCaseStep.create(t, tc, s, sort, null, null, null, null, description, null, null, null, 0, null);
+                        TestCaseStep tcs = factoryTestCaseStep.create(t, tc, s, sort, null, null, null, null, description, null, null, null, 0, null, null, null, null, null, null);
                         TestCase tcObj = factoryTestCase.create(t, tc, tcdesc);
                         tcs.setTestCaseObj(tcObj);
                         list.add(tcs);
@@ -585,7 +557,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
                         String tcdesc = resultSet.getString("tcdesc");
                         TestCase tcToAdd = factoryTestCase.create(t, tc, tcdesc);
                         tcToAdd.setApplication(resultSet.getString("tcapp"));
-                        TestCaseStep tcsToAdd = factoryTestCaseStep.create(t, tc, s, sort, null, null, null, null, description, null, null, null, 0, null);
+                        TestCaseStep tcsToAdd = factoryTestCaseStep.create(t, tc, s, sort, null, null, null, null, description, null, null, null, 0, null, null, null, null, null, null);
                         tcsToAdd.setTestCaseObj(tcToAdd);
                         list.add(tcsToAdd);
                     }
@@ -664,7 +636,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
                         int s = resultSet.getInt("step");
                         int sort = resultSet.getInt("sort");
                         String description = resultSet.getString("description");
-                        list.add(factoryTestCaseStep.create(t, tc, s, sort, null, null, null, null, description, null, null, null, 0, null));
+                        list.add(factoryTestCaseStep.create(t, tc, s, sort, null, null, null, null, description, null, null, null, 0, null, null, null, null, null, null));
                     }
                 } catch (SQLException exception) {
                     LOG.error("Unable to execute query : " + exception.toString());
@@ -691,8 +663,8 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
     }
 
     @Override
-    public AnswerList readByTestTestCase(String test, String testcase) {
-        AnswerList response = new AnswerList();
+    public AnswerList<TestCaseStep> readByTestTestCase(String test, String testcase) {
+        AnswerList response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<TestCaseStep> stepList = new ArrayList<TestCaseStep>();
@@ -726,14 +698,14 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
                         LOG.error("Partial Result in the query.");
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                        response = new AnswerList(stepList, stepList.size());
+                        response = new AnswerList<>(stepList, stepList.size());
                     } else if (stepList.size() <= 0) {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                        response = new AnswerList(stepList, stepList.size());
+                        response = new AnswerList<>(stepList, stepList.size());
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                         msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                        response = new AnswerList(stepList, stepList.size());
+                        response = new AnswerList<>(stepList, stepList.size());
                     }
 
                 } catch (SQLException exception) {
@@ -779,7 +751,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
 
     @Override
     public AnswerList readByLibraryUsed(String test, String testcase, int step) {
-        AnswerList response = new AnswerList();
+        AnswerList response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<TestCaseStep> stepList = new ArrayList<TestCaseStep>();
@@ -812,14 +784,14 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
                         LOG.error("Partial Result in the query.");
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
                         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
-                        response = new AnswerList(stepList, stepList.size());
+                        response = new AnswerList<>(stepList, stepList.size());
                     } else if (stepList.size() <= 0) {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                        response = new AnswerList(stepList, stepList.size());
+                        response = new AnswerList<>(stepList, stepList.size());
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                         msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                        response = new AnswerList(stepList, stepList.size());
+                        response = new AnswerList<>(stepList, stepList.size());
                     }
 
                 } catch (SQLException exception) {
@@ -879,7 +851,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         if (testCaseStep.getUseStepStep() >= 0) {
             query.append(",`useStepStep` ");
         }
-        query.append(", `inLibrary`, `loop`, `conditionOper`, `conditionVal1`, `conditionVal2`) ");
+        query.append(", `inLibrary`, `loop`, `conditionOper`, `conditionVal1`, `conditionVal2`, `forceExe`, `usrCreated`) ");
         query.append("VALUES (?,?,?,?,?,?");
         if (!StringUtil.isNullOrEmpty(testCaseStep.getUseStepTest())) {
             query.append(",?");
@@ -890,7 +862,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         if (testCaseStep.getUseStepStep() >= 0) {
             query.append(",?");
         }
-        query.append(",?,?,?,?,?)");
+        query.append(",?,?,?,?,?,?,?)");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -924,6 +896,8 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
             preStat.setString(i++, testCaseStep.getConditionOper() == null ? "" : testCaseStep.getConditionOper());
             preStat.setString(i++, testCaseStep.getConditionVal1() == null ? "" : testCaseStep.getConditionVal1());
             preStat.setString(i++, testCaseStep.getConditionVal2() == null ? "" : testCaseStep.getConditionVal2());
+            preStat.setString(i++, testCaseStep.getForceExe() == null ? "N" : testCaseStep.getForceExe());
+            preStat.setString(i++, testCaseStep.getUsrCreated() == null ? "" : testCaseStep.getUsrCreated());
             preStat.executeUpdate();
 
             // Set the final message
@@ -959,8 +933,14 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         String useStepTestCase = resultSet.getString("useStepTestCase") == null ? "" : resultSet.getString("useStepTestCase");
         int useStepStep = resultSet.getInt("useStepStep") == 0 ? 0 : resultSet.getInt("useStepStep");
         String inLibrary = resultSet.getString("inLibrary") == null ? "" : resultSet.getString("inLibrary");
+        String forceExe = resultSet.getString("ForceExe");
+        String usrCreated = resultSet.getString("UsrCreated");
+        Timestamp dateCreated = resultSet.getTimestamp("DateCreated");
+        String usrModif = resultSet.getString("UsrModif");
+        Timestamp dateModif = resultSet.getTimestamp("DateModif");
 
-        TestCaseStep tcs = factoryTestCaseStep.create(test, testcase, step, sort, loop, conditionOper, conditionVal1, conditionVal2, description, useStep, useStepTest, useStepTestCase, useStepStep, inLibrary);
+        TestCaseStep tcs = factoryTestCaseStep.create(test, testcase, step, sort, loop, conditionOper, conditionVal1, conditionVal2, description, useStep, useStepTest, useStepTestCase, useStepStep,
+                 inLibrary, forceExe, usrCreated, dateCreated, usrModif, dateModif);
 
         try {
             resultSet.findColumn("isStepInUseByOtherTestCase");

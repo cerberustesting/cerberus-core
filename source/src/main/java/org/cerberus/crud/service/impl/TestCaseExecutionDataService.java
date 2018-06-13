@@ -76,19 +76,19 @@ public class TestCaseExecutionDataService implements ITestCaseExecutionDataServi
 
     @Override
     public AnswerList<TestCaseExecutionData> readByIdWithDependency(long id) {
-        AnswerList data = this.readByIdByCriteria(id, 0, 0, "exd.property", "asc", null, null);
-        AnswerList response = null;
-        List<TestCaseExecutionData> tcsaceList = new ArrayList();
+        AnswerList<TestCaseExecutionData> data = this.readByIdByCriteria(id, 0, 0, "exd.property", "asc", null, null);
+        AnswerList<TestCaseExecutionData> response = null;
+        List<TestCaseExecutionData> tcsaceList = new ArrayList<>();
         for (Object mydata : data.getDataList()) {
 
             TestCaseExecutionData tcsace = (TestCaseExecutionData) mydata;
 
-            AnswerList files = testCaseExecutionFileService.readByVarious(id, tcsace.getProperty() + "-" + tcsace.getIndex());
+            AnswerList<TestCaseExecutionFile> files = testCaseExecutionFileService.readByVarious(id, tcsace.getProperty() + "-" + tcsace.getIndex());
             tcsace.setFileList((List<TestCaseExecutionFile>) files.getDataList());
 
             tcsaceList.add(tcsace);
         }
-        response = new AnswerList(tcsaceList, data.getTotalRows());
+        response = new AnswerList<>(tcsaceList, data.getTotalRows());
         return response;
 
     }
@@ -134,7 +134,7 @@ public class TestCaseExecutionDataService implements ITestCaseExecutionDataServi
     }
 
     @Override
-    public List<TestCaseExecutionData> convert(AnswerList answerList) throws CerberusException {
+    public List<TestCaseExecutionData> convert(AnswerList<TestCaseExecutionData> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (List<TestCaseExecutionData>) answerList.getDataList();

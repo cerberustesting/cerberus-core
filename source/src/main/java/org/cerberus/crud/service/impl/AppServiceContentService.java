@@ -118,7 +118,7 @@ public class AppServiceContentService implements IAppServiceContentService {
     }
 
     @Override
-    public AppServiceContent convert(AnswerItem answerItem) throws CerberusException {
+    public AppServiceContent convert(AnswerItem<AppServiceContent> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (AppServiceContent) answerItem.getItem();
@@ -127,7 +127,7 @@ public class AppServiceContentService implements IAppServiceContentService {
     }
 
     @Override
-    public List<AppServiceContent> convert(AnswerList answerList) throws CerberusException {
+    public List<AppServiceContent> convert(AnswerList<AppServiceContent> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (List<AppServiceContent>) answerList.getDataList();
@@ -151,7 +151,7 @@ public class AppServiceContentService implements IAppServiceContentService {
         MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
         Answer finalAnswer = new Answer(msg1);
 
-        List<AppServiceContent> oldList = new ArrayList();
+        List<AppServiceContent> oldList = new ArrayList<>();
         try {
             oldList = this.convert(this.readByVarious(service, null));
         } catch (CerberusException ex) {
@@ -161,9 +161,9 @@ public class AppServiceContentService implements IAppServiceContentService {
         /**
          * Update and Create all objects database Objects from newList
          */
-        List<AppServiceContent> listToUpdateOrInsert = new ArrayList(newList);
+        List<AppServiceContent> listToUpdateOrInsert = new ArrayList<>(newList);
         listToUpdateOrInsert.removeAll(oldList);
-        List<AppServiceContent> listToUpdateOrInsertToIterate = new ArrayList(listToUpdateOrInsert);
+        List<AppServiceContent> listToUpdateOrInsertToIterate = new ArrayList<>(listToUpdateOrInsert);
 
         for (AppServiceContent objectDifference : listToUpdateOrInsertToIterate) {
             for (AppServiceContent objectInDatabase : oldList) {
@@ -178,9 +178,9 @@ public class AppServiceContentService implements IAppServiceContentService {
         /**
          * Delete all objects database Objects that do not exist from newList
          */
-        List<AppServiceContent> listToDelete = new ArrayList(oldList);
+        List<AppServiceContent> listToDelete = new ArrayList<>(oldList);
         listToDelete.removeAll(newList);
-        List<AppServiceContent> listToDeleteToIterate = new ArrayList(listToDelete);
+        List<AppServiceContent> listToDeleteToIterate = new ArrayList<>(listToDelete);
 
         for (AppServiceContent tcsDifference : listToDeleteToIterate) {
             for (AppServiceContent tcsInPage : newList) {

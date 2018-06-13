@@ -1,9 +1,9 @@
+==== Table of Contents
+
 http://appium.io/[Appium] is an open source test automation framework for use with native, hybrid and mobile Web applications.
 It drives iOS, Android, and Windows applications using the https://www.w3.org/TR/webdriver/[WebDriver] protocol.
 
 This procedure covers installation and configuration of **Appium v.1.6.2+**.
-
-==== Table of Contents
 
 . <<installation_externaltools_appium_en_appium_server_installation, Appium server installation>>
 . <<installation_externaltools_appium_en_client_use, Client use>>
@@ -14,7 +14,43 @@ This procedure covers installation and configuration of **Appium v.1.6.2+**.
 
 ===== Android
 
+====== Classic installation
 Install _Android SDK_ v.1.7+. See official documentation https://developer.android.com/studio/install.html[here] and https://developer.android.com/studio/intro/update.html[here] for more details.
+
+====== Docker install
++
+--------------------------------------
+# Note: It requires docker-compose 1.6.0+
+#
+# Usage: docker-compose up -d
+version: '2'
+
+services:
+  # Selenium hub
+  selenium_hub:
+    image: selenium/hub:3.7.1
+    ports:
+      - 4444:4444
+
+  # Appium Docker Android
+  appium_android_device:
+    image: appium/appium
+    depends_on:
+      - selenium_hub
+    privileged: true
+    volumes:
+#      - /dev/bus/usb:/dev/bus/usb
+      - ~/.android:/root/.android
+      - ./localapk/:/apk/  # used to push apk to install
+    ports:
+      - 4723:4723
+    environment:
+      - CONNECT_TO_GRID=True
+      - SELENIUM_HOST=selenium_hub
+      # Enable it for msite testing
+      #- BROWSER_NAME=chrom
+--------------------------------------
++
 
 ===== IOS
 
@@ -159,6 +195,7 @@ appium --default-capabilities /path/to/common.caps
 ==== Client use
 
 The following section will show different use cases to connect to the Appium server.
+
 
 ===== Execute mobile test case with Cerberus
 

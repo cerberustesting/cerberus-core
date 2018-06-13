@@ -20,8 +20,7 @@
 
 var imagePasteFromClipboard = undefined;//stock the picture if the user chose to upload it from his clipboard
 
-function openModalApplicationObject(applicationObject, value, mode, page){
-	
+function openModalApplicationObject(applicationObject, value, mode, page){	
 	if ($('#editApplicationObjectModal').data("initLabel") === undefined){
 		if(page === "applicationObject"){
 			initModalApplicationObject("applicationObject", undefined);
@@ -30,8 +29,6 @@ function openModalApplicationObject(applicationObject, value, mode, page){
 		}		
 		$('#editApplicationObjectModal').data("initLabel", true);
 	}
-
-	
 	if (mode === "EDIT"){
 		editApplicationObjectClick(applicationObject, value);
 	}else if (mode == "ADD"){
@@ -68,7 +65,6 @@ function initModalApplicationObject(page, application){
 	});
 	
 	setUpDragAndDrop('#editApplicationObjectModal');
-  
     hidePasteMessageIfNotOnFirefox()
 }
 
@@ -131,7 +127,6 @@ function confirmApplicationObjectModalHandler(page, mode) {
         };
     }
     catch(e){
-    	
     } 
     
 	// Calculate servlet name to call.
@@ -144,7 +139,6 @@ function confirmApplicationObjectModalHandler(page, mode) {
 	
 	showLoaderInModal('#editApplicationObjectModal');
 	
-
 	$.ajax({
 		url : myServlet,
 		async : true,
@@ -167,61 +161,49 @@ function confirmApplicationObjectModalHandler(page, mode) {
 	                    }
 	                }
 	                $("div.step-action .content div.fieldRow div:nth-child(n+2) input").trigger("input");
-	            }
-				
+	            }				
 				$('#editApplicationObjectModal').data("Saved", true);
 				$('#editApplicationObjectModal').modal('hide');
-				showMessage(data);			
-							
+				showMessage(data);										
 			} else {
 				showMessage(data, $('#editApplicationObjectModal'));
-			}
-			
+			}			
 			hideLoaderInModal('#editApplicationObjectModal');
 		},
 		error : showUnexpectedError
 	});
-
 }
 
 
 function feedApplicationObjectModal(application, object, modalId, mode) {
 	clearResponseMessageMainPage();
-
 	var formEdit = $('#' + modalId);
 
-
 	if (mode === "EDIT") {
-		$
-				.ajax({
-					url : "ReadApplicationObject",
-					async : true,
-					method : "POST",
-					data : {
-						application : application,
-						object : object,
-						
-
-					},
-					success : function(data) {
-						if (data.messageType === "OK") {
-
-							// Feed the data to the screen and manage
-							// authorities.
-							var applicationObj = data.contentTable;
-							var hasPermissions = data.hasPermissions;
-
-							feedApplicationObjectModalData(applicationObj, modalId, mode,
-									hasPermissions);
-
-							formEdit.modal('show');
-						} else {
-							showUnexpectedError();
-						}
-					},
-					error : showUnexpectedError
-				});
-
+		$.ajax({
+			url : "ReadApplicationObject",
+			async : true,
+			method : "POST",
+			data : {
+				application : application,
+				object : object,
+			},
+			success : function(data) {
+				if (data.messageType === "OK") {	
+					// Feed the data to the screen and manage
+					// authorities.
+					var applicationObj = data.contentTable;
+					var hasPermissions = data.hasPermissions;
+	
+					feedApplicationObjectModalData(applicationObj, modalId, mode,
+							hasPermissions);
+					formEdit.modal('show');
+				} else {
+					showUnexpectedError();
+				}
+			},
+			error : showUnexpectedError
+		});
 	} else {
 		var applicationObj1 = {};
 		applicationObj1.application = application;
@@ -233,7 +215,6 @@ function feedApplicationObjectModal(application, object, modalId, mode) {
 		feedApplicationObjectModalData(applicationObj1, modalId, mode, hasPermissions);
 		formEdit.modal('show');
 	}
-
 }
 
 
@@ -242,7 +223,6 @@ function feedApplicationObjectModalData(applicationObject, modalId, mode, hasPer
 	var doc = new Doc();
 	var isEditable = (((hasPermissionsUpdate) && (mode === "EDIT"))
 			|| (mode === "ADD"));
-
 	// Data Feed.
 	if (mode === "EDIT") {
 		$("[name='editApplicationObjectField']").html(
@@ -268,8 +248,7 @@ function feedApplicationObjectModalData(applicationObject, modalId, mode, hasPer
 		}else{
 			formEdit.find("#application").val(applicationObject.application);
 		}
-		
-		
+			
 		if(applicationObject.screenshotfilename == ""){
 			updateDropzone("Drag and drop Files","#" + modalId);
 		}else{
@@ -300,14 +279,11 @@ function feedApplicationObjectModalData(applicationObject, modalId, mode, hasPer
 function pasteListennerForClipboardPicture( idModal) {
     var _self = this;
     //handlers
-    document.addEventListener('paste', function (e) { _self.paste_auto(e); }, false);
-    
+    document.addEventListener('paste', function (e) { _self.paste_auto(e); }, false);  
     //on paste
     this.paste_auto = function (e) {
-        //handle paste event if the user do not select an input
-    	console.log("copy");
+        //handle paste event if the user do not select an input;
         if (e.clipboardData && !$(e.target).is( "input" )) {
-        	console.log(e);
             var items = e.clipboardData.items;
             handlePictureSend(items, idModal);
             e.preventDefault();
@@ -370,7 +346,6 @@ function handlePictureSend(items,idModal){
      //access data directly
     for (var i = 0; i < items.length; i++) {
         ///check if the input is an image
-    	console.log(items[i].type);
         if (items[i].type.indexOf("image") !== -1) {
             //image from clipboard found
             var blob = items[i].getAsFile();
@@ -407,8 +382,6 @@ function hidePasteMessageIfNotOnFirefox(){
 function listennerForInputTypeFile(idModal){
     
     var inputs = $(idModal).find("#inputFile");
-    
-
     inputs[0].addEventListener( 'change', function( e ){
         //check if the input is an image
         if(  inputs[0].files[0].type.indexOf("image") !== -1 ){
@@ -417,7 +390,6 @@ function listennerForInputTypeFile(idModal){
                 fileName = ( this.getAttribute( 'data-multiple-caption' ) || '' ).replace( '{count}', this.files.length );
             else
                 fileName = e.target.value.split( '\\' ).pop();
-
             if( fileName ){
                 updateDropzone(fileName, idModal);
             }

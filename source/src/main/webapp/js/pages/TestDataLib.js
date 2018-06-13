@@ -21,7 +21,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
         initPage();
 
-      
+
     });
 });
 
@@ -29,15 +29,18 @@ function initPage() {
 
     var doc = new Doc();
     displayPageLabel();
-    
+
     $('#editTestDataLibModal').on('hidden.bs.modal', {extra: "#editTestLibData"}, buttonCloseHandler);
-    
+
     $('#testCaseListModal').on('hidden.bs.modal', getTestCasesUsingModalCloseHandler);
-    
+
+    // In itialise Modal Datalib.
+    initModalDataLib();
+
     /*
      * Handles the change of the type when adding a new test data lib entry
      */
-   
+
     $("#editTestDataLibModal #service").change(function () {
         activateSOAPServiceFields("#editTestDataLibModal", $(this).val());
     });
@@ -121,26 +124,137 @@ function renderOptionsForTestDataLib(data) {
     var doc = new Doc();
 
     if (data["hasPermissions"]) {
-        if ($("#createLibButton").length === 0) {
+        if ($("#createLibButton").length === 0 && $("#bulkRenameButton").length === 0) {
             var contentToAdd = "<div class='marginBottom10'><button id='createLibButton' type='button' class='btn btn-default'><span class='glyphicon glyphicon-plus-sign'></span> ";
             contentToAdd += doc.getDocLabel("page_testdatalib", "btn_create"); //translation for the create button;
-            contentToAdd += "</button></div>";
+            contentToAdd += "</button>";
+            contentToAdd += "<button id='bulkRenameButton' type='button' class='btn btn-default'><span class='glyphicon glyphicon-duplicate'></span> ";
+            contentToAdd += doc.getDocLabel("page_testdatalib", "btn_bulkrename"); // translation for the bulk rename button
+            contentToAdd += "</button>";
+            contentToAdd += "</div>";
 
             $("#listOfTestDataLib_wrapper #listOfTestDataLib_length").before(contentToAdd);
-            
-        	if (window.matchMedia("(max-width: 768px)").matches) {
-        		$("#createLibButton").addClass("pull-right")
-        	} 
-            
+
+            if (window.matchMedia("(max-width: 768px)").matches) {
+                $("#createLibButton").addClass("pull-right")
+                $("#bulkRenameButton").addClass("pull-right");
+            }
+
             $("#createLibButton").off("click");
-            $('#createLibButton').click(function() {
+            $('#createLibButton').click(function () {
                 openModalDataLib(null, undefined, "ADD");
-                
+
+            });
+
+            $("#bulkRenameButton").off("click");
+            $('#bulkRenameButton').click(function () {
+                openModalDataLibBulk();
             });
 
         }
     } else {
         $("#testdatalibFirstColumnHeader").html(doc.getDocLabel("page_global", "columnAction"));
+    }
+}
+
+function openModalDataLibBulk() {
+
+    clearResponseMessageMainPage();
+
+    // from: initModalDataLib
+    $('[data-toggle="popover"]').popover({
+        'placement': 'auto',
+        'z-index': 1060,
+        'container': 'body'})
+
+    var doc = new Doc();
+
+    if ($('#bulkRenameDataLibModal').data("initLabel") === undefined) {
+        $("[name='lbl_currentname']").html(doc.getDocOnline("testdatalib", "currentname"));
+        $("[name='lbl_newname']").html(doc.getDocOnline("testdatalib", "newname"));
+        $("#bulkRenameValidate").text(doc.getDocLabel("page_global", "btn_bulkrename"));
+        $('#bulkRenameDataLibModal').data("initLabel", true);
+    }
+
+    $("#bulkRenameValidate").off("click");
+    $('#bulkRenameValidate').click(function () {
+        confirmDataLibBulkModalHandler();
+    });
+
+    $('#bulkRenameDataLibModal').modal('show');
+}
+
+/**
+ * Data Library Bulk Rename modal fields validation, must be: -defined, -not empty and without white space.
+ * @returns {true or false}
+ */
+function isBlankOrContainsWhiteSpace(str) {
+    // blank test: is null or undefined
+    var regex1 = /^\s*$/;
+    // contains white space test
+    var regex2 = /^(.*\s+.*)+$/;
+    if (!str || regex1.test(str)) {
+        return true;
+    } else if (regex2.test(str)) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function confirmDataLibBulkModalHandler() {
+    var bool = false;
+    // get the input values
+    var old_name = $('#dl_currentname').val();
+    var new_name = $('#dl_newname').val();
+    // get 
+    var formEdit = $('#bulkRenameDataLibModal');
+    var old_nameElement = formEdit.find("#dl_currentname");
+    var new_nameElement = formEdit.find("#dl_newname");
+    // reset the error formatting
+    if (old_nameElement.parents("div.form-group").hasClass("has-error")) {
+        old_nameElement.parents("div.form-group").removeClass("has-error");
+    }
+    if (new_nameElement.parents("div.form-group").hasClass("has-error")) {
+        new_nameElement.parents("div.form-group").removeClass("has-error");
+    }
+    // client-side validation
+    if (!isBlankOrContainsWhiteSpace(old_name)) {
+        if (!isBlankOrContainsWhiteSpace(new_name)) {
+            var myServlet = "BulkRenameDataLib";
+            bool = true;
+        } else {
+            var doc = new Doc();
+            var localMessage = new Message("danger", doc.getDocLabel("page_testdatalib", "wrong_name_message"));
+            new_nameElement.parents("div.form-group").addClass("has-error");
+            showMessage(localMessage, $('#bulkRenameDataLibModal'));
+        }
+    } else {
+        var doc = new Doc();
+        var localMessage = new Message("danger", doc.getDocLabel("page_testdatalib", "wrong_name_message"));
+        old_nameElement.parents("div.form-group").addClass("has-error");
+        showMessage(localMessage, $('#bulkRenameDataLibModal'));
+    }
+    // bulk rename operation
+    if (bool) {
+        $.ajax({
+            async: true,
+            url: myServlet,
+            method: "GET",
+            data: 'oldname=' + old_name + '&newname=' + new_name,
+            success: function (data) {
+                hideLoaderInModal('#bulkRenameDataLibModal');
+                if (getAlertType(data.messageType) === "success") {
+                    $('#bulkRenameDataLibModal').modal('hide');
+                    var doc = new Doc();
+                    data.message += " " + doc.getDocLabel("page_testdatalib", "bulk_rename_success_message");
+                    showMessage(data);
+                } else {
+                    showMessage(data, $('#bulkRenameDataLibModal'));
+                }
+            },
+            error: showUnexpectedError
+        });
     }
 }
 
@@ -301,14 +415,14 @@ function aoColumnsFuncTestDataLib(tableId) {
         },
         {
             "sName": "tdl.TestDataLibID",
-            "like":true,
+            "like": true,
             "data": "testDataLibID",
             "sWidth": "50px",
             "title": doc.getDocOnline("testdatalib", "testdatalibid")
         },
         {
             "sName": "tdl.Name",
-            "like":true,
+            "like": true,
             "data": "name",
             "sWidth": "200px",
             "title": doc.getDocOnline("testdatalib", "name")
@@ -333,14 +447,14 @@ function aoColumnsFuncTestDataLib(tableId) {
         },
         {
             "sName": "tdl.Group",
-            "like":true,
+            "like": true,
             "data": "group",
             "sWidth": "100px",
             "title": doc.getDocOnline("testdatalib", "group")
         },
         {
             "sName": "tdl.Description",
-            "like":true,
+            "like": true,
             "data": "description",
             "sWidth": "150px",
             "title": doc.getDocOnline("testdatalib", "description")
@@ -353,7 +467,7 @@ function aoColumnsFuncTestDataLib(tableId) {
         },
         {
             "sName": "tdd.value",
-            "like":true,
+            "like": true,
             "data": "subDataValue",
             "sWidth": "150px",
             "bSortable": false,
@@ -383,20 +497,20 @@ function aoColumnsFuncTestDataLib(tableId) {
         },
         {
             "sName": "tdl.ServicePath",
-            "like":true,
+            "like": true,
             "data": "servicePath",
             "sWidth": "150px",
             "title": doc.getDocOnline("testdatalib", "servicepath")
         },
         {
             "sName": "tdl.method",
-            "like":true,
+            "like": true,
             "data": "method",
             "sWidth": "150px",
             "title": doc.getDocOnline("testdatalib", "method")
         },
         {
-            "data": "envelope", "sName": "tdl.envelope", "like":true, "title": doc.getDocLabel("testdatalib", "envelope"), "sWidth": "350px",
+            "data": "envelope", "sName": "tdl.envelope", "like": true, "title": doc.getDocLabel("testdatalib", "envelope"), "sWidth": "350px",
             "mRender": function (data, type, obj) {
                 return $("<div></div>").append($("<pre name='envelopeField' style='height:20px; overflow:hidden; text-overflow:clip; border: 0px; padding:0; margin:0'></pre>").text(obj['envelope'])).html();
             }
@@ -409,7 +523,7 @@ function aoColumnsFuncTestDataLib(tableId) {
         },
         {
             "sName": "tdl.csvUrl",
-            "like":true,
+            "like": true,
             "data": "csvUrl",
             "sWidth": "150px",
             "title": doc.getDocOnline("testdatalib", "csvUrl")
@@ -422,7 +536,7 @@ function aoColumnsFuncTestDataLib(tableId) {
         },
         {
             "sName": "tdl.Created",
-            "like":true,
+            "like": true,
             "data": "created",
             "sWidth": "150px",
             "title": doc.getDocOnline("testdatalib", "created")
@@ -435,7 +549,7 @@ function aoColumnsFuncTestDataLib(tableId) {
         },
         {
             "sName": "tdl.LastModified",
-            "like":true,
+            "like": true,
             "data": "lastModified",
             "sWidth": "150px",
             "title": doc.getDocOnline("testdatalib", "lastmodified"),
@@ -451,7 +565,7 @@ function aoColumnsFuncTestDataLib(tableId) {
         },
         {
             "sName": "tdd.column",
-            "like":true,
+            "like": true,
             "data": "subDataColumn",
             "bSortable": false,
             "sWidth": "70px",
@@ -459,7 +573,7 @@ function aoColumnsFuncTestDataLib(tableId) {
         },
         {
             "sName": "tdd.ParsingAnswer",
-            "like":true,
+            "like": true,
             "data": "subDataParsingAnswer",
             "bSortable": false,
             "sWidth": "70px",

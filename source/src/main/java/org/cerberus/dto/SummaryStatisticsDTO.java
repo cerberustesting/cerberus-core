@@ -36,18 +36,22 @@ public class SummaryStatisticsDTO {
     private int FA;
     private int NA;
     private int NE;
+    private int WE;
     private int PE;
+    private int QE;
     private int QU;
     private int CA;
     private int total;
     private int notOKTotal;
     private float percOK;
     private float percKO;
+    private float percFA;
     private float percNA;
     private float percNE;
+    private float percWE;
     private float percPE;
+    private float percQE;
     private float percQU;
-    private float percFA;
     private float percCA;
     private float percNotOKTotal;
 
@@ -61,7 +65,9 @@ public class SummaryStatisticsDTO {
         this.FA = 0;
         this.NA = 0;
         this.NE = 0;
+        this.WE = 0;
         this.PE = 0;
+        this.QE = 0;
         this.QU = 0;
         this.CA = 0;
         this.total = 0;
@@ -81,8 +87,14 @@ public class SummaryStatisticsDTO {
         } else if (status.equalsIgnoreCase("NE")) {
             this.NE++;
             this.notOKTotal++;
+        } else if (status.equalsIgnoreCase("WE")) {
+            this.WE++;
+            this.notOKTotal++;
         } else if (status.equalsIgnoreCase("PE")) {
             this.PE++;
+            this.notOKTotal++;
+        } else if (status.equalsIgnoreCase("QE")) {
+            this.QE++;
             this.notOKTotal++;
         } else if (status.equalsIgnoreCase("QU")) {
             this.QU++;
@@ -102,7 +114,9 @@ public class SummaryStatisticsDTO {
         this.percFA = (float) Math.round(((float) (this.FA * 100) / this.total) * 10) / 10;
         this.percNA = (float) Math.round(((float) (this.NA * 100) / this.total) * 10) / 10;
         this.percNE = (float) Math.round(((float) (this.NE * 100) / this.total) * 10) / 10;
+        this.percWE = (float) Math.round(((float) (this.WE * 100) / this.total) * 10) / 10;
         this.percPE = (float) Math.round(((float) (this.PE * 100) / this.total) * 10) / 10;
+        this.percQE = (float) Math.round(((float) (this.QE * 100) / this.total) * 10) / 10;
         this.percQU = (float) Math.round(((float) (this.QU * 100) / this.total) * 10) / 10;
         this.percCA = (float) Math.round(((float) (this.CA * 100) / this.total) * 10) / 10;
         this.percNotOKTotal = (float) Math.round(((float) (this.notOKTotal * 100) / this.total) * 10) / 10;
@@ -122,6 +136,38 @@ public class SummaryStatisticsDTO {
 
     public String getRobotDecli() {
         return robotDecli;
+    }
+
+    public int getWE() {
+        return WE;
+    }
+
+    public void setWE(int WE) {
+        this.WE = WE;
+    }
+
+    public float getPercWE() {
+        return percWE;
+    }
+
+    public void setPercWE(float percWE) {
+        this.percWE = percWE;
+    }
+
+    public int getQE() {
+        return QE;
+    }
+
+    public void setQE(int QE) {
+        this.QE = QE;
+    }
+
+    public float getPercQE() {
+        return percQE;
+    }
+
+    public void setPercQE(float percQE) {
+        this.percQE = percQE;
     }
 
     public int getOK() {

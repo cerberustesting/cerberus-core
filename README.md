@@ -9,6 +9,21 @@ User-friendly automated testing framework.
 
 Check out all information about Cerberus from its [dedicated web site](http://www.cerberus-testing.org/)!
 
+Full Documentation is available [here](https://cerberustesting.github.io/documentation_en.html)
+
+A demo site is available [here](http://demo.cerberus-testing.org)
+
+A Jenkins Plugin is also available directly from Jenkins. Corresponding repo is [here](https://github.com/jenkinsci/cerberus-testing-plugin)
+
+Docker images are available for [mysql](https://hub.docker.com/r/cerberustesting/cerberus-db-mysql/) and [glassfish](https://hub.docker.com/r/cerberustesting/cerberus-as-glassfish/) 
+
+**For Developpers :**
+
+A Slack channel is available [here](https://cerberustesting.slack.com)
+
+Cerberus Production is available [here](http://prod.cerberus-testing.org)
+
+
 # License
 
 Cerberus Copyright (C) 2013 - 2017 cerberustesting

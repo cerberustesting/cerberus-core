@@ -249,18 +249,41 @@ function aoColumnsFunc() {
             "className": "center"
         },
         {
-            "data": "automated",
-            "sName": "automated",
-            "sWidth": "30px",
-            "title": doc.getDocOnline("test", "Automated"),
-            "className": "center"
+            "data": "dateCreated",
+            "sName": "tes.dateCreated",
+            "like": true,
+            "title": doc.getDocOnline("transversal", "DateCreated"),
+            "sWidth": "150px",
+            "sDefaultContent": "",
+            "mRender": function (data, type, oObj) {
+                return getDate(oObj["dateCreated"]);
+            }
         },
         {
-            "data": "tDateCrea",
-            "sName": "tdatecrea",
-            "like":true,
-            "sWidth": "80px",
-            "title": doc.getDocOnline("test", "dateCreation")
+            "data": "usrCreated",
+            "sName": "tes.usrCreated",
+            "title": doc.getDocOnline("transversal", "UsrCreated"),
+            "sWidth": "100px",
+            "sDefaultContent": ""
+        },
+        {
+            "data": "dateModif",
+            "like": true,
+            "sName": "tes.dateModif",
+            "title": doc.getDocOnline("transversal", "DateModif"),
+            "sWidth": "150px",
+            "sDefaultContent": "",
+            "mRender": function (data, type, oObj) {
+                return getDate(oObj["dateModif"]);
+            }
+
+        },
+        {
+            "data": "usrModif",
+            "sName": "tes.usrModif",
+            "title": doc.getDocOnline("transversal", "UsrModif"),
+            "sWidth": "100px",
+            "sDefaultContent": ""
         }
     ];
     return aoColumns;

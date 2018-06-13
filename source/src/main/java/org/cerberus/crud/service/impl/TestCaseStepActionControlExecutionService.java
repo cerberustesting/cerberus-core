@@ -78,7 +78,7 @@ public class TestCaseStepActionControlExecutionService implements ITestCaseStepA
 
         AnswerList controls = this.readByVarious1(executionId, test, testcase, step, index, sequence);
         AnswerList response = null;
-        List<TestCaseStepActionControlExecution> tcsaceList = new ArrayList();
+        List<TestCaseStepActionControlExecution> tcsaceList = new ArrayList<>();
         for (Object control : controls.getDataList()) {
 
             TestCaseStepActionControlExecution tcsace = (TestCaseStepActionControlExecution) control;
@@ -88,7 +88,7 @@ public class TestCaseStepActionControlExecutionService implements ITestCaseStepA
 
             tcsaceList.add(tcsace);
         }
-        response = new AnswerList(tcsaceList, controls.getTotalRows());
+        response = new AnswerList<>(tcsaceList, controls.getTotalRows());
         return response;
 
     }

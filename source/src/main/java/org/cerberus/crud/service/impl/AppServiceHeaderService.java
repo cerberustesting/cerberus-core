@@ -118,7 +118,7 @@ public class AppServiceHeaderService implements IAppServiceHeaderService {
     }
 
     @Override
-    public AppServiceHeader convert(AnswerItem answerItem) throws CerberusException {
+    public AppServiceHeader convert(AnswerItem<AppServiceHeader> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (AppServiceHeader) answerItem.getItem();
@@ -127,7 +127,7 @@ public class AppServiceHeaderService implements IAppServiceHeaderService {
     }
 
     @Override
-    public List<AppServiceHeader> convert(AnswerList answerList) throws CerberusException {
+    public List<AppServiceHeader> convert(AnswerList<AppServiceHeader> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
             return (List<AppServiceHeader>) answerList.getDataList();
@@ -151,7 +151,7 @@ public class AppServiceHeaderService implements IAppServiceHeaderService {
         MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
         Answer finalAnswer = new Answer(msg1);
 
-        List<AppServiceHeader> oldList = new ArrayList();
+        List<AppServiceHeader> oldList = new ArrayList<>();
         try {
             oldList = this.convert(this.readByVarious(service, null));
         } catch (CerberusException ex) {
@@ -161,9 +161,9 @@ public class AppServiceHeaderService implements IAppServiceHeaderService {
         /**
          * Update and Create all objects database Objects from newList
          */
-        List<AppServiceHeader> listToUpdateOrInsert = new ArrayList(newList);
+        List<AppServiceHeader> listToUpdateOrInsert = new ArrayList<>(newList);
         listToUpdateOrInsert.removeAll(oldList);
-        List<AppServiceHeader> listToUpdateOrInsertToIterate = new ArrayList(listToUpdateOrInsert);
+        List<AppServiceHeader> listToUpdateOrInsertToIterate = new ArrayList<>(listToUpdateOrInsert);
 
         for (AppServiceHeader objectDifference : listToUpdateOrInsertToIterate) {
             for (AppServiceHeader objectInDatabase : oldList) {
@@ -178,9 +178,9 @@ public class AppServiceHeaderService implements IAppServiceHeaderService {
         /**
          * Delete all objects database Objects that do not exist from newList
          */
-        List<AppServiceHeader> listToDelete = new ArrayList(oldList);
+        List<AppServiceHeader> listToDelete = new ArrayList<>(oldList);
         listToDelete.removeAll(newList);
-        List<AppServiceHeader> listToDeleteToIterate = new ArrayList(listToDelete);
+        List<AppServiceHeader> listToDeleteToIterate = new ArrayList<>(listToDelete);
 
         for (AppServiceHeader tcsDifference : listToDeleteToIterate) {
             for (AppServiceHeader tcsInPage : newList) {

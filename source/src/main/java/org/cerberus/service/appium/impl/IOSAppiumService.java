@@ -116,6 +116,11 @@ public class IOSAppiumService extends AppiumService {
                 : MessageEventEnum.ACTION_FAILED_HIDEKEYBOARD);
     }
 
+    @Override
+    public String executeCommandString(Session session, String cmd, String args) throws IllegalArgumentException {
+        return null;
+    }
+
     /**
      * The only valid IOS key codes to be able to be pressed
      * <p>
@@ -176,4 +181,23 @@ public class IOSAppiumService extends AppiumService {
         }
     }
 
+    @Override
+    public MessageEvent executeCommand(Session session, String cmd, String args) throws IllegalArgumentException {
+        return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+    }
+
+    @Override
+    public MessageEvent installApp(Session session, String appPath) throws IllegalArgumentException {
+        return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+    }
+
+    @Override
+    public MessageEvent removeApp(Session session, String appPackage) throws IllegalArgumentException {
+        return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+    }
+
+    @Override
+    public MessageEvent openApp(Session session, String appPackage, String appActivity) {
+        return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+    }
 }

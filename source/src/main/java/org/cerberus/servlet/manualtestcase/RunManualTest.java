@@ -75,8 +75,8 @@ public class RunManualTest extends HttpServlet {
             execution.setControlMessage(controlMessage);
             String test = execution.getTest();
             String testCase = execution.getTestCase();
-            List<String> status = new ArrayList();
-            List<String> stepStatus = new ArrayList();
+            List<String> status = new ArrayList<>();
+            List<String> stepStatus = new ArrayList<>();
 
             /**
              * If cancel execution, Set execution to cancel
@@ -102,7 +102,7 @@ public class RunManualTest extends HttpServlet {
                          * Get Step Action Execution and insert them into
                          * Database
                          */
-                        List tcae = new ArrayList();
+                        List tcae = new ArrayList<>();
                         for (TestCaseStepActionExecution tcsae : getTestCaseStepActionExecution(req, appContext, test, testCase, executionId, tcse.getSort())) {
                             testCaseStepActionExecutionService.insertTestCaseStepActionExecution(tcsae);
                             status.add(tcsae.getReturnCode());
@@ -201,7 +201,7 @@ public class RunManualTest extends HttpServlet {
     }// </editor-fold>
 
     private List<TestCaseStepExecution> getTestCaseStepExecution(HttpServletRequest request, ApplicationContext appContext, String test, String testCase, long executionId) {
-        List<TestCaseStepExecution> result = new ArrayList();
+        List<TestCaseStepExecution> result = new ArrayList<>();
         long now = new Date().getTime();
         IFactoryTestCaseStepExecution testCaseStepExecutionFactory = appContext.getBean(IFactoryTestCaseStepExecution.class);
 
@@ -221,7 +221,7 @@ public class RunManualTest extends HttpServlet {
     }
 
     private List<TestCaseStepActionExecution> getTestCaseStepActionExecution(HttpServletRequest request, ApplicationContext appContext, String test, String testCase, long executionId, int stepSort) {
-        List<TestCaseStepActionExecution> result = new ArrayList();
+        List<TestCaseStepActionExecution> result = new ArrayList<>();
         IRecorderService recorderService = appContext.getBean(IRecorderService.class);
         long now = new Date().getTime();
         IFactoryTestCaseStepActionExecution testCaseStepActionExecutionFactory = appContext.getBean(IFactoryTestCaseStepActionExecution.class);
@@ -248,7 +248,7 @@ public class RunManualTest extends HttpServlet {
     }
 
     private List<TestCaseStepActionControlExecution> getTestCaseStepActionControlExecution(HttpServletRequest request, ApplicationContext appContext, String test, String testCase, long executionId, int stepSort, int actionSort) {
-        List<TestCaseStepActionControlExecution> result = new ArrayList();
+        List<TestCaseStepActionControlExecution> result = new ArrayList<>();
         IRecorderService recorderService = appContext.getBean(IRecorderService.class);
         long now = new Date().getTime();
         IFactoryTestCaseStepActionControlExecution testCaseStepActionExecutionFactory = appContext.getBean(IFactoryTestCaseStepActionControlExecution.class);

@@ -1,5 +1,3 @@
-Dans cette partie vous trouverez les informations concernant la gestion des utilisateurs.
-
 === Création des utilisateurs
 
 . Allez dans *[red]#Administration -> Gestion des Utilisateurs#*.

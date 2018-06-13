@@ -74,7 +74,7 @@ public class SqlUtil {
             return "";
         }
         
-        List<String> search = new ArrayList(Arrays.asList(parameter.split(":")));
+        List<String> search = new ArrayList<>(Arrays.asList(parameter.split(":")));
         
         StringBuilder result = new StringBuilder();
         result.append(" ");

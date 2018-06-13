@@ -202,7 +202,7 @@ public interface ITestCaseExecutionService {
      * @return
      * @throws CerberusException
      */
-    TestCaseExecution convert(AnswerItem answerItem) throws CerberusException;
+    TestCaseExecution convert(AnswerItem<TestCaseExecution> answerItem) throws CerberusException;
 
     /**
      *
@@ -210,7 +210,7 @@ public interface ITestCaseExecutionService {
      * @return
      * @throws CerberusException
      */
-    List<TestCaseExecution> convert(AnswerList answerList) throws CerberusException;
+    List<TestCaseExecution> convert(AnswerList<TestCaseExecution> answerList) throws CerberusException;
 
     /**
      *

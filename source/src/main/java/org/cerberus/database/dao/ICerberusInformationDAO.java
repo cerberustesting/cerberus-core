@@ -19,6 +19,7 @@
  */
 package org.cerberus.database.dao;
 
+import java.util.HashMap;
 import org.cerberus.util.answer.AnswerItem;
 
 /**
@@ -35,6 +36,6 @@ public interface ICerberusInformationDAO {
      *
      * @return
      */
-    AnswerItem getDatabaseInformation();
+    AnswerItem<HashMap<String, String>> getDatabaseInformation();
 
 }

@@ -245,7 +245,7 @@ public class UpdateCountryEnvParam extends HttpServlet {
     }
 
     private List<CountryEnvironmentDatabase> getCountryEnvironmentDatabaseFromParameter(HttpServletRequest request, ApplicationContext appContext, String system, String country, String environment, JSONArray json) throws JSONException {
-        List<CountryEnvironmentDatabase> cebList = new ArrayList();
+        List<CountryEnvironmentDatabase> cebList = new ArrayList<>();
         IFactoryCountryEnvironmentDatabase cebFactory = appContext.getBean(IFactoryCountryEnvironmentDatabase.class);
 
         for (int i = 0; i < json.length(); i++) {
@@ -266,7 +266,7 @@ public class UpdateCountryEnvParam extends HttpServlet {
     }
 
     private List<CountryEnvironmentParameters> getCountryEnvironmentApplicationFromParameter(HttpServletRequest request, ApplicationContext appContext, String system, String country, String environment, JSONArray json) throws JSONException {
-        List<CountryEnvironmentParameters> ceaList = new ArrayList();
+        List<CountryEnvironmentParameters> ceaList = new ArrayList<>();
         ICountryEnvironmentParametersService ceaService = appContext.getBean(ICountryEnvironmentParametersService.class);
         IFactoryCountryEnvironmentParameters ceaFactory = appContext.getBean(IFactoryCountryEnvironmentParameters.class);
 
@@ -284,6 +284,8 @@ public class UpdateCountryEnvParam extends HttpServlet {
             String var3 = tcsaJson.getString("var3");
             String var4 = tcsaJson.getString("var4");
             String strPoolSize = tcsaJson.getString("poolSize");
+            String mobileActivity = tcsaJson.getString("mobileActivity");
+            String mobilePackage = tcsaJson.getString("mobilePackage");
             int poolSize;
             if (strPoolSize.isEmpty()) {
                 poolSize = CountryEnvironmentParameters.DEFAULT_POOLSIZE;
@@ -298,7 +300,7 @@ public class UpdateCountryEnvParam extends HttpServlet {
             }
 
             if (!delete) {
-                CountryEnvironmentParameters cea = ceaFactory.create(system, country, environment, application, ip, domain, url, urlLogin, var1, var2, var3, var4, poolSize);
+                CountryEnvironmentParameters cea = ceaFactory.create(system, country, environment, application, ip, domain, url, urlLogin, var1, var2, var3, var4, poolSize, mobileActivity, mobilePackage);
                 ceaList.add(cea);
             }
         }
@@ -306,7 +308,7 @@ public class UpdateCountryEnvParam extends HttpServlet {
     }
 
     private List<CountryEnvDeployType> getCountryEnvironmentDeployTypeFromParameter(HttpServletRequest request, ApplicationContext appContext, String system, String country, String environment, JSONArray json) throws JSONException {
-        List<CountryEnvDeployType> cedList = new ArrayList();
+        List<CountryEnvDeployType> cedList = new ArrayList<>();
         IFactoryCountryEnvDeployType cedFactory = appContext.getBean(IFactoryCountryEnvDeployType.class);
 
         for (int i = 0; i < json.length(); i++) {
@@ -325,7 +327,7 @@ public class UpdateCountryEnvParam extends HttpServlet {
     }
 
     private List<CountryEnvLink> getCountryEnvironmentLinkFromParameter(HttpServletRequest request, ApplicationContext appContext, String system, String country, String environment, JSONArray json) throws JSONException {
-        List<CountryEnvLink> ceiList = new ArrayList();
+        List<CountryEnvLink> ceiList = new ArrayList<>();
         IFactoryCountryEnvLink ceiFactory = appContext.getBean(IFactoryCountryEnvLink.class);
 
         for (int i = 0; i < json.length(); i++) {

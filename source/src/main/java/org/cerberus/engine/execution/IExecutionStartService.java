@@ -28,6 +28,12 @@ import org.cerberus.exception.CerberusException;
  */
 public interface IExecutionStartService {
     
+    /**
+     *
+     * @param tCExecution
+     * @return
+     * @throws CerberusException
+     */
     TestCaseExecution startExecution(TestCaseExecution tCExecution) throws CerberusException;
     
 }
