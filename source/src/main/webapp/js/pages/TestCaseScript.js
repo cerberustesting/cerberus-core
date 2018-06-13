@@ -23,6 +23,8 @@ var allDelete = false;
 var Tags = [];
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
+    	
+    	initModalDataLib();
 
         $("#nav-property").on('mouseenter', 'a', function (ev) {
             try {
@@ -918,13 +920,11 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
                         nothing = false
                         stopNothing = true;
                     }
-
                 } else {
                     if (stopAllDelete !== true) {
                         allDelete = false;
                         stopAllDelete = true;
                     }
-
                     if (stopNothing !== true) {
                         nothing = true;
                     }
@@ -1099,7 +1099,6 @@ function drawInheritedProperty(propList) {
         var cacheExpire = $("<div class='col-sm-2 form-group' name='fieldExpire'></div>").append($("<label></label>").text("cacheExpire")).append(cacheExpireInput);
         var retryNb = $("<div class='col-sm-2 form-group' name='fieldRetryNb'></div>").append($("<label></label>").text(doc.getDocLabel("testcasecountryproperties", "RetryNb"))).append(retryNbInput);
         var retryPeriod = $("<div class='col-sm-2 form-group' name='fieldRetryPeriod'></div>").append($("<label></label>").text(doc.getDocLabel("testcasecountryproperties", "RetryPeriod"))).append(retryPeriodInput);
-
 
         var selectAllBtn = $("<button disabled></button>").addClass("btn btn-default btn-sm").append($("<span></span>").addClass("glyphicon glyphicon-check")).click(function () {
             country.find("input[type='checkbox']").prop('checked', true);
@@ -3183,6 +3182,7 @@ function setPlaceholderAction(actionElement) {
     var placeHoldersList = {
         "fr": [
             {"type": "Unknown", "object": null, "property": null},
+            {"type": "dragAndDrop", "object": "Chemin de l'élement", "property": "destination de l'élément"},
             {"type": "click", "object": "Chemin vers l'élement à cliquer", "property": null},
             {"type": "mouseLeftButtonPress", "object": "Chemin vers l'élement à cibler", "property": null},
             {"type": "mouseLeftButtonRelease", "object": "Chemin vers l'élement", "property": null},
@@ -3219,6 +3219,7 @@ function setPlaceholderAction(actionElement) {
             {"type": "removeDifference", "object": "Action Depreciée", "property": "Action Depreciée"}
         ], "en": [
             {"type": "Unknown", "object": null, "property": null},
+            {"type": "dragAndDrop", "object": "Element path", "property": "Destination Element Path"},
             {"type": "click", "object": "Element path", "property": null},
             {"type": "mouseLeftButtonPress", "object": "Element path", "property": null},
             {"type": "mouseLeftButtonRelease", "object": "Element path", "property": null},
