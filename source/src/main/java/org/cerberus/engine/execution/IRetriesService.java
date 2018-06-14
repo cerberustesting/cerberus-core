@@ -20,7 +20,6 @@
 package org.cerberus.engine.execution;
 
 import org.cerberus.crud.entity.TestCaseExecution;
-import org.cerberus.crud.entity.TestCaseExecutionQueue;
 
 public interface IRetriesService {
 
@@ -32,10 +31,5 @@ public interface IRetriesService {
      * @param tCExecution */
     void manageRetries(TestCaseExecution tCExecution);
 
-    /**
-     * Retry management, in case the result is not (OK or NE), we
-     * execute the job again reducing the retry to 1.
-     *
-     * @param tCExecutionQueue */
-    void manageRetries(final TestCaseExecutionQueue tCExecutionQueue);
+
 }

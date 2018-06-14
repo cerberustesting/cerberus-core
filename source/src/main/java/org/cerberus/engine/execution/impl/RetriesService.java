@@ -19,6 +19,8 @@
  */
 package org.cerberus.engine.execution.impl;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionQueue;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
@@ -31,6 +33,11 @@ public class RetriesService implements IRetriesService {
 
     @Autowired
     private ITestCaseExecutionQueueService executionQueueService;
+
+    /**
+     * The associated {@link org.apache.logging.log4j.Logger} to this class
+     */
+    private static final Logger LOG = LogManager.getLogger(RetriesService.class);
 
     /**
      * Retry management, in case the result is not (OK or NE), we execute the
@@ -59,15 +66,19 @@ public class RetriesService implements IRetriesService {
         }
     }
 
-    @Override
-    public void manageRetries(final TestCaseExecutionQueue tCExecutionQueue) {
+    private void manageRetries(final TestCaseExecutionQueue tCExecutionQueue) {
         // copy ExecutionQueue
         TestCaseExecutionQueue newExeQueue = tCExecutionQueue;
 
         // Forcing init value for that new queue execution : exeid=0, no debugflag and State = QUEUED
         int newRetry = newExeQueue.getRetries() - 1;
         if (newRetry < 0) {
+            LOG.debug("Execution not retried because no more retry.");
             return; // no automatic retry if newRetry <=0
+        }
+        if (TestCaseExecutionQueue.State.CANCELLED.toString().equals(newExeQueue.getState().toString())) {
+            LOG.debug("Execution not retried because Current Queue Entry is CANCELLED.");
+            return; // no automatic retry if source queue has been cancelled. #1752
         }
         newExeQueue.setId(0);
         newExeQueue.setDebugFlag("N");
