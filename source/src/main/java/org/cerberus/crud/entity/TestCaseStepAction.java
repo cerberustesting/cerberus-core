@@ -88,6 +88,7 @@ public class TestCaseStepAction {
     public static final String ACTION_SCROLLTO = "scrollTo";
     public static final String ACTION_INSTALLAPP = "installApp";
     public static final String ACTION_REMOVEAPP = "removeApp";
+    public static final String ACTION_DRAGANDDROP = "dragAndDrop";
 
 
     // DEPRECATED

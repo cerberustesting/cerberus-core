@@ -19,6 +19,7 @@
  */
 package org.cerberus.engine.gwt.impl;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import org.apache.logging.log4j.Logger;
@@ -283,6 +284,9 @@ public class ActionService implements IActionService {
                     break;
                 case TestCaseStepAction.ACTION_REMOVEAPP:
                     res = this.doActionRemoveApp(tCExecution, value1);
+                    break;
+                case TestCaseStepAction.ACTION_DRAGANDDROP:
+                    res = this.doActionDragAndDrop(tCExecution, value1, value2);
                     break;
                 /**
                  * DEPRECATED ACTIONS FROM HERE.
@@ -1156,6 +1160,39 @@ public class ActionService implements IActionService {
         message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
         return message;
 
+    }
+    
+    public MessageEvent doActionDragAndDrop(TestCaseExecution tCExecution, String value1, String value2) throws IOException {
+    	MessageEvent message;
+        try {
+            /**
+             * Check source and target are not null
+             */
+            if (StringUtil.isNullOrEmpty(value1)) {
+                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_DRAGANDDROP);
+                message.setDescription(message.getDescription().replace("%ELEMENT%", value1));
+                return message;
+            }else if(StringUtil.isNullOrEmpty(value2)) {
+            	message = new MessageEvent(MessageEventEnum.ACTION_FAILED_DRAGANDDROP);
+                message.setDescription(message.getDescription().replace("%ELEMENT%", value2));
+                return message;
+            }           
+            Identifier identifierDrag = identifierService.convertStringToIdentifier(value1);
+            Identifier identifierDrop = identifierService.convertStringToIdentifier(value2);
+            identifierService.checkWebElementIdentifier(identifierDrag.getIdentifier());
+            identifierService.checkWebElementIdentifier(identifierDrop.getIdentifier());
+            
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
+                return webdriverService.doSeleniumActionDragAndDrop(tCExecution.getSession(), identifierDrag, identifierDrop);
+            }
+            message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+            message.setDescription(message.getDescription().replace("%ACTION%", "Select"));
+            message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
+            return message;
+        }catch (CerberusEventException ex) {
+            LOG.fatal("Error doing Action DragAndDrop :" + ex);
+            return ex.getMessageError();
+        }
     }
 
     private MessageEvent doActionCallService(TestCaseStepActionExecution testCaseStepActionExecution, String value1) {

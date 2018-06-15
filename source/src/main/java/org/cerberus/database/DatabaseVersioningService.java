@@ -7756,6 +7756,15 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add("ALTER TABLE `testcaselabel` DROP FOREIGN KEY `FK_testcaselabel_02`;");
         a.add("ALTER TABLE `testcaselabel` ADD CONSTRAINT `FK_testcaselabel_02` FOREIGN KEY (`LabelId`)   REFERENCES `label` (`Id`) ON DELETE RESTRICT ON UPDATE CASCADE;");
 
+        
+        // Add Action dragAndDrop into invariant
+        // 1350
+        b = new StringBuilder();
+        b.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ");
+        b.append("('ACTION', 'dragAndDrop', '7000', 'Drag an element and drop it to a specific target', '')");
+        a.add(b.toString());
+
+        
         return a;
     }
 
