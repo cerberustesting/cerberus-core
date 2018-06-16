@@ -92,10 +92,8 @@ public interface IEmailGenerationService {
      * @param Tag
      * @param campaign
      * @param to
-     * @param ciResult
-     * @param ciScore
      * @return
      * @throws Exception
      */
-    public Email generateNotifyEndTagExecution(String Tag, String campaign, String to, String ciResult, double ciScore) throws Exception;
+    public Email generateNotifyEndTagExecution(String Tag, String campaign, String to) throws Exception;
 }

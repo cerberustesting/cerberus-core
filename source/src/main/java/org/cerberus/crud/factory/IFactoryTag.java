@@ -34,13 +34,30 @@ public interface IFactoryTag {
      * @param description
      * @param campaign
      * @param dateEndQueue
+     * @param nbExe
+     * @param nbExeUsefull
+     * @param nbOK
      * @param usrCreated
      * @param dateCreated
+     * @param nbKO
+     * @param nbFA
      * @param usrModif
+     * @param nbPE
+     * @param nbQU
+     * @param nbQE
+     * @param nbCA
+     * @param nbNA
+     * @param nbWE
+     * @param nbNE
      * @param dateModif
+     * @param ciResult
+     * @param ciScoreThreshold
+     * @param ciScore
      * @return
      */
     Tag create(long id, String tag, String description, String campaign, Timestamp dateEndQueue,
+            int nbExe, int nbExeUsefull, int nbOK, int nbKO, int nbFA, int nbNA, int nbNE, int nbWE, int nbPE, int nbQU, int nbQE, int nbCA,
+            int ciScore, int ciScoreThreshold, String ciResult,
             String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif);
 
     /**

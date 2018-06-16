@@ -142,6 +142,7 @@ public interface ITestCaseExecutionService {
      * @param sort
      * @param searchTerm
      * @param individualSearch
+     * @param individualLike
      * @return
      * @throws CerberusException
      */
@@ -154,6 +155,14 @@ public interface ITestCaseExecutionService {
      * @throws CerberusException
      */
     AnswerList readByTag(String tag) throws CerberusException;
+
+    /**
+     *
+     * @param tag
+     * @return
+     * @throws CerberusException
+     */
+    Integer readNbByTag(String tag) throws CerberusException;
 
     /**
      *

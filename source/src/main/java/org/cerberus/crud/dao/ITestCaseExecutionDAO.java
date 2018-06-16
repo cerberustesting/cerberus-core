@@ -161,6 +161,14 @@ public interface ITestCaseExecutionDAO {
     public AnswerList readByTag(String tag) throws CerberusException;
 
     /**
+     * Read TestCaseExecution By Tag
+     * @param tag Tag used to filter execution
+     * @return AnswerList that contains a list of TestCaseExecution object enriched with TestCase and Application objects
+     * @throws CerberusException
+     */
+    public Integer readNbByTag(String tag) throws CerberusException;
+
+    /**
      *
      * @param start
      * @param amount

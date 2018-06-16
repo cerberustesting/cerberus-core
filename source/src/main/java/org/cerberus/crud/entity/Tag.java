@@ -31,6 +31,21 @@ public class Tag {
     private String description;
     private String campaign;
     private Timestamp DateEndQueue;
+    private int nbExe;
+    private int nbExeUsefull;
+    private int nbOK;
+    private int nbKO;
+    private int nbFA;
+    private int nbNA;
+    private int nbNE;
+    private int nbWE;
+    private int nbPE;
+    private int nbQU;
+    private int nbQE;
+    private int nbCA;
+    private int ciScore;
+    private int ciScoreThreshold;
+    private String ciResult;
     private String UsrCreated;
     private Timestamp DateCreated;
     private String UsrModif;
@@ -66,6 +81,126 @@ public class Tag {
 
     public void setDateEndQueue(Timestamp DateEndQueue) {
         this.DateEndQueue = DateEndQueue;
+    }
+
+    public int getNbExe() {
+        return nbExe;
+    }
+
+    public void setNbExe(int nbExe) {
+        this.nbExe = nbExe;
+    }
+
+    public int getNbExeUsefull() {
+        return nbExeUsefull;
+    }
+
+    public void setNbExeUsefull(int nbExeUsefull) {
+        this.nbExeUsefull = nbExeUsefull;
+    }
+
+    public int getNbOK() {
+        return nbOK;
+    }
+
+    public void setNbOK(int nbOK) {
+        this.nbOK = nbOK;
+    }
+
+    public int getNbKO() {
+        return nbKO;
+    }
+
+    public void setNbKO(int nbKO) {
+        this.nbKO = nbKO;
+    }
+
+    public int getNbFA() {
+        return nbFA;
+    }
+
+    public void setNbFA(int nbFA) {
+        this.nbFA = nbFA;
+    }
+
+    public int getNbNA() {
+        return nbNA;
+    }
+
+    public void setNbNA(int nbNA) {
+        this.nbNA = nbNA;
+    }
+
+    public int getNbNE() {
+        return nbNE;
+    }
+
+    public void setNbNE(int nbNE) {
+        this.nbNE = nbNE;
+    }
+
+    public int getNbWE() {
+        return nbWE;
+    }
+
+    public void setNbWE(int nbWE) {
+        this.nbWE = nbWE;
+    }
+
+    public int getNbPE() {
+        return nbPE;
+    }
+
+    public void setNbPE(int nbPE) {
+        this.nbPE = nbPE;
+    }
+
+    public int getNbQU() {
+        return nbQU;
+    }
+
+    public void setNbQU(int nbQU) {
+        this.nbQU = nbQU;
+    }
+
+    public int getNbQE() {
+        return nbQE;
+    }
+
+    public void setNbQE(int nbQE) {
+        this.nbQE = nbQE;
+    }
+
+    public int getNbCA() {
+        return nbCA;
+    }
+
+    public void setNbCA(int nbCA) {
+        this.nbCA = nbCA;
+    }
+
+    public int getCiScore() {
+        return ciScore;
+    }
+
+    public void setCiScore(int ciScore) {
+        this.ciScore = ciScore;
+    }
+
+    public int getCiScoreThreshold() {
+        return ciScoreThreshold;
+    }
+
+    public void setCiScoreThreshold(int ciScoreThreshold) {
+        this.ciScoreThreshold = ciScoreThreshold;
+    }
+
+    public String getCiResult() {
+        return ciResult;
+    }
+
+    public void setCiResult(String ciResult) {
+        this.ciResult = ciResult;
     }
 
     public String getUsrCreated() {

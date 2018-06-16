@@ -780,8 +780,8 @@ public class ExecutionRunService implements IExecutionRunService {
                             AnswerList answerListQueue = new AnswerList<>();
                             answerListQueue = executionQueueService.readQueueOpen(tCExecution.getTag());
                             if (answerListQueue.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && (answerListQueue.getDataList().isEmpty())) {
-                                LOG.debug("No More executions in (queue) on tag : " + tCExecution.getTag() + " - " + answerListQueue.getDataList().size() + " " + answerListQueue.getMessageCodeString() + " - ");
-                                tagService.updateDateEndQueue(tCExecution.getTag(), new Timestamp(new Date().getTime()));
+                                LOG.debug("No More executions (in queue or running) on tag : " + tCExecution.getTag() + " - " + answerListQueue.getDataList().size() + " " + answerListQueue.getMessageCodeString() + " - ");
+                                tagService.updateEndOfQueueData(tCExecution.getTag());
                                 if (!StringUtil.isNullOrEmpty(currentTag.getCampaign())) {
                                     // We get the campaig here and potencially send the notification.
                                     emailService.generateAndSendNotifyEndTagExecution(tCExecution.getTag(), currentTag.getCampaign());

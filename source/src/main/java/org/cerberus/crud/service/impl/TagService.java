@@ -20,23 +20,30 @@
 package org.cerberus.crud.service.impl;
 
 import java.sql.Timestamp;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.ITagDAO;
 import org.cerberus.crud.entity.Tag;
+import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.factory.IFactoryTag;
 import org.cerberus.crud.service.ITagService;
+import org.cerberus.crud.service.ITestCaseExecutionService;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.service.ciresult.ICIService;
 import org.cerberus.service.email.IEmailService;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -53,6 +60,10 @@ public class TagService implements ITagService {
     private IFactoryTag factoryTag;
     @Autowired
     private IEmailService emailService;
+    @Autowired
+    private ITestCaseExecutionService testCaseExecutionService;
+    @Autowired
+    private ICIService ciService;
 
     private static final Logger LOG = LogManager.getLogger("TagService");
 
@@ -110,8 +121,57 @@ public class TagService implements ITagService {
     }
 
     @Override
-    public Answer updateDateEndQueue(String tag, Timestamp newDate) {
-        return tagDAO.updateDateEndQueue(tag, newDate);
+    public Answer updateEndOfQueueData(String tag) {
+
+        try {
+            Tag mytag = convert(readByKey(tag));
+
+//            List<TestCaseExecution> testCaseExecutions = testCaseExecutionService.readLastExecutionAndExecutionInQueueByTag(tag);
+//            List<TestCaseExecution> testCaseExecutionsTot = testCaseExecutionService.convert(testCaseExecutionService.readByTag(tag));
+//            Map<String, Integer> axisMap = new HashMap<>();
+//            Integer total;
+//            total = testCaseExecutions.size();
+//            for (TestCaseExecution execution : testCaseExecutions) {
+//                if (axisMap.containsKey(execution.getControlStatus())) {
+//                    axisMap.put(execution.getControlStatus(), axisMap.get(execution.getControlStatus()) + 1);
+//                } else {
+//                    axisMap.put(execution.getControlStatus(), 1);
+//                }
+//            }
+            // Total execution.
+            mytag.setNbExe(testCaseExecutionService.readNbByTag(tag));
+
+            // End of queue is now.
+            mytag.setDateEndQueue(new Timestamp(new Date().getTime()));
+            
+            // All the rest of the data are coming from ResultCI Servlet.
+            JSONObject jsonResponse = ciService.getCIResult(tag);
+            mytag.setCiResult(jsonResponse.getString("result"));
+            mytag.setCiScore(jsonResponse.getInt("CI_finalResult"));
+            mytag.setCiScoreThreshold(jsonResponse.getInt("CI_finalResultThreshold"));
+            mytag.setNbOK(jsonResponse.getInt("status_OK_nbOfExecution"));
+            mytag.setNbKO(jsonResponse.getInt("status_KO_nbOfExecution"));
+            mytag.setNbFA(jsonResponse.getInt("status_FA_nbOfExecution"));
+            mytag.setNbNA(jsonResponse.getInt("status_NA_nbOfExecution"));
+            mytag.setNbNE(jsonResponse.getInt("status_NE_nbOfExecution"));
+            mytag.setNbWE(jsonResponse.getInt("status_WE_nbOfExecution"));
+            mytag.setNbPE(jsonResponse.getInt("status_PE_nbOfExecution"));
+            mytag.setNbQU(jsonResponse.getInt("status_QU_nbOfExecution"));
+            mytag.setNbQE(jsonResponse.getInt("status_QE_nbOfExecution"));
+            mytag.setNbCA(jsonResponse.getInt("status_CA_nbOfExecution"));
+            mytag.setNbExeUsefull(jsonResponse.getInt("TOTAL_nbOfExecution"));
+
+            return tagDAO.updateDateEndQueue(mytag);
+
+        } catch (CerberusException ex) {
+            java.util.logging.Logger.getLogger(TagService.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+
+        } catch (Exception ex) {
+            java.util.logging.Logger.getLogger(TagService.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+
     }
 
     @Override
@@ -120,7 +180,7 @@ public class TagService implements ITagService {
         answerTag = readByKey(tagS);
         Tag tag = (Tag) answerTag.getItem();
         if (tag == null) {
-            Answer ans = tagDAO.create(factoryTag.create(0, tagS, "", campaign, null, user, null, user, null));
+            Answer ans = tagDAO.create(factoryTag.create(0, tagS, "", campaign, null, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", user, null, user, null));
             if (!StringUtil.isNullOrEmpty(campaign)) {
                 emailService.generateAndSendNotifyStartTagExecution(tagS, campaign);
             }

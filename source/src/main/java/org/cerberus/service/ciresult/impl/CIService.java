@@ -22,8 +22,6 @@ package org.cerberus.service.ciresult.impl;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ITestCaseExecutionService;
@@ -72,6 +70,7 @@ public class CIService implements ICIService {
             int nbkop2 = 0;
             int nbkop3 = 0;
             int nbkop4 = 0;
+            int nbkop5 = 0;
 
             long longStart = 0;
             long longEnd = 0;
@@ -145,6 +144,9 @@ public class CIService implements ICIService {
                             case 4:
                                 nbkop4++;
                                 break;
+                            case 5:
+                                nbkop5++;
+                                break;
                         }
                     }
                 }
@@ -155,15 +157,17 @@ public class CIService implements ICIService {
                 LOG.warn(ex);
             }
 
-            float pond1 = parameterService.getParameterFloatByKey("cerberus_ci_okcoefprio1", "", 0);
-            float pond2 = parameterService.getParameterFloatByKey("cerberus_ci_okcoefprio2", "", 0);
-            float pond3 = parameterService.getParameterFloatByKey("cerberus_ci_okcoefprio3", "", 0);
-            float pond4 = parameterService.getParameterFloatByKey("cerberus_ci_okcoefprio4", "", 0);
+            int pond1 = parameterService.getParameterIntegerByKey("cerberus_ci_okcoefprio1", "", 0);
+            int pond2 = parameterService.getParameterIntegerByKey("cerberus_ci_okcoefprio2", "", 0);
+            int pond3 = parameterService.getParameterIntegerByKey("cerberus_ci_okcoefprio3", "", 0);
+            int pond4 = parameterService.getParameterIntegerByKey("cerberus_ci_okcoefprio4", "", 0);
+            int pond5 = parameterService.getParameterIntegerByKey("cerberus_ci_okcoefprio5", "", 0);
             String result;
-            float resultCal = (nbkop1 * pond1) + (nbkop2 * pond2) + (nbkop3 * pond3) + (nbkop4 * pond4);
+            int resultCalThreshold = parameterService.getParameterIntegerByKey("cerberus_ci_threshold", "", 100);
+            int resultCal = (nbkop1 * pond1) + (nbkop2 * pond2) + (nbkop3 * pond3) + (nbkop4 * pond4) + (nbkop5 * pond5);
             if ((nbtotal > 0) && nbqu + nbpe > 0) {
                 result = "PE";
-            } else if ((resultCal < 1) && (nbtotal > 0) && nbok > 0) {
+            } else if ((resultCal < resultCalThreshold) && (nbtotal > 0) && nbok > 0) {
                 result = "OK";
             } else {
                 result = "KO";
@@ -176,11 +180,14 @@ public class CIService implements ICIService {
             jsonResponse.put("CI_OK_prio2", pond2);
             jsonResponse.put("CI_OK_prio3", pond3);
             jsonResponse.put("CI_OK_prio4", pond4);
+            jsonResponse.put("CI_OK_prio5", pond5);
             jsonResponse.put("CI_finalResult", resultCal);
+            jsonResponse.put("CI_finalResultThreshold", resultCalThreshold);
             jsonResponse.put("NonOK_prio1_nbOfExecution", nbkop1);
             jsonResponse.put("NonOK_prio2_nbOfExecution", nbkop2);
             jsonResponse.put("NonOK_prio3_nbOfExecution", nbkop3);
             jsonResponse.put("NonOK_prio4_nbOfExecution", nbkop4);
+            jsonResponse.put("NonOK_prio5_nbOfExecution", nbkop5);
             jsonResponse.put("status_OK_nbOfExecution", nbok);
             jsonResponse.put("status_KO_nbOfExecution", nbko);
             jsonResponse.put("status_FA_nbOfExecution", nbfa);

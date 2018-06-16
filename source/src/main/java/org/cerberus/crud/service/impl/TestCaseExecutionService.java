@@ -186,6 +186,11 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     }
 
     @Override
+    public Integer readNbByTag(String tag) throws CerberusException {
+        return testCaseExecutionDao.readNbByTag(tag);
+    }
+
+    @Override
     public AnswerList readDistinctEnvCoutnryBrowserByTag(String tag) {
         return testCaseExecutionDao.readDistinctEnvCoutnryBrowserByTag(tag);
     }

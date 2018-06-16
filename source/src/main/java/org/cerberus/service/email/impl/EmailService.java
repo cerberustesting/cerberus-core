@@ -266,7 +266,7 @@ public class EmailService implements IEmailService {
 
                         Email email = null;
                         try {
-                            email = emailGenerationService.generateNotifyEndTagExecution(tag, campaign, myCampaign.getDistribList(), jsonResponse.getString("result"), (double) jsonResponse.get("CI_finalResult"));
+                            email = emailGenerationService.generateNotifyEndTagExecution(tag, campaign, myCampaign.getDistribList());
                         } catch (Exception ex) {
                             LOG.warn("Exception generating email for End Tag Execution :" + ex);
                             return new MessageEvent(MessageEventEnum.GENERIC_ERROR).resolveDescription("REASON", ex.toString());

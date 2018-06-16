@@ -21,6 +21,7 @@ package org.cerberus.service.email.impl;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -324,117 +325,136 @@ public class EmailGenerationService implements IEmailGenerationService {
     }
 
     @Override
-    public Email generateNotifyEndTagExecution(String tag, String campaign, String to, String ciResult, double ciScore) throws Exception {
-        Email email = new Email();
-        String system = "";
+    public Email generateNotifyEndTagExecution(String tag, String campaign, String to) throws Exception {
+        try {
 
-        String from = parameterService.getParameterStringByKey("cerberus_notification_tagexecutionend_from", system, "Cerberus <no.reply@cerberus-testing.org>");
-        String host = parameterService.findParameterByKey("cerberus_smtp_host", system).getValue();
-        int port = Integer.valueOf(parameterService.findParameterByKey("cerberus_smtp_port", system).getValue());
-        String userName = parameterService.findParameterByKey("cerberus_smtp_username", system).getValue();
-        String password = parameterService.findParameterByKey("cerberus_smtp_password", system).getValue();
-        String subject = parameterService.getParameterStringByKey("cerberus_notification_tagexecutionend_subject", system, "Empty Subject. Please define parameter 'cerberus_notification_tagexecutionend_subject'.");
-        String body = parameterService.getParameterStringByKey("cerberus_notification_tagexecutionend_body", system, "Empty Body. Please define parameter 'cerberus_notification_tagexecutionend_body'.");
+            Email email = new Email();
+            String system = "";
 
-        String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", system, "");
-        if (StringUtil.isNullOrEmpty(cerberusUrl)) {
-            cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", system, "");
-        }
+            String from = parameterService.getParameterStringByKey("cerberus_notification_tagexecutionend_from", system, "Cerberus <no.reply@cerberus-testing.org>");
+            String host = parameterService.findParameterByKey("cerberus_smtp_host", system).getValue();
+            int port = Integer.valueOf(parameterService.findParameterByKey("cerberus_smtp_port", system).getValue());
+            String userName = parameterService.findParameterByKey("cerberus_smtp_username", system).getValue();
+            String password = parameterService.findParameterByKey("cerberus_smtp_password", system).getValue();
+            String subject = parameterService.getParameterStringByKey("cerberus_notification_tagexecutionend_subject", system, "Empty Subject. Please define parameter 'cerberus_notification_tagexecutionend_subject'.");
+            String body = parameterService.getParameterStringByKey("cerberus_notification_tagexecutionend_body", system, "Empty Body. Please define parameter 'cerberus_notification_tagexecutionend_body'.");
 
-        StringBuilder urlreporttag = new StringBuilder();
-        urlreporttag.append(cerberusUrl);
-        urlreporttag.append("/ReportingExecutionByTag.jsp?Tag=");
-        urlreporttag.append(tag);
-
-        // Body replace.
-        body = body.replace("%TAG%", tag);
-        body = body.replace("%URLTAGREPORT%", urlreporttag.toString());
-        body = body.replace("%CAMPAIGN%", campaign);
-        body = body.replace("%CIRESULT%", ciResult);
-        body = body.replace("%CISCORE%", String.format("%.2f", ciScore));
-
-        Tag mytag = tagService.convert(tagService.readByKey(tag));
-        long tagDur = (mytag.getDateEndQueue().getTime() - mytag.getDateCreated().getTime()) / 60000;
-        body = body.replace("%TAGDURATION%", String.valueOf(tagDur));
-        body = body.replace("%TAGSTART%", String.valueOf(mytag.getDateCreated()));
-        body = body.replace("%TAGEND%", String.valueOf(mytag.getDateEndQueue()));
-
-        // Get TestcaseExecutionDetail in order to replace %TAGGLOBALSTATUS% or %TAGTCDETAIL%.
-        List<TestCaseExecution> testCaseExecutions = testCaseExecutionService.readLastExecutionAndExecutionInQueueByTag(tag);
-        StringBuilder globalStatus = new StringBuilder();
-        globalStatus.append("<table><thead><tr style=\"background-color:#cad3f1; font-style:bold\"><td>Status</td><td>Number</td><td>%</td></tr></thead><tbody>");
-        Map<String, Integer> axisMap = new HashMap<>();
-        Integer total;
-        total = testCaseExecutions.size();
-        for (TestCaseExecution execution : testCaseExecutions) {
-            if (axisMap.containsKey(execution.getControlStatus())) {
-                axisMap.put(execution.getControlStatus(), axisMap.get(execution.getControlStatus()) + 1);
-            } else {
-                axisMap.put(execution.getControlStatus(), 1);
+            String cerberusUrl = parameterService.getParameterStringByKey("cerberus_gui_url", system, "");
+            if (StringUtil.isNullOrEmpty(cerberusUrl)) {
+                cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", system, "");
             }
-        }
-        float per = 0;
-        DecimalFormat df = new DecimalFormat("#.##");
-        // Build the status list in the correct order.
-        List<String> statList = new ArrayList<>();
-        statList.add("OK");
-        statList.add("KO");
-        statList.add("FA");
-        statList.add("NA");
-        statList.add("NE");
-        statList.add("WE");
-        statList.add("PE");
-        statList.add("QU");
-        statList.add("QE");
-        statList.add("CA");
-        for (String string : statList) {
-            if (axisMap.containsKey(string)) {
-                globalStatus.append("<tr>");
-                globalStatus.append("<td>").append(string).append("</td>");
-                globalStatus.append("<td>").append(axisMap.get(string)).append("</td>");
-                per = (float) axisMap.get(string) / (float) total;
-                per = per * 100;
-                globalStatus.append("<td>").append(String.format("%.2f", per)).append("</td>");
-                globalStatus.append("</tr>");
+
+            Tag mytag = tagService.convert(tagService.readByKey(tag));
+
+            StringBuilder urlreporttag = new StringBuilder();
+            urlreporttag.append(cerberusUrl);
+            urlreporttag.append("/ReportingExecutionByTag.jsp?Tag=");
+            urlreporttag.append(tag);
+
+            // Body replace.
+            body = body.replace("%TAG%", tag);
+            body = body.replace("%URLTAGREPORT%", urlreporttag.toString());
+            body = body.replace("%CAMPAIGN%", campaign);
+            body = body.replace("%CIRESULT%", mytag.getCiResult());
+            body = body.replace("%CISCORE%", String.valueOf(mytag.getCiScore()));
+            body = body.replace("%CISCORETHRESHOLD%", String.valueOf(mytag.getCiScoreThreshold()));
+
+            long tagDur = (mytag.getDateEndQueue().getTime() - mytag.getDateCreated().getTime()) / 60000;
+            body = body.replace("%TAGDURATION%", String.valueOf(tagDur));
+            body = body.replace("%TAGSTART%", String.valueOf(mytag.getDateCreated()));
+            body = body.replace("%TAGEND%", String.valueOf(mytag.getDateEndQueue()));
+
+            // Get TestcaseExecutionDetail in order to replace %TAGGLOBALSTATUS%.
+            StringBuilder globalStatus = new StringBuilder();
+            globalStatus.append("<table><thead><tr style=\"background-color:#cad3f1; font-style:bold\"><td>Status</td><td>Number</td><td>%</td></tr></thead><tbody>");
+            // Map that will contain the color of every status.
+            Map<String, String> statColorMap = new HashMap<>();
+            statColorMap.put(TestCaseExecution.CONTROLSTATUS_OK, TestCaseExecution.CONTROLSTATUS_OK_COL);
+            statColorMap.put(TestCaseExecution.CONTROLSTATUS_KO, TestCaseExecution.CONTROLSTATUS_KO_COL);
+            statColorMap.put(TestCaseExecution.CONTROLSTATUS_FA, TestCaseExecution.CONTROLSTATUS_FA_COL);
+            statColorMap.put(TestCaseExecution.CONTROLSTATUS_NA, TestCaseExecution.CONTROLSTATUS_NA_COL);
+            statColorMap.put(TestCaseExecution.CONTROLSTATUS_NE, TestCaseExecution.CONTROLSTATUS_NE_COL);
+            statColorMap.put(TestCaseExecution.CONTROLSTATUS_WE, TestCaseExecution.CONTROLSTATUS_WE_COL);
+            statColorMap.put(TestCaseExecution.CONTROLSTATUS_PE, TestCaseExecution.CONTROLSTATUS_PE_COL);
+            statColorMap.put(TestCaseExecution.CONTROLSTATUS_QU, TestCaseExecution.CONTROLSTATUS_QU_COL);
+            statColorMap.put(TestCaseExecution.CONTROLSTATUS_QE, TestCaseExecution.CONTROLSTATUS_QE_COL);
+            statColorMap.put(TestCaseExecution.CONTROLSTATUS_CA, TestCaseExecution.CONTROLSTATUS_CA_COL);
+            // Map that will contain the nb of execution for global status.
+            Map<String, Integer> statNbMap = new HashMap<>();
+            statNbMap.put(TestCaseExecution.CONTROLSTATUS_OK, mytag.getNbOK());
+            statNbMap.put(TestCaseExecution.CONTROLSTATUS_KO, mytag.getNbKO());
+            statNbMap.put(TestCaseExecution.CONTROLSTATUS_FA, mytag.getNbFA());
+            statNbMap.put(TestCaseExecution.CONTROLSTATUS_NA, mytag.getNbNA());
+            statNbMap.put(TestCaseExecution.CONTROLSTATUS_NE, mytag.getNbNE());
+            statNbMap.put(TestCaseExecution.CONTROLSTATUS_WE, mytag.getNbWE());
+            statNbMap.put(TestCaseExecution.CONTROLSTATUS_PE, mytag.getNbPE());
+            statNbMap.put(TestCaseExecution.CONTROLSTATUS_QU, mytag.getNbQU());
+            statNbMap.put(TestCaseExecution.CONTROLSTATUS_QE, mytag.getNbQE());
+            statNbMap.put(TestCaseExecution.CONTROLSTATUS_CA, mytag.getNbCA());
+            // Status list in the correct order.
+            float per = 0;
+            List<String> statList = new ArrayList<>(Arrays.asList("OK", "KO", "FA", "NA", "NE", "WE", "PE", "QU", "QE", "CA"));
+            for (String string : statList) {
+                if (statNbMap.get(string) > 0) {
+                    globalStatus.append("<tr>");
+                    globalStatus.append("<td style=\"background-color:").append(statColorMap.get(string)).append(";\">").append(string).append("</td>");
+                    globalStatus.append("<td>").append(statNbMap.get(string)).append("</td>");
+                    per = (float) statNbMap.get(string) / (float) mytag.getNbExeUsefull();
+                    per = per * 100;
+                    globalStatus.append("<td>").append(String.format("%.2f", per)).append("</td>");
+                    globalStatus.append("</tr>");
+                }
             }
-        }
-        globalStatus.append("<tr style=\"background-color:#cad3f1; font-style:bold\"><td>TOTAL</td>");
-        globalStatus.append("<td>").append(total).append("</td>");
-        globalStatus.append("<td></td></tr>");
-        globalStatus.append("</tbody></table>");
-        body = body.replace("%TAGGLOBALSTATUS%", globalStatus.toString());
+            globalStatus.append("<tr style=\"background-color:#cad3f1; font-style:bold\"><td>TOTAL</td>");
+            globalStatus.append("<td>").append(mytag.getNbExeUsefull()).append("</td>");
+            globalStatus.append("<td></td></tr>");
+            globalStatus.append("</tbody></table>");
+            body = body.replace("%TAGGLOBALSTATUS%", globalStatus.toString());
 
-        Integer totalTC = 0;
-        StringBuilder detailStatus = new StringBuilder();
-        detailStatus.append("<table><thead><tr style=\"background-color:#cad3f1; font-style:bold\"><td>Test</td><td>Test Case</td><td>Description</td><td>Environment</td><td>Country</td><td>Robot Decli</td><td>Status</td></tr></thead><tbody>");
-        for (TestCaseExecution execution : testCaseExecutions) {
-            if (!TestCaseExecution.CONTROLSTATUS_OK.equals(execution.getControlStatus())) {
-                detailStatus.append("<tr>");
-                detailStatus.append("<td>").append(execution.getTest()).append("</td>");
-                detailStatus.append("<td>").append(execution.getTestCase()).append("</td>");
-                detailStatus.append("<td>").append(execution.getDescription()).append("</td>");
-                detailStatus.append("<td>").append(execution.getEnvironment()).append("</td>");
-                detailStatus.append("<td>").append(execution.getCountry()).append("</td>");
-                detailStatus.append("<td>").append(execution.getRobotDecli()).append("</td>");
-                detailStatus.append("<td>").append(execution.getControlStatus()).append("</td>");
-                detailStatus.append("</tr>");
-                totalTC++;
+            // Get TestcaseExecutionDetail in order to replace %TAGTCDETAIL%.
+            StringBuilder detailStatus = new StringBuilder();
+            List<TestCaseExecution> testCaseExecutions = testCaseExecutionService.readLastExecutionAndExecutionInQueueByTag(tag);
+            Integer totalTC = 0;
+            boolean odd = true;
+            detailStatus.append("<table><thead><tr style=\"background-color:#cad3f1; font-style:bold\"><td>Test</td><td>Test Case</td><td>Description</td><td>Environment</td><td>Country</td><td>Robot Decli</td><td>Status</td></tr></thead><tbody>");
+            for (TestCaseExecution execution : testCaseExecutions) {
+                if (!TestCaseExecution.CONTROLSTATUS_OK.equals(execution.getControlStatus())) {
+                    if (odd) {
+                        detailStatus.append("<tr style=\"background-color:#E3E3E3\">");
+                    } else {
+                        detailStatus.append("<tr>");
+                    }
+                    odd = !odd;
+                    detailStatus.append("<td>").append(execution.getTest()).append("</td>");
+                    detailStatus.append("<td>").append(execution.getTestCase()).append("</td>");
+                    detailStatus.append("<td>").append(execution.getDescription()).append("</td>");
+                    detailStatus.append("<td>").append(execution.getEnvironment()).append("</td>");
+                    detailStatus.append("<td>").append(execution.getCountry()).append("</td>");
+                    detailStatus.append("<td>").append(execution.getRobotDecli()).append("</td>");
+                    detailStatus.append("<td style=\"background-color:").append(statColorMap.get(execution.getControlStatus())).append(";\">").append(execution.getControlStatus()).append("</td>");
+                    detailStatus.append("</tr>");
+                    totalTC++;
+                }
             }
+            detailStatus.append("<tr style=\"background-color:#cad3f1; font-style:bold\">");
+            detailStatus.append("<td>TOTAL</td>");
+            detailStatus.append("<td colspan=\"6\">").append(totalTC).append("</td>");
+            detailStatus.append("</tr>");
+            detailStatus.append("</tbody></table>");
+            body = body.replace("%TAGTCDETAIL%", detailStatus.toString());
+
+            // Subject replace.
+            subject = subject.replace("%TAG%", tag);
+            subject = subject.replace("%CAMPAIGN%", campaign);
+
+            email = emailFactory.create(host, port, userName, password, true, subject, body, from, to, null);
+
+            return email;
+
+        } catch (Exception e) {
+            LOG.error(e.toString(), e);
         }
-        detailStatus.append("<tr style=\"background-color:#cad3f1; font-style:bold\">");
-        detailStatus.append("<td>TOTAL</td>");
-        detailStatus.append("<td colspan=\"6\">").append(totalTC).append("</td>");
-        detailStatus.append("</tr>");
-        detailStatus.append("</tbody></table>");
-        body = body.replace("%TAGTCDETAIL%", detailStatus.toString());
-
-        // Subject replace.
-        subject = subject.replace("%TAG%", tag);
-        subject = subject.replace("%CAMPAIGN%", campaign);
-
-        email = emailFactory.create(host, port, userName, password, true, subject, body, from, to, null);
-
-        return email;
+        return null;
 
     }
 

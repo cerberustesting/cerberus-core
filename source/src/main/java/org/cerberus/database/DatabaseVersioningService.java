@@ -7752,10 +7752,41 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add(b.toString());
 
         // Prevent delete of a label if links still exist to testcases.
-        // 1349
+        // 1349-1350
         a.add("ALTER TABLE `testcaselabel` DROP FOREIGN KEY `FK_testcaselabel_02`;");
         a.add("ALTER TABLE `testcaselabel` ADD CONSTRAINT `FK_testcaselabel_02` FOREIGN KEY (`LabelId`)   REFERENCES `label` (`Id`) ON DELETE RESTRICT ON UPDATE CASCADE;");
 
+        // Added stats columns to Tag table and move CIScore management from float to Integer.
+        // 1351-1354
+        b = new StringBuilder();
+        b.append("ALTER TABLE `tag` ADD COLUMN `nbExe` INT NULL DEFAULT 0 AFTER `DateEndQueue`, ADD COLUMN `nbExeUsefull` INT NULL DEFAULT 0 AFTER `nbExe`,");
+        b.append("ADD COLUMN `nbOK` INT NULL DEFAULT 0 AFTER `nbExeUsefull`, ADD COLUMN `nbKO` INT NULL DEFAULT 0 AFTER `nbOK`, ADD COLUMN `nbFA` INT NULL DEFAULT 0 AFTER `nbKO`, ADD COLUMN `nbNA` INT NULL DEFAULT 0 AFTER `nbFA`,");
+        b.append("ADD COLUMN `nbNE` INT NULL DEFAULT 0 AFTER `nbNA`, ADD COLUMN `nbWE` INT NULL DEFAULT 0 AFTER `nbNE`, ADD COLUMN `nbPE` INT NULL DEFAULT 0 AFTER `nbWE`, ADD COLUMN `nbQU` INT NULL DEFAULT 0 AFTER `nbPE`,");
+        b.append("ADD COLUMN `nbQE` INT NULL DEFAULT 0 AFTER `nbQU`, ADD COLUMN `nbCA` INT NULL DEFAULT 0 AFTER `nbQE`,");
+        b.append("ADD COLUMN `CIScore` INT NULL DEFAULT 0 AFTER `nbCA`, ADD COLUMN `CIScoreThreshold` INT NULL DEFAULT 0 AFTER `CIScore`, ADD COLUMN `CIResult` VARCHAR(45) NULL DEFAULT '' AFTER `CIScoreThreshold`;");
+        a.add(b.toString());
+        a.add("UPDATE parameter SET value=CAST(value*100 AS INT), description = concat(description, \" (integer)\") where param like 'cerberus_ci%';");
+        a.add("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ('', 'cerberus_ci_threshold', '100', 'Target integer value above which the result CI is KO.');");
+        b = new StringBuilder();
+        b.append("UPDATE parameter SET value=REPLACE(REPLACE(value, '<td>%CISCORE%</td>', '<td>%CISCORE%</td><td>%CISCORETHRESHOLD%</td>'), '<td>CI Score</td>', '<td>CI Score</td><td>CI Score Threshold</td>')");
+        b.append(", description = 'Cerberus End of tag execution notification email body. %TAG%, %URLTAGREPORT%, %CAMPAIGN%, %TAGDURATION%, %TAGSTART%, %TAGEND%, %CIRESULT%, %CISCORE%, %CISCORETHRESHOLD%, %TAGGLOBALSTATUS% and %TAGTCDETAIL% can be used as variables.' ");
+        b.append("where param like 'cerberus_notification_tagexecutionend_body%';");
+        a.add(b.toString());
+
+        // Created Tag System table.
+        // 1352
+//        b = new StringBuilder();
+//        b.append("CREATE TABLE `tagsystem` (");
+//        b.append("  `ID` INT(11) NOT NULL AUTO_INCREMENT,");
+//        b.append("  `TagID` INT(11) NOT NULL,");
+//        b.append("  `System` VARCHAR(45) NOT NULL DEFAULT '',");
+//        b.append("  `UsrCreated` VARCHAR(45) NOT NULL DEFAULT '',");
+//        b.append("  `DateCreated` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,");
+//        b.append("  `UsrModif` VARCHAR(45) NULL DEFAULT '',");
+//        b.append("  `DateModif` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01',");
+//        b.append("  PRIMARY KEY (`ID`),");
+//        b.append("  INDEX `IX_tagsystem_01` (`System` ASC)) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
+//        a.add(b.toString());
         return a;
     }
 

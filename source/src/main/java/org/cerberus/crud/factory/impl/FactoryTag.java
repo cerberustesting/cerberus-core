@@ -29,9 +29,11 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class FactoryTag implements IFactoryTag {
-
+    
     @Override
     public Tag create(long id, String tag, String description, String campaign, Timestamp dateEndQueue,
+            int nbExe, int nbExeUsefull, int nbOK, int nbKO, int nbFA, int nbNA, int nbNE, int nbWE, int nbPE, int nbQU, int nbQE, int nbCA,
+            int ciScore, int ciScoreThreshold, String ciResult,
             String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif) {
         Tag newObject = new Tag();
         newObject.setId(id);
@@ -39,19 +41,36 @@ public class FactoryTag implements IFactoryTag {
         newObject.setDescription(description);
         newObject.setCampaign(campaign);
         newObject.setDateEndQueue(dateEndQueue);
+        
+        newObject.setNbExe(nbExe);
+        newObject.setNbExeUsefull(nbExeUsefull);
+        newObject.setNbOK(nbOK);
+        newObject.setNbKO(nbKO);
+        newObject.setNbFA(nbFA);
+        newObject.setNbNA(nbNA);
+        newObject.setNbNE(nbNE);
+        newObject.setNbWE(nbWE);
+        newObject.setNbPE(nbPE);
+        newObject.setNbQU(nbQU);
+        newObject.setNbQE(nbQE);
+        newObject.setNbCA(nbCA);
+        newObject.setCiScore(ciScore);
+        newObject.setCiScoreThreshold(ciScoreThreshold);
+        newObject.setCiResult(ciResult);
+        
         newObject.setUsrModif(usrModif);
         newObject.setUsrCreated(usrCreated);
         newObject.setDateModif(dateModif);
         newObject.setDateCreated(dateCreated);
+        
         return newObject;
     }
-
+    
     @Override
     public Tag create(String tag) {
         Tag newObject = new Tag();
         newObject.setTag(tag);
         return newObject;
     }
-
-
+    
 }

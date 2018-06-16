@@ -19,7 +19,6 @@
  */
 package org.cerberus.crud.service;
 
-import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 
@@ -120,10 +119,9 @@ public interface ITagService {
     /**
      *
      * @param tag
-     * @param newDate
      * @return
      */
-    Answer updateDateEndQueue(String tag, Timestamp newDate);
+    Answer updateEndOfQueueData(String tag);
 
     /**
      *

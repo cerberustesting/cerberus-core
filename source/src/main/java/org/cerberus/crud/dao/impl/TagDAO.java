@@ -495,22 +495,37 @@ public class TagDAO implements ITagDAO {
     }
 
     @Override
-    public Answer updateDateEndQueue(String tag, Timestamp newDate) {
+    public Answer updateDateEndQueue(Tag tag) {
         MessageEvent msg = null;
-        String query = "UPDATE tag SET DateEndQueue = ? WHERE Tag = ?";
+        String query = "UPDATE tag SET DateEndQueue = ?, nbExe = ?, nbExeUsefull = ?, nbOK = ?, nbKO = ?, nbFA = ?, nbNA = ?, nbNE = ?, nbWE = ?, nbPE = ?, nbQU = ?, nbQE = ?, nbCA = ?, CIScore = ?, CIScoreThreshold = ?, CIResult = ?  WHERE Tag = ?";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
-            LOG.debug("SQL.param.tag : " + tag);
+            LOG.debug("SQL.param.tag : " + tag.getTag());
         }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
                 int i = 1;
-                preStat.setTimestamp(i++, newDate);
-                preStat.setString(i++, tag);
+                preStat.setTimestamp(i++, tag.getDateEndQueue());
+                preStat.setInt(i++, tag.getNbExe());
+                preStat.setInt(i++, tag.getNbExeUsefull());
+                preStat.setInt(i++, tag.getNbOK());
+                preStat.setInt(i++, tag.getNbKO());
+                preStat.setInt(i++, tag.getNbFA());
+                preStat.setInt(i++, tag.getNbNA());
+                preStat.setInt(i++, tag.getNbNE());
+                preStat.setInt(i++, tag.getNbWE());
+                preStat.setInt(i++, tag.getNbPE());
+                preStat.setInt(i++, tag.getNbQU());
+                preStat.setInt(i++, tag.getNbQE());
+                preStat.setInt(i++, tag.getNbCA());
+                preStat.setInt(i++, tag.getCiScore());
+                preStat.setInt(i++, tag.getCiScoreThreshold());
+                preStat.setString(i++, tag.getCiResult());
+                preStat.setString(i++, tag.getTag());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -550,9 +565,27 @@ public class TagDAO implements ITagDAO {
         Timestamp dateModif = rs.getTimestamp("tag.DateModif");
         Timestamp dateCreated = rs.getTimestamp("tag.DateCreated");
 
+        int nbExe = rs.getInt("tag.nbExe");
+        int nbExeUsefull = rs.getInt("tag.nbExeUsefull");
+        int nbOK = rs.getInt("tag.nbOK");
+        int nbKO = rs.getInt("tag.nbKO");
+        int nbFA = rs.getInt("tag.nbFA");
+        int nbNA = rs.getInt("tag.nbNA");
+        int nbNE = rs.getInt("tag.nbNE");
+        int nbWE = rs.getInt("tag.nbWE");
+        int nbPE = rs.getInt("tag.nbPE");
+        int nbQU = rs.getInt("tag.nbQU");
+        int nbQE = rs.getInt("tag.nbQE");
+        int nbCA = rs.getInt("tag.nbCA");
+        int ciScore = rs.getInt("tag.ciScore");
+        int ciScoreThreshold = rs.getInt("tag.ciScoreThreshold");
+        String ciResult = rs.getString("tag.ciResult");
+
         //TODO remove when working in test with mockito and autowired
         factoryTag = new FactoryTag();
-        return factoryTag.create(id, tag, description, campaign, dateEndQueue, usrCreated, dateCreated, usrModif, dateModif);
+        Tag newTag = factoryTag.create(id, tag, description, campaign, dateEndQueue, nbExe, nbExeUsefull, nbOK, nbKO, nbFA, nbNA, nbNE, nbWE, nbPE, nbQU, nbQE, nbCA, ciScore, ciScoreThreshold, ciResult, usrCreated, dateCreated, usrModif, dateModif);
+
+        return newTag;
     }
 
     @Override
@@ -599,7 +632,7 @@ public class TagDAO implements ITagDAO {
         }
         try (Connection connection = databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(query.toString());
-        		Statement stm = connection.createStatement();) {
+                Statement stm = connection.createStatement();) {
 
             int i = 1;
             if (!StringUtil.isNullOrEmpty(campaign)) {
@@ -615,9 +648,9 @@ public class TagDAO implements ITagDAO {
                 preStat.setString(i++, individualColumnSearchValue);
             }
 
-            try(ResultSet resultSet = preStat.executeQuery();
-            		ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
-            	//gets the data
+            try (ResultSet resultSet = preStat.executeQuery();
+                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+                //gets the data
                 while (resultSet.next()) {
                     distinctValues.add(resultSet.getString("distinctValues") == null ? "" : resultSet.getString("distinctValues"));
                 }
@@ -642,11 +675,11 @@ public class TagDAO implements ITagDAO {
                     msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
                     answer = new AnswerList<>(distinctValues, nrTotalRows);
                 }
-            }catch (SQLException exception) {
+            } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-            } 
+            }
         } catch (Exception e) {
             LOG.warn("Unable to execute query : " + e.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",

@@ -137,15 +137,25 @@ public class TestCaseExecution {
      * Invariant PROPERTY TYPE String.
      */
     public static final String CONTROLSTATUS_OK = "OK"; // Test executed and everything was fine.
+    public static final String CONTROLSTATUS_OK_COL = "#5CB85C"; // Test executed and everything was fine.
     public static final String CONTROLSTATUS_KO = "KO"; // Test executed and 1 control has reported a bug. --> Ticket to be open for dev team.
+    public static final String CONTROLSTATUS_KO_COL = "#D9534F"; // Test executed and 1 control has reported a bug. --> Ticket to be open for dev team.
     public static final String CONTROLSTATUS_FA = "FA"; // Test failed to be executed. --> Problem is in the test itself.
+    public static final String CONTROLSTATUS_FA_COL = "#F0AD4E"; // Test failed to be executed. --> Problem is in the test itself.
     public static final String CONTROLSTATUS_NA = "NA"; // Test could not be executed because no data could be retreive for testing.
+    public static final String CONTROLSTATUS_NA_COL = "#F1C40F"; // Test could not be executed because no data could be retreive for testing.
     public static final String CONTROLSTATUS_NE = "NE"; // Test was not executed.
+    public static final String CONTROLSTATUS_NE_COL = "#aaa"; // Test was not executed.
     public static final String CONTROLSTATUS_WE = "WE"; // Test is waiting for a manual testing.
+    public static final String CONTROLSTATUS_WE_COL = "#34495E"; // Test is waiting for a manual testing.
     public static final String CONTROLSTATUS_PE = "PE"; // Test is currently beeing executed.
+    public static final String CONTROLSTATUS_PE_COL = "#3498DB"; // Test is currently beeing executed.
     public static final String CONTROLSTATUS_CA = "CA"; // Test has been cancelled by user.
+    public static final String CONTROLSTATUS_CA_COL = "#F0AD4E"; // Test has been cancelled by user.
     public static final String CONTROLSTATUS_QU = "QU"; // Test is still waiting in queue.
+    public static final String CONTROLSTATUS_QU_COL = "#BF00BF"; // Test is still waiting in queue.
     public static final String CONTROLSTATUS_QE = "QE"; // Test is stuck in Queue.
+    public static final String CONTROLSTATUS_QE_COL = "#5C025C"; // Test is stuck in Queue.
 
     public static final String MANUAL_Y = "Y";
     public static final String MANUAL_N = "N";

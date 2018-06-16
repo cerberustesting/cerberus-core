@@ -595,23 +595,25 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         String color = null;
 
         if ("OK".equals(controlStatus)) {
-            color = "#5CB85C";
+            color = TestCaseExecution.CONTROLSTATUS_OK_COL;
         } else if ("KO".equals(controlStatus)) {
-            color = "#D9534F";
-        } else if ("FA".equals(controlStatus) || "CA".equals(controlStatus)) {
-            color = "#F0AD4E";
+            color = TestCaseExecution.CONTROLSTATUS_KO_COL;
+        } else if ("FA".equals(controlStatus)) {
+            color = TestCaseExecution.CONTROLSTATUS_FA_COL;
+        } else if ("CA".equals(controlStatus)) {
+            color = TestCaseExecution.CONTROLSTATUS_CA_COL;
         } else if ("NA".equals(controlStatus)) {
-            color = "#F1C40F";
+            color = TestCaseExecution.CONTROLSTATUS_NA_COL;
         } else if ("NE".equals(controlStatus)) {
-            color = "#aaa";
+            color = TestCaseExecution.CONTROLSTATUS_NE_COL;
         } else if ("WE".equals(controlStatus)) {
-            color = "#34495E";
+            color = TestCaseExecution.CONTROLSTATUS_WE_COL;
         } else if ("PE".equals(controlStatus)) {
-            color = "#3498DB";
+            color = TestCaseExecution.CONTROLSTATUS_PE_COL;
         } else if ("QU".equals(controlStatus)) {
-            color = "#BF00BF";
+            color = TestCaseExecution.CONTROLSTATUS_QU_COL;
         } else if ("QE".equals(controlStatus)) {
-            color = "#5C025C";
+            color = TestCaseExecution.CONTROLSTATUS_QE_COL;
         } else {
             color = "#000000";
         }
