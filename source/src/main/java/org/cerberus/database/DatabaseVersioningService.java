@@ -7756,8 +7756,15 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add("ALTER TABLE `testcaselabel` DROP FOREIGN KEY `FK_testcaselabel_02`;");
         a.add("ALTER TABLE `testcaselabel` ADD CONSTRAINT `FK_testcaselabel_02` FOREIGN KEY (`LabelId`)   REFERENCES `label` (`Id`) ON DELETE RESTRICT ON UPDATE CASCADE;");
 
+        // Add Action dragAndDrop into invariant
+        // 1351
+        b = new StringBuilder();
+        b.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ");
+        b.append("('ACTION', 'dragAndDrop', '7000', 'Drag an element and drop it to a specific target', '')");
+        a.add(b.toString());
+
         // Added stats columns to Tag table and move CIScore management from float to Integer.
-        // 1351-1354
+        // 1352-1355
         b = new StringBuilder();
         b.append("ALTER TABLE `tag` ADD COLUMN `nbExe` INT NULL DEFAULT 0 AFTER `DateEndQueue`, ADD COLUMN `nbExeUsefull` INT NULL DEFAULT 0 AFTER `nbExe`,");
         b.append("ADD COLUMN `nbOK` INT NULL DEFAULT 0 AFTER `nbExeUsefull`, ADD COLUMN `nbKO` INT NULL DEFAULT 0 AFTER `nbOK`, ADD COLUMN `nbFA` INT NULL DEFAULT 0 AFTER `nbKO`, ADD COLUMN `nbNA` INT NULL DEFAULT 0 AFTER `nbFA`,");
@@ -7774,7 +7781,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add(b.toString());
 
         // Created Tag System table.
-        // 1352
+        // 1356
 //        b = new StringBuilder();
 //        b.append("CREATE TABLE `tagsystem` (");
 //        b.append("  `ID` INT(11) NOT NULL AUTO_INCREMENT,");
@@ -7787,6 +7794,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 //        b.append("  PRIMARY KEY (`ID`),");
 //        b.append("  INDEX `IX_tagsystem_01` (`System` ASC)) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
 //        a.add(b.toString());
+        
+        
         return a;
     }
 

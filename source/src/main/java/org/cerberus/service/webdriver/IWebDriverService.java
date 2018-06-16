@@ -20,6 +20,7 @@
 package org.cerberus.service.webdriver;
 
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.List;
 import org.cerberus.engine.entity.Identifier;
 import org.cerberus.engine.entity.MessageEvent;
@@ -117,4 +118,6 @@ public interface IWebDriverService {
     MessageEvent doSeleniumActionFocusDefaultIframe(Session session);
 
     MessageEvent doSeleniumActionRightClick(Session session, Identifier identifier);
+    
+    MessageEvent doSeleniumActionDragAndDrop(Session session, Identifier object, Identifier property) throws IOException;
 }

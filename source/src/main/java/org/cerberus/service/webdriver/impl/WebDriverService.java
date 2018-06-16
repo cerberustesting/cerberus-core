@@ -1052,6 +1052,57 @@ public class WebDriverService implements IWebDriverService {
             return ex.getMessageError();
         }
     }
+    
+    // we need to implement the right selenium dragAndDrop method when it works
+    @Override
+    public MessageEvent doSeleniumActionDragAndDrop(Session session, Identifier drag, Identifier drop) throws IOException{
+        MessageEvent message;
+        try {
+	        AnswerItem answerDrag = this.getSeleniumElement(session, drag, true, true);
+	        AnswerItem answerDrop = this.getSeleniumElement(session, drop, true, true);
+	        if (answerDrag.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode()) &&
+	        		answerDrop.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode())) {
+	            WebElement source = (WebElement) answerDrag.getItem();
+	            WebElement target = (WebElement) answerDrop.getItem();
+	            if (source != null && target != null ) {
+	            	((JavascriptExecutor) session.getDriver()).executeScript("function createEvent(typeOfEvent) {\n" + "var event =document.createEvent(\"CustomEvent\");\n"
+	                        + "event.initCustomEvent(typeOfEvent,true, true, null);\n" + "event.dataTransfer = {\n" + "data: {},\n"
+	                        + "setData: function (key, value) {\n" + "this.data[key] = value;\n" + "},\n"
+	                        + "getData: function (key) {\n" + "return this.data[key];\n" + "}\n" + "};\n" + "return event;\n"
+	                        + "}\n" + "\n" + "function dispatchEvent(element, event,transferData) {\n"
+	                        + "if (transferData !== undefined) {\n" + "event.dataTransfer = transferData;\n" + "}\n"
+	                        + "if (element.dispatchEvent) {\n" + "element.dispatchEvent(event);\n"
+	                        + "} else if (element.fireEvent) {\n" + "element.fireEvent(\"on\" + event.type, event);\n" + "}\n"
+	                        + "}\n" + "\n" + "function simulateHTML5DragAndDrop(element, destination) {\n"
+	                        + "var dragStartEvent =createEvent('dragstart');\n" + "dispatchEvent(element, dragStartEvent);\n"
+	                        + "var dropEvent = createEvent('drop');\n"
+	                        + "dispatchEvent(destination, dropEvent,dragStartEvent.dataTransfer);\n"
+	                        + "var dragEndEvent = createEvent('dragend');\n"
+	                        + "dispatchEvent(element, dragEndEvent,dropEvent.dataTransfer);\n" + "}\n" + "\n"
+	                        + "var source = arguments[0];\n" + "var destination = arguments[1];\n"
+	                        + "simulateHTML5DragAndDrop(source,destination);", source, target);
+	            }
+	            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_DRAGANDDROP);
+	            message.setDescription(message.getDescription().replace("%SOURCE%", drag.getIdentifier() + "=" + drag.getLocator()));
+	            message.setDescription(message.getDescription().replace("%TARGET%", drop.getIdentifier() + "=" + drop.getLocator()));
+	            return message;
+	        }else {
+	        	 message = new MessageEvent(MessageEventEnum.ACTION_FAILED_DRAGANDDROP_NO_SUCH_ELEMENT);
+	             message.setDescription(message.getDescription().replace("%ELEMENT%", drag.getIdentifier() + "=" + drag.getLocator()));
+	             return message;
+	        }
+        }catch (NoSuchElementException exception) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_DRAGANDDROP_NO_SUCH_ELEMENT);
+            message.setDescription(message.getDescription().replace("%ELEMENT%", drag.getIdentifier() + "=" + drag.getLocator()));
+            LOG.debug(exception.toString());
+            return message;
+        } catch (TimeoutException exception) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_TIMEOUT);
+            message.setDescription(message.getDescription().replace("%TIMEOUT%", String.valueOf(session.getCerberus_selenium_wait_element())));
+            LOG.warn(exception.toString());
+            return message;
+        }  
+    }
 
     private void selectRequestedOption(Select select, Identifier property, String element) throws CerberusEventException {
         MessageEvent message;
@@ -1158,10 +1209,8 @@ public class WebDriverService implements IWebDriverService {
                     message.setDescription(message.getDescription().replace("%IFRAME%", identifier.getIdentifier() + "=" + identifier.getLocator()));
                     return message;
                 }
-
             }
             return answer.getResultMessage();
-
         } catch (NoSuchElementException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_FOCUS_NO_SUCH_ELEMENT);
             message.setDescription(message.getDescription().replace("%IFRAME%", identifier.getIdentifier() + "=" + identifier.getLocator()));
