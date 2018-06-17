@@ -7782,20 +7782,18 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 
         // Created Tag System table.
         // 1356
-//        b = new StringBuilder();
-//        b.append("CREATE TABLE `tagsystem` (");
-//        b.append("  `ID` INT(11) NOT NULL AUTO_INCREMENT,");
-//        b.append("  `TagID` INT(11) NOT NULL,");
-//        b.append("  `System` VARCHAR(45) NOT NULL DEFAULT '',");
-//        b.append("  `UsrCreated` VARCHAR(45) NOT NULL DEFAULT '',");
-//        b.append("  `DateCreated` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,");
-//        b.append("  `UsrModif` VARCHAR(45) NULL DEFAULT '',");
-//        b.append("  `DateModif` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01',");
-//        b.append("  PRIMARY KEY (`ID`),");
-//        b.append("  INDEX `IX_tagsystem_01` (`System` ASC)) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
-//        a.add(b.toString());
-        
-        
+        b = new StringBuilder();
+        b.append("CREATE TABLE `tagsystem` (");
+        b.append("  `Tag` VARCHAR(255) NOT NULL,");
+        b.append("  `System` VARCHAR(45) NOT NULL DEFAULT '',");
+        b.append("  `UsrCreated` VARCHAR(45) NOT NULL DEFAULT '',");
+        b.append("  `DateCreated` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,");
+        b.append("  `UsrModif` VARCHAR(45) NULL DEFAULT '',");
+        b.append("  `DateModif` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01',");
+        b.append("  PRIMARY KEY (`Tag`,`System`),");
+        b.append("  INDEX `IX_tagsystem_01` (`System` ASC)) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
+        a.add(b.toString());
+
         return a;
     }
 
