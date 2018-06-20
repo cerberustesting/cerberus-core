@@ -10,9 +10,10 @@ Glassfish Server v4.1.2
         http://dev.mysql.com/downloads/connector/j/ (mysql)
         https://mariadb.com/kb/en/library/about-mariadb-connector-j/ (MariaDb)
   - In case your default distribution does not use Oracle jdk, you can get it from the web and modify glassfish config :
-      file : glassfish/config/asenv.conf
+      file : glassfish/config/asenv.conf (or glassfish/config/asenv.bat for Windows)
       can be modified in order to add the following line :
        AS_JAVA=/home/user/local/jdk1.8.0_xx
+       (or set AS_JAVA=/home/user/local/jdk1.8.0_xx for Windows)
       pointing to the location of the choosen jdk folder.
   
 
