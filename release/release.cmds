@@ -25,30 +25,36 @@
 #       - <current database version> is the current database version
 
 
-#clone cerberus repository
+# Clone cerberus repository
 rm -rf cerberus-source
 git clone https://github.com/cerberustesting/cerberus-source.git
 cd cerberus-source
 
 # Prepare the release version
-# Update database version 
+# Update database version inside DatabaseMaintenance.jsp in order to automaticly update until latest database change
 database_version=$((${DATABASE_VERSION}+1))
 sqlLimit="Integer SQLLimit = "$database_version"; // "${RELEASE_VERSION}" Version LEVEL."
 awk -v sqlLimit="$sqlLimit" '{gsub(/Integer SQLLimit = (.*)/,sqlLimit,$0); print }' source/src/main/webapp/DatabaseMaintenance.jsp > source/src/main/webapp/DatabaseMaintenance.jsp.back && mv source/src/main/webapp/DatabaseMaintenance.jsp.back source/src/main/webapp/DatabaseMaintenance.jsp
 
+# Modify instalation scripts with the new version.
+# Linux --> 02DeployApp.sh
 awk '/asadmin deploy/{print "$GLASSFISHPATH/asadmin undeploy --target server --cascade=true Cerberus-${RELEASE_VERSION}"}1' bin/02DeployApp.sh > bin/02DeployApp.sh.back && mv bin/02DeployApp.sh.back bin/02DeployApp.sh
 awk '/asadmin deploy/ {$0="$GLASSFISHPATH/asadmin deploy --target server --contextroot Cerberus --availabilityenabled=true $MYPATH/../Cerberus-${RELEASE_VERSION}.war"} {print}' bin/02DeployApp.sh > bin/02DeployApp.sh.back && mv bin/02DeployApp.sh.back bin/02DeployApp.sh
+# Windows --> 02DeployApp.bat
 awk '/asadmin.bat deploy/{print "CALL %GLASSFISHPATH%asadmin.bat undeploy --target server --cascade=true Cerberus-${RELEASE_VERSION}"}1' bin/02DeployApp.bat > bin/02DeployApp.bat.back && mv bin/02DeployApp.bat.back bin/02DeployApp.bat
-awk '/asadmin.bat deploy/ {$0="CALL %GLASSFISHPATH%asadmin.bat deploy --target server --contextroot Cerberus --availabilityenabled=true %MYPATH%\\..\\source\\target\\Cerberus-${RELEASE_VERSION}.war"} {print}' bin/02DeployApp.bat > bin/02DeployApp.bat.back && mv bin/02DeployApp.bat.back bin/02DeployApp.bat
+awk '/asadmin.bat deploy/ {$0="CALL %GLASSFISHPATH%asadmin.bat deploy --target server --contextroot Cerberus --availabilityenabled=true %MYPATH%\\..\\Cerberus-${RELEASE_VERSION}.war"} {print}' bin/02DeployApp.bat > bin/02DeployApp.bat.back && mv bin/02DeployApp.bat.back bin/02DeployApp.bat
+# Commit changes.
 git add bin/02DeployApp.sh bin/02DeployApp.bat source/src/main/webapp/DatabaseMaintenance.jsp
 git commit -m 'chore:source prepare the new ${RELEASE_VERSION} version and update database version to ${DATABASE_VERSION}'
 
 # Execute release
 mvn --batch-mode -Prelease release:prepare -Dtag=cerberus-testing-${RELEASE_VERSION} -DreleaseVersion=${RELEASE_VERSION} -DdevelopmentVersion=${NEXT_DEVELOPMENT_VERSION}
 mvn release:perform
+
+# Push all changes
 git push origin master
 
-# Create new changelog file
+# Create new changelog file from template
 nextRelease=$(echo ${NEXT_DEVELOPMENT_VERSION} | grep -P '^.*(?=(\-SNAPSHOT))' -o)
 filenameAdoc="source/src/main/resources/documentation/include/en/changelog_"$nextRelease"_en.adoc"
 cp source/src/main/resources/documentation/include/en/changelog_template_en.adoc $filenameAdoc
