@@ -470,7 +470,7 @@ public class SikuliService implements ISikuliService {
         }
         if (actionResult.getResultMessage().getCodeString().equals(new MessageEvent(MessageEventEnum.ACTION_FAILED).getCodeString())) {
             MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_KEYPRESS_OTHER);
-            mes.setDescription(mes.getDescription().replace("%KEY%", text) + " - " + actionResult.getMessageDescription());
+            mes.setDescription(mes.getDescription().replace("%KEY%", text).replace("%REASON%", actionResult.getMessageDescription()));
             return mes;
         }
 

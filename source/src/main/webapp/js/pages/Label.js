@@ -93,7 +93,9 @@ function generateLabelTree() {
         for (var i = 0; i < data.contentTable.length; i++) {
             //1st : Create the object
             var ele = new Object();
-            ele.text = "<span class='label label-primary' style='background-color:" + data.contentTable[i].color + "' data-toggle='tooltip' data-labelid='" + data.contentTable[i].id + "' title='' data-original-title=''>" + data.contentTable[i].label + "</span>";
+            
+            ele.text = "<span class='label label-primary' onclick=\"editEntryClick('" + data.contentTable[i].id + "', '" + data.contentTable[i].system + "');\" style='background-color:" + data.contentTable[i].color + "' data-toggle='tooltip' data-labelid='" + data.contentTable[i].id + "' title='' data-original-title=''>" + data.contentTable[i].label + "</span>";
+            ele.text += "<span style='margin-left: 5px; margin-right: 5px;' class=''>" + data.contentTable[i].description + "</span>";
             ele.text += "<span class='badge badge-pill badge-secondary'>" + data.contentTable[i].reqType + "</span>";
             ele.text += "<span class='badge badge-pill badge-secondary'>" + data.contentTable[i].reqStatus + "</span>";
             ele.text += "<span class='badge badge-pill badge-secondary'>" + data.contentTable[i].reqCriticity + "</span>";

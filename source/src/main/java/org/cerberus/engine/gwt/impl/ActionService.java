@@ -347,9 +347,6 @@ public class ActionService implements IActionService {
         return testCaseStepActionExecution;
     }
 
-
-
-
     private MessageEvent doActionInstallApp(TestCaseExecution tCExecution, String appPath) {
         MessageEvent message;
 
@@ -373,7 +370,6 @@ public class ActionService implements IActionService {
         }
     }
 
-
     private MessageEvent doActionRemoveApp(TestCaseExecution tCExecution, String appPackage) {
         MessageEvent message;
 
@@ -396,7 +392,6 @@ public class ActionService implements IActionService {
             return message;
         }
     }
-
 
     private MessageEvent doActionScrollTo(TestCaseExecution tCExecution, String element, String text) {
         MessageEvent message;
@@ -1003,8 +998,7 @@ public class ActionService implements IActionService {
         if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)
                 || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
             return sikuliService.doSikuliActionOpenApp(tCExecution.getSession(), value1);
-        }
-        else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
+        } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
             return androidAppiumService.openApp(tCExecution.getSession(), value1, value2);
         }
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
@@ -1161,9 +1155,9 @@ public class ActionService implements IActionService {
         return message;
 
     }
-    
+
     public MessageEvent doActionDragAndDrop(TestCaseExecution tCExecution, String value1, String value2) throws IOException {
-    	MessageEvent message;
+        MessageEvent message;
         try {
             /**
              * Check source and target are not null
@@ -1172,16 +1166,16 @@ public class ActionService implements IActionService {
                 message = new MessageEvent(MessageEventEnum.ACTION_FAILED_DRAGANDDROP);
                 message.setDescription(message.getDescription().replace("%ELEMENT%", value1));
                 return message;
-            }else if(StringUtil.isNullOrEmpty(value2)) {
-            	message = new MessageEvent(MessageEventEnum.ACTION_FAILED_DRAGANDDROP);
+            } else if (StringUtil.isNullOrEmpty(value2)) {
+                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_DRAGANDDROP);
                 message.setDescription(message.getDescription().replace("%ELEMENT%", value2));
                 return message;
-            }           
+            }
             Identifier identifierDrag = identifierService.convertStringToIdentifier(value1);
             Identifier identifierDrop = identifierService.convertStringToIdentifier(value2);
             identifierService.checkWebElementIdentifier(identifierDrag.getIdentifier());
             identifierService.checkWebElementIdentifier(identifierDrop.getIdentifier());
-            
+
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
                 return webdriverService.doSeleniumActionDragAndDrop(tCExecution.getSession(), identifierDrag, identifierDrop);
             }
@@ -1189,7 +1183,7 @@ public class ActionService implements IActionService {
             message.setDescription(message.getDescription().replace("%ACTION%", "Select"));
             message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
             return message;
-        }catch (CerberusEventException ex) {
+        } catch (CerberusEventException ex) {
             LOG.fatal("Error doing Action DragAndDrop :" + ex);
             return ex.getMessageError();
         }
