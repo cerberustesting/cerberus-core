@@ -879,7 +879,6 @@ function loadRobotInfo(robot) {
         $("#robotSettings #browser").val("");
         $("#robotEdit").addClass("disabled");
         $('#robotEdit').unbind("click");
-        $("#saveRobotPreferences").addClass("disabled");
 
     } else {
         if (robot[0] !== "") {
@@ -889,7 +888,6 @@ function loadRobotInfo(robot) {
             $("#robotEdit").click(function (e) {
                 openModalRobot_FromRunTest(robot[0], "EDIT");
             });
-            $("#saveRobotPreferences").addClass("disabled");
 
             $.ajax({
                 url: "ReadRobot",
