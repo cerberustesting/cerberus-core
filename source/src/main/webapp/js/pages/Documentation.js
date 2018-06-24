@@ -36,7 +36,7 @@ function initPage() {
     var windowsHeight = $(window).height() + 'px';
     
     var hash = window.location.hash.substr(1);
-    $("#documentationFrame").attr("src", "./documentation/documentation_" + lang + ".html#" + hash);
+    $("#documentationFrame").attr("src", "./documentation/documentation_en.html#" + hash);
     $('#documentationFrame').css('height', windowsHeight);
 
     $('#documentationFrame').load(function () {

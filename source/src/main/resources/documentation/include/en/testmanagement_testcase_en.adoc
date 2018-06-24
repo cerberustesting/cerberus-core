@@ -1,27 +1,29 @@
-=== TestCase List
+=== TestCase
+
+==== TestCase List
 
 image:testcaselistpage.png[TestCaseListPage]
 
-=== Shortcut
+==== Shortcut
 
-==== Edit TestCase
+===== Edit TestCase
 
 image:testcaseshortcutedit.png[TestCaseEdit,200,200]
 
-==== Delete TestCase
+===== Delete TestCase
 
 image:testcaseshortcutdelete.png[TestCaseDelete,200,200]
 
-==== Run TestCase
+===== Run TestCase
 
 image:testcaseshortcutrun.png[TestCaseRun,200,200]
 
-==== Duplicate TestCase
+===== Duplicate TestCase
 
 image:testcaseshortcutduplicate.png[TestCaseDuplicate,200,200]
 
 
-=== TestCase attributes
+==== TestCase attributes
 |=== 
 
 | *Field* | *Description*  
@@ -52,7 +54,34 @@ The Activation Criterias defines condition to enable/block the Testcase to be la
 
 A Testcase can be linked to multiple Labels depending on their assigned system (see labels section)
 
-=== Create TestCase 
+You can define Robot constrains at testcase level in order to force the execution a specific testcase with a specific UserAgent or ScreenSize.
+This is used to test some specific behaviour of a website for a given UserAgent or ScreenSize.
+You can tune the list of UserAgent and ScreenSize proposed in autocomplete mode (on the GUI) by modifying the respective public invariant USERAGENT and SCREENSIZE.
+
+UserAgent and ScreenSize will be defined at execution level following the rule :
+
+|=== 
+
+| *TestCase* | *Robot / Execution* | *UserAgent Result*   
+| UserAgent1 |	| UserAgent1
+|  | UserAgent2 | UserAgent2
+|  |	| user Agent unchanged
+| UserAgent1 | UserAgent2 | UserAgent1
+
+|=== 
+
+|=== 
+
+| *TestCase* | *Robot / Execution* | *ScreenSize Result*   
+| 1024*768 |	| 1024*768
+|  | 640*360 | 640*360
+|  |	| Fullscreen
+| 1024*768 | 640*360 | 1024*768
+
+|=== 
+
+
+==== Create TestCase 
 
 . Go to *[red]#TestCase -> TestCase List#*.
 . Click on *[red]#Create TestCase#*.
@@ -67,7 +96,7 @@ Only the following field are mandatory:
 .. Continue to describe
 .. Click on *[red]#Save#* as soon as you're done.
 
-=== Implement TestCase
+=== TestCase Step
 
 ==== Step
 
@@ -93,7 +122,10 @@ NOTE: You have the possibility to switch the position of your steps by clicking 
 
 image:testcasemovestep1.png[testcaseusestep] image:testcasemovestep2.png[testcaseusestep]
 
-==== Action
+NOTE: It is possible to loop over a step using the following configuration.
+image:testlooptep.png[TestCaseLoopStep]
+
+=== TestCase Action
 
 |=== 
 
@@ -135,7 +167,7 @@ image:testcasemovestep1.png[testcaseusestep] image:testcasemovestep2.png[testcas
 
 |=== 
 
-==== Control
+=== TestCase Control
 
 |===
 | *Control* | *Description* |  *Example* 
@@ -170,7 +202,7 @@ image:testcasemovestep1.png[testcaseusestep] image:testcasemovestep2.png[testcas
 | verifyXmlTreeStructure | TBD | 
 |===
 
-==== Property
+=== TestCase Property
 
 When clicking on Tab image:buttonmanageproperties.png[buttonManageProperties], the Property menu will appear.
 From there you can manage your TestCase properties or see your Inherited Properties - coming from the step libraries of your use steps.
@@ -254,7 +286,7 @@ A service must be referenced in Service Library
 - it can be stored in a datalib and all the field will be parsed using the Subdatas.
 
 
-==== Variables
+=== TestCase Variables
 
 You can use variables in many area of Cerberus. Those variable are used in order to perform some actions of controls in a dynamic way.
 3 types of variables can be created :
@@ -299,7 +331,7 @@ That means that the following syntax :
 
 Please note also that, if at the end of the decode operation, there are still references to %property.???% or %system.???% or %object.%%% in the field, the corresponding test case will report an error and generate an FA status.
 
-===== Property Variables
+==== Property Variables
 
 Property variable allow to have multi row content.
 As a consequence the full syntax will look like this :
@@ -310,13 +342,13 @@ If rowNb is not defined, the 1st row will be used. As a consequence, the syntax 
 
 If SubData is not defined, the key velue subdata will be used.
 
-===== Object Variables
+==== Object Variables
 
 - %object.myobject.value% : Get the application object myobject's value
 - %object.myobject.picturepath% : Get the application object myobject's picture path
 - %object.myobject.pictureurl% : Get the application object myobject's picure url
 
-===== System Variables
+==== System Variables
 
 Below you will find useful properties :
 
@@ -384,40 +416,10 @@ Below you will find useful properties :
 
 |=== 
 
-===== Tricks
+==== Tricks
 
 You will find below some tricks which help you to implement specific test cases.
 
 NOTE: It is possible to create a random property with a number of digit defined. You have to feed the property fields like the screenshot below. This property will be different for each execution. Example: 884592, 004795
 image:testcaserandomproperty.png[TestCaseRandomProperty]
 
-NOTE: It is possible to loop over a step using the following configuration.
-image:testlooptep.png[TestCaseLoopStep]
-
-==== Robot Constrains
-
-You can define Robot constrains at testcase level in order to force the execution a specific testcase with a specific UserAgent or ScreenSize.
-This is used to test some specific behaviour of a website for a given UserAgent or ScreenSize.
-You can tune the list of UserAgent and ScreenSize proposed in autocomplete mode (on the GUI) by modifying the respective public invariant USERAGENT and SCREENSIZE.
-
-UserAgent and ScreenSize will be defined at execution level following the rule :
-
-|=== 
-
-| *TestCase* | *Robot / Execution* | *UserAgent Result*   
-| UserAgent1 |	| UserAgent1
-|  | UserAgent2 | UserAgent2
-|  |	| user Agent unchanged
-| UserAgent1 | UserAgent2 | UserAgent1
-
-|=== 
-
-|=== 
-
-| *TestCase* | *Robot / Execution* | *ScreenSize Result*   
-| 1024*768 |	| 1024*768
-|  | 640*360 | 640*360
-|  |	| Fullscreen
-| 1024*768 | 640*360 | 1024*768
-
-|=== 

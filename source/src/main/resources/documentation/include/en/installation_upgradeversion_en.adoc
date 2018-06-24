@@ -1,0 +1,6 @@
+==== Manual upgrade
+
+Please refer to INSTALL File in the Cerberus.zip package file.
+
+==== Docker upgrade
+

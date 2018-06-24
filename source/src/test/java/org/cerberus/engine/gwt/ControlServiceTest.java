@@ -827,7 +827,7 @@ public class ControlServiceTest {
     public void testDoControlElementNotVisibleWhenPropertyNull() {
         String property = "null";
         String value = "id=test";
-        String msg = "Object is 'null'. This is mandatory in order to perform the control verify element not visible";
+        String msg = "Value1 is 'null'. This is mandatory in order to perform the control verify element not visible";
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
         tcsace.setControl("verifyElementNotVisible");

@@ -26,8 +26,6 @@ For a given testcase running on an application app1, the following rules will ap
 
 | Active | Define if the test is active.
 
-| Automated | Define if the test contains automated testcase.
-
 |=== 
 
 === Create test 
@@ -37,5 +35,4 @@ For a given testcase running on an application app1, the following rules will ap
 .. Feed the *[red]#Test#* field with the test name.
 .. Feed the *[red]#Description#* field with a short description of this test.
 .. Select the activation information in the *[red]#Active#* field.
-.. Select the automation information in the *[red]#Automated#* field.
 .. Click on *[red]#Save#*.
