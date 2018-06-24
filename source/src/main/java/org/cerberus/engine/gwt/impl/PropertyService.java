@@ -125,7 +125,6 @@ public class PropertyService implements IPropertyService {
     @Autowired
     private AndroidAppiumService androidAppiumService;
 
-
     @Override
     public AnswerItem<String> decodeStringWithExistingProperties(String stringToDecode, TestCaseExecution tCExecution,
             TestCaseStepActionExecution testCaseStepActionExecution, boolean forceCalculation) throws CerberusEventException {
@@ -833,17 +832,16 @@ public class PropertyService implements IPropertyService {
         // Try to evaluate Command script
         try {
             if (tCExecution.getApplicationObj().getType().equals(Application.TYPE_APK)) {
-                String message = androidAppiumService.executeCommandString(tCExecution.getSession(),script,"");
+                String message = androidAppiumService.executeCommandString(tCExecution.getSession(), script, "");
 
-                String value="";
-                if(!StringUtil.isNullOrEmpty(message)) {
-                    value=message;
+                String value = "";
+                if (!StringUtil.isNullOrEmpty(message)) {
+                    value = message;
                 }
                 testCaseExecutionData.setValue(value);
                 testCaseExecutionData.setPropertyResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMCOMMAND)
                         .resolveDescription("VALUE", value));
-            }
-            else {
+            } else {
                 MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_FEATURENOTSUPPORTED);
                 res.setDescription(res.getDescription().replace("%APPTYPE%", tCExecution.getApplicationObj().getType()));
                 res.setDescription(res.getDescription().replace("%PROPTYPE%", testCaseExecutionData.getType()));
@@ -1279,12 +1277,14 @@ public class PropertyService implements IPropertyService {
                     MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMJSON_PARAMETERNOTFOUND);
                     res.setDescription(res.getDescription().replace("%URL%", testCaseExecutionData.getValue2()));
                     res.setDescription(res.getDescription().replace("%PARAM%", testCaseExecutionData.getValue1()));
+                    res.setDescription(res.getDescription().replace("%ERROR%", ""));
                     testCaseExecutionData.setPropertyResultMessage(res);
                 }
             } else {
                 MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMJSON_PARAMETERNOTFOUND);
                 res.setDescription(res.getDescription().replace("%URL%", testCaseExecutionData.getValue2()));
                 res.setDescription(res.getDescription().replace("%PARAM%", testCaseExecutionData.getValue1()));
+                res.setDescription(res.getDescription().replace("%ERROR%", ""));
                 testCaseExecutionData.setPropertyResultMessage(res);
 
             }

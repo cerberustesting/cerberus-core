@@ -701,9 +701,9 @@ public class ExecutionRunService implements IExecutionRunService {
              * If an exception is found, set the execution to FA and print the
              * exception
              */
-            MessageGeneral toto = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA);
-            toto.resolveDescription("DETAILMESSAGE", ex.getMessageError().getDescription());
-            tCExecution.setResultMessage(toto);
+            MessageGeneral messageFin = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA);
+            messageFin.setDescription(messageFin.getDescription() + " " + ex.getMessageError().getDescription());
+            tCExecution.setResultMessage(messageFin);
             tCExecution.setControlMessage(tCExecution.getControlMessage() + " Exception: " + ex);
             LOG.error(logPrefix + "Exception found Executing Test " + tCExecution.getId() + " Exception :" + ex.toString(), ex);
         } catch (Exception ex) {
@@ -712,7 +712,7 @@ public class ExecutionRunService implements IExecutionRunService {
              * exception
              */
             MessageGeneral messageFin = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA);
-            messageFin.resolveDescription("DETAILMESSAGE", ex.getMessage());
+            messageFin.setDescription(messageFin.getDescription() + " " + ex.getMessage());
             tCExecution.setResultMessage(messageFin);
             tCExecution.setControlMessage(tCExecution.getControlMessage() + " Exception: " + ex);
             LOG.error(logPrefix + "Exception found Executing Test " + tCExecution.getId() + " Exception :" + ex.toString(), ex);
