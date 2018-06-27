@@ -36,42 +36,45 @@
 #   - 15901: The Google Chrome Selenium node VNC port
 #
 # Volumes:
-#   - MySQL data directory                      : FROM /var/lib/mysql                                                             TO ../localdata/mysql-db      (SERVICE cerberus-db-mysql)
-#   - Cerberus execution screenshots directory  : FROM /usr/local/glassfish4/glassfish/domains/domain1/docroot/CerberusPictures   TO ../localdata/screenshots   (SERVICE cerberus-as-glassfish)
-#   - Cerberus server logs directory            : FROM /usr/local/glassfish4/glassfish/domains/domain1/logs                       TO ../localdata/logs          (SERVICE cerberus-as-glassfish)
+#   - MySQL data directory                      : FROM /var/lib/mysql                                                    TO ../localdata/mysql-db           (SERVICE cerberus-db-mysql)
+#   - Cerberus execution screenshots directory  : FROM /glassfish5/glassfish/domain/cerberus                             TO ../localdata/cerberus-domains   (SERVICE cerberus-as-glassfish)
+#   - Cerberus server logs directory            : FROM /glassfish5/glassfish/domains/cerberus/logs                       TO ../localdata/logs               (SERVICE cerberus-as-glassfish)
 #     ** IMPORTANT **
 #     The default mapping values are for test only. Don't forget to change them to be more relevant with your configuration.
 version: '2'
 services:
-  # Cerebrus internal services
-   cerberus-db-mysql:
-     image: cerberustesting/cerberus-db-mysql:latest
-     expose:
-       - "3306"
-     ports:
-       - "13306:3306"
-     volumes:
-       - ./localdata/mysql-db:/var/lib/mysql
-       - /etc/localtime:/etc/localtime:ro
-     restart: always
-   cerberus-as-glassfish:
-     image: cerberustesting/cerberus-as-glassfish:latest
-     environment:
-       - DATABASE_HOST=cerberus-db-mysql
-       - DATABASE_PORT=3306
-       - GLASSFISH_DOMAIN=cerberus
-     ports:
-       - "18080:8080"
-       - "14848:4848"
-     volumes:
-       - ./localdata/glassfish/cerberus:/usr/local/glassfish4/glassfish/domains/cerberus
-       - ./localdata/glassfish/lib:/usr/local/glassfish4/glassfish/lib
-       - /etc/localtime:/etc/localtime:ro
-     restart: always
-     depends_on:
-       - cerberus-db-mysql
-     links:
-       - cerberus-db-mysql
+  cerberus-db-mysql:
+    image: cerberustesting/cerberus-db-mysql:latest
+    expose:
+      - "3306"
+# If you want expose database, you can use it.
+#    ports:
+#      - "13306:3306"
+    volumes:
+      - ./localdata/mysql-db:/var/lib/mysql
+      - /etc/localtime:/etc/localtime:ro
+    restart: always
+  cerberus-as-glassfish:
+    image: cerberustesting/cerberus-as-glassfish:latest
+    environment:
+      - DATABASE_HOST=cerberus-db-mysql
+      - DATABASE_PORT=3306
+#  If you want custom cerberus domain
+#      - GLASSFISH_DOMAIN=cerberus
+# If you want custom glasfish admin password. It's recommanded for a production instance
+#      - GLASSFISH_ADMIN_PASSWORD=custompassword
+    ports:
+      - "18080:8080"
+      - "14848:4848"
+    volumes:
+      - ./localdata/cerberus-domains:/glassfish5/glassfish/domain/cerberus  # allow to persist database pool connection / custom glassfish settings
+      - ./localdata/screenshots:/opt/cerberus-screenshots/
+      - /etc/localtime:/etc/localtime:ro
+    restart: always
+    depends_on:
+      - cerberus-db-mysql
+    links:
+      - cerberus-db-mysql
   # Selenium-related services
   selenium-hub:
     image: selenium/hub:latest
