@@ -1,11 +1,19 @@
 *Bug fixes*
 [square]
-* bla bla
+* Issue on update and creation of services. #1753
+* Issue on adding an application from environment page #1754
+* Issues Datalib edit modal from testcasescrpt page
+* Some error message were not decoded (%ERROR% or %DETAILMESSAGE%)
+* 'Save Robot Preference' on RunTest page was disable by mistake.
 
 *Improvements / New features*
 [square]
-* bla bla
+* Improved documentation structure and removed fr language support (French translation was not uptodate)
+* New FTP connector for services with GET and PUT command
+* In case a queue entry has been forced to CANCELLED and corresponding execution is still pending and has retry, it no longuer gets retried.
+* New dragAndDrop action (using javascript in order to avoid Selenium bug).
+* Small improvements on Label Requirement screen.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
-* bla bla
+* CIScore is now in integer format. As a consequence, corresponding coef were multiplied by 100 and converted to integer. CI Threshold now default to 100 in stead of 1 and ca be configured with 'cerberus_ci_threshold' parameter.

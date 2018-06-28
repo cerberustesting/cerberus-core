@@ -354,6 +354,7 @@ public class WebDriverService implements IWebDriverService {
         return result;
     }
 
+    @Override
     public File takeScreenShotFile(Session session) {
         boolean event = true;
         long timeout = System.currentTimeMillis() + (session.getCerberus_selenium_wait_element());

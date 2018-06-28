@@ -20,6 +20,7 @@
 package org.cerberus.service.webdriver;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import org.cerberus.engine.entity.Identifier;
@@ -81,6 +82,8 @@ public interface IWebDriverService {
 
     String getFromCookie(Session session, String cookieName, String cookieParameter);
 
+    File takeScreenShotFile(Session session);
+
     BufferedImage takeScreenShot(Session session);
 
     List<String> getSeleniumLog(Session session);
@@ -102,7 +105,7 @@ public interface IWebDriverService {
     MessageEvent doSeleniumActionMouseOver(Session session, Identifier identifier);
 
     MessageEvent doSeleniumActionWait(Session session, Identifier identifier);
-    
+
     MessageEvent doSeleniumActionWaitVanish(Session session, Identifier identifier);
 
     MessageEvent doSeleniumActionKeyPress(Session session, Identifier identifier, String property);
@@ -118,6 +121,6 @@ public interface IWebDriverService {
     MessageEvent doSeleniumActionFocusDefaultIframe(Session session);
 
     MessageEvent doSeleniumActionRightClick(Session session, Identifier identifier);
-    
+
     MessageEvent doSeleniumActionDragAndDrop(Session session, Identifier object, Identifier property) throws IOException;
 }
