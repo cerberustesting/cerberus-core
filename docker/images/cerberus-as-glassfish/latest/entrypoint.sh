@@ -29,10 +29,31 @@ ASADMIN="asadmin --user ${GLASSFISH_ADMIN_USER} --passwordfile /tmp/glassfishpwd
 INIT_MARKER_FILE=${GLASSFISH_HOME}/glassfish/domains/${GLASSFISH_DOMAIN}/.cerberus
 INIT_MARKER_DEPLOY=${GLASSFISH_HOME}/glassfish/domains/${GLASSFISH_DOMAIN}/.cerberus.deploy
 
+
+function undeploy_all {
+    echo "* Starting undeployment..."
+
+    apps=`$ASADMIN list-applications -t | awk '{print $1;}'`
+
+    for p in $apps; do
+        if [[ $p = *"Cerberus"* ]]; then
+            echo "Undeploying $p..."
+            $ASADMIN undeploy $p
+        fi
+    done;
+
+    echo "* Starting undeployment... Done."
+
+}
+
+
 # Deploy the installed Cerberus instance
 function deploy() {
     echo "* Starting Cerberus Glassfish deployment..."
     ${ASADMIN} start-domain ${GLASSFISH_DOMAIN}
+
+    undeploy_all
+
     ${ASADMIN} deploy --force=true --target server --contextroot ${CERBERUS_NAME} --availabilityenabled=true /tmp/${CERBERUS_PACKAGE_NAME}/${CERBERUS_PACKAGE_NAME}.war
     ${ASADMIN} stop-domain ${GLASSFISH_DOMAIN}
     touch ${INIT_MARKER_DEPLOY}
@@ -94,7 +115,7 @@ function main() {
 
     # always redeploy 
     #if [ ! -f ${INIT_MARKER_DEPLOY} ]; then
-        deploy
+    deploy
     #else
     #    echo "* Cerberus is already deployed to the Glassfish instance. Skip installation."
     #fi

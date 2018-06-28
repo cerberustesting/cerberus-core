@@ -107,8 +107,12 @@ Hereafter list of mapped volumes:
 Service                 | Data volume (Source)                                                          | Host volume (Destination, default values)     | Description
 ------------------------|-------------------------------------------------------------------------------|-----------------------------------------------| -----------------------------------------------
 `cerberus-db-mysql`     | `/var/lib/mysql`                                                              | `./localdata/mysql-db`                        | The MySQL local database directory
-`cerberus-as-glassfish` | `/usr/local/glassfish4/glassfish/domains/domain1/docroot/CerberusPictures`    | `./localdata/screenshots`                     | The Cerberus execution screenshots directory
-`cerberus-as-glassfish` | `/usr/local/glassfish4/glassfish/domains/domain1/logs`                        | `./localdata/logs`                            | The Cerberus logs directory
+`cerberus-as-glassfish` | `/opt/cerberus-screenshots/`                                                  | `./localdata/screenshots`                     | The Cerberus execution screenshots directory
+`cerberus-as-glassfish` | `/glassfish5/glassfish/domain/cerberus/logs`                                  | `./localdata/logs`                            | The Cerberus logs directory
+`cerberus-as-glassfish` | `/glassfish5/glassfish/domain/cerberus`                                       | `./localdata/cerberus-domain`                 | The Cerberus Glassfish domain. Allow to persist connection pool and custom glassfish seetings
+
+/glassfish5/glassfish/domain/cerberus
+
 
 Don't forget to change host volume default values to fit to your need.
 
