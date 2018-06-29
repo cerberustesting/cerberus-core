@@ -7772,7 +7772,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append("ADD COLUMN `nbQE` INT NULL DEFAULT 0 AFTER `nbQU`, ADD COLUMN `nbCA` INT NULL DEFAULT 0 AFTER `nbQE`,");
         b.append("ADD COLUMN `CIScore` INT NULL DEFAULT 0 AFTER `nbCA`, ADD COLUMN `CIScoreThreshold` INT NULL DEFAULT 0 AFTER `CIScore`, ADD COLUMN `CIResult` VARCHAR(45) NULL DEFAULT '' AFTER `CIScoreThreshold`;");
         a.add(b.toString());
-        a.add("UPDATE parameter SET value=CAST(value*100 AS INT), description = concat(description, \" (integer)\") where param like 'cerberus_ci%';");
+        a.add("UPDATE parameter SET value=CAST(value*100 AS SIGNED INTEGER), description = concat(description, \" (integer)\") where param like 'cerberus_ci%';");
         a.add("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ('', 'cerberus_ci_threshold', '100', 'Target integer value above which the result CI is KO.');");
         b = new StringBuilder();
         b.append("UPDATE parameter SET value=REPLACE(REPLACE(value, '<td>%CISCORE%</td>', '<td>%CISCORE%</td><td>%CISCORETHRESHOLD%</td>'), '<td>CI Score</td>', '<td>CI Score</td><td>CI Score Threshold</td>')");

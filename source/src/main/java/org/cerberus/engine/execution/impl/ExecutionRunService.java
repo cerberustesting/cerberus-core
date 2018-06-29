@@ -796,7 +796,7 @@ public class ExecutionRunService implements IExecutionRunService {
                     }
                 }
             } catch (Exception e) {
-                LOG.error(e);
+                LOG.error(e,e);
             }
 
             //
