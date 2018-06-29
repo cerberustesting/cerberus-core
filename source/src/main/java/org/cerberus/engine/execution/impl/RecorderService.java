@@ -19,6 +19,8 @@
  */
 package org.cerberus.engine.execution.impl;
 
+import com.google.common.collect.Lists;
+import io.appium.java_client.AppiumDriver;
 import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
@@ -36,11 +38,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.persistence.criteria.CriteriaBuilder.Trimspec;
-
-import com.google.common.collect.Lists;
-import io.appium.java_client.AppiumDriver;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -56,12 +53,12 @@ import org.cerberus.crud.service.ITestCaseExecutionFileService;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.Recorder;
 import org.cerberus.engine.entity.Session;
-import org.cerberus.exception.CerberusException;
 import org.cerberus.engine.execution.IRecorderService;
 import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.exception.CerberusException;
 import org.cerberus.service.datalib.IDataLibService;
 import org.cerberus.service.sikuli.ISikuliService;
-import org.cerberus.service.webdriver.impl.WebDriverService;
+import org.cerberus.service.webdriver.IWebDriverService;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.version.Infos;
@@ -82,7 +79,7 @@ public class RecorderService implements IRecorderService {
     @Autowired
     ITestCaseExecutionFileService testCaseExecutionFileService;
     @Autowired
-    WebDriverService webdriverService;
+    IWebDriverService webdriverService;
     @Autowired
     ISikuliService sikuliService;
     @Autowired
@@ -412,7 +409,7 @@ public class RecorderService implements IRecorderService {
 
             File file = new File(recorder.getFullFilename());
 
-            try(FileOutputStream fileOutputStream = new FileOutputStream(file);) {
+            try (FileOutputStream fileOutputStream = new FileOutputStream(file);) {
                 fileOutputStream.write(this.webdriverService.getPageSource(testCaseExecution.getSession()).getBytes());
                 fileOutputStream.close();
 
@@ -464,10 +461,10 @@ public class RecorderService implements IRecorderService {
 
             // Service Call META data information.
             Recorder recorderRequest = this.initFilenames(runId, test, testCase, step, index, sequence, controlString, property, propertyIndex, "call", "json", false);
-            if(se.getType().equals("FTP")) {
-            	recordFile(recorderRequest.getFullPath(), recorderRequest.getFileName(), se.toFTPJSONOnExecution().toString());
-            }else {
-            	recordFile(recorderRequest.getFullPath(), recorderRequest.getFileName(), se.toJSONOnExecution().toString());
+            if (se.getType().equals("FTP")) {
+                recordFile(recorderRequest.getFullPath(), recorderRequest.getFileName(), se.toFTPJSONOnExecution().toString());
+            } else {
+                recordFile(recorderRequest.getFullPath(), recorderRequest.getFileName(), se.toJSONOnExecution().toString());
             }
             // Index file created to database.
             object = testCaseExecutionFileFactory.create(0, runId, recorderRequest.getLevel(), "Service Call", recorderRequest.getRelativeFilenameURL(), "JSON", "", null, "", null);
@@ -516,19 +513,19 @@ public class RecorderService implements IRecorderService {
                 object = testCaseExecutionFileFactory.create(0, runId, recorderResponse.getLevel(), "Response", recorderResponse.getRelativeFilenameURL(), messageFormat, "", null, "", null);
                 testCaseExecutionFileService.save(object);
                 objectFileList.add(object);
-            }else if(se.getFile() != null){
-                    Recorder recorderResponse = this.initFilenames(runId, test, testCase, step, index, sequence, controlString, property, propertyIndex, "response", se.getResponseHTTPBodyContentType().toLowerCase(), false);
-            		File file = new File(recorderResponse.getFullPath());
-            		OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(new File(file.getAbsolutePath() + File.separator + recorderResponse.getFileName())));
-            		InputStream ftpFile = new ByteArrayInputStream(se.getFile());         		
-            		IOUtils.copy(ftpFile, outputStream);
-            		outputStream.close();
-            		ftpFile.close();
-            		se.setFile(null);
-    				// Index file created to database.
-                    object = testCaseExecutionFileFactory.create(0, runId, recorderResponse.getLevel(), "Response", recorderResponse.getRelativeFilenameURL(), se.getResponseHTTPBodyContentType(), "", null, "", null);
-                    testCaseExecutionFileService.save(object);
-                    objectFileList.add(object);
+            } else if (se.getFile() != null) {
+                Recorder recorderResponse = this.initFilenames(runId, test, testCase, step, index, sequence, controlString, property, propertyIndex, "response", se.getResponseHTTPBodyContentType().toLowerCase(), false);
+                File file = new File(recorderResponse.getFullPath());
+                OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(new File(file.getAbsolutePath() + File.separator + recorderResponse.getFileName())));
+                InputStream ftpFile = new ByteArrayInputStream(se.getFile());
+                IOUtils.copy(ftpFile, outputStream);
+                outputStream.close();
+                ftpFile.close();
+                se.setFile(null);
+                // Index file created to database.
+                object = testCaseExecutionFileFactory.create(0, runId, recorderResponse.getLevel(), "Response", recorderResponse.getRelativeFilenameURL(), se.getResponseHTTPBodyContentType(), "", null, "", null);
+                testCaseExecutionFileService.save(object);
+                objectFileList.add(object);
             }
         } catch (Exception ex) {
             LOG.error(logPrefix + ex.toString());
@@ -578,8 +575,8 @@ public class RecorderService implements IRecorderService {
                     dir.mkdirs();
 
                     File file = new File(recorder.getFullFilename());
-                    
-                    try(FileOutputStream fileOutputStream = new FileOutputStream(file);) {
+
+                    try (FileOutputStream fileOutputStream = new FileOutputStream(file);) {
                         ByteArrayOutputStream baos = new ByteArrayOutputStream();
                         DataOutputStream out = new DataOutputStream(baos);
                         for (String element : this.webdriverService.getSeleniumLog(testCaseExecution.getSession())) {
@@ -633,14 +630,13 @@ public class RecorderService implements IRecorderService {
 
     }
 
-
     public void beginRecordVideo(TestCaseExecution testCaseExecution) {
 
         try {
             String applicationType = testCaseExecution.getApplicationObj().getType();
 
             Session session = testCaseExecution.getSession();
-            if(applicationType.equals(Application.TYPE_APK)) {
+            if (applicationType.equals(Application.TYPE_APK)) {
                 AppiumDriver driver = session.getAppiumDriver();
 
                 Map<String, Object> args = new HashMap<>();
@@ -654,7 +650,7 @@ public class RecorderService implements IRecorderService {
                     argss.put("command", "screenrecord --bit-rate 5000000 --time-limit 180 /sdcard/video.mp4");
                     argss.put("args", Lists.newArrayList(""));
                     LOG.error(driver.executeScript("mobile: shell", argss));
-                } );
+                });
                 thread.start();
 
             }
@@ -665,20 +661,19 @@ public class RecorderService implements IRecorderService {
 
     }
 
-
     public void endRecordVideo(TestCaseExecution testCaseExecution) {
 
         try {
             String applicationType = testCaseExecution.getApplicationObj().getType();
 
             Session session = testCaseExecution.getSession();
-            if(applicationType.equals(Application.TYPE_APK)) {
+            if (applicationType.equals(Application.TYPE_APK)) {
                 String test = testCaseExecution.getTest();
                 String testCase = testCaseExecution.getTestCase();
 
                 AppiumDriver driver = session.getAppiumDriver();
 
-                Recorder recorder = initFilenames(1l,test,testCase,null,null,null,null,null,0, "appium","mp4", false);
+                Recorder recorder = initFilenames(1l, test, testCase, null, null, null, null, null, 0, "appium", "mp4", false);
 
                 LOG.error("try to upload video to " + recorder.getRelativeFilenameURL());
 
@@ -714,10 +709,10 @@ public class RecorderService implements IRecorderService {
         if (!dir.exists()) {
             dir.mkdirs();
         }
- 
-        try( BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(dir.getAbsolutePath() + File.separator + fileName), StandardCharsets.UTF_8));) {
-        	writer.write(content);
-        	writer.close();
+
+        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(dir.getAbsolutePath() + File.separator + fileName), StandardCharsets.UTF_8));) {
+            writer.write(content);
+            writer.close();
             LOG.debug("File saved : " + path + File.separator + fileName);
         } catch (FileNotFoundException ex) {
             LOG.debug("Unable to save : " + path + File.separator + fileName + " ex: " + ex);
@@ -725,8 +720,6 @@ public class RecorderService implements IRecorderService {
             LOG.debug("Unable to save : " + path + File.separator + fileName + " ex: " + ex);
         }
     }
-
-
 
     private Recorder initFilenames(long exeID, String test, String testCase, String step, String index, String sequence, String controlString, String property, int propertyIndex, String filename, String extention, boolean manual) throws CerberusException {
         Recorder newRecorder = new Recorder();
