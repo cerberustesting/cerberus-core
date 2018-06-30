@@ -19,6 +19,11 @@
  */
 package org.cerberus.engine.gwt.impl;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -28,7 +33,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.logging.Level;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.AppService;
@@ -54,7 +58,6 @@ import org.cerberus.engine.gwt.IVariableService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.service.appium.IAppiumService;
 import org.cerberus.service.appium.impl.AndroidAppiumService;
 import org.cerberus.service.datalib.IDataLibService;
 import org.cerberus.service.groovy.IGroovyService;
@@ -716,6 +719,7 @@ public class PropertyService implements IPropertyService {
                         case TestCaseCountryProperties.TYPE_GETFROMGROOVY:
                             testCaseExecutionData = this.property_getFromGroovy(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
                             break;
+
                         case TestCaseCountryProperties.TYPE_GETFROMCOMMAND:
                             testCaseExecutionData = this.property_getFromCommand(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
                             break;
@@ -1127,9 +1131,9 @@ public class PropertyService implements IPropertyService {
         } catch (CerberusException exception) {
             LOG.error(exception.toString());
             MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_TESTDATA_PROPERTYDONOTEXIST);
-
             res.setDescription(res.getDescription().replace("%PROPERTY%", testCaseExecutionData.getValue1()));
             testCaseExecutionData.setPropertyResultMessage(res);
+
         } catch (CerberusEventException ex) {
             LOG.error(ex.toString());
             MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
@@ -1259,12 +1263,44 @@ public class PropertyService implements IPropertyService {
             if (null != tCExecution.getLastServiceCalled()) {
                 jsonResponse = tCExecution.getLastServiceCalled().getResponseHTTPBody();
             }
-            String newUrl = null;
+
             if (!(StringUtil.isNullOrEmpty(testCaseExecutionData.getValue2()))) {
-                newUrl = testCaseExecutionData.getValue2();
+                try {
+                    URL myurl;
+                    myurl = new URL(testCaseExecutionData.getValue2());
+
+                    String str = "";
+                    StringBuilder sb = new StringBuilder();
+                    BufferedReader br = null;
+                    try {
+                        br = new BufferedReader(new InputStreamReader(myurl.openStream()));
+                        while (null != (str = br.readLine())) {
+                            sb.append(str);
+                        }
+                    } catch (IOException ex) {
+                        LOG.warn("Error Getting Json File " + ex);
+                    } finally {
+                        if (br != null) {
+                            try {
+                                br.close();
+                            } catch (IOException e) {
+                                LOG.warn(e.toString());
+                            }
+                        }
+                    }
+                    jsonResponse = sb.toString();
+
+                } catch (MalformedURLException e) {
+                    LOG.debug("URL is invalid so we consider that it is a json file.");
+                    jsonResponse = testCaseExecutionData.getValue2();
+                }
             }
 
-            String valueFromJson = this.jsonService.getFromJson(jsonResponse, newUrl, testCaseExecutionData.getValue1());
+            //Record result in filessytem.
+            recorderService.recordProperty(tCExecution.getId(), testCaseExecutionData.getProperty(), 1, jsonResponse);
+
+            String valueFromJson = this.jsonService.getFromJson(jsonResponse, null, testCaseExecutionData.getValue1());
+            
             if (valueFromJson != null) {
                 if (!"".equals(valueFromJson)) {
                     testCaseExecutionData.setValue(valueFromJson);
@@ -1273,6 +1309,7 @@ public class PropertyService implements IPropertyService {
                     res.setDescription(res.getDescription().replace("%PARAM%", testCaseExecutionData.getValue1()));
                     res.setDescription(res.getDescription().replace("%VALUE%", valueFromJson));
                     testCaseExecutionData.setPropertyResultMessage(res);
+
                 } else {
                     MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMJSON_PARAMETERNOTFOUND);
                     res.setDescription(res.getDescription().replace("%URL%", testCaseExecutionData.getValue2()));
@@ -1280,6 +1317,7 @@ public class PropertyService implements IPropertyService {
                     res.setDescription(res.getDescription().replace("%ERROR%", ""));
                     testCaseExecutionData.setPropertyResultMessage(res);
                 }
+
             } else {
                 MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMJSON_PARAMETERNOTFOUND);
                 res.setDescription(res.getDescription().replace("%URL%", testCaseExecutionData.getValue2()));

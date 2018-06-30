@@ -62,14 +62,14 @@ public class JsonService implements IJsonService {
             }
         } catch (IOException ex) {
             LOG.warn("Error Getting Json File " + ex);
-        }finally {
-        	if(br != null) {
-        		try {
-					br.close();
-				} catch (IOException e) {
-					LOG.warn(e.toString());
-				}
-        	}
+        } finally {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    LOG.warn(e.toString());
+                }
+            }
         }
         return sb.toString();
     }

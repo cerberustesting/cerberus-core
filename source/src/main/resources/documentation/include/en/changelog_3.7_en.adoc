@@ -15,6 +15,7 @@
 * New dragAndDrop action (using javascript in order to avoid Selenium bug).
 * Small improvements on Label Requirement screen.
 * new parameter 'cerberus_robot_timeout' that allow Cerberus to generate a FA in case the robot (Selenium, Appium or Sikuli) does not answer quick enought.
+* getFromjson Property also gets the result when JSON is staticly feed on value2.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

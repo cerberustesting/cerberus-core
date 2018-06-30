@@ -558,6 +558,27 @@ public class RecorderService implements IRecorderService {
     }
 
     @Override
+    public TestCaseExecutionFile recordProperty(Long runId, String property, int propertyIndex, String content) {
+        TestCaseExecutionFile object = null;
+        // Used for logging purposes
+        String logPrefix = Infos.getInstance().getProjectNameAndVersion() + " - ";
+
+        try {
+            // RESULT.
+            Recorder recorder = this.initFilenames(runId, null, null, null, null, null, null, property, propertyIndex, "result", "json", false);
+            recordFile(recorder.getFullPath(), recorder.getFileName(), content);
+
+            // Index file created to database.
+            object = testCaseExecutionFileFactory.create(0, runId, recorder.getLevel(), "Content", recorder.getRelativeFilenameURL(), "JSON", "", null, "", null);
+            testCaseExecutionFileService.save(object);
+
+        } catch (CerberusException ex) {
+            LOG.error(logPrefix + "Property file was not saved due to unexpected error." + ex.toString(), ex);
+        }
+        return object;
+    }
+
+    @Override
     public TestCaseExecutionFile recordSeleniumLog(TestCaseExecution testCaseExecution) {
         TestCaseExecutionFile object = null;
         // Used for logging purposes
