@@ -69,7 +69,7 @@ public enum MessageGeneralEnum {
     EXECUTION_PE_CHECKINGPARAMETERS(5, "PE", "Checking parameters..."),
     EXECUTION_PE_LOADINGDATA(5, "PE", "Loading data..."),
     EXECUTION_PE_VALIDATIONSTARTING(5, "PE", "Validation is beeing done..."),
-    EXECUTION_PE_STARTINGROBOTSERVER(5, "PE", "Connection to Robot Server..."),
+    EXECUTION_PE_STARTINGROBOTSERVER(5, "PE", "Connection to Robot Server (%IP%)..."),
     EXECUTION_PE_CREATINGRUNID(5, "PE", "Creating RunID..."),
     EXECUTION_PE_LOADINGDETAILEDDATA(5, "PE", "Loading detailed data..."),
     EXECUTION_PE_TESTEXECUTING(5, "PE", "Test is executing..."),

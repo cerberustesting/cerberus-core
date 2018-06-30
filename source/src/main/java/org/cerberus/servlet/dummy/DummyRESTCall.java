@@ -66,7 +66,11 @@ public class DummyRESTCall extends HttpServlet {
         response.setCharacterEncoding("utf8");
 
         try {
-            Thread.sleep(1000);
+            if (request.getParameter("sleep") == null) {
+                Thread.sleep(1000);
+            } else {
+                Thread.sleep(Integer.valueOf(request.getParameter("sleep")));
+            }
             JSONObject jsonResponse = new JSONObject();
             jsonResponse.put("messageType", "OK");
             jsonResponse.put("message", "Dummy call performed with success.");
@@ -126,7 +130,7 @@ public class DummyRESTCall extends HttpServlet {
                 jsonParameters.put(parameterName, parameterValue);
             }
             jsonResponse.put("Parameters", jsonParameters);
-            
+
             response.getWriter().print(jsonResponse.toString());
 
         } catch (Exception e) {

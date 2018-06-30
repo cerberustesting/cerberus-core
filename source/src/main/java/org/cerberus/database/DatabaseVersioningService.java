@@ -7732,10 +7732,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 
         // Add ftp file path parameter
         // 1345
-        b = new StringBuilder();
-        b.append("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ");
-        b.append("('', 'cerberus_ftpfile_path', '', 'Path to store local files which will be stored into ftpServer');");
-        a.add(b.toString());
+        a.add("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ('', 'cerberus_ftpfile_path', '', 'Path to store local files which will be stored into ftpServer');");
 
         // Add forceExe to Step.
         // 1346-1347
@@ -7758,10 +7755,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 
         // Add Action dragAndDrop into invariant
         // 1351
-        b = new StringBuilder();
-        b.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ");
-        b.append("('ACTION', 'dragAndDrop', '7000', 'Drag an element and drop it to a specific target', '')");
-        a.add(b.toString());
+        a.add("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('ACTION', 'dragAndDrop', '7000', 'Drag an element and drop it to a specific target', '')");
 
         // Added stats columns to Tag table and move CIScore management from float to Integer.
         // 1352-1355
@@ -7793,6 +7787,10 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append("  PRIMARY KEY (`Tag`,`System`),");
         b.append("  INDEX `IX_tagsystem_01` (`System` ASC)) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
         a.add(b.toString());
+
+        // Add cerberus_robot_timeout parameter
+        // 1357
+        a.add("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ('', 'cerberus_robot_timeout', '60000', 'Timeout (in ms) for the robot to answer Cerberus requests.');");
 
         return a;
     }

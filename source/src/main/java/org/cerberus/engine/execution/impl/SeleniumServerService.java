@@ -51,10 +51,12 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.apache.http.message.BasicHttpEntityEnclosingRequest;
+import org.apache.http.protocol.HttpProcessor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.Application;
@@ -125,7 +127,6 @@ public class SeleniumServerService implements ISeleniumServerService {
     private static final String DEFAULT_PROXYAUTHENT_USER = "squid";
     private static final String DEFAULT_PROXYAUTHENT_PASSWORD = "squid";
 
-
     @Override
     public void startServer(TestCaseExecution tCExecution) throws CerberusException {
         //message used for log purposes 
@@ -194,16 +195,28 @@ public class SeleniumServerService implements ISeleniumServerService {
                             tCExecution.getSession().getHostUser(),
                             tCExecution.getSession().getHostPassword()) + session.getHost(),
                             session.getPort())) + "/wd/hub";
+//            hubUrl = "http://localhost:8080/source/DummyRESTCall?sleep=10000&toto=";
             LOG.debug(logPrefix + "Hub URL :" + hubUrl);
             URL url = new URL(hubUrl);
             HttpCommandExecutor executor = null;
 
             boolean isProxy = proxyService.useProxy(hubUrl, system);
+
+            HttpClientBuilder builder = HttpClientBuilder.create();
+
+            // Timeout Management
+            int robotTimeout = parameterService.getParameterIntegerByKey("cerberus_robot_timeout", system, 2000);
+            RequestConfig.Builder requestBuilder = RequestConfig.custom();
+            requestBuilder = requestBuilder.setConnectTimeout(robotTimeout);
+            requestBuilder = requestBuilder.setConnectionRequestTimeout(robotTimeout);
+            requestBuilder = requestBuilder.setSocketTimeout(robotTimeout);
+            builder.setDefaultRequestConfig(requestBuilder.build());
+
             if (isProxy) {
+
+                // Proxy Management
                 String proxyHost = parameterService.getParameterStringByKey("cerberus_proxy_host", system, DEFAULT_PROXY_HOST);
                 int proxyPort = parameterService.getParameterIntegerByKey("cerberus_proxy_port", system, DEFAULT_PROXY_PORT);
-
-                HttpClientBuilder builder = HttpClientBuilder.create();
                 HttpHost proxy = new HttpHost(proxyHost, proxyPort);
                 builder.setProxy(proxy);
 
@@ -226,10 +239,10 @@ public class SeleniumServerService implements ISeleniumServerService {
                     builder.setDefaultCredentialsProvider(credsProvider);
                 }
 
-                Factory factory = new MyHttpClientFactory(builder);
-                executor = new HttpCommandExecutor(new HashMap<String, CommandInfo>(), url, factory);
-
             }
+
+            Factory factory = new MyHttpClientFactory(builder);
+            executor = new HttpCommandExecutor(new HashMap<String, CommandInfo>(), url, factory);
 
             /**
              * SetUp Driver
@@ -239,32 +252,32 @@ public class SeleniumServerService implements ISeleniumServerService {
             AppiumDriver appiumDriver = null;
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
                 if (caps.getPlatform().is(Platform.ANDROID)) {
-                    if (executor == null) {
-                        appiumDriver = new AndroidDriver(url, caps);
-                    } else {
-                        appiumDriver = new AndroidDriver(executor, caps);
-                    }
+//                    if (executor == null) {
+//                        appiumDriver = new AndroidDriver(url, caps);
+//                    } else {
+                    appiumDriver = new AndroidDriver(executor, caps);
+//                    }
                     driver = (WebDriver) appiumDriver;
                 } else if (caps.getPlatform().is(Platform.MAC)) {
-                    if (executor == null) {
-                        appiumDriver = new IOSDriver(url, caps);
-                    } else {
-                        appiumDriver = new IOSDriver(executor, caps);
-                    }
+//                    if (executor == null) {
+//                        appiumDriver = new IOSDriver(url, caps);
+//                    } else {
+                    appiumDriver = new IOSDriver(executor, caps);
+//                    }
                     driver = (WebDriver) appiumDriver;
-                } else // Any Other
-                {
-                    if (executor == null) {
-                        driver = new RemoteWebDriver(url, caps);
-                    } else {
-                        driver = new RemoteWebDriver(executor, caps);
-                    }
+                } else {
+//                    if (executor == null) {
+//                        driver = new RemoteWebDriver(url, caps);
+//                    } else {
+                    driver = new RemoteWebDriver(executor, caps);
+//                    }
                 }
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
                 // add a lock on app path this part of code, because we can't install 2 apk with the same name simultaneously
                 String appUrl = null;
-                if(caps.getCapability("app") != null)
+                if (caps.getCapability("app") != null) {
                     appUrl = caps.getCapability("app").toString();
+                }
 
                 String newApkName = null;
                 try {
@@ -275,8 +288,7 @@ public class SeleniumServerService implements ISeleniumServerService {
                             // provoque a latency if first test is already running and apk don't finish to be prepared
                             if (apkAlreadyPrepare.containsKey(appUrl) && !apkAlreadyPrepare.get(appUrl)) {
                                 Thread.sleep(10000);
-                            }
-                            else {
+                            } else {
                                 apkAlreadyPrepare.put(appUrl, false);
                             }
                         }
@@ -294,6 +306,7 @@ public class SeleniumServerService implements ISeleniumServerService {
                 }
 
                 driver = (WebDriver) appiumDriver;
+
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
                 if (executor == null) {
                     appiumDriver = new IOSDriver(url, caps);
@@ -301,6 +314,7 @@ public class SeleniumServerService implements ISeleniumServerService {
                     appiumDriver = new IOSDriver(executor, caps);
                 }
                 driver = (WebDriver) appiumDriver;
+
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
                 /**
                  * Check sikuli extension is reachable
@@ -317,6 +331,7 @@ public class SeleniumServerService implements ISeleniumServerService {
                 if (!tCExecution.getCountryEnvironmentParameters().getIp().isEmpty()) {
                     sikuliService.doSikuliActionOpenApp(session, tCExecution.getCountryEnvironmentParameters().getIp());
                 }
+
             }
 
             /**
@@ -366,8 +381,6 @@ public class SeleniumServerService implements ISeleniumServerService {
 
             // begin to record video
             //recorderService.beginRecordVideo(tCExecution);
-
-
         } catch (CerberusException exception) {
             LOG.error(logPrefix + exception.toString(), exception);
             throw new CerberusException(exception.getMessageError(), exception);
@@ -451,7 +464,7 @@ public class SeleniumServerService implements ISeleniumServerService {
             } else {
                 caps.setCapability("app", tCExecution.getCountryEnvironmentParameters().getIp());
             }
-            if(!StringUtil.isNullOrEmpty(tCExecution.getCountryEnvironmentParameters().getMobileActivity()) && tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
+            if (!StringUtil.isNullOrEmpty(tCExecution.getCountryEnvironmentParameters().getMobileActivity()) && tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
                 caps.setCapability("appWaitActivity", tCExecution.getCountryEnvironmentParameters().getMobileActivity());
             }
         }
@@ -580,8 +593,8 @@ public class SeleniumServerService implements ISeleniumServerService {
                 LOG.error(ex.toString());
             }
 
-            if(session.getAppiumDriver() != null && tce.getCountryEnvironmentParameters() != null &&
-                    !StringUtil.isNullOrEmpty(tce.getCountryEnvironmentParameters().getMobilePackage())) {
+            if (session.getAppiumDriver() != null && tce.getCountryEnvironmentParameters() != null
+                    && !StringUtil.isNullOrEmpty(tce.getCountryEnvironmentParameters().getMobilePackage())) {
                 session.getAppiumDriver().removeApp(tce.getCountryEnvironmentParameters().getMobilePackage()); // remove manually if package is defined
             }
 

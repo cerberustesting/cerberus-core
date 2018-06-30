@@ -210,31 +210,37 @@ public class ExecutionRunService implements IExecutionRunService {
              * Start robot server if execution is not manual
              */
             if (!tCExecution.getManualExecution().equals("Y")) {
-                tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_STARTINGROBOTSERVER));
                 if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
                         || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
                         || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)
                         || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
 
+                    MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_STARTINGROBOTSERVER);
+                    mes.setDescription(mes.getDescription().replace("%IP%", tCExecution.getIp()));
+                    tCExecution.setResultMessage(mes);
+
+                    updateTCExecution(tCExecution, false);
+
                     if (tCExecution.getIp().equalsIgnoreCase("")) {
-                        MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_EMPTYORBADIP);
+                        mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_EMPTYORBADIP);
                         mes.setDescription(mes.getDescription().replace("%IP%", tCExecution.getIp()));
                         LOG.debug(mes.getDescription());
                         throw new CerberusException(mes);
+
+                    } else {
+                        /**
+                         * Start Selenium server
+                         */
+                        LOG.debug("Starting Server.");
+                        try {
+                            this.serverService.startServer(tCExecution);
+                        } catch (CerberusException ex) {
+                            LOG.debug(ex.getMessageError().getDescription());
+                            throw new CerberusException(ex.getMessageError(), ex);
+                        }
+                        LOG.debug("Server Started.");
                     }
 
-                    /**
-                     * Start Selenium server
-                     */
-                    LOG.debug("Starting Server.");
-                    tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_CREATINGRUNID));
-                    try {
-                        this.serverService.startServer(tCExecution);
-                    } catch (CerberusException ex) {
-                        LOG.debug(ex.getMessageError().getDescription());
-                        throw new CerberusException(ex.getMessageError(), ex);
-                    }
-                    LOG.debug("Server Started.");
                 }
             }
 
@@ -358,16 +364,17 @@ public class ExecutionRunService implements IExecutionRunService {
              */
             // 
             tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTEXECUTING));
-            try {
-                testCaseExecutionService.updateTCExecution(tCExecution);
-            } catch (CerberusException ex) {
-                LOG.warn(ex);
-            }
-
-            // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
-            if (tCExecution.isCerberus_featureflipping_activatewebsocketpush()) {
-                TestCaseExecutionEndPoint.getInstance().send(tCExecution, true);
-            }
+            updateTCExecution(tCExecution, true);
+//            try {
+//                testCaseExecutionService.updateTCExecution(tCExecution);
+//            } catch (CerberusException ex) {
+//                LOG.warn(ex);
+//            }
+//
+//            // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
+//            if (tCExecution.isCerberus_featureflipping_activatewebsocketpush()) {
+//                TestCaseExecutionEndPoint.getInstance().send(tCExecution, true);
+//            }
 
             // Evaluate the condition at the step level.
             AnswerItem<Boolean> conditionAnswerTc;
@@ -650,9 +657,10 @@ public class ExecutionRunService implements IExecutionRunService {
                                 }
 
                                 // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
-                                if (tCExecution.isCerberus_featureflipping_activatewebsocketpush()) {
-                                    TestCaseExecutionEndPoint.getInstance().send(tCExecution, false);
-                                }
+                                updateTCExecutionWebSocketOnly(tCExecution, false);
+//                                if (tCExecution.isCerberus_featureflipping_activatewebsocketpush()) {
+//                                    TestCaseExecutionEndPoint.getInstance().send(tCExecution, false);
+//                                }
 
                                 step_index++;
                             } while (execute_Next_Step && step_index <= maxloop);
@@ -806,6 +814,26 @@ public class ExecutionRunService implements IExecutionRunService {
         }
 
         return tCExecution;
+
+    }
+
+    // Update Execution status and eventually push the new value to websocket.
+    private void updateTCExecution(TestCaseExecution tCExecution, boolean forcePush) {
+        try {
+            testCaseExecutionService.updateTCExecution(tCExecution);
+        } catch (CerberusException ex) {
+            LOG.warn(ex);
+        }
+
+        updateTCExecutionWebSocketOnly(tCExecution, forcePush);
+
+    }
+
+    private void updateTCExecutionWebSocketOnly(TestCaseExecution tCExecution, boolean forcePush) {
+        // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
+        if (tCExecution.isCerberus_featureflipping_activatewebsocketpush()) {
+            TestCaseExecutionEndPoint.getInstance().send(tCExecution, forcePush);
+        }
 
     }
 
@@ -1044,12 +1072,14 @@ public class ExecutionRunService implements IExecutionRunService {
 
         }
         testCaseStepExecution.setEnd(new Date().getTime());
+
         this.testCaseStepExecutionService.updateTestCaseStepExecution(testCaseStepExecution);
 
-        // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
-        if (tcExecution.isCerberus_featureflipping_activatewebsocketpush()) {
-            TestCaseExecutionEndPoint.getInstance().send(tcExecution, false);
-        }
+        updateTCExecutionWebSocketOnly(tcExecution, false);
+//        // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
+//        if (tcExecution.isCerberus_featureflipping_activatewebsocketpush()) {
+//            TestCaseExecutionEndPoint.getInstance().send(tcExecution, false);
+//        }
 
         return testCaseStepExecution;
     }
@@ -1237,9 +1267,10 @@ public class ExecutionRunService implements IExecutionRunService {
                         LOG.debug("Registered Control");
 
                         // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
-                        if (tcExecution.isCerberus_featureflipping_activatewebsocketpush()) {
-                            TestCaseExecutionEndPoint.getInstance().send(tcExecution, false);
-                        }
+                        updateTCExecutionWebSocketOnly(tcExecution, false);
+//                        if (tcExecution.isCerberus_featureflipping_activatewebsocketpush()) {
+//                            TestCaseExecutionEndPoint.getInstance().send(tcExecution, false);
+//                        }
 
                     }
                 } else {
@@ -1278,9 +1309,10 @@ public class ExecutionRunService implements IExecutionRunService {
                 LOG.debug("Registered Control");
 
                 // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
-                if (tcExecution.isCerberus_featureflipping_activatewebsocketpush()) {
-                    TestCaseExecutionEndPoint.getInstance().send(tcExecution, false);
-                }
+                updateTCExecutionWebSocketOnly(tcExecution, false);
+//                if (tcExecution.isCerberus_featureflipping_activatewebsocketpush()) {
+//                    TestCaseExecutionEndPoint.getInstance().send(tcExecution, false);
+//                }
             }
 
             /**
@@ -1293,9 +1325,10 @@ public class ExecutionRunService implements IExecutionRunService {
         }
 
         // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
-        if (tcExecution.isCerberus_featureflipping_activatewebsocketpush()) {
-            TestCaseExecutionEndPoint.getInstance().send(tcExecution, false);
-        }
+        updateTCExecutionWebSocketOnly(tcExecution, false);
+//        if (tcExecution.isCerberus_featureflipping_activatewebsocketpush()) {
+//            TestCaseExecutionEndPoint.getInstance().send(tcExecution, false);
+//        }
 
         LOG.debug("Finished execute Action : " + testCaseStepActionExecution.getAction());
         return testCaseStepActionExecution;
@@ -1331,9 +1364,10 @@ public class ExecutionRunService implements IExecutionRunService {
         LOG.debug("Registered Control");
 
         // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
-        if (tcExecution.isCerberus_featureflipping_activatewebsocketpush()) {
-            TestCaseExecutionEndPoint.getInstance().send(tcExecution, false);
-        }
+        updateTCExecutionWebSocketOnly(tcExecution, false);
+//        if (tcExecution.isCerberus_featureflipping_activatewebsocketpush()) {
+//            TestCaseExecutionEndPoint.getInstance().send(tcExecution, false);
+//        }
 
         return testCaseStepActionControlExecution;
     }
@@ -1361,9 +1395,10 @@ public class ExecutionRunService implements IExecutionRunService {
         }
 
         // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
-        if (tCExecution.isCerberus_featureflipping_activatewebsocketpush()) {
-            TestCaseExecutionEndPoint.getInstance().send(tCExecution, false);
-        }
+        updateTCExecutionWebSocketOnly(tCExecution, false);
+//        if (tCExecution.isCerberus_featureflipping_activatewebsocketpush()) {
+//            TestCaseExecutionEndPoint.getInstance().send(tCExecution, false);
+//        }
 
         return tCExecution;
     }
