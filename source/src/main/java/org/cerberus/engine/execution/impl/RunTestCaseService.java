@@ -78,9 +78,9 @@ public class RunTestCaseService implements IRunTestCaseService {
                 }
             } catch (CerberusException ex) {
                 tCExecution.setResultMessage(ex.getMessageError());
-                LOG.warn("Execution stopped due to exception. " + ex.getMessageError().getDescription());
+                LOG.warn("Execution stopped due to exception. " + ex.getMessageError().getDescription(), ex);
             } catch (Exception ex) {
-                LOG.warn("Execution stopped due to exception : UUID=" + tCExecution.getExecutionUUID() + "__causedBy=" + ex.toString());
+                LOG.warn("Execution stopped due to exception : UUID=" + tCExecution.getExecutionUUID() + "__causedBy=" + ex.toString(), ex);
                 tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.GENERIC_ERROR));
             }
         }

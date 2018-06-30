@@ -439,8 +439,8 @@ public class ExecutionStartService implements IExecutionStartService {
 
         } catch (CerberusException ex) {
             tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_COULDNOTCREATE_RUNID));
-            LOG.warn(ex.getMessageError().getDescription());
-            throw new CerberusException(ex.getMessageError());
+            LOG.warn(ex.getMessageError().getDescription(), ex);
+            throw new CerberusException(ex.getMessageError(), ex);
         }
 
         LOG.debug("Execution ID registered on database : " + tCExecution.getId());
