@@ -2100,25 +2100,6 @@ var propertyNameRestriction = /[\(\.\,\)\'\"]/g;
 var subDataNameRestriction = /[\(\.\,\)\'\"]/g;
 var testDataLibNameRestriction = /[\(\.\,\)\'\"]/g;
 
-function restrictCharacters(myfield, e, restrictionType) {
-    if (!e)
-        var e = window.event;
-    if (e.keyCode)
-        code = e.keyCode;
-    else if (e.which)
-        code = e.which;
-    var character = String.fromCharCode(code);
-    if ((e.keyCode === 39) || (e.keyCode === 40)) {
-        return true;
-    }
-    if (character.match(restrictionType)) {
-        console.debug("Key not allowed in that field. keyCode : '" + e.keyCode + "', character : '" + character + "', code : '" + code + "'");
-        return false;
-    } else {
-        return true;
-    }
-}
-
 /**
  * Function that allow to autoComplete Input with different data and regex that decide which data to show
  * @param {type} identifier jquery identifier to find the input to affect the autocomplete

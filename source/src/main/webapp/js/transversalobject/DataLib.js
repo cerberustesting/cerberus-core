@@ -80,7 +80,7 @@ function openModalAppServiceFromHere() {
 }
 
 function openModalDataLib(element, dataLibEntry, mode, id) {
-    
+
 //    Modal is now init on master page load #1748
 //    if ($('#editTestDataLibModal').data("initLabel") === undefined) {
 //        initModalDataLib();
@@ -571,30 +571,6 @@ function feedDataLibModalData(testDataLib, modalId, mode, hasPermissionsUpdate) 
 
     }
 
-
-    //We desactivate or activate the access to the fields depending on if user has the credentials to edit.
-//    if (!(hasPermissionsUpdate)) { // If readonly, we readonly all fields
-//        formEdit.find("#application").prop("readonly", "readonly");
-//        formEdit.find("#types").attr("disabled", true);
-//        formEdit.find("#methods").prop("disabled", "disabled");
-//        formEdit.find("#servicepaths").prop("readonly", true);
-//        formEdit.find("#attachementurl").prop("readonly", true);
-//        formEdit.find("#srvRequest").prop("readonly", "readonly");
-//        formEdit.find("#description").prop("readonly", "readonly");
-//        // We hide Save button.
-//        $('#editSoapLibraryButton').attr('class', '');
-//        $('#editSoapLibraryButton').attr('hidden', 'hidden');
-//    } else {
-//        formEdit.find("#application").removeProp("readonly");
-//        formEdit.find("#types").attr("disabled", false);
-//        formEdit.find("#methods").removeProp("disabled");
-//        formEdit.find("#servicepaths").prop("readonly", false);
-//        formEdit.find("#attachementurl").prop("readonly", false);
-//        formEdit.find("#srvRequest").removeProp("readonly");
-//        formEdit.find("#description").removeProp("disabled");
-//    }
-
-
 }
 
 //Function to append 1 line of Subdata in the various SubData lists.
@@ -609,7 +585,7 @@ function appendSubDataRow(subdata, targetTableBody) {
         var subDataInput = $("<input  maxlength=\"200\" disabled=\"disabled\">").addClass("form-control input-sm").val(subdata.subData);
     } else {
         var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
-        var subDataInput = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("testdatalibdata", "subData") + " --\">").addClass("form-control input-sm").val(subdata.subData);
+        var subDataInput = $("<input onkeydown=\"return dtl_keyispressed(event);\" maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("testdatalibdata", "subData") + " --\">").addClass("form-control input-sm").val(subdata.subData);
     }
     var valueInput = $("<input placeholder=\"-- " + doc.getDocLabel("testdatalibdata", "value") + " --\">").addClass("form-control input-sm").val(subdata.value);
     var columnInput = $("<input  maxlength=\"255\" placeholder=\"-- " + doc.getDocLabel("testdatalibdata", "column") + " --\">").addClass("form-control input-sm").val(subdata.column);
@@ -785,3 +761,13 @@ function uploadTestDataLibFromXMLFile() {
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
+function dtl_keyispressed(e) {
+    var toto="|.| |(|)|%|";
+    var charval = "|" + e.key + "|";
+    if (toto.indexOf(charval) !== -1) {
+        var localMessage = new Message("WARNING", "Character '"+e.key+"' is not allowed on subdata name. This is to avoid creating ambiguous syntax when using variabilization.");
+        showMessage(localMessage, $('#editTestDataLibModal'), false, 1000);
+        return false;
+    }
+    return true;
+}

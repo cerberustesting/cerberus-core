@@ -1,22 +1,24 @@
 *Bug fixes*
 [square]
-* Issue on update and creation of services. #1753
-* Issue on adding an application from environment page #1754
-* Issues Datalib edit modal from testcasescrpt page
-* Some error message were not decoded (%ERROR% or %DETAILMESSAGE%)
-* 'Save Robot Preference' on RunTest page was disable by mistake.
-* Fixed small filter issue on testcaselist page. #1759
+* [GUI] Issue on update and creation of services. #1753
+* [GUI] Issue on adding an application from environment page #1754
+* [GUI] Issues Datalib edit modal from testcasescrpt page
+* [ENGINE] Some error message were not decoded (%ERROR% or %DETAILMESSAGE%)
+* [GUI] 'Save Robot Preference' on RunTest page was disable by mistake.
+* [GUI] Fixed small filter issue on testcaselist page. #1759
 
 *Improvements / New features*
 [square]
-* Improved documentation structure and removed fr language support (French translation was not uptodate)
-* New FTP connector for services with GET and PUT command
-* In case a queue entry has been forced to CANCELLED and corresponding execution is still pending and has retry, it no longuer gets retried.
-* New dragAndDrop action (using javascript in order to avoid Selenium bug).
-* Small improvements on Label Requirement screen.
-* new parameter 'cerberus_robot_timeout' that allow Cerberus to generate a FA in case the robot (Selenium, Appium or Sikuli) does not answer quick enought.
-* getFromjson Property also gets the result when JSON is staticly feed on value2.
+* [GUI] Improved documentation structure and removed fr language support (French translation was not uptodate)
+* [ENGINE] New FTP connector for services with GET and PUT command
+* [ENGINE] In case a queue entry has been forced to CANCELLED and corresponding execution is still pending and has retry, it no longuer gets retried.
+* [ENGINE] New dragAndDrop action (using javascript in order to avoid Selenium bug).
+* [GUI] Small improvements on Label Requirement screen.
+* [ENGINE] new parameter 'cerberus_robot_timeout' that allow Cerberus to generate a FA in case the robot (Selenium, Appium or Sikuli) does not answer quick enought.
+* [ENGINE] getFromjson Property also gets the result when JSON is staticly feed on value2.
+* [GUI] prevent special characters to be used on COUNTRY, ENVIRONMENT and SYSTEM invariant.
+* [GUI] prevent . SPACE ( ) and % characters in Property name and Subdata (in order to avoid generating strange and complex variabilisation string)
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
-* CIScore is now in integer format. As a consequence, corresponding coef were multiplied by 100 and converted to integer. CI Threshold now default to 100 in stead of 1 and ca be configured with 'cerberus_ci_threshold' parameter.
+* [ENGINE] CIScore is now in integer format. As a consequence, corresponding coef were multiplied by 100 and converted to integer. CI Threshold now default to 100 in stead of 1 and ca be configured with 'cerberus_ci_threshold' parameter.

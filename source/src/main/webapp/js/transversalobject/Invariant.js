@@ -45,7 +45,7 @@ function openModalInvariant(invariant, value, mode) {
 
 function initModalInvariant() {
 
-    console.info("init");
+//    console.info("init");
     var doc = new Doc();
     $("[name='buttonClose']").html(doc.getDocLabel("page_global", "buttonClose"));
     $("[name='buttonAdd']").html(doc.getDocLabel("page_global", "btn_add"));
@@ -438,3 +438,18 @@ function feedInvariantModalData(inv, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#gp9").prop("readonly", "readonly");
     }
 }
+
+function inv_keyispressed(e) {
+    var idname = $('#editInvariantModal #idname').val();
+    if (idname === "COUNTRY" || idname === "ENVIRONMENT" || idname === "SYSTEM") {
+        var toto = "|:| |(|)|é|à|è|ê|\"|'|&|<|>|ù|&|#|{|[|`|_|\|ç|^|@|]|}|=|$|£|µ|*|!|.|;|,|?|§|/|%|°|+|";
+        var charval = "|" + e.key + "|";
+        if (toto.indexOf(charval) !== -1) {
+            var localMessage = new Message("WARNING", "Character '" + e.key + "' is not allowed for idnames COUNTRY, ENVIRONMENT and SYSTEM. Please use numeric or letter.");
+            showMessage(localMessage, $('#editInvariantModal'), false, 1000);
+            return false;
+        }
+    }
+    return true;
+}
+
