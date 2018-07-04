@@ -18,6 +18,8 @@
 * [ENGINE] getFromjson Property also gets the result when JSON is staticly feed on value2.
 * [GUI] prevent special characters to be used on COUNTRY, ENVIRONMENT and SYSTEM invariant.
 * [GUI] prevent . SPACE ( ) and % characters in Property name and Subdata (in order to avoid generating strange and complex variabilisation string)
+* [ENGINE] new system variables : %system.ROBOT% and %system.ROBOTDECLI%. #1779
+* [ENGINE] Robot capabilities are now also decoded. #1780
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

@@ -19,32 +19,19 @@
  */
 package org.cerberus.engine.execution.impl;
 
-import com.google.common.collect.Lists;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.ios.IOSDriver;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
-import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.security.MessageDigest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
-import io.appium.java_client.remote.AppiumCommandExecutor;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.commons.text.RandomStringGenerator;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
@@ -56,22 +43,21 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.apache.http.message.BasicHttpEntityEnclosingRequest;
-import org.apache.http.protocol.HttpProcessor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.Invariant;
-import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.crud.entity.RobotCapability;
-import org.cerberus.engine.entity.Session;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.IParameterService;
+import org.cerberus.engine.entity.MessageGeneral;
+import org.cerberus.engine.entity.Session;
 import org.cerberus.engine.execution.IRecorderService;
+import org.cerberus.engine.execution.ISeleniumServerService;
 import org.cerberus.engine.threadpool.IExecutionThreadPoolService;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.engine.execution.ISeleniumServerService;
 import org.cerberus.service.proxy.IProxyService;
 import org.cerberus.service.sikuli.ISikuliService;
 import org.cerberus.util.StringUtil;
@@ -97,7 +83,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class SeleniumServerService implements ISeleniumServerService {
-
+    
     @Autowired
     private IParameterService parameterService;
     @Autowired
@@ -106,15 +92,15 @@ public class SeleniumServerService implements ISeleniumServerService {
     private ISikuliService sikuliService;
     @Autowired
     IProxyService proxyService;
-
+    
     @Autowired
     private IExecutionThreadPoolService executionThreadPoolService;
     @Autowired
     private IRecorderService recorderService;
-
+    
     private static Map<String, Boolean> apkAlreadyPrepare = new HashMap<>();
     private static int totocpt = 0;
-
+    
     private static final Logger LOG = LogManager.getLogger(SeleniumServerService.class);
     /**
      * Proxy default config. (Should never be used as default config is inserted
@@ -126,14 +112,14 @@ public class SeleniumServerService implements ISeleniumServerService {
     private static final boolean DEFAULT_PROXYAUTHENT_ACTIVATE = false;
     private static final String DEFAULT_PROXYAUTHENT_USER = "squid";
     private static final String DEFAULT_PROXYAUTHENT_PASSWORD = "squid";
-
+    
     @Override
     public void startServer(TestCaseExecution tCExecution) throws CerberusException {
         //message used for log purposes 
         String logPrefix = "[" + tCExecution.getTest() + " - " + tCExecution.getTestCase() + "] ";
-
+        
         try {
-
+            
             LOG.info(logPrefix + "Start Robot Server (Selenium, Appium or Sikuli)");
 
             /**
@@ -149,7 +135,7 @@ public class SeleniumServerService implements ISeleniumServerService {
              * else, take the one from parameter
              */
             Integer cerberus_selenium_pageLoadTimeout, cerberus_selenium_implicitlyWait, cerberus_selenium_setScriptTimeout, cerberus_selenium_wait_element, cerberus_appium_wait_element, cerberus_selenium_action_click_timeout;
-
+            
             if (!tCExecution.getTimeout().isEmpty()) {
                 cerberus_selenium_wait_element = Integer.valueOf(tCExecution.getTimeout());
                 cerberus_appium_wait_element = Integer.valueOf(tCExecution.getTimeout());
@@ -157,14 +143,14 @@ public class SeleniumServerService implements ISeleniumServerService {
                 cerberus_selenium_wait_element = parameterService.getParameterIntegerByKey("cerberus_selenium_wait_element", system, 90000);
                 cerberus_appium_wait_element = parameterService.getParameterIntegerByKey("cerberus_appium_wait_element", system, 90000);
             }
-
+            
             cerberus_selenium_pageLoadTimeout = parameterService.getParameterIntegerByKey("cerberus_selenium_pageLoadTimeout", system, 90000);
             cerberus_selenium_implicitlyWait = parameterService.getParameterIntegerByKey("cerberus_selenium_implicitlyWait", system, 0);
             cerberus_selenium_setScriptTimeout = parameterService.getParameterIntegerByKey("cerberus_selenium_setScriptTimeout", system, 90000);
             cerberus_selenium_action_click_timeout = parameterService.getParameterIntegerByKey("cerberus_selenium_action_click_timeout", system, 90000);
-
+            
             LOG.debug(logPrefix + "TimeOut defined on session : " + cerberus_selenium_wait_element);
-
+            
             Session session = new Session();
             session.setCerberus_selenium_implicitlyWait(cerberus_selenium_implicitlyWait);
             session.setCerberus_selenium_pageLoadTimeout(cerberus_selenium_pageLoadTimeout);
@@ -195,13 +181,12 @@ public class SeleniumServerService implements ISeleniumServerService {
                             tCExecution.getSession().getHostUser(),
                             tCExecution.getSession().getHostPassword()) + session.getHost(),
                             session.getPort())) + "/wd/hub";
-//            hubUrl = "http://localhost:8080/source/DummyRESTCall?sleep=10000&toto=";
             LOG.debug(logPrefix + "Hub URL :" + hubUrl);
             URL url = new URL(hubUrl);
             HttpCommandExecutor executor = null;
-
+            
             boolean isProxy = proxyService.useProxy(hubUrl, system);
-
+            
             HttpClientBuilder builder = HttpClientBuilder.create();
 
             // Timeout Management
@@ -211,7 +196,7 @@ public class SeleniumServerService implements ISeleniumServerService {
             requestBuilder = requestBuilder.setConnectionRequestTimeout(robotTimeout);
             requestBuilder = requestBuilder.setSocketTimeout(robotTimeout);
             builder.setDefaultRequestConfig(requestBuilder.build());
-
+            
             if (isProxy) {
 
                 // Proxy Management
@@ -219,28 +204,28 @@ public class SeleniumServerService implements ISeleniumServerService {
                 int proxyPort = parameterService.getParameterIntegerByKey("cerberus_proxy_port", system, DEFAULT_PROXY_PORT);
                 HttpHost proxy = new HttpHost(proxyHost, proxyPort);
                 builder.setProxy(proxy);
-
+                
                 if (parameterService.getParameterBooleanByKey("cerberus_proxyauthentification_active", system, DEFAULT_PROXYAUTHENT_ACTIVATE)) {
-
+                    
                     String proxyUser = parameterService.getParameterStringByKey("cerberus_proxyauthentification_user", system, DEFAULT_PROXYAUTHENT_USER);
                     String proxyPassword = parameterService.getParameterStringByKey("cerberus_proxyauthentification_password", system, DEFAULT_PROXYAUTHENT_PASSWORD);
-
+                    
                     CredentialsProvider credsProvider = new BasicCredentialsProvider();
-
+                    
                     credsProvider.setCredentials(new AuthScope(proxyHost, proxyPort), new UsernamePasswordCredentials(proxyUser, proxyPassword));
-
+                    
                     if (url.getUserInfo() != null && !url.getUserInfo().isEmpty()) {
                         credsProvider.setCredentials(
                                 new AuthScope(url.getHost(), (url.getPort() > 0 ? url.getPort() : url.getDefaultPort())),
                                 new UsernamePasswordCredentials(tCExecution.getSession().getHostUser(), tCExecution.getSession().getHostPassword())
                         );
                     }
-
+                    
                     builder.setDefaultCredentialsProvider(credsProvider);
                 }
-
+                
             }
-
+            
             Factory factory = new MyHttpClientFactory(builder);
             executor = new HttpCommandExecutor(new HashMap<String, CommandInfo>(), url, factory);
 
@@ -278,7 +263,7 @@ public class SeleniumServerService implements ISeleniumServerService {
                 if (caps.getCapability("app") != null) {
                     appUrl = caps.getCapability("app").toString();
                 }
-
+                
                 String newApkName = null;
                 try {
                     int toto = totocpt++;
@@ -304,9 +289,9 @@ public class SeleniumServerService implements ISeleniumServerService {
                 } finally {
                     Runtime.getRuntime().exec("rm " + newApkName);
                 }
-
+                
                 driver = (WebDriver) appiumDriver;
-
+                
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
                 if (executor == null) {
                     appiumDriver = new IOSDriver(url, caps);
@@ -314,7 +299,7 @@ public class SeleniumServerService implements ISeleniumServerService {
                     appiumDriver = new IOSDriver(executor, caps);
                 }
                 driver = (WebDriver) appiumDriver;
-
+                
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
                 /**
                  * Check sikuli extension is reachable
@@ -331,7 +316,7 @@ public class SeleniumServerService implements ISeleniumServerService {
                 if (!tCExecution.getCountryEnvironmentParameters().getIp().isEmpty()) {
                     sikuliService.doSikuliActionOpenApp(session, tCExecution.getCountryEnvironmentParameters().getIp());
                 }
-
+                
             }
 
             /**
@@ -372,10 +357,10 @@ public class SeleniumServerService implements ISeleniumServerService {
                 }
                 tCExecution.setScreenSize(getScreenSize(driver));
                 tCExecution.setRobotDecli(tCExecution.getRobotDecli().replace("%SCREENSIZE%", tCExecution.getScreenSize()));
-
+                
                 String userAgent = (String) ((JavascriptExecutor) driver).executeScript("return navigator.userAgent;");
                 tCExecution.setUserAgent(userAgent);
-
+                
             }
             tCExecution.getSession().setStarted(true);
 
@@ -417,7 +402,7 @@ public class SeleniumServerService implements ISeleniumServerService {
         /**
          * Instanciate DesiredCapabilities
          */
-
+        
         DesiredCapabilities caps = new DesiredCapabilities();
         // In case browser is not defined at that level, we force it to firefox.
         if (StringUtil.isNullOrEmpty(tCExecution.getBrowser())) {
@@ -439,9 +424,13 @@ public class SeleniumServerService implements ISeleniumServerService {
          * Loop on RobotCapabilities to feed DesiredCapabilities Capability must
          * be String, Integer or Boolean
          */
-        List<RobotCapability> additionalCapabilities = tCExecution.getCapabilities();
+        List<RobotCapability> additionalCapabilities = null;
+        if (tCExecution.getRobotObj() != null) {
+            additionalCapabilities = tCExecution.getRobotObj().getCapabilitiesDecoded();
+        }
         if (additionalCapabilities != null) {
             for (RobotCapability additionalCapability : additionalCapabilities) {
+                LOG.debug("RobotCaps : " + additionalCapability.getCapability() + " " + additionalCapability.getRobot() + " " + additionalCapability.getValue());
                 if (StringUtil.isBoolean(additionalCapability.getValue())) {
                     caps.setCapability(additionalCapability.getCapability(), StringUtil.parseBoolean(additionalCapability.getValue()));
                 } else if (StringUtil.isInteger(additionalCapability.getValue())) {
@@ -468,7 +457,7 @@ public class SeleniumServerService implements ISeleniumServerService {
                 caps.setCapability("appWaitActivity", tCExecution.getCountryEnvironmentParameters().getMobileActivity());
             }
         }
-
+        
         return caps;
     }
 
@@ -506,10 +495,10 @@ public class SeleniumServerService implements ISeleniumServerService {
                     profile.setPreference("general.useragent.override", usedUserAgent);
                 }
                 capabilities.setCapability(FirefoxDriver.PROFILE, profile);
-
+                
             } else if (browser.equalsIgnoreCase("IE")) {
                 capabilities = DesiredCapabilities.internetExplorer();
-
+                
             } else if (browser.equalsIgnoreCase("chrome")) {
                 capabilities = DesiredCapabilities.chrome();
                 /**
@@ -524,19 +513,19 @@ public class SeleniumServerService implements ISeleniumServerService {
                     options.addArguments("--user-agent=" + usedUserAgent);
                 }
                 capabilities.setCapability(ChromeOptions.CAPABILITY, options);
-
+                
             } else if (browser.contains("android")) {
                 capabilities = DesiredCapabilities.android();
-
+                
             } else if (browser.contains("ipad")) {
                 capabilities = DesiredCapabilities.ipad();
-
+                
             } else if (browser.contains("iphone")) {
                 capabilities = DesiredCapabilities.iphone();
-
+                
             } else if (browser.contains("safari")) {
                 capabilities = DesiredCapabilities.safari();
-
+                
             } else {
                 LOG.warn("Not supported Browser : " + browser);
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
@@ -581,7 +570,7 @@ public class SeleniumServerService implements ISeleniumServerService {
             return StringUtil.isNullOrEmpty(screenSizeTestCase) ? screenSizeRobot : screenSizeTestCase;
         }
     }
-
+    
     @Override
     public boolean stopServer(TestCaseExecution tce) {
         Session session = tce.getSession();
@@ -592,19 +581,19 @@ public class SeleniumServerService implements ISeleniumServerService {
             } catch (InterruptedException ex) {
                 LOG.error(ex.toString());
             }
-
+            
             if (session.getAppiumDriver() != null && tce.getCountryEnvironmentParameters() != null
                     && !StringUtil.isNullOrEmpty(tce.getCountryEnvironmentParameters().getMobilePackage())) {
                 session.getAppiumDriver().removeApp(tce.getCountryEnvironmentParameters().getMobilePackage()); // remove manually if package is defined
             }
-
+            
             LOG.info("Stop execution session");
             session.quit();
             return true;
         }
         return false;
     }
-
+    
     private static void getIPOfNode(TestCaseExecution tCExecution) {
         try {
             Session session = tCExecution.getSession();
@@ -613,11 +602,11 @@ public class SeleniumServerService implements ISeleniumServerService {
             String hostName = ce.getAddressOfRemoteServer().getHost();
             int port = ce.getAddressOfRemoteServer().getPort();
             HttpHost host = new HttpHost(hostName, port);
-
+            
             HttpClient client = HttpClientBuilder.create().setRedirectStrategy(new LaxRedirectStrategy()).build();
-
+            
             URL sessionURL = new URL(SeleniumServerService.getBaseUrl(session.getHost(), session.getPort()) + "/grid/api/testsession?session=" + sessionId);
-
+            
             BasicHttpEntityEnclosingRequest r = new BasicHttpEntityEnclosingRequest("POST", sessionURL.toExternalForm());
             HttpResponse response = client.execute(host, r);
             if (!response.getStatusLine().toString().contains("403")
@@ -632,42 +621,42 @@ public class SeleniumServerService implements ISeleniumServerService {
                     tCExecution.setPort(String.valueOf(myURL.getPort()));
                 }
             }
-
+            
         } catch (IOException ex) {
             LOG.error(ex.toString());
         } catch (JSONException ex) {
             LOG.error(ex.toString());
         }
     }
-
+    
     @Override
     public Capabilities getUsedCapabilities(Session session) {
         Capabilities caps = ((RemoteWebDriver) session.getDriver()).getCapabilities();
         return caps;
     }
-
+    
     private void setScreenSize(WebDriver driver, Integer width, Integer length) {
         driver.manage().window().setPosition(new Point(0, 0));
         driver.manage().window().setSize(new Dimension(width, length));
     }
-
+    
     private String getScreenSize(WebDriver driver) {
         return driver.manage().window().getSize().width + "*" + driver.manage().window().getSize().height;
     }
-
+    
     private static String getBaseUrl(String host, String port) {
         String baseurl = "";
-
+        
         if (!StringUtil.isNullOrEmpty(host) && (host.contains("https://") || host.contains("http://"))) {
             baseurl = host;
         } else {
             baseurl = "http://" + host;
         }
-
+        
         if (!StringUtil.isNullOrEmpty(port) && Integer.valueOf(port) > 0) {
             baseurl += ":" + port;
         }
-
+        
         return baseurl;
     }
 }

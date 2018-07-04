@@ -142,7 +142,6 @@ public class RunTestCase extends HttpServlet {
         int getPageSource = 0;
         int getSeleniumLog = 0;
         String manualExecution = "N";
-        List<RobotCapability> capabilities = null;
 
         //Test
         String test = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("Test"), "");
@@ -248,10 +247,11 @@ public class RunTestCase extends HttpServlet {
         }
 
         // If Robot is feeded, we check it exist. If it exist, we overwrite the associated parameters.
+                Robot robObj = null;
         if (!StringUtil.isNullOrEmpty(robot)) {
             IRobotService robotService = appContext.getBean(IRobotService.class);
             try {
-                Robot robObj = robotService.readByKey(robot);
+                robObj = robotService.readByKey(robot);
                 // If Robot parameter is defined and we can find the robot, we overwrite the corresponding parameters.
                 ss_ip = ParameterParserUtil.parseStringParam(robObj.getHost(), ss_ip);
                 ss_ip_user = robObj.getHostUser();
@@ -266,7 +266,6 @@ public class RunTestCase extends HttpServlet {
                 platform = ParameterParserUtil.parseStringParam(robObj.getPlatform(), platform);
                 active = robObj.getActive();
                 userAgent = robObj.getUserAgent();
-                capabilities = robObj.getCapabilities();
                 screenSize = robObj.getScreenSize();
             } catch (CerberusException ex) {
                 errorMessage += "Error - Robot [" + robot + "] does not exist. ";
@@ -322,7 +321,7 @@ public class RunTestCase extends HttpServlet {
             TestCaseExecution tCExecution = factoryTCExecution.create(0, test, testCase, null, null, null, environment, country, browser, version, platform, "",
                     0, 0, "", "", "", null, ss_ip, null, ss_p, tag, verbose, screenshot, getPageSource, getSeleniumLog, synchroneous, timeout, outputFormat, null,
                     Infos.getInstance().getProjectNameAndVersion(), tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL, myEnvData, ss_ip, ss_p,
-                    null, new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED), executor, numberOfRetries, screenSize, capabilities,
+                    null, new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED), executor, numberOfRetries, screenSize, robObj,
                     "", "", "", "", "", manualExecution, userAgent, 0, "", robotDecli);
             tCExecution.setSeleniumIPUser(ss_ip_user);
             tCExecution.setSeleniumIPPassword(ss_ip_pass);

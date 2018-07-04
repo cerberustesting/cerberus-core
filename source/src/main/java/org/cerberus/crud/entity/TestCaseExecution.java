@@ -124,7 +124,7 @@ public class TestCaseExecution {
     private String executionUUID;
     private Selenium selenium;
     private Session session;
-    private List<RobotCapability> capabilities;
+    private Robot robotObj;
     private AppService lastServiceCalled;
     private Integer nbExecutions; // Has the nb of execution that was necessary to execute the testcase.
     // Global parameters.
@@ -160,6 +160,14 @@ public class TestCaseExecution {
     public static final String MANUAL_Y = "Y";
     public static final String MANUAL_N = "N";
     public static final String MANUAL_A = "A";
+
+    public Robot getRobotObj() {
+        return robotObj;
+    }
+
+    public void setRobotObj(Robot robotObj) {
+        this.robotObj = robotObj;
+    }
 
     public String getSystem() {
         return system;
@@ -837,14 +845,6 @@ public class TestCaseExecution {
         this.screenSize = screenSize;
     }
 
-    public List<RobotCapability> getCapabilities() {
-        return capabilities;
-    }
-
-    public void setCapabilities(List<RobotCapability> capabilities) {
-        this.capabilities = capabilities;
-    }
-
     public int getTestCaseVersion() {
         return this.testCaseVersion;
     }
@@ -876,7 +876,6 @@ public class TestCaseExecution {
             result.put("version", this.getVersion());
             result.put("platform", this.getPlatform());
             result.put("browserFullVersion", this.getBrowserFullVersion());
-            result.put("capabilities", this.getCapabilities());
             result.put("start", this.getStart());
             result.put("end", this.getEnd());
             result.put("controlStatus", this.getControlStatus());

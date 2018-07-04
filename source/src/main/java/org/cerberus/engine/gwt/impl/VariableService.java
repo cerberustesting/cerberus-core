@@ -208,6 +208,13 @@ public class VariableService implements IVariableService {
             stringToDecode = stringToDecode.replace("%SYS_SYSTEM%", tCExecution.getApplicationObj().getSystem());
             stringToDecode = stringToDecode.replace("%SYS_APPLI%", tCExecution.getApplicationObj().getApplication());
             stringToDecode = stringToDecode.replace("%SYS_BROWSER%", tCExecution.getBrowser());
+            if (tCExecution.getRobotObj() != null) {
+                stringToDecode = stringToDecode.replace("%SYS_ROBOT%", tCExecution.getRobotObj().getRobot());
+                stringToDecode = stringToDecode.replace("%SYS_ROBOTDECLI%", tCExecution.getRobotObj().getRobotDecli());
+            } else {
+                stringToDecode = stringToDecode.replace("%SYS_ROBOT%", "");
+                stringToDecode = stringToDecode.replace("%SYS_ROBOTDECLI%", "");
+            }
             stringToDecode = stringToDecode.replace("%SYS_APP_DOMAIN%", tCExecution.getCountryEnvironmentParameters().getDomain());
             stringToDecode = stringToDecode.replace("%SYS_APP_HOST%", tCExecution.getCountryEnvironmentParameters().getIp());
             stringToDecode = stringToDecode.replace("%SYS_APP_CONTEXTROOT%", tCExecution.getCountryEnvironmentParameters().getUrl());
@@ -243,6 +250,13 @@ public class VariableService implements IVariableService {
             stringToDecode = stringToDecode.replace("%system.SYSTEM%", tCExecution.getApplicationObj().getSystem());
             stringToDecode = stringToDecode.replace("%system.APPLI%", tCExecution.getApplicationObj().getApplication());
             stringToDecode = stringToDecode.replace("%system.BROWSER%", tCExecution.getBrowser());
+            if (tCExecution.getRobotObj() != null) {
+                stringToDecode = stringToDecode.replace("%system.ROBOT%", tCExecution.getRobotObj().getRobot());
+                stringToDecode = stringToDecode.replace("%system.ROBOTDECLI%", tCExecution.getRobotObj().getRobotDecli());
+            } else {
+                stringToDecode = stringToDecode.replace("%system.ROBOT%", "");
+                stringToDecode = stringToDecode.replace("%system.ROBOTDECLI%", "");
+            }
             stringToDecode = stringToDecode.replace("%system.APP_DOMAIN%", tCExecution.getCountryEnvironmentParameters().getDomain());
             stringToDecode = stringToDecode.replace("%system.APP_HOST%", tCExecution.getCountryEnvironmentParameters().getIp());
             stringToDecode = stringToDecode.replace("%system.APP_CONTEXTROOT%", tCExecution.getCountryEnvironmentParameters().getUrl());

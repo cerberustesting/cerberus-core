@@ -29,13 +29,13 @@ import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.CountryEnvLink;
 import org.cerberus.crud.entity.CountryEnvParam;
+import org.cerberus.crud.entity.RobotCapability;
 import org.cerberus.crud.entity.Tag;
 import org.cerberus.crud.entity.Test;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionData;
-import org.cerberus.crud.entity.TestCaseExecutionQueue;
 import org.cerberus.crud.entity.TestCaseExecutionSysVer;
 import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.crud.entity.TestCaseStepAction;
@@ -43,6 +43,7 @@ import org.cerberus.crud.entity.TestCaseStepActionControl;
 import org.cerberus.crud.entity.TestCaseStepActionControlExecution;
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
 import org.cerberus.crud.entity.TestCaseStepExecution;
+import org.cerberus.crud.factory.IFactoryRobotCapability;
 import org.cerberus.crud.factory.IFactoryTestCaseExecutionSysVer;
 import org.cerberus.crud.factory.IFactoryTestCaseStepActionControlExecution;
 import org.cerberus.crud.factory.IFactoryTestCaseStepActionExecution;
@@ -153,6 +154,8 @@ public class ExecutionRunService implements IExecutionRunService {
     private IRetriesService retriesService;
     @Autowired
     private ISeleniumServerService serverService;
+    @Autowired
+    private IFactoryRobotCapability robotCapabilityFactory;
 
     @Override
     public TestCaseExecution executeTestCase(TestCaseExecution tCExecution) throws CerberusException {
@@ -163,6 +166,8 @@ public class ExecutionRunService implements IExecutionRunService {
          * testcaseexecutionsysver table. Only if execution is not manual.
          */
         try {
+
+            AnswerItem<String> answerDecode = new AnswerItem<>();
 
             if (!(tCExecution.isManualURL())) {
                 /**
@@ -214,6 +219,51 @@ public class ExecutionRunService implements IExecutionRunService {
                         || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
                         || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)
                         || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
+
+                    // Decoding Robot capabilities.
+                    if (tCExecution.getRobotObj() != null) {
+                        List<RobotCapability> caps = tCExecution.getRobotObj().getCapabilities();
+                        List<RobotCapability> capsDecoded = new ArrayList<>();
+                        for (RobotCapability cap : caps) {
+
+                            String capDecoded = "";
+                            try {
+                                answerDecode = variableService.decodeStringCompletly(cap.getCapability(), tCExecution, null, false);
+                                capDecoded = (String) answerDecode.getItem();
+
+                                if (!(answerDecode.isCodeStringEquals("OK"))) {
+                                    // If anything wrong with the decode --> we stop here with decode message in the action result.
+                                    LOG.debug("TestCase interupted due to decode 'Robot Capability key' Error.");
+                                    throw new CerberusException(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_CAPABILITYDECODE)
+                                            .resolveDescription("MES", answerDecode.getMessageDescription())
+                                            .resolveDescription("FIELD", "")
+                                            .resolveDescription("AREA", "Robot Capability key : " + cap.getCapability()));
+                                }
+                            } catch (CerberusEventException cex) {
+                                LOG.warn(cex);
+                            }
+
+                            String valDecoded = "";
+                            try {
+                                answerDecode = variableService.decodeStringCompletly(cap.getValue(), tCExecution, null, false);
+                                valDecoded = (String) answerDecode.getItem();
+
+                                if (!(answerDecode.isCodeStringEquals("OK"))) {
+                                    // If anything wrong with the decode --> we stop here with decode message in the action result.
+                                    LOG.debug("TestCase interupted due to decode 'Robot Capability value' Error.");
+                                    throw new CerberusException(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_CAPABILITYDECODE)
+                                            .resolveDescription("MES", answerDecode.getMessageDescription())
+                                            .resolveDescription("FIELD", "")
+                                            .resolveDescription("AREA", "Robot Capability value : " + cap.getValue()));
+                                }
+                            } catch (CerberusEventException cex) {
+                                LOG.warn(cex);
+                            }
+
+                            capsDecoded.add(robotCapabilityFactory.create(cap.getId(), cap.getRobot(), capDecoded, valDecoded));
+                        }
+                        tCExecution.getRobotObj().setCapabilitiesDecoded(capsDecoded);
+                    }
 
                     MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_STARTINGROBOTSERVER);
                     mes.setDescription(mes.getDescription().replace("%IP%", tCExecution.getIp()));
@@ -378,7 +428,6 @@ public class ExecutionRunService implements IExecutionRunService {
 
             // Evaluate the condition at the step level.
             AnswerItem<Boolean> conditionAnswerTc;
-            AnswerItem<String> answerDecode = new AnswerItem<>();
             boolean conditionDecodeError = false;
             /**
              * If execution is not manual, evaluate the condition at the step
@@ -393,7 +442,7 @@ public class ExecutionRunService implements IExecutionRunService {
                         // If anything wrong with the decode --> we stop here with decode message in the action result.
                         tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_CONDITIONDECODE)
                                 .resolveDescription("MES", answerDecode.getMessageDescription())
-                                .resolveDescription("FIELD", "TestCase Condition Value1"));
+                                .resolveDescription("AREA", "TestCase Condition Value1 "));
                         tCExecution.setEnd(new Date().getTime());
                         LOG.debug("TestCase interupted due to decode 'TestCase Condition Value1' Error.");
                         conditionDecodeError = true;
@@ -409,7 +458,7 @@ public class ExecutionRunService implements IExecutionRunService {
                         // If anything wrong with the decode --> we stop here with decode message in the action result.
                         tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_CONDITIONDECODE)
                                 .resolveDescription("MES", answerDecode.getMessageDescription())
-                                .resolveDescription("FIELD", "TestCase Condition Value2"));
+                                .resolveDescription("AREA", "TestCase Condition Value2 "));
                         tCExecution.setEnd(new Date().getTime());
                         LOG.debug("TestCase interupted due to decode 'TestCase Condition Value2' Error.");
                         conditionDecodeError = true;
@@ -804,7 +853,7 @@ public class ExecutionRunService implements IExecutionRunService {
                     }
                 }
             } catch (Exception e) {
-                LOG.error(e,e);
+                LOG.error(e, e);
             }
 
             //

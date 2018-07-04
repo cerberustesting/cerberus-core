@@ -502,18 +502,20 @@ public class PropertyService implements IPropertyService {
 
         TestCaseCountryProperties testCaseCountryProperty = null;
         //searches for properties that match the propertyname (even if they use the getFromDataLib syntax)
-        for (TestCaseCountryProperties tccp : propertieOfTestcase) {
-            if (tccp.getProperty().equals(property)) {
-                //property is defined
-                propertyDefined = true;
-                //check if is defined for country
-                if (tccp.getCountry().equals(country)) {
-                    //if is a sub data access then we create a auxiliary property
-                    testCaseCountryProperty = tccp;
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("Property found : " + tccp);
+        if (propertieOfTestcase != null) {
+            for (TestCaseCountryProperties tccp : propertieOfTestcase) {
+                if (tccp.getProperty().equals(property)) {
+                    //property is defined
+                    propertyDefined = true;
+                    //check if is defined for country
+                    if (tccp.getCountry().equals(country)) {
+                        //if is a sub data access then we create a auxiliary property
+                        testCaseCountryProperty = tccp;
+                        if (LOG.isDebugEnabled()) {
+                            LOG.debug("Property found : " + tccp);
+                        }
+                        break;
                     }
-                    break;
                 }
             }
         }
@@ -1300,7 +1302,7 @@ public class PropertyService implements IPropertyService {
             recorderService.recordProperty(tCExecution.getId(), testCaseExecutionData.getProperty(), 1, jsonResponse);
 
             String valueFromJson = this.jsonService.getFromJson(jsonResponse, null, testCaseExecutionData.getValue1());
-            
+
             if (valueFromJson != null) {
                 if (!"".equals(valueFromJson)) {
                     testCaseExecutionData.setValue(valueFromJson);

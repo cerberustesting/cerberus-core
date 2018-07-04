@@ -83,6 +83,7 @@ public enum MessageGeneralEnum {
     EXECUTION_FA_CERBERUS(9, "FA", "The test case failed to be executed due to error in Cerberus, please contact Administrator of Cerberus. %MES%."),
     EXECUTION_FA_CONDITION(11, "FA", "The test case failed to be executed. An error occured when evaluating the %AREA%condition '%COND%'. %MES%"),
     EXECUTION_FA_CONDITIONDECODE(11, "FA", "The test case failed to be executed. An error occured when decoding the %AREA%condition. %MES%"),
+    EXECUTION_FA_CAPABILITYDECODE(11, "FA", "The test case failed to be executed. An error occured when decoding the %AREA%. %MES%"),
     EXECUTION_CA(6, "CA", "The test case has been cancelled by the user."),
     EXECUTION_NA(7, "NA", "The test case could not be run because of missing testing data."),
     EXECUTION_NE_CONDITION(12, "NE", "The test case was not executed following the evaluation of the condition '%COND%'. %MES%"),

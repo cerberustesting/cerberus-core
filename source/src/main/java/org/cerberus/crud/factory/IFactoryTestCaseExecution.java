@@ -23,7 +23,7 @@ import java.util.List;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.CountryEnvParam;
 import org.cerberus.crud.entity.CountryEnvironmentParameters;
-import org.cerberus.crud.entity.RobotCapability;
+import org.cerberus.crud.entity.Robot;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseStepExecution;
@@ -82,7 +82,7 @@ public interface IFactoryTestCaseExecution {
      * @param executor
      * @param numberOfRetries
      * @param screenSize
-     * @param capabilities
+     * @param robotObj
      * @param conditionOper
      * @param conditionVal1Init
      * @param conditionVal2Init
@@ -100,7 +100,7 @@ public interface IFactoryTestCaseExecution {
             String application, Application applicationObj, String ip, String url, String port, String tag, int verbose, int screenshot, int pageSource, int seleniumLog, boolean synchroneous, String timeout,
             String outputFormat, String status, String crbVersion, TestCase tCase, CountryEnvParam countryEnvParam,
             CountryEnvironmentParameters countryEnvironmentParameters, boolean manualURL, String myHost, String myContextRoot, String myLoginRelativeURL, String myEnvData,
-            String seleniumIP, String seleniumPort, List<TestCaseStepExecution> testCaseStepExecution, MessageGeneral resultMessage, 
-            String executor, int numberOfRetries, String screenSize, List<RobotCapability> capabilities,
+            String seleniumIP, String seleniumPort, List<TestCaseStepExecution> testCaseStepExecution, MessageGeneral resultMessage,
+            String executor, int numberOfRetries, String screenSize, Robot robotObj,
             String conditionOper, String conditionVal1Init, String conditionVal2Init, String conditionVal1, String conditionVal2, String manualExecution, String userAgent, int testCaseVersion, String system, String robotDecli);
 }

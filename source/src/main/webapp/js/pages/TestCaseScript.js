@@ -4216,7 +4216,7 @@ function createAllKeywordList(objectList, propertyList) {
     var availableSystemValues = [
         "SYSTEM",
         "APPLI",
-        "BROWSER",
+        "BROWSER", "ROBOT", "ROBOTDECLI",
         "APP_DOMAIN", "APP_HOST", "APP_CONTEXTROOT", "EXEURL", "APP_VAR1", "APP_VAR2", "APP_VAR3", "APP_VAR4",
         "ENV", "ENVGP",
         "COUNTRY", "COUNTRYGP1", "COUNTRYGP2", "COUNTRYGP3", "COUNTRYGP4", "COUNTRYGP5", "COUNTRYGP6", "COUNTRYGP7", "COUNTRYGP8", "COUNTRYGP9",
@@ -4663,8 +4663,6 @@ function tec_keyispressed(e) {
         console.info(charval);
         console.info(e.key);
         if (toto.indexOf(charval) !== -1) {
-//            var localMessage = new Message("WARNING", "Character '" + e.key + "' is not allowed on subdata name. This is to avoid creating ambiguous syntax when using variabilization.");
-//            showMessage(localMessage, $('#editInvariantModal'), false, 1000);
             showMessageMainPage("warning", "Character '" + e.key + "' is not allowed on subdata name. This is to avoid creating ambiguous syntax when using variabilization.", false, 4000);
             return false;
         }

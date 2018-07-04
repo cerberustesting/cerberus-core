@@ -48,6 +48,15 @@ public class Robot {
      * From here are data outside database model.
      */
     private List<RobotCapability> capabilities;
+    private List<RobotCapability> capabilitiesDecoded;
+
+    public List<RobotCapability> getCapabilitiesDecoded() {
+        return capabilitiesDecoded;
+    }
+
+    public void setCapabilitiesDecoded(List<RobotCapability> capabilitiesDecoded) {
+        this.capabilitiesDecoded = capabilitiesDecoded;
+    }
 
     public String getRobotDecli() {
         return robotDecli;
