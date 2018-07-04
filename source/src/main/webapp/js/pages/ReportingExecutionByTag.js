@@ -284,9 +284,9 @@ function loadReportingData(selectTag) {
 
         // Report By Label
         $("#progressLabel").empty();
-        if (!$.isEmptyObject(data.labelStat)) {
-            loadLabelReport(data.labelStat);
-        }
+//        if (!$.isEmptyObject(data.labelStat)) {
+        loadLabelReport(data.labelStat);
+//        }
 
         // Detailed Test Case List Report
         loadReportList(data.table, selectTag);
@@ -438,15 +438,12 @@ function loadLabelReport(data) {
     $("#progressLabel").empty();
 
     var len = data.labelStats.split.length;
+    $("#reportByLabel").show();
     if (len > 0) {
-        $("#reportByLabel").show();
-        //createSummaryTable(data.contentTable);
         for (var index = 0; index < len; index++) {
             //draw a progress bar for each combo retrieved
             buildLabelBar(data.labelStats.split[index]);
         }
-    } else {
-        $("#reportByLabel").hide();
     }
     hideLoader($("#reportLabel"));
 

@@ -1072,8 +1072,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_reportbytag','button_reload','','fr','Recharger','',NULL)");
         b.append(",('page_reportbytag','filters','','en','Filters','Filters for the report',NULL)");
         b.append(",('page_reportbytag','filters','','fr','Filtres','Filtres du rapport',NULL)");
-        b.append(",('page_reportbytag','report_envcountrybrowser','','en','Report By Application Environment Country Browser','Report of the execution filtering by Application Environment Country and Browser',NULL)");
-        b.append(",('page_reportbytag','report_envcountrybrowser','','fr','Rapport par Application / Environnement / Pays / Navigateur','Rapport d\\'execution filtré par Application Envrionnment Pays et Navigateur',NULL)");
+        b.append(",('page_reportbytag','report_envcountrybrowser','','en','Report By Application Environment Country RobotDecli','Report of the execution filtering by Application Environment Country and Robot Decli',NULL)");
+        b.append(",('page_reportbytag','report_envcountrybrowser','','fr','Rapport par Application / Environnement / Pays / Variation Robot','Rapport d\\'execution filtré par Application Envrionnment Pays et declinaison de Robot',NULL)");
         b.append(",('page_reportbytag','report_function','','en','Report by Function','A bar chart with the number of execution and their status for each function',NULL)");
         b.append(",('page_reportbytag','report_function','','fr','Rapport par Fonction','diagramme en bâtons contenant le nombre d\\'execution par status pour chaque fonction',NULL)");
         b.append(",('page_reportbytag','report_list','','en','List','A list of all test case execution for each Environment, Country and Browser',NULL)");
