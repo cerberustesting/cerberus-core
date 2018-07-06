@@ -304,7 +304,7 @@ public class ParameterService implements IParameterService {
         }
         return false;
     }
-
+    
     @Override
     public boolean isSystemManaged(Parameter parameter) {
         switch (parameter.getParam()) {

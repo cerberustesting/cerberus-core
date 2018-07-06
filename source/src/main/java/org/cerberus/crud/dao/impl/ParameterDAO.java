@@ -488,29 +488,29 @@ public class ParameterDAO implements IParameterDAO {
             LOG.debug("SQL.param.system : " + system);
             LOG.debug("SQL.param.key : " + key);
         }
-        
-        try(Connection connection = this.databaseSpring.connect();
-        		PreparedStatement preStat = connection.prepareStatement(query.toString());) {
-            
+
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query.toString());) {
+
             preStat.setString(1, system1);
             preStat.setString(2, system1);
             preStat.setString(3, key);
             preStat.setString(4, system);
             preStat.setString(5, key);
-            
-            try(ResultSet resultSet = preStat.executeQuery();){
-            	//gets the data
+
+            try (ResultSet resultSet = preStat.executeQuery();) {
+                //gets the data
                 while (resultSet.next()) {
                     p = this.loadFromResultSetWithSystem1(resultSet);
                 }
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                 msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-            }catch (SQLException exception) {
+            } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
 
-            } 
+            }
         } catch (SQLException e) {
             LOG.error("Unable to execute query : " + e.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -564,6 +564,11 @@ public class ParameterDAO implements IParameterDAO {
         query.append(" LEFT OUTER JOIN ( SELECT * from parameter par1 WHERE par1.system = ? ) as par1 ON par1.`param` = par.`param` ");
         query.append(" WHERE par.system = ?");
 
+        // Not allowing distinct on forbiden data.
+        if (columnName.contains("par.value") || columnName.contains("par1.value")) {
+            searchSQL.append(" and par.param not in " + Parameter.SECUREDPARAMINSQLCLAUSE);
+        }
+
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
             searchSQL.append(" and (par.param like ?");
             searchSQL.append(" or par.`value` like ?");
@@ -587,10 +592,10 @@ public class ParameterDAO implements IParameterDAO {
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
         }
-        
+
         try (Connection connection = databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(query.toString());
-        		Statement stm = connection.createStatement();) {
+                Statement stm = connection.createStatement();) {
 
             int i = 1;
             if (!StringUtil.isNullOrEmpty(system1)) {
@@ -606,10 +611,10 @@ public class ParameterDAO implements IParameterDAO {
             for (String individualColumnSearchValue : individalColumnSearchValues) {
                 preStat.setString(i++, individualColumnSearchValue);
             }
-            
-            try(ResultSet resultSet = preStat.executeQuery();
-            		ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");){
-            	//gets the data
+
+            try (ResultSet resultSet = preStat.executeQuery();
+                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+                //gets the data
                 while (resultSet.next()) {
                     distinctValues.add(resultSet.getString("distinctValues") == null ? "" : resultSet.getString("distinctValues"));
                 }
@@ -633,11 +638,11 @@ public class ParameterDAO implements IParameterDAO {
                     msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
                     answer = new AnswerList<>(distinctValues, nrTotalRows);
                 }
-            }catch (SQLException exception) {
+            } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-            } 
+            }
         } catch (Exception e) {
             LOG.warn("Unable to execute query : " + e.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
@@ -661,18 +666,18 @@ public class ParameterDAO implements IParameterDAO {
             // Prepare and execute query
             preStat.setString(1, system);
             preStat.setString(2, param);
-            
-            try(ResultSet resultSet = preStat.executeQuery();){
-            	while (resultSet.next()) {
+
+            try (ResultSet resultSet = preStat.executeQuery();) {
+                while (resultSet.next()) {
                     ans.setItem(loadFromResultSet(resultSet));
                 }
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
                         .resolveDescription("OPERATION", "SELECT");
-            }catch (SQLException exception) {
+            } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-            } 
+            }
         } catch (Exception e) {
             LOG.warn("Unable to execute query : " + e.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",

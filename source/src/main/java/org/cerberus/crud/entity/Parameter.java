@@ -36,6 +36,8 @@ public class Parameter {
     private String system1;
     private String system1value;
 
+    public static final String SECUREDPARAMINSQLCLAUSE = "(\"cerberus_accountcreation_defaultpassword\",\"cerberus_proxyauthentification_password\",\"cerberus_jenkinsadmin_password\",\"cerberus_smtp_password\")";
+    
     public String getSystem() {
         return system;
     }
