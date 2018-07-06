@@ -20,6 +20,7 @@
 * [GUI] prevent . SPACE ( ) and % characters in Property name and Subdata (in order to avoid generating strange and complex variabilisation string)
 * [ENGINE] new system variables : %system.ROBOT% and %system.ROBOTDECLI%. #1779
 * [ENGINE] Robot capabilities are now also decoded. #1780
+* [GUI] DATALIB Bulk rename feature (thanks to @Nouxx). Datalib can not be renamed in consistent mode accros all testcases.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

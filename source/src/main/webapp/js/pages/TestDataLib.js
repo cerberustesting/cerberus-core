@@ -246,8 +246,9 @@ function confirmDataLibBulkModalHandler() {
                 hideLoaderInModal('#bulkRenameDataLibModal');
                 if (getAlertType(data.messageType) === "success") {
                     $('#bulkRenameDataLibModal').modal('hide');
+                    var oTable = $("#listOfTestDataLib").dataTable();
+                    oTable.fnDraw(true);
                     var doc = new Doc();
-                    data.message += " " + doc.getDocLabel("page_testdatalib", "bulk_rename_success_message");
                     showMessage(data);
                 } else {
                     showMessage(data, $('#bulkRenameDataLibModal'));

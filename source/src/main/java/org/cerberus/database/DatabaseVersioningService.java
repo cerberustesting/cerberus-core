@@ -7792,6 +7792,10 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // 1357
         a.add("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ('', 'cerberus_robot_timeout', '60000', 'Timeout (in ms) for the robot to answer Cerberus requests.');");
 
+        // Remove BROWSER parameter from campaign criteria.
+        // 1358
+        a.add("DELETE FROM `invariant` WHERE `idname`='CAMPAIGN_PARAMETER' and`value`='BROWSER';");
+
         return a;
     }
 

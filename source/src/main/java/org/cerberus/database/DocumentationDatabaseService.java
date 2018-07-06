@@ -1749,8 +1749,6 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_testdatalib','btn_bulkrename','','fr','Renommer massivement','',NULL)");
         b.append(",('page_testdatalib','wrong_name_message','','en','The Data Library name isn\\'t correctly formated','',NULL)");
         b.append(",('page_testdatalib','wrong_name_message','','fr','Le nom de la Data Lib n\\'est pas correct','',NULL)");
-        b.append(",('page_testdatalib','bulk_rename_success_message','','en','WARNING: please refresh the page','',NULL)");
-        b.append(",('page_testdatalib','bulk_rename_success_message','','fr','ATTENTION : rafraichir la page','',NULL)");
         b.append(",('page_testdatalib_delete','title','','en','Delete Test Data Library Entry','',NULL)");
         b.append(",('page_testdatalib_m_createlib','title','','en','Create New Test Data Library Entry','',NULL)");
         b.append(",('page_testdatalib_m_duplicatelib','title','','en','Duplicate Test Data Library','',NULL)");
