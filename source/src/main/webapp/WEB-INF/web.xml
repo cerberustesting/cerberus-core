@@ -101,6 +101,10 @@
         <servlet-class>org.cerberus.servlet.zzpublic.ResultCIV003</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>ResultCIV004</servlet-name>
+        <servlet-class>org.cerberus.servlet.zzpublic.ResultCIV004</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>DuplicateTestCase</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.test.DuplicateTestCase</servlet-class>
     </servlet>
@@ -856,6 +860,10 @@
     <servlet-mapping>
         <servlet-name>ResultCIV003</servlet-name>
         <url-pattern>/ResultCIV003</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ResultCIV004</servlet-name>
+        <url-pattern>/ResultCIV004</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>TestcaseList</servlet-name>

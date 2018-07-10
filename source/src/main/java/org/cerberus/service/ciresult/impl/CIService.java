@@ -21,16 +21,25 @@ package org.cerberus.service.ciresult.impl;
 
 import java.sql.Timestamp;
 import java.text.ParseException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.TreeMap;
+
+import com.google.gson.Gson;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ITestCaseExecutionService;
+import org.cerberus.dto.SummaryStatisticsDTO;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.ciresult.ICIService;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.json.JsonException;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  *
@@ -48,11 +57,34 @@ public class CIService implements ICIService {
 
     @Override
     public JSONObject getCIResult(String tag) {
+        try {
+            List<TestCaseExecution> myList = testExecutionService.readLastExecutionAndExecutionInQueueByTag(tag);
+            return getCIResult(tag, myList);
+        } catch (CerberusException | ParseException ex) {
+            LOG.error(ex);
+        }
+        return null;
+    }
 
+    @Override
+    public JSONObject getCIResultV004(String tag)  {
+        try {
+            List<TestCaseExecution> myList = testExecutionService.readLastExecutionAndExecutionInQueueByTag(tag);
+            JSONObject jsonResponse = getCIResult(tag, myList);
+
+            jsonResponse.put("detail_by_declinaison", generateStats(myList));
+
+            return jsonResponse;
+        } catch (CerberusException | ParseException | JSONException ex) {
+            LOG.error(ex);
+        }
+        return null;
+    }
+
+
+    private JSONObject getCIResult(String tag, List<TestCaseExecution> myList) {
         try {
             JSONObject jsonResponse = new JSONObject();
-
-            List<TestCaseExecution> myList;
 
             int nbok = 0;
             int nbko = 0;
@@ -74,9 +106,6 @@ public class CIService implements ICIService {
 
             long longStart = 0;
             long longEnd = 0;
-
-            try {
-                myList = testExecutionService.readLastExecutionAndExecutionInQueueByTag(tag);
 
                 for (TestCaseExecution curExe : myList) {
 
@@ -151,12 +180,6 @@ public class CIService implements ICIService {
                     }
                 }
 
-            } catch (CerberusException ex) {
-                LOG.warn(ex);
-            } catch (ParseException ex) {
-                LOG.warn(ex);
-            }
-
             int pond1 = parameterService.getParameterIntegerByKey("cerberus_ci_okcoefprio1", "", 0);
             int pond2 = parameterService.getParameterIntegerByKey("cerberus_ci_okcoefprio2", "", 0);
             int pond3 = parameterService.getParameterIntegerByKey("cerberus_ci_okcoefprio3", "", 0);
@@ -211,4 +234,68 @@ public class CIService implements ICIService {
         return null;
     }
 
+
+
+    private JSONArray generateStats(List<TestCaseExecution> testCaseExecutions) throws JSONException {
+
+        JSONObject jsonResult = new JSONObject();
+
+        HashMap<String, SummaryStatisticsDTO> statMap = new HashMap<String, SummaryStatisticsDTO>();
+        for (TestCaseExecution testCaseExecution : testCaseExecutions) {
+            StringBuilder key = new StringBuilder();
+            key.append(testCaseExecution.getEnvironment());
+            key.append("_");
+            key.append(testCaseExecution.getCountry());
+            key.append("_");
+            key.append(testCaseExecution.getRobotDecli());
+            key.append("_");
+            key.append(testCaseExecution.getApplication());
+
+            SummaryStatisticsDTO stat = new SummaryStatisticsDTO();
+            stat.setEnvironment(testCaseExecution.getEnvironment());
+            stat.setCountry(testCaseExecution.getCountry());
+            stat.setRobotDecli(testCaseExecution.getRobotDecli());
+            stat.setApplication(testCaseExecution.getApplication());
+            statMap.put(key.toString(), stat);
+        }
+
+
+        return getStatByEnvCountryRobotDecli(testCaseExecutions, statMap);
+    }
+
+
+    private JSONArray getStatByEnvCountryRobotDecli(List<TestCaseExecution> testCaseExecutions, HashMap<String, SummaryStatisticsDTO> statMap) throws JSONException {
+        for (TestCaseExecution testCaseExecution : testCaseExecutions) {
+
+            StringBuilder key = new StringBuilder();
+
+            key.append(testCaseExecution.getEnvironment());
+            key.append("_");
+            key.append((testCaseExecution.getCountry()));
+            key.append("_");
+            key.append((testCaseExecution.getRobotDecli()));
+            key.append("_");
+            key.append(testCaseExecution.getApplication());
+
+            if (statMap.containsKey(key.toString())) {
+                statMap.get(key.toString()).updateStatisticByStatus(testCaseExecution.getControlStatus()); }
+        }
+        return extractSummaryData(statMap);
+    }
+
+    private JSONArray extractSummaryData(HashMap<String, SummaryStatisticsDTO> summaryMap) throws JSONException {
+        JSONObject extract = new JSONObject();
+        Gson gson = new Gson();
+        JSONArray dataArray = new JSONArray();
+        //sort keys
+        TreeMap<String, SummaryStatisticsDTO> sortedKeys = new TreeMap<String, SummaryStatisticsDTO>(summaryMap);
+        for (String key : sortedKeys.keySet()) {
+            SummaryStatisticsDTO sumStats = summaryMap.get(key);
+            //percentage values
+            sumStats.updatePercentageStatistics();
+            dataArray.put(new JSONObject(gson.toJson(sumStats)));
+        }
+
+        return dataArray;
+    }
 }
