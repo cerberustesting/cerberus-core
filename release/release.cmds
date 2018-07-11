@@ -70,6 +70,6 @@ sed -e '$a\:file-to-include: changelog_'$nextRelease'_en.adoc' source/src/main/r
 sed -e '$a\include::include/en/{file-to-include}[]' source/src/main/resources/documentation/documentation_en.adoc > source/src/main/resources/documentation/documentation_en.adoc.back && mv source/src/main/resources/documentation/documentation_en.adoc.back source/src/main/resources/documentation/documentation_en.adoc
 
 
-git add source/src/main/webapp/Homepage.jsp source/src/main/webapp/js/pages/Homepage.js "source/src/main/resources/documentation/include/en/changelog_"$nextRelease"_en.adoc"
+git add source/src/main/webapp/Homepage.jsp source/src/main/webapp/js/pages/Homepage.js "source/src/main/resources/documentation/include/en/changelog_"$nextRelease"_en.adoc" source/src/main/resources/documentation/documentation_en.adoc
 git commit -m 'create a new changelog file for the next version'
 git push origin master
