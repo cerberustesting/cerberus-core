@@ -549,6 +549,7 @@ public class DataLibService implements IDataLibService {
 
             case TestDataLib.TYPE_SERVICE:
                 answerData = testDataLibDataService.readByVarious(lib.getTestDataLibID(), null, "N", null);
+
                 if ((answerData.getResultMessage().getCode() == MessageEventEnum.DATA_OPERATION_OK.getCode()) && !answerData.getDataList().isEmpty()) {
 
                     objectDataList = answerData.getDataList();
@@ -990,7 +991,8 @@ public class DataLibService implements IDataLibService {
                                         msg.setDescription(msg.getDescription()
                                                 .replace("%XPATH%", lib.getSubDataParsingAnswer())
                                                 .replace("%SUBDATA%", "")
-                                                .replace("%REASON%", ex.toString()));
+                                                .replace("%REASON%", ex.toString() +
+                                                        "\n api response : " + appService.getResponseHTTPBody()));
                                     }
                                 }
 

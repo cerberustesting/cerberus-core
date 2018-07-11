@@ -32,6 +32,7 @@ public interface ICIService {
      * @param tag
      * @return
      */
-    public JSONObject getCIResult(String tag);
+    JSONObject getCIResult(String tag);
 
+    JSONObject getCIResultV004(String tag);
 }
