@@ -350,3 +350,7 @@ include::include/en/{file-to-include}[]
 :file-to-include: changelog_3.7_en.adoc
 include::include/en/{file-to-include}[]
 
+ 
+=== 3.8
+:file-to-include: changelog_3.8_en.adoc
+include::include/en/{file-to-include}[]
