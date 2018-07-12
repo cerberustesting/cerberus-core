@@ -23,6 +23,7 @@ import java.util.List;
 import org.cerberus.crud.entity.AppService;
 import org.cerberus.crud.entity.AppServiceContent;
 import org.cerberus.crud.entity.AppServiceHeader;
+import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.util.answer.AnswerItem;
 
 /**
@@ -44,7 +45,7 @@ public interface IRestService {
      * @param system
      * @return
      */
-    AnswerItem<AppService> callREST(String servicePath, String queryString, String method, 
-            List<AppServiceHeader> headerList, List<AppServiceContent> contentList, String token, int timeOutMs, String system);
+    AnswerItem<AppService> callREST(String servicePath, String queryString, String method,
+                                    List<AppServiceHeader> headerList, List<AppServiceContent> contentList, String token, int timeOutMs, String system, TestCaseExecution tcexecution);
 
 }
