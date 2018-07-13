@@ -24,6 +24,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.http.Header;
@@ -44,19 +46,17 @@ import org.apache.http.client.methods.HttpPatch;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.entity.InputStreamEntity;
-import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.impl.client.ProxyAuthenticationStrategy;
+import org.apache.http.impl.client.*;
+import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-import org.cerberus.crud.entity.AppService;
-import org.cerberus.crud.entity.AppServiceContent;
-import org.cerberus.crud.entity.AppServiceHeader;
+import org.cerberus.crud.entity.*;
 import org.cerberus.crud.factory.IFactoryAppService;
 import org.cerberus.crud.factory.IFactoryAppServiceHeader;
 import org.cerberus.crud.service.IAppServiceService;
@@ -68,8 +68,12 @@ import org.cerberus.service.proxy.IProxyService;
 import org.cerberus.service.rest.IRestService;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
+import org.openqa.selenium.Cookie;
+import org.openqa.selenium.WebDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.net.ssl.SSLContext;
 
 /**
  *
@@ -132,7 +136,7 @@ public class RestService implements IRestService {
             return httpclient.execute(httpget, responseHandler);
 
         } catch (Exception ex) {
-            LOG.error(ex.toString());
+            LOG.error(ex.toString(), ex);
             throw ex;
         } finally {
             httpclient.close();
@@ -142,7 +146,7 @@ public class RestService implements IRestService {
     @Override
     public AnswerItem<AppService> callREST(String servicePath, String requestString, String method,
             List<AppServiceHeader> headerList, List<AppServiceContent> contentList, String token, int timeOutMs,
-            String system) {
+            String system, TestCaseExecution tcexecution) {
         AnswerItem result = new AnswerItem<>();
         AppService serviceREST = factoryAppService.create("", AppService.TYPE_REST, method, "", "", "", "", "", "", "",
                 "", null, "", null, null);
@@ -169,7 +173,8 @@ public class RestService implements IRestService {
             headerList.add(factoryAppServiceHeader.create(null, "cerberus-token", token, "Y", 0, "", "", null, "", null));
         }
 
-        CloseableHttpClient httpclient;
+        CloseableHttpClient httpclient=null;
+        HttpClientBuilder httpclientBuilder;
         if (proxyService.useProxy(servicePath, system)) {
 
             String proxyHost = parameterService.getParameterStringByKey("cerberus_proxy_host", system,
@@ -196,24 +201,39 @@ public class RestService implements IRestService {
                 credsProvider.setCredentials(new AuthScope(proxyHost, proxyPort), new UsernamePasswordCredentials(proxyUser, proxyPassword));
 
                 LOG.debug("Activating Proxy With Authentification.");
-                httpclient = HttpClientBuilder.create().setProxy(proxyHostObject)
+                httpclientBuilder = HttpClientBuilder.create().setProxy(proxyHostObject)
                         .setProxyAuthenticationStrategy(new ProxyAuthenticationStrategy())
-                        .setDefaultCredentialsProvider(credsProvider).build();
+                        .setDefaultCredentialsProvider(credsProvider);
 
             } else {
 
                 LOG.debug("Activating Proxy (No Authentification).");
-                httpclient = HttpClientBuilder.create().setProxy(proxyHostObject).build();
-
+                httpclientBuilder = HttpClientBuilder.create().setProxy(proxyHostObject);
             }
-
         } else {
-
-            httpclient = HttpClients.createDefault();
-
+            httpclientBuilder = HttpClientBuilder.create();
         }
 
         try {
+
+            boolean acceptUnsignedSsl = parameterService.getParameterBooleanByKey("cerberus_accept_unsigned_ssl_certificate", system,true);
+
+            if(acceptUnsignedSsl) {
+                // authorize non valide certificat ssl
+                SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(null, new TrustSelfSignedStrategy() {
+                    public boolean isTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+                        return true;
+                    }
+                }).build();
+
+                httpclientBuilder
+                        .setSSLContext(sslContext)
+                        .setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE);
+            }
+
+            httpclient = httpclientBuilder.build();
+
+
 
             RequestConfig requestConfig;
             // Timeout setup.
@@ -491,7 +511,8 @@ public class RestService implements IRestService {
             return result;
         } finally {
             try {
-                httpclient.close();
+                if(httpclient != null)
+                    httpclient.close();
             } catch (IOException ex) {
                 LOG.error(ex.toString());
             }
