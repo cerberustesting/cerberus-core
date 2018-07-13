@@ -50,7 +50,7 @@
         <groovy.version>2.4.7</groovy.version>
         <groovy-sandbox.version>1.10</groovy-sandbox.version>
         <!-- Appium/Selenium scope Version -->
-        <appium.version>6.1.0</appium.version>
+        <appium.version>5.0.4</appium.version>
         <selenium.version>3.6.0</selenium.version>
         <!-- Log4J Version -->
         <log4j.version>2.9.1</log4j.version>
