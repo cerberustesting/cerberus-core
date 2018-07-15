@@ -1,1 +1,6 @@
+Cerberus is a JAVA application that is linked to a database server.
+Cerberus is a web application that need a browser to connect to.
+Cerberus also require a robot infrastructure that depend on the type of test you want to execute.
+Web application testing require a Selenium server when mobile application require an Appium Server and Fat application a Sikuli server.
+
 image:architecture.png[Logo]

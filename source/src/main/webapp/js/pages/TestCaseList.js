@@ -574,6 +574,48 @@ function aoColumnsFunc(countries, tableId) {
             }
         },
         {
+            "data": "labelsSTICKER",
+            "sName": "lab.labelsSTICKER",
+            "title": doc.getDocOnline("label", "labelsSTICKER"),
+            "sWidth": "170px",
+            "sDefaultContent": "",
+            "render": function (data, type, full, meta) {
+                var labelValue = '';
+                $.each(data, function (i, e) {
+                    labelValue += '<div style="float:left"><span class="label label-primary" onclick="filterOnLabel(this)" style="cursor:pointer;background-color:' + e.color + '" data-toggle="tooltip" title="' + e.description + '">' + e.name + '</span></div> ';
+                });
+                return labelValue;
+            }
+        },
+        {
+            "data": "labelsREQUIREMENT",
+            "sName": "lab.labelsREQUIREMENT",
+            "title": doc.getDocOnline("label", "labelsREQUIREMENT"),
+            "sWidth": "170px",
+            "sDefaultContent": "",
+            "render": function (data, type, full, meta) {
+                var labelValue = '';
+                $.each(data, function (i, e) {
+                    labelValue += '<div style="float:left"><span class="label label-primary" onclick="filterOnLabel(this)" style="cursor:pointer;background-color:' + e.color + '" data-toggle="tooltip" title="' + e.description + '">' + e.name + '</span></div> ';
+                });
+                return labelValue;
+            }
+        },
+        {
+            "data": "labelsBATTERY",
+            "sName": "lab.labelsBATTERY",
+            "title": doc.getDocOnline("label", "labelsBATTERY"),
+            "sWidth": "170px",
+            "sDefaultContent": "",
+            "render": function (data, type, full, meta) {
+                var labelValue = '';
+                $.each(data, function (i, e) {
+                    labelValue += '<div style="float:left"><span class="label label-primary" onclick="filterOnLabel(this)" style="cursor:pointer;background-color:' + e.color + '" data-toggle="tooltip" title="' + e.description + '">' + e.name + '</span></div> ';
+                });
+                return labelValue;
+            }
+        },
+        {
             "data": "status",
             "sName": "tec.status",
             "title": doc.getDocOnline("testcase", "Status"),

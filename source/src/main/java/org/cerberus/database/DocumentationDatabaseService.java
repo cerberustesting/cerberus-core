@@ -333,6 +333,12 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('label','id','','fr','ID','',NULL)");
         b.append(",('label','label','','en','Label','<p>This value is the label attached to testcase for the purpose of identification or to give other information.</p>',NULL)");
         b.append(",('label','label','','fr','Label','<p>Cette valeur représente le label qui sera attaché au testcase à des fins d\\'identification ou de regroupement.</p>',NULL)");
+        b.append(",('label','labelsSTICKER','','en','Stickers','<p>This value is the Sticker labels attached to testcase for the purpose of identification or to give other information.</p>',NULL)");
+        b.append(",('label','labelsSTICKER','','fr','Stickers','<p>Cette valeur représente le label de type sticker qui sera attaché au testcase à des fins d\\'identification ou de regroupement.</p>',NULL)");
+        b.append(",('label','labelsREQUIREMENT','','en','Requirements','<p>This value is the Requirement label attached to testcase for the purpose of identification or to give other information.</p>',NULL)");
+        b.append(",('label','labelsREQUIREMENT','','fr','Requirements','<p>Cette valeur représente le label de type Requirement qui sera attaché au testcase à des fins d\\'identification ou de regroupement.</p>',NULL)");
+        b.append(",('label','labelsBATTERY','','en','Batteries','<p>This value is the Battery label attached to testcase for the purpose of identification or to give other information.</p>',NULL)");
+        b.append(",('label','labelsBATTERY','','fr','Batteries','<p>Cette valeur représente le label de type battery qui sera attaché au testcase à des fins d\\'identification ou de regroupement.</p>',NULL)");
         b.append(",('label','longdesc','','en','Long Description','',NULL)");
         b.append(",('label','longdesc','','fr','Description Longue','',NULL)");
         b.append(",('label','parentid','','en','Parent LabelID','<p>This value represent the labelID of the parent label. This allow to group or create hierachy in label</p>',NULL)");

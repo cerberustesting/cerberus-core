@@ -4,7 +4,7 @@
 
 *Improvements / New features*
 [square]
-* bla bla
+* Cerberus now allow service calls without proper SSL Certificate available. new parameter 'cerberus_accept_unsigned_ssl_certificate' allow to tune that behaviour. Default to Y you can put N in order to fail when certificate is not correct.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

@@ -7796,9 +7796,9 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // 1358
         a.add("DELETE FROM `invariant` WHERE `idname`='CAMPAIGN_PARAMETER' and`value`='BROWSER';");
 
-        a.add("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ('', 'cerberus_accept_unsigned_ssl_certificate', 'true', 'Allow to use unsigned ssl protocol on REST service');");
-
-
+        // New parameter.
+        // 1359
+        a.add("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ('', 'cerberus_accept_unsigned_ssl_certificate', 'Y', 'Allow to use unsigned ssl protocol on REST service');");
 
         return a;
     }

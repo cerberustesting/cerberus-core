@@ -100,6 +100,12 @@ public interface ITestCaseLabelDAO {
      */
     TestCaseLabel loadFromResultSet(ResultSet rs, Label label) throws SQLException;
 
+    /**
+     *
+     * @param test
+     * @param testCase
+     * @return
+     */
     AnswerList readByTestTestCase(String test, String testCase);
 
 }

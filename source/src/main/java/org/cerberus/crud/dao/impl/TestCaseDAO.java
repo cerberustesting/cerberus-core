@@ -183,7 +183,13 @@ public class TestCaseDAO implements ITestCaseDAO {
             searchSQL.append(" and ( 1=1 ");
             for (Map.Entry<String, List<String>> entry : individualSearch.entrySet()) {
                 searchSQL.append(" and ");
-                searchSQL.append(SqlUtil.getInSQLClauseForPreparedStatement(entry.getKey(), entry.getValue()));
+
+                String toto = entry.getKey();
+                if (entry.getKey().equals("lab.labelsSTICKER") || entry.getKey().equals("lab.labelsREQUIREMENT") || entry.getKey().equals("lab.labelsBATTERY")) {
+                    toto = "lab.label";
+                }
+
+                searchSQL.append(SqlUtil.getInSQLClauseForPreparedStatement(toto, entry.getValue()));
                 individalColumnSearchValues.addAll(entry.getValue());
             }
             searchSQL.append(" )");
@@ -1661,12 +1667,17 @@ public class TestCaseDAO implements ITestCaseDAO {
     public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String test, String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
         AnswerList answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        String columnNameOri = columnName;
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<String> distinctValues = new ArrayList<>();
         StringBuilder searchSQL = new StringBuilder();
         List<String> individalColumnSearchValues = new ArrayList<String>();
 
         StringBuilder query = new StringBuilder();
+
+        if (columnName.equals("lab.labelsSTICKER") || columnName.equals("lab.labelsREQUIREMENT") || columnName.equals("lab.labelsBATTERY")) {
+            columnName = "lab.label";
+        }
 
         query.append("SELECT distinct ");
         query.append(columnName);
@@ -1676,7 +1687,17 @@ public class TestCaseDAO implements ITestCaseDAO {
         query.append(" LEFT OUTER JOIN application app on app.application = tec.application ");
 
         searchSQL.append("WHERE 1=1");
-
+        switch (columnNameOri) {
+            case "lab.labelsSTICKER":
+                searchSQL.append(" AND lab.`type` = 'STICKER' ");
+                break;
+            case "lab.labelsREQUIREMENT":
+                searchSQL.append(" AND lab.`type` = 'REQUIREMENT' ");
+                break;
+            case "lab.labelsBATTERY":
+                searchSQL.append(" AND lab.`type` = 'BATTERY' ");
+                break;
+        }
         if (!StringUtil.isNullOrEmpty(system)) {
             searchSQL.append(" AND app.`system` = ? ");
         }
@@ -1703,7 +1724,12 @@ public class TestCaseDAO implements ITestCaseDAO {
             searchSQL.append(" and ( 1=1 ");
             for (Map.Entry<String, List<String>> entry : individualSearch.entrySet()) {
                 searchSQL.append(" and ");
-                searchSQL.append(SqlUtil.getInSQLClauseForPreparedStatement(entry.getKey(), entry.getValue()));
+                String toto = entry.getKey();
+                if (entry.getKey().equals("lab.labelsSTICKER") || entry.getKey().equals("lab.labelsREQUIREMENT") || entry.getKey().equals("lab.labelsBATTERY")) {
+                    toto = "lab.label";
+                }
+
+                searchSQL.append(SqlUtil.getInSQLClauseForPreparedStatement(toto, entry.getValue()));
                 individalColumnSearchValues.addAll(entry.getValue());
             }
             searchSQL.append(" )");
