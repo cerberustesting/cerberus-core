@@ -43,7 +43,11 @@ ENV MYSQL_JAVA_CONNECTOR_LIB_PATH /tmp/${MYSQL_JAVA_CONNECTOR_NAME}/${MYSQL_JAVA
 # https://github.com/cerberustesting/cerberus-source/releases/download/cerberus-testing-2.0.0/Cerberus-2.0.0.zip
 
 # Oracle do not install JDK on Glassfish...
-RUN yum install -y java-1.8.0-openjdk-devel-1.8.0.151-5.b12.el7_4 unzip && yum clean all && rm -rf /var/cache/yum
+RUN yum remove -y java-1.8.0-openjdk && yum install -y unzip wget && yum clean all && rm -rf /var/cache/yum
+
+RUN wget -P /tmp/ https://github.com/cerberustesting/cerberus-source/releases/download/cerberus-testing-2.0.0/jdk-8u152-linux-x64.rpm
+RUN rpm -ivh /tmp/jdk-8u152-linux-x64.rpm
+ENV JAVA_HOME /usr/java/jdk1.8.0_152/
 
 # For windows user
 RUN yum install -y dos2unix
