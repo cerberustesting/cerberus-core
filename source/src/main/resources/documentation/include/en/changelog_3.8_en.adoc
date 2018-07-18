@@ -1,6 +1,6 @@
 *Bug fixes*
 [square]
-* bla bla
+* Docker : Correct bug since java version change on glassfish docker OS
 
 *Improvements / New features*
 [square]
@@ -8,4 +8,4 @@
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
-* bla bla
+
