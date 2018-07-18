@@ -238,16 +238,16 @@ public class SeleniumServerService implements ISeleniumServerService {
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
                 if (caps.getPlatform().is(Platform.ANDROID)) {
 //                    if (executor == null) {
-//                        appiumDriver = new AndroidDriver(url, caps);
+                       appiumDriver = new AndroidDriver(url, caps);
 //                    } else {
-                    appiumDriver = new AndroidDriver(executor, caps);
+//                    appiumDriver = new AndroidDriver(executor, caps);
 //                    }
                     driver = (WebDriver) appiumDriver;
                 } else if (caps.getPlatform().is(Platform.MAC)) {
 //                    if (executor == null) {
-//                        appiumDriver = new IOSDriver(url, caps);
+                        appiumDriver = new IOSDriver(url, caps);
 //                    } else {
-                    appiumDriver = new IOSDriver(executor, caps);
+//                    appiumDriver = new IOSDriver(executor, caps);
 //                    }
                     driver = (WebDriver) appiumDriver;
                 } else {
@@ -278,11 +278,11 @@ public class SeleniumServerService implements ISeleniumServerService {
                             }
                         }
                     }
-                    if (executor == null) {
+//                    if (executor == null) {
                         appiumDriver = new AndroidDriver(url, caps);
-                    } else {
-                        appiumDriver = new AndroidDriver(executor, caps);
-                    }
+//                    } else {
+ //                       appiumDriver = new AndroidDriver(executor, caps);
+//                    }
                     if (apkAlreadyPrepare.containsKey(appUrl)) {
                         apkAlreadyPrepare.put(appUrl, true);
                     }
@@ -293,11 +293,11 @@ public class SeleniumServerService implements ISeleniumServerService {
                 driver = (WebDriver) appiumDriver;
                 
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
-                if (executor == null) {
+//                if (executor == null) {
                     appiumDriver = new IOSDriver(url, caps);
-                } else {
-                    appiumDriver = new IOSDriver(executor, caps);
-                }
+ //               } else {
+ //                   appiumDriver = new IOSDriver(executor, caps);
+ //               }
                 driver = (WebDriver) appiumDriver;
                 
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
