@@ -1789,6 +1789,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_user','button_create','','fr','Créer un Utilisateur','',NULL)");
         b.append(",('page_user','button_edit','','en','Edit User','',NULL)");
         b.append(",('page_user','button_edit','','fr','Editer l\\'Utilisateur','',NULL)");
+        b.append(",('page_user','button_password_edit','','en','Edit Password','',NULL)");
+        b.append(",('page_user','button_password_edit','','fr','Editer le mot de passe','',NULL)");
         b.append(",('page_user','button_remove','','en','Delete User','',NULL)");
         b.append(",('page_user','button_remove','','fr','Supprimer l\\'Utilisateur','',NULL)");
         b.append(",('page_user','close_btn','','en','Close','',NULL)");

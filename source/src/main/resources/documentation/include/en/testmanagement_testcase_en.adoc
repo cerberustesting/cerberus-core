@@ -132,7 +132,7 @@ image:testlooptep.png[TestCaseLoopStep]
 | *Action* | *Description* | *Example* 
 | Unknown | Unknown action. Default Action when creating a new action. Warning: make the execution fail. | 
 | click | will allow you to click on an element inside the current page. 
-*[red]#Value1#*	Identifier and name of the element to click in the form of : identifier=html_reference. Example : id=html_reference | 
+*[red]#Value1#*	Identifier and name of the element to click in the form of : identifier=html_reference. | id=html_reference, xpath=//*[@id='html_reference'], (Sikuli) picture=%object.NameOfYourObject.pictureurl% 
 | mouseLeftButtonPress | allow to press and keep the button pressed until the next ButtonRelease action | 
 | mouseLeftButtonRelease | release the mouse button. Usefull with ButtonPress to perform drag & drop | 
 | doubleClick |  will allow you to double click on an element inside the current page. 
@@ -166,6 +166,10 @@ image:testlooptep.png[TestCaseLoopStep]
 | removeDifference | DEPRECATED | 
 
 |=== 
+
+NB : For FAT client interaction (e.g. 'click', 'verifyElementPresent'), Application object must be used to reference picture. 
+Keep in mind that for click action, it will be performed in the center of the picture:
+image:sikuliclick1.png[SikuliClick1]
 
 === TestCase Control
 

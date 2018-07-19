@@ -542,7 +542,7 @@ function aoColumnsFunc(tableId) {
                                         <span class="glyphicon glyphicon-trash"></span></button>';
                 var passwordUser = '<button id="editPassUser" onclick="editEntryPassClick(\'' + obj["login"] + '\');"\n\
                                         class="editUserPass btn btn-default btn-xs margin-right5" \n\
-                                        name="editUserPass" title="' + doc.getDocLabel("page_user", "button_edit") + '" type="button">\n\
+                                        name="editUserPass" title="' + doc.getDocLabel("page_user", "button_password_edit") + '" type="button">\n\
                                         <span class="glyphicon glyphicon-lock"></span></button>';
 
                 return '<div class="center btn-group width150">' + editUser + removeUser + passwordUser + '</div>';
