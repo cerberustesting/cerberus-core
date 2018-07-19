@@ -250,46 +250,59 @@ function loadReportingData(selectTag) {
     var jqxhr = $.get("ReadTestCaseExecutionByTag?Tag=" + selectTag + "&" + statusFilter.serialize() + "&" + countryFilter.serialize() + "&" + params.serialize() + "&" + paramsLabel.serialize(), null, "json");
     $.when(jqxhr).then(function (data) {
 
-        // Tag Detail feed.
-        $("#startExe").val(data.tagObject.DateCreated);
-        $("#endExe").val(data.tagObject.DateEndQueue);
-        $("#endLastExe").val(data.functionChart.globalEnd);
-        $("#TagUsrCreated").val(data.tagObject.UsrCreated);
-        $("#Tagcampaign").val(data.tagObject.campaign);
-        $("#durExe").val(data.tagDuration);
-        if (data.tagDuration >= 0) {
-            $("#panelDuration").removeClass("hidden");
-            $("#durExe").removeClass("hidden");
-        } else {
-            $("#panelDuration").addClass("hidden");
-            $("#durExe").addClass("hidden");
-        }
-        hideLoader($("#TagDetail"));
+        if (data.hasOwnProperty('tagObject')) {
 
-        // Report By Status
-        $("#ReportByStatusTable").empty();
-        $("#statusChart").empty();
-        loadReportByStatusTable(data.functionChart, selectTag);
+            // Tag Detail feed.
+            $("#startExe").val(data.tagObject.DateCreated);
+            $("#endExe").val(data.tagObject.DateEndQueue);
+            $("#endLastExe").val(data.functionChart.globalEnd);
+            $("#TagUsrCreated").val(data.tagObject.UsrCreated);
+            $("#Tagcampaign").val(data.tagObject.campaign);
+            $("#durExe").val(data.tagDuration);
+            if (data.tagDuration >= 0) {
+                $("#panelDuration").removeClass("hidden");
+                $("#durExe").removeClass("hidden");
+            } else {
+                $("#panelDuration").addClass("hidden");
+                $("#durExe").addClass("hidden");
+            }
+            hideLoader($("#TagDetail"));
 
-        // Report By Function
-        $("#ReportByfunctionChart").empty();
-        loadReportByFunctionChart(data.functionChart, selectTag);
+            // Report By Status
+            $("#ReportByStatusTable").empty();
+            $("#statusChart").empty();
+            loadReportByStatusTable(data.functionChart, selectTag);
 
-        // Bug Report
-        $("#BugReportTable").empty();
-        loadBugReportByStatusTable(data.bugTrackerStat, selectTag);
+            // Report By Function
+            $("#ReportByfunctionChart").empty();
+            loadReportByFunctionChart(data.functionChart, selectTag);
 
-        // Report By Application Environment Country Browser
-        loadEnvCountryBrowserReport(data.statsChart);
+            // Bug Report
+            $("#BugReportTable").empty();
+            loadBugReportByStatusTable(data.bugTrackerStat, selectTag);
 
-        // Report By Label
-        $("#progressLabel").empty();
+            // Report By Application Environment Country Browser
+            loadEnvCountryBrowserReport(data.statsChart);
+
+            // Report By Label
+            $("#progressLabel").empty();
 //        if (!$.isEmptyObject(data.labelStat)) {
-        loadLabelReport(data.labelStat);
+            loadLabelReport(data.labelStat);
 //        }
 
-        // Detailed Test Case List Report
-        loadReportList(data.table, selectTag);
+            // Detailed Test Case List Report
+            loadReportList(data.table, selectTag);
+        } else {
+            hideLoader($("#TagDetail"));
+            hideLoader($("#ReportByStatus"));
+            hideLoader($("#functionChart"));
+            hideLoader($("#BugReportByStatus"));
+            hideLoader($("#reportEnvCountryBrowser"));
+            hideLoader($("#reportLabel"));
+            hideLoader($("#listReport"));
+            showMessageMainPage("danger", "Tag '" + selectTag + "' does not exist.", false);
+
+        }
     });
 
 }
