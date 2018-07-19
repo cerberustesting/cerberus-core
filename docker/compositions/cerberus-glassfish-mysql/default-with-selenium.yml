@@ -37,7 +37,7 @@
 #
 # Volumes:
 #   - MySQL data directory                      : FROM /var/lib/mysql                                                    TO ../localdata/mysql-db           (SERVICE cerberus-db-mysql)
-#   - Cerberus execution screenshots directory  : FROM /glassfish5/glassfish/domain/cerberus                             TO ../localdata/cerberus-domains   (SERVICE cerberus-as-glassfish)
+#   - Cerberus execution screenshots directory  : FROM /glassfish5/glassfish/domains/cerberus                             TO ../localdata/cerberus-domains   (SERVICE cerberus-as-glassfish)
 #   - Cerberus server logs directory            : FROM /glassfish5/glassfish/domains/cerberus/logs                       TO ../localdata/logs               (SERVICE cerberus-as-glassfish)
 #     ** IMPORTANT **
 #     The default mapping values are for test only. Don't forget to change them to be more relevant with your configuration.
@@ -67,7 +67,8 @@ services:
       - "18080:8080"
       - "14848:4848"
     volumes:
-      - ./localdata/cerberus-domains:/glassfish5/glassfish/domain/cerberus  # allow to persist database pool connection / custom glassfish settings
+      - ./localdata/cerberus-domains:/glassfish5/glassfish/domains/cerberus  # allow to persist database pool connection / custom glassfish settings
+      - ./localdata/lib:/tmp/lib/ # allow to add jdbc library to connect database to cerberus
       - ./localdata/screenshots:/opt/cerberus-screenshots/
       - /etc/localtime:/etc/localtime:ro
     restart: always

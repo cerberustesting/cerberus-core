@@ -98,12 +98,42 @@ function setup() {
     echo "* Starting Cerberus Glassfish setup... Done."
 }
 
+function createDomain() {
+    echo "* Create domain ${GLASSFISH_DOMAIN} ... Begin "
+
+    echo "AS_ADMIN_PASSWORD=admin" > /tmp/glassfishpwd
+
+    domain=${GLASSFISH_HOME}/glassfish/domains/${GLASSFISH_DOMAIN}
+    domaintmp=${GLASSFISH_HOME}/glassfish/domains/tmp
+
+
+    echo "Create a tmp domain"
+    ${ASADMIN} create-domain --adminport 4848 --domaindir ${domaintmp} ${GLASSFISH_DOMAIN}
+
+    echo "Copy to real domain $domain (you have to use this volume to persist glassfish) "
+    cp -R ${domaintmp}/${GLASSFISH_DOMAIN}/* $domain/
+
+    echo "Delete tmp domain "
+    ${ASADMIN} delete-domain --domaindir ${domaintmp} ${GLASSFISH_DOMAIN}
+
+    echo "* Create domain ${GLASSFISH_DOMAIN} ... Done "
+}
+
+
 # Main entry point
 function main() {
+
     if [ ! -f ${GLASSFISH_HOME}/glassfish/domains/${GLASSFISH_DOMAIN}/config/domain.xml ]; then
-        echo "AS_ADMIN_PASSWORD=admin" > /tmp/glassfishpwd
-        ${ASADMIN} create-domain --adminport 4848 ${GLASSFISH_DOMAIN}
+        createDomain
+    else
+        echo "* Glassfish domain already exist. Use volume data."
     fi
+
+    if [ ! -f /tmp/lib/ ]; then
+        echo "* Copy library"
+        yes | cp -rf  /tmp/lib/ ${GLASSFISH_HOME}/glassfish/lib
+    fi
+
     # Check if setup has already been done, and if not, then execute it
     if [ ! -f ${INIT_MARKER_FILE} ]; then
         setup
@@ -113,12 +143,8 @@ function main() {
 
     echo "AS_ADMIN_PASSWORD=${GLASSFISH_ADMIN_PASSWORD}" > /tmp/glassfishpwd
 
-    # always redeploy 
-    #if [ ! -f ${INIT_MARKER_DEPLOY} ]; then
+    # always redeploy
     deploy
-    #else
-    #    echo "* Cerberus is already deployed to the Glassfish instance. Skip installation."
-    #fi
 }
 
 # Execute the main entry point
