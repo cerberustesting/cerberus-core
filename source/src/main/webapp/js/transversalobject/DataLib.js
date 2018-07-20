@@ -487,7 +487,12 @@ function feedDataLibModalData(testDataLib, modalId, mode, hasPermissionsUpdate) 
 
         //loads the information for the entries
         $('#editTestDataLibModal #databaseUrl').find('option[value="' + obj.databaseUrl + '"]:first').prop("selected", "selected");
-        $('#editTestDataLibModal #service').find('option[value="' + obj.service + '"]:first').prop("selected", "selected");
+        
+        // init the select2
+        $('#editTestDataLibModal #service').select2(getComboConfigService());
+        // set it with the service value
+        $("#editTestDataLibModal #service").val(obj.service).trigger('change');
+        
         $('#editTestDataLibModal #servicepaths').prop("value", obj.servicePath);
         $('#editTestDataLibModal #methods').prop("value", obj.method);
         $('#editTestDataLibModal #envelope').text(obj.envelope);

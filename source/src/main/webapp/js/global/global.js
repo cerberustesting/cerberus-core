@@ -2579,3 +2579,36 @@ function getComboConfigLabel(labelType) {
 
 }
 
+function getComboConfigService() {
+    var config =
+            {
+                ajax: {
+                    url: "ReadAppService?iSortCol_0=0&sSortDir_0=desc&sColumns=service,type,method,description&iDisplayLength=30&sSearch_0=",
+                	dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        params.page = params.page || 1;
+                        return {
+                            sSearch: params.term, // search term
+                            iDisplayStart: (params.page * 30) - 30
+                        };
+                    },
+                    processResults: function (data, params) {
+                        params.page = params.page || 1;
+                        return {
+                            results: $.map(data.contentTable, function (obj) {
+                            	return {id: obj.service, text: obj.service};
+                            }),
+                            pagination: {
+                                more: (params.page * 30) < data.iTotalRecords
+                            }
+                        };
+                    },
+                    cache: true,
+                    allowClear: true
+                },
+                width: "100%",
+                minimumInputLength: 0
+            };
+    return config;
+}
