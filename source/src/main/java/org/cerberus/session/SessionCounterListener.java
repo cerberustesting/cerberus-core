@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.crud.entity;
+package org.cerberus.session;
 
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
@@ -39,6 +39,7 @@ public class SessionCounterListener implements HttpSessionListener {
                 .getRequiredWebApplicationContext(arg0.getSession().getServletContext())
                 .getAutowireCapableBeanFactory()
                 .autowireBean(this);
+        cs.identificateUser(arg0.getSession().getId(), arg0.getSession().getId());
     }
 
     @Override

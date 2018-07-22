@@ -25,7 +25,7 @@ $(function () {
     });
 
     $('#editTestDataLibModal #service').change(function () {
-        openModalAppServiceFromHere();
+        changeAppServiceFromHere();
     });
 
 })
@@ -51,7 +51,7 @@ function collapseOrExpandTypes() {
     }
 
 }
-function openModalAppServiceFromHere() {
+function changeAppServiceFromHere() {
 
     var doc = new Doc();
 
@@ -61,23 +61,32 @@ function openModalAppServiceFromHere() {
 
     if (!isEmpty($('#editTestDataLibModal #service').val())) {
 
-        formEdit.find("#methods").prop("readonly", true);
-        formEdit.find("#servicepaths").prop("readonly", true);
 
-        var addEntry = '<span class="input-group-btn  ' + name + '" style="vertical-align:bottom!important"><button id="editEntry" onclick="openModalAppService(\'' + $('#editTestDataLibModal #service').val() + '\',\'EDIT\' );"\n\
+        activateSOAPServiceFields("#editTestDataLibModal #editTestLibData", $('#editTestDataLibModal #service').val());
+
+        var editEntry = '<span class="input-group-btn" style="vertical-align:bottom!important"><button id="editEntry" onclick="openModalAppService(\'' + $('#editTestDataLibModal #service').val() + '\',\'EDIT\' );"\n\
             class="buttonObject btn btn-default " \n\
            title="' + doc.getDocLabel("page_applicationObject", "button_create") + '" type="button">\n\
             <span class="glyphicon glyphicon-pencil"></span></button></span>';
-        $('#editTestDataLibModal #service').parent().append(addEntry);
+        var emptyEntry = '<span class="input-group-btn" style="vertical-align:bottom!important"><button id="emptyEntry" onclick="emptyService();"\n\
+            class="buttonObject btn btn-default " \n\
+           title="Empty" type="button">\n\
+            <span class="glyphicon glyphicon-trash"></span></button></span>';
+        $('#editTestDataLibModal #service').parent().append(editEntry).append(emptyEntry);
 
     } else {
 
-        formEdit.find("#methods").prop("readonly", false);
-        formEdit.find("#servicepaths").prop("readonly", false);
+        activateSOAPServiceFields("#editTestDataLibModal #editTestLibData", $('#editTestDataLibModal #service').val());
 
     }
 
 }
+
+
+function emptyService() {
+    $("#editTestDataLibModal #service").val("").trigger('change');
+}
+
 
 function openModalDataLib(element, dataLibEntry, mode, id) {
 
@@ -436,18 +445,18 @@ function feedDataLibModal(serviceName, modalId, mode) {
 }
 
 function activateSOAPServiceFields(modal, serviceValue) {
-    if (serviceValue === "") {
-        $(modal + " #servicepath").prop("readonly", false);
-        $(modal + " #method").prop("readonly", false);
-        var editor = ace.edit($(modal + " #envelope")[0]);
-        editor.container.style.opacity = 1;
-        editor.renderer.setStyle("disabled", false);
+    if (isEmpty(serviceValue)) {
+        $(modal + " #servicepaths").prop("readonly", false);
+        $(modal + " #methods").prop("readonly", false);
+//        var editor = ace.edit($(modal + " #envelope")[0]);
+//        editor.container.style.opacity = 1;
+//        editor.renderer.setStyle("disabled", false);
     } else {
-        $(modal + " #servicepath").prop("readonly", true);
-        $(modal + " #method").prop("readonly", true);
-        var editor = ace.edit($(modal + " #envelope")[0]);
-        editor.container.style.opacity = 0.5;
-        editor.renderer.setStyle("disabled", true);
+        $(modal + " #servicepaths").prop("readonly", true);
+        $(modal + " #methods").prop("readonly", true);
+//        var editor = ace.edit($(modal + " #envelope")[0]);
+//        editor.container.style.opacity = 0.5;
+//        editor.renderer.setStyle("disabled", true);
     }
 }
 
@@ -475,6 +484,7 @@ function feedDataLibModalData(testDataLib, modalId, mode, hasPermissionsUpdate) 
         addNewSubDataKeyRow("subdataTableBody_edit");
 
     } else {
+
         var obj = testDataLib;
         $('#editTestDataLibModal #testdatalibid').val(obj.testDataLibID);
         $('#editTestDataLibModal #name').prop("value", obj.name);
@@ -487,12 +497,13 @@ function feedDataLibModalData(testDataLib, modalId, mode, hasPermissionsUpdate) 
 
         //loads the information for the entries
         $('#editTestDataLibModal #databaseUrl').find('option[value="' + obj.databaseUrl + '"]:first').prop("selected", "selected");
-        
+
+//        $('#editTestDataLibModal #service').find('option[value="' + obj.service + '"]:first').prop("selected", "selected");
         // init the select2
         $('#editTestDataLibModal #service').select2(getComboConfigService());
         // set it with the service value
         $("#editTestDataLibModal #service").val(obj.service).trigger('change');
-        
+
         $('#editTestDataLibModal #servicepaths').prop("value", obj.servicePath);
         $('#editTestDataLibModal #methods').prop("value", obj.method);
         $('#editTestDataLibModal #envelope').text(obj.envelope);
@@ -511,7 +522,7 @@ function feedDataLibModalData(testDataLib, modalId, mode, hasPermissionsUpdate) 
         $('#editTestDataLibModal #lastModified').prop("value", getDate(obj.lastModified));
         $('#editTestDataLibModal #lastModifier').prop("value", obj.lastModifier);
 
-        openModalAppServiceFromHere();
+        changeAppServiceFromHere();
 
         // Loading the list of subdata.       
         if ((mode === "EDIT") || (mode === "DUPLICATE")) {
@@ -539,7 +550,7 @@ function feedDataLibModalData(testDataLib, modalId, mode, hasPermissionsUpdate) 
             $('#editDataLibButton').attr('class', '');
             $('#editDataLibButton').attr('hidden', 'hidden');
         }
-
+        
         //Highlight envelop on modal loading
         var editor = ace.edit($("#editTestDataLibModal #envelope")[0]);
         editor.setTheme("ace/theme/chrome");
@@ -563,13 +574,14 @@ function feedDataLibModalData(testDataLib, modalId, mode, hasPermissionsUpdate) 
     // Authorities
     if (mode === "EDIT") {
         formEdit.find("#name").prop("readonly", "");
+        $("#editTestDataLibModalLabel").html(doc.getDocOnline("page_testdatalib", "title_edit"));
     } else {
         formEdit.find("#name").prop("readonly", "");
         if (mode === "ADD") {
             $('#editTestDataLibModal #types option[value="INTERNAL"]').prop("selected", true);
-            $("#editTestDataLibModalLabel").html(doc.getDocOnline("page_testdatalib", "btn_create"));
+            $("#editTestDataLibModalLabel").html(doc.getDocOnline("page_testdatalib", "title_create"));
         } else {
-            $("#editTestDataLibModalLabel").html(doc.getDocOnline("page_testdatalib", "tooltip_duplicateEntry"));
+            $("#editTestDataLibModalLabel").html(doc.getDocOnline("page_testdatalib", "title_duplicate"));
         }
 
         formEdit.find("#testdatalibid").val("");
@@ -767,10 +779,10 @@ function uploadTestDataLibFromXMLFile() {
 }
 
 function dtl_keyispressed(e) {
-    var toto="|.| |(|)|%|";
+    var toto = "|.| |(|)|%|";
     var charval = "|" + e.key + "|";
     if (toto.indexOf(charval) !== -1) {
-        var localMessage = new Message("WARNING", "Character '"+e.key+"' is not allowed on subdata name. This is to avoid creating ambiguous syntax when using variabilization.");
+        var localMessage = new Message("WARNING", "Character '" + e.key + "' is not allowed on subdata name. This is to avoid creating ambiguous syntax when using variabilization.");
         showMessage(localMessage, $('#editTestDataLibModal'), false, 1000);
         return false;
     }

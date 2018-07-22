@@ -2000,7 +2000,6 @@
             <url-pattern>/Login.jsp</url-pattern>
             <url-pattern>/Logout.jsp</url-pattern>
             <url-pattern>/Error.jsp</url-pattern>
-            <url-pattern>/function.jsp</url-pattern>
             <url-pattern>/index1.jsp</url-pattern>
             <url-pattern>/index2.jsp</url-pattern>
             <url-pattern>/index3.jsp</url-pattern>

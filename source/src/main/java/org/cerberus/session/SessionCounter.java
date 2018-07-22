@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.crud.entity;
+package org.cerberus.session;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -43,7 +43,7 @@ public class SessionCounter {
         return users.containsKey(sessionId);
     }
 
-    public void identifiateUser(String sessionId, String user) {
+    public void identificateUser(String sessionId, String user) {
         if (!this.isAuthentified(sessionId)) {
             users.put(sessionId, user);
         }
@@ -52,7 +52,6 @@ public class SessionCounter {
     public void destroyUser(String sessionId) {
         if (this.isAuthentified(sessionId)) {
             users.remove(sessionId);
-
         }
     }
 

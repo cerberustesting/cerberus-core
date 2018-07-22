@@ -26,8 +26,8 @@
         <meta content="text/html; charset=UTF-8" http-equiv="content-type">
         <%@ include file="include/global/dependenciesInclusions.html" %>
         <title id="pageTitle">Test Data Library</title>        
-        <script type="text/javascript" src="js/pages/TestDataLib.js"></script>
-        <script type="text/javascript" src="js/transversalobject/DataLib.js"></script>
+        <script type="text/javascript" src="js/pages/TestDataLibList.js"></script>
+        <script type="text/javascript" src="js/transversalobject/TestDataLib.js"></script>
         <script type="text/javascript" src="js/transversalobject/AppService.js"></script>
     </head>
     <body>

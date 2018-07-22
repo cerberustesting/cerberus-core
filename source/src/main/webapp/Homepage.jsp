@@ -24,6 +24,7 @@
 <%@page import="org.springframework.context.ApplicationContext"%>
 <%@page import="org.springframework.web.context.WebApplicationContext"%>
 <%@page import="org.cerberus.crud.entity.Invariant"%>
+<%@page import="org.cerberus.session.SessionCounter"%>
 <%@page import="java.util.List"%>
 <%@page import="org.cerberus.crud.service.IInvariantService"%>
 <%@page import="org.cerberus.database.IDatabaseVersioningService"%>

@@ -775,12 +775,14 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_exeperbuildrevision','RegressionExecutionStatus1','','fr','Statistiques d\\'Execution en Régression sur des Applications Externes',NULL,NULL)");
         b.append(",('page_global','beta_message','','en','This page is in beta, some features may not be available or fully functional.','',NULL)");
         b.append(",('page_global','beta_message','','fr','Cette page est en beta, certaines fonctionnalités peuvent être indisponnible ou non complètes.','',NULL)");
-        b.append(",('page_global','btn_add','','en','Add','',NULL)");
+        b.append(",('page_global','btn_add','','en','Create','',NULL)");
         b.append(",('page_global','btn_add','','fr','Ajouter','',NULL)");
         b.append(",('page_global','btn_cancel','','en','Cancel','',NULL)");
         b.append(",('page_global','btn_cancel','','fr','Annuler','',NULL)");
         b.append(",('page_global','btn_clearfilter','','en','','',NULL)");
         b.append(",('page_global','btn_clearfilter','','fr','','',NULL)");
+        b.append(",('page_global','btn_delete','','en','Delete','',NULL)");
+        b.append(",('page_global','btn_delete','','fr','Supprimer','',NULL)");
         b.append(",('page_global','btn_duplicate','','en','Duplicate','',NULL)");
         b.append(",('page_global','btn_duplicate','','fr','Dupliquer','',NULL)");
         b.append(",('page_global','btn_edit','','en','Edit',NULL,NULL)");
@@ -1710,6 +1712,12 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_testcase_m_showPicture','title','','en','Selected Picture','',NULL)");
         b.append(",('page_testdatalib','btn_create','','en','Create New Data Library','',NULL)");
         b.append(",('page_testdatalib','btn_create','','fr','Créer une nouvelle entrée',NULL,NULL)");
+        b.append(",('page_testdatalib','title_edit','','en','Edit New Data Library','',NULL)");
+        b.append(",('page_testdatalib','title_edit','','fr','Editer la Librairie de données',NULL,NULL)");
+        b.append(",('page_testdatalib','title_duplicate','','en','Duplicate New Data Library','',NULL)");
+        b.append(",('page_testdatalib','title_duplicate','','fr','Dupliquer une nouvelle Librairie de données',NULL,NULL)");
+        b.append(",('page_testdatalib','title_create','','en','Create New Data Library','',NULL)");
+        b.append(",('page_testdatalib','title_create','','fr','Créer une nouvelle Librairie de données',NULL,NULL)");
         b.append(",('page_testdatalib','btn_import','','en','Import from XML file','',NULL)");
         b.append(",('page_testdatalib','btn_import','','fr','Importer d\\'un fichier XML',NULL,NULL)");
         b.append(",('page_testdatalib','duplicated_message','','en','Please check the subdata entries. There are entries with duplicated names, a total of: ','',NULL)");

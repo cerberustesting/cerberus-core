@@ -425,7 +425,7 @@ input#submitButtonDuplicate {
 }
 
 .dataTables_scrollHeadInner{
-	width:100%!important;
+    width:100%!important;
 }
 
 ul.nav li.dropdown:hover > ul.dropdown-menu {
@@ -482,7 +482,7 @@ ul.nav li.dropdown:hover > ul.dropdown-menu {
     color: #ebebeb;
     font: 12px Arial, Helvetica, sans-serif;
     background: url(../images/login-box-backg.png) no-repeat left top;
-/*    box-sizing: initial;*/
+    /*    box-sizing: initial;*/
 }
 
 .login-box img {
@@ -507,7 +507,7 @@ ul.nav li.dropdown:hover > ul.dropdown-menu {
 }
 
 .table{
-	width:100%!important;
+    width:100%!important;
 }
 
 .login-box-error {
@@ -793,7 +793,7 @@ table.dataTable thead th {
     background-color: #E6E6E6 !important;
 }
 
-.dataTables_scroll{
+.dataTables_scroll {
     /*overflow: auto;
     clear: both;*/
     width: 100%;
@@ -801,22 +801,22 @@ table.dataTable thead th {
 }
 
 
-.editable-checklist{
+.editable-checklist {
     max-height: 350px;
     width: 120%;
     max-width: 500px;
     overflow: auto;
 }
 
-.list-label{
+.list-label {
     height : 40px;
 }
 
 .colorpicker {
-  z-index: 9999;
+    z-index: 9999;
 }
 
-.tooltip{
+.tooltip {
     z-index: 1049 !important;
 }
 

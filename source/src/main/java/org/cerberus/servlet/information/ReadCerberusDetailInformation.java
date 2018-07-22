@@ -31,7 +31,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.database.dao.ICerberusInformationDAO;
 import org.cerberus.engine.entity.ExecutionUUID;
-import org.cerberus.crud.entity.SessionCounter;
+import org.cerberus.session.SessionCounter;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.service.IMyVersionService;
 import org.cerberus.database.IDatabaseVersioningService;

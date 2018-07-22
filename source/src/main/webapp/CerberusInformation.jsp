@@ -52,7 +52,7 @@
                             </div>
                         </div>
 
-                        <div class="row">
+<!--                        <div class="row">
                             <div class="form-group col-xs-12">
                                 <table class="table table-bordered table-hover nomarginbottom dataTable" id="sessionNbTable">
                                     <thead>
@@ -77,7 +77,8 @@
                                     </tbody>
                                 </table>
                             </div>
-                        </div>
+                        </div>-->
+                        
                         <div class="row">
                             <div class="form-group col-xs-12">
                                 <table class="table table-bordered table-hover nomarginbottom dataTable" id="exeNbTable">
