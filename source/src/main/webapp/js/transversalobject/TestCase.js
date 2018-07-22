@@ -121,7 +121,7 @@ function initModalTestCase() {
     displayInvariantList("activeUAT", "TCACTIVE", false);
     displayInvariantList("activeProd", "TCACTIVE", false);
     appendProjectList();
-    
+
     $('[data-toggle="popover"]').popover({
         'placement': 'auto',
         'container': 'body'}
@@ -219,10 +219,10 @@ function duplicateTestCaseClick(test, testCase) {
     $('#addTestCaseButton').attr('hidden', 'hidden');
 
     // In Duplicate TestCase form, if we change the test, we get the latest testcase from that test.
-    $('#editTestCaseModalForm select[name="test"]').off("change");
-    $('#editTestCaseModalForm select[name="test"]').change(function () {
-        feedTestCaseField(null, "editTestCaseModalForm");
-    });
+//    $('#editTestCaseModalForm select[name="test"]').off("change");
+//    $('#editTestCaseModalForm select[name="test"]').change(function () {
+//        feedTestCaseField(null, "editTestCaseModalForm");
+//    });
 
     // In Add and duplicate TestCase form, if we change the test, we don't display any warning.
     $('#editTestCaseModalForm select[name="test"]').off("change");
@@ -256,10 +256,10 @@ function addTestCaseClick(defaultTest) {
     $('#addTestCaseButton').attr('class', 'btn btn-primary');
     $('#addTestCaseButton').removeProp('hidden');
 
-    $('#editTestCaseModalForm select[name="test"]').off("change");
-    $('#editTestCaseModalForm select[name="test"]').change(function () {
-        feedTestCaseField(null, "editTestCaseModalForm");
-    });
+//    $('#editTestCaseModalForm select[name="test"]').off("change");
+//    $('#editTestCaseModalForm select[name="test"]').change(function () {
+//        feedTestCaseField(null, "editTestCaseModalForm");
+//    });
 
     // In Add and duplicate TestCase form, if we change the test, we don't display any warning.
     $('#editTestCaseModalForm select[name="test"]').off("change");
@@ -279,9 +279,11 @@ function addTestCaseClick(defaultTest) {
  * @returns {null}
  */
 function feedTestCaseField(test, modalForm) {
+    console.info("feed Test Case. " + test);
 // Predefine the testcase value.
     if ((test === null) || (test === undefined))
         test = $('#' + modalForm + ' select[name="test"]').val();
+    console.info(" Value : " + test);
     $.ajax({
         url: "ReadTestCase",
         method: "GET",
@@ -512,30 +514,31 @@ function feedTestCaseModal(test, testCase, modalId, mode) {
 function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, defaultTest) {
     var formEdit = $('#' + modalId);
     var doc = new Doc();
-    
+
+//    $('#editTestCaseModal [name="test"]').select2(getComboConfigTest());
+
     var observer = new MutationObserver(function (mutations, me) {
-    	var behaviorOrValueExpected = tinyMCE.get('behaviorOrValueExpected');
-    	var howTo = tinyMCE.get('howTo')
-		if(howTo != null && behaviorOrValueExpected != null){
-			if(isEmpty(testCase)){
-				tinyMCE.get('behaviorOrValueExpected').setContent("");
-				tinyMCE.get('howTo').setContent("");
-			}
-    		else{
-    			tinyMCE.get('behaviorOrValueExpected').setContent(testCase.behaviorOrValueExpected);
-				tinyMCE.get('howTo').setContent(testCase.behaviorOrValueExpected);
-    		}
-			
-			me.disconnect()
-		}
-	    return;
+        var behaviorOrValueExpected = tinyMCE.get('behaviorOrValueExpected');
+        var howTo = tinyMCE.get('howTo')
+        if (howTo != null && behaviorOrValueExpected != null) {
+            if (isEmpty(testCase)) {
+                tinyMCE.get('behaviorOrValueExpected').setContent("");
+                tinyMCE.get('howTo').setContent("");
+            } else {
+                tinyMCE.get('behaviorOrValueExpected').setContent(testCase.behaviorOrValueExpected);
+                tinyMCE.get('howTo').setContent(testCase.behaviorOrValueExpected);
+            }
+
+            me.disconnect()
+        }
+        return;
     });
 
-	// start observing
-	observer.observe(document, {
-	  childList: true,
-	  subtree: true
-	});
+    // start observing
+    observer.observe(document, {
+        childList: true,
+        subtree: true
+    });
 
     // Data Feed.
     if (mode === "EDIT") {
@@ -956,6 +959,11 @@ function appendTestList(defautValue) {
         testList.val(defautValue);
 
     });
+
+// Set Select2 Value.
+//        var myoption = $('<option></option>').text(defautValue).val(defautValue);
+//        $("#editTestCaseModal [name=test]").append(myoption).trigger('change'); // append the option and update Select2
+
 }
 
 function appendProjectList() {
