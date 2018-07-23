@@ -36,18 +36,39 @@ import org.cerberus.util.answer.AnswerList;
  */
 public interface ITestService {
 
-
-
-
-
-
-
+    /**
+     *
+     * @param test
+     * @return
+     */
     public AnswerItem readByKey(String test);
 
+    /**
+     *
+     * @param system
+     * @return
+     */
     public AnswerList readDistinctBySystem(String system);
-    
+
+    /**
+     *
+     * @param start
+     * @param amount
+     * @param colName
+     * @param dir
+     * @param searchTerm
+     * @param individualSearch
+     * @return
+     */
     public AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
+    /**
+     *
+     * @param Object
+     * @return
+     */
+    public boolean exist(String Object);
+    
     /**
      *
      * @param test
@@ -62,14 +83,14 @@ public interface ITestService {
      * @return
      */
     public Answer update(String keyTest, Test test);
-    
+
     /**
      *
      * @param test
      * @return
      */
     public Answer delete(Test test);
-    
+
     /**
      *
      * @param answerItem
@@ -92,13 +113,14 @@ public interface ITestService {
      * @throws CerberusException
      */
     void convert(Answer answer) throws CerberusException;
-    
+
     /**
      * Read distinct Value of specified column
+     *
      * @param searchTerm
      * @param individualSearch
      * @param columnName
-     * @return 
+     * @return
      */
     AnswerList<List<String>> readDistinctValuesByCriteria(String searchTerm, Map<String, List<String>> individualSearch, String columnName);
 }
