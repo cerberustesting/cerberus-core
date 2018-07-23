@@ -71,7 +71,7 @@ function changeAppServiceFromHere() {
         var emptyEntry = '<span class="input-group-btn" style="vertical-align:bottom!important"><button id="emptyEntry" onclick="emptyService();"\n\
             class="buttonObject btn btn-default " \n\
            title="Empty" type="button">\n\
-            <span class="glyphicon glyphicon-trash"></span></button></span>';
+            <span class="glyphicon glyphicon-remove"></span></button></span>';
         $('#editTestDataLibModal #service').parent().append(editEntry).append(emptyEntry);
 
     } else {
