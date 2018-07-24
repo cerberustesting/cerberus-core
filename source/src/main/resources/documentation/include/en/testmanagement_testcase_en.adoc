@@ -151,7 +151,7 @@ image:testlooptep.png[TestCaseLoopStep]
 | openApp | TBD | 
 | closeApp | TBD | 
 | select | select an option in a <select> tag. this 'text' must be defined : <option value="text"> | 
-| keypress | will allow you to press any key in the current web page. *[red]#Value1#* : Location of the element from which press the key. *[red]#Value2#* : Keycode of the key to press Example : ENTER |
+| keypress | will allow you to press any key in the current web page. *[red]#Value1#* : Location of the element from which press the key. *[red]#Value2#* : Keycode of the key to press | Examples : `ENTER` (GUI) , `Key.ENTER` (FAT)
 | type | Write a data in a field. *[red]#Element path#* : the id of the field  *[red]#Property Name#* : the property containing the value to type (can be a property or text. | 
 | hidekeyboard | Hide the currently visible keyboard | 
 | swipe | The action simulates a user pressing down on the screen, sliding to another position, and removing their finger from the screen. Swipe action can be used neither with unique parameter *[red]#UP#*,*[red]#DOWN#*,*[red]#LEFT#*,*[red]#RIGHT#*, or with combination of parameter *[red]#CUSTOM#* and *[red]#x1;y1;x2;y2#*, which are coordinates of origin point (x1;y1) and #relatives# coodinates of destination point (x2;y2) | swipe UP : will swipe from the 2/3 to the 1/3 of the screen. swipe CUSTOM 100;100;0;100 : will swipe from the point (100;100) to the point (100;200)
@@ -167,9 +167,18 @@ image:testlooptep.png[TestCaseLoopStep]
 
 |=== 
 
-NB : For FAT client interaction (e.g. 'click', 'verifyElementPresent'), Application object must be used to reference picture. 
++**For FAT client**
+
+In order to perform any action/control (e.g. 'click', 'verifyElementPresent'), Application Object must be used to reference picture. 
 Keep in mind that for click action, it will be performed in the center of the picture:
 image:sikuliclick1.png[SikuliClick1]
+
+The keycodes (see. keypress action) also changes from GUI to FAT type. The syntaxes are:
+
+- `KEYNAME` for GUI, ex : `ENTER`
+
+- `Key.KEYNAME` for FAT, ex `Key.ENTER`
+
 
 === TestCase Control
 
