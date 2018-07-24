@@ -22,12 +22,15 @@ package org.cerberus.crud.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.cerberus.crud.dao.ITagSystemDAO;
 import org.cerberus.crud.dao.ITestCaseExecutionQueueDAO;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionQueue;
+import org.cerberus.crud.factory.IFactoryTagSystem;
 import org.cerberus.crud.factory.IFactoryTestCaseExecution;
+import org.cerberus.crud.service.ITagSystemService;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.enums.MessageEventEnum;
@@ -50,6 +53,10 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
 
     @Autowired
     private ITestCaseExecutionQueueDAO testCaseExecutionInQueueDAO;
+    @Autowired
+    private ITagSystemService tagSystemService;
+    @Autowired
+    private IFactoryTagSystem factoryTagSystem;
 
     @Autowired
     private IFactoryTestCaseExecution factoryTestCaseExecution;
@@ -140,6 +147,12 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
 
     @Override
     public AnswerItem<TestCaseExecutionQueue> create(TestCaseExecutionQueue object) {
+        // We create the link between the tag and the system if it does not exist yet.
+        if (!StringUtil.isNullOrEmpty(object.getTag()) && !StringUtil.isNullOrEmpty(object.getSystem())) {
+            if (!tagSystemService.exist(object.getTag(), object.getSystem())) {
+                tagSystemService.create(factoryTagSystem.create(object.getTag(), object.getSystem(), object.getUsrCreated(), null, "", null));
+            }
+        }
         return testCaseExecutionInQueueDAO.create(object);
     }
 
