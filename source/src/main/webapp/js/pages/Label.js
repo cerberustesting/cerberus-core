@@ -88,7 +88,7 @@ function displayPageLabel() {
 }
 
 function generateLabelTree() {
-    $.when($.ajax("ReadLabel?iColumns=1&sColumns=type,type&sSearch_0=REQUIREMENT")).then(function (data) {
+    $.when($.ajax("ReadLabel?iColumns=1&sColumns=type,type&sSearch_0=REQUIREMENT&system="+getSys())).then(function (data) {
         var treeObj = new Object();
         for (var i = 0; i < data.contentTable.length; i++) {
             //1st : Create the object
