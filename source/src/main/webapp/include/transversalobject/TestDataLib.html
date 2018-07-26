@@ -1,5 +1,5 @@
 <!-- Edit test data lib-->
-<div data-backdrop="static" class="modal fade center" id="editTestDataLibModal" tabindex="-1" role="dialog" aria-labelledby="editTestDataLibModalLabel" aria-hidden="true">
+<div data-backdrop="static" class="modal fade center" id="editTestDataLibModal" role="dialog" aria-labelledby="editTestDataLibModalLabel" aria-hidden="true">
     <div class="modal-dialog nomargintop nomarginbottom modal-xl">
         <div class="modal-content">
             <div class="modal-header">
@@ -80,9 +80,9 @@
                                                     <select class="form-control" id="databaseUrl" name="databaseUrl">
                                                     </select> 
                                                 </div>
-                                                <div class="input-group  col-xs-7"> 
+                                                <div class="input-group col-xs-7"> 
                                                     <label name="lbl_service" for="service">Service</label> 
-                                                    <select class="form-control" id="service" name="service">
+                                                    <select type="text" class="form-control" id="service" name="service" aria-describedby="basic-addon1" maxlength="100">
                                                     </select> 
                                                 </div>
                                             </div>    
@@ -99,8 +99,7 @@
                                             <div class="row">
                                                 <div class="col-xs-12">
                                                     <label name="lbl_envelope" for="envelope">Envelope</label> 
-                                                    <div name="envelopeContainer" id="envelopeContainer"
-                                                         aria-describedby="basic-editon1">
+                                                    <div name="envelopeContainer" id="envelopeContainer" aria-describedby="basic-editon1">
                                                         <pre style="min-height:150px" id="envelope" name="envelope"></pre>
                                                     </div>
                                                 </div>

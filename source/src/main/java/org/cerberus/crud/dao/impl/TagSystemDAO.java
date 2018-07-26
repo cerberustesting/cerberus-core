@@ -30,13 +30,10 @@ import java.util.List;
 import java.util.Map;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-import org.cerberus.crud.dao.ICampaignLabelDAO;
-import org.cerberus.crud.entity.CampaignLabel;
-import org.cerberus.crud.entity.Label;
-import org.cerberus.crud.factory.IFactoryCampaignLabel;
-import org.cerberus.crud.factory.IFactoryLabel;
-import org.cerberus.crud.factory.impl.FactoryCampaignLabel;
-import org.cerberus.crud.factory.impl.FactoryLabel;
+import org.cerberus.crud.dao.ITagSystemDAO;
+import org.cerberus.crud.entity.TagSystem;
+import org.cerberus.crud.factory.IFactoryTagSystem;
+import org.cerberus.crud.factory.impl.FactoryTagSystem;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
@@ -57,40 +54,40 @@ import org.springframework.stereotype.Repository;
  * @since 0.9.0
  */
 @Repository
-public class CampaignLabelDAO implements ICampaignLabelDAO {
+public class TagSystemDAO implements ITagSystemDAO {
 
     @Autowired
     private DatabaseSpring databaseSpring;
     @Autowired
-    private IFactoryCampaignLabel factoryCampaignLabel;
-    @Autowired
-    private IFactoryLabel factoryLabel;
+    private IFactoryTagSystem factoryTagSystem;
 
-    private static final Logger LOG = LogManager.getLogger(CampaignLabelDAO.class);
+    private static final Logger LOG = LogManager.getLogger(TagSystemDAO.class);
 
-    private final String OBJECT_NAME = "Campaign Label";
+    private final String OBJECT_NAME = "TagSystem";
     private final String SQL_DUPLICATED_CODE = "23000";
     private final int MAX_ROW_SELECTED = 100000;
 
     @Override
-    public AnswerItem<CampaignLabel> readByKeyTech(Integer campaignLabelID) {
+    public AnswerItem<TagSystem> readByKey(String tag, String system) {
         AnswerItem ans = new AnswerItem<>();
-        CampaignLabel result = null;
-        final String query = "SELECT * FROM `campaignLabel` cpl WHERE `campaignlabelid` = ? JOIN label lab ON lab.id = cpl.labelid ";
+        TagSystem result = null;
+        final String query = "SELECT * FROM `tagsystem` tas WHERE `tag` = ? and `system` = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
-            LOG.debug("SQL.param.campaignlabelid : " + campaignLabelID);
+            LOG.debug("SQL.param.tag : " + tag);
+            LOG.debug("SQL.param.system : " + system);
         }
 
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
-                preStat.setInt(1, campaignLabelID);
+                preStat.setString(1, tag);
+                preStat.setString(2, system);
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     if (resultSet.first()) {
@@ -102,21 +99,21 @@ public class CampaignLabelDAO implements ICampaignLabelDAO {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
                     }
                 } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
+                    LOG.error("Unable to execute query : " + exception.toString(), exception);
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
+                LOG.error("Unable to execute query : " + exception.toString(), exception);
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
+            LOG.error("Unable to execute query : " + exception.toString(), exception);
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
         } finally {
@@ -135,95 +132,24 @@ public class CampaignLabelDAO implements ICampaignLabelDAO {
     }
 
     @Override
-    public AnswerItem<CampaignLabel> readByKey(String campaign, Integer LabelId) {
-        AnswerItem ans = new AnswerItem<>();
-        CampaignLabel result = null;
-        final String query = "SELECT * FROM `campaignlabel` src WHERE `campaign` = ? and `labelid` = ? JOIN label lab ON lab.id = cpl.labelid";
-        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-
-        // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query);
-            LOG.debug("SQL.param.campaign : " + campaign);
-            LOG.debug("SQL.param.labelid : " + LabelId);
-        }
-
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                preStat.setString(1, campaign);
-                preStat.setInt(2, LabelId);
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    if (resultSet.first()) {
-                        result = loadFromResultSet(resultSet);
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                        ans.setItem(result);
-                    } else {
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                    }
-                } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-                } finally {
-                    resultSet.close();
-                }
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException exception) {
-                LOG.warn("Unable to close connection : " + exception.toString());
-            }
-        }
-
-        //sets the message
-        ans.setResultMessage(msg);
-        return ans;
-    }
-
-    @Override
-    public AnswerList<CampaignLabel> readByVariousByCriteria(String campaign, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
+    public AnswerList<TagSystem> readByVariousByCriteria(String system, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
         AnswerList response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<CampaignLabel> objectList = new ArrayList<CampaignLabel>();
+        List<TagSystem> objectList = new ArrayList<TagSystem>();
         StringBuilder searchSQL = new StringBuilder();
         List<String> individalColumnSearchValues = new ArrayList<String>();
 
         StringBuilder query = new StringBuilder();
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
         //were applied -- used for pagination p
-        query.append("SELECT SQL_CALC_FOUND_ROWS * FROM campaignlabel cpl ");
-
-        query.append("JOIN label lab ON lab.id = cpl.labelid");
+        query.append("SELECT SQL_CALC_FOUND_ROWS * FROM tagsystem tas ");
 
         searchSQL.append(" where 1=1 ");
 
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
-            searchSQL.append(" and (cpl.`campaignlabelid` like ?");
-            searchSQL.append(" or cpl.`campaign` like ?");
-            searchSQL.append(" or cpl.`labelid` like ?");
-            searchSQL.append(" or cpl.`usrCreated` like ?");
-            searchSQL.append(" or cpl.`usrModif` like ?");
-            searchSQL.append(" or cpl.`dateCreated` like ?");
-            searchSQL.append(" or cpl.`dateModif` like ?)");
+            searchSQL.append(" and (tas.`tag` like ?");
+            searchSQL.append(" or tas.`system` like ?)");
         }
         if (individualSearch != null && !individualSearch.isEmpty()) {
             searchSQL.append(" and ( 1=1 ");
@@ -235,8 +161,8 @@ public class CampaignLabelDAO implements ICampaignLabelDAO {
             searchSQL.append(" )");
         }
 
-        if (!StringUtil.isNullOrEmpty(campaign)) {
-            searchSQL.append(" and (`campaign` = ? )");
+        if (!StringUtil.isNullOrEmpty(system)) {
+            searchSQL.append(" and (`system` = ? )");
         }
         query.append(searchSQL);
 
@@ -262,17 +188,12 @@ public class CampaignLabelDAO implements ICampaignLabelDAO {
                 if (!StringUtil.isNullOrEmpty(searchTerm)) {
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
                 }
                 for (String individualColumnSearchValue : individalColumnSearchValues) {
                     preStat.setString(i++, individualColumnSearchValue);
                 }
-                if (!StringUtil.isNullOrEmpty(campaign)) {
-                    preStat.setString(i++, campaign);
+                if (!StringUtil.isNullOrEmpty(system)) {
+                    preStat.setString(i++, system);
                 }
                 ResultSet resultSet = preStat.executeQuery();
                 try {
@@ -346,11 +267,19 @@ public class CampaignLabelDAO implements ICampaignLabelDAO {
     }
 
     @Override
-    public Answer create(CampaignLabel object) {
+    public Answer create(TagSystem object) {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO campaignlabel (`campaign`, `labelid`, `usrcreated`) ");
-        query.append("VALUES (?,?,?)");
+        StringBuilder queryV = new StringBuilder();
+        query.append("INSERT INTO tagsystem (`tag`, `system`");
+        queryV.append("VALUES (?,?");
+        if (!StringUtil.isNullOrEmpty(object.getUsrCreated())) {
+            query.append(", `usrcreated`");
+            queryV.append(",?");
+        }
+        query.append(") ");
+        queryV.append(");");
+        query.append(queryV);
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -361,9 +290,11 @@ public class CampaignLabelDAO implements ICampaignLabelDAO {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
                 int i = 1;
-                preStat.setString(i++, object.getCampaign());
-                preStat.setInt(i++, object.getLabelId());
-                preStat.setString(i++, object.getUsrCreated());
+                preStat.setString(i++, object.getTag());
+                preStat.setString(i++, object.getSystem());
+                if (!StringUtil.isNullOrEmpty(object.getUsrCreated())) {
+                    preStat.setString(i++, object.getUsrCreated());
+                }
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -399,21 +330,20 @@ public class CampaignLabelDAO implements ICampaignLabelDAO {
     }
 
     @Override
-    public Answer delete(CampaignLabel object) {
+    public Answer delete(TagSystem object) {
         MessageEvent msg = null;
-        final String query = "DELETE FROM campaignlabel WHERE `campaignlabelid` = ? ";
+        final String query = "DELETE FROM tagsystem WHERE tag = ? and system = ? ";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
-            LOG.debug("SQL.param.campaignlabelid : " + object.getCampaignLabelID());
         }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
-                int i = 1;
-                preStat.setInt(i++, object.getCampaignLabelID());
+                preStat.setString(1, object.getTag());
+                preStat.setString(2, object.getSystem());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -442,25 +372,26 @@ public class CampaignLabelDAO implements ICampaignLabelDAO {
     }
 
     @Override
-    public Answer update(CampaignLabel object) {
+    public Answer update(String tag,String system, TagSystem object) {
         MessageEvent msg = null;
-        final String query = "UPDATE campaignlabel SET campaign = ?, labelid = ? "
-                + "dateModif = NOW(), usrModif= ?  WHERE `campaignlabelid` = ? ";
+        String query = "UPDATE tagsystem SET tag = ?, system = ?, dateModif = NOW(), usrModif= ?";
+        query += "  WHERE Tag = ? and System = ?";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
-            LOG.debug("SQL.param.service : " + object.getCampaignLabelID());
+            LOG.debug("SQL.param.tag : " + object.getTag());
         }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
                 int i = 1;
-                preStat.setString(i++, object.getCampaign());
-                preStat.setInt(i++, object.getLabelId());
+                preStat.setString(i++, object.getTag());
+                preStat.setString(i++, object.getSystem());
                 preStat.setString(i++, object.getUsrModif());
-                preStat.setInt(i++, object.getCampaignLabelID());
+                preStat.setString(i++, tag);
+                preStat.setString(i++, system);
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -489,42 +420,23 @@ public class CampaignLabelDAO implements ICampaignLabelDAO {
     }
 
     @Override
-    public CampaignLabel loadFromResultSet(ResultSet rs) throws SQLException {
-        int campaignlabelid = ParameterParserUtil.parseIntegerParam(rs.getString("cpl.campaignlabelid"), 0);
-        String campaign = ParameterParserUtil.parseStringParam(rs.getString("cpl.campaign"), "");
-        int labelid = ParameterParserUtil.parseIntegerParam(rs.getString("cpl.labelid"), 0);
-        String usrModif = ParameterParserUtil.parseStringParam(rs.getString("cpl.UsrModif"), "");
-        String usrCreated = ParameterParserUtil.parseStringParam(rs.getString("cpl.UsrCreated"), "");
-        Timestamp dateModif = rs.getTimestamp("cpl.DateModif");
-        Timestamp dateCreated = rs.getTimestamp("cpl.DateCreated");
+    public TagSystem loadFromResultSet(ResultSet rs) throws SQLException {
+        String tag = ParameterParserUtil.parseStringParam(rs.getString("tas.tag"), "");
+        String system = ParameterParserUtil.parseStringParam(rs.getString("tas.system"), "");
+        String usrModif = ParameterParserUtil.parseStringParam(rs.getString("tas.UsrModif"), "");
+        String usrCreated = ParameterParserUtil.parseStringParam(rs.getString("tas.UsrCreated"), "");
+        Timestamp dateModif = rs.getTimestamp("tas.DateModif");
+        Timestamp dateCreated = rs.getTimestamp("tas.DateCreated");
 
-        Integer id = ParameterParserUtil.parseIntegerParam(rs.getString("lab.id"), 0);
-        String system = ParameterParserUtil.parseStringParam(rs.getString("lab.system"), "");
-        String label = ParameterParserUtil.parseStringParam(rs.getString("lab.label"), "");
-        String type = ParameterParserUtil.parseStringParam(rs.getString("lab.type"), "");
-        String color = ParameterParserUtil.parseStringParam(rs.getString("lab.color"), "");
-        String reqType = ParameterParserUtil.parseStringParam(rs.getString("lab.ReqType"), "");
-        String reqStatus = ParameterParserUtil.parseStringParam(rs.getString("lab.ReqStatus"), "");
-        String reqCriticity = ParameterParserUtil.parseStringParam(rs.getString("lab.ReqCriticity"), "");
-        Integer parentLabel = Integer.valueOf(ParameterParserUtil.parseStringParam(rs.getString("lab.parentLabel"), "0"));
-        String description = ParameterParserUtil.parseStringParam(rs.getString("lab.description"), "");
-        String longDesc = ParameterParserUtil.parseStringParam(rs.getString("lab.LongDesc"), "");
-        String usrCreated1 = ParameterParserUtil.parseStringParam(rs.getString("lab.usrCreated"), "");
-        Timestamp dateCreated1 = rs.getTimestamp("lab.dateCreated");
-        String usrModif1 = ParameterParserUtil.parseStringParam(rs.getString("lab.usrModif"), "");
-        Timestamp dateModif1 = rs.getTimestamp("lab.dateModif");
-        
-        factoryLabel = new FactoryLabel();
-        Label labelObj = factoryLabel.create(id, system, label, type, color, parentLabel, reqType, reqStatus, reqCriticity, description, longDesc, usrCreated1, dateCreated1, usrModif1, dateModif1);
-        
-        factoryCampaignLabel = new FactoryCampaignLabel();
-        CampaignLabel res = factoryCampaignLabel.create(campaignlabelid, campaign, labelid, usrCreated, dateCreated, usrModif, dateModif);
-        res.setLabel(labelObj);
-        return res;
+        //TODO remove when working in test with mockito and autowired
+        factoryTagSystem = new FactoryTagSystem();
+        TagSystem newTagSystem = factoryTagSystem.create(tag, system, usrCreated, dateCreated, usrModif, dateModif);
+
+        return newTagSystem;
     }
 
     @Override
-    public AnswerList<String> readDistinctValuesByCriteria(String campaign, String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
+    public AnswerList<String> readDistinctValuesByCriteria(String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
         AnswerList answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -536,21 +448,13 @@ public class CampaignLabelDAO implements ICampaignLabelDAO {
 
         query.append("SELECT distinct ");
         query.append(columnName);
-        query.append(" as distinctValues FROM campaignlabel ");
+        query.append(" as distinctValues FROM tagsystem ");
 
         searchSQL.append("WHERE 1=1");
-        if (!StringUtil.isNullOrEmpty(campaign)) {
-            searchSQL.append(" and (`campaign` = ? )");
-        }
 
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
-            searchSQL.append(" and (cpl.`campaignlabelid` like ?");
-            searchSQL.append(" or cpl.`campaign` like ?");
-            searchSQL.append(" or cpl.`labelid` like ?");
-            searchSQL.append(" or cpl.`usrCreated` like ?");
-            searchSQL.append(" or cpl.`usrModif` like ?");
-            searchSQL.append(" or cpl.`dateCreated` like ?");
-            searchSQL.append(" or cpl.`dateModif` like ?)");
+            searchSQL.append(" and (`tag` like ?");
+            searchSQL.append(" or `system` like ?)");
         }
         if (individualSearch != null && !individualSearch.isEmpty()) {
             searchSQL.append(" and ( 1=1 ");
@@ -570,18 +474,10 @@ public class CampaignLabelDAO implements ICampaignLabelDAO {
         }
         try (Connection connection = databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(query.toString());
-        		Statement stm = connection.createStatement();) {
+                Statement stm = connection.createStatement();) {
 
             int i = 1;
-            if (!StringUtil.isNullOrEmpty(campaign)) {
-                preStat.setString(i++, campaign);
-            }
             if (!StringUtil.isNullOrEmpty(searchTerm)) {
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
             }
@@ -589,13 +485,14 @@ public class CampaignLabelDAO implements ICampaignLabelDAO {
                 preStat.setString(i++, individualColumnSearchValue);
             }
 
-            try(ResultSet resultSet = preStat.executeQuery();
-            		ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
-            	//gets the data
+            try (ResultSet resultSet = preStat.executeQuery();
+                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+                //gets the data
                 while (resultSet.next()) {
                     distinctValues.add(resultSet.getString("distinctValues") == null ? "" : resultSet.getString("distinctValues"));
                 }
 
+                //get the total number of rows
                 int nrTotalRows = 0;
 
                 if (rowSet != null && rowSet.next()) {
@@ -615,12 +512,11 @@ public class CampaignLabelDAO implements ICampaignLabelDAO {
                     msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
                     answer = new AnswerList<>(distinctValues, nrTotalRows);
                 }
-            }catch (SQLException exception) {
+            } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-
-            } 
+            }
         } catch (Exception e) {
             LOG.warn("Unable to execute query : " + e.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",

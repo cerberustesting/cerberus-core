@@ -1,0 +1,11 @@
+*Bug fixes*
+[square]
+* Docker : Correct bug since java version change on glassfish docker OS
+* Issue on appium using HttpCommandExecutor
+
+*Improvements / New features*
+[square]
+* Cerberus now allow service calls without proper SSL Certificate available. new parameter 'cerberus_accept_unsigned_ssl_certificate' allow to tune that behaviour. Default to Y you can put N in order to fail when certificate is not correct.
+* In the datalib modal, we use now a select2 for the service field to be able to search for a specific service.
+
+

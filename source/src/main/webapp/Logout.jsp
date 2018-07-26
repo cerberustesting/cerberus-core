@@ -21,7 +21,7 @@
 --%>
 <%@page import="org.springframework.web.context.support.WebApplicationContextUtils"%>
 <%@page import="org.springframework.context.ApplicationContext"%>
-<%@page import="org.cerberus.crud.entity.SessionCounter"%>
+<%@page import="org.cerberus.session.SessionCounter"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -51,7 +51,7 @@
     ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
     SessionCounter sc = appContext.getBean(SessionCounter.class);
     if (request.getUserPrincipal() != null) {
-        sc.identifiateUser(request.getSession().getId(), request.getUserPrincipal().getName());
+        sc.identificateUser(request.getSession().getId(), request.getUserPrincipal().getName());
         sc.destroyUser(request.getSession().getId());
     }
     request.getSession().invalidate();

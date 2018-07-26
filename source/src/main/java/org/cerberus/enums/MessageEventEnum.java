@@ -378,6 +378,7 @@ public enum MessageEventEnum {
     STEP_FAILED(450, "KO", "", false, true, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     STEP_PENDING(499, "PE", "Step %STEP%.%STEPINDEX% running...", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     // *********** CONDITION OPERATION ***********
+    CONDITIONEVAL_NOTPOSSIBLE(1199, "FA", "can't evaluate this condition", false, false, false, MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_NOCONNECTION),
     CONDITIONEVAL_PENDING(1200, "PE", "Evaluating Condition...", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     CONDITIONEVAL_FAILED_UNKNOWNCONDITION(1290, "FA", "condition '%COND%' do not exist.", false, false, false, MessageGeneralEnum.EXECUTION_FA_CONDITION),
     CONDITIONEVAL_FAILED_DECODE_GENERICERROR(1215, "FA", "Error when decoding '%VALUE%'.", false, false, false, MessageGeneralEnum.EXECUTION_FA_CONDITION),
@@ -441,6 +442,7 @@ public enum MessageEventEnum {
     DATA_OPERATION_ERROR_EXPECTED(550, MessageCodeEnum.GENERIC_CODE_ERROR.getCodeString(), "%ITEM% - operation %OPERATION% failed to complete. %REASON%", false, false, false, MessageGeneralEnum.DATA_OPERATION_ERROR),
     DATA_OPERATION_ERROR_DUPLICATE(551, MessageCodeEnum.GENERIC_CODE_ERROR.getCodeString(), "The %ITEM% that you are trying to %OPERATION% conflicts with an existing one! Please check for duplicates! %REASON%", false, false, false, MessageGeneralEnum.DATA_OPERATION_ERROR),
     DATA_OPERATION_ERROR_UNEXPECTED(552, MessageCodeEnum.GENERIC_CODE_ERROR.getCodeString(), "An unexpected problem occurred. %DESCRIPTION%", false, false, false, MessageGeneralEnum.DATA_OPERATION_ERROR),
+    DATA_OPERATION_ERROR_LABEL(553, MessageCodeEnum.GENERIC_CODE_ERROR.getCodeString(), "Failed to attach Label '%LABEL%' to parent label '%LABELPARENT%'. %DESCRIPTION%.", false, false, false, MessageGeneralEnum.DATA_OPERATION_ERROR),
     DATA_OPERATION_IMPORT_OK(003, MessageCodeEnum.GENERIC_CODE_SUCCESS.getCodeString(), "%ITEM% was imported with success!", false, false, false, MessageGeneralEnum.DATA_OPERATION_SUCCESS),
     DATA_OPERATION_IMPORT_ERROR(905, MessageCodeEnum.GENERIC_CODE_ERROR.getCodeString(), "%ITEM% - Import failed! %REASON%", false, false, false, MessageGeneralEnum.DATA_OPERATION_ERROR),
     DATA_OPERATION_IMPORT_ERROR_FORMAT(906, MessageCodeEnum.GENERIC_CODE_ERROR.getCodeString(), "%ITEM% Import failed! Format %FORMAT% is invalid!", false, false, false, MessageGeneralEnum.DATA_OPERATION_ERROR),

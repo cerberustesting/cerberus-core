@@ -7800,8 +7800,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // 1359
         a.add("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ('', 'cerberus_accept_unsigned_ssl_certificate', 'Y', 'Allow to use unsigned ssl protocol on REST service');");
 
-        // New parameter.
+        // Change ParentLabelID format columns.
         // 1360
+        a.add("ALTER TABLE `label` CHANGE COLUMN `ParentLabel` `ParentLabelID` INT(11) NULL ;");
+
+        // New parameter.
+        // 1361
         a.add("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ('', 'cerberus_register_video', 'Y', 'Allow to register video on compatible application type');");
 
         return a;

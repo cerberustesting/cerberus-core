@@ -70,7 +70,6 @@ public class ConditionService implements IConditionService {
     public AnswerItem<Boolean> evaluateCondition(String conditionOper, String conditionValue1, String conditionValue2, TestCaseExecution tCExecution) {
 
         LOG.debug("Starting Evaluation condition : " + conditionOper);
-
         AnswerItem ans = new AnswerItem<>();
         MessageEvent mes;
         boolean execute_Operation = true;
@@ -203,12 +202,13 @@ public class ConditionService implements IConditionService {
         AnswerItem ans = new AnswerItem<>();
         MessageEvent mes;
 
-        if (StringUtil.isNullOrEmpty(conditionValue1)) {
+        if(tCExecution.getManualExecution().equals("Y")) {
+        	mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_NOTPOSSIBLE);
+        }
+        else if (StringUtil.isNullOrEmpty(conditionValue1)) {
             mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_IFELEMENTPRESENT_MISSINGPARAMETER);
             mes.setDescription(mes.getDescription().replace("%COND%", conditionOper));
-
         } else {
-
             boolean condition_result = false;
 
             Identifier identifier = identifierService.convertStringToIdentifier(conditionValue1);
@@ -294,12 +294,13 @@ public class ConditionService implements IConditionService {
         AnswerItem ans = new AnswerItem<>();
         MessageEvent mes;
 
-        if (StringUtil.isNullOrEmpty(conditionValue1)) {
+        if(tCExecution.getManualExecution().equals("Y")) {
+        	mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_NOTPOSSIBLE);
+        }
+        else if (StringUtil.isNullOrEmpty(conditionValue1)) {
             mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_IFELEMENTNOTPRESENT_MISSINGPARAMETER);
             mes.setDescription(mes.getDescription().replace("%COND%", conditionOper));
-
         } else {
-
             boolean condition_result = false;
 
             Identifier identifier = identifierService.convertStringToIdentifier(conditionValue1);

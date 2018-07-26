@@ -21,75 +21,96 @@ package org.cerberus.crud.service;
 
 import java.util.List;
 import java.util.Map;
-import org.cerberus.crud.entity.Test;
+
+import org.cerberus.crud.entity.TagSystem;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 
 /**
- * {Insert class description here}
  *
- * @author Tiago Bernardes
- * @version 1.0, 07/01/2013
- * @since 2.0.0
+ * @author vertigo
  */
-public interface ITestService {
+public interface ITagSystemService {
 
     /**
      *
-     * @param test
+     * @param tag
+     * @param system
      * @return
      */
-    public AnswerItem readByKey(String test);
+    AnswerItem<TagSystem> readByKey(String tag, String system);
+
+    /**
+     *
+     * @return
+     */
+    AnswerList<TagSystem> readAll();
 
     /**
      *
      * @param system
      * @return
      */
-    public AnswerList readDistinctBySystem(String system);
+    AnswerList readBySystem(String system);
 
     /**
      *
-     * @param start
-     * @param amount
-     * @param colName
-     * @param dir
-     * @param searchTerm
+     * @param startPosition
+     * @param length
+     * @param columnName
+     * @param sort
+     * @param searchParameter
      * @param individualSearch
      * @return
      */
-    public AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchTerm, Map<String, List<String>> individualSearch);
+    AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
     /**
      *
-     * @param Object
+     * @param system
+     * @param startPosition
+     * @param length
+     * @param columnName
+     * @param sort
+     * @param searchParameter
+     * @param individualSearch
      * @return
      */
-    public boolean exist(String Object);
-    
-    /**
-     *
-     * @param test
-     * @return
-     */
-    public Answer create(Test test);
+    AnswerList readByVariousByCriteria(String system, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
     /**
      *
-     * @param keyTest
-     * @param test
-     * @return
+     * @param tag
+     * @param system
+     * @return true is application exist or false is application does not exist
+     * in database.
      */
-    public Answer update(String keyTest, Test test);
+    boolean exist(String tag, String system);
 
     /**
      *
-     * @param test
+     * @param object
      * @return
      */
-    public Answer delete(Test test);
+    Answer create(TagSystem object);
+
+    /**
+     *
+     * @param object
+     * @return
+     */
+    Answer delete(TagSystem object);
+
+    /**
+     *
+     * @param Tag
+     * @param system
+     * @param object
+     * @return
+     */
+    Answer update(String Tag, String system, TagSystem object);
 
     /**
      *
@@ -97,7 +118,7 @@ public interface ITestService {
      * @return
      * @throws CerberusException
      */
-    Test convert(AnswerItem<Test> answerItem) throws CerberusException;
+    TagSystem convert(AnswerItem<TagSystem> answerItem) throws CerberusException;
 
     /**
      *
@@ -105,7 +126,7 @@ public interface ITestService {
      * @return
      * @throws CerberusException
      */
-    List<Test> convert(AnswerList<Test> answerList) throws CerberusException;
+    List<TagSystem> convert(AnswerList<TagSystem> answerList) throws CerberusException;
 
     /**
      *
@@ -115,12 +136,12 @@ public interface ITestService {
     void convert(Answer answer) throws CerberusException;
 
     /**
-     * Read distinct Value of specified column
      *
-     * @param searchTerm
+     * @param campaign
+     * @param searchParameter
      * @param individualSearch
      * @param columnName
      * @return
      */
-    AnswerList<List<String>> readDistinctValuesByCriteria(String searchTerm, Map<String, List<String>> individualSearch, String columnName);
+    AnswerList<String> readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 }

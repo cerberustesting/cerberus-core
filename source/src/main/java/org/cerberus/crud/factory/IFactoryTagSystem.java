@@ -20,34 +20,24 @@
 package org.cerberus.crud.factory;
 
 import java.sql.Timestamp;
-import org.cerberus.crud.entity.Label;
+import org.cerberus.crud.entity.TagSystem;
 
 /**
- * @author bcivel
+ * @author vertigo
  */
-public interface IFactoryLabel {
+public interface IFactoryTagSystem {
 
     /**
-     * 
-     * @param id
+     *
      * @param system
-     * @param label
-     * @param type
-     * @param color
-     * @param parentLabelID
-     * @param reqType
-     * @param reqStatus
-     * @param reqCriticity
-     * @param description
-     * @param longDesc
+     * @param tag
      * @param usrCreated
      * @param dateCreated
      * @param usrModif
      * @param dateModif
-     * @return 
+     * @return
      */
-    Label create(Integer id, String system, String label, String type, String color, Integer parentLabelID, String reqType, String reqStatus, String reqCriticity, String description, String longDesc
-            , String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif);
-
+    TagSystem create(String tag, String system,
+            String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif);
 
 }

@@ -31,7 +31,9 @@ import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionData;
 import org.cerberus.crud.entity.TestCaseExecutionFile;
 import org.cerberus.crud.entity.TestCaseExecutionQueue;
+import org.cerberus.crud.factory.IFactoryTagSystem;
 import org.cerberus.crud.service.IParameterService;
+import org.cerberus.crud.service.ITagSystemService;
 import org.cerberus.crud.service.ITestCaseExecutionDataService;
 import org.cerberus.crud.service.ITestCaseExecutionFileService;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
@@ -45,6 +47,7 @@ import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
@@ -76,11 +79,21 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     ITestCaseService testCaseService;
     @Autowired
     ITestCaseExecutionQueueService testCaseExecutionInQueueService;
+    @Autowired
+    private ITagSystemService tagSystemService;
+    @Autowired
+    private IFactoryTagSystem factoryTagSystem;
 
     private static final Logger LOG = LogManager.getLogger(TestCaseExecutionService.class);
 
     @Override
     public long insertTCExecution(TestCaseExecution tCExecution) throws CerberusException {
+        // We create the link between the tag and the system if it does not exist yet.
+        if (!StringUtil.isNullOrEmpty(tCExecution.getTag()) && !StringUtil.isNullOrEmpty(tCExecution.getSystem())) {
+            if (!tagSystemService.exist(tCExecution.getTag(), tCExecution.getSystem())) {
+                tagSystemService.create(factoryTagSystem.create(tCExecution.getTag(), tCExecution.getSystem(), tCExecution.getUsrCreated(), null, "", null));
+            }
+        }
         return testCaseExecutionDao.insertTCExecution(tCExecution);
     }
 
@@ -343,7 +356,7 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     private List<TestCaseExecution> hashExecution(List<TestCaseExecution> testCaseExecutions, List<TestCaseExecutionQueue> testCaseExecutionsInQueue) throws ParseException {
         LinkedHashMap<String, TestCaseExecution> testCaseExecutionsList = new LinkedHashMap();
         for (TestCaseExecution testCaseExecution : testCaseExecutions) {
-            String key = testCaseExecution.getRobotDecli()+ "_"
+            String key = testCaseExecution.getRobotDecli() + "_"
                     + testCaseExecution.getCountry() + "_"
                     + testCaseExecution.getEnvironment() + "_"
                     + testCaseExecution.getTest() + "_"
@@ -355,7 +368,7 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
         }
         for (TestCaseExecutionQueue testCaseExecutionInQueue : testCaseExecutionsInQueue) {
             TestCaseExecution testCaseExecution = testCaseExecutionInQueueService.convertToTestCaseExecution(testCaseExecutionInQueue);
-            String key = testCaseExecution.getRobotDecli()+ "_"
+            String key = testCaseExecution.getRobotDecli() + "_"
                     + testCaseExecution.getCountry() + "_"
                     + testCaseExecution.getEnvironment() + "_"
                     + testCaseExecution.getTest() + "_"

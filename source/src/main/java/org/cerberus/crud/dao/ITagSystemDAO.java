@@ -21,34 +21,34 @@ package org.cerberus.crud.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.cerberus.crud.entity.Label;
+import org.cerberus.crud.entity.TagSystem;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 
 /**
- * Interface that defines the public methods to manage Label data on table
+ * Interface that defines the public methods to manage Application data on table
  * Insert, Delete, Update, Find
  *
- * @author bcivel
+ * @author tbernardes
+ * @version 1.0, 15/10/13
+ * @since 0.9.0
  */
-public interface ILabelDAO {
+public interface ITagSystemDAO {
 
     /**
      *
-     * @param id
+     * @param tag
+     * @param system
      * @return
      */
-    AnswerItem<Label> readByKey(Integer id);
+    AnswerItem<TagSystem> readByKey(String tag, String system);
 
     /**
      *
      * @param system
-     * @param type
      * @param startPosition
      * @param length
      * @param columnName
@@ -57,49 +57,49 @@ public interface ILabelDAO {
      * @param individualSearch
      * @return
      */
-    AnswerList<List<Label>> readBySystemByCriteria(String system, String type, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+    AnswerList<TagSystem> readByVariousByCriteria(String system, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
     /**
      *
      * @param object
      * @return
      */
-    Answer create(Label object);
+    Answer create(TagSystem object);
 
     /**
      *
      * @param object
      * @return
      */
-    Answer delete(Label object);
+    Answer delete(TagSystem object);
 
     /**
      *
+     * @param tag
+     * @param system
      * @param object
      * @return
      */
-    Answer update(Label object);
+    Answer update(String tag, String system, TagSystem object);
 
-   
     /**
-     * Uses data of ResultSet to create object {@link Label}
+     * Uses data of ResultSet to create object {@link Application}
      *
-     * @param rs ResultSet relative to select from table Label
-     * @return object {@link Label}
+     * @param rs ResultSet relative to select from table Application
+     * @return object {@link Application}
      * @throws SQLException when trying to get value from
      * {@link java.sql.ResultSet#getString(String)}
-     * @see FactoryLabel
+     * @see FactoryApplication
      */
-    Label loadFromResultSet(ResultSet rs) throws SQLException;
+    TagSystem loadFromResultSet(ResultSet rs) throws SQLException;
 
     /**
-     * 
-     * @param system
+     *
      * @param searchParameter
      * @param individualSearch
      * @param columnName
-     * @return 
+     * @return
      */
-    public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+    public AnswerList<String> readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 
 }

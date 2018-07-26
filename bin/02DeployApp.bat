@@ -42,4 +42,5 @@ CALL %GLASSFISHPATH%asadmin.bat undeploy --target server --cascade=true Cerberus
 CALL %GLASSFISHPATH%asadmin.bat undeploy --target server --cascade=true Cerberus-3.5
 CALL %GLASSFISHPATH%asadmin.bat undeploy --target server --cascade=true Cerberus-3.6
 CALL %GLASSFISHPATH%asadmin.bat undeploy --target server --cascade=true Cerberus-3.7
-CALL %GLASSFISHPATH%asadmin.bat deploy --target server --contextroot Cerberus --availabilityenabled=true %MYPATH%\..\source\target\Cerberus-3.7.war
+CALL %GLASSFISHPATH%asadmin.bat undeploy --target server --cascade=true Cerberus-3.7.1
+CALL %GLASSFISHPATH%asadmin.bat deploy --target server --contextroot Cerberus --availabilityenabled=true %MYPATH%\..\Cerberus-3.7.1.war

@@ -64,6 +64,12 @@ public class TestService implements ITestService {
     }
 
     @Override
+    public boolean exist(String Object) {
+        AnswerItem objectAnswer = readByKey(Object);
+        return (objectAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) && (objectAnswer.getItem() != null); // Call was successfull and object was found.
+    }
+
+    @Override
     public Answer create(Test test) {
         return testDao.create(test);
     }

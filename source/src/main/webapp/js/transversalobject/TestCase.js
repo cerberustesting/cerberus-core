@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-
+var curMode = "";
 /***
  * Open the modal with testcase information.
  * @param {String} test - id of the test to open the modal
@@ -26,6 +26,7 @@
  * @returns {null}
  */
 function openModalTestCase(test, testcase, mode) {
+    curMode = mode;
 
     // We only load the Labels and bind the events once for performance optimisations.
     if ($('#editTestCaseModal').data("initLabel") === undefined) {
@@ -43,6 +44,7 @@ function openModalTestCase(test, testcase, mode) {
     } else {
         addTestCaseClick(test, "ADD");
     }
+
     $('#editTestCaseModalForm #application').parents("div.form-group").removeClass("has-error");
     clearResponseMessage($('#editTestCaseModal'));
 }
@@ -121,7 +123,7 @@ function initModalTestCase() {
     displayInvariantList("activeUAT", "TCACTIVE", false);
     displayInvariantList("activeProd", "TCACTIVE", false);
     appendProjectList();
-    
+
     $('[data-toggle="popover"]').popover({
         'placement': 'auto',
         'container': 'body'}
@@ -166,27 +168,35 @@ function editTestCaseClick(test, testCase) {
     $('#addTestCaseButton').attr('class', '');
     $('#addTestCaseButton').attr('hidden', 'hidden');
 
+
+    $("#originalTest").prop("value", test);
+    $("#originalTestCase").prop("value", testCase);
+    $("#testCase").prop("value", testCase);
+
     // In Edit TestCase form, if we change the test, we get the latest testcase from that test.
     $('#editTestCaseModalForm select[name="test"]').off("change");
     $('#editTestCaseModalForm select[name="test"]').change(function () {
-        feedTestCaseField(null, "editTestCaseModalForm");
+        feedTestCaseField(test, "editTestCaseModalForm");
         // Compare with original value in order to display the warning message.
-        displayWarningOnChangeTestCaseKey();
+        displayWarningOnChangeTestCaseKey(test, testCase);
     });
     $('#editTestCaseModalForm input[name="testCase"]').off("change");
     $('#editTestCaseModalForm input[name="testCase"]').change(function () {
         // Compare with original value in order to display the warning message.
-        displayWarningOnChangeTestCaseKey();
+        displayWarningOnChangeTestCaseKey(test, testCase);
     });
     feedTestCaseModal(test, testCase, "editTestCaseModal", "EDIT");
 }
 
-function displayWarningOnChangeTestCaseKey() {
+function displayWarningOnChangeTestCaseKey(test, testCase) {
     // Compare with original value in order to display the warning message.
     let old1 = $("#originalTest").val();
     let old2 = $("#originalTestCase").val();
     let new1 = $('#editTestCaseModalForm select[name="test"]').val();
     let new2 = $('#editTestCaseModalForm input[name="testCase"]').val();
+    console.info("Diff : " + test + " | " + testCase);
+    console.info("Diff : " + old1 + " | " + new1);
+    console.info("Diff : " + old2 + " | " + new2);
     if ((old1 !== new1) || (old2 !== new2)) {
         var localMessage = new Message("WARNING", "If you rename that test case, it will loose the corresponding execution historic.");
         showMessage(localMessage, $('#editTestCaseModal'));
@@ -219,15 +229,15 @@ function duplicateTestCaseClick(test, testCase) {
     $('#addTestCaseButton').attr('hidden', 'hidden');
 
     // In Duplicate TestCase form, if we change the test, we get the latest testcase from that test.
-    $('#editTestCaseModalForm select[name="test"]').off("change");
-    $('#editTestCaseModalForm select[name="test"]').change(function () {
-        feedTestCaseField(null, "editTestCaseModalForm");
-    });
+//    $('#editTestCaseModalForm select[name="test"]').off("change");
+//    $('#editTestCaseModalForm select[name="test"]').change(function () {
+//        feedTestCaseField(null, "editTestCaseModalForm");
+//    });
 
     // In Add and duplicate TestCase form, if we change the test, we don't display any warning.
     $('#editTestCaseModalForm select[name="test"]').off("change");
     $('#editTestCaseModalForm select[name="test"]').change(function () {
-        feedTestCaseField(null, "editTestCaseModalForm");
+        feedTestCaseField(test, "editTestCaseModalForm");
     });
     $('#editTestCaseModalForm input[name="testCase"]').off("change");
 
@@ -256,15 +266,15 @@ function addTestCaseClick(defaultTest) {
     $('#addTestCaseButton').attr('class', 'btn btn-primary');
     $('#addTestCaseButton').removeProp('hidden');
 
-    $('#editTestCaseModalForm select[name="test"]').off("change");
-    $('#editTestCaseModalForm select[name="test"]').change(function () {
-        feedTestCaseField(null, "editTestCaseModalForm");
-    });
+//    $('#editTestCaseModalForm select[name="test"]').off("change");
+//    $('#editTestCaseModalForm select[name="test"]').change(function () {
+//        feedTestCaseField(null, "editTestCaseModalForm");
+//    });
 
     // In Add and duplicate TestCase form, if we change the test, we don't display any warning.
     $('#editTestCaseModalForm select[name="test"]').off("change");
     $('#editTestCaseModalForm select[name="test"]').change(function () {
-        feedTestCaseField(null, "editTestCaseModalForm");
+        feedTestCaseField(defaultTest, "editTestCaseModalForm");
     });
     $('#editTestCaseModalForm input[name="testCase"]').off("change");
 
@@ -279,33 +289,55 @@ function addTestCaseClick(defaultTest) {
  * @returns {null}
  */
 function feedTestCaseField(test, modalForm) {
+//    console.info("feed Test Case. " + test + " mode : " + curMode);
+    var trigNewTestCase = true;
 // Predefine the testcase value.
-    if ((test === null) || (test === undefined))
-        test = $('#' + modalForm + ' select[name="test"]').val();
-    $.ajax({
-        url: "ReadTestCase",
-        method: "GET",
-        data: {test: encodeURIComponent(test), getMaxTC: true},
-        dataType: "json",
-        success: function (data) {
-            var testCaseNumber = data.maxTestCase + 1;
-            var tcnumber;
+    if (curMode !== "EDIT") {
+        trigNewTestCase = true;
+        let new1 = $('#editTestCaseModalForm select[name="test"]').val();
+        test = new1;
 
-            if (testCaseNumber < 10) {
-                tcnumber = "000" + testCaseNumber.toString() + "A";
-            } else if (testCaseNumber >= 10 && testCaseNumber < 99) {
-                tcnumber = "00" + testCaseNumber.toString() + "A";
-            } else if (testCaseNumber >= 100 && testCaseNumber < 999) {
-                tcnumber = "0" + testCaseNumber.toString() + "A";
-            } else if (testCaseNumber >= 1000) {
-                tcnumber = testCaseNumber.toString() + "A";
-            } else {
-                tcnumber = "0001A";
-            }
-            $('#' + modalForm + ' [name="testCase"]').val(tcnumber);
-        },
-        error: showUnexpectedError
-    });
+    } else {
+        trigNewTestCase = false;
+        let old1 = $("#originalTest").val();
+        let new1 = $('#editTestCaseModalForm select[name="test"]').val();
+//        console.info(" Value : " + old1 + " --> " + new1);
+        if (test !== new1) {
+            test = new1;
+            trigNewTestCase = true;
+        } else {
+
+            trigNewTestCase = false;
+        }
+
+    }
+
+    if (trigNewTestCase) {
+        $.ajax({
+            url: "ReadTestCase",
+            method: "GET",
+            data: {test: encodeURIComponent(test), getMaxTC: true},
+            dataType: "json",
+            success: function (data) {
+                var testCaseNumber = data.maxTestCase + 1;
+                var tcnumber;
+
+                if (testCaseNumber < 10) {
+                    tcnumber = "000" + testCaseNumber.toString() + "A";
+                } else if (testCaseNumber >= 10 && testCaseNumber < 99) {
+                    tcnumber = "00" + testCaseNumber.toString() + "A";
+                } else if (testCaseNumber >= 100 && testCaseNumber < 999) {
+                    tcnumber = "0" + testCaseNumber.toString() + "A";
+                } else if (testCaseNumber >= 1000) {
+                    tcnumber = testCaseNumber.toString() + "A";
+                } else {
+                    tcnumber = "0001A";
+                }
+                $('#' + modalForm + ' [name="testCase"]').val(tcnumber);
+            },
+            error: showUnexpectedError
+        });
+    }
 
 }
 
@@ -512,30 +544,31 @@ function feedTestCaseModal(test, testCase, modalId, mode) {
 function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, defaultTest) {
     var formEdit = $('#' + modalId);
     var doc = new Doc();
-    
+
+//    $('#editTestCaseModal [name="test"]').select2(getComboConfigTest());
+
     var observer = new MutationObserver(function (mutations, me) {
-    	var behaviorOrValueExpected = tinyMCE.get('behaviorOrValueExpected');
-    	var howTo = tinyMCE.get('howTo')
-		if(howTo != null && behaviorOrValueExpected != null){
-			if(isEmpty(testCase)){
-				tinyMCE.get('behaviorOrValueExpected').setContent("");
-				tinyMCE.get('howTo').setContent("");
-			}
-    		else{
-    			tinyMCE.get('behaviorOrValueExpected').setContent(testCase.behaviorOrValueExpected);
-				tinyMCE.get('howTo').setContent(testCase.behaviorOrValueExpected);
-    		}
-			
-			me.disconnect()
-		}
-	    return;
+        var behaviorOrValueExpected = tinyMCE.get('behaviorOrValueExpected');
+        var howTo = tinyMCE.get('howTo')
+        if (howTo != null && behaviorOrValueExpected != null) {
+            if (isEmpty(testCase)) {
+                tinyMCE.get('behaviorOrValueExpected').setContent("");
+                tinyMCE.get('howTo').setContent("");
+            } else {
+                tinyMCE.get('behaviorOrValueExpected').setContent(testCase.behaviorOrValueExpected);
+                tinyMCE.get('howTo').setContent(testCase.behaviorOrValueExpected);
+            }
+
+            me.disconnect()
+        }
+        return;
     });
 
-	// start observing
-	observer.observe(document, {
-	  childList: true,
-	  subtree: true
-	});
+    // start observing
+    observer.observe(document, {
+        childList: true,
+        subtree: true
+    });
 
     // Data Feed.
     if (mode === "EDIT") {
@@ -942,8 +975,10 @@ function appendApplicationList(defautValue, mySystem) {
 }
 
 function appendTestList(defautValue) {
+//    $('#editTestCaseModal [name="test"]').empty();
+//    $('#editTestCaseModal [name="test"]').select2(getComboConfigTest());
 
-    var user = getUser();
+	var user = getUser();
     $("#editTestCaseModal [name=test]").empty();
 
     var jqxhr = $.getJSON("ReadTest", "");
@@ -956,6 +991,11 @@ function appendTestList(defautValue) {
         testList.val(defautValue);
 
     });
+
+// Set Select2 Value.
+    var myoption = $('<option></option>').text(defautValue).val(defautValue);
+    $("#editTestCaseModal [name=test]").append(myoption).trigger('change'); // append the option and update Select2
+
 }
 
 function appendProjectList() {

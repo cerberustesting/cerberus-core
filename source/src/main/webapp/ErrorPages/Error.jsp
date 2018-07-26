@@ -24,8 +24,26 @@
     Created on : 19 août 2014, 07:19:16
     Author     : bcivel
 --%>
-<% Date DatePageStart = new Date();
-   %>
+<%@page import="java.util.Date"%>
+<%@page import="java.text.DateFormat"%>
+<%@page import="org.cerberus.version.Infos"%>
+<%!
+    Date DatePageStart = new Date();
+    
+    String display_footer(Date DatePageStart) {
+        Date mydate = new Date();
+        long Duration = mydate.getTime() - DatePageStart.getTime();
+        String footer = "Page started generating on <b><span id=\"foot-loaddatetime\">" + DatePageStart.toString() + "</span></b>"
+                + " by <b><span id=\"foot-projectname\">" + Infos.getInstance().getProjectName() + "</span></b>"
+                + " <b><span id=\"foot-version\">" + Infos.getInstance().getProjectVersion() + "</span></b>"
+                + " in <b><span id=\"foot-env\">" + System.getProperty("org.cerberus.environment") + "</span></b>"
+                + " and took <b><span id=\"foot-duration\">" + Duration + "</span>ms</b>"
+                + " - Open a bug or ask for any new feature <a target=\"_blank\"  href=\"https://github.com/vertigo17/Cerberus/issues/new?body=Cerberus%20Version%20:%20" + Infos.getInstance().getProjectVersion() + "\">here</a>.";
+        return footer;
+    }
+
+%>
+
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
@@ -33,14 +51,13 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <link rel="stylesheet" type="text/css" href="css/global/crb_style.css">
-        
+
         <link rel="icon" type="image/png" href="images/favicon.ico.png"><!-- Major Browsers -->
         <!--[if IE]><link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico"/><![endif]--><!-- Internet Explorer-->
-        
+
         <title>Error</title>
     </head>
     <body>
-        <%@ include file="../include/global/function.jsp" %>
         <%
             if ((request.getParameter("error") != null) && (request.getParameter("error").equals("403"))) {
         %>

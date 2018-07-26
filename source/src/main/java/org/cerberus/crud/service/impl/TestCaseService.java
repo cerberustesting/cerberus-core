@@ -36,6 +36,7 @@ import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.crud.entity.TestCaseStepAction;
 import org.cerberus.crud.entity.TestCaseStepActionControl;
+import org.cerberus.crud.factory.IFactoryTest;
 import org.cerberus.crud.factory.IFactoryTestCase;
 import org.cerberus.crud.service.ICampaignLabelService;
 import org.cerberus.crud.service.ICampaignParameterService;
@@ -46,6 +47,7 @@ import org.cerberus.crud.service.ITestCaseService;
 import org.cerberus.crud.service.ITestCaseStepActionControlService;
 import org.cerberus.crud.service.ITestCaseStepActionService;
 import org.cerberus.crud.service.ITestCaseStepService;
+import org.cerberus.crud.service.ITestService;
 import org.cerberus.dto.TestCaseListDTO;
 import org.cerberus.dto.TestListDTO;
 import org.cerberus.engine.entity.MessageEvent;
@@ -71,6 +73,10 @@ public class TestCaseService implements ITestCaseService {
 
     @Autowired
     private ITestCaseDAO testCaseDao;
+    @Autowired
+    private ITestService testService;
+    @Autowired
+    private IFactoryTest factoryTest;
     @Autowired
     private ITestCaseCountryService testCaseCountryService;
     @Autowired
@@ -416,11 +422,23 @@ public class TestCaseService implements ITestCaseService {
 
     @Override
     public Answer update(String keyTest, String keyTestCase, TestCase testCase) {
+        // We first create the corresponding test if it doesn,'t exist.
+        if (testCase.getTest() != null) {
+            if (!testService.exist(testCase.getTest())) {
+                testService.create(factoryTest.create(testCase.getTest(), "", "Y", testCase.getUsrModif(), null, "", null));
+            }
+        }
         return testCaseDao.update(keyTest, keyTestCase, testCase);
     }
 
     @Override
     public Answer create(TestCase testCase) {
+        // We first create the corresponding test if it doesn,'t exist.
+        if (testCase.getTest() != null) {
+            if (!testService.exist(testCase.getTest())) {
+                testService.create(factoryTest.create(testCase.getTest(), "", "Y", testCase.getUsrCreated(), null, "", null));
+            }
+        }
         return testCaseDao.create(testCase);
     }
 

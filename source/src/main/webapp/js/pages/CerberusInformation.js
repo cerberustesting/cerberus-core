@@ -88,21 +88,21 @@ function feedContent() {
         table.append(row);
 
 
-        var table = $("#sessionNbTableBody");
-        table.empty();
-        var row = $("<tr></tr>");
-        var cel1 = $("<td></td>").append(data.simultaneous_session);
-        row.append(cel1);
-        table.append(row);
-
-        var table = $("#sessionTableBody");
-        table.empty();
-        $.each(data["active_users"], function (idx, obj) {
-            var row = $("<tr></tr>");
-            var cel1 = $("<td></td>").append(obj);
-            row.append(cel1);
-            table.append(row);
-        });
+//        var table = $("#sessionNbTableBody");
+//        table.empty();
+//        var row = $("<tr></tr>");
+//        var cel1 = $("<td></td>").append(data.simultaneous_session);
+//        row.append(cel1);
+//        table.append(row);
+//
+//        var table = $("#sessionTableBody");
+//        table.empty();
+//        $.each(data["active_users"], function (idx, obj) {
+//            var row = $("<tr></tr>");
+//            var cel1 = $("<td></td>").append(obj);
+//            row.append(cel1);
+//            table.append(row);
+//        });
 
         var table = $("#exeNbTableBody");
         table.empty();

@@ -150,11 +150,11 @@ function renderOptionsForTestCaseList(data) {
             $('#testCaseList #createTestCaseButton').click(data, function () {
                 // Getting the Test from the 1st row of the testcase table.
                 if ($("#testCaseTable td.sorting_1")[0] !== undefined) {
-                    var firstRowTest = $("#testCaseTable td.sorting_1")[0].textContent; 
+                    var firstRowTest = $("#testCaseTable td.sorting_1")[0].textContent;
 //                    addTestCaseClick(firstRowTest);
                     openModalTestCase(firstRowTest, undefined, "ADD");
                 } else {
-                	var testQueryString = GetURLParameter("test",undefined);
+                    var testQueryString = GetURLParameter("test", undefined);
 //                    addTestCaseClick();
                     openModalTestCase(testQueryString, undefined, "ADD");
                 }
@@ -342,7 +342,7 @@ function massActionClick() {
         // Load Status.
         $("[name='massPriority']").empty();
         displayInvariantList("massPriority", "PRIORITY", false);
-        
+
         $('#massActionTestCaseModal').modal('show');
     }
 }

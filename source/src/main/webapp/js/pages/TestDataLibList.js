@@ -41,9 +41,9 @@ function initPage() {
      * Handles the change of the type when adding a new test data lib entry
      */
 
-    $("#editTestDataLibModal #service").change(function () {
-        activateSOAPServiceFields("#editTestDataLibModal", $(this).val());
-    });
+//    $("#editTestDataLibModal #service").change(function () {
+//        activateSOAPServiceFields("#editTestDataLibModal", $(this).val());
+//    });
 
     var configurations = new TableConfigurationsServerSide("listOfTestDataLib", "ReadTestDataLib", "contentTable", aoColumnsFuncTestDataLib("listOfTestDataLib"), [2, 'asc']);
 
@@ -54,21 +54,21 @@ function initPage() {
 
 }
 
-function activateSOAPServiceFields(modal, serviceValue) {
-    if (serviceValue === "") {
-        $(modal + " #servicepath").prop("readonly", false);
-        $(modal + " #method").prop("readonly", false);
-        var editor = ace.edit($(modal + " #envelope")[0]);
-        editor.container.style.opacity = 1;
-        editor.renderer.setStyle("disabled", false);
-    } else {
-        $(modal + " #servicepath").prop("readonly", true);
-        $(modal + " #method").prop("readonly", true);
-        var editor = ace.edit($(modal + " #envelope")[0]);
-        editor.container.style.opacity = 0.5;
-        editor.renderer.setStyle("disabled", true);
-    }
-}
+//function activateSOAPServiceFields(modal, serviceValue) {
+//    if (serviceValue === "") {
+//        $(modal + " #servicepath").prop("readonly", false);
+//        $(modal + " #method").prop("readonly", false);
+//        var editor = ace.edit($(modal + " #envelope")[0]);
+//        editor.container.style.opacity = 1;
+//        editor.renderer.setStyle("disabled", false);
+//    } else {
+//        $(modal + " #servicepath").prop("readonly", true);
+//        $(modal + " #method").prop("readonly", true);
+//        var editor = ace.edit($(modal + " #envelope")[0]);
+//        editor.container.style.opacity = 0.5;
+//        editor.renderer.setStyle("disabled", true);
+//    }
+//}
 
 /**
  * After table feeds, 

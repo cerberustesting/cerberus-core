@@ -17,33 +17,32 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.crud.entity;
+package org.cerberus.crud.factory.impl;
 
-import javax.servlet.http.HttpSessionEvent;
-import javax.servlet.http.HttpSessionListener;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.context.support.WebApplicationContextUtils;
+import java.sql.Timestamp;
+import org.cerberus.crud.entity.TagSystem;
+import org.cerberus.crud.factory.IFactoryTagSystem;
+import org.springframework.stereotype.Service;
 
 /**
- *
- * @author bcivel
+ * @author vertigo
  */
-public class SessionCounterListener implements HttpSessionListener {
-
-    @Autowired
-    SessionCounter cs;
+@Service
+public class FactoryTagSystem implements IFactoryTagSystem {
 
     @Override
-    public void sessionCreated(HttpSessionEvent arg0) {
-        WebApplicationContextUtils
-                .getRequiredWebApplicationContext(arg0.getSession().getServletContext())
-                .getAutowireCapableBeanFactory()
-                .autowireBean(this);
+    public TagSystem create(String tag, String system,
+            String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif) {
+        TagSystem newObject = new TagSystem();
+        newObject.setTag(tag);
+        newObject.setSystem(system);
+
+        newObject.setUsrModif(usrModif);
+        newObject.setUsrCreated(usrCreated);
+        newObject.setDateModif(dateModif);
+        newObject.setDateCreated(dateCreated);
+
+        return newObject;
     }
 
-    @Override
-    public void sessionDestroyed(HttpSessionEvent arg0) {
-        String key = (String) arg0.getSession().getId();
-        cs.destroyUser(key);
-    }
 }

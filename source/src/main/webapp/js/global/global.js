@@ -1384,11 +1384,11 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
         configs["fnStateSaveCallback"] = function (settings, data) {
             try {
                 localStorage.setItem(
-	                'DataTables_' + settings.sInstance + '_' + location.pathname,
-	                JSON.stringify(data)
-                );
+                        'DataTables_' + settings.sInstance + '_' + location.pathname,
+                        JSON.stringify(data)
+                        );
             } catch (e) {
-            	console.error("access denied, "+e)
+                console.error("access denied, " + e)
             }
         };
         configs["fnStateLoadCallback"] = function (settings) {
@@ -1415,7 +1415,7 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
         } : false;
         if (filtrableColumns !== undefined) {
             configs["fnServerParams"] = function (aoData) {
-            	
+
                 var filters = generateFiltersOnMultipleColumns(tableConfigurations.divId, filtrableColumns);
                 for (var f = 0; f < filters.length; f++) {
                     aoData.push(filters[f]);
@@ -1480,23 +1480,23 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
 
     } else {
 
-        configs["fnStateSaveCallback"] = function (oSettings,data) {
-        	 try {
-                 localStorage.setItem(
-                     'DataTables_' + oSettings.sInstance + '_' + location.pathname,
-                     JSON.stringify(data)
-                 );
-             } catch (e) {
-            	 console.error("access denied, "+e)
-             }
+        configs["fnStateSaveCallback"] = function (oSettings, data) {
+            try {
+                localStorage.setItem(
+                        'DataTables_' + oSettings.sInstance + '_' + location.pathname,
+                        JSON.stringify(data)
+                        );
+            } catch (e) {
+                console.error("access denied, " + e)
+            }
             afterDatatableFeedsForServerSide(tableConfigurations.aaData, tableConfigurations.divId, oSettings);
         };
-        
+
         configs["data"] = tableConfigurations.aaData;
-        
+
         configs["fnStateLoadCallback"] = function (settings) {
             //Get UserPreferences from user object
-        	
+
             var user = null;
             $.when(getUser()).then(function (data) {
                 user = data;
@@ -1504,23 +1504,23 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
             while (user === null) {
                 //Wait for user information make sure to don't loose it
             }
-            
+
             if ("" !== user.userPreferences && undefined !== user.userPreferences && null !== user.userPreferences) {
                 var userPref = JSON.parse(user.userPreferences);
                 var currentTable = userPref['DataTables_' + settings.sInstance + '_' + location.pathname]
                 if (undefined !== currentTable) {
-                	 for(var i= 0; i < JSON.parse(currentTable)["columns"].length; i++){
-                     	var currentSearch = JSON.parse(currentTable)["columns"][i]["search"]["search"];
-                     	var search = currentSearch.substr(1,currentSearch.length-2)
-                     	search = search.split("|")
-                     	columnSearchValuesForClientSide.push(search)
-                     }
+                    for (var i = 0; i < JSON.parse(currentTable)["columns"].length; i++) {
+                        var currentSearch = JSON.parse(currentTable)["columns"][i]["search"]["search"];
+                        var search = currentSearch.substr(1, currentSearch.length - 2)
+                        search = search.split("|")
+                        columnSearchValuesForClientSide.push(search)
+                    }
                     return JSON.parse(currentTable);
                 }
             }
         };
     }
-    
+
     var oTable = $("#" + tableConfigurations.divId).DataTable(configs);
 
     var doc = new Doc();
@@ -2511,38 +2511,13 @@ function getComboConfigTag() {
 
 }
 
-function comboConfigLabel_format(label) {
-    var markup = "<div class='select2-result-tag clearfix'>" +
-            "<div style='float:left;'><span class='label label-primary' style='background-color:"
-            + label.color + "' data-toggle='tooltip' data-labelid='"
-            + label.id + "' title='"
-            + label.description + "'>"
-            + label.label + "</span></div>";
 
-    markup += "</div>";
-
-    return markup;
-}
-
-function comboConfigLabel_formatSelection(label) {
-    var result = label.id;
-    if (!isEmpty(label.label)) {
-        result = "<div style='float:left;height: 34px'><span class='label label-primary' style='background-color:"
-                + label.color + "' data-toggle='tooltip' data-labelid='"
-                + label.id + "' title='"
-                + label.description + "'>"
-                + label.label + "</span></div>";
-    }
-    return result;
-}
-
-
-function getComboConfigLabel(labelType) {
+function getComboConfigLabel(labelType, system) {
 
     var config =
             {
                 ajax: {
-                    url: "ReadLabel?iSortCol_0=0&sSortDir_0=desc&sColumns=type&iDisplayLength=30&sSearch_0=" + labelType,
+                    url: "ReadLabel?iSortCol_0=0&sSortDir_0=desc&sColumns=type&iDisplayLength=30&sSearch_0=" + labelType + "&system=" + system,
                     dataType: 'json',
                     delay: 250,
                     data: function (params) {
@@ -2576,6 +2551,100 @@ function getComboConfigLabel(labelType) {
             };
 
     return config;
+}
 
+function comboConfigLabel_format(label) {
+    var markup = "<div class='select2-result-tag clearfix'>" +
+            "<div style='float:left;'><span class='label label-primary' style='background-color:"
+            + label.color + "' data-toggle='tooltip' data-labelid='"
+            + label.id + "' title='"
+            + label.description + "'>"
+            + label.label + "</span></div>";
+
+    markup += "</div>";
+
+    return markup;
+}
+
+function comboConfigLabel_formatSelection(label) {
+    var result = label.id;
+    if (!isEmpty(label.label)) {
+        result = "<div style='float:left;height: 34px'><span class='label label-primary' style='background-color:"
+                + label.color + "' data-toggle='tooltip' data-labelid='"
+                + label.id + "' title='"
+                + label.description + "'>"
+                + label.label + "</span></div>";
+    }
+    return result;
+}
+
+function getComboConfigService() {
+    var config =
+            {
+                ajax: {
+                    url: "ReadAppService?iSortCol_0=0&sSortDir_0=asc&sColumns=service,type,method,description&iDisplayLength=30&sSearch_0=",
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        params.page = params.page || 1;
+                        return {
+                            sSearch: params.term, // search term
+                            iDisplayStart: (params.page * 30) - 30
+                        };
+                    },
+                    processResults: function (data, params) {
+                        params.page = params.page || 1;
+                        return {
+                            results: $.map(data.contentTable, function (obj) {
+                                return {id: obj.service, text: obj.service};
+                            }),
+                            pagination: {
+                                more: (params.page * 30) < data.iTotalRecords
+                            }
+                        };
+                    },
+                    cache: true,
+                    allowClear: true
+                },
+//                tags: true,
+                width: "100%",
+                minimumInputLength: 0
+            };
+    return config;
+}
+
+function getComboConfigTest() {
+    var config =
+            {
+                ajax: {
+                    url: "ReadTest?iSortCol_0=0&sSortDir_0=asc&sColumns=test&iDisplayLength=30&sSearch_0=",
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        params.page = params.page || 1;
+                        return {
+                            sSearch: params.term, // search term
+                            iDisplayStart: (params.page * 30) - 30
+                        };
+                    },
+                    processResults: function (data, params) {
+                        params.page = params.page || 1;
+                        return {
+                            results: $.map(data.contentTable, function (obj) {
+                                return {id: obj.test, text: obj.test};
+                            }),
+                            pagination: {
+                                more: (params.page * 30) < data.iTotalRecords
+                            }
+                        };
+                    },
+                    cache: true,
+                    allowClear: true
+                },
+                tags: true,
+                width: "100%",
+                minimumInputLength: 0
+            };
+    return config;
 }
 
