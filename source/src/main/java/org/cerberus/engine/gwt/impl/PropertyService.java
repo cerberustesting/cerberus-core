@@ -980,29 +980,32 @@ public class PropertyService implements IPropertyService {
     }
 
     private TestCaseExecutionData property_getFromJS(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty, boolean forceCalculation) {
-
         String script = testCaseExecutionData.getValue1();
         String valueFromJS;
         String message = "";
-        try {
-            valueFromJS = this.webdriverService.getValueFromJS(tCExecution.getSession(), script);
-        } catch (Exception e) {
-            message = e.getMessage().split("\n")[0];
-            LOG.debug("Exception Running JS Script :" + message);
-            valueFromJS = null;
-        }
-        if (valueFromJS != null) {
-            testCaseExecutionData.setValue(valueFromJS);
-            MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_JS);
-            res.setDescription(res.getDescription().replace("%SCRIPT%", script));
-            res.setDescription(res.getDescription().replace("%VALUE%", valueFromJS));
-            testCaseExecutionData.setPropertyResultMessage(res);
-        } else {
-            MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_JS_EXCEPTION);
-            res.setDescription(res.getDescription().replace("%EXCEPTION%", message));
-            testCaseExecutionData.setPropertyResultMessage(res);
-        }
-
+        if(tCExecution.getManualExecution().equals("Y")) {
+        	MessageEvent mes = new MessageEvent(MessageEventEnum.PROPERTY_NOTPOSSIBLE);
+        	testCaseExecutionData.setPropertyResultMessage(mes);
+        }else {
+        	try {
+                valueFromJS = this.webdriverService.getValueFromJS(tCExecution.getSession(), script);
+            } catch (Exception e) {
+                message = e.getMessage().split("\n")[0];
+                LOG.debug("Exception Running JS Script :" + message);
+                valueFromJS = null;
+            }
+            if (valueFromJS != null) {
+                testCaseExecutionData.setValue(valueFromJS);
+                MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_JS);
+                res.setDescription(res.getDescription().replace("%SCRIPT%", script));
+                res.setDescription(res.getDescription().replace("%VALUE%", valueFromJS));
+                testCaseExecutionData.setPropertyResultMessage(res);
+            } else {
+                MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_JS_EXCEPTION);
+                res.setDescription(res.getDescription().replace("%EXCEPTION%", message));
+                testCaseExecutionData.setPropertyResultMessage(res);
+            }
+        }     
         return testCaseExecutionData;
     }
 

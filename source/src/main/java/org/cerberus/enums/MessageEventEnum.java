@@ -156,6 +156,7 @@ public enum MessageEventEnum {
     PROPERTY_FAILED_FEATURENOTIMPLEMENTED(197, "FA", "Feature '%FEATURE%' is not yet implemented!", true, false, false, MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_FAILED_FEATURENOTSUPPORTED(197, "FA", "property type '%PROPTYPE%' is not supported for application type '%APPTYPE'.", true, false, false, MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_PENDING(199, "PE", "Calculating property...", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    PROPERTY_NOTPOSSIBLE(199, "FA", "can't calculate this property, no webdriver set on a manual execution", false, false, false, MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_NOCONNECTION),
     // *********** EXECUTION ACTIONS ***********
     ACTION_SUCCESS(200, "OK", "", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_OPENAPP(200, "OK", "Application '%APP%' opened.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
@@ -378,7 +379,7 @@ public enum MessageEventEnum {
     STEP_FAILED(450, "KO", "", false, true, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     STEP_PENDING(499, "PE", "Step %STEP%.%STEPINDEX% running...", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     // *********** CONDITION OPERATION ***********
-    CONDITIONEVAL_NOTPOSSIBLE(1199, "FA", "can't evaluate this condition", false, false, false, MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_NOCONNECTION),
+    CONDITIONEVAL_NOTPOSSIBLE(1199, "FA", "can't evaluate this condition, no webdriver set on a manual execution", false, false, false, MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_NOCONNECTION),
     CONDITIONEVAL_PENDING(1200, "PE", "Evaluating Condition...", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     CONDITIONEVAL_FAILED_UNKNOWNCONDITION(1290, "FA", "condition '%COND%' do not exist.", false, false, false, MessageGeneralEnum.EXECUTION_FA_CONDITION),
     CONDITIONEVAL_FAILED_DECODE_GENERICERROR(1215, "FA", "Error when decoding '%VALUE%'.", false, false, false, MessageGeneralEnum.EXECUTION_FA_CONDITION),

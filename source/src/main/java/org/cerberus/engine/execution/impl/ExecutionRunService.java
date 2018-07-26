@@ -622,9 +622,13 @@ public class ExecutionRunService implements IExecutionRunService {
                                         LOG.debug("TestCase interupted due to decode Condition Error.");
 
                                         // There was an error on decode so we stop everything.
-                                        execute_Next_Step = false;
-                                        execute_Step = false;
-
+                                        if(tCExecution.getManualExecution().equals("Y")) {
+                                        	execute_Next_Step = true;
+                                            execute_Step = true;
+                                        }else {
+                                        	execute_Next_Step = false;
+                                            execute_Step = false;
+                                        }                                        
                                     }
                                 } else if (testCaseStepExecution.getLoop().equals(TestCaseStep.LOOP_DOWHILECONDITIONFALSE)
                                         || testCaseStepExecution.getLoop().equals(TestCaseStep.LOOP_DOWHILECONDITIONTRUE)) {
