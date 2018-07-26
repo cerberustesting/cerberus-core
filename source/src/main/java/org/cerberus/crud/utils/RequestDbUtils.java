@@ -58,7 +58,7 @@ public class RequestDbUtils {
     }
 
 
-    public static <T> List<T> executeQueryList(DatabaseSpring databaseSpring, String query, SqlFunction<PreparedStatement, Void> functionPrepareStatement,
+    public static <T> List<T> executeQueryList(DatabaseSpring databaseSpring, String query, VoidSqlFunction<PreparedStatement> functionPrepareStatement,
                                                SqlFunction<ResultSet, T> functionResultSet) throws SQLException {
         List<T> res = new LinkedList<>();
 
@@ -68,7 +68,7 @@ public class RequestDbUtils {
             functionPrepareStatement.apply(preStat);
 
             try (ResultSet resultSet = preStat.executeQuery()) {
-                if (resultSet.next()) {
+                while (resultSet.next()) {
                     res.add(functionResultSet.apply(resultSet));
                 }
             }

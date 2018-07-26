@@ -119,6 +119,9 @@ public class TestCaseExecution {
     // This is used to keep track of all property calculated within a step/action/control. It is reset each time we enter a step/action/control and the property name is added to the list each time it gets calculated. In case it was already asked for calculation, we stop the execution with FA message.
     private List<String> recursiveAlreadyCalculatedPropertiesList;
     private List<TestCaseCountryProperties> testCaseCountryPropertyList;
+
+    private List<String> videos;
+
     // Others
     private MessageGeneral resultMessage;
     private String executionUUID;
@@ -853,6 +856,14 @@ public class TestCaseExecution {
         this.testCaseVersion = testCaseVersion;
     }
 
+    public List<String> getVideos() {
+        return videos;
+    }
+
+    public void setVideos(List<String> videos) {
+        this.videos = videos;
+    }
+
     /**
      * Convert the current TestCaseExecution into JSON format
      *
@@ -901,6 +912,7 @@ public class TestCaseExecution {
             result.put("testCaseVersion", this.getTestCaseVersion());
             result.put("system", this.getSystem());
             result.put("robotDecli", this.getRobotDecli());
+            result.put("videos", this.getVideos());
 
             if (withChilds) {
                 // Looping on ** Step **

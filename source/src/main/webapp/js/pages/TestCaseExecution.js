@@ -427,9 +427,91 @@ function updatePage(data, stepList) {
 
     createStepList(data.testCaseStepExecutionList, stepList);
     createProperties(data.testCaseExecutionDataList);
+    createVideo(data.videos);
     setUpClickFunctionToSaveTestCaseExecutionButton(data);
 }
 
+
+function createVideo(videos) {
+
+    if(videos == undefined || videos.length == 0) return;
+
+    $("#tabsScriptEdit").append("<li><a data-toggle=\"tab\" href=\"#tabVideo\" id=\"editTabVideo\" name=\"tabVideo\">Video</a></li>");
+
+
+    var menuEntry = "";
+    var videoEntry = "";
+
+    var videoIndex=0;
+
+    videos.forEach( function(video) {
+        menuEntry += "            <a href=\"javascript:void(0);\" id=\"anchorToVideo" + videoIndex + "\" name=\"anchorToVideo\" index=\"" + videoIndex + "\" class=\"list-group-item row " + (videoIndex==0 ? "active" : "") + " \" style=\"margin-left: 0px; margin-right: 0px;\">Part " + (videoIndex+1) + "/" + videos.length + " </a>\n";
+
+        videoEntry +=
+            "<source  id=\"video" + videoIndex + "\" index=\"" + videoIndex + "\" name='videoObject' " + (videoIndex==0 ? "class='active'" : "") + " src=\"ReadTestCaseExecutionMedia?filename=" + video + "&filedesc=Video&filetype=MP4\" type=\"video/mp4\">\n";
+
+        videoIndex++;
+    });
+
+    $("#testCaseDetails > div").append(
+        "<div class=\"center marginTop25 tab-pane fade\" id=\"tabVideo\">\n" +
+        "   <div class=\"row\">" +
+        "       <div class=\"col-md-2\">\n" +
+        "           <div class=\"list-group step-list side-item\">" +
+                        menuEntry +
+        "           </div>\n" +
+        "       </div>" +
+        "       <div class=\"col-md-10\">" +
+        "           <video id=\"videoTest\" poster=\"images/loading_2.gif\" width=\"500\" height=\"700\" controls style=\"background:black\">" +
+                    videoEntry +
+        "           Your browser does not support the video tag." +
+        "           </video>\n"+
+        "       </div>" +
+        "   </div>" +
+        "</div>");
+
+
+    var myvid = $('#videoTest').get(0);
+
+
+    $("[name='anchorToVideo']").click(function () {
+        $("[name='anchorToVideo']").removeClass("active");
+        $(this).addClass("active");
+
+        $("[name='videoObject']").removeClass("active");
+        $("#video" + $(this).attr("index")).addClass("active");
+        var activesource = $("#videoTest source.active");
+        myvid.src =activesource.attr("src");
+        myvid.play();
+    })
+
+    // automaticaly stream  the next part
+    myvid.addEventListener('ended', function(e) {
+        // get the active source and the next video source.
+        // I set it so if there's no next, it loops to the first one
+        var activesource = $("#videoTest source.active");
+        var nextsource = $("#videoTest source.active + source");
+
+        if(nextsource.length === 0) nextsource =  $("#videoTest source:first-child");
+
+        $("[name='anchorToVideo']").removeClass("active");
+        $("#anchorToVideo" + nextsource.attr("index")).addClass("active");
+
+        // deactivate current source, and activate next one
+        activesource.removeClass("active");
+        nextsource.addClass("active");
+
+        // update the video source and play
+        myvid.src = nextsource.attr("src");
+        myvid.play();
+    });
+
+    $("#editTabVideo").click(function() { // automaticaly play video when you arrive on the video page
+        myvid.play();
+    });
+
+
+}
 
 function triggerTestCaseExecutionQueueandSee(queueId) {
     $.ajax({

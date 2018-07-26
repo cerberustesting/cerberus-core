@@ -364,8 +364,6 @@ public class SeleniumServerService implements ISeleniumServerService {
             }
             tCExecution.getSession().setStarted(true);
 
-            // begin to record video
-            //recorderService.beginRecordVideo(tCExecution);
         } catch (CerberusException exception) {
             LOG.error(logPrefix + exception.toString(), exception);
             throw new CerberusException(exception.getMessageError(), exception);
@@ -581,7 +579,7 @@ public class SeleniumServerService implements ISeleniumServerService {
             } catch (InterruptedException ex) {
                 LOG.error(ex.toString());
             }
-            
+
             if (session.getAppiumDriver() != null && tce.getCountryEnvironmentParameters() != null
                     && !StringUtil.isNullOrEmpty(tce.getCountryEnvironmentParameters().getMobilePackage())) {
                 session.getAppiumDriver().removeApp(tce.getCountryEnvironmentParameters().getMobilePackage()); // remove manually if package is defined

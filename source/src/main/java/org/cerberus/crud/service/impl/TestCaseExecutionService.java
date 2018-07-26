@@ -20,10 +20,7 @@
 package org.cerberus.crud.service.impl;
 
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -51,6 +48,7 @@ import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
+import org.jfree.util.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -252,6 +250,16 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
             if (tced.getIndex() == 1) {
                 testCaseExecution.getTestCaseExecutionDataMap().put(tced.getProperty(), tced);
             }
+        }
+
+        // set video if it exists
+        try {
+            List<TestCaseExecutionFile> videosAnswer = testCaseExecutionFileService.getListByFileDesc(executionId, "Video");
+            List<String> videos = new LinkedList<>();
+            videosAnswer.forEach(tcef -> videos.add(tcef.getFileName()));
+            testCaseExecution.setVideos(videos);
+        } catch(CerberusException e) {
+            LOG.error("An erreur occured while get video file", e);
         }
 
         // We first add the 'Pres Testing' testcase execution steps.

@@ -20,6 +20,7 @@
 package org.cerberus.crud.service.impl;
 
 import java.io.File;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import org.apache.logging.log4j.Logger;
@@ -73,6 +74,15 @@ public class TestCaseExecutionFileService implements ITestCaseExecutionFileServi
     @Override
     public AnswerList<TestCaseExecutionFile> readByVarious(long ExeId, String level) {
         return testCaseExecutionFileDAO.readByVariousByCriteria(ExeId, level, 0, 0, null, null, null, null);
+    }
+
+    @Override
+    public List<TestCaseExecutionFile> getListByFileDesc(long exeId, String fileDesc) throws CerberusException{
+        try {
+            return testCaseExecutionFileDAO.getListByFileDesc(exeId, fileDesc);
+        } catch (SQLException sqlException) {
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.GENERIC_ERROR), sqlException);
+        }
     }
 
     @Override

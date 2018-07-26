@@ -210,6 +210,8 @@ public class ReadTestCaseExecutionMedia extends HttpServlet {
                     break;
                 case "PDF":
                     returnPDF(request, response, tceFile, pathString);
+                case "MP4":
+                    returnMP4(request, response, tceFile, pathString);
                 default:
                     returnNotSupported(request, response, tceFile, pathString);
             }
@@ -286,6 +288,22 @@ public class ReadTestCaseExecutionMedia extends HttpServlet {
         response.setContentLength((int) pdfFile.length());
         try {
             Files.copy(pdfFile, response.getOutputStream());
+        } catch (IOException e) {
+            Log.warn(e);
+        }
+
+    }
+
+    private void returnMP4(HttpServletRequest request, HttpServletResponse response, TestCaseExecutionFile tc, String filePath) {
+
+        File mp4File = null;
+        filePath = StringUtil.addSuffixIfNotAlready(filePath, File.separator);
+        mp4File = new File(filePath + tc.getFileName());
+        response.setContentType("video/mp4");
+        response.setContentLength((int) mp4File.length());
+        response.setHeader("Content-Range",  "bytes start-end/length");
+        try {
+            Files.copy(mp4File, response.getOutputStream());
         } catch (IOException e) {
             Log.warn(e);
         }
