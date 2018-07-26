@@ -2511,38 +2511,13 @@ function getComboConfigTag() {
 
 }
 
-function comboConfigLabel_format(label) {
-    var markup = "<div class='select2-result-tag clearfix'>" +
-            "<div style='float:left;'><span class='label label-primary' style='background-color:"
-            + label.color + "' data-toggle='tooltip' data-labelid='"
-            + label.id + "' title='"
-            + label.description + "'>"
-            + label.label + "</span></div>";
 
-    markup += "</div>";
-
-    return markup;
-}
-
-function comboConfigLabel_formatSelection(label) {
-    var result = label.id;
-    if (!isEmpty(label.label)) {
-        result = "<div style='float:left;height: 34px'><span class='label label-primary' style='background-color:"
-                + label.color + "' data-toggle='tooltip' data-labelid='"
-                + label.id + "' title='"
-                + label.description + "'>"
-                + label.label + "</span></div>";
-    }
-    return result;
-}
-
-
-function getComboConfigLabel(labelType) {
+function getComboConfigLabel(labelType, system) {
 
     var config =
             {
                 ajax: {
-                    url: "ReadLabel?iSortCol_0=0&sSortDir_0=desc&sColumns=type&iDisplayLength=30&sSearch_0=" + labelType,
+                    url: "ReadLabel?iSortCol_0=0&sSortDir_0=desc&sColumns=type&iDisplayLength=30&sSearch_0=" + labelType + "&system=" + system,
                     dataType: 'json',
                     delay: 250,
                     data: function (params) {
@@ -2576,7 +2551,31 @@ function getComboConfigLabel(labelType) {
             };
 
     return config;
+}
 
+function comboConfigLabel_format(label) {
+    var markup = "<div class='select2-result-tag clearfix'>" +
+            "<div style='float:left;'><span class='label label-primary' style='background-color:"
+            + label.color + "' data-toggle='tooltip' data-labelid='"
+            + label.id + "' title='"
+            + label.description + "'>"
+            + label.label + "</span></div>";
+
+    markup += "</div>";
+
+    return markup;
+}
+
+function comboConfigLabel_formatSelection(label) {
+    var result = label.id;
+    if (!isEmpty(label.label)) {
+        result = "<div style='float:left;height: 34px'><span class='label label-primary' style='background-color:"
+                + label.color + "' data-toggle='tooltip' data-labelid='"
+                + label.id + "' title='"
+                + label.description + "'>"
+                + label.label + "</span></div>";
+    }
+    return result;
 }
 
 function getComboConfigService() {

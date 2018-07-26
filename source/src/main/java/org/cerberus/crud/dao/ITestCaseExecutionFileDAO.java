@@ -70,6 +70,15 @@ public interface ITestCaseExecutionFileDAO {
     AnswerList<TestCaseExecutionFile> readByVariousByCriteria(long ExeId, String level, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
     /**
+     * Return all File correponding to fileDesc
+     * @param exeId
+     * @param fileDesc
+     * @return
+     */
+    List<TestCaseExecutionFile> getListByFileDesc(long exeId, String fileDesc) throws SQLException;
+
+
+    /**
      *
      * @param object
      * @return

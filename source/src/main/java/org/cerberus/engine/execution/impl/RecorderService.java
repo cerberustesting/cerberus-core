@@ -19,40 +19,19 @@
  */
 package org.cerberus.engine.execution.impl;
 
-import com.google.common.collect.Lists;
-import io.appium.java_client.AppiumDriver;
-import java.io.BufferedOutputStream;
-import java.io.BufferedWriter;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.cerberus.crud.entity.AppService;
-import org.cerberus.crud.entity.Application;
-import org.cerberus.crud.entity.TestCaseExecution;
-import org.cerberus.crud.entity.TestCaseExecutionFile;
-import org.cerberus.crud.entity.TestCaseStepActionControlExecution;
-import org.cerberus.crud.entity.TestCaseStepActionExecution;
+import org.cerberus.crud.entity.*;
 import org.cerberus.crud.factory.IFactoryTestCaseExecutionFile;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ITestCaseExecutionFileService;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.Recorder;
-import org.cerberus.engine.entity.Session;
 import org.cerberus.engine.execution.IRecorderService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
@@ -651,70 +630,12 @@ public class RecorderService implements IRecorderService {
 
     }
 
-    public void beginRecordVideo(TestCaseExecution testCaseExecution) {
 
-        try {
-            String applicationType = testCaseExecution.getApplicationObj().getType();
-
-            Session session = testCaseExecution.getSession();
-            if (applicationType.equals(Application.TYPE_APK)) {
-                AppiumDriver driver = session.getAppiumDriver();
-
-                Map<String, Object> args = new HashMap<>();
-                args = new HashMap<>();
-                args.put("command", "rm");
-                args.put("args", Lists.newArrayList("/sdcard/video.mp4"));
-                LOG.error(driver.executeScript("mobile: shell", args));
-
-                Thread thread = new Thread(() -> {
-                    Map<String, Object> argss = new HashMap<>();
-                    argss.put("command", "screenrecord --bit-rate 5000000 --time-limit 180 /sdcard/video.mp4");
-                    argss.put("args", Lists.newArrayList(""));
-                    LOG.error(driver.executeScript("mobile: shell", argss));
-                });
-                thread.start();
-
-            }
-
-        } catch (Exception ex) {
-            LOG.error("Failed to begin video : " + ex.toString(), ex);
-        }
-
+    public void addFileToTestCaseExecution(TestCaseExecution tce, Recorder recorder, String fileDesc, String fileType) {
+        TestCaseExecutionFile object = testCaseExecutionFileFactory.create(0, tce.getId(), recorder.getLevel(), fileDesc, recorder.getRelativeFilenameURL(), fileType, "", null, "", null);
+        testCaseExecutionFileService.save(object);
     }
 
-    public void endRecordVideo(TestCaseExecution testCaseExecution) {
-
-        try {
-            String applicationType = testCaseExecution.getApplicationObj().getType();
-
-            Session session = testCaseExecution.getSession();
-            if (applicationType.equals(Application.TYPE_APK)) {
-                String test = testCaseExecution.getTest();
-                String testCase = testCaseExecution.getTestCase();
-
-                AppiumDriver driver = session.getAppiumDriver();
-
-                Recorder recorder = initFilenames(1l, test, testCase, null, null, null, null, null, 0, "appium", "mp4", false);
-
-                LOG.error("try to upload video to " + recorder.getRelativeFilenameURL());
-
-                // init shell executor
-                Map<String, Object> args = new HashMap<>();
-                args.put("command", "pull");
-                args.put("args", Lists.newArrayList("c " + recorder.getRelativeFilenameURL()));
-                LOG.error(driver.executeScript("mobile: shell", args));
-
-                // init shell executor
-                args = new HashMap<>();
-                args.put("command", "rm");
-                args.put("args", Lists.newArrayList("/sdcard/video.mp4"));
-                LOG.error(driver.executeScript("mobile: shell", args));
-            }
-        } catch (Exception ex) {
-            LOG.error("Failed to end video : " + ex.toString(), ex);
-        }
-
-    }
 
     /**
      * Auxiliary method that saves a file
@@ -742,7 +663,7 @@ public class RecorderService implements IRecorderService {
         }
     }
 
-    private Recorder initFilenames(long exeID, String test, String testCase, String step, String index, String sequence, String controlString, String property, int propertyIndex, String filename, String extention, boolean manual) throws CerberusException {
+    public Recorder initFilenames(long exeID, String test, String testCase, String step, String index, String sequence, String controlString, String property, int propertyIndex, String filename, String extention, boolean manual) throws CerberusException {
         Recorder newRecorder = new Recorder();
 
         try {

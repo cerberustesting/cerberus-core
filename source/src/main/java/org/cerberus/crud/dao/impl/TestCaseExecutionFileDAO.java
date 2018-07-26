@@ -31,6 +31,7 @@ import java.util.Map;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.ITestCaseExecutionFileDAO;
+import org.cerberus.crud.utils.RequestDbUtils;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.TestCaseExecutionFile;
@@ -131,7 +132,7 @@ public class TestCaseExecutionFileDAO implements ITestCaseExecutionFileDAO {
         
         try(Connection connection = this.databaseSpring.connect();
         		PreparedStatement preStat = connection.prepareStatement(query.toString());) {
-            
+
             preStat.setLong(1, exeId);
             preStat.setString(2, level);
             if(fileDesc != null) {
@@ -162,6 +163,22 @@ public class TestCaseExecutionFileDAO implements ITestCaseExecutionFileDAO {
         ans.setResultMessage(msg);
         return ans;
     }
+
+    @Override
+    public List<TestCaseExecutionFile> getListByFileDesc(long exeId, String fileDesc) throws SQLException {
+        String query = "SELECT * FROM `testcaseexecutionfile` exf WHERE `exeid` = ? and `filedesc` = ? ";
+
+
+        List<TestCaseExecutionFile> res = RequestDbUtils.executeQueryList(databaseSpring, query,
+                ps -> {
+                    ps.setLong(1, exeId);
+                    ps.setString(2, fileDesc);
+                },
+                rs -> loadFromResultSet(rs));
+
+        return res;
+    }
+
 
     @Override
     public AnswerList<TestCaseExecutionFile> readByVariousByCriteria(long exeId, String level, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {

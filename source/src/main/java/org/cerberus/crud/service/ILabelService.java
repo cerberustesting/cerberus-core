@@ -49,10 +49,18 @@ public interface ILabelService {
 
     /**
      *
-     * @param System
+     * @param system
      * @return
      */
-    AnswerList readBySystem(String System);
+    AnswerList readBySystem(String system);
+
+    /**
+     *
+     * @param system
+     * @param type
+     * @return
+     */
+    AnswerList readByVarious(String system, String type);
 
     /**
      *
@@ -69,6 +77,7 @@ public interface ILabelService {
     /**
      *
      * @param system
+     * @param type
      * @param startPosition
      * @param length
      * @param columnName
@@ -77,7 +86,7 @@ public interface ILabelService {
      * @param individualSearch
      * @return
      */
-    AnswerList readBySystemByCriteria(String system, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+    AnswerList readByVariousByCriteria(String system, String type, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
     /**
      *

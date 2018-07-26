@@ -47,15 +47,53 @@
                 <div class="panel-body" id="labelList">
                     <ul id="tabsScriptEdit" class="nav nav-tabs" data-tabs="tabs">
                         <li class="active"><a data-toggle="tab" href="#tabDetails" id="editTabDetails" name="tabDetails">List</a></li>
-                        <li><a data-toggle="tab" href="#tabRequirement" id="editTabRequirement" name="tabRequirement">Requirement</a></li>
+                        <li><a data-toggle="tab" href="#tabTreeR" id="editTabTressR" name="tabTree">Requirement Tree</a></li>
+                        <li><a data-toggle="tab" href="#tabTreeS" id="editTabTressS" name="tabTree">Sticker Tree</a></li>
+                        <li><a data-toggle="tab" href="#tabTreeB" id="editTabTressB" name="tabTree">Battery Tree</a></li>
                     </ul>
                     <div class="tab-content">
                         <div class="center marginTop25 tab-pane fade in active" id="tabDetails">
                             <table id="labelsTable" class="table table-bordered table-hover display" name="labelsTable"></table>
                             <div class="marginBottom20"></div>
                         </div>
-                        <div class="center marginTop25 tab-pane fade in" id="tabRequirement">
-                            <div id="requirementTree"></div>
+                        <div class="center marginTop25 tab-pane fade in" id="tabTreeR">
+                            <div class="row">
+                                <div class='marginBottom20 marginLeft30'>
+                                    <button id='createLabelButtonTreeR' type='button' class='btn btn-default pull-left'>
+                                        <span class='glyphicon glyphicon-plus-sign'></span>Create</button>
+                                    <button id='collapseAllTreeR' type='button' class='btn btn-default pull-left'>
+                                        <span class='glyphicon glyphicon-plus-sign'></span>Collapse All</button>
+                                    <button id='expandAllTreeR' type='button' class='btn btn-default pull-left'>
+                                        <span class='glyphicon glyphicon-plus-sign'></span>Expand All</button>
+                                </div>
+                            </div>
+                            <div class='marginTop20' id="mainTreeR"></div>
+                        </div>
+                        <div class="center marginTop25 tab-pane fade in" id="tabTreeS">
+                            <div class="row">
+                                <div class='marginBottom20 marginLeft20'>
+                                    <button id='createLabelButtonTreeS' type='button' class='btn btn-default pull-left'>
+                                        <span class='glyphicon glyphicon-plus-sign'></span>Create</button>
+                                    <button id='collapseAllTreeS' type='button' class='btn btn-default pull-left'>
+                                        <span class='glyphicon glyphicon-plus-sign'></span>Collapse All</button>
+                                    <button id='expandAllTreeS' type='button' class='btn btn-default pull-left'>
+                                        <span class='glyphicon glyphicon-plus-sign'></span>Expand All</button>
+                                </div>
+                            </div>
+                            <div class='marginTop20' id="mainTreeS"></div>
+                        </div>
+                        <div class="center marginTop25 tab-pane fade in" id="tabTreeB">
+                            <div class="row">
+                                <div class='marginBottom20 marginLeft20'>
+                                    <button id='createLabelButtonTreeB' type='button' class='btn btn-default pull-left'>
+                                        <span class='glyphicon glyphicon-plus-sign'></span>Create</button>
+                                    <button id='collapseAllTreeB' type='button' class='btn btn-default pull-left'>
+                                        <span class='glyphicon glyphicon-plus-sign'></span>Collapse All</button>
+                                    <button id='expandAllTreeB' type='button' class='btn btn-default pull-left'>
+                                        <span class='glyphicon glyphicon-plus-sign'></span>Expand All</button>
+                                </div>
+                            </div>
+                            <div class='marginTop20' id="mainTreeB"></div>
                         </div>
                     </div>
                 </div>

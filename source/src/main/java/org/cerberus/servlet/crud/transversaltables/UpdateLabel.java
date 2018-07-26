@@ -98,7 +98,7 @@ public class UpdateLabel extends HttpServlet {
         // Parameter that needs to be secured --> We SECURE+DECODE them
         String label = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("label"), "", charset);
         String color = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("color"), "", charset);
-        String parentLabel = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("parentLabel"), "", charset);
+        Integer parentLabelID = Integer.valueOf(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("parentLabel"), "0", charset));
         String description = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("description"), "", charset);
         String longDesc = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("longdesc"), "", charset);
         String usr = request.getUserPrincipal().getName();
@@ -133,7 +133,7 @@ public class UpdateLabel extends HttpServlet {
                  * object exist, then we can delete it.
                  */
                 Timestamp updateDate = new Timestamp(new Date().getTime());
-                Label l = labelFactory.create(id, system, label, type, color, parentLabel, reqtype, reqstatus, reqcriticity, description, longDesc, null, null, usr, updateDate);
+                Label l = labelFactory.create(id, system, label, type, color, parentLabelID, reqtype, reqstatus, reqcriticity, description, longDesc, null, null, usr, updateDate);
                 ans = labelService.update(l);
 
                 if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {

@@ -65,6 +65,7 @@ import org.cerberus.engine.entity.ExecutionUUID;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.engine.execution.*;
+import org.cerberus.engine.execution.video.VideoRecorder;
 import org.cerberus.engine.gwt.IActionService;
 import org.cerberus.engine.gwt.IControlService;
 import org.cerberus.engine.gwt.IVariableService;
@@ -161,6 +162,8 @@ public class ExecutionRunService implements IExecutionRunService {
     public TestCaseExecution executeTestCase(TestCaseExecution tCExecution) throws CerberusException {
         long runID = tCExecution.getId();
         String logPrefix = runID + " - ";
+
+        VideoRecorder videoRecorder = null;
         /**
          * Feeding Build Rev of main Application system to
          * testcaseexecutionsysver table. Only if execution is not manual.
@@ -284,11 +287,21 @@ public class ExecutionRunService implements IExecutionRunService {
                         LOG.debug("Starting Server.");
                         try {
                             this.serverService.startServer(tCExecution);
+                            LOG.debug("Server Started.");
                         } catch (CerberusException ex) {
                             LOG.debug(ex.getMessageError().getDescription());
                             throw new CerberusException(ex.getMessageError(), ex);
                         }
-                        LOG.debug("Server Started.");
+
+                        // Start video
+                        try {
+                            if(parameterService.getParameterBooleanByKey("cerberus_register_video", tCExecution.getSystem(), true)) {
+                                videoRecorder = VideoRecorder.getInstance(tCExecution, recorderService);
+                                videoRecorder.beginRecordVideo();
+                            }
+                        } catch (UnsupportedOperationException ex) {
+                            LOG.info(ex.getMessage()); // log only message that application type is not supported
+                        }
                     }
 
                 }
@@ -783,6 +796,8 @@ public class ExecutionRunService implements IExecutionRunService {
              * We stop the server session here (selenium for ex.).
              */
             try {
+                if(videoRecorder != null)
+                    videoRecorder.endRecordVideo();
                 tCExecution = this.stopTestCase(tCExecution);
             } catch (Exception ex) {
                 LOG.error(logPrefix + "Exception Stopping Test " + tCExecution.getId() + " Exception :" + ex.toString());

@@ -48,6 +48,7 @@ public interface ILabelDAO {
     /**
      *
      * @param system
+     * @param type
      * @param startPosition
      * @param length
      * @param columnName
@@ -56,7 +57,7 @@ public interface ILabelDAO {
      * @param individualSearch
      * @return
      */
-    AnswerList<List<Label>> readBySystemByCriteria(String system, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+    AnswerList<List<Label>> readBySystemByCriteria(String system, String type, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
     /**
      *

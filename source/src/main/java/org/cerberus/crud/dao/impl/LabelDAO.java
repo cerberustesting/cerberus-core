@@ -28,15 +28,14 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.dao.ILabelDAO;
-import org.cerberus.database.DatabaseSpring;
 import org.cerberus.crud.entity.Label;
+import org.cerberus.crud.factory.IFactoryLabel;
+import org.cerberus.database.DatabaseSpring;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.crud.factory.IFactoryLabel;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.SqlUtil;
 import org.cerberus.util.StringUtil;
@@ -109,7 +108,7 @@ public class LabelDAO implements ILabelDAO {
     }
 
     @Override
-    public AnswerList<List<Label>> readBySystemByCriteria(String system, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
+    public AnswerList<List<Label>> readBySystemByCriteria(String system, String type, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
         AnswerList response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -130,7 +129,7 @@ public class LabelDAO implements ILabelDAO {
             searchSQL.append(" or `label` like ?");
             searchSQL.append(" or `type` like ?");
             searchSQL.append(" or `color` like ?");
-            searchSQL.append(" or `parentLabel` like ?");
+            searchSQL.append(" or `parentLabelid` like ?");
             searchSQL.append(" or `ReqType` like ?");
             searchSQL.append(" or `ReqStatus` like ?");
             searchSQL.append(" or `ReqCriticity` like ?");
@@ -154,6 +153,9 @@ public class LabelDAO implements ILabelDAO {
         if (!StringUtil.isNullOrEmpty(system)) {
             searchSQL.append(" and (`System` = ? or `System` = '')");
         }
+        if (!StringUtil.isNullOrEmpty(type)) {
+            searchSQL.append(" and (`Type` = ?)");
+        }
         query.append(searchSQL);
 
         if (!StringUtil.isNullOrEmpty(column)) {
@@ -169,6 +171,8 @@ public class LabelDAO implements ILabelDAO {
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
+            LOG.debug("SQL.param.system : " + system);
+            LOG.debug("SQL.param.type : " + type);
         }
         try (Connection connection = databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -197,6 +201,9 @@ public class LabelDAO implements ILabelDAO {
             }
             if (!StringUtil.isNullOrEmpty(system)) {
                 preStat.setString(i++, system);
+            }
+            if (!StringUtil.isNullOrEmpty(type)) {
+                preStat.setString(i++, type);
             }
             
             try(ResultSet resultSet = preStat.executeQuery();
@@ -249,7 +256,7 @@ public class LabelDAO implements ILabelDAO {
         Answer response = new Answer();
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO label (`system`, `label`, `type`, `color`, `parentLabel`, `ReqType`, `ReqStatus`, `ReqCriticity`, `description`, `longdesc`, `usrCreated`, `dateCreated`, `usrModif`, `dateModif` ) ");
+        query.append("INSERT INTO label (`system`, `label`, `type`, `color`, `parentLabelid`, `ReqType`, `ReqStatus`, `ReqCriticity`, `description`, `longdesc`, `usrCreated`, `dateCreated`, `usrModif`, `dateModif` ) ");
         query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
         // Debug message on SQL.
@@ -264,7 +271,7 @@ public class LabelDAO implements ILabelDAO {
             preStat.setString(i++, object.getLabel());
             preStat.setString(i++, object.getType());
             preStat.setString(i++, object.getColor());
-            preStat.setString(i++, object.getParentLabel());
+            preStat.setInt(i++, object.getParentLabelID());
             preStat.setString(i++, object.getReqType());
             preStat.setString(i++, object.getReqStatus());
             preStat.setString(i++, object.getReqCriticity());
@@ -322,7 +329,7 @@ public class LabelDAO implements ILabelDAO {
     public Answer update(Label object) {
         Answer response = new Answer();
         MessageEvent msg = null;
-        final String query = "UPDATE label SET `system` = ?, `label` = ?, `type` = ?, `color` = ?, `parentLabel` = ?, `usrModif` = ?, `dateModif` = ?, `description` = ?"
+        final String query = "UPDATE label SET `system` = ?, `label` = ?, `type` = ?, `color` = ?, `parentLabelid` = ?, `usrModif` = ?, `dateModif` = ?, `description` = ?"
                 + ", `LongDesc` = ?, `ReqType` = ?, `ReqStatus` = ?, `ReqCriticity` = ?  WHERE id = ?";
 
         // Debug message on SQL.
@@ -336,7 +343,7 @@ public class LabelDAO implements ILabelDAO {
             preStat.setString(i++, object.getLabel());
             preStat.setString(i++, object.getType());
             preStat.setString(i++, object.getColor());
-            preStat.setString(i++, object.getParentLabel());
+            preStat.setInt(i++, object.getParentLabelID());
             preStat.setString(i++, object.getUsrModif());
             preStat.setTimestamp(i++, object.getDateModif());
             preStat.setString(i++, object.getDescription());
@@ -367,7 +374,7 @@ public class LabelDAO implements ILabelDAO {
         String label = ParameterParserUtil.parseStringParam(rs.getString("lab.label"), "");
         String type = ParameterParserUtil.parseStringParam(rs.getString("lab.type"), "");
         String color = ParameterParserUtil.parseStringParam(rs.getString("lab.color"), "");
-        String parentLabel = ParameterParserUtil.parseStringParam(rs.getString("lab.parentLabel"), "");
+        Integer parentLabelid = ParameterParserUtil.parseIntegerParam(rs.getString("lab.parentLabelid"), 0);
         String reqType = ParameterParserUtil.parseStringParam(rs.getString("lab.ReqType"), "");
         String reqStatus = ParameterParserUtil.parseStringParam(rs.getString("lab.ReqStatus"), "");
         String reqCriticity = ParameterParserUtil.parseStringParam(rs.getString("lab.ReqCriticity"), "");
@@ -377,7 +384,7 @@ public class LabelDAO implements ILabelDAO {
         Timestamp dateCreated = rs.getTimestamp("lab.dateCreated");
         String usrModif = ParameterParserUtil.parseStringParam(rs.getString("lab.usrModif"), "");
         Timestamp dateModif = rs.getTimestamp("lab.dateModif");
-        return factoryLabel.create(id, system, label, type, color, parentLabel, reqType, reqStatus, reqCriticity, description, longdesc, usrCreated, dateCreated, usrModif, dateModif);
+        return factoryLabel.create(id, system, label, type, color, parentLabelid, reqType, reqStatus, reqCriticity, description, longdesc, usrCreated, dateCreated, usrModif, dateModif);
     }
 
     @Override
@@ -406,7 +413,7 @@ public class LabelDAO implements ILabelDAO {
             searchSQL.append(" or `label` like ?");
             searchSQL.append(" or `type` like ?");
             searchSQL.append(" or `color` like ?");
-            searchSQL.append(" or `parentLabel` like ?");
+            searchSQL.append(" or `parentLabelid` like ?");
             searchSQL.append(" or `ReqType` like ?");
             searchSQL.append(" or `ReqStatus` like ?");
             searchSQL.append(" or `ReqCriticity` like ?");

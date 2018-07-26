@@ -20,6 +20,7 @@
 package org.cerberus.crud.service;
 
 import java.io.File;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -72,6 +73,15 @@ public interface ITestCaseExecutionFileService {
      * @return
      */
     AnswerList<TestCaseExecutionFile> readByVarious(long exeId, String level);
+
+
+    /**
+     * Return all File correponding to fileDesc
+     * @param exeId
+     * @param fileDesc
+     * @return
+     */
+    List<TestCaseExecutionFile> getListByFileDesc(long exeId, String fileDesc) throws CerberusException;
 
     /**
      *

@@ -27,6 +27,8 @@ import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionFile;
 import org.cerberus.crud.entity.TestCaseStepActionControlExecution;
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
+import org.cerberus.engine.entity.Recorder;
+import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.AnswerItem;
 
 /**
@@ -126,16 +128,24 @@ public interface IRecorderService {
      * @param exeID
      * @return
      */
-    public String getStorageSubFolderURL(long exeID);
+    String getStorageSubFolderURL(long exeID);
 
     /**
      *
      * @param exeID
      * @return
      */
-    public String getStorageSubFolder(long exeID);
+    String getStorageSubFolder(long exeID);
 
-    void beginRecordVideo(TestCaseExecution testCaseExecution);
+    Recorder initFilenames(long exeID, String test, String testCase, String step, String index, String sequence, String controlString, String property, int propertyIndex, String filename, String extention, boolean manual) throws CerberusException;
 
-    void endRecordVideo(TestCaseExecution testCaseExecution);
+    /**
+     * attach a physique file to the testcase execution and save it to database
+     * @param tce   the test case execution
+     * @param recorder the recorder that was created to save file on datastorage
+     * @param fileDesc  description of file : Exxemple : "Video"
+     * @param fileType  File type (PNG, MP4, etc.)
+     */
+    void addFileToTestCaseExecution(TestCaseExecution tce, Recorder recorder, String fileDesc, String fileType);
+
 }

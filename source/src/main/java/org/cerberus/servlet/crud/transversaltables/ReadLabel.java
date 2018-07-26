@@ -101,13 +101,14 @@ public class ReadLabel extends HttpServlet {
         //Get Parameters
         String columnName = ParameterParserUtil.parseStringParam(request.getParameter("columnName"), "");
         Boolean likeColumn = ParameterParserUtil.parseBooleanParam(request.getParameter("likeColumn"), false);
-        
+
         // Init Answer with potencial error from Parsing parameter.
         AnswerItem answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+        AnswerItem answer1 = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
 
         try {
             JSONObject jsonResponse = new JSONObject();
-            if ((request.getParameter("id") == null) && (request.getParameter("system") == null) && Strings.isNullOrEmpty(columnName) ) {
+            if ((request.getParameter("id") == null) && (request.getParameter("system") == null) && Strings.isNullOrEmpty(columnName)) {
                 answer = findLabelList(null, appContext, userHasPermissions, request);
                 jsonResponse = (JSONObject) answer.getItem();
             } else {
@@ -116,13 +117,20 @@ public class ReadLabel extends HttpServlet {
                     answer = findLabelByKey(id, appContext, userHasPermissions);
                     jsonResponse = (JSONObject) answer.getItem();
                 } else if (request.getParameter("system") != null && !Strings.isNullOrEmpty(columnName)) {
-                    answer = findDistinctValuesOfColumn(request.getParameter("system"),appContext, request, columnName);
+                    answer = findDistinctValuesOfColumn(request.getParameter("system"), appContext, request, columnName);
                     jsonResponse = (JSONObject) answer.getItem();
                 } else if (request.getParameter("system") != null) {
                     String system = policy.sanitize(request.getParameter("system"));
                     answer = findLabelList(system, appContext, userHasPermissions, request);
                     jsonResponse = (JSONObject) answer.getItem();
                 }
+            }
+            if ((request.getParameter("withHierarchy") != null)) {
+                String system = policy.sanitize(request.getParameter("system"));
+                answer1 = getLabelHierarchy(system, appContext, userHasPermissions, request);
+                JSONObject jsonHierarchy = (JSONObject) answer1.getItem();
+                jsonResponse.put("labelHierarchy", jsonHierarchy);
+
             }
 
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
@@ -201,29 +209,29 @@ public class ReadLabel extends HttpServlet {
         String columnToSort[] = sColumns.split(",");
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
-        List<String> individualLike = new ArrayList<>(Arrays.asList(ParameterParserUtil.parseStringParam(request.getParameter("sLike"),"").split(",")));
+        List<String> individualLike = new ArrayList<>(Arrays.asList(ParameterParserUtil.parseStringParam(request.getParameter("sLike"), "").split(",")));
 
         Map<String, List<String>> individualSearch = new HashMap<>();
         for (int a = 0; a < columnToSort.length; a++) {
             if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
                 List<String> search = new ArrayList<>(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
-                if(individualLike.contains(columnToSort[a])) {
-                	individualSearch.put(columnToSort[a]+":like", search);
-                }else {
-                	individualSearch.put(columnToSort[a], search);
+                if (individualLike.contains(columnToSort[a])) {
+                    individualSearch.put(columnToSort[a] + ":like", search);
+                } else {
+                    individualSearch.put(columnToSort[a], search);
                 }
             }
         }
-        AnswerList resp = labelService.readBySystemByCriteria(system, startPosition, length, columnName, sort, searchParameter, individualSearch);
+        AnswerList resp = labelService.readByVariousByCriteria(system, null, startPosition, length, columnName, sort, searchParameter, individualSearch);
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
             for (Label label : (List<Label>) resp.getDataList()) {
                 JSONObject labelObject = convertLabelToJSONObject(label);
-                if (!"".equals(label.getParentLabel())) {
-                    AnswerItem parentLabel = labelService.readByKey(Integer.valueOf(label.getParentLabel()));
-                    if(parentLabel.getItem() != null) {
-                       labelObject.put("labelParentObject", convertLabelToJSONObject((Label) parentLabel.getItem()));
+                if (label.getParentLabelID() > 0) {
+                    AnswerItem parentLabel = labelService.readByKey(label.getParentLabelID());
+                    if (parentLabel.getItem() != null) {
+                        labelObject.put("labelParentObject", convertLabelToJSONObject((Label) parentLabel.getItem()));
                     }
                 }
                 jsonArray.put(labelObject);
@@ -236,6 +244,105 @@ public class ReadLabel extends HttpServlet {
         item.setItem(object);
         item.setResultMessage(resp.getResultMessage());
         return item;
+    }
+
+    private AnswerItem getLabelHierarchy(String system, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
+
+        AnswerItem item = new AnswerItem<>();
+        JSONObject object = new JSONObject();
+
+        JSONArray jsonObject = new JSONArray();
+        jsonObject = getTree(system, Label.TYPE_REQUIREMENT, appContext);
+        object.put("requirements", jsonObject);
+
+        jsonObject = new JSONArray();
+        jsonObject = getTree(system, Label.TYPE_STICKER, appContext);
+        object.put("stickers", jsonObject);
+
+        jsonObject = new JSONArray();
+        jsonObject = getTree(system, Label.TYPE_BATTERY, appContext);
+        object.put("batteries", jsonObject);
+
+        item.setItem(object);
+
+        return item;
+    }
+
+    private JSONArray getTree(String system, String type, ApplicationContext appContext) throws JSONException {
+        labelService = appContext.getBean(LabelService.class);
+
+        List<Label> finalList = new ArrayList<Label>();
+
+        AnswerList resp = labelService.readByVarious(system, type);
+
+        // Building tree Structure;
+        if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            Map<Integer, Label> tree = new HashMap<>();
+            Map<Integer, Label> labelList = new HashMap<>();
+            for (Label label : (List<Label>) resp.getDataList()) {
+                String text = "<span class='label label-primary' style='background-color:" + label.getColor() + "' data-toggle='tooltip' data-labelid='" + label.getId() + "' title='' data-original-title=''>" + label.getLabel() + "</span>";
+                text += "<span style='margin-left: 5px; margin-right: 5px;' class=''>" + label.getDescription() + "</span>";
+                text += "<span class='badge badge-pill badge-secondary'>" + label.getReqType() + "</span>";
+                text += "<span class='badge badge-pill badge-secondary'>" + label.getReqStatus() + "</span>";
+                text += "<span class='badge badge-pill badge-secondary'>" + label.getReqCriticity() + "</span>";
+
+                text += "<button id='editLabel' onclick=\"stopPropagation(event);editEntryClick(\'" + label.getId() + "\', \'" + label.getSystem() + "\');\" class='editLabel btn-tree btn btn-default btn-xs margin-right5' name='editLabel' title='Edit Label' type='button'>";
+                text += " <span class='glyphicon glyphicon-pencil'></span></button>";
+                text += "<button id='deleteLabel' onclick=\"stopPropagation(event);deleteEntryClick(\'" + label.getId() + "\', \'" + label.getLabel() + "\');\" class='deleteLabel btn-tree btn btn-default btn-xs margin-right5' name='deleteLabel' title='Delete Label' type='button'>";
+                text += " <span class='glyphicon glyphicon-trash'></span></button>";
+
+                label.setText(text);
+                labelList.put(label.getId(), label);
+                if (label.getParentLabelID() > 0) {
+                    tree.put(label.getParentLabelID(), label);
+                }
+            }
+
+            // Loop on maximum hierarchi levels.
+            int i = 0;
+            while (i < 50 && !labelList.isEmpty()) {
+//                LOG.debug(i + ".1 : " + labelList);
+                List<Label> listToRemove = new ArrayList<Label>();
+
+                for (Map.Entry<Integer, Label> entry : labelList.entrySet()) {
+                    Integer key = entry.getKey();
+                    Label value = entry.getValue();
+//                    LOG.debug(value.getId() + " " + value.getParentLabelID() + " " + value.getNodes().size());
+                    if (tree.get(value.getId()) == null) {
+                        if ((i == 0) && (value.getNodes().isEmpty())) {
+                            value.setNodes(null);
+                        }
+//                        LOG.debug("Pas de fils.");
+                        if (value.getParentLabelID() <= 0) {
+//                            LOG.debug("Adding to final result and remove from list." + i);
+                            finalList.add(value);
+                            listToRemove.add(value);
+                        } else {
+//                            LOG.debug("Adding to final result and remove from list." + i);
+                            // Mettre sur le fils sur son pere.
+                            Label toto = labelList.get(value.getParentLabelID());
+                            if (toto != null) {
+                                List<Label> titi = toto.getNodes();
+                                titi.add(value);
+                                toto.setNodes(titi);
+                                labelList.put(key, toto);
+                            }
+                            listToRemove.add(value);
+                            tree.remove(value.getParentLabelID());
+                        }
+                    }
+                }
+                // Removing all entries that has been clasified to finalList.
+                for (Label label : listToRemove) {
+                    labelList.remove(label.getId());
+                }
+                i++;
+            }
+        }
+        Gson gson = new Gson();
+        JSONArray jsonArray = new JSONArray(gson.toJson(finalList));
+
+        return jsonArray;
     }
 
     private AnswerItem findLabelByKey(Integer id, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
@@ -251,8 +358,8 @@ public class ReadLabel extends HttpServlet {
             //if the service returns an OK message then we can get the item and convert it to JSONformat
             Label label = (Label) answer.getItem();
             JSONObject labelObject = convertLabelToJSONObject(label);
-            if (!"".equals(label.getParentLabel())) {
-                labelObject.put("labelParentObject", convertLabelToJSONObject((Label) labelService.readByKey(Integer.valueOf(label.getParentLabel())).getItem()));
+            if (label.getParentLabelID() > 0) {
+                labelObject.put("labelParentObject", convertLabelToJSONObject((Label) labelService.readByKey(label.getParentLabelID()).getItem()));
             }
             JSONObject response = labelObject;
             object.put("contentTable", response);
@@ -285,21 +392,21 @@ public class ReadLabel extends HttpServlet {
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
         String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "System,Label,Color,Display,parentLabelId,Description");
         String columnToSort[] = sColumns.split(",");
-        
+
         List<String> individualLike = new ArrayList<>(Arrays.asList(ParameterParserUtil.parseStringParam(request.getParameter("sLike"), "").split(",")));
 
         Map<String, List<String>> individualSearch = new HashMap<>();
         for (int a = 0; a < columnToSort.length; a++) {
             if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
-            	List<String> search = new ArrayList<>(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
-            	if(individualLike.contains(columnToSort[a])) {
-                	individualSearch.put(columnToSort[a]+":like", search);
-                }else {
-                	individualSearch.put(columnToSort[a], search);
-                } 
+                List<String> search = new ArrayList<>(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
+                if (individualLike.contains(columnToSort[a])) {
+                    individualSearch.put(columnToSort[a] + ":like", search);
+                } else {
+                    individualSearch.put(columnToSort[a], search);
+                }
             }
         }
-        
+
         AnswerList testCaseList = labelService.readDistinctValuesByCriteria(system, searchParameter, individualSearch, columnName);
 
         object.put("distinctValues", testCaseList.getDataList());
