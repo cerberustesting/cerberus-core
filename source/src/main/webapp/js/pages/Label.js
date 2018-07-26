@@ -24,6 +24,54 @@ $.when($.getScript("js/global/global.js")).then(function () {
             'placement': 'auto',
             'container': 'body'}
         );
+
+        $('#addLabelModal #parentLabel').change(function () {
+            changeLabelParent("addLabelModal");
+        });
+        $('#editLabelModal #parentLabel').change(function () {
+            changeLabelParent("editLabelModal");
+        });
+
+        generateLabelTree();
+
+        var doc = new Doc();
+
+        $('#labelList #createLabelButtonTreeR').click(function () {
+            addEntryClick("REQUIREMENT");
+            refreshParentLabelCombo("REQUIREMENT");
+            showHideRequirementPanelAdd();
+        });
+        $('#labelList #expandAllTreeR').click(function () {
+            $('#mainTreeR').treeview('expandAll', {levels: 20, silent: true});
+        });
+        $('#labelList #collapseAllTreeR').click(function () {
+            $('#mainTreeR').treeview('collapseAll', {levels: 20, silent: true});
+        });
+
+        $('#labelList #createLabelButtonTreeS').click(function () {
+            addEntryClick("STICKER");
+            refreshParentLabelCombo("STICKER");
+            showHideRequirementPanelAdd();
+        });
+        $('#labelList #expandAllTreeS').click(function () {
+            $('#mainTreeS').treeview('expandAll', {levels: 20, silent: true});
+        });
+        $('#labelList #collapseAllTreeS').click(function () {
+            $('#mainTreeS').treeview('collapseAll', {levels: 20, silent: true});
+        });
+
+        $('#labelList #createLabelButtonTreeB').click(function () {
+            addEntryClick("BATTERY");
+            refreshParentLabelCombo("BATTERY");
+            showHideRequirementPanelAdd();
+        });
+        $('#labelList #expandAllTreeB').click(function () {
+            $('#mainTreeB').treeview('expandAll', {levels: 20, silent: true});
+        });
+        $('#labelList #collapseAllTreeB').click(function () {
+            $('#mainTreeB').treeview('collapseAll', {levels: 20, silent: true});
+        });
+
     });
 });
 
@@ -37,7 +85,9 @@ function initPage() {
     $('#addLabelModal').on('hidden.bs.modal', addEntryModalCloseHandler);
     $('#editLabelModal').on('hidden.bs.modal', editEntryModalCloseHandler);
 
-    $('#editLabelModal #editLabelModalForm #type').on('change', showHideRequirementPanel);
+    $('#editLabelModal #editLabelModalForm #type').on('change', showHideRequirementPanelEdit);
+
+    $('#addLabelModal #addLabelModalForm #type').on('change', showHideRequirementPanelAdd);
 
     tinymce.init({
         selector: ".wysiwyg"
@@ -84,69 +134,20 @@ function displayPageLabel() {
         refreshParentLabelCombo($("#type").val());
     });
     displayFooter(doc);
-    generateLabelTree();
 }
 
 function generateLabelTree() {
-    $.when($.ajax("ReadLabel?iColumns=1&sColumns=type,type&sSearch_0=REQUIREMENT")).then(function (data) {
-        var treeObj = new Object();
-        for (var i = 0; i < data.contentTable.length; i++) {
-            //1st : Create the object
-            var ele = new Object();
-            
-            ele.text = "<span class='label label-primary' onclick=\"editEntryClick('" + data.contentTable[i].id + "', '" + data.contentTable[i].system + "');\" style='background-color:" + data.contentTable[i].color + "' data-toggle='tooltip' data-labelid='" + data.contentTable[i].id + "' title='' data-original-title=''>" + data.contentTable[i].label + "</span>";
-            ele.text += "<span style='margin-left: 5px; margin-right: 5px;' class=''>" + data.contentTable[i].description + "</span>";
-            ele.text += "<span class='badge badge-pill badge-secondary'>" + data.contentTable[i].reqType + "</span>";
-            ele.text += "<span class='badge badge-pill badge-secondary'>" + data.contentTable[i].reqStatus + "</span>";
-            ele.text += "<span class='badge badge-pill badge-secondary'>" + data.contentTable[i].reqCriticity + "</span>";
-            //if label has parent label
-            if (data.contentTable[i].parentLabel !== "") {
-                //if parentLabel already created, find it and add a child
-            	
-            	if(data.contentTable[i].labelParentObject){
-            		if (treeObj.hasOwnProperty(data.contentTable[i].labelParentObject.id)) {
-                        var existingParent = treeObj[data.contentTable[i].labelParentObject.id];
-                        if (existingParent.nodes === undefined) {
-                            existingParent.nodes = [ele];
-                        } else {
-                            existingParent.nodes.push(ele);
-                        }
-                        existingParent.tags = [existingParent.tags === undefined ? 1 : parseInt(existingParent.tags) + 1];
-                    }else {
-                        //else create parent object and add child
-                        var parent = new Object();
-                        if (parent.nodes === undefined) {
-                            parent.nodes = [ele];
-                        } else {
-                            parent.nodes.push(ele);
-                        }
+    $.when($.ajax("ReadLabel?system=" + getUser().defaultSystem + "&withHierarchy=true")).then(function (data) {
 
-                        parent.text = "<span class='label label-primary' style='background-color:" + data.contentTable[i].labelParentObject.color + "' data-toggle='tooltip' data-labelid='" + data.contentTable[i].labelParentObject.id + "' title='' data-original-title=''>" + data.contentTable[i].labelParentObject.label + "</span>";
-                        parent.text += "<span class='badge badge-pill badge-secondary'>" + data.contentTable[i].labelParentObject.reqType + "</span>";
-                        parent.text += "<span class='badge badge-pill badge-secondary'>" + data.contentTable[i].labelParentObject.reqStatus + "</span>";
-                        parent.text += "<span class='badge badge-pill badge-secondary'>" + data.contentTable[i].labelParentObject.reqCriticity + "</span>";
-                        parent.tags = [1];
-                        treeObj[data.contentTable[i].labelParentObject.id] = parent;
-                    }
-            	}
-            	
-                 
-            } else {
-                //if no parent label, push the object if not already exists
-                if (!treeObj.hasOwnProperty(data.contentTable[i].id)) {
-                    treeObj[data.contentTable[i].id] = ele;
-                }
-            }
-        }
-        $('#requirementTree').empty();
-        $('#requirementTree').treeview({data: Object.values(treeObj),
-            showTags: true});
+        $('#mainTreeS').treeview({data: data.labelHierarchy.stickers});
+        $('#mainTreeB').treeview({data: data.labelHierarchy.batteries});
+        $('#mainTreeR').treeview({data: data.labelHierarchy.requirements});
+
     });
 }
 
-
 function refreshParentLabelCombo(type) {
-    $("[name='parentLabel']").select2(getComboConfigLabel(type));
+    $("[name='parentLabel']").select2(getComboConfigLabel(type, getUser().defaultSystem));
 }
 
 function renderOptionsForLabel(data) {
@@ -162,13 +163,52 @@ function renderOptionsForLabel(data) {
     }
 }
 
-function showHideRequirementPanel() {
+function changeLabelParent(modal) {
+
+    var doc = new Doc();
+
+    $('#' + modal + ' #parentLabel').parent().find(".input-group-btn").remove();
+
+    if (!isEmpty($('#' + modal + ' #parentLabel').val())) {
+        var emptyEntry = '<span class="input-group-btn" style="vertical-align:bottom!important"><button id="emptyEntry" onclick="emptyService();"\n\
+            class="buttonObject btn btn-default " \n\
+           title="Empty" type="button">\n\
+            <span class="glyphicon glyphicon-remove"></span></button></span>';
+        $('#' + modal + ' #parentLabel').parent().append(emptyEntry);
+
+    }
+}
+
+function emptyService() {
+    $('#addLabelModal #parentLabel').val(null).trigger('change');
+    $('#editLabelModal #parentLabel').val(null).trigger('change');
+}
+
+
+function showHideRequirementPanelEdit() {
 
     refreshParentLabelCombo($('#editLabelModal #editLabelModalForm #type').val());
     if ($('#editLabelModal #editLabelModalForm #type').val() === "REQUIREMENT") {
-        $("#panelReq").show();
+        $("#editLabelModal #panelReq").show();
     } else {
-        $("#panelReq").hide();
+        $("#editLabelModal #panelReq").hide();
+        $("#editLabelModal #panelReq #reqtype").val("");
+        $("#editLabelModal #panelReq #reqstatus").val("");
+        $("#editLabelModal #panelReq #reqcriticity").val("");
+    }
+
+}
+
+function showHideRequirementPanelAdd() {
+
+    refreshParentLabelCombo($('#addLabelModal #addLabelModalForm #type').val());
+    if ($('#addLabelModal #addLabelModalForm #type').val() === "REQUIREMENT") {
+        $("#addLabelModal #panelReq").show();
+    } else {
+        $("#addLabelModal #panelReq").hide();
+        $("#editLabelModal #panelReq #reqtype").val("");
+        $("#editLabelModal #panelReq #reqstatus").val("");
+        $("#editLabelModal #panelReq #reqcriticity").val("");
     }
 
 }
@@ -179,7 +219,7 @@ function deleteEntryHandlerClick() {
     $.when(jqxhr).then(function (data) {
         var messageType = getAlertType(data.messageType);
         if (messageType === "success") {
-//redraw the datatable
+            // Redraw the datatable
             var oTable = $("#labelsTable").dataTable();
             oTable.fnDraw(true);
             var info = oTable.fnGetData().length;
@@ -188,7 +228,7 @@ function deleteEntryHandlerClick() {
             }
 
         }
-//show message in the main page
+        // Show message in the main page
         showMessageMainPage(messageType, data.message, false);
         //close confirmation window
         $('#confirmationModal').modal('hide');
@@ -247,7 +287,7 @@ function addEntryModalCloseHandler() {
     clearResponseMessage($('#addLabelModal'));
 }
 
-function addEntryClick() {
+function addEntryClick(type) {
     clearResponseMessageMainPage();
     // When creating a new label, System takes the default value of the 
     // system already selected in header.
@@ -257,6 +297,9 @@ function addEntryClick() {
     //ColorPicker
     $("[name='colorDiv']").colorpicker();
     $("[name='colorDiv']").colorpicker('setValue', '#000000');
+    if (type !== undefined) {
+        $("[name='type']").val(type);
+    }
 }
 
 function editEntryModalSaveHandler() {
@@ -332,14 +375,14 @@ function editEntryClick(id, system) {
             $('#editLabelButton').attr('class', '');
             $('#editLabelButton').attr('hidden', 'hidden');
         }
-        
-        $("#editLabelModal #editLabelModalForm #parentLabel").val(obj.labelParentObject===undefined?"":obj.labelParentObject.id).trigger('change');
-        
 
-//ColorPicker
+        $("#editLabelModal #editLabelModalForm #parentLabel").val(obj.parentLabelID === 0 ? "" : obj.parentLabelID).trigger('change');
+
+
+        // ColorPicker
         $("[name='colorDiv']").colorpicker();
         $("[name='colorDiv']").colorpicker('setValue', obj["color"]);
-        showHideRequirementPanel();
+        showHideRequirementPanelEdit();
         formEdit.modal('show');
     });
 }
@@ -414,7 +457,7 @@ function aoColumnsFunc(tableId) {
                 return '<span class="label label-primary" style="background-color:' + data.color + '">' + data.label + '</span> ';
             }
         },
-        {"sName": "parentLabel",
+        {"sName": "parentLabelid",
             "sWidth": "80px",
             "title": doc.getDocOnline("label", "parentid"),
             "data": function (data, type, full, meta) {

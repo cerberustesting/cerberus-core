@@ -441,6 +441,7 @@ public enum MessageEventEnum {
     DATA_OPERATION_ERROR_EXPECTED(550, MessageCodeEnum.GENERIC_CODE_ERROR.getCodeString(), "%ITEM% - operation %OPERATION% failed to complete. %REASON%", false, false, false, MessageGeneralEnum.DATA_OPERATION_ERROR),
     DATA_OPERATION_ERROR_DUPLICATE(551, MessageCodeEnum.GENERIC_CODE_ERROR.getCodeString(), "The %ITEM% that you are trying to %OPERATION% conflicts with an existing one! Please check for duplicates! %REASON%", false, false, false, MessageGeneralEnum.DATA_OPERATION_ERROR),
     DATA_OPERATION_ERROR_UNEXPECTED(552, MessageCodeEnum.GENERIC_CODE_ERROR.getCodeString(), "An unexpected problem occurred. %DESCRIPTION%", false, false, false, MessageGeneralEnum.DATA_OPERATION_ERROR),
+    DATA_OPERATION_ERROR_LABEL(553, MessageCodeEnum.GENERIC_CODE_ERROR.getCodeString(), "Failed to attach Label '%LABEL%' to parent label '%LABELPARENT%'. %DESCRIPTION%.", false, false, false, MessageGeneralEnum.DATA_OPERATION_ERROR),
     DATA_OPERATION_IMPORT_OK(003, MessageCodeEnum.GENERIC_CODE_SUCCESS.getCodeString(), "%ITEM% was imported with success!", false, false, false, MessageGeneralEnum.DATA_OPERATION_SUCCESS),
     DATA_OPERATION_IMPORT_ERROR(905, MessageCodeEnum.GENERIC_CODE_ERROR.getCodeString(), "%ITEM% - Import failed! %REASON%", false, false, false, MessageGeneralEnum.DATA_OPERATION_ERROR),
     DATA_OPERATION_IMPORT_ERROR_FORMAT(906, MessageCodeEnum.GENERIC_CODE_ERROR.getCodeString(), "%ITEM% Import failed! Format %FORMAT% is invalid!", false, false, false, MessageGeneralEnum.DATA_OPERATION_ERROR),

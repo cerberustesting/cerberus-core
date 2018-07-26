@@ -20,6 +20,12 @@
 package org.cerberus.crud.entity;
 
 import java.sql.Timestamp;
+import java.util.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * @author bcivel
@@ -31,7 +37,7 @@ public class Label {
     private String label;
     private String type;
     private String color;
-    private String parentLabel;
+    private Integer parentLabelID;
     private String reqType;
     private String reqStatus;
     private String reqCriticity;
@@ -41,7 +47,12 @@ public class Label {
     private Timestamp dateCreated;
     private String usrModif;
     private Timestamp dateModif;
-
+    // External Database model
+    private List<Label> nodes;
+    private String text;
+    private String icon;
+    private String href;
+    private boolean selectable;
 
     /**
      * Invariant PROPERTY TYPE String.
@@ -49,6 +60,56 @@ public class Label {
     public static final String TYPE_STICKER = "STICKER";
     public static final String TYPE_BATTERY = "BATTERY";
     public static final String TYPE_REQUIREMENT = "REQUIREMENT";
+
+    private static final Logger LOG = LogManager.getLogger(Label.class);
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
+    }
+
+    public String getHref() {
+        return href;
+    }
+
+    public void setHref(String href) {
+        this.href = href;
+    }
+
+    public boolean isSelectable() {
+        return selectable;
+    }
+
+    public void setSelectable(boolean selectable) {
+        this.selectable = selectable;
+    }
+
+    public List<Label> getNodes() {
+        return nodes;
+    }
+
+    public void setNodes(List<Label> childList) {
+        this.nodes = childList;
+    }
+
+    public Integer getParentLabelID() {
+        return parentLabelID;
+    }
+
+    public void setParentLabelID(Integer parentLabelID) {
+        this.parentLabelID = parentLabelID;
+    }
 
     public String getReqType() {
         return reqType;
@@ -122,14 +183,6 @@ public class Label {
         this.color = color;
     }
 
-    public String getParentLabel() {
-        return parentLabel;
-    }
-
-    public void setParentLabel(String parentLabel) {
-        this.parentLabel = parentLabel;
-    }
-
     public String getUsrCreated() {
         return usrCreated;
     }
@@ -168,6 +221,34 @@ public class Label {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public JSONObject toJson() {
+        JSONObject result = new JSONObject();
+        try {
+            result.put("description", this.getDescription());
+            result.put("label", this.getLabel());
+            result.put("type", this.getType());
+            result.put("usrCreated", this.getUsrCreated());
+            result.put("dateCreated", this.getDateCreated());
+            result.put("usrModif", this.getUsrModif());
+            result.put("dateModif", this.getDateModif());
+            JSONArray array = new JSONArray();
+            if (this.getNodes() != null) {
+                for (Object childList : this.getNodes()) {
+                    array.put(((Label) childList).toJson());
+                }
+            }
+            result.put("nodes", array);
+        } catch (JSONException ex) {
+            LOG.error(ex.toString());
+        }
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return id + ":" + system + "-" + label;
     }
 
 }

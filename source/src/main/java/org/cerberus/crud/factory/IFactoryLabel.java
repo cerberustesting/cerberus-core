@@ -34,7 +34,7 @@ public interface IFactoryLabel {
      * @param label
      * @param type
      * @param color
-     * @param parentLabel
+     * @param parentLabelID
      * @param reqType
      * @param reqStatus
      * @param reqCriticity
@@ -46,7 +46,7 @@ public interface IFactoryLabel {
      * @param dateModif
      * @return 
      */
-    Label create(Integer id, String system, String label, String type, String color, String parentLabel, String reqType, String reqStatus, String reqCriticity, String description, String longDesc
+    Label create(Integer id, String system, String label, String type, String color, Integer parentLabelID, String reqType, String reqStatus, String reqCriticity, String description, String longDesc
             , String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif);
 
 

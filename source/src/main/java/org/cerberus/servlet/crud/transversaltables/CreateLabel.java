@@ -97,7 +97,7 @@ public class CreateLabel extends HttpServlet {
         // Parameter that needs to be secured --> We SECURE+DECODE them
         String label = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("label"), "", charset);
         String color = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("color"), "", charset);
-        String parentLabel = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("parentLabel"), "", charset);
+        Integer parentLabelID = Integer.valueOf(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("parentLabel"), "0", charset));
         String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("description"), "", charset);
         String usr = request.getUserPrincipal().getName();
         
@@ -120,7 +120,7 @@ public class CreateLabel extends HttpServlet {
             IFactoryLabel factoryLabel = appContext.getBean(IFactoryLabel.class);
 
             Timestamp creationDate = new Timestamp(new Date().getTime());
-            Label labelData = factoryLabel.create(0, system, label, type, color, parentLabel, reqtype, reqstatus, reqcriticity, description, longDesc, usr,creationDate, usr, creationDate);
+            Label labelData = factoryLabel.create(0, system, label, type, color, parentLabelID, reqtype, reqstatus, reqcriticity, description, longDesc, usr,creationDate, usr, creationDate);
             ans = labelService.create(labelData);
 
             if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
