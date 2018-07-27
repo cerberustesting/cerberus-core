@@ -111,6 +111,10 @@ function createDomain() {
     ${ASADMIN} create-domain --adminport 4848 --domaindir ${domaintmp} ${GLASSFISH_DOMAIN}
 
     echo "Copy to real domain $domain (you have to use this volume to persist glassfish) "
+    if [ ! -d $domain ]; then
+        echo "repo doesn't exist. Create it "
+        mkdir $domain
+    fi
     cp -R ${domaintmp}/${GLASSFISH_DOMAIN}/* $domain/
 
     echo "Delete tmp domain "
@@ -129,7 +133,7 @@ function main() {
         echo "* Glassfish domain already exist. Use volume data."
     fi
 
-    if [ ! -f /tmp/lib/ ]; then
+    if [ -d /tmp/lib/ ]; then
         echo "* Copy library"
         yes | cp -rf  /tmp/lib/ ${GLASSFISH_HOME}/glassfish/lib
     fi
