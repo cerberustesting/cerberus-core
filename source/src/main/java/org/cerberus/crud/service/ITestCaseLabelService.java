@@ -78,6 +78,14 @@ public interface ITestCaseLabelService {
 
     /**
      *
+     * @param type
+     * @param system
+     * @return
+     */
+    AnswerList readByTypeSystem(String type, String system);
+
+    /**
+     *
      * @param id
      * @return true is label exist or false is label does not exist in database.
      */

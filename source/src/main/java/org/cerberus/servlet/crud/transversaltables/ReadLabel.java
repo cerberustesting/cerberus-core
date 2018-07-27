@@ -27,7 +27,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -36,12 +35,16 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.Label;
+import org.cerberus.crud.service.ILabelService;
+import org.cerberus.crud.service.ITestCaseLabelService;
+import org.cerberus.crud.service.impl.LabelService;
+import org.cerberus.crud.service.impl.TestCaseLabelService;
+import org.cerberus.dto.TreeNode;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.crud.service.ILabelService;
-import org.cerberus.crud.service.impl.LabelService;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.cerberus.util.answer.AnswerUtil;
@@ -62,6 +65,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class ReadLabel extends HttpServlet {
 
     private ILabelService labelService;
+    private ITestCaseLabelService testCaseLabelService;
+
     private static final Logger LOG = LogManager.getLogger(ReadLabel.class);
 
     /**
@@ -270,71 +275,92 @@ public class ReadLabel extends HttpServlet {
 
     private JSONArray getTree(String system, String type, ApplicationContext appContext) throws JSONException {
         labelService = appContext.getBean(LabelService.class);
+        testCaseLabelService = appContext.getBean(TestCaseLabelService.class);
+        TreeNode node;
 
-        List<Label> finalList = new ArrayList<Label>();
+        List<TreeNode> finalList = new ArrayList<>();
 
         AnswerList resp = labelService.readByVarious(system, type);
 
         // Building tree Structure;
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-            Map<Integer, Label> tree = new HashMap<>();
-            Map<Integer, Label> labelList = new HashMap<>();
-            for (Label label : (List<Label>) resp.getDataList()) {
-                String text = "<span class='label label-primary' style='background-color:" + label.getColor() + "' data-toggle='tooltip' data-labelid='" + label.getId() + "' title='' data-original-title=''>" + label.getLabel() + "</span>";
-                text += "<span style='margin-left: 5px; margin-right: 5px;' class=''>" + label.getDescription() + "</span>";
-                text += "<span class='badge badge-pill badge-secondary'>" + label.getReqType() + "</span>";
-                text += "<span class='badge badge-pill badge-secondary'>" + label.getReqStatus() + "</span>";
-                text += "<span class='badge badge-pill badge-secondary'>" + label.getReqCriticity() + "</span>";
+            Map<Integer, TreeNode> treeParent = new HashMap<>();
+            Map<Integer, TreeNode> nodeList = new HashMap<>();
 
+            for (Label label : (List<Label>) resp.getDataList()) {
+
+                String text = "";
                 text += "<button id='editLabel' onclick=\"stopPropagation(event);editEntryClick(\'" + label.getId() + "\', \'" + label.getSystem() + "\');\" class='editLabel btn-tree btn btn-default btn-xs margin-right5' name='editLabel' title='Edit Label' type='button'>";
                 text += " <span class='glyphicon glyphicon-pencil'></span></button>";
                 text += "<button id='deleteLabel' onclick=\"stopPropagation(event);deleteEntryClick(\'" + label.getId() + "\', \'" + label.getLabel() + "\');\" class='deleteLabel btn-tree btn btn-default btn-xs margin-right5' name='deleteLabel' title='Delete Label' type='button'>";
                 text += " <span class='glyphicon glyphicon-trash'></span></button>";
+                text += "<a id='tcList' href=\"./TestCaseList.jsp?label=" + label.getLabel() + "\" class='btn btn-primary btn-xs marginRight5' name='tcList' title='Test Case List'>";
+                text += " <span class='glyphicon glyphicon-list'></span></a>";
+                text += "<span class='label label-primary' style='background-color:" + label.getColor() + "' data-toggle='tooltip' data-labelid='" + label.getId() + "' title='' data-original-title=''>" + label.getLabel() + "</span>";
+                text += "<span style='margin-left: 5px; margin-right: 5px;' class=''>" + label.getDescription() + "</span>";
 
-                label.setText(text);
-                labelList.put(label.getId(), label);
+                List<String> attributList = new ArrayList<>();
+                if (label.getCounter1() > 0) {
+                    attributList.add(String.valueOf(label.getCounter1()));
+                }
+                if (Label.TYPE_REQUIREMENT.equals(label.getType())) {
+                    if (!StringUtil.isNullOrEmpty(label.getReqType())) {
+                        attributList.add("<span class='badge badge-pill badge-secondary'>" + label.getReqType() + "</span>");
+                    }
+                    if (!StringUtil.isNullOrEmpty(label.getReqStatus())) {
+                        attributList.add("<span class='badge badge-pill badge-secondary'>" + label.getReqStatus() + "</span>");
+                    }
+                    if (!StringUtil.isNullOrEmpty(label.getReqCriticity())) {
+                        attributList.add("<span class='badge badge-pill badge-secondary'>" + label.getReqCriticity() + "</span>");
+                    }
+                }
+
+//                label.setText(text);
+                node = new TreeNode(label.getId() + "-" + label.getSystem() + "-" + label.getLabel(), label.getId(), label.getParentLabelID(), text, null, null, false);
+                node.setTags(attributList);
+                nodeList.put(label.getId(), node);
                 if (label.getParentLabelID() > 0) {
-                    tree.put(label.getParentLabelID(), label);
+                    treeParent.put(label.getParentLabelID(), node);
                 }
             }
 
-            // Loop on maximum hierarchi levels.
+            // Loop on maximum hierarchy levels.
             int i = 0;
-            while (i < 50 && !labelList.isEmpty()) {
+            while (i < 50 && !nodeList.isEmpty()) {
 //                LOG.debug(i + ".1 : " + labelList);
-                List<Label> listToRemove = new ArrayList<Label>();
+                List<TreeNode> listToRemove = new ArrayList<>();
 
-                for (Map.Entry<Integer, Label> entry : labelList.entrySet()) {
+                for (Map.Entry<Integer, TreeNode> entry : nodeList.entrySet()) {
                     Integer key = entry.getKey();
-                    Label value = entry.getValue();
+                    TreeNode value = entry.getValue();
 //                    LOG.debug(value.getId() + " " + value.getParentLabelID() + " " + value.getNodes().size());
-                    if (tree.get(value.getId()) == null) {
+                    if (treeParent.get(value.getId()) == null) {
                         if ((i == 0) && (value.getNodes().isEmpty())) {
                             value.setNodes(null);
                         }
 //                        LOG.debug("Pas de fils.");
-                        if (value.getParentLabelID() <= 0) {
+                        if (value.getParentId() <= 0) {
 //                            LOG.debug("Adding to final result and remove from list." + i);
                             finalList.add(value);
                             listToRemove.add(value);
                         } else {
 //                            LOG.debug("Adding to final result and remove from list." + i);
                             // Mettre sur le fils sur son pere.
-                            Label toto = labelList.get(value.getParentLabelID());
+                            TreeNode toto = nodeList.get(value.getParentId());
                             if (toto != null) {
-                                List<Label> titi = toto.getNodes();
+                                List<TreeNode> titi = toto.getNodes();
                                 titi.add(value);
                                 toto.setNodes(titi);
-                                labelList.put(key, toto);
+                                nodeList.put(key, toto);
                             }
                             listToRemove.add(value);
-                            tree.remove(value.getParentLabelID());
+                            treeParent.remove(value.getParentId());
                         }
                     }
                 }
                 // Removing all entries that has been clasified to finalList.
-                for (Label label : listToRemove) {
-                    labelList.remove(label.getId());
+                for (TreeNode label : listToRemove) {
+                    nodeList.remove(label.getId());
                 }
                 i++;
             }

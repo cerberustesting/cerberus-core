@@ -20,10 +20,8 @@
 package org.cerberus.crud.entity;
 
 import java.sql.Timestamp;
-import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -48,12 +46,7 @@ public class Label {
     private String usrModif;
     private Timestamp dateModif;
     // External Database model
-    private List<Label> nodes;
-    private String text;
-    private String icon;
-    private String href;
-    private boolean selectable;
-
+    Integer counter1 ;
     /**
      * Invariant PROPERTY TYPE String.
      */
@@ -63,44 +56,12 @@ public class Label {
 
     private static final Logger LOG = LogManager.getLogger(Label.class);
 
-    public String getText() {
-        return text;
+    public Integer getCounter1() {
+        return counter1;
     }
 
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public String getIcon() {
-        return icon;
-    }
-
-    public void setIcon(String icon) {
-        this.icon = icon;
-    }
-
-    public String getHref() {
-        return href;
-    }
-
-    public void setHref(String href) {
-        this.href = href;
-    }
-
-    public boolean isSelectable() {
-        return selectable;
-    }
-
-    public void setSelectable(boolean selectable) {
-        this.selectable = selectable;
-    }
-
-    public List<Label> getNodes() {
-        return nodes;
-    }
-
-    public void setNodes(List<Label> childList) {
-        this.nodes = childList;
+    public void setCounter1(Integer counter1) {
+        this.counter1 = counter1;
     }
 
     public Integer getParentLabelID() {
@@ -233,13 +194,6 @@ public class Label {
             result.put("dateCreated", this.getDateCreated());
             result.put("usrModif", this.getUsrModif());
             result.put("dateModif", this.getDateModif());
-            JSONArray array = new JSONArray();
-            if (this.getNodes() != null) {
-                for (Object childList : this.getNodes()) {
-                    array.put(((Label) childList).toJson());
-                }
-            }
-            result.put("nodes", array);
         } catch (JSONException ex) {
             LOG.error(ex.toString());
         }

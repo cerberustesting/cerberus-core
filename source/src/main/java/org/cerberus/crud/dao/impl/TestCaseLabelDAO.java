@@ -88,9 +88,9 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
                 PreparedStatement preStat = connection.prepareStatement(query)) {
             //prepare and execute query
             preStat.setInt(1, id);
-            
-            try(ResultSet resultSet = preStat.executeQuery();){
-            	//parse query
+
+            try (ResultSet resultSet = preStat.executeQuery();) {
+                //parse query
                 if (resultSet.first()) {
                     result = loadFromResultSet(resultSet, null);
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -99,12 +99,12 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
                 } else {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
                 }
-            }catch (SQLException exception) {
+            } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
 
-            } 
+            }
         } catch (Exception e) {
             LOG.warn("Unable to readByKey TestCaseLabel: " + e.getMessage());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
@@ -138,10 +138,10 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
             preStat.setInt(1, labelId);
             preStat.setString(2, test);
             preStat.setString(3, testCase);
-            
-            try(ResultSet resultSet = preStat.executeQuery();){
-            	//parse query
-            	if (resultSet.first()) {
+
+            try (ResultSet resultSet = preStat.executeQuery();) {
+                //parse query
+                if (resultSet.first()) {
                     result = loadFromResultSet(resultSet, null);
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                     msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
@@ -149,11 +149,11 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
                 } else {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
                 }
-            }catch (SQLException exception) {
+            } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-            } 
+            }
         } catch (Exception e) {
             LOG.warn("Unable to readByKey TestCaseLabel: " + e.getMessage());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
@@ -220,7 +220,7 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
         }
         try (Connection connection = databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(query.toString());
-        		Statement stm = connection.createStatement();) {
+                Statement stm = connection.createStatement();) {
 
             int i = 1;
             if (!StringUtil.isNullOrEmpty(searchTerm)) {
@@ -236,17 +236,16 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
             for (String individualColumnSearchValue : individalColumnSearchValues) {
                 preStat.setString(i++, individualColumnSearchValue);
             }
-            
-            try(ResultSet resultSet = preStat.executeQuery();
-            		ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");){
-            	//gets the data
+
+            try (ResultSet resultSet = preStat.executeQuery();
+                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+                //gets the data
                 while (resultSet.next()) {
                     Label label = labelDAO.loadFromResultSet(resultSet);
                     objectList.add(this.loadFromResultSet(resultSet, label));
                 }
 
                 //get the total number of rows
-                
                 int nrTotalRows = 0;
 
                 if (rowSet != null && rowSet.next()) {
@@ -268,11 +267,11 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
                 }
                 response.setDataList(objectList);
 
-            }catch (SQLException exception) {
+            } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-            } 
+            }
         } catch (Exception e) {
             LOG.warn("Unable to readByCriteria TestCaseLabel: " + e.getMessage());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
@@ -356,18 +355,18 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
         }
-         try (Connection connection = databaseSpring.connect();
+        try (Connection connection = databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(query.toString())) {
-                preStat.setString(1, object.getTest());
-                preStat.setString(2, object.getTestcase());
-                preStat.setInt(3, object.getLabelId());
-                preStat.setString(4, object.getUsrModif());
-                preStat.setInt(5, object.getId());
-                
-                preStat.executeUpdate();
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
-            } catch (Exception e) {
+            preStat.setString(1, object.getTest());
+            preStat.setString(2, object.getTestcase());
+            preStat.setInt(3, object.getLabelId());
+            preStat.setString(4, object.getUsrModif());
+            preStat.setInt(5, object.getId());
+
+            preStat.executeUpdate();
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
+        } catch (Exception e) {
             LOG.warn("Unable to update TestCaseLabel: " + e.getMessage());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
                     e.toString());
@@ -403,7 +402,7 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
         //were applied -- used for pagination p
         query.append("SELECT SQL_CALC_FOUND_ROWS * FROM testcaselabel tel ");
         query.append(" LEFT OUTER JOIN label lab on lab.id = tel.labelId  ");
-        
+
         query.append(" WHERE 1=1");
 
         if (!Strings.isNullOrEmpty(test)) {
@@ -412,16 +411,16 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
         if (testCase != null) {
             query.append(" AND tel.testcase = ?");
         }
-        
+
         query.append(" ORDER BY Label ASC ");
-        
+
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
         }
         try (Connection connection = databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(query.toString());
-                		Statement stm = connection.createStatement();) {
+                Statement stm = connection.createStatement();) {
             int i = 1;
             if (!Strings.isNullOrEmpty(test)) {
                 preStat.setString(i++, test);
@@ -429,10 +428,10 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
             if (testCase != null) {
                 preStat.setString(i++, testCase);
             }
-            
-            try( ResultSet resultSet = preStat.executeQuery();
-            		ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");){
-            	//gets the data
+
+            try (ResultSet resultSet = preStat.executeQuery();
+                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+                //gets the data
                 while (resultSet.next()) {
                     Label label = labelDAO.loadFromResultSet(resultSet);
                     TestCaseLabel tcl = this.loadFromResultSet(resultSet, label);
@@ -460,11 +459,11 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
                     response = new AnswerList<>(objectList, nrTotalRows);
                 }
                 response.setDataList(objectList);
-            }catch (SQLException exception) {
+            } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-            } 
+            }
         } catch (Exception e) {
             LOG.warn("Unable to readByTestTestCase TestCaseLabel: " + e.getMessage());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
@@ -474,5 +473,89 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
         }
         return response;
     }
-  
+
+    @Override
+    public AnswerList readByTypeSystem(String type, String system) {
+        AnswerList response = new AnswerList<>();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+        List<TestCaseLabel> objectList = new ArrayList<>();
+
+        StringBuilder query = new StringBuilder();
+        //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
+
+        query.append("SELECT lab.*, tel.* from testcaselabel tel");
+        query.append(" JOIN label lab ON lab.id = tel.labelid");
+        
+        query.append(" WHERE 1=1");
+
+        if (!Strings.isNullOrEmpty(type)) {
+            query.append(" AND lab.type = ?");
+        }
+        if (system != null) {
+            query.append(" AND (lab.system = '' or lab.system = ?)");
+        }
+
+        query.append(" ORDER BY Label ASC ");
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query.toString());
+        }
+        try (Connection connection = databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query.toString());
+                Statement stm = connection.createStatement();) {
+            int i = 1;
+            if (!Strings.isNullOrEmpty(type)) {
+                preStat.setString(i++, type);
+            }
+            if (system != null) {
+                preStat.setString(i++, system);
+            }
+
+            try (ResultSet resultSet = preStat.executeQuery();
+                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+                //gets the data
+                while (resultSet.next()) {
+                    Label label = labelDAO.loadFromResultSet(resultSet);
+                    TestCaseLabel tcl = this.loadFromResultSet(resultSet, label);
+                    objectList.add(tcl);
+                }
+
+                //get the total number of rows
+                int nrTotalRows = 0;
+
+                if (rowSet != null && rowSet.next()) {
+                    nrTotalRows = rowSet.getInt(1);
+                }
+
+                if (objectList.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
+                    LOG.error("Partial Result in the query.");
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
+                    response = new AnswerList<>(objectList, nrTotalRows);
+                } else if (objectList.size() <= 0) {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                    response = new AnswerList<>(objectList, nrTotalRows);
+                } else {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+                    response = new AnswerList<>(objectList, nrTotalRows);
+                }
+                response.setDataList(objectList);
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            }
+        } catch (Exception e) {
+            LOG.warn("Unable to readByTestTestCase TestCaseLabel: " + e.getMessage());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                    e.toString());
+        } finally {
+            response.setResultMessage(msg);
+        }
+        return response;
+    }
+
 }

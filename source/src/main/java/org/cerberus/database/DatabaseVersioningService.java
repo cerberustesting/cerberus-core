@@ -7802,10 +7802,14 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 
         // Change ParentLabelID format columns.
         // 1360
+        a.add("UPDATE label SET parentlabel=0 WHERE parentlabel='';");
+
+        // Change ParentLabelID format columns.
+        // 1361
         a.add("ALTER TABLE `label` CHANGE COLUMN `ParentLabel` `ParentLabelID` INT(11) NULL ;");
 
         // New parameter.
-        // 1361
+        // 1362
         a.add("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ('', 'cerberus_register_video', 'Y', 'Allow to register video on compatible application type');");
 
         return a;

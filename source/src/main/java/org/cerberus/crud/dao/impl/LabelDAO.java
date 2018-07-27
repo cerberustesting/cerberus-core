@@ -80,8 +80,8 @@ public class LabelDAO implements ILabelDAO {
                 PreparedStatement preStat = connection.prepareStatement(query)) {
             //prepare and execute query
             preStat.setInt(1, id);
-            try(ResultSet resultSet = preStat.executeQuery();){
-            	//parse query
+            try (ResultSet resultSet = preStat.executeQuery();) {
+                //parse query
                 if (resultSet.first()) {
                     result = loadFromResultSet(resultSet);
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -90,12 +90,12 @@ public class LabelDAO implements ILabelDAO {
                 } else {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
                 }
-            }catch (SQLException exception) {
+            } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
 
-            } 
+            }
         } catch (Exception e) {
             LOG.warn("Unable to readByKey Label: " + e.getMessage());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
@@ -119,26 +119,27 @@ public class LabelDAO implements ILabelDAO {
         StringBuilder query = new StringBuilder();
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
         //were applied -- used for pagination p
-        query.append("SELECT SQL_CALC_FOUND_ROWS * FROM `label` lab");
+        query.append("SELECT SQL_CALC_FOUND_ROWS lab.*,  count(tcl.id) cnt FROM `label` lab ");
+        query.append("left outer join testcaselabel tcl ON lab.id = tcl.labelid ");
 
         searchSQL.append(" where 1=1 ");
 
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
-            searchSQL.append(" and (`id` like ?");
-            searchSQL.append(" or `system` like ?");
-            searchSQL.append(" or `label` like ?");
-            searchSQL.append(" or `type` like ?");
-            searchSQL.append(" or `color` like ?");
-            searchSQL.append(" or `parentLabelid` like ?");
-            searchSQL.append(" or `ReqType` like ?");
-            searchSQL.append(" or `ReqStatus` like ?");
-            searchSQL.append(" or `ReqCriticity` like ?");
-            searchSQL.append(" or `description` like ?");
-            searchSQL.append(" or `longdesc` like ?");
-            searchSQL.append(" or `usrCreated` like ?");
-            searchSQL.append(" or `dateCreated` like ?");
-            searchSQL.append(" or `usrModif` like ?");
-            searchSQL.append(" or `dateModif` like ?)");
+            searchSQL.append(" and (lab.`id` like ?");
+            searchSQL.append(" or lab.`system` like ?");
+            searchSQL.append(" or lab.`label` like ?");
+            searchSQL.append(" or lab.`type` like ?");
+            searchSQL.append(" or lab.`color` like ?");
+            searchSQL.append(" or lab.`parentLabelid` like ?");
+            searchSQL.append(" or lab.`ReqType` like ?");
+            searchSQL.append(" or lab.`ReqStatus` like ?");
+            searchSQL.append(" or lab.`ReqCriticity` like ?");
+            searchSQL.append(" or lab.`description` like ?");
+            searchSQL.append(" or lab.`longdesc` like ?");
+            searchSQL.append(" or lab.`usrCreated` like ?");
+            searchSQL.append(" or lab.`dateCreated` like ?");
+            searchSQL.append(" or lab.`usrModif` like ?");
+            searchSQL.append(" or lab.`dateModif` like ?)");
         }
         if (individualSearch != null && !individualSearch.isEmpty()) {
             searchSQL.append(" and ( 1=1 ");
@@ -151,13 +152,15 @@ public class LabelDAO implements ILabelDAO {
         }
 
         if (!StringUtil.isNullOrEmpty(system)) {
-            searchSQL.append(" and (`System` = ? or `System` = '')");
+            searchSQL.append(" and (lab.`System` = ? or lab.`System` = '')");
         }
         if (!StringUtil.isNullOrEmpty(type)) {
-            searchSQL.append(" and (`Type` = ?)");
+            searchSQL.append(" and (lab.`Type` = ?)");
         }
         query.append(searchSQL);
 
+        query.append(" group by lab.id ");
+        
         if (!StringUtil.isNullOrEmpty(column)) {
             query.append(" order by `").append(column).append("` ").append(dir);
         }
@@ -168,6 +171,7 @@ public class LabelDAO implements ILabelDAO {
             query.append(" limit ").append(start).append(" , ").append(amount);
         }
 
+
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
@@ -176,7 +180,7 @@ public class LabelDAO implements ILabelDAO {
         }
         try (Connection connection = databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(query.toString());
-        		Statement stm = connection.createStatement();) {
+                Statement stm = connection.createStatement();) {
 
             int i = 1;
             if (!StringUtil.isNullOrEmpty(searchTerm)) {
@@ -205,10 +209,10 @@ public class LabelDAO implements ILabelDAO {
             if (!StringUtil.isNullOrEmpty(type)) {
                 preStat.setString(i++, type);
             }
-            
-            try(ResultSet resultSet = preStat.executeQuery();
-            		ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
-            	
+
+            try (ResultSet resultSet = preStat.executeQuery();
+                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+
                 //gets the data
                 while (resultSet.next()) {
                     objectList.add(this.loadFromResultSet(resultSet));
@@ -235,12 +239,12 @@ public class LabelDAO implements ILabelDAO {
                 }
                 response.setDataList(objectList);
 
-            }catch (SQLException exception) {
+            } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
 
-            } 
+            }
         } catch (Exception e) {
             LOG.warn("Unable to readBySystemCriteria Label: " + e.getMessage());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
@@ -384,7 +388,14 @@ public class LabelDAO implements ILabelDAO {
         Timestamp dateCreated = rs.getTimestamp("lab.dateCreated");
         String usrModif = ParameterParserUtil.parseStringParam(rs.getString("lab.usrModif"), "");
         Timestamp dateModif = rs.getTimestamp("lab.dateModif");
-        return factoryLabel.create(id, system, label, type, color, parentLabelid, reqType, reqStatus, reqCriticity, description, longdesc, usrCreated, dateCreated, usrModif, dateModif);
+        Integer counter = 0;
+        try {
+            counter = ParameterParserUtil.parseIntegerParam(rs.getString("cnt"), 0);
+        } catch (Exception e) {
+        }
+        Label labelObj = factoryLabel.create(id, system, label, type, color, parentLabelid, reqType, reqStatus, reqCriticity, description, longdesc, usrCreated, dateCreated, usrModif, dateModif);
+        labelObj.setCounter1(counter);
+        return labelObj;
     }
 
     @Override
@@ -407,7 +418,7 @@ public class LabelDAO implements ILabelDAO {
             searchSQL.append(" and (`System` = ? or `System` = '' )");
         }
 
-    	if (!StringUtil.isNullOrEmpty(searchTerm)) {
+        if (!StringUtil.isNullOrEmpty(searchTerm)) {
             searchSQL.append(" and (`id` like ?");
             searchSQL.append(" or `system` like ?");
             searchSQL.append(" or `label` like ?");
@@ -433,7 +444,7 @@ public class LabelDAO implements ILabelDAO {
             }
             searchSQL.append(" )");
         }
-        
+
         query.append(searchSQL);
         query.append(" order by ").append(columnName).append(" asc");
 
@@ -443,14 +454,14 @@ public class LabelDAO implements ILabelDAO {
         }
         try (Connection connection = databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(query.toString());
-        		Statement stm = connection.createStatement();) {
+                Statement stm = connection.createStatement();) {
 
             int i = 1;
             if (!StringUtil.isNullOrEmpty(system)) {
                 preStat.setString(i++, system);
             }
 
-        	if (!StringUtil.isNullOrEmpty(searchTerm)) {
+            if (!StringUtil.isNullOrEmpty(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
@@ -470,11 +481,11 @@ public class LabelDAO implements ILabelDAO {
             for (String individualColumnSearchValue : individalColumnSearchValues) {
                 preStat.setString(i++, individualColumnSearchValue);
             }
-            
-            try(ResultSet resultSet = preStat.executeQuery();
-            		ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
-            	
-            	//gets the data
+
+            try (ResultSet resultSet = preStat.executeQuery();
+                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+
+                //gets the data
                 while (resultSet.next()) {
                     distinctValues.add(resultSet.getString("distinctValues") == null ? "" : resultSet.getString("distinctValues"));
                 }
@@ -498,11 +509,11 @@ public class LabelDAO implements ILabelDAO {
                     msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
                     answer = new AnswerList<>(distinctValues, nrTotalRows);
                 }
-            }catch (SQLException exception) {
+            } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-            } 
+            }
         } catch (Exception e) {
             LOG.warn("Unable to execute query : " + e.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",

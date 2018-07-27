@@ -20,7 +20,6 @@
 package org.cerberus.crud.factory.impl;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import org.cerberus.crud.entity.Label;
 import org.cerberus.crud.factory.IFactoryLabel;
 import org.springframework.stereotype.Service;
@@ -49,12 +48,6 @@ public class FactoryLabel implements IFactoryLabel {
         labelObject.setReqCriticity(reqCriticity);
         labelObject.setReqStatus(reqStatus);
         labelObject.setReqType(reqType);
-        labelObject.setNodes(new ArrayList<>());
-
-        labelObject.setText("");
-        labelObject.setIcon(null);
-        labelObject.setHref(null);
-        labelObject.setSelectable(false);
         
         return labelObject;
     }

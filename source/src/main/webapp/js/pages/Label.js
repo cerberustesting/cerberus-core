@@ -25,6 +25,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
             'container': 'body'}
         );
 
+        // 
         $('#addLabelModal #parentLabel').change(function () {
             changeLabelParent("addLabelModal");
         });
@@ -32,10 +33,9 @@ $.when($.getScript("js/global/global.js")).then(function () {
             changeLabelParent("editLabelModal");
         });
 
-        generateLabelTree();
-
         var doc = new Doc();
 
+        // Tree Requirements butons
         $('#labelList #createLabelButtonTreeR').click(function () {
             addEntryClick("REQUIREMENT");
             refreshParentLabelCombo("REQUIREMENT");
@@ -47,7 +47,11 @@ $.when($.getScript("js/global/global.js")).then(function () {
         $('#labelList #collapseAllTreeR').click(function () {
             $('#mainTreeR').treeview('collapseAll', {levels: 20, silent: true});
         });
+        $('#labelList #refreshButtonTreeR').click(function () {
+            generateLabelTree();
+        });
 
+        // Tree Sticker butons
         $('#labelList #createLabelButtonTreeS').click(function () {
             addEntryClick("STICKER");
             refreshParentLabelCombo("STICKER");
@@ -59,7 +63,11 @@ $.when($.getScript("js/global/global.js")).then(function () {
         $('#labelList #collapseAllTreeS').click(function () {
             $('#mainTreeS').treeview('collapseAll', {levels: 20, silent: true});
         });
+        $('#labelList #refreshButtonTreeS').click(function () {
+            generateLabelTree();
+        });
 
+        // Tree Battery butons
         $('#labelList #createLabelButtonTreeB').click(function () {
             addEntryClick("BATTERY");
             refreshParentLabelCombo("BATTERY");
@@ -70,6 +78,9 @@ $.when($.getScript("js/global/global.js")).then(function () {
         });
         $('#labelList #collapseAllTreeB').click(function () {
             $('#mainTreeB').treeview('collapseAll', {levels: 20, silent: true});
+        });
+        $('#labelList #refreshButtonTreeB').click(function () {
+            generateLabelTree();
         });
 
     });
@@ -139,9 +150,9 @@ function displayPageLabel() {
 function generateLabelTree() {
     $.when($.ajax("ReadLabel?system=" + getUser().defaultSystem + "&withHierarchy=true")).then(function (data) {
 
-        $('#mainTreeS').treeview({data: data.labelHierarchy.stickers});
-        $('#mainTreeB').treeview({data: data.labelHierarchy.batteries});
-        $('#mainTreeR').treeview({data: data.labelHierarchy.requirements});
+        $('#mainTreeS').treeview({data: data.labelHierarchy.stickers, enableLinks: true, showTags: true});
+        $('#mainTreeB').treeview({data: data.labelHierarchy.batteries, enableLinks: true, showTags: true});
+        $('#mainTreeR').treeview({data: data.labelHierarchy.requirements, enableLinks: true, showTags: true});
 
     });
 }
@@ -394,7 +405,7 @@ function aoColumnsFunc(tableId) {
             "title": doc.getDocLabel("page_global", "columnAction"),
             "bSortable": false,
             "bSearchable": false,
-            "sWidth": "50px",
+            "sWidth": "80px",
             "mRender": function (data, type, obj) {
                 var hasPermissions = $("#" + tableId).attr("hasPermissions");
                 var editLabel = '<button id="editLabel" onclick="editEntryClick(\'' + obj["id"] + '\', \'' + obj["system"] + '\');"\n\
@@ -409,8 +420,12 @@ function aoColumnsFunc(tableId) {
                                     class="deleteLabel btn btn-default btn-xs margin-right5" \n\
                                     name="deleteLabel" title="' + doc.getDocLabel("page_label", "btn_delete") + '" type="button">\n\
                                     <span class="glyphicon glyphicon-trash"></span></button>';
+                var tcLabel = '<a id="tcLabel" href="./TestCaseList.jsp?label=' + obj["label"] + '" \n\
+                                    class="btn btn-primary btn-xs marginRight5" \n\
+                                    name="tcLabel" title="' + doc.getDocLabel("page_label", "btn_tclist") + '" >\n\
+                                    <span class="glyphicon glyphicon-list"></span></a>';
                 if (hasPermissions === "true") { //only draws the options if the user has the correct privileges
-                    return '<div class="center btn-group width150">' + editLabel + deleteLabel + '</div>';
+                    return '<div class="center btn-group width150">' + editLabel + deleteLabel + tcLabel + '</div>';
                 }
                 return '<div class="center btn-group width150">' + viewLabel + '</div>';
             }

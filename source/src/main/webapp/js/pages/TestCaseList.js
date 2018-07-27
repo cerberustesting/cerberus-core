@@ -127,6 +127,11 @@ function loadTable(selectTest, sortColumn) {
             filterOnColumn("testCaseTable", "test", test);
         }
 
+        var label = GetURLParameter('label');
+        if (label !== "" && label !== null) {
+            filterOnColumn("testCaseTable", "labels", label);
+        }
+        
         // Mass action 
         $("#selectAll").click(selectAll);
 
