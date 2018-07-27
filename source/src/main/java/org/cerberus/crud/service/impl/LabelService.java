@@ -129,7 +129,7 @@ public class LabelService implements ILabelService {
                     msg.setDescription(msg.getDescription()
                             .replace("%LABEL%", object.getLabel())
                             .replace("%LABELPARENT%", parentLabel.getLabel())
-                            .replace("%DESCRIPTION%", "Parent label does not belong to the same system as child."));
+                            .replace("%DESCRIPTION%", "Parent label does not belong to the same system as child"));
                     response.setResultMessage(msg);
                     return response;
                 }
@@ -138,7 +138,16 @@ public class LabelService implements ILabelService {
                     msg.setDescription(msg.getDescription()
                             .replace("%LABEL%", object.getLabel())
                             .replace("%LABELPARENT%", parentLabel.getLabel())
-                            .replace("%DESCRIPTION%", "Cannot attach " + object.getType() + " Parent label to " + parentLabel.getType() + " child label. Types must be consistent."));
+                            .replace("%DESCRIPTION%", "Cannot attach " + object.getType() + " Parent label to " + parentLabel.getType() + " child label. Types must be consistent"));
+                    response.setResultMessage(msg);
+                    return response;
+                }
+                if ((parentLabel.getId().equals(object.getParentLabelID())) && (object.getId().equals(parentLabel.getParentLabelID()))) {
+                    // Parent & Child have different types.
+                    msg.setDescription(msg.getDescription()
+                            .replace("%LABEL%", object.getLabel())
+                            .replace("%LABELPARENT%", parentLabel.getLabel())
+                            .replace("%DESCRIPTION%", "'" + parentLabel.getLabel() + "' is already attached to '" + object.getLabel()+ "' and recursive links are not allowed"));
                     response.setResultMessage(msg);
                     return response;
                 }
@@ -147,7 +156,7 @@ public class LabelService implements ILabelService {
                     msg.setDescription(msg.getDescription()
                             .replace("%LABEL%", object.getLabel())
                             .replace("%LABELPARENT%", parentLabel.getLabel())
-                            .replace("%DESCRIPTION%", "Label cannot be attached to itself."));
+                            .replace("%DESCRIPTION%", "Label cannot be attached to itself"));
                     response.setResultMessage(msg);
                     return response;
                 }
@@ -156,7 +165,7 @@ public class LabelService implements ILabelService {
                 msg.setDescription(msg.getDescription()
                         .replace("%LABEL%", object.getLabel())
                         .replace("%LABELPARENT%", object.getParentLabelID().toString())
-                        .replace("%DESCRIPTION%", "Parent label does not exist."));
+                        .replace("%DESCRIPTION%", "Parent label does not exist"));
                 response.setResultMessage(msg);
                 return response;
             }

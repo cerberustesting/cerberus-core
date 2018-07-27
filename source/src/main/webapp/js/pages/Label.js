@@ -35,10 +35,12 @@ $.when($.getScript("js/global/global.js")).then(function () {
 
         var doc = new Doc();
 
+        generateLabelTree();
+
         // Tree Requirements butons
         $('#labelList #createLabelButtonTreeR').click(function () {
             addEntryClick("REQUIREMENT");
-            refreshParentLabelCombo("REQUIREMENT");
+//            refreshParentLabelCombo("REQUIREMENT", "editLabelModalForm");
             showHideRequirementPanelAdd();
         });
         $('#labelList #expandAllTreeR').click(function () {
@@ -54,7 +56,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
         // Tree Sticker butons
         $('#labelList #createLabelButtonTreeS').click(function () {
             addEntryClick("STICKER");
-            refreshParentLabelCombo("STICKER");
+//            refreshParentLabelCombo("STICKER","editLabelModalForm");
             showHideRequirementPanelAdd();
         });
         $('#labelList #expandAllTreeS').click(function () {
@@ -70,7 +72,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
         // Tree Battery butons
         $('#labelList #createLabelButtonTreeB').click(function () {
             addEntryClick("BATTERY");
-            refreshParentLabelCombo("BATTERY");
+//            refreshParentLabelCombo("BATTERY","editLabelModalForm");
             showHideRequirementPanelAdd();
         });
         $('#labelList #expandAllTreeB').click(function () {
@@ -96,10 +98,10 @@ function initPage() {
     $('#addLabelModal').on('hidden.bs.modal', addEntryModalCloseHandler);
     $('#editLabelModal').on('hidden.bs.modal', editEntryModalCloseHandler);
 
-    $('#editLabelModal #editLabelModalForm #type').on('change', showHideRequirementPanelEdit);
-
-    $('#addLabelModal #addLabelModalForm #type').on('change', showHideRequirementPanelAdd);
-
+//    $('#editLabelModal #editLabelModalForm #type').on('change', showHideRequirementPanelEdit);
+//
+//    $('#addLabelModal #addLabelModalForm #type').on('change', showHideRequirementPanelAdd);
+//
     tinymce.init({
         selector: ".wysiwyg"
     });
@@ -140,9 +142,13 @@ function displayPageLabel() {
     displayInvariantList("reqstatus", "REQUIREMENTSTATUS", false);
     displayInvariantList("reqcriticity", "REQUIREMENTCRITICITY", false);
 
-    refreshParentLabelCombo($("#type").val());
-    $("#type").change(function () {
-        refreshParentLabelCombo($("#type").val());
+    refreshParentLabelCombo($("#type").val(), "editLabelModalForm");
+    refreshParentLabelCombo($("#type").val(), "addLabelModalForm");
+    $("#editLabelModalForm #type").change(function () {
+        refreshParentLabelCombo($("#type").val(), "editLabelModalForm");
+    });
+    $("#addLabelModalForm #type").change(function () {
+        refreshParentLabelCombo($("#type").val(), "addLabelModalForm");
     });
     displayFooter(doc);
 }
@@ -150,15 +156,15 @@ function displayPageLabel() {
 function generateLabelTree() {
     $.when($.ajax("ReadLabel?system=" + getUser().defaultSystem + "&withHierarchy=true")).then(function (data) {
 
-        $('#mainTreeS').treeview({data: data.labelHierarchy.stickers, enableLinks: true, showTags: true});
-        $('#mainTreeB').treeview({data: data.labelHierarchy.batteries, enableLinks: true, showTags: true});
-        $('#mainTreeR').treeview({data: data.labelHierarchy.requirements, enableLinks: true, showTags: true});
+        $('#mainTreeS').treeview({data: data.labelHierarchy.stickers, enableLinks: false, showTags: true});
+        $('#mainTreeB').treeview({data: data.labelHierarchy.batteries, enableLinks: false, showTags: true});
+        $('#mainTreeR').treeview({data: data.labelHierarchy.requirements, enableLinks: false, showTags: true});
 
     });
 }
 
-function refreshParentLabelCombo(type) {
-    $("[name='parentLabel']").select2(getComboConfigLabel(type, getUser().defaultSystem));
+function refreshParentLabelCombo(type, form) {
+    $("#" + form + " #parentLabel").select2(getComboConfigLabel(type, getUser().defaultSystem));
 }
 
 function renderOptionsForLabel(data) {
@@ -180,7 +186,8 @@ function changeLabelParent(modal) {
 
     $('#' + modal + ' #parentLabel').parent().find(".input-group-btn").remove();
 
-    if (!isEmpty($('#' + modal + ' #parentLabel').val())) {
+    var par = $('#' + modal + ' #parentLabel').val();
+    if (!isEmpty(par) && par !== 0) {
         var emptyEntry = '<span class="input-group-btn" style="vertical-align:bottom!important"><button id="emptyEntry" onclick="emptyService();"\n\
             class="buttonObject btn btn-default " \n\
            title="Empty" type="button">\n\
@@ -198,7 +205,7 @@ function emptyService() {
 
 function showHideRequirementPanelEdit() {
 
-    refreshParentLabelCombo($('#editLabelModal #editLabelModalForm #type').val());
+    refreshParentLabelCombo($('#editLabelModal #editLabelModalForm #type').val(), "editLabelModalForm");
     if ($('#editLabelModal #editLabelModalForm #type').val() === "REQUIREMENT") {
         $("#editLabelModal #panelReq").show();
     } else {
@@ -212,14 +219,14 @@ function showHideRequirementPanelEdit() {
 
 function showHideRequirementPanelAdd() {
 
-    refreshParentLabelCombo($('#addLabelModal #addLabelModalForm #type').val());
+    refreshParentLabelCombo($('#addLabelModal #addLabelModalForm #type').val(), "addLabelModalForm");
     if ($('#addLabelModal #addLabelModalForm #type').val() === "REQUIREMENT") {
         $("#addLabelModal #panelReq").show();
     } else {
         $("#addLabelModal #panelReq").hide();
-        $("#editLabelModal #panelReq #reqtype").val("");
-        $("#editLabelModal #panelReq #reqstatus").val("");
-        $("#editLabelModal #panelReq #reqcriticity").val("");
+        $("#addLabelModal #panelReq #reqtype").val("");
+        $("#addLabelModal #panelReq #reqstatus").val("");
+        $("#addLabelModal #panelReq #reqcriticity").val("");
     }
 
 }
@@ -233,6 +240,7 @@ function deleteEntryHandlerClick() {
             // Redraw the datatable
             var oTable = $("#labelsTable").dataTable();
             oTable.fnDraw(true);
+            generateLabelTree();
             var info = oTable.fnGetData().length;
             if (info === 1) {//page has only one row, then returns to the previous page
                 oTable.fnPageChange('previous');
@@ -281,6 +289,7 @@ function addEntryModalSaveHandler() {
         if (getAlertType(data.messageType) === 'success') {
             var oTable = $("#labelsTable").dataTable();
             oTable.fnDraw(true);
+            generateLabelTree();
             showMessage(data);
             $('#addLabelModal').modal('hide');
         } else {
@@ -340,6 +349,7 @@ function editEntryModalSaveHandler() {
             if (getAlertType(data.messageType) === "success") {
                 var oTable = $("#labelsTable").dataTable();
                 oTable.fnDraw(true);
+                generateLabelTree();
                 $('#editLabelModal').modal('hide');
                 showMessage(data);
             } else {
@@ -386,9 +396,14 @@ function editEntryClick(id, system) {
             $('#editLabelButton').attr('class', '');
             $('#editLabelButton').attr('hidden', 'hidden');
         }
+//        console.info(obj.parentLabelID);
 
-        $("#editLabelModal #editLabelModalForm #parentLabel").val(obj.parentLabelID === 0 ? "" : obj.parentLabelID).trigger('change');
-
+        var $option = $('<option></option>').text(0).val(0);
+        if (obj.parentLabelID !== 0) {
+            $option = $('<option></option>').text(obj.parentLabelID).val(obj.parentLabelID);
+//        console.info($option);            
+        }
+        $("#editLabelModal #parentLabel").append($option).val(obj.parentLabelID).trigger('change'); // append the option and update Select2
 
         // ColorPicker
         $("[name='colorDiv']").colorpicker();
@@ -397,6 +412,74 @@ function editEntryClick(id, system) {
         formEdit.modal('show');
     });
 }
+
+
+function getComboConfigLabel(labelType, system) {
+
+    var config =
+            {
+                ajax: {
+                    url: "ReadLabel?iSortCol_0=0&sSortDir_0=desc&sColumns=type&iDisplayLength=30&sSearch_0=" + labelType + "&system=" + system,
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        params.page = params.page || 1;
+                        return {
+                            sSearch: params.term, // search term
+                            iDisplayStart: (params.page * 30) - 30
+                        };
+                    },
+                    processResults: function (data, params) {
+                        params.page = params.page || 1;
+                        return {
+                            results: $.map(data.contentTable, function (obj) {
+                                return {id: obj.id, label: obj.label, color: obj.color, description: obj.description};
+                            }),
+                            pagination: {
+                                more: (params.page * 30) < data.iTotalRecords
+                            }
+                        };
+                    },
+                    cache: true,
+                    allowClear: true
+                },
+                width: "100%",
+                escapeMarkup: function (markup) {
+                    return markup;
+                }, // let our custom formatter work
+                minimumInputLength: 0,
+                templateResult: comboConfigLabel_format, // omitted for brevity, see the source of this page
+                templateSelection: comboConfigLabel_formatSelection // omitted for brevity, see the source of this page
+            };
+
+    return config;
+}
+
+function comboConfigLabel_format(label) {
+    var markup = "<div class='select2-result-tag clearfix'>" +
+            "<div style='float:left;'><span class='label label-primary' style='background-color:"
+            + label.color + "' data-toggle='tooltip' data-labelid='"
+            + label.id + "' title='"
+            + label.description + "'>"
+            + label.label + "</span></div>";
+
+    markup += "</div>";
+
+    return markup;
+}
+
+function comboConfigLabel_formatSelection(label) {
+    var result = label.id;
+    if (!isEmpty(label.label)) {
+        result = "<div style='float:left;height: 34px'><span class='label label-primary' style='background-color:"
+                + label.color + "' data-toggle='tooltip' data-labelid='"
+                + label.id + "' title='"
+                + label.description + "'>"
+                + label.label + "</span></div>";
+    }
+    return result;
+}
+
 
 function aoColumnsFunc(tableId) {
     var doc = new Doc();
@@ -527,7 +610,7 @@ function filterOnLabel(element) {
     $("#labelsTable").dataTable().fnFilter(newLabel, colIndex);
 }
 
-function afterTableLoad() {
-    generateLabelTree();
-}
+//function afterTableLoad() {
+//    generateLabelTree();
+//}
 

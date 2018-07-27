@@ -284,18 +284,24 @@ public class ReadLabel extends HttpServlet {
 
         // Building tree Structure;
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-            Map<Integer, TreeNode> treeParent = new HashMap<>();
             Map<Integer, TreeNode> nodeList = new HashMap<>();
+            List<TreeNode> treeParent = new ArrayList<>();
 
             for (Label label : (List<Label>) resp.getDataList()) {
 
                 String text = "";
                 text += "<button id='editLabel' onclick=\"stopPropagation(event);editEntryClick(\'" + label.getId() + "\', \'" + label.getSystem() + "\');\" class='editLabel btn-tree btn btn-default btn-xs margin-right5' name='editLabel' title='Edit Label' type='button'>";
                 text += " <span class='glyphicon glyphicon-pencil'></span></button>";
+
                 text += "<button id='deleteLabel' onclick=\"stopPropagation(event);deleteEntryClick(\'" + label.getId() + "\', \'" + label.getLabel() + "\');\" class='deleteLabel btn-tree btn btn-default btn-xs margin-right5' name='deleteLabel' title='Delete Label' type='button'>";
                 text += " <span class='glyphicon glyphicon-trash'></span></button>";
-                text += "<a id='tcList' href=\"./TestCaseList.jsp?label=" + label.getLabel() + "\" class='btn btn-primary btn-xs marginRight5' name='tcList' title='Test Case List'>";
-                text += " <span class='glyphicon glyphicon-list'></span></a>";
+
+                text += "<button id='tc1Label' onclick=\"stopPropagation(event);window.open('./TestCaseList.jsp?label=" + label.getLabel() + "','_blank');\" class='btn-tree btn btn-default btn-xs margin-right5' name='tcLabel' title='Open Testcase list in new window' type='button'>";
+                text += " <span class='glyphicon glyphicon-list'></span></button>";
+
+                text += "<button id='tc1Label' onclick=\"stopPropagation(event);window.location.href = './TestCaseList.jsp?label=" + label.getLabel() + "';\" class='btn-tree btn btn-primary btn-xs margin-right5' name='tcLabel' title='Open Testcase list.' type='button'>";
+                text += " <span class='glyphicon glyphicon-list'></span></button>";
+
                 text += "<span class='label label-primary' style='background-color:" + label.getColor() + "' data-toggle='tooltip' data-labelid='" + label.getId() + "' title='' data-original-title=''>" + label.getLabel() + "</span>";
                 text += "<span style='margin-left: 5px; margin-right: 5px;' class=''>" + label.getDescription() + "</span>";
 
@@ -304,37 +310,45 @@ public class ReadLabel extends HttpServlet {
                     attributList.add(String.valueOf(label.getCounter1()));
                 }
                 if (Label.TYPE_REQUIREMENT.equals(label.getType())) {
-                    if (!StringUtil.isNullOrEmpty(label.getReqType())) {
+                    if (!StringUtil.isNullOrEmpty(label.getReqType()) && !"unknown".equalsIgnoreCase(label.getReqType())) {
                         attributList.add("<span class='badge badge-pill badge-secondary'>" + label.getReqType() + "</span>");
                     }
-                    if (!StringUtil.isNullOrEmpty(label.getReqStatus())) {
+                    if (!StringUtil.isNullOrEmpty(label.getReqStatus()) && !"unknown".equalsIgnoreCase(label.getReqStatus())) {
                         attributList.add("<span class='badge badge-pill badge-secondary'>" + label.getReqStatus() + "</span>");
                     }
-                    if (!StringUtil.isNullOrEmpty(label.getReqCriticity())) {
+                    if (!StringUtil.isNullOrEmpty(label.getReqCriticity()) && !"unknown".equalsIgnoreCase(label.getReqCriticity())) {
                         attributList.add("<span class='badge badge-pill badge-secondary'>" + label.getReqCriticity() + "</span>");
                     }
                 }
 
-//                label.setText(text);
+                // Create Node.
                 node = new TreeNode(label.getId() + "-" + label.getSystem() + "-" + label.getLabel(), label.getId(), label.getParentLabelID(), text, null, null, false);
                 node.setTags(attributList);
                 nodeList.put(label.getId(), node);
                 if (label.getParentLabelID() > 0) {
-                    treeParent.put(label.getParentLabelID(), node);
+                    treeParent.add(node);
                 }
             }
 
             // Loop on maximum hierarchy levels.
             int i = 0;
             while (i < 50 && !nodeList.isEmpty()) {
-//                LOG.debug(i + ".1 : " + labelList);
+//                LOG.debug(i + ".start : " + nodeList);
                 List<TreeNode> listToRemove = new ArrayList<>();
 
                 for (Map.Entry<Integer, TreeNode> entry : nodeList.entrySet()) {
                     Integer key = entry.getKey();
                     TreeNode value = entry.getValue();
-//                    LOG.debug(value.getId() + " " + value.getParentLabelID() + " " + value.getNodes().size());
-                    if (treeParent.get(value.getId()) == null) {
+//                    LOG.debug(value.getId() + " " + value.getParentId() + " " + value.getNodes().size());
+
+                    boolean hasChild = false;
+                    for (TreeNode treeNode : treeParent) {
+                        if (treeNode.getParentId() == value.getId()) {
+                            hasChild = true;
+                        }
+                    }
+
+                    if (!hasChild) {
                         if ((i == 0) && (value.getNodes().isEmpty())) {
                             value.setNodes(null);
                         }
@@ -344,7 +358,7 @@ public class ReadLabel extends HttpServlet {
                             finalList.add(value);
                             listToRemove.add(value);
                         } else {
-//                            LOG.debug("Adding to final result and remove from list." + i);
+//                            LOG.debug("Moving to parent and remove from list." + i);
                             // Mettre sur le fils sur son pere.
                             TreeNode toto = nodeList.get(value.getParentId());
                             if (toto != null) {
@@ -354,11 +368,12 @@ public class ReadLabel extends HttpServlet {
                                 nodeList.put(key, toto);
                             }
                             listToRemove.add(value);
-                            treeParent.remove(value.getParentId());
+                            treeParent.remove(value);
                         }
                     }
                 }
                 // Removing all entries that has been clasified to finalList.
+//                LOG.debug("To remove : " + listToRemove);
                 for (TreeNode label : listToRemove) {
                     nodeList.remove(label.getId());
                 }
