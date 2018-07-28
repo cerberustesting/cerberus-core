@@ -277,15 +277,14 @@ public class ReadLabel extends HttpServlet {
         labelService = appContext.getBean(LabelService.class);
         testCaseLabelService = appContext.getBean(TestCaseLabelService.class);
         TreeNode node;
-
-        List<TreeNode> finalList = new ArrayList<>();
+        JSONArray jsonArray = new JSONArray();
 
         AnswerList resp = labelService.readByVarious(system, type);
 
         // Building tree Structure;
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-            Map<Integer, TreeNode> nodeList = new HashMap<>();
-            List<TreeNode> treeParent = new ArrayList<>();
+
+            List<TreeNode> inputList = new ArrayList<>();
 
             for (Label label : (List<Label>) resp.getDataList()) {
 
@@ -305,10 +304,14 @@ public class ReadLabel extends HttpServlet {
                 text += "<span class='label label-primary' style='background-color:" + label.getColor() + "' data-toggle='tooltip' data-labelid='" + label.getId() + "' title='' data-original-title=''>" + label.getLabel() + "</span>";
                 text += "<span style='margin-left: 5px; margin-right: 5px;' class=''>" + label.getDescription() + "</span>";
 
+                text += "%COUNTER1TEXT%";
+                text += "%COUNTER1WITHCHILDTEXT%";
+                text += "%NBNODESWITHCHILDTEXT%";
+
+                // Specific pills
+                //text += "<span class='badge badge-pill badge-secondary'>666</span>";
+                // Standard pills
                 List<String> attributList = new ArrayList<>();
-                if (label.getCounter1() > 0) {
-                    attributList.add(String.valueOf(label.getCounter1()));
-                }
                 if (Label.TYPE_REQUIREMENT.equals(label.getType())) {
                     if (!StringUtil.isNullOrEmpty(label.getReqType()) && !"unknown".equalsIgnoreCase(label.getReqType())) {
                         attributList.add("<span class='badge badge-pill badge-secondary'>" + label.getReqType() + "</span>");
@@ -320,70 +323,99 @@ public class ReadLabel extends HttpServlet {
                         attributList.add("<span class='badge badge-pill badge-secondary'>" + label.getReqCriticity() + "</span>");
                     }
                 }
+                if ("".equals(label.getSystem())) {
+                    attributList.add("GLOBAL");
+                }
 
                 // Create Node.
                 node = new TreeNode(label.getId() + "-" + label.getSystem() + "-" + label.getLabel(), label.getId(), label.getParentLabelID(), text, null, null, false);
+                node.setCounter1(label.getCounter1());
+                node.setCounter1WithChild(label.getCounter1());
                 node.setTags(attributList);
-                nodeList.put(label.getId(), node);
-                if (label.getParentLabelID() > 0) {
-                    treeParent.add(node);
-                }
+                node.setCounter1Text("<span style='background-color:#000000' class='cnt1 badge badge-pill badge-secondary'>%COUNTER1%</span>");
+                node.setCounter1WithChildText("<span class='cnt1WC badge badge-pill badge-secondary'>%COUNTER1WITHCHILD%</span>");
+                node.setNbNodesText("<span style='background-color:#337ab7' class='nbNodes badge badge-pill badge-primary'>%NBNODESWITHCHILD%</span>");
+                inputList.add(node);
             }
 
-            // Loop on maximum hierarchy levels.
-            int i = 0;
-            while (i < 50 && !nodeList.isEmpty()) {
-//                LOG.debug(i + ".start : " + nodeList);
-                List<TreeNode> listToRemove = new ArrayList<>();
+            jsonArray = new JSONArray();
 
-                for (Map.Entry<Integer, TreeNode> entry : nodeList.entrySet()) {
-                    Integer key = entry.getKey();
-                    TreeNode value = entry.getValue();
-//                    LOG.debug(value.getId() + " " + value.getParentId() + " " + value.getNodes().size());
-
-                    boolean hasChild = false;
-                    for (TreeNode treeNode : treeParent) {
-                        if (treeNode.getParentId() == value.getId()) {
-                            hasChild = true;
-                        }
-                    }
-
-                    if (!hasChild) {
-                        if ((i == 0) && (value.getNodes().isEmpty())) {
-                            value.setNodes(null);
-                        }
-//                        LOG.debug("Pas de fils.");
-                        if (value.getParentId() <= 0) {
-//                            LOG.debug("Adding to final result and remove from list." + i);
-                            finalList.add(value);
-                            listToRemove.add(value);
-                        } else {
-//                            LOG.debug("Moving to parent and remove from list." + i);
-                            // Mettre sur le fils sur son pere.
-                            TreeNode toto = nodeList.get(value.getParentId());
-                            if (toto != null) {
-                                List<TreeNode> titi = toto.getNodes();
-                                titi.add(value);
-                                toto.setNodes(titi);
-                                nodeList.put(key, toto);
-                            }
-                            listToRemove.add(value);
-                            treeParent.remove(value);
-                        }
-                    }
-                }
-                // Removing all entries that has been clasified to finalList.
-//                LOG.debug("To remove : " + listToRemove);
-                for (TreeNode label : listToRemove) {
-                    nodeList.remove(label.getId());
-                }
-                i++;
+            for (TreeNode treeNode : hierarchyConstructor(inputList)) {
+                jsonArray.put(treeNode.toJson());
             }
+
         }
-        Gson gson = new Gson();
-        JSONArray jsonArray = new JSONArray(gson.toJson(finalList));
 
         return jsonArray;
+    }
+
+    private List<TreeNode> hierarchyConstructor(List<TreeNode> inputList) {
+        // Preparing data structure.
+        Map<Integer, TreeNode> nodeList = new HashMap<>();
+        List<TreeNode> treeParent = new ArrayList<>();
+        for (TreeNode localNode : inputList) {
+            nodeList.put(localNode.getId(), localNode);
+            if (localNode.getParentId() > 0) {
+                treeParent.add(localNode);
+            }
+        }
+
+        // Building final list
+        List<TreeNode> finalList = new ArrayList<>();
+
+        // Loop on maximum hierarchy levels.
+        int i = 0;
+        while (i < 50 && !nodeList.isEmpty()) {
+//                LOG.debug(i + ".start : " + nodeList);
+            List<TreeNode> listToRemove = new ArrayList<>();
+
+            for (Map.Entry<Integer, TreeNode> entry : nodeList.entrySet()) {
+                Integer key = entry.getKey();
+                TreeNode value = entry.getValue();
+//                    LOG.debug(value.getId() + " " + value.getParentId() + " " + value.getNodes().size());
+
+                boolean hasChild = false;
+                for (TreeNode treeNode : treeParent) {
+                    if (treeNode.getParentId() == value.getId()) {
+                        hasChild = true;
+                    }
+                }
+
+                if (!hasChild) {
+                    if ((i == 0) && (value.getNodes().isEmpty())) {
+                        value.setNodes(null);
+                    }
+//                        LOG.debug("Pas de fils.");
+                    if (value.getParentId() <= 0) {
+//                            LOG.debug("Adding to final result and remove from list." + i);
+                        finalList.add(value);
+                        listToRemove.add(value);
+                    } else {
+//                            LOG.debug("Moving to parent and remove from list." + i);
+                        // Mettre sur le fils sur son pere.
+                        TreeNode father = nodeList.get(value.getParentId());
+                        if (father != null) {
+                            List<TreeNode> sons = father.getNodes();
+                            sons.add(value);
+                            father.setNodes(sons);
+                            father.setCounter1WithChild(father.getCounter1WithChild() + value.getCounter1WithChild());
+                            father.setNbNodesWithChild(father.getNbNodesWithChild() + 1);
+                            nodeList.put(key, father);
+                        }
+                        listToRemove.add(value);
+                        treeParent.remove(value);
+                    }
+                }
+            }
+            // Removing all entries that has been clasified to finalList.
+//                LOG.debug("To remove : " + listToRemove);
+            for (TreeNode label : listToRemove) {
+                nodeList.remove(label.getId());
+            }
+            i++;
+        }
+
+        return finalList;
     }
 
     private AnswerItem findLabelByKey(Integer id, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {

@@ -42,11 +42,16 @@ public class TreeNode {
     private boolean selectable;
     private List<TreeNode> nodes;
     private List<String> tags;
+    private Integer nbNodesWithChild;
+    private String nbNodesText;
     private Integer counter1;
+    private String counter1Text;
+    private Integer counter1WithChild;
+    private String counter1WithChildText;
 
     private static final Logger LOG = LogManager.getLogger(TreeNode.class);
-    
-    public TreeNode(String key,Integer id, Integer parentId, String text, String icon, String href, boolean selectable) {
+
+    public TreeNode(String key, Integer id, Integer parentId, String text, String icon, String href, boolean selectable) {
         this.key = key;
         this.id = id;
         this.parentId = parentId;
@@ -55,6 +60,47 @@ public class TreeNode {
         this.href = href;
         this.selectable = selectable;
         this.nodes = new ArrayList<>();
+        this.nbNodesWithChild = 0;
+    }
+
+    public String getCounter1WithChildText() {
+        return counter1WithChildText;
+    }
+
+    public void setCounter1WithChildText(String counter1WithChildText) {
+        this.counter1WithChildText = counter1WithChildText;
+    }
+
+    public String getNbNodesText() {
+        return nbNodesText;
+    }
+
+    public void setNbNodesText(String nbNodesText) {
+        this.nbNodesText = nbNodesText;
+    }
+
+    public String getCounter1Text() {
+        return counter1Text;
+    }
+
+    public void setCounter1Text(String counter1Text) {
+        this.counter1Text = counter1Text;
+    }
+
+    public Integer getNbNodesWithChild() {
+        return nbNodesWithChild;
+    }
+
+    public void setNbNodesWithChild(Integer nbNodesWithChild) {
+        this.nbNodesWithChild = nbNodesWithChild;
+    }
+
+    public Integer getCounter1WithChild() {
+        return counter1WithChild;
+    }
+
+    public void setCounter1WithChild(Integer counter1WithChild) {
+        this.counter1WithChild = counter1WithChild;
     }
 
     public List<String> getTags() {
@@ -96,8 +142,7 @@ public class TreeNode {
     public void setKey(String key) {
         this.key = key;
     }
-    
-    
+
     public List<TreeNode> getNodes() {
         return nodes;
     }
@@ -142,17 +187,41 @@ public class TreeNode {
         JSONObject result = new JSONObject();
         try {
             result.put("id", this.getId());
-            result.put("text", this.getText());
+
+            String cnt1Text = "";
+            if (this.getCounter1() > 0) {
+                cnt1Text = this.getCounter1Text();
+            }
+            String cnt1WCText = "";
+            if ((this.getCounter1WithChild() > 0) && (this.getCounter1WithChild() != this.getCounter1())) {
+                cnt1WCText = this.getCounter1WithChildText();
+            }
+            String nbNodText = "";
+            if (this.getNbNodesWithChild() > 0) {
+                nbNodText = this.getNbNodesText();
+            }
+            result.put(
+                    "text", this.getText().replace("%COUNTER1TEXT%", cnt1Text)
+                            .replace("%COUNTER1WITHCHILDTEXT%", cnt1WCText)
+                            .replace("%NBNODESWITHCHILDTEXT%", nbNodText)
+                            .replace("%COUNTER1%", this.getCounter1().toString())
+                            .replace("%COUNTER1WITHCHILD%", this.getCounter1WithChild().toString())
+                            .replace("%NBNODESWITHCHILD%", this.getNbNodesWithChild().toString())
+            );
             result.put("icon", this.getIcon());
             result.put("href", this.getHref());
             result.put("selectable", this.isSelectable());
-            JSONArray array = new JSONArray();
+            result.put("nbNodesWithChild", this.getNbNodesWithChild());
+            result.put("counter1", this.getCounter1());
+            result.put("counter1WithChild", this.getCounter1WithChild());
+            result.put("tags", this.getTags());
             if (this.getNodes() != null) {
+                JSONArray array = new JSONArray();
                 for (Object childList : this.getNodes()) {
                     array.put(((TreeNode) childList).toJson());
                 }
+                result.put("nodes", array);
             }
-            result.put("nodes", array);
         } catch (JSONException ex) {
             LOG.error(ex.toString());
         }
