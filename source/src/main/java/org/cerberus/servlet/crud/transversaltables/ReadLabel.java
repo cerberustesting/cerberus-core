@@ -365,7 +365,11 @@ public class ReadLabel extends HttpServlet {
             Label label = (Label) answer.getItem();
             JSONObject labelObject = convertLabelToJSONObject(label);
             if (label.getParentLabelID() > 0) {
-                labelObject.put("labelParentObject", convertLabelToJSONObject((Label) labelService.readByKey(label.getParentLabelID()).getItem()));
+                AnswerItem answerParent = labelService.readByKey(label.getParentLabelID());
+                if (answerParent.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && (answerParent.getItem() != null)) {
+                    labelObject.put("labelParentObject", convertLabelToJSONObject((Label) answerParent.getItem()));
+                }
+
             }
             JSONObject response = labelObject;
             object.put("contentTable", response);

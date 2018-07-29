@@ -23,16 +23,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.dao.ILabelDAO;
 import org.cerberus.crud.entity.Label;
-import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.crud.service.ILabelService;
 import org.cerberus.dto.TreeNode;
 import org.cerberus.engine.entity.MessageEvent;
+import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
@@ -73,7 +71,7 @@ public class LabelService implements ILabelService {
     }
 
     @Override
-    public AnswerList readByVarious(List<String>  system, List<String>  type) {
+    public AnswerList readByVarious(List<String> system, List<String> type) {
         return labelDAO.readBySystemByCriteria(system, false, type, 0, 0, "Label", "asc", null, null);
     }
 
@@ -145,12 +143,12 @@ public class LabelService implements ILabelService {
                     response.setResultMessage(msg);
                     return response;
                 }
-                if ((parentLabel.getId().equals(object.getParentLabelID())) && (object.getId().equals(parentLabel.getParentLabelID()))) {
-                    // Parent & Child have different types.
+                if ((parentLabel.getId().equals(object.getParentLabelID())) && (object.getId().equals(parentLabel.getParentLabelID())) && (object.getId() > 0)) {
+                    // Parent & Child have different types. and current > 0 (means that we are not creating a new record.)
                     msg.setDescription(msg.getDescription()
                             .replace("%LABEL%", object.getLabel())
                             .replace("%LABELPARENT%", parentLabel.getLabel())
-                            .replace("%DESCRIPTION%", "'" + parentLabel.getLabel() + "' is already attached to '" + object.getLabel()+ "' and recursive links are not allowed"));
+                            .replace("%DESCRIPTION%", "'" + parentLabel.getLabel() + "' is already attached to '" + object.getLabel() + "' and recursive links are not allowed"));
                     response.setResultMessage(msg);
                     return response;
                 }
@@ -207,7 +205,7 @@ public class LabelService implements ILabelService {
     public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
         return labelDAO.readDistinctValuesByCriteria(system, searchParameter, individualSearch, columnName);
     }
-    
+
     @Override
     public List<TreeNode> hierarchyConstructor(HashMap<Integer, TreeNode> inputList) {
         // Preparing data structure.
@@ -253,11 +251,14 @@ public class LabelService implements ILabelService {
                         finalList.add(value);
                         listToRemove.add(value);
                     } else {
-//                            LOG.debug("Moving to parent and remove from list." + i);
+//                        LOG.debug("Moving to parent and remove from list." + i + " Parent " + value.getParentId());
                         // Mettre sur le fils sur son pere.
                         TreeNode father = nodeList.get(value.getParentId());
                         if (father != null) {
                             List<TreeNode> sons = father.getNodes();
+                            if (sons == null) {
+                                sons = new ArrayList<>();
+                            }
                             sons.add(value);
                             father.setNodes(sons);
                             father.setCounter1WithChild(father.getCounter1WithChild() + value.getCounter1WithChild());
@@ -272,7 +273,11 @@ public class LabelService implements ILabelService {
                             father.setNbQE(father.getNbQE() + value.getNbQE());
                             father.setNbQU(father.getNbQU() + value.getNbQU());
                             father.setNbCA(father.getNbCA() + value.getNbCA());
-                            nodeList.put(key, father);
+                            nodeList.put(father.getId(), father);
+                        } else {
+                            // Father does not exist so we attach it to root.
+                            finalList.add(value);
+                            listToRemove.add(value);
                         }
                         listToRemove.add(value);
                         treeParent.remove(value);
@@ -289,6 +294,5 @@ public class LabelService implements ILabelService {
 
         return finalList;
     }
-    
 
 }

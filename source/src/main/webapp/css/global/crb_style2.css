@@ -821,5 +821,8 @@ table.dataTable thead th {
 }
 
 .node-mainTreeExeS {
-    height : 70px;
+    height : 75px;
+}
+.node-mainTreeExeR {
+    height : 75px;
 }

@@ -294,7 +294,6 @@ public class TreeNode {
 
     private float getP(Integer a, Integer b) {
         float c = ((float) a * (float) 100) / (float) b;
-        LOG.debug(c);
         return c;
     }
 
