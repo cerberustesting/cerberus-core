@@ -143,7 +143,7 @@ function deleteEntryHandlerClick() {
         if (messageType === "success") {
             //redraw the datatable
             var oTable = $("#applicationsTable").dataTable();
-            oTable.fnDraw(true);
+            oTable.fnDraw(false);
             var info = oTable.fnGetData().length;
 
             if (info === 1) {//page has only one row, then returns to the previous page
@@ -193,7 +193,7 @@ function addEntryModalSaveHandler() {
         hideLoaderInModal('#addApplicationModal');
         if (getAlertType(data.messageType) === 'success') {
             var oTable = $("#applicationsTable").dataTable();
-            oTable.fnDraw(true);
+            oTable.fnDraw(false);
             showMessage(data);
             $('#addApplicationModal').modal('hide');
         } else {
@@ -261,7 +261,7 @@ function editEntryModalSaveHandler() {
             hideLoaderInModal('#editApplicationModal');
             if (getAlertType(data.messageType) === "success") {
                 var oTable = $("#applicationsTable").dataTable();
-                oTable.fnDraw(true);
+                oTable.fnDraw(false);
                 $('#editApplicationModal').modal('hide');
                 showMessage(data);
             } else {

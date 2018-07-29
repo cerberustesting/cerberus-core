@@ -129,7 +129,7 @@ function deleteEntryHandlerClick() {
 		if (messageType === "success") {
 			// redraw the datatable
 			var oTable = $("#applicationObjectsTable").dataTable();
-			oTable.fnDraw(true);
+			oTable.fnDraw(false);
 			var info = oTable.fnGetData().length;
 
 			if (info === 1) {// page has only one row, then returns to the

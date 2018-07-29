@@ -317,7 +317,7 @@ function deleteEntryHandlerClick() {
         if (messageType === "success") {
             //redraw the datatable
             var oTable = $("#environmentsTable").dataTable();
-            oTable.fnDraw(true);
+            oTable.fnDraw(false);
             var info = oTable.fnGetData().length;
 
             if (info === 1) {//page has only one row, then returns to the previous page
@@ -370,7 +370,7 @@ function addEntryModalSaveHandler() {
         console.log(data.messageType);
         if (getAlertType(data.messageType) === 'success') {
             var oTable = $("#environmentsTable").dataTable();
-            oTable.fnDraw(true);
+            oTable.fnDraw(false);
             showMessage(data);
             $('#addEnvModal').modal('hide');
         } else {
@@ -469,7 +469,7 @@ function editEntryModalSaveHandler() {
             hideLoaderInModal('#editEnvModal');
             if (getAlertType(data.messageType) === "success") {
                 var oTable = $("#environmentsTable").dataTable();
-                oTable.fnDraw(true);
+                oTable.fnDraw(false);
                 $('#editEnvModal').modal('hide');
                 showMessage(data);
             } else {
@@ -978,7 +978,7 @@ function eventEnableModalConfirmHandler() {
         hideLoaderInModal('#eventEnableModal');
         if (getAlertType(data.messageType) === "success") {
             var oTable = $("#environmentsTable").dataTable();
-            oTable.fnDraw(true);
+            oTable.fnDraw(false);
             $('#eventEnableModal').modal('hide');
             showMessage(data);
         } else {
@@ -1102,7 +1102,7 @@ function eventDisableModalConfirmHandler() {
         hideLoaderInModal('#eventDisableModal');
         if (getAlertType(data.messageType) === "success") {
             var oTable = $("#environmentsTable").dataTable();
-            oTable.fnDraw(true);
+            oTable.fnDraw(false);
             $('#eventDisableModal').modal('hide');
             showMessage(data);
         } else {
@@ -1177,7 +1177,7 @@ function eventNewChainModalConfirmHandler() {
         hideLoaderInModal('#eventNewChainModal');
         if (getAlertType(data.messageType) === "success") {
             var oTable = $("#environmentsTable").dataTable();
-            oTable.fnDraw(true);
+            oTable.fnDraw(false);
             $('#eventNewChainModal').modal('hide');
             showMessage(data);
         } else {

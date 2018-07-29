@@ -1672,7 +1672,7 @@ function createEntry(servletName, form, tableID) {
         hideLoaderInModal("#addEntryModal");
         if (getAlertType(data.messageType) === 'success') {
             var oTable = $(tableID).dataTable();
-            oTable.fnDraw(true);
+            oTable.fnDraw(false);
             showMessage(data);
             $("#addEntryModal").modal('hide');
         } else {

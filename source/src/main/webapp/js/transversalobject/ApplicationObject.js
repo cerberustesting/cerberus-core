@@ -151,7 +151,7 @@ function confirmApplicationObjectModalHandler(page, mode) {
 			if (getAlertType(data.messageType) === "success") {
 				if(page == "applicationObject") {
 	                var oTable = $("#applicationObjectsTable").dataTable();
-	                oTable.fnDraw(true);
+	                oTable.fnDraw(false);
 	            }else if(page == "testCaseScript"){
 	                //TestCaseScript.js must be loaded so getTags exist
 	                var Tags = getTags();

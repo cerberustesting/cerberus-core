@@ -239,7 +239,7 @@ function deleteEntryHandlerClick() {
         if (messageType === "success") {
             // Redraw the datatable
             var oTable = $("#labelsTable").dataTable();
-            oTable.fnDraw(true);
+            oTable.fnDraw(false);
             generateLabelTree();
             var info = oTable.fnGetData().length;
             if (info === 1) {//page has only one row, then returns to the previous page
@@ -288,7 +288,7 @@ function addEntryModalSaveHandler() {
 //        console.log(data.messageType);
         if (getAlertType(data.messageType) === 'success') {
             var oTable = $("#labelsTable").dataTable();
-            oTable.fnDraw(true);
+            oTable.fnDraw(false);
             generateLabelTree();
             showMessage(data);
             $('#addLabelModal').modal('hide');
@@ -348,7 +348,7 @@ function editEntryModalSaveHandler() {
             hideLoaderInModal('#editLabelModal');
             if (getAlertType(data.messageType) === "success") {
                 var oTable = $("#labelsTable").dataTable();
-                oTable.fnDraw(true);
+                oTable.fnDraw(false);
                 generateLabelTree();
                 $('#editLabelModal').modal('hide');
                 showMessage(data);

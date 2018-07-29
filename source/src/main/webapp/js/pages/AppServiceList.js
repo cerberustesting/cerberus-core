@@ -91,7 +91,7 @@ function removeEntryClick(service) {
 				}
 				hideLoaderInModal('#removeSoapLibraryModal');
 				var oTable = $("#soapLibrarysTable").dataTable();
-				oTable.fnDraw(true);
+				oTable.fnDraw(false);
 				$('#removeSoapLibraryModal').modal('hide');
 				showMessageMainPage(messageType, data.message, false);
 
@@ -342,7 +342,7 @@ function deleteEntryHandlerClick() {
 		if (messageType === "success") {
 			// redraw the datatable
 			var oTable = $("#soapLibrarysTable").dataTable();
-			oTable.fnDraw(true);
+			oTable.fnDraw(false);
 			var info = oTable.fnGetData().length;
 
 			if (info === 1) {// page has only one row, then returns to the

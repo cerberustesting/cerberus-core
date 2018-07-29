@@ -268,7 +268,7 @@ function confirmAppServiceModalHandler(mode, page) {
                     $("." + temp).parent().find("input").trigger("input", ['first']);
                 } else {
                     var oTable = $("#soapLibrarysTable").dataTable();
-                    oTable.fnDraw(true);
+                    oTable.fnDraw(false);
                 }
                 $('#editSoapLibraryModal').data("Saved", true);
                 $('#editSoapLibraryModal').modal('hide');

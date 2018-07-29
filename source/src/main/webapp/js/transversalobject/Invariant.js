@@ -245,7 +245,7 @@ function confirmInvariantModalHandler(mode) {
             hideLoaderInModal('#editInvariantModal');
             if (getAlertType(data.messageType) === "success") {
                 var oTable = $("#invariantsTable").dataTable();
-                oTable.fnDraw(true);
+                oTable.fnDraw(false);
                 $('#editInvariantModal').data("Saved", true);
                 $('#editInvariantModal').modal('hide');
                 showMessage(data);

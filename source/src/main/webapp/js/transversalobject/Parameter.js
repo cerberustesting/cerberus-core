@@ -117,7 +117,7 @@ function confirmParameterModalHandler(system) {
             hideLoaderInModal('#editParameterModal');
             if (getAlertType(data.messageType) === 'success') {
                 var oTable = $("#parametersTable").dataTable();
-                oTable.fnDraw(true);
+                oTable.fnDraw(false);
                 $('#editParameterModal').modal('hide');
                 showMessage(data);
             } else {

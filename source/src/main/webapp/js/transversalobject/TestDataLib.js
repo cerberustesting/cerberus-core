@@ -362,7 +362,7 @@ function confirmDataLibModalHandler(element, mode, id) {
             if (getAlertType(data.messageType) === "success") {
                 if (isEmpty(id)) {
                     var oTable = $("#listOfTestDataLib").dataTable();
-                    oTable.fnDraw(true);
+                    oTable.fnDraw(false);
                 } else {
                     if (element != null) {
                         var editor = ace.edit($("#" + element)[0])
@@ -772,7 +772,7 @@ function uploadTestDataLibFromXMLFile() {
     $.when(jqxhr).then(function (data) {
         hideLoaderInModal("#modalUpload");
         var oTable = $("#listOfTestDataLib").dataTable();
-        oTable.fnDraw(true);
+        oTable.fnDraw(false);
         $('#modalUpload').modal('hide');
         showMessageMainPage(getAlertType(data.messageType), data.message, false);
     }).fail(handleErrorAjaxAfterTimeout);

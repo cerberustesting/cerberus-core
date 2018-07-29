@@ -247,7 +247,7 @@ function confirmDataLibBulkModalHandler() {
                 if (getAlertType(data.messageType) === "success") {
                     $('#bulkRenameDataLibModal').modal('hide');
                     var oTable = $("#listOfTestDataLib").dataTable();
-                    oTable.fnDraw(true);
+                    oTable.fnDraw(false);
                     var doc = new Doc();
                     showMessage(data);
                 } else {
@@ -267,7 +267,7 @@ function deleteTestDataLibHandlerClick() {
         if (messageType === "success") {
             //redraw the datatable
             var oTable = $("#listOfTestDataLib").dataTable();
-            oTable.fnDraw(true);
+            oTable.fnDraw(false);
             var info = oTable.fnGetData().length;
 
             if (info === 1) {//page has only one row, then returns to the previous page

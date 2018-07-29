@@ -319,7 +319,7 @@ function editEntryModalSaveHandler() {
             if (getAlertType(data.messageType) === 'success') {
                 $('#editUserModal').modal('hide');
                 var oTable = $("#usersTable").dataTable();
-                oTable.fnDraw(true);
+                oTable.fnDraw(false);
                 showMessage(data);
             } else {
                 showMessage(data, $('#editUserModal'));
@@ -478,7 +478,7 @@ function addEntryModalSaveHandler() {
             if (getAlertType(data.messageType) === 'success') {
                 $('#addUserModal').modal('hide');
                 var oTable = $("#usersTable").dataTable();
-                oTable.fnDraw(true);
+                oTable.fnDraw(false);
                 showMessage(data);
             } else {
                 showMessage(data, $('#addUserModal'));
@@ -509,7 +509,7 @@ function removeEntryClick(key) {
             success: function (data) {
                 hideLoaderInModal('#removeTestampaignModal');
                 var oTable = $("#usersTable").dataTable();
-                oTable.fnDraw(true);
+                oTable.fnDraw(false);
                 $('#removeUserModal').modal('hide');
                 showMessage(data);
             },

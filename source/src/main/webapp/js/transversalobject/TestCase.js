@@ -446,7 +446,7 @@ function confirmTestCaseModalHandler(mode) {
             hideLoaderInModal('#editTestCaseModal');
             if (getAlertType(dataMessage.messageType) === "success") {
                 var oTable = $("#testCaseTable").dataTable();
-                oTable.fnDraw(true);
+                oTable.fnDraw(false);
                 $('#editTestCaseModal').data("Saved", true);
                 $('#editTestCaseModal').data("testcase", data);
                 $('#editTestCaseModal').modal('hide');
@@ -505,16 +505,17 @@ function feedTestCaseModal(test, testCase, modalId, mode) {
 
         $.when(appInfo).then(function (appData) {
             var currentSys = getUser().defaultSystem;
-            var bugTrackerUrl = appData.contentTable.bugTrackerUrl;
+            var t = appData.contentTable;
+            var bugTrackerUrl = t.bugTrackerUrl;
 
             // Loading build and revision various combos.
-            appendBuildRevListOnTestCase(appData.contentTable.system, testCase);
+            appendBuildRevListOnTestCase(t.system, testCase);
             // Title of the label list.
-            $("[name='labelField']").html("Labels from system : " + appData.contentTable.system);
+            $("#labelField").html("Labels from system : " + t.system);
             // Loading the label list from aplication of the testcase.
-            loadLabel(testCase.labelList, appData.contentTable.system, "#selectLabel");
+            loadLabel(testCase.labelList, t.system, "#selectLabel");
             // Loading application combo from the system of the current application.
-            appendApplicationList(testCase.application, appData.contentTable.system);
+            appendApplicationList(testCase.application, t.system);
 
             var newbugTrackerUrl = "";
             if (testCase.bugID !== "" && bugTrackerUrl) {
@@ -914,18 +915,27 @@ function loadLabel(labelList, mySystem, myLabelDiv, labelSize) {
         var messageType = getAlertType(data.messageType);
         //DRAW LABEL LIST
         if (messageType === "success") {
-            $(labelDiv).empty();
+            $(labelDiv + "S").empty();
+            $(labelDiv + "R").empty();
+            $(labelDiv + "B").empty();
             var index;
             for (index = 0; index < data.contentTable.length; index++) {
-                //the character " needs a special encoding in order to avoid breaking the string that creates the html element   
-                var labelTag = '<div style="float:left" align="center"><input name="labelid" id="labelId' + data.contentTable[index].id + '" value="' + data.contentTable[index].id + '" type="checkbox">\n\
-                <span class="label label-primary" style="cursor:pointer;background-color:' + data.contentTable[index].color + '">' + data.contentTable[index].label + '</span></div> ';
-                var option = $('<div style="float:left; height:60px" name="itemLabelDiv" id="itemLabelId' + data.contentTable[index].id + '" class="col-xs-' + labelSize + ' list-group-item list-label"></div>')
-                        .attr("value", data.contentTable[index].label).html(labelTag);
-                if (data.contentTable[index].system === targetSystem) {
-                    $(labelDiv).prepend(option);
+                //the character " needs a special encoding in order to avoid breaking the string that creates the html element
+                var l = data.contentTable[index];
+                var labelTag = '<div style="float:left" align="center"><input name="labelid" id="labelId' + l.id + '" value="' + l.id + '" type="checkbox">\n\
+                <span class="label label-primary" style="cursor:pointer;background-color:' + l.color + '">' + l.label + '</span></div> ';
+                var option = $('<div style="float:left; height:60px" name="itemLabelDiv" id="itemLabelId' + l.id + '" class="col-xs-' + labelSize + ' list-group-item list-label"></div>')
+                        .attr("value", l.label).html(labelTag);
+                var a = "S";
+                if (l.type === "REQUIREMENT") {
+                    a = "R";
+                } else if (l.type === "BATTERY") {
+                    a = "B";
+                }
+                if (l.system === targetSystem) {
+                    $(labelDiv + a).prepend(option);
                 } else {
-                    $(labelDiv).append(option);
+                    $(labelDiv + a).append(option);
                 }
             }
         } else {
@@ -935,15 +945,22 @@ function loadLabel(labelList, mySystem, myLabelDiv, labelSize) {
         if (!(isEmpty(labelList))) {
             var index;
             for (index = 0; index < labelList.length; index++) {
+                var l = labelList[index].label;
                 //For each testcaselabel, put at the top of the list and check them
-                var element = $("#itemLabelId" + labelList[index].label.id);
+                var element = $("#itemLabelId" + l.id);
                 element.remove();
-                $(labelDiv).prepend(element);
-                $("#labelId" + labelList[index].label.id).prop("checked", true);
+                var a = "S";
+                if (l.type === "REQUIREMENT") {
+                    a = "R";
+                } else if (l.type === "BATTERY") {
+                    a = "B";
+                }
+                $(labelDiv + a).prepend(element);
+                $("#labelId" + l.id).prop("checked", true);
             }
         }
         //ADD CLICK EVENT ON LABEL
-        $(labelDiv).find('span').click(function () {
+        $(labelDiv + "S").find('span').click(function () {
             var status = $(this).parent().find("input").prop('checked');
             $(this).parent().find("input").prop('checked', !status);
         });
@@ -978,7 +995,7 @@ function appendTestList(defautValue) {
 //    $('#editTestCaseModal [name="test"]').empty();
 //    $('#editTestCaseModal [name="test"]').select2(getComboConfigTest());
 
-	var user = getUser();
+    var user = getUser();
     $("#editTestCaseModal [name=test]").empty();
 
     var jqxhr = $.getJSON("ReadTest", "");

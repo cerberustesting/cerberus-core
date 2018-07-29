@@ -201,7 +201,7 @@ function confirmExecutionQueueModalHandler(mode, queueAction, saveAction) {
             hideLoaderInModal('#editExecutionQueueModal');
             if (getAlertType(data.messageType) === "success") {
                 var oTable = $("#executionsTable").dataTable();
-                oTable.fnDraw(true);
+                oTable.fnDraw(false);
                 $('#editExecutionQueueModal').data("Saved", true);
                 $('#editExecutionQueueModal').modal('hide');
                 if (data.addedEntries === 1) {

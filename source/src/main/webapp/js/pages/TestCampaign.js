@@ -505,7 +505,7 @@ function editEntryModalSaveHandler() {
             hideLoaderInModal('#editTestcampaignModal');
             if (getAlertType(data.messageType) === 'success') {
                 var oTable = $("#testcampaignsTable").dataTable();
-                oTable.fnDraw(true);
+                oTable.fnDraw(false);
                 $('#editTestcampaignModal').modal('hide');
                 showMessage(data);
             } else {
@@ -622,7 +622,7 @@ function addEntryModalSaveHandler() {
             hideLoaderInModal('#addTestcampaignModal');
             if (getAlertType(data.messageType) === 'success') {
                 var oTable = $("#testcampaignsTable").dataTable();
-                oTable.fnDraw(true);
+                oTable.fnDraw(false);
                 $('#addTestcampaignModal').modal('hide');
                 showMessage(data);
             } else {
@@ -654,7 +654,7 @@ function removeEntryClick(key) {
             success: function (data) {
                 hideLoaderInModal('#removeTestampaignModal');
                 var oTable = $("#testcampaignsTable").dataTable();
-                oTable.fnDraw(true);
+                oTable.fnDraw(false);
                 $('#removeTestcampaignModal').modal('hide');
                 showMessage(data);
             },

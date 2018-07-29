@@ -82,7 +82,7 @@ function deleteEntryHandlerClick() {
         if (messageType === "success") {
             //redraw the datatable
             var oTable = $("#batchinvariantsTable").dataTable();
-            oTable.fnDraw(true);
+            oTable.fnDraw(false);
             var info = oTable.fnGetData().length;
 
             if (info === 1) {//page has only one row, then returns to the previous page
@@ -176,7 +176,7 @@ function saveEntry(servletName, modalID, form) {
         hideLoaderInModal(modalID);
         if (getAlertType(data.messageType) === 'success') {
             var oTable = $("#batchinvariantsTable").dataTable();
-            oTable.fnDraw(true);
+            oTable.fnDraw(false);
             showMessage(data);
             $(modalID).modal('hide');
         } else {

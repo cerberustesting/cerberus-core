@@ -276,7 +276,7 @@ function confirmRobotModalHandler(mode) {
             hideLoaderInModal('#editRobotModal');
             if (getAlertType(dataMessage.messageType) === "success") {
                 var oTable = $("#robotsTable").dataTable();
-                oTable.fnDraw(true);
+                oTable.fnDraw(false);
                 $('#editRobotModal').data("Saved", true);
                 $('#editRobotModal').data("robot", data);
                 $('#editRobotModal').modal('hide');

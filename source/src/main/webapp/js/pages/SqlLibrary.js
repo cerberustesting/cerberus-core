@@ -182,7 +182,7 @@ function editEntryModalSaveHandler() {
             hideLoaderInModal('#editSqlLibraryModal');
             if (getAlertType(data.messageType) === 'success') {
                 var oTable = $("#sqlLibrarysTable").dataTable();
-                oTable.fnDraw(true);
+                oTable.fnDraw(false);
                 $('#editSqlLibraryModal').modal('hide');
                 showMessage(data);
             } else {
@@ -251,7 +251,7 @@ function addEntryModalSaveHandler() {
             hideLoaderInModal('#addSqlLibraryModal');
             if (getAlertType(data.messageType) === 'success') {
                 var oTable = $("#sqlLibrarysTable").dataTable();
-                oTable.fnDraw(true);
+                oTable.fnDraw(false);
                 $('#addSqlLibraryModal').modal('hide');
                 showMessage(data);
             } else {
@@ -280,7 +280,7 @@ function removeEntryClickHandler() {
         if (messageType === "success") {
             //redraw the datatable
             var oTable = $("#sqlLibrarysTable").dataTable();
-            oTable.fnDraw(true);
+            oTable.fnDraw(false);
             var info = oTable.fnGetData().length;
 
             if (info === 1) {//page has only one row, then returns to the previous page
