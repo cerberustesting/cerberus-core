@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.ArrayList;
+import static java.util.Arrays.asList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -43,6 +44,7 @@ import org.cerberus.crud.entity.Tag;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseLabel;
 import org.cerberus.crud.service.IInvariantService;
+import org.cerberus.crud.service.ILabelService;
 import org.cerberus.crud.service.ITagService;
 import org.cerberus.crud.service.ITestCaseExecutionService;
 import org.cerberus.crud.service.ITestCaseLabelService;
@@ -63,6 +65,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.util.JavaScriptUtils;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
+import org.cerberus.crud.service.impl.LabelService;
+import org.cerberus.crud.service.impl.TestCaseLabelService;
+import org.cerberus.dto.TreeNode;
 import org.cerberus.util.StringUtil;
 
 /**
@@ -76,6 +81,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
     private ITagService tagService;
     private ITestCaseExecutionQueueService testCaseExecutionInQueueService;
     private ITestCaseLabelService testCaseLabelService;
+    private ILabelService labelService;
 
     private static final Logger LOG = LogManager.getLogger("ReadTestCaseExecutionByTag");
 
@@ -293,9 +299,9 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                         execTab = ttcObject.getJSONObject("execTab");
                         execTab.put(execKey, executionJSON);
                         ttcObject.put("execTab", execTab);
-                        Integer toto = (Integer) ttcObject.get("NbExecutionsTotal");
-                        toto += testCaseExecution.getNbExecutions() - 1;
-                        ttcObject.put("NbExecutionsTotal", toto);
+                        Integer nbExeTot = (Integer) ttcObject.get("NbExecutionsTotal");
+                        nbExeTot += testCaseExecution.getNbExecutions() - 1;
+                        ttcObject.put("NbExecutionsTotal", nbExeTot);
 
                     } else {
                         // We add a new testcase entry (with The current execution).
@@ -632,64 +638,166 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
     private JSONObject generateLabelStats(ApplicationContext appContext, HttpServletRequest request, List<TestCaseExecution> testCaseExecutions, JSONObject statusFilter, JSONObject countryFilter) throws JSONException {
 
         JSONObject jsonResult = new JSONObject();
-        boolean stickers = request.getParameter("stickers") != null;
-        boolean requirement = request.getParameter("requirement") != null;
 
-        if (stickers || requirement) {
+        labelService = appContext.getBean(LabelService.class);
+        testCaseLabelService = appContext.getBean(TestCaseLabelService.class);
+        TreeNode node;
+        JSONArray jsonArraySTICKER = new JSONArray();
+        JSONArray jsonArrayREQUIREMENT = new JSONArray();
 
-            testCaseLabelService = appContext.getBean(ITestCaseLabelService.class);
-            AnswerList testCaseLabelList = testCaseLabelService.readByTestTestCase(null, null);
-            SummaryStatisticsDTO total = new SummaryStatisticsDTO();
-            total.setEnvironment("Total");
+        AnswerList resp = labelService.readByVarious(new ArrayList<>(), new ArrayList<>(asList(Label.TYPE_STICKER, Label.TYPE_REQUIREMENT)));
 
-            /**
-             * Iterate on the label retrieved and generate HashMap based on the
-             * key Test_TestCase
-             */
-            LinkedHashMap<String, JSONArray> testCaseWithLabel = new LinkedHashMap();
-            for (TestCaseLabel label : (List<TestCaseLabel>) testCaseLabelList.getDataList()) {
-                if ((Label.TYPE_STICKER.equals(label.getLabel().getType()) && stickers)
-                        || (Label.TYPE_REQUIREMENT.equals(label.getLabel().getType()) && requirement)) {
+        // Building Label inputlist with target layout
+        if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+
+            HashMap<Integer, TreeNode> inputList = new HashMap();
+
+            for (Label label : (List<Label>) resp.getDataList()) {
+
+                String text = "";
+
+                text += "<span class='label label-primary' style='background-color:" + label.getColor() + "' data-toggle='tooltip' data-labelid='" + label.getId() + "' title='' data-original-title=''>" + label.getLabel() + "</span>";
+                text += "<span style='margin-left: 5px; margin-right: 5px;' class=''>" + label.getDescription() + "</span>";
+
+                text += "%STATUSBAR%";
+                text += "%COUNTER1TEXT%";
+                text += "%COUNTER1WITHCHILDTEXT%";
+                text += "%NBNODESWITHCHILDTEXT%";
+
+                // Specific pills
+                //text += "<span class='badge badge-pill badge-secondary'>666</span>";
+                // Standard pills
+                List<String> attributList = new ArrayList<>();
+                if (Label.TYPE_REQUIREMENT.equals(label.getType())) {
+                    if (!StringUtil.isNullOrEmpty(label.getReqType()) && !"unknown".equalsIgnoreCase(label.getReqType())) {
+                        attributList.add("<span class='badge badge-pill badge-secondary'>" + label.getReqType() + "</span>");
+                    }
+                    if (!StringUtil.isNullOrEmpty(label.getReqStatus()) && !"unknown".equalsIgnoreCase(label.getReqStatus())) {
+                        attributList.add("<span class='badge badge-pill badge-secondary'>" + label.getReqStatus() + "</span>");
+                    }
+                    if (!StringUtil.isNullOrEmpty(label.getReqCriticity()) && !"unknown".equalsIgnoreCase(label.getReqCriticity())) {
+                        attributList.add("<span class='badge badge-pill badge-secondary'>" + label.getReqCriticity() + "</span>");
+                    }
+                }
+
+                // Create Node.
+                node = new TreeNode(label.getId() + "-" + label.getSystem() + "-" + label.getLabel(), label.getId(), label.getParentLabelID(), text, null, null, false);
+                node.setCounter1(0);
+                node.setCounter1WithChild(0);
+                node.setTags(attributList);
+                node.setType(label.getType());
+                node.setCounter1Text("<span style='background-color:#000000' class='cnt1 badge badge-pill badge-secondary'>%COUNTER1%</span>");
+                node.setCounter1WithChildText("<span class='cnt1WC badge badge-pill badge-secondary'>%COUNTER1WITHCHILD%</span>");
+                node.setNbNodesText("<span style='background-color:#337ab7' class='nbNodes badge badge-pill badge-primary'>%NBNODESWITHCHILD%</span>");
+                inputList.put(node.getId(), node);
+//                    LOG.debug("Label : " + node.getId() + " T : " + node);
+            }
+
+            // Building TestCase Hash with List of Labels.
+            AnswerList testCaseLabelList1 = testCaseLabelService.readByTestTestCase(null, null);
+            HashMap<String, List<Integer>> testCaseWithLabel1 = new HashMap();
+            for (TestCaseLabel label : (List<TestCaseLabel>) testCaseLabelList1.getDataList()) {
+//                LOG.debug("TCLabel : " + label.getLabel() + " T : " + label.getTest() + " C : " + label.getTestcase() + " Type : " + label.getLabel().getType());
+                if ((Label.TYPE_STICKER.equals(label.getLabel().getType()))
+                        || (Label.TYPE_REQUIREMENT.equals(label.getLabel().getType()))) {
                     String key = label.getTest() + "_" + label.getTestcase();
-                    JSONObject jo = new JSONObject().put("name", label.getLabel().getLabel()).put("color", label.getLabel().getColor()).put("description", label.getLabel().getDescription());
-                    if (testCaseWithLabel.containsKey(key)) {
-                        testCaseWithLabel.get(key).put(jo);
+                    List<Integer> curLabelIdList = new ArrayList<>();
+                    if (testCaseWithLabel1.get(key) != null) {
+                        curLabelIdList = testCaseWithLabel1.get(key);
+                        curLabelIdList.add(label.getLabelId());
+                        testCaseWithLabel1.put(key, curLabelIdList);
+//                        LOG.debug("  ADDED");
                     } else {
-                        testCaseWithLabel.put(key, new JSONArray().put(jo));
+                        curLabelIdList.add(label.getLabelId());
+                        testCaseWithLabel1.put(key, curLabelIdList);
+//                        LOG.debug("  ADDED");
                     }
                 }
             }
+
             /**
-             * For All execution, get all label and generate statistics
+             * For All execution, get all labels from the test case and add if
+             * those labels were in the list add the stats of executions into
+             * the counters.
              */
-            LinkedHashMap<String, SummaryStatisticsDTO> labelPerTestcaseExecution = new LinkedHashMap();
             for (TestCaseExecution testCaseExecution : testCaseExecutions) {
+//                    LOG.debug("Exe : " + testCaseExecution.getId() + " T : " + testCaseExecution.getTest() + " C : " + testCaseExecution.getTestCase());
                 String controlStatus = testCaseExecution.getControlStatus();
                 if (statusFilter.get(controlStatus).equals("on") && countryFilter.get(testCaseExecution.getCountry()).equals("on")) {
 
                     //Get label for current test_testcase
-                    JSONArray labelsForTestCase = testCaseWithLabel.get(testCaseExecution.getTest() + "_" + testCaseExecution.getTestCase());
+                    List<Integer> labelsForTestCase = testCaseWithLabel1.get(testCaseExecution.getTest() + "_" + testCaseExecution.getTestCase());
                     if (labelsForTestCase != null) {
-                        for (int index = 0; index < labelsForTestCase.length(); index++) {
-                            JSONObject j = labelsForTestCase.getJSONObject(index);
-                            if (labelPerTestcaseExecution.containsKey(j.get("name"))) {
-                                labelPerTestcaseExecution.get(j.get("name").toString()).updateStatisticByStatus(controlStatus);
-                            } else {
-                                SummaryStatisticsDTO stat = new SummaryStatisticsDTO();
-                                stat.setLabel(j);
-                                stat.updateStatisticByStatus(controlStatus);
-                                labelPerTestcaseExecution.put(j.get("name").toString(), stat);
+                        for (Integer integer : labelsForTestCase) {
+//                                LOG.debug(" T : " + testCaseExecution.getTest() + " C : " + testCaseExecution.getTestCase() + " T : " + integer);
+                            TreeNode curTreenode = inputList.get(integer);
+                            if (curTreenode != null) {
+//                                    LOG.debug(" K : " + titi.getKey() + " C : " + titi.getCounter1());
+                                curTreenode.setCounter1(curTreenode.getCounter1() + 1);
+                                curTreenode.setCounter1WithChild(curTreenode.getCounter1WithChild() + 1);
+                                switch (testCaseExecution.getControlStatus()) {
+                                    case TestCaseExecution.CONTROLSTATUS_OK:
+                                        curTreenode.setNbOK(curTreenode.getNbOK() + 1);
+                                        break;
+                                    case TestCaseExecution.CONTROLSTATUS_KO:
+                                        curTreenode.setNbKO(curTreenode.getNbKO() + 1);
+                                        break;
+                                    case TestCaseExecution.CONTROLSTATUS_FA:
+                                        curTreenode.setNbFA(curTreenode.getNbFA() + 1);
+                                        break;
+                                    case TestCaseExecution.CONTROLSTATUS_NA:
+                                        curTreenode.setNbNA(curTreenode.getNbNA() + 1);
+                                        break;
+                                    case TestCaseExecution.CONTROLSTATUS_NE:
+                                        curTreenode.setNbNE(curTreenode.getNbNE() + 1);
+                                        break;
+                                    case TestCaseExecution.CONTROLSTATUS_WE:
+                                        curTreenode.setNbWE(curTreenode.getNbWE() + 1);
+                                        break;
+                                    case TestCaseExecution.CONTROLSTATUS_PE:
+                                        curTreenode.setNbPE(curTreenode.getNbPE() + 1);
+                                        break;
+                                    case TestCaseExecution.CONTROLSTATUS_QE:
+                                        curTreenode.setNbQE(curTreenode.getNbQE() + 1);
+                                        break;
+                                    case TestCaseExecution.CONTROLSTATUS_QU:
+                                        curTreenode.setNbQU(curTreenode.getNbQU() + 1);
+                                        break;
+                                    case TestCaseExecution.CONTROLSTATUS_CA:
+                                        curTreenode.setNbCA(curTreenode.getNbCA() + 1);
+                                        break;
+                                }
+                                inputList.put(curTreenode.getId(), curTreenode);
                             }
-                            total.updateStatisticByStatus(controlStatus);
                         }
                     }
                 }
             }
 
-            jsonResult.put("labelStats", extractSummaryData(labelPerTestcaseExecution, total, true));
+            // Build Tres.
+            List<TreeNode> finalList;
+            jsonArraySTICKER = new JSONArray();
+            jsonArrayREQUIREMENT = new JSONArray();
+            finalList = labelService.hierarchyConstructor(inputList);
+
+            for (TreeNode treeNode : finalList) {
+                if (treeNode.getCounter1WithChild() > 0) {
+                    if (Label.TYPE_STICKER.equals(treeNode.getType())) {
+                        jsonArraySTICKER.put(treeNode.toJson());
+                    } else {
+                        jsonArrayREQUIREMENT.put(treeNode.toJson());
+                    }
+                }
+            }
+
         }
+
+        jsonResult.put("labelTreeSTICKER", jsonArraySTICKER);
+        jsonResult.put("labelTreeREQUIREMENT", jsonArrayREQUIREMENT);
+
         return jsonResult;
     }
+
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**

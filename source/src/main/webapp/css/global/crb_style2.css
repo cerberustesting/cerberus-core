@@ -820,3 +820,6 @@ table.dataTable thead th {
     z-index: 1049 !important;
 }
 
+.node-mainTreeExeS {
+    height : 70px;
+}

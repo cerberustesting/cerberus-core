@@ -38,6 +38,7 @@
         <script type="text/javascript" src="js/pages/ReportingExecutionByTag.js"></script>
         <script type="text/javascript" src="js/transversalobject/TestCaseExecutionQueue.js"></script>
         <script type="text/javascript" src="js/transversalobject/TestCase.js"></script>
+        <script type="text/javascript" src="dependencies/Bootstrap-treeview-1.2.0/js/bootstrap-treeview.js"></script>
         <title id="pageTitle">Campaign Reporting</title>
     </head>
     <body>
@@ -252,7 +253,6 @@
                                 </label>
                             </div>
                             <div id="progressEnvCountryBrowser">
-
                             </div>
                             <div id="summaryTableDiv" style="display: none;">
 
@@ -295,21 +295,14 @@
                         <div class="panel-heading card clearfix" data-toggle="collapse" data-target="#reportLabel">
                             <label id="envCountryBrowser">Report by Label</label>
                             <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
+                            <ul class="nav nav-tabs pull-right">
+                                <li class="active" id="stickers"><a>Stickers</a></li>
+                                <li class="" id="requirements"><a>Requirements</a></li>
+                            </ul>
                         </div>
                         <div class="panel-body collapse in" id="reportLabel">
-                            <label id="splitLabel" class="bold">Show :</label>
-                            <div class="form-group marginBottom20" id="splitLabelFilter">
-                                <label class="checkbox-inline">
-                                    <input type="checkbox" name="stickers" checked/>
-                                    Stickers
-                                </label>
-                                <label class="checkbox-inline">
-                                    <input type="checkbox" name="requirement" checked/>
-                                    Requirement
-                                </label>
-                            </div>
-                            <div id="progressLabel">
-                            </div>
+                            <div class='marginTop20' id="mainTreeExeS"></div>
+                            <div class='marginTop20' id="mainTreeExeR" style="display: none;"></div>
                         </div>
                     </div>
                 </div>

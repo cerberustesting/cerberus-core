@@ -108,7 +108,7 @@ public class LabelDAO implements ILabelDAO {
     }
 
     @Override
-    public AnswerList<List<Label>> readBySystemByCriteria(String system, String type, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
+    public AnswerList<List<Label>> readBySystemByCriteria(List<String> system, List<String> type, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
         AnswerList response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -151,16 +151,17 @@ public class LabelDAO implements ILabelDAO {
             searchSQL.append(" )");
         }
 
-        if (!StringUtil.isNullOrEmpty(system)) {
-            searchSQL.append(" and (lab.`System` = ? or lab.`System` = '')");
+        if ((system != null) && (!system.isEmpty())) {
+            system.add("");
+            searchSQL.append(" and (" + SqlUtil.generateInClause("lab.`System`", system) + ")");
         }
-        if (!StringUtil.isNullOrEmpty(type)) {
-            searchSQL.append(" and (lab.`Type` = ?)");
+        if ((type != null) && (!type.isEmpty())) {
+            searchSQL.append(" and (" + SqlUtil.generateInClause("lab.`Type`", type) + ")");
         }
         query.append(searchSQL);
 
         query.append(" group by lab.id ");
-        
+
         if (!StringUtil.isNullOrEmpty(column)) {
             query.append(" order by `").append(column).append("` ").append(dir);
         }
@@ -170,7 +171,6 @@ public class LabelDAO implements ILabelDAO {
         } else {
             query.append(" limit ").append(start).append(" , ").append(amount);
         }
-
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -203,11 +203,15 @@ public class LabelDAO implements ILabelDAO {
             for (String individualColumnSearchValue : individalColumnSearchValues) {
                 preStat.setString(i++, individualColumnSearchValue);
             }
-            if (!StringUtil.isNullOrEmpty(system)) {
-                preStat.setString(i++, system);
+            if ((system != null) && (!system.isEmpty())) {
+                for (String mysystem : system) {
+                    preStat.setString(i++, mysystem);
+                }
             }
-            if (!StringUtil.isNullOrEmpty(type)) {
-                preStat.setString(i++, type);
+            if ((type != null) && (!type.isEmpty())) {
+                for (String mytype : type) {
+                    preStat.setString(i++, mytype);
+                }
             }
 
             try (ResultSet resultSet = preStat.executeQuery();

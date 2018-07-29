@@ -19,10 +19,12 @@
  */
 package org.cerberus.crud.service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.cerberus.crud.entity.Label;
+import org.cerberus.dto.TreeNode;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -52,7 +54,7 @@ public interface ILabelService {
      * @param system
      * @return
      */
-    AnswerList readBySystem(String system);
+    AnswerList readBySystem(List<String> system);
 
     /**
      *
@@ -60,7 +62,7 @@ public interface ILabelService {
      * @param type
      * @return
      */
-    AnswerList readByVarious(String system, String type);
+    AnswerList readByVarious(List<String> system, List<String> type);
 
     /**
      *
@@ -86,13 +88,12 @@ public interface ILabelService {
      * @param individualSearch
      * @return
      */
-    AnswerList readByVariousByCriteria(String system, String type, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+    AnswerList readByVariousByCriteria(List<String> system, List<String> type, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
     /**
      *
      * @param id
-     * @return true is label exist or false is label does not exist
-     * in database.
+     * @return true is label exist or false is label does not exist in database.
      */
     boolean exist(Integer id);
 
@@ -141,12 +142,19 @@ public interface ILabelService {
     void convert(Answer answer) throws CerberusException;
 
     /**
-     * 
+     *
      * @param system
      * @param searchParameter
      * @param individualSearch
      * @param columnName
-     * @return 
+     * @return
      */
     public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+
+    /**
+     *
+     * @param inputList
+     * @return
+     */
+    public List<TreeNode> hierarchyConstructor(HashMap<Integer, TreeNode> inputList);
 }

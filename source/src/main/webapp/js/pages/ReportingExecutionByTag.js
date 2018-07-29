@@ -72,6 +72,19 @@ $.when($.getScript("js/global/global.js")).then(function () {
             }
         });
 
+        $("#reportByLabel .nav li").on("click", function (event) {
+            stopPropagation(event);
+            $(this).parent().find(".active").removeClass("active");
+            $(this).addClass("active");
+            if ($(this).prop("id") === "requirements") {
+                $("#mainTreeExeS").hide();
+                $("#mainTreeExeR").show();
+            } else if ($(this).prop("id") === "stickers") {
+                $("#mainTreeExeS").show();
+                $("#mainTreeExeR").hide();
+            }
+        });
+
         loadTagFilters(urlTag);
         if (urlTag !== null) {
             loadAllReports(urlTag);
@@ -450,14 +463,18 @@ function loadLabelReport(data) {
     showLoader($("#reportLabel"));
     $("#progressLabel").empty();
 
-    var len = data.labelStats.split.length;
-    $("#reportByLabel").show();
-    if (len > 0) {
-        for (var index = 0; index < len; index++) {
-            //draw a progress bar for each combo retrieved
-            buildLabelBar(data.labelStats.split[index]);
-        }
-    }
+//    var len = data.labelStats.split.length;
+//    $("#reportByLabel").show();
+//    if (len > 0) {
+//        for (var index = 0; index < len; index++) {
+//            //draw a progress bar for each combo retrieved
+//            buildLabelBar(data.labelStats.split[index]);
+//        }
+//    }
+
+    $('#mainTreeExeS').treeview({data: data.labelTreeSTICKER, enableLinks: false, showTags: true, levels: 1});
+    $('#mainTreeExeR').treeview({data: data.labelTreeREQUIREMENT, enableLinks: false, showTags: true, levels: 1});
+
     hideLoader($("#reportLabel"));
 
 }

@@ -42,12 +42,23 @@ public class TreeNode {
     private boolean selectable;
     private List<TreeNode> nodes;
     private List<String> tags;
+    private String type;
     private Integer nbNodesWithChild;
     private String nbNodesText;
     private Integer counter1;
     private String counter1Text;
     private Integer counter1WithChild;
     private String counter1WithChildText;
+    private Integer nbOK;
+    private Integer nbKO;
+    private Integer nbFA;
+    private Integer nbNA;
+    private Integer nbNE;
+    private Integer nbWE;
+    private Integer nbPE;
+    private Integer nbQE;
+    private Integer nbQU;
+    private Integer nbCA;
 
     private static final Logger LOG = LogManager.getLogger(TreeNode.class);
 
@@ -61,6 +72,104 @@ public class TreeNode {
         this.selectable = selectable;
         this.nodes = new ArrayList<>();
         this.nbNodesWithChild = 0;
+        this.nbOK = 0;
+        this.nbKO = 0;
+        this.nbFA = 0;
+        this.nbNA = 0;
+        this.nbNE = 0;
+        this.nbWE = 0;
+        this.nbPE = 0;
+        this.nbQE = 0;
+        this.nbQU = 0;
+        this.nbCA = 0;
+    }
+
+    public Integer getNbOK() {
+        return nbOK;
+    }
+
+    public void setNbOK(Integer nbOK) {
+        this.nbOK = nbOK;
+    }
+
+    public Integer getNbKO() {
+        return nbKO;
+    }
+
+    public void setNbKO(Integer nbKO) {
+        this.nbKO = nbKO;
+    }
+
+    public Integer getNbFA() {
+        return nbFA;
+    }
+
+    public void setNbFA(Integer nbFA) {
+        this.nbFA = nbFA;
+    }
+
+    public Integer getNbNA() {
+        return nbNA;
+    }
+
+    public void setNbNA(Integer nbNA) {
+        this.nbNA = nbNA;
+    }
+
+    public Integer getNbNE() {
+        return nbNE;
+    }
+
+    public void setNbNE(Integer nbNE) {
+        this.nbNE = nbNE;
+    }
+
+    public Integer getNbWE() {
+        return nbWE;
+    }
+
+    public void setNbWE(Integer nbWE) {
+        this.nbWE = nbWE;
+    }
+
+    public Integer getNbPE() {
+        return nbPE;
+    }
+
+    public void setNbPE(Integer nbPE) {
+        this.nbPE = nbPE;
+    }
+
+    public Integer getNbQE() {
+        return nbQE;
+    }
+
+    public void setNbQE(Integer nbQE) {
+        this.nbQE = nbQE;
+    }
+
+    public Integer getNbQU() {
+        return nbQU;
+    }
+
+    public void setNbQU(Integer nbQU) {
+        this.nbQU = nbQU;
+    }
+
+    public Integer getNbCA() {
+        return nbCA;
+    }
+
+    public void setNbCA(Integer nbCA) {
+        this.nbCA = nbCA;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public String getCounter1WithChildText() {
@@ -183,6 +292,17 @@ public class TreeNode {
         this.selectable = selectable;
     }
 
+    private float getP(Integer a, Integer b) {
+        float c = ((float) a * (float) 100) / (float) b;
+        LOG.debug(c);
+        return c;
+    }
+
+    private Integer getPI(Integer a, Integer b) {
+        float c = ((float) a * (float) 100) / (float) b;
+        return (Integer) Math.round(c);
+    }
+
     public JSONObject toJson() {
         JSONObject result = new JSONObject();
         try {
@@ -200,6 +320,46 @@ public class TreeNode {
             if (this.getNbNodesWithChild() > 0) {
                 nbNodText = this.getNbNodesText();
             }
+            String statusBar = "";
+            if (this.getCounter1WithChild() > 0) {
+                statusBar = "<div style='margin-left: 5px; margin-right: 5px;' class=''>";
+                statusBar += "<span class=\"progress-bar statusOK\" role=\"progressbar\" style=\"height : 20px;width:"
+                        + getP(this.getNbOK(), this.getCounter1WithChild()) + "%\">" + getPI(this.getNbOK(), this.getCounter1WithChild()) + "%</span>";
+                statusBar += "<span class=\"progress-bar statusKO\" role=\"progressbar\" style=\"height : 20px;width:"
+                        + getP(this.getNbKO(), this.getCounter1WithChild()) + "%\">" + getPI(this.getNbKO(), this.getCounter1WithChild()) + "%</span>";
+                statusBar += "<span class=\"progress-bar statusFA\" role=\"progressbar\" style=\"height : 20px;width:"
+                        + getP(this.getNbFA(), this.getCounter1WithChild()) + "%\">" + getPI(this.getNbFA(), this.getCounter1WithChild()) + "%</span>";
+                if (this.getNbNA() > 0) {
+                    statusBar += "<span class=\"progress-bar statusNA\" role=\"progressbar\" style=\"height : 20px;width:"
+                            + getP(this.getNbNA(), this.getCounter1WithChild()) + "%\">" + getPI(this.getNbNA(), this.getCounter1WithChild()) + "%</span>";
+                }
+                if (this.getNbNE() > 0) {
+                    statusBar += "<span class=\"progress-bar statusNE\" role=\"progressbar\" style=\"height : 20px;width:"
+                            + getP(this.getNbNE(), this.getCounter1WithChild()) + "%\">" + getPI(this.getNbNE(), this.getCounter1WithChild()) + "%</span>";
+                }
+                if (this.getNbWE() > 0) {
+                    statusBar += "<span class=\"progress-bar statusWE\" role=\"progressbar\" style=\"height : 20px;width:"
+                            + getP(this.getNbWE(), this.getCounter1WithChild()) + "%\">" + getPI(this.getNbWE(), this.getCounter1WithChild()) + "%</span>";
+                }
+                if (this.getNbPE() > 0) {
+                    statusBar += "<span class=\"progress-bar statusPE\" role=\"progressbar\" style=\"height : 20px;width:"
+                            + getP(this.getNbPE(), this.getCounter1WithChild()) + "%\">" + getPI(this.getNbPE(), this.getCounter1WithChild()) + "%</span>";
+                }
+                if (this.getNbQE() > 0) {
+                    statusBar += "<span class=\"progress-bar statusQE\" role=\"progressbar\" style=\"height : 20px;width:"
+                            + getP(this.getNbQE(), this.getCounter1WithChild()) + "%\">" + getPI(this.getNbQE(), this.getCounter1WithChild()) + "%</span>";
+                }
+                if (this.getNbQU() > 0) {
+                    statusBar += "<span class=\"progress-bar statusQU\" role=\"progressbar\" style=\"height : 20px;width:"
+                            + getP(this.getNbQU(), this.getCounter1WithChild()) + "%\">" + getPI(this.getNbQU(), this.getCounter1WithChild()) + "%</span>";
+                }
+                if (this.getNbCA() > 0) {
+                    statusBar += "<span class=\"progress-bar statusCA\" role=\"progressbar\" style=\"height : 20px;width:"
+                            + getP(this.getNbCA(), this.getCounter1WithChild()) + "%\">" + getPI(this.getNbCA(), this.getCounter1WithChild()) + "%</span>";
+                }
+                statusBar += "</div>";
+            }
+
             result.put(
                     "text", this.getText().replace("%COUNTER1TEXT%", cnt1Text)
                             .replace("%COUNTER1WITHCHILDTEXT%", cnt1WCText)
@@ -207,6 +367,17 @@ public class TreeNode {
                             .replace("%COUNTER1%", this.getCounter1().toString())
                             .replace("%COUNTER1WITHCHILD%", this.getCounter1WithChild().toString())
                             .replace("%NBNODESWITHCHILD%", this.getNbNodesWithChild().toString())
+                            .replace("%STATUSBAR%", statusBar)
+                            .replace("%NBOK%", this.getNbOK().toString())
+                            .replace("%NBKO%", this.getNbKO().toString())
+                            .replace("%NBFA%", this.getNbFA().toString())
+                            .replace("%NBNA%", this.getNbNA().toString())
+                            .replace("%NBNE%", this.getNbNE().toString())
+                            .replace("%NBWE%", this.getNbWE().toString())
+                            .replace("%NBPE%", this.getNbPE().toString())
+                            .replace("%NBQE%", this.getNbQE().toString())
+                            .replace("%NBQU%", this.getNbQU().toString())
+                            .replace("%NBCA%", this.getNbCA().toString())
             );
             result.put("icon", this.getIcon());
             result.put("href", this.getHref());
