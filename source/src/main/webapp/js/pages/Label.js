@@ -516,7 +516,7 @@ function aoColumnsFunc(tableId) {
         {"data": "id",
             "like": true,
             "sWidth": "30px",
-            "sName": "id",
+            "sName": "lab.id",
             "title": doc.getDocOnline("label", "id")},
         {"data": "system",
             "sWidth": "50px",

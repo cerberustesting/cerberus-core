@@ -506,7 +506,7 @@ public class CampaignLabelDAO implements ICampaignLabelDAO {
         String reqType = ParameterParserUtil.parseStringParam(rs.getString("lab.ReqType"), "");
         String reqStatus = ParameterParserUtil.parseStringParam(rs.getString("lab.ReqStatus"), "");
         String reqCriticity = ParameterParserUtil.parseStringParam(rs.getString("lab.ReqCriticity"), "");
-        Integer parentLabel = Integer.valueOf(ParameterParserUtil.parseStringParam(rs.getString("lab.parentLabel"), "0"));
+        Integer parentLabel = Integer.valueOf(ParameterParserUtil.parseStringParam(rs.getString("lab.parentLabelid"), "0"));
         String description = ParameterParserUtil.parseStringParam(rs.getString("lab.description"), "");
         String longDesc = ParameterParserUtil.parseStringParam(rs.getString("lab.LongDesc"), "");
         String usrCreated1 = ParameterParserUtil.parseStringParam(rs.getString("lab.usrCreated"), "");
