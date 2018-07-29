@@ -108,7 +108,7 @@ public class LabelDAO implements ILabelDAO {
     }
 
     @Override
-    public AnswerList<List<Label>> readBySystemByCriteria(List<String> system, List<String> type, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
+    public AnswerList<List<Label>> readBySystemByCriteria(List<String> system, boolean strictSystemFilter, List<String> type, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
         AnswerList response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -152,7 +152,9 @@ public class LabelDAO implements ILabelDAO {
         }
 
         if ((system != null) && (!system.isEmpty())) {
-            system.add("");
+            if (!strictSystemFilter) {
+                system.add("");
+            }
             searchSQL.append(" and (" + SqlUtil.generateInClause("lab.`System`", system) + ")");
         }
         if ((type != null) && (!type.isEmpty())) {

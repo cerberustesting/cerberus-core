@@ -216,6 +216,7 @@ public class ReadLabel extends HttpServlet {
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
         List<String> individualLike = new ArrayList<>(Arrays.asList(ParameterParserUtil.parseStringParam(request.getParameter("sLike"), "").split(",")));
+        boolean strictSystemFilter = ParameterParserUtil.parseBooleanParam(request.getParameter("bStrictSystemFilter"), false);
 
         Map<String, List<String>> individualSearch = new HashMap<>();
         for (int a = 0; a < columnToSort.length; a++) {
@@ -228,7 +229,7 @@ public class ReadLabel extends HttpServlet {
                 }
             }
         }
-        AnswerList resp = labelService.readByVariousByCriteria(new ArrayList<>(asList(system)), new ArrayList<>(), startPosition, length, columnName, sort, searchParameter, individualSearch);
+        AnswerList resp = labelService.readByVariousByCriteria(new ArrayList<>(asList(system)), strictSystemFilter, new ArrayList<>(), startPosition, length, columnName, sort, searchParameter, individualSearch);
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values

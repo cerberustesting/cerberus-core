@@ -113,14 +113,14 @@ function renderOptionsForCampaign(data) {
     }
 }
 
-function renderOptionsForCampaign_Label(id) {
+function renderOptionsForCampaign_Label(tableId) {
     var doc = new Doc();
     var data = getSelectInvariant("SYSTEM", false, true, "");
-    $("#" + id + "_wrapper #addLabelTestcampaign").remove();
+    $("#" + tableId + "_wrapper #addLabelTestcampaign").remove();
     var contentToAdd =
             "<div class='marginBottom10 form-inline' id='addLabelTestcampaign'>" +
             "<div class='form-group marginRight10 col-sm-3' style='padding-right: 0px; padding-left: 0px;'>" +
-            "<select id='labelSelect' class='form-control' style='width:100%;' onchange='updateSelectLabel(\"" + id + "\")'>";
+            "<select id='labelSelect' class='form-control' style='width:100%;' onchange='updateSelectLabel(\"" + tableId + "\")'>";
     for (var i = 0; i < data.find("option").length; i++) {
         contentToAdd +=
                 "<option value='" + data.find("option")[i].value + "'>" + data.find("option")[i].value + "</option>";
@@ -133,15 +133,91 @@ function renderOptionsForCampaign_Label(id) {
             "</select>" +
             "</div>" +
             "<div class='form-group'>" +
-            "<button type='button' id='addLabelTestcampaignButton' disabled='true' class='btn btn-primary' name='ButtonEdit' onclick='addLabelEntryClick(\"" + id + "\")'>" + doc.getDocLabel("page_testcampaign", "add_btn") + "</button>" +
+            "<button type='button' id='addLabelTestcampaignButton' disabled='true' class='btn btn-primary' name='ButtonEdit' onclick='addLabelEntryClick(\"" + tableId + "\")'>" + doc.getDocLabel("page_testcampaign", "add_btn") + "</button>" +
             "</div>" +
             "</div>";
-    $("#" + id + "_wrapper div#" + id + "_length").before(contentToAdd);
-    $("#" + id + "_wrapper #labelSelect").select2();
-    $("#" + id + "_wrapper #labelSelect2").select2();
-    updateSelectLabel(id);
+    $("#" + tableId + "_wrapper div#" + tableId + "_length").before(contentToAdd);
+    $("#" + tableId + "_wrapper #labelSelect").select2();
+
+    $("#" + tableId + "_wrapper #labelSelect2").select2(camp_getComboConfigLabel("", "", tableId));
+    $('#labelSelect2').on('select2:select', function (e) {
+        $('#addLabelTestcampaignButton').prop("disabled", false);
+    });
+
+    updateSelectLabel(tableId);
 
 }
+
+function camp_getComboConfigLabel(labelType, system, tableId) {
+
+    var config =
+            {
+                ajax: {
+                    url: "ReadLabel?bStrictSystemFilter=Y&iSortCol_0=0&sSortDir_0=desc&sColumns=type&iDisplayLength=30&sSearch_0=" + labelType + "&system=" + system,
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        params.page = params.page || 1;
+                        return {
+                            sSearch: params.term, // search term
+                            iDisplayStart: (params.page * 30) - 30
+                        };
+                    },
+                    processResults: function (data, params) {
+                        params.page = params.page || 1;
+//                        console.info(data);
+                        return {
+                            results: $.map(data.contentTable, function (obj) {
+                                if (!(findValueTableDataByCol(tableId, 4, obj.label))) {
+                                    return {id: obj.id, label: obj.label, color: obj.color, description: obj.description, system: obj.system, type: obj.type};
+                                }
+                            }),
+                            pagination: {
+                                more: (params.page * 30) < data.iTotalRecords
+                            }
+                        };
+                    },
+                    cache: true,
+                    allowClear: true
+                },
+                width: "100%",
+                escapeMarkup: function (markup) {
+                    return markup;
+                }, // let our custom formatter work
+                minimumInputLength: 0,
+                templateResult: camp_comboConfigLabel_format, // omitted for brevity, see the source of this page
+                templateSelection: camp_comboConfigLabel_formatSelection // omitted for brevity, see the source of this page
+            };
+
+    return config;
+}
+
+function camp_comboConfigLabel_format(label) {
+    var markup = "<div class='select2-result-tag clearfix'>" +
+            "<div style='float:left;'><span class='label label-primary' style='background-color:"
+            + label.color + "' data-toggle='tooltip' data-labelid='"
+            + label.id + "' title='"
+            + label.description + "'>"
+            + label.label + "</span></div>";
+
+    markup += "</div>";
+
+    return markup;
+}
+
+function camp_comboConfigLabel_formatSelection(label) {
+    var result = label.id;
+    if (!isEmpty(label.label)) {
+        result = "<div style='float:left;height: 34px'><span class='label label-primary' style='background-color:"
+                + label.color + "' data-toggle='tooltip' data-labelid='"
+                + label.id + "' title='"
+                + label.description + "'>"
+                + label.label + "</span></div>";
+    }
+    return result;
+}
+
+
 
 function renderOptionsForCampaign_Parameter(id) {
     var doc = new Doc();
@@ -312,7 +388,7 @@ function editEntryClick(param) {
 
         $.each(obj.label, function (e) {
             array.push(
-                    [obj.label[e].campaign, obj.label[e].campaignLabelID, obj.label[e].LabelId, obj.label[e].label.label + " - " + obj.label[e].label.color, obj.label[e].label.system]
+                    [obj.label[e].campaign, obj.label[e].campaignLabelID, obj.label[e].LabelId, obj.label[e].label.system, obj.label[e].label.label, obj.label[e].label.color, obj.label[e].label.description, obj.label[e].label.type]
                     );
         });
 
@@ -590,15 +666,21 @@ function removeEntryClick(key) {
 }
 
 function addLabelEntryClick(tableId) {
-    $("#" + tableId + '_wrapper #addLabelTestcampaignButton').off().prop("disabled", true);
+
+    var v = $('#labelSelect2').select2('data')[0];
+
     $("#" + tableId).DataTable().row.add([
-        $("#campaignKey").val()
-                , 0
-                , $("#" + tableId + '_wrapper #labelSelect2').find(":selected").val()
-                , $("#" + tableId + '_wrapper #labelSelect2').find(":selected").text()
-                , $("#" + tableId + '_wrapper #labelSelect').find(":selected").val()
+        $("#campaignKey").val(),
+        0,
+        v.id,
+        v.system,
+        v.label,
+        v.color,
+        v.description,
+        v.type
     ]).draw();
-    updateSelectLabel(tableId);
+    $('#labelSelect2').val("").trigger('change');
+    $('#addLabelTestcampaignButton').prop("disabled", true);
 }
 
 function removeLabelEntryClick(tableId, key) {
@@ -611,27 +693,14 @@ function removeLabelEntryClick(tableId, key) {
     updateSelectLabel(tableId);
 }
 
-function updateSelectLabel(id) {
-    var val = $("#" + id + '_wrapper #labelSelect').find(":selected").val();
-    var data = getSelectLabel(val, true, true);
-    $("#" + id + "_wrapper #labelSelect2").empty();
-    var optionList = "";
-    for (var i = 0; i < data.find("option").length; i++) {
-        if (!(findValueTableDataByCol(id, 2, data.find("option")[i].value)))
-            optionList +=
-                    "<option value='" + data.find("option")[i].value + "'>" + data.find("option")[i].text + "</option>";
-    }
-    $("#" + id + "_wrapper #labelSelect2").append(optionList);
-    $("#" + id + '_wrapper #addlabelTestcampaignButton').prop("disabled", true);
-    if ($("#" + id + '_wrapper #labelSelect2 option').size() <= 0) {
-        $("#" + id + '_wrapper #labelSelect2').parent().hide();
-        $("#" + id + '_wrapper #addlabelTestcampaignButton').prop("disabled", true);
-    } else {
-        $("#" + id + '_wrapper #labelSelect2').parent().show();
-        $("#" + id + '_wrapper #addLabelTestcampaignButton').bind("click", function () {
-            addParameterEntryClick(id);
-        }).prop("disabled", false);
-    }
+function updateSelectLabel(tableId) {
+    var val = $("#" + tableId + '_wrapper #labelSelect').find(":selected").val();
+
+    $("#" + tableId + "_wrapper #labelSelect2").select2(camp_getComboConfigLabel("", val, tableId));
+
+    $("#addLabelTestcampaignButton").prop("disabled", true);
+
+    $("#" + tableId + '_wrapper #addLabelTestcampaignButton').prop("disabled", false);
 }
 
 function addParameterEntryClick(tableId) {
@@ -816,8 +885,22 @@ function aoColumnsFunc_Label(tableId) {
             }
         },
         {"data": "2", "sName": "labelId", "title": doc.getDocLabel("label", "id")},
-        {"data": "4", "sName": "system", "title": doc.getDocLabel("label", "system")},
-        {"data": "3", "sName": "label", "title": doc.getDocLabel("label", "label")}
+        {"data": "3", "sName": "system", "title": doc.getDocLabel("label", "system")},
+        {
+            "data": "4",
+            "sName": "label",
+            "title": doc.getDocLabel("label", "label"),
+            "mRender": function (data, type, obj) {
+                var result = "<div style='float:left;height: 34px'><span class='label label-primary' style='background-color:"
+                        + obj[5] + "' data-toggle='tooltip' data-labelid='"
+                        + obj[2] + "' title='"
+                        + obj[6] + "'>"
+                        + obj[4] + "</span></div>";
+                return result;
+
+            }
+        },
+        {"data": "7", "sName": "type", "title": doc.getDocLabel("label", "type")}
     ];
     return aoColumns;
 }

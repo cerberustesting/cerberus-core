@@ -64,27 +64,27 @@ public class LabelService implements ILabelService {
 
     @Override
     public AnswerList readAll() {
-        return readByVariousByCriteria(new ArrayList<>(), new ArrayList<>(), 0, 0, "Label", "asc", null, null);
+        return readByVariousByCriteria(new ArrayList<>(), false, new ArrayList<>(), 0, 0, "Label", "asc", null, null);
     }
 
     @Override
     public AnswerList readBySystem(List<String> system) {
-        return labelDAO.readBySystemByCriteria(system, new ArrayList<>(), 0, 0, "Label", "asc", null, null);
+        return labelDAO.readBySystemByCriteria(system, false, new ArrayList<>(), 0, 0, "Label", "asc", null, null);
     }
 
     @Override
     public AnswerList readByVarious(List<String>  system, List<String>  type) {
-        return labelDAO.readBySystemByCriteria(system, type, 0, 0, "Label", "asc", null, null);
+        return labelDAO.readBySystemByCriteria(system, false, type, 0, 0, "Label", "asc", null, null);
     }
 
     @Override
     public AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
-        return labelDAO.readBySystemByCriteria(new ArrayList<>(), new ArrayList<>(), startPosition, length, columnName, sort, searchParameter, individualSearch);
+        return labelDAO.readBySystemByCriteria(new ArrayList<>(), false, new ArrayList<>(), startPosition, length, columnName, sort, searchParameter, individualSearch);
     }
 
     @Override
-    public AnswerList readByVariousByCriteria(List<String> system, List<String> type, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
-        return labelDAO.readBySystemByCriteria(system, type, startPosition, length, columnName, sort, searchParameter, individualSearch);
+    public AnswerList readByVariousByCriteria(List<String> system, boolean strictSystemFilter, List<String> type, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
+        return labelDAO.readBySystemByCriteria(system, strictSystemFilter, type, startPosition, length, columnName, sort, searchParameter, individualSearch);
     }
 
     @Override
