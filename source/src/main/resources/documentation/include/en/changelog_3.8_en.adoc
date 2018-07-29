@@ -1,11 +1,13 @@
 *Bug fixes*
 [square]
-* bla bla
+* [ENGINE] Bug on Manual execution that sometimes could generate an FA status has been fixed.
 
 *Improvements / New features*
 [square]
-* bla bla
+* [GUI] Big Label screen improvements. Label screen now display full hierarchy for all types of label (Sticker, Requirement and Battery)
+* [GUI] ReportByTag page agregates all execution in label tree.
+* [ENGINE] Video is now recorded for Android devices.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
-* bla bla
+* none
