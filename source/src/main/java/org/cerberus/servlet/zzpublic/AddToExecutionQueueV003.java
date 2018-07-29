@@ -351,6 +351,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
         int nbtestcasenotactive = 0;
         int nbtestcaseenvgroupnotallowed = 0;
         int nbenvnotexist = 0;
+        int nbrobotmissing = 0;
         boolean tagAlreadyAdded = false;
 
         int nbrobot = 0;
@@ -427,9 +428,14 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                                                         if (StringUtil.isNullOrEmpty(robotDecli)) {
                                                             robotDecli = robot;
                                                         }
-                                                        toInserts.add(inQueueFactoryService.create(app.getSystem(), test, testCase, country.getCountry(), environment, robot, robotDecli, robotIP, robotPort, browser, browserVersion,
-                                                                platform, screenSize, manualURL, manualHost, manualContextRoot, manualLoginRelativeURL, manualEnvData, tag, screenshot, verbose,
-                                                                timeout, pageSource, seleniumLog, 0, retries, manualExecution, priority, user, null, null, null));
+                                                        if ("".equals(robot) && StringUtil.isNullOrEmpty(robotIP)) {
+                                                            // We don't insert the execution for robot application that have no robot and robotIP defined.
+                                                            nbrobotmissing++;
+                                                        } else {
+                                                            toInserts.add(inQueueFactoryService.create(app.getSystem(), test, testCase, country.getCountry(), environment, robot, robotDecli, robotIP, robotPort, browser, browserVersion,
+                                                                    platform, screenSize, manualURL, manualHost, manualContextRoot, manualLoginRelativeURL, manualEnvData, tag, screenshot, verbose,
+                                                                    timeout, pageSource, seleniumLog, 0, retries, manualExecution, priority, user, null, null, null));
+                                                        }
                                                     } catch (FactoryCreationException e) {
                                                         LOG.error("Unable to insert record due to: " + e, e);
                                                         LOG.error("test: " + test + "-" + testCase + "-" + country.getCountry() + "-" + environment + "-" + robots);
@@ -543,6 +549,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                     jsonResponse.put("nbErrorTCNotActive", nbtestcasenotactive);
                     jsonResponse.put("nbErrorTCNotAllowedOnEnv", nbtestcaseenvgroupnotallowed);
                     jsonResponse.put("nbErrorEnvNotExistOrNotActive", nbenvnotexist);
+                    jsonResponse.put("nbErrorRobotMissing", nbrobotmissing);
                     jsonResponse.put("queueList", jsonArray);
 
                     response.setContentType("application/json");

@@ -549,28 +549,7 @@ function runCampaign(doRedirect) {
         hideLoader('#page-layout');
         data.message = data.message.replace(/\n/g, '<br>');
         if (getAlertType(data.messageType) === "success") {
-            if (data.nbErrorTCNotActive > 0) {
-                data.message = data.message + "<br>" + data.nbErrorTCNotActive + " Executions not added due to <b>Test Case not active</b>.";
-            }
-            if (data.nbErrorTCNotAllowedOnEnv > 0) {
-                data.message = data.message + "<br>" + data.nbErrorTCNotAllowedOnEnv + " Executions not added due to <b>Test Case not beeing allowed to run on the corresponding group of environment</b>.";
-            }
-            if (data.nbErrorEnvNotExistOrNotActive > 0) {
-                data.message = data.message + "<br>" + data.nbErrorEnvNotExistOrNotActive + " Executions not added due to <b>Environment/Country not active or don't exist</b>.";
-            }
-            if (data.nbExe === 1) {
-                data.message = data.message + "<br><a href='TestCaseExecution.jsp?executionQueueId=" + data.queueList[0].queueId + "'><button class='btn btn-primary' id='goToExecution'>Get to Execution</button></a>";
-            }
-            if (data.nbExe > 1) {
-                data.message = data.message + "<br><a href='ReportingExecutionByTag.jsp?Tag=" + data.tag + "'><button class='btn btn-primary' id='goToTagReport'>Report by Tag</button></a>"
-            }
-            showMessageMainPage(getAlertType(data.messageType), data.message, false, 60000);
-            if ((data.nbExe === 1) && doRedirect) {
-                window.location.href = "TestCaseExecution.jsp?executionQueueId=" + data.queueList[0].queueId;
-            }
-            if ((data.nbExe > 1) && doRedirect) {
-                window.location.href = "ReportingExecutionByTag.jsp?Tag=" + data.tag;
-            }
+            handleAddToQueueResponse(data, doRedirect);
         } else {
             showMessageMainPage(getAlertType(data.messageType), data.message, false);
         }
@@ -652,29 +631,7 @@ function runTestCase(doRedirect) {
         hideLoader('#page-layout');
         data.message = data.message.replace(/\n/g, '<br>');
         if (getAlertType(data.messageType) === "success") {
-            if (data.nbErrorTCNotActive > 0) {
-                data.message = data.message + "<br>" + data.nbErrorTCNotActive + " Executions not added due to <b>Test Case not active</b>.";
-            }
-            if (data.nbErrorTCNotAllowedOnEnv > 0) {
-                data.message = data.message + "<br>" + data.nbErrorTCNotAllowedOnEnv + " Executions not added due to <b>Test Case not beeing allowed to run on the corresponding group of environment</b>.";
-            }
-            if (data.nbErrorEnvNotExistOrNotActive > 0) {
-                data.message = data.message + "<br>" + data.nbErrorEnvNotExistOrNotActive + " Executions not added due to <b>Environment/Country not active or don't exist</b>.";
-            }
-            if (data.nbExe === 1) {
-                data.message = data.message + "<br><a href='TestCaseExecution.jsp?executionQueueId=" + data.queueList[0].queueId + "'><button class='btn btn-primary' id='goToExecution'>Get to Execution</button></a>";
-            }
-            if (data.nbExe > 1) {
-                data.message = data.message + "<br><a href='ReportingExecutionByTag.jsp?Tag=" + data.tag + "'><button class='btn btn-primary' id='goToTagReport'>Report by Tag</button></a>"
-            }
-            showMessageMainPage(getAlertType(data.messageType), data.message, false, 60000);
-            if ((data.nbExe === 1) && doRedirect) {
-                window.location.href = "TestCaseExecution.jsp?executionQueueId=" + data.queueList[0].queueId;
-            }
-            if ((data.nbExe > 1) && doRedirect) {
-                window.location.href = "ReportingExecutionByTag.jsp?Tag=" + data.tag;
-            }
-
+            handleAddToQueueResponse(data, doRedirect);
         } else {
             showMessageMainPage(getAlertType(data.messageType), data.message, false);
         }
@@ -682,7 +639,37 @@ function runTestCase(doRedirect) {
 
 }
 
-
+function handleAddToQueueResponse(data, doRedirect) {
+    if (data.nbErrorRobotMissing > 0) {
+        data.message = data.message + "<br>" + data.nbErrorRobotMissing + " Executions not added due to <b>Empty Robot</b>.";
+    }
+    if (data.nbErrorTCNotActive > 0) {
+        data.message = data.message + "<br>" + data.nbErrorTCNotActive + " Executions not added due to <b>Test Case not active</b>.";
+    }
+    if (data.nbErrorTCNotAllowedOnEnv > 0) {
+        data.message = data.message + "<br>" + data.nbErrorTCNotAllowedOnEnv + " Executions not added due to <b>Test Case not beeing allowed to run on the corresponding group of environment</b>.";
+    }
+    if (data.nbErrorEnvNotExistOrNotActive > 0) {
+        data.message = data.message + "<br>" + data.nbErrorEnvNotExistOrNotActive + " Executions not added due to <b>Environment/Country not active or don't exist</b>.";
+    }
+    if (data.nbExe === 1) {
+        data.message = data.message + "<br><a href='TestCaseExecution.jsp?executionQueueId=" + data.queueList[0].queueId + "'><button class='btn btn-primary' id='goToExecution'>Get to Execution</button></a>";
+    }
+    if (data.nbExe > 1) {
+        data.message = data.message + "<br><a href='ReportingExecutionByTag.jsp?Tag=" + data.tag + "'><button class='btn btn-primary' id='goToTagReport'>Report by Tag</button></a>"
+    }
+    var rc = getAlertType(data.messageType);
+    if ((rc === "success") && (data.nbExe === 0)) {
+        rc = "warning";
+    }
+    showMessageMainPage(rc, data.message, false, 60000);
+    if ((data.nbExe === 1) && doRedirect) {
+        window.location.href = "TestCaseExecution.jsp?executionQueueId=" + data.queueList[0].queueId;
+    }
+    if ((data.nbExe > 1) && doRedirect) {
+        window.location.href = "ReportingExecutionByTag.jsp?Tag=" + data.tag;
+    }
+}
 
 /** UTILITY FUNCTIONS FOR TESTCASE FILTERS **/
 
