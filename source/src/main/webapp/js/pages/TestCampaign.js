@@ -323,7 +323,7 @@ function viewEntryClick(param) {
 
         $.each(obj.tag, function (e) {
             array.push(
-                    [obj.tag[e].id, obj.tag[e].tag, obj.tag[e].nbExe, obj.tag[e].nbExeUsefull, obj.tag[e].DateCreated, obj.tag[e].DateEndQueue, obj.tag[e]]
+                    [obj.tag[e], obj.tag[e].tag, obj.tag[e].nbExe, obj.tag[e].nbExeUsefull, obj.tag[e].DateCreated, obj.tag[e].DateEndQueue, obj.tag[e].ciResult, obj.tag[e].ciScore]
                     );
         });
 
@@ -967,20 +967,112 @@ function aoColumnsFunc_TestCase() {
 function aoColumnsFunc_Tag() {
     var doc = new Doc();
     var aoColumns = [
-        {"data": "0", "sName": "tbc.id", "title": doc.getDocLabel("tag", "id")},
-        {"data": "1", "sName": "tbc.Tag", "title": doc.getDocLabel("tag", "tag")},
-        {"data": "2", "sName": "tbc.nbExe", "title": doc.getDocLabel("tag", "Application")},
-        {"data": "3", "sName": "tbc.nbExeUsefull", "title": doc.getDocLabel("tag", "Description")},
-        {"data": "4", "sName": "tec.DateCreated", "title": doc.getDocLabel("tag", "Status")},
-        {"data": "5", "sName": "tec.DateEndQueue", "title": doc.getDocLabel("tag", "Status")},
+//                     obj.tag[e], 
+//                     obj.tag[e].tag, 
+//                     obj.tag[e].nbExe, 
+//                     obj.tag[e].nbExeUsefull, 
+//                     obj.tag[e].DateCreated, 
+//                     obj.tag[e].DateEndQueue, 
+
+        {"data": "1", "sName": "Tag", "sWidth": "250px", "title": doc.getDocLabel("page_tag", "tag")},
+        {"data": "4", "sName": "DateCreated", "sWidth": "150px", "title": doc.getDocLabel("page_tag", "datecreated")},
         {
-            "data": "6", 
-            "sName": "tec.DateEndQueue", 
+            "data": "6",
+            "sName": "ciresult",
+            "sWidth": "40px",
             "mRender": function (data, type, obj) {
-                return " " + obj[6].nbExe + " " + obj[6].nbExeUsefull + " " + obj[6].ciResult + " ";
+                if (isEmpty(obj[0].ciResult)) {
+                    return "";
+                } else {
+                    return '<div class="progress-bar status' + obj[0].ciResult + '" role="progressbar" style="width:100%">' + obj[0].ciResult + '</div>';
+                }
             },
-            "title": doc.getDocLabel("tag", "Status")
-        }
+            "title": doc.getDocLabel("page_tag", "ciresult")
+        },
+        {
+            "data": null,
+            "sName": "result",
+            "sWidth": "150px",
+            "mRender": function (data, type, obj) {
+                return result(obj[0]);
+            },
+            "title": doc.getDocLabel("page_tag", "result")
+        },
+        {
+            "data": null,
+            "sName": "duration",
+            "sWidth": "40px",
+            className: 'dt-body-right',
+            "mRender": function (data, type, obj) {
+                return getDuration(obj[0]);
+            },
+            "title": doc.getDocLabel("page_tag", "duration")
+        },
+        {"data": "3", "sName": "nbExeUsefull", "sWidth": "40px", "title": doc.getDocLabel("page_tag", "nbexeuseful")},
+        {
+            "data": null,
+            "sName": "reliability",
+            "sWidth": "150px",
+            "mRender": function (data, type, obj) {
+                return reliability(obj[0]);
+            },
+            "title": doc.getDocLabel("page_tag", "reliability")
+        },
+        {
+            "data": null,
+            "sName": "exepermin",
+            "sWidth": "40px",
+            "mRender": function (data, type, obj) {
+                var dur = getDuration(obj[0]);
+                if (dur > 0) {
+                    return Math.round((obj[0].nbExe / dur) * 10) / 10;
+                }
+                return "exepermin";
+            },
+            "title": doc.getDocLabel("page_tag", "exepermin")
+        },
+        {"data": "2", "sName": "nbExe", "sWidth": "40px", "title": doc.getDocLabel("page_tag", "nbexe")},
+        {"data": "7", "sName": "ciscore", "sWidth": "40px", "title": doc.getDocLabel("page_tag", "ciscore")},
+        {"data": "5", "sName": "DateEndQueue", "sWidth": "150px", "title": doc.getDocLabel("page_tag", "dateend")}
     ];
     return aoColumns;
+}
+function reliability(tag) {
+    if (tag.nbExe > 0) {
+        var per = (tag.nbExeUsefull / tag.nbExe) * 100;
+        var roundPercent = Math.round(per * 10) / 10;
+        var satcolor = getGreenToRed(per);
+        return "<div class=\"progress-bar\" role=\"progressbar\" style=\"width:" + per + "%; background-color: " + satcolor + "\">" + roundPercent + "%</div>";
+    } else {
+        return "";
+    }
+}
+function getGreenToRed(percent) {
+    r = percent < 50 ? 255 : Math.floor(255 - (percent * 2 - 100) * 255 / 100);
+    g = percent > 50 ? 255 : Math.floor((percent * 2) * 255 / 100);
+    return 'rgb(' + r + ',' + g + ',0)';
+}
+function result(tag) {
+    var progress = "";
+    if (tag.nbExeUsefull > 0) {
+//        var per = 30;
+        progress += "<div class=\"progress-bar statusOK\" role=\"progressbar\" style=\"width:" + (tag.nbOK * 100 / tag.nbExeUsefull) + "%;\">" + Math.round((tag.nbOK * 100 / tag.nbExeUsefull) * 10) / 10 + "%</div>";
+        progress += "<div class=\"progress-bar statusKO\" role=\"progressbar\" style=\"width:" + (tag.nbKO * 100 / tag.nbExeUsefull) + "%;\">" + Math.round((tag.nbKO * 100 / tag.nbExeUsefull) * 10) / 10 + "%</div>";
+        progress += "<div class=\"progress-bar statusFA\" role=\"progressbar\" style=\"width:" + (tag.nbFA * 100 / tag.nbExeUsefull) + "%;\">" + Math.round((tag.nbFA * 100 / tag.nbExeUsefull) * 10) / 10 + "%</div>";
+        progress += "<div class=\"progress-bar statusNA\" role=\"progressbar\" style=\"width:" + (tag.nbNA * 100 / tag.nbExeUsefull) + "%;\">" + Math.round((tag.nbNA * 100 / tag.nbExeUsefull) * 10) / 10 + "%</div>";
+        progress += "<div class=\"progress-bar statusNE\" role=\"progressbar\" style=\"width:" + (tag.nbNE * 100 / tag.nbExeUsefull) + "%;\">" + Math.round((tag.nbNE * 100 / tag.nbExeUsefull) * 10) / 10 + "%</div>";
+        progress += "<div class=\"progress-bar statusWE\" role=\"progressbar\" style=\"width:" + (tag.nbWE * 100 / tag.nbExeUsefull) + "%;\">" + Math.round((tag.nbWE * 100 / tag.nbExeUsefull) * 10) / 10 + "%</div>";
+        progress += "<div class=\"progress-bar statusPE\" role=\"progressbar\" style=\"width:" + (tag.nbPE * 100 / tag.nbExeUsefull) + "%;\">" + Math.round((tag.nbPE * 100 / tag.nbExeUsefull) * 10) / 10 + "%</div>";
+        progress += "<div class=\"progress-bar statusQU\" role=\"progressbar\" style=\"width:" + (tag.nbQU * 100 / tag.nbExeUsefull) + "%;\">" + Math.round((tag.nbQU * 100 / tag.nbExeUsefull) * 10) / 10 + "%</div>";
+        progress += "<div class=\"progress-bar statusQE\" role=\"progressbar\" style=\"width:" + (tag.nbQE * 100 / tag.nbExeUsefull) + "%;\">" + Math.round((tag.nbQE * 100 / tag.nbExeUsefull) * 10) / 10 + "%</div>";
+        progress += "<div class=\"progress-bar statusCA\" role=\"progressbar\" style=\"width:" + (tag.nbCA * 100 / tag.nbExeUsefull) + "%;\">" + Math.round((tag.nbCA * 100 / tag.nbExeUsefull) * 10) / 10 + "%</div>";
+    }
+    return progress;
+}
+function getDuration(tag) {
+    var startTime = new Date(tag.DateCreated);
+    var endTime = new Date(tag.DateEndQueue);
+    var diff = (endTime - startTime) / 60000;
+    var roundDiff = Math.round(diff * 10) / 10;
+    return (roundDiff);
 }
