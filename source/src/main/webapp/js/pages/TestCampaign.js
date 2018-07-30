@@ -295,7 +295,7 @@ function viewEntryClick(param) {
     showLoader("#testcampaignList");
 
 
-    var jqxhr = $.getJSON("ReadCampaign?testcase=true", "campaign=" + param);
+    var jqxhr = $.getJSON("ReadCampaign?testcase=true&tag=true&", "campaign=" + param);
     $.when(jqxhr).then(function (data) {
         var obj = data["contentTable"];
 
@@ -313,14 +313,31 @@ function viewEntryClick(param) {
             $("#viewTestcampaignModal #viewTestcampaignsTable").DataTable().clear();
             $("#viewTestcampaignModal #viewTestcampaignsTable").DataTable().rows.add(array).draw();
 
-//            $("#viewTestcampaignModal #viewTestcampaignsTable").DataTable().destroy();
-//            $("#viewTestcampaignModal #viewTestcampaignsTable").empty();
         } else {
             //configure and create the dataTable
-//    var configurations = new TableConfigurationsServerSide("viewTestcampaignsTable", "ReadCampaign?testcase=true&campaign=" + param, "contentTable.testcase", aoColumnsFunc_TestCase(), [0, 'asc']);
             var configurations = new TableConfigurationsClientSide("viewTestcampaignsTable", array, aoColumnsFunc_TestCase(), true);
             createDataTableWithPermissions(configurations, renderOptionsForCampaign_TestCase, "#viewTestcampaignList", undefined, true);
         }
+
+        var array = [];
+
+        $.each(obj.tag, function (e) {
+            array.push(
+                    [obj.tag[e].id, obj.tag[e].tag, obj.tag[e].nbExe, obj.tag[e].nbExeUsefull, obj.tag[e].DateCreated, obj.tag[e].DateEndQueue, obj.tag[e]]
+                    );
+        });
+
+        if ($("#viewTestcampaignModal #viewTagcampaignsTable_wrapper").length > 0) {
+            $("#viewTestcampaignModal #viewTagcampaignsTable").DataTable().clear();
+            $("#viewTestcampaignModal #viewTagcampaignsTable").DataTable().rows.add(array).draw();
+
+        } else {
+            //configure and create the dataTable
+            var configurations = new TableConfigurationsClientSide("viewTagcampaignsTable", array, aoColumnsFunc_Tag(), true);
+            createDataTableWithPermissions(configurations, renderOptionsForCampaign_TestCase, "#viewTagcampaignList", undefined, true);
+        }
+
+
 
         hideLoader("#testcampaignList");
 
@@ -943,6 +960,27 @@ function aoColumnsFunc_TestCase() {
         {"data": "2", "sName": "tbc.application", "title": doc.getDocLabel("application", "Application")},
         {"data": "3", "sName": "tbc.description", "title": doc.getDocLabel("testcase", "Description")},
         {"data": "4", "sName": "tec.status", "title": doc.getDocLabel("testcase", "Status")}
+    ];
+    return aoColumns;
+}
+
+function aoColumnsFunc_Tag() {
+    var doc = new Doc();
+    var aoColumns = [
+        {"data": "0", "sName": "tbc.id", "title": doc.getDocLabel("tag", "id")},
+        {"data": "1", "sName": "tbc.Tag", "title": doc.getDocLabel("tag", "tag")},
+        {"data": "2", "sName": "tbc.nbExe", "title": doc.getDocLabel("tag", "Application")},
+        {"data": "3", "sName": "tbc.nbExeUsefull", "title": doc.getDocLabel("tag", "Description")},
+        {"data": "4", "sName": "tec.DateCreated", "title": doc.getDocLabel("tag", "Status")},
+        {"data": "5", "sName": "tec.DateEndQueue", "title": doc.getDocLabel("tag", "Status")},
+        {
+            "data": "6", 
+            "sName": "tec.DateEndQueue", 
+            "mRender": function (data, type, obj) {
+                return " " + obj[6].nbExe + " " + obj[6].nbExeUsefull + " " + obj[6].ciResult + " ";
+            },
+            "title": doc.getDocLabel("tag", "Status")
+        }
     ];
     return aoColumns;
 }

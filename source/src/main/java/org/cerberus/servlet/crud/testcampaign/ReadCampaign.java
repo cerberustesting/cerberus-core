@@ -37,10 +37,12 @@ import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.Campaign;
 import org.cerberus.crud.entity.CampaignLabel;
 import org.cerberus.crud.entity.CampaignParameter;
+import org.cerberus.crud.entity.Tag;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.service.ICampaignLabelService;
 import org.cerberus.crud.service.ICampaignParameterService;
 import org.cerberus.crud.service.ICampaignService;
+import org.cerberus.crud.service.ITagService;
 import org.cerberus.crud.service.ITestCaseService;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
@@ -174,11 +176,11 @@ public class ReadCampaign extends HttpServlet {
         for (int a = 0; a < columnToSort.length; a++) {
             if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
                 List<String> search = new ArrayList<>(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
-                if(individualLike.contains(columnToSort[a])) {
-                	individualSearch.put(columnToSort[a]+":like", search);
-                }else {
-                	individualSearch.put(columnToSort[a], search);
-                }  
+                if (individualLike.contains(columnToSort[a])) {
+                    individualSearch.put(columnToSort[a] + ":like", search);
+                } else {
+                    individualSearch.put(columnToSort[a], search);
+                }
             }
         }
 
@@ -201,30 +203,6 @@ public class ReadCampaign extends HttpServlet {
         item.setResultMessage(answer.getResultMessage());
 
         return item;
-    }
-
-    private JSONObject convertCampaigntoJSONObject(Campaign campaign) throws JSONException {
-        Gson gson = new Gson();
-        JSONObject result = new JSONObject(gson.toJson(campaign));
-        return result;
-    }
-
-    private JSONObject convertCampaignParametertoJSONObject(CampaignParameter campaign) throws JSONException {
-        Gson gson = new Gson();
-        JSONObject result = new JSONObject(gson.toJson(campaign));
-        return result;
-    }
-
-    private JSONObject convertCampaignLabeltoJSONObject(CampaignLabel campaign) throws JSONException {
-        Gson gson = new Gson();
-        JSONObject result = new JSONObject(gson.toJson(campaign));
-        return result;
-    }
-    
-    private JSONObject convertTestCasetoJSONObject(TestCase testCase) throws JSONException {
-        Gson gson = new Gson();
-        JSONObject result = new JSONObject(gson.toJson(testCase));
-        return result;
     }
 
     private AnswerItem findCampaignByKey(String key, Boolean userHasPermissions, ApplicationContext appContext, HttpServletRequest request) throws JSONException {
@@ -265,8 +243,6 @@ public class ReadCampaign extends HttpServlet {
             }
             if (request.getParameter("testcase") != null) {
                 ITestCaseService testCaseService = appContext.getBean(ITestCaseService.class);
-                String[] campaignList = new String[1];
-                campaignList[0] = key;
                 AnswerItem<List<TestCase>> resp = testCaseService.findTestCaseByCampaignNameAndCountries(key, null);
                 if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
                     JSONArray a = new JSONArray();
@@ -277,6 +253,18 @@ public class ReadCampaign extends HttpServlet {
                     response.put("testcase", a);
                 }
             }
+            if (request.getParameter("tag") != null) {
+                ITagService tagService = appContext.getBean(ITagService.class);
+                AnswerList<Tag> resp = tagService.readByCampaign(key);
+                if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
+                    JSONArray a = new JSONArray();
+                    for (Tag c : (List<Tag>) resp.getDataList()) {
+                        a.put(convertTagtoJSONObject(c));
+                    }
+                    response.put("tag", a);
+                }
+            }
+
             object.put("contentTable", response);
         }
         object.put("hasPermissions", userHasPermissions);
@@ -301,12 +289,12 @@ public class ReadCampaign extends HttpServlet {
         Map<String, List<String>> individualSearch = new HashMap<>();
         for (int a = 0; a < columnToSort.length; a++) {
             if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
-            	List<String> search = new ArrayList<>(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
-            	if(individualLike.contains(columnToSort[a])) {
-                	individualSearch.put(columnToSort[a]+":like", search);
-                }else {
-                	individualSearch.put(columnToSort[a], search);
-                } 
+                List<String> search = new ArrayList<>(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
+                if (individualLike.contains(columnToSort[a])) {
+                    individualSearch.put(columnToSort[a] + ":like", search);
+                } else {
+                    individualSearch.put(columnToSort[a], search);
+                }
             }
         }
 
@@ -317,6 +305,40 @@ public class ReadCampaign extends HttpServlet {
         answer.setItem(object);
         answer.setResultMessage(applicationList.getResultMessage());
         return answer;
+    }
+
+    private JSONObject convertCampaigntoJSONObject(Campaign campaign) throws JSONException {
+        Gson gson = new Gson();
+        JSONObject result = new JSONObject(gson.toJson(campaign));
+        return result;
+    }
+
+    private JSONObject convertCampaignParametertoJSONObject(CampaignParameter campaign) throws JSONException {
+        Gson gson = new Gson();
+        JSONObject result = new JSONObject(gson.toJson(campaign));
+        return result;
+    }
+
+    private JSONObject convertCampaignLabeltoJSONObject(CampaignLabel campaign) throws JSONException {
+        Gson gson = new Gson();
+        JSONObject result = new JSONObject(gson.toJson(campaign));
+        return result;
+    }
+
+    private JSONObject convertTagtoJSONObject(Tag tag) throws JSONException {
+        Gson gson = new Gson();
+        JSONObject result = new JSONObject(gson.toJson(tag));
+        return result;
+    }
+
+    private JSONObject convertTestCasetoJSONObject(TestCase testCase) throws JSONException {
+        JSONObject result = new JSONObject();
+        result.put("test", testCase.getTest());
+        result.put("testCase", testCase.getTestCase());
+        result.put("application", testCase.getApplication());
+        result.put("description", testCase.getDescription());
+        result.put("status", testCase.getStatus());
+        return result;
     }
 
 }

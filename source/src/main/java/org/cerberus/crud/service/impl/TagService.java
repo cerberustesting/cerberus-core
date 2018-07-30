@@ -79,12 +79,12 @@ public class TagService implements ITagService {
 
     @Override
     public AnswerList<Tag> readAll() {
-        return tagDAO.readByVariousByCriteria(null, 0, 0, "sort", "asc", null, null);
+        return tagDAO.readByVariousByCriteria(null, 0, 0, "id", "desc", null, null);
     }
 
     @Override
     public AnswerList readByCampaign(String campaign) {
-        return tagDAO.readByVariousByCriteria(campaign, 0, 0, "sort", "asc", null, null);
+        return tagDAO.readByVariousByCriteria(campaign, 0, 0, "id", "desc", null, null);
     }
 
     @Override
