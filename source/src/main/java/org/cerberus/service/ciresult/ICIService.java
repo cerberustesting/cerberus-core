@@ -35,4 +35,6 @@ public interface ICIService {
     JSONObject getCIResult(String tag);
 
     JSONObject getCIResultV004(String tag);
+
+    String getFinalResult(int resultCal, int resultCalThreshold, int nbtotal, int nbok);
 }

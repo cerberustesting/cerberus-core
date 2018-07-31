@@ -319,6 +319,8 @@ function viewEntryClick(param) {
             createDataTableWithPermissions(configurations, renderOptionsForCampaign_TestCase, "#viewTestcampaignList", undefined, true);
         }
 
+        /* TAG */
+
         var array = [];
 
         $.each(obj.tag, function (e) {
@@ -333,7 +335,7 @@ function viewEntryClick(param) {
 
         } else {
             //configure and create the dataTable
-            var configurations = new TableConfigurationsClientSide("viewTagcampaignsTable", array, aoColumnsFunc_Tag(), true);
+            var configurations = new TableConfigurationsClientSide("viewTagcampaignsTable", array, aoColumnsFunc_Tag(), true, [1, 'desc']);
             createDataTableWithPermissions(configurations, renderOptionsForCampaign_TestCase, "#viewTagcampaignList", undefined, true);
         }
 

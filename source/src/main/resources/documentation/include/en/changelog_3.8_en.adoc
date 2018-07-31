@@ -1,12 +1,15 @@
 *Bug fixes*
 [square]
-* [ENGINE] Bug on Manual execution that sometimes could generate an FA status has been fixed.
+* [ENGINE] Bug on Manual execution that sometimes could generate an FA status has been fixed. Happened when manual execution require a Selenium action/control/property.
 
 *Improvements / New features*
 [square]
-* [GUI] Big Label screen improvements. Label screen now display full hierarchy for all types of label (Sticker, Requirement and Battery)
-* [GUI] ReportByTag page agregates all execution in label tree.
-* [ENGINE] Video is now recorded for Android devices.
+* [GUI] Major Label screen improvements. Label screen now display full hierarchy for all types of label (Sticker, Requirement and Battery)
+* [GUI] Label hierarchy is also displayed on ReportByTag page.
+* [GUI] On TestCase header modal, the 3 types of labels are now split per type 1 tab for STICKER, another for BATTERY and a last one for REQUIREMENT
+* [ENGINE] Video is now recorded for Android devices >= 4.4 (KitKat).  Just select option Screenshot 3 (Automatic Screenshots on error and Video) or 4 (Systematic Screenshots/Video) to use it
+* [GUI] On Campaign statistics modal, list of past tags are displayed with results.
+* [GUI] On all list screens (testcase, labels, datalib,...) updating an element on a list no longuer force to come back to the 1st page of the list. #981
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

@@ -67,7 +67,7 @@ public class CIService implements ICIService {
     }
 
     @Override
-    public JSONObject getCIResultV004(String tag)  {
+    public JSONObject getCIResultV004(String tag) {
         try {
             List<TestCaseExecution> myList = testExecutionService.readLastExecutionAndExecutionInQueueByTag(tag);
             JSONObject jsonResponse = getCIResult(tag, myList);
@@ -80,7 +80,6 @@ public class CIService implements ICIService {
         }
         return null;
     }
-
 
     private JSONObject getCIResult(String tag, List<TestCaseExecution> myList) {
         try {
@@ -107,78 +106,78 @@ public class CIService implements ICIService {
             long longStart = 0;
             long longEnd = 0;
 
-                for (TestCaseExecution curExe : myList) {
+            for (TestCaseExecution curExe : myList) {
 
-                    if (longStart == 0) {
-                        longStart = curExe.getStart();
-                    }
-                    if (curExe.getStart() < longStart) {
-                        longStart = curExe.getStart();
-                    }
+                if (longStart == 0) {
+                    longStart = curExe.getStart();
+                }
+                if (curExe.getStart() < longStart) {
+                    longStart = curExe.getStart();
+                }
 
-                    if (longEnd == 0) {
-                        longEnd = curExe.getEnd();
-                    }
-                    if (curExe.getEnd() > longEnd) {
-                        longEnd = curExe.getEnd();
-                    }
+                if (longEnd == 0) {
+                    longEnd = curExe.getEnd();
+                }
+                if (curExe.getEnd() > longEnd) {
+                    longEnd = curExe.getEnd();
+                }
 
-                    nbtotal++;
+                nbtotal++;
 
-                    switch (curExe.getControlStatus()) {
-                        case TestCaseExecution.CONTROLSTATUS_KO:
-                            nbko++;
-                            break;
-                        case TestCaseExecution.CONTROLSTATUS_OK:
-                            nbok++;
-                            break;
-                        case TestCaseExecution.CONTROLSTATUS_FA:
-                            nbfa++;
-                            break;
-                        case TestCaseExecution.CONTROLSTATUS_NA:
-                            nbna++;
-                            break;
-                        case TestCaseExecution.CONTROLSTATUS_CA:
-                            nbca++;
-                            break;
-                        case TestCaseExecution.CONTROLSTATUS_PE:
-                            nbpe++;
-                            break;
-                        case TestCaseExecution.CONTROLSTATUS_NE:
-                            nbne++;
-                            break;
-                        case TestCaseExecution.CONTROLSTATUS_WE:
-                            nbwe++;
-                            break;
-                        case TestCaseExecution.CONTROLSTATUS_QU:
-                            nbqu++;
-                            break;
-                        case TestCaseExecution.CONTROLSTATUS_QE:
-                            nbqe++;
-                            break;
-                    }
+                switch (curExe.getControlStatus()) {
+                    case TestCaseExecution.CONTROLSTATUS_KO:
+                        nbko++;
+                        break;
+                    case TestCaseExecution.CONTROLSTATUS_OK:
+                        nbok++;
+                        break;
+                    case TestCaseExecution.CONTROLSTATUS_FA:
+                        nbfa++;
+                        break;
+                    case TestCaseExecution.CONTROLSTATUS_NA:
+                        nbna++;
+                        break;
+                    case TestCaseExecution.CONTROLSTATUS_CA:
+                        nbca++;
+                        break;
+                    case TestCaseExecution.CONTROLSTATUS_PE:
+                        nbpe++;
+                        break;
+                    case TestCaseExecution.CONTROLSTATUS_NE:
+                        nbne++;
+                        break;
+                    case TestCaseExecution.CONTROLSTATUS_WE:
+                        nbwe++;
+                        break;
+                    case TestCaseExecution.CONTROLSTATUS_QU:
+                        nbqu++;
+                        break;
+                    case TestCaseExecution.CONTROLSTATUS_QE:
+                        nbqe++;
+                        break;
+                }
 
-                    if (!curExe.getControlStatus().equals("OK") && !curExe.getControlStatus().equals("NE")
-                            && !curExe.getControlStatus().equals("PE") && !curExe.getControlStatus().equals("QU")) {
-                        switch (curExe.getTestCaseObj().getPriority()) {
-                            case 1:
-                                nbkop1++;
-                                break;
-                            case 2:
-                                nbkop2++;
-                                break;
-                            case 3:
-                                nbkop3++;
-                                break;
-                            case 4:
-                                nbkop4++;
-                                break;
-                            case 5:
-                                nbkop5++;
-                                break;
-                        }
+                if (!curExe.getControlStatus().equals("OK") && !curExe.getControlStatus().equals("NE")
+                        && !curExe.getControlStatus().equals("PE") && !curExe.getControlStatus().equals("QU")) {
+                    switch (curExe.getTestCaseObj().getPriority()) {
+                        case 1:
+                            nbkop1++;
+                            break;
+                        case 2:
+                            nbkop2++;
+                            break;
+                        case 3:
+                            nbkop3++;
+                            break;
+                        case 4:
+                            nbkop4++;
+                            break;
+                        case 5:
+                            nbkop5++;
+                            break;
                     }
                 }
+            }
 
             int pond1 = parameterService.getParameterIntegerByKey("cerberus_ci_okcoefprio1", "", 0);
             int pond2 = parameterService.getParameterIntegerByKey("cerberus_ci_okcoefprio2", "", 0);
@@ -190,11 +189,14 @@ public class CIService implements ICIService {
             int resultCal = (nbkop1 * pond1) + (nbkop2 * pond2) + (nbkop3 * pond3) + (nbkop4 * pond4) + (nbkop5 * pond5);
             if ((nbtotal > 0) && nbqu + nbpe > 0) {
                 result = "PE";
-            } else if ((resultCal < resultCalThreshold) && (nbtotal > 0) && nbok > 0) {
-                result = "OK";
             } else {
-                result = "KO";
+                result = getFinalResult(resultCal, resultCalThreshold, nbtotal, nbok);
             }
+//                if ((resultCal < resultCalThreshold) && (nbtotal > 0) && nbok > 0) {
+//                result = "OK";
+//            } else {
+//                result = "KO";
+//            }
 
             jsonResponse.put("messageType", "OK");
             jsonResponse.put("message", "CI result calculated with success.");
@@ -234,7 +236,14 @@ public class CIService implements ICIService {
         return null;
     }
 
-
+    @Override
+    public String getFinalResult(int resultCal, int resultCalThreshold, int nbtotal, int nbok) {
+        if ((resultCal < resultCalThreshold) && (nbtotal > 0) && nbok > 0) {
+            return "OK";
+        } else {
+            return "KO";
+        }
+    }
 
     private JSONArray generateStats(List<TestCaseExecution> testCaseExecutions) throws JSONException {
 
@@ -259,10 +268,8 @@ public class CIService implements ICIService {
             statMap.put(key.toString(), stat);
         }
 
-
         return getStatByEnvCountryRobotDecli(testCaseExecutions, statMap);
     }
-
 
     private JSONArray getStatByEnvCountryRobotDecli(List<TestCaseExecution> testCaseExecutions, HashMap<String, SummaryStatisticsDTO> statMap) throws JSONException {
         for (TestCaseExecution testCaseExecution : testCaseExecutions) {
@@ -278,7 +285,8 @@ public class CIService implements ICIService {
             key.append(testCaseExecution.getApplication());
 
             if (statMap.containsKey(key.toString())) {
-                statMap.get(key.toString()).updateStatisticByStatus(testCaseExecution.getControlStatus()); }
+                statMap.get(key.toString()).updateStatisticByStatus(testCaseExecution.getControlStatus());
+            }
         }
         return extractSummaryData(statMap);
     }

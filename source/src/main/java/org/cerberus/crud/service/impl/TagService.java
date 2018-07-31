@@ -124,29 +124,25 @@ public class TagService implements ITagService {
         try {
             Tag mytag = convert(readByKey(tag));
 
-//            List<TestCaseExecution> testCaseExecutions = testCaseExecutionService.readLastExecutionAndExecutionInQueueByTag(tag);
-//            List<TestCaseExecution> testCaseExecutionsTot = testCaseExecutionService.convert(testCaseExecutionService.readByTag(tag));
-//            Map<String, Integer> axisMap = new HashMap<>();
-//            Integer total;
-//            total = testCaseExecutions.size();
-//            for (TestCaseExecution execution : testCaseExecutions) {
-//                if (axisMap.containsKey(execution.getControlStatus())) {
-//                    axisMap.put(execution.getControlStatus(), axisMap.get(execution.getControlStatus()) + 1);
-//                } else {
-//                    axisMap.put(execution.getControlStatus(), 1);
-//                }
-//            }
             // Total execution.
             mytag.setNbExe(testCaseExecutionService.readNbByTag(tag));
 
             // End of queue is now.
             mytag.setDateEndQueue(new Timestamp(new Date().getTime()));
-            
+
             // All the rest of the data are coming from ResultCI Servlet.
             JSONObject jsonResponse = ciService.getCIResult(tag);
-            mytag.setCiResult(jsonResponse.getString("result"));
             mytag.setCiScore(jsonResponse.getInt("CI_finalResult"));
             mytag.setCiScoreThreshold(jsonResponse.getInt("CI_finalResultThreshold"));
+
+            if (jsonResponse.getString("result").equalsIgnoreCase("PE")) {
+                // If result is PE that probably means that another execution was manually inserted in the queue or started after the end of last execution. It should not be considered.
+                mytag.setCiResult(ciService.getFinalResult(jsonResponse.getInt("CI_finalResult"), jsonResponse.getInt("CI_finalResultThreshold"),
+                        jsonResponse.getInt("TOTAL_nbOfExecution"), jsonResponse.getInt("status_OK_nbOfExecution")));
+            } else {
+                mytag.setCiResult(jsonResponse.getString("result"));
+            }
+
             mytag.setNbOK(jsonResponse.getInt("status_OK_nbOfExecution"));
             mytag.setNbKO(jsonResponse.getInt("status_KO_nbOfExecution"));
             mytag.setNbFA(jsonResponse.getInt("status_FA_nbOfExecution"));

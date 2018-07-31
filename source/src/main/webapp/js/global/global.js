@@ -1206,17 +1206,17 @@ $.fn.dataTableExt.oApi.fnNewAjax = function (oSettings, sNewSource) {
  * @param {type} divId - table unique identifier
  * @param {type} data - data that is presented in the table
  * @param {type} aoColumnsFunction - function to render the columns
+ * @param {booblean} activatePagination - true in order to activate pagination. False display all records.
  * @param {type} aaSorting - Table to define the sorting column and order. Ex : [3, 'asc']
- * @param {type} defineLenghtMenu - allows the defintion of the select with the number or rows that should be displayed
  * @returns {TableConfigurationsClientSide}
  */
-function TableConfigurationsClientSide(divId, data, aoColumnsFunction, defineLenghtMenu, aaSorting) {
+function TableConfigurationsClientSide(divId, data, aoColumnsFunction, activatePagination, aaSorting) {
     this.divId = divId;
     this.aoColumnsFunction = aoColumnsFunction;
     this.aaData = data;
     this.aaSorting = aaSorting;
 
-    if (defineLenghtMenu) {
+    if (activatePagination) {
         this.lengthMenu = [10, 25, 50, 100];
         this.lengthChange = true;
         this.bPaginate = true;
