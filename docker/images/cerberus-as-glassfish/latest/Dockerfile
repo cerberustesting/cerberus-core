@@ -30,7 +30,7 @@ ENV GLASSFISH_HTTP_THREADPOOL_MAX_SIZE 500
 # Internal environment variables
 # Should not be overridden by user
 ENV CERBERUS_NAME Cerberus
-ENV CERBERUS_VERSION 3.7.1
+ENV CERBERUS_VERSION 3.8-SNAPSHOT
 ENV GLASSFISH_DOMAIN cerberus
 ENV GLASSFISH_ADMIN_PASSWORD admin
 ENV CERBERUS_PICTURES_PATH ${GLASSFISH_HOME}/glassfish/domains/${GLASSFISH_DOMAIN}/docroot/CerberusPictures
@@ -55,8 +55,11 @@ RUN yum install -y dos2unix
 # Get and extract the Cerberus package
 # Use RUN instead of ADD to avoid re-download (see https://github.com/docker/docker/issues/15717)
 
-RUN curl -L -o /tmp/${CERBERUS_PACKAGE_NAME}.zip https://github.com/cerberustesting/cerberus-source/releases/download/cerberus-testing-${CERBERUS_VERSION}/Cerberus-${CERBERUS_VERSION}.zip && \
-    unzip -q -d /tmp /tmp/${CERBERUS_PACKAGE_NAME}.zip
+#RUN curl -L -o /tmp/${CERBERUS_PACKAGE_NAME}.zip https://github.com/cerberustesting/cerberus-source/releases/download/cerberus-testing-${CERBERUS_VERSION}/Cerberus-${CERBERUS_VERSION}.zip && \
+
+
+COPY Cerberus.zip /tmp/${CERBERUS_PACKAGE_NAME}.zip
+RUN unzip -q -d /tmp /tmp/${CERBERUS_PACKAGE_NAME}.zip
 
 # Get and extract the MySQL connector library
 # Use RUN instead of ADD to avoid re-download (see https://github.com/docker/docker/issues/15717)

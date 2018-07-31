@@ -214,6 +214,23 @@ public class RestService implements IRestService {
             httpclientBuilder = HttpClientBuilder.create();
         }
 
+        // if it is an GUI REST, share the GUI context with api call
+        if(tcexecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
+            WebDriver driver = tcexecution.getSession().getDriver();
+
+            BasicCookieStore cookieStore = new BasicCookieStore();
+
+            driver.manage().getCookies().forEach(cookieSelenium -> {
+                BasicClientCookie cookie = new BasicClientCookie(cookieSelenium.getName(), cookieSelenium.getValue());
+                cookie.setDomain(cookieSelenium.getDomain());
+                cookie.setPath(cookieSelenium.getPath());
+                cookie.setExpiryDate(cookieSelenium.getExpiry());
+                cookieStore.addCookie(cookie);
+            });
+
+            httpclientBuilder.setDefaultCookieStore(cookieStore);
+        }
+
         try {
 
             boolean acceptUnsignedSsl = parameterService.getParameterBooleanByKey("cerberus_accept_unsigned_ssl_certificate", system,true);
