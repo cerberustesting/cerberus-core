@@ -6,7 +6,7 @@
 [square]
 * [GUI] Big Label screen improvements. Label screen now display full hierarchy for all types of label (Sticker, Requirement and Battery)
 * [GUI] ReportByTag page agregates all execution in label tree.
-* [ENGINE] Video is now recorded for Android devices.
+* [ENGINE] Video is now recorded for Android devices >= 4.4 (KitKat).  Just select option Screenshot 3 (Automatic Screenshots on error and Video) or 4 (Systematic Screenshots/Video) to use it
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

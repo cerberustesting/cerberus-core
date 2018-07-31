@@ -34,6 +34,7 @@ import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.Recorder;
 import org.cerberus.engine.execution.IRecorderService;
 import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.enums.Screenshot;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.datalib.IDataLibService;
 import org.cerberus.service.sikuli.ISikuliService;
@@ -103,8 +104,8 @@ public class RecorderService implements IRecorderService {
          * parameter is eq to 2 or screenshot parameter is eq to 1 with the
          * correct doScreenshot flag on the last action MessageEvent.
          */
-        if ((myExecution.getScreenshot() == 2) || ((myExecution.getScreenshot() == 1) && (doScreenshot))) {
-
+        if (    Screenshot.printScreenSystematicaly(myExecution.getScreenshot()) ||
+                Screenshot.printScreenOnError(myExecution.getScreenshot()) && (doScreenshot)) {
             if (applicationType.equals(Application.TYPE_GUI)
                     || applicationType.equals(Application.TYPE_APK)
                     || applicationType.equals(Application.TYPE_IPA)
