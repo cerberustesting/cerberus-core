@@ -72,6 +72,7 @@ import org.cerberus.engine.gwt.IVariableService;
 import org.cerberus.engine.threadpool.IExecutionThreadPoolService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
+import org.cerberus.enums.Screenshot;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.email.IEmailService;
@@ -295,7 +296,7 @@ public class ExecutionRunService implements IExecutionRunService {
 
                         // Start video
                         try {
-                            if(parameterService.getParameterBooleanByKey("cerberus_register_video", tCExecution.getSystem(), true)) {
+                            if( Screenshot.recordVideo(tCExecution.getScreenshot()) ) {
                                 videoRecorder = VideoRecorder.getInstance(tCExecution, recorderService);
                                 videoRecorder.beginRecordVideo();
                             }

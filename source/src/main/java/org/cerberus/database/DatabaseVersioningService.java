@@ -7810,7 +7810,18 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 
         // New parameter.
         // 1362
-        a.add("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ('', 'cerberus_register_video', 'Y', 'Allow to register video on compatible application type');");
+        a.add("SELECT 1 FROM dual");
+
+        // 1363-64-65
+        a.add("UPDATE `invariant` set `description` = 'No Screenshots/Video' where `idname`='SCREENSHOT' and `value` = '0'");
+        a.add("UPDATE `invariant` set `description` = 'Automatic Screenshots on error' where `idname`='SCREENSHOT' and `value` = '1'");
+        a.add("UPDATE `invariant` set `description` = 'Systematic Screenshots' where `idname`='SCREENSHOT' and `value` = '2'");
+
+        // 1365
+        a.add("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`)  values "+
+        "('SCREENSHOT', '3', 40, 'Automatic Screenshots on error and Video', '')"+
+        ",('SCREENSHOT', '4', 50, 'Systematic Screenshots/Video', '')");
+
 
         return a;
     }
