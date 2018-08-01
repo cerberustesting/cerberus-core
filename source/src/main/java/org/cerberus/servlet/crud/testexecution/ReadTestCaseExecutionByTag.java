@@ -191,6 +191,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         result.put("End", testCaseExecution.getEnd());
         result.put("Country", JavaScriptUtils.javaScriptEscape(testCaseExecution.getCountry()));
         result.put("RobotDecli", JavaScriptUtils.javaScriptEscape(testCaseExecution.getRobotDecli()));
+        result.put("ManualExecution", JavaScriptUtils.javaScriptEscape(testCaseExecution.getManualExecution()));
         result.put("ControlStatus", JavaScriptUtils.javaScriptEscape(testCaseExecution.getControlStatus()));
         result.put("ControlMessage", JavaScriptUtils.javaScriptEscape(testCaseExecution.getControlMessage()));
         result.put("Status", JavaScriptUtils.javaScriptEscape(testCaseExecution.getStatus()));

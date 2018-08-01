@@ -43,7 +43,7 @@ public class Robot {
     private String userAgent;
     private String robotDecli;
     private String screenSize;
-    
+
     /**
      * From here are data outside database model.
      */
@@ -73,7 +73,7 @@ public class Robot {
     public void setScreenSize(String screenSize) {
         this.screenSize = screenSize;
     }
-    
+
     public String getUserAgent() {
         return userAgent;
     }
@@ -81,7 +81,7 @@ public class Robot {
     public void setUserAgent(String userAgent) {
         this.userAgent = userAgent;
     }
-    
+
     public String getPort() {
         return port;
     }
@@ -112,8 +112,9 @@ public class Robot {
 
     public String getHostWithCredential() {
         String credential = "";
-        if(!StringUtil.isNullOrEmpty(this.getHostUser()))
+        if (!StringUtil.isNullOrEmpty(this.getHostUser())) {
             credential = this.getHostUser() + ":" + this.getHostPassword() + "@";
+        }
 
         return credential + this.getHost();
     }
@@ -162,13 +163,13 @@ public class Robot {
         this.version = version;
     }
 
-	public List<RobotCapability> getCapabilities() {
-		return capabilities;
-	}
+    public List<RobotCapability> getCapabilities() {
+        return capabilities;
+    }
 
-	public void setCapabilities(List<RobotCapability> capabilities) {
-		this.capabilities = capabilities;
-	}
+    public void setCapabilities(List<RobotCapability> capabilities) {
+        this.capabilities = capabilities;
+    }
 
     public String getHostUser() {
         return hostUser;

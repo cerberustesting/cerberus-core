@@ -1110,11 +1110,21 @@ function openModalTestCase_FromRepTag(element, test, testcase, mode) {
     });
 }
 
-function selectAllQueue(status) {
-    if ($('#selectAllQueue' + status).prop("checked")) {
-        $("[data-line='select" + status + "']").prop("checked", true);
+function selectAllQueue(checkboxid, manualExecution, status) {
+    if ($('#' + checkboxid).prop("checked")) {
+        if (!isEmpty(manualExecution)) {
+            $("[data-line='select" + manualExecution + "-" + status + "']").prop("checked", true);
+        } else {
+            $("[data-line='selectN-" + status + "']").prop("checked", true);
+            $("[data-line='selectY-" + status + "']").prop("checked", true);
+        }
     } else {
-        $("[data-line='select" + status + "']").prop("checked", false);
+        if (!isEmpty(manualExecution)) {
+            $("[data-line='select" + manualExecution + "-" + status + "']").prop("checked", false);
+        } else {
+            $("[data-line='selectN-" + status + "']").prop("checked", false);
+            $("[data-line='selectY-" + status + "']").prop("checked", false);
+        }
     }
     refreshNbChecked();
 }
@@ -1135,11 +1145,13 @@ function renderOptionsForExeList(selectTag) {
     if ($("#blankSpace").length === 0) {
         var doc = new Doc();
         var contentToAdd = "<div class='marginBottom10'>";
-        contentToAdd += "<label>Select all/none :</label>";
+        contentToAdd += "<label class='marginRight10'>Select all/none :</label>";
         contentToAdd += "<label class='checkbox-inline'><input id='selectAllQueueQEERROR' type='checkbox'></input>QE (ERROR)</label>";
         contentToAdd += "<label class='checkbox-inline'><input id='selectAllQueueFA' type='checkbox'></input>FA</label>";
+        contentToAdd += "<label class='checkbox-inline'><input id='selectAllQueueFAManual' type='checkbox'></input>FA (Manual)</label>";
         contentToAdd += "<label class='checkbox-inline'><input id='selectAllQueueKO' type='checkbox'></input>KO</label>";
-        contentToAdd += "<label class='checkbox-inline'><input id='selectAllQueueNA' type='checkbox'></input>NA</label>";
+        contentToAdd += "<label class='checkbox-inline'><input id='selectAllQueueKOManual' type='checkbox'></input>KO (Manual)</label>";
+        contentToAdd += "<label class='checkbox-inline marginRight10'><input id='selectAllQueueNA' type='checkbox'></input>NA</label>";
         contentToAdd += "<button id='submitExe' type='button' disabled='disabled' title='Submit again the selected executions.' class='btn btn-default'><span class='glyphicon glyphicon-play'></span> Submit Again</button>";
         contentToAdd += "<a href='TestCaseExecutionQueueList.jsp?tag=" + selectTag + "'><button id='openqueue' type='button' class='btn btn-default'><span class='glyphicon glyphicon-list'></span> Open Queue</button></a>";
         contentToAdd += "<button id='refresh' type='button' title='Refresh.' class='btn btn-default' onclick='loadAllReports()'><span class='glyphicon glyphicon-refresh'></span> Refresh</button>";
@@ -1148,16 +1160,22 @@ function renderOptionsForExeList(selectTag) {
         $("#listTable_length").before(contentToAdd);
 
         $('#selectAllQueueQEERROR').click(function () {
-            selectAllQueue("QEERROR");
+            selectAllQueue("selectAllQueueQEERROR", "", "QEERROR");
         });
         $('#selectAllQueueFA').click(function () {
-            selectAllQueue("FA");
+            selectAllQueue("selectAllQueueFA", "N", "FA");
+        });
+        $('#selectAllQueueFAManual').click(function () {
+            selectAllQueue("selectAllQueueFAManual", "Y", "FA");
         });
         $('#selectAllQueueKO').click(function () {
-            selectAllQueue("KO");
+            selectAllQueue("selectAllQueueKO", "N", "KO");
+        });
+        $('#selectAllQueueKOManual').click(function () {
+            selectAllQueue("selectAllQueueKOManual", "Y", "KO");
         });
         $('#selectAllQueueNA').click(function () {
-            selectAllQueue("NA");
+            selectAllQueue("selectAllQueueNA", "", "NA");
         });
         $('#submitExe').click(massAction_copyQueue);
     }
@@ -1269,7 +1287,7 @@ function aoColumnsFunc(Columns) {
                         state += data.QueueState;
                     }
                     if ((data.QueueID !== undefined) && (data.QueueID !== "0")) {
-                        cell += '<input id="selectLine" name="id" value=' + data.QueueID + ' onclick="refreshNbChecked()" data-select="id" data-line="select' + state + '" data-id="' + data.QueueID + '" title="Select for Action" type="checkbox"></input>';
+                        cell += '<input id="selectLine" name="id" value=' + data.QueueID + ' onclick="refreshNbChecked()" data-select="id" data-line="select' + data.ManualExecution + '-' + state + '" data-id="' + data.QueueID + '" title="Select for Action" type="checkbox"></input>';
                     }
                     cell += '</span>';
                     if ((data.ControlStatus === "QU") || (data.ControlStatus === "QE")) {
