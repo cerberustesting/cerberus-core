@@ -31,6 +31,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/global/dependenciesInclusions.html" %>
+        <link rel="stylesheet" type="text/css" href="css/pages/RunTests.css"/>
         <script type="text/javascript" src="js/pages/RunTest.js"></script>
         <script type="text/javascript" src="js/transversalobject/Robot.js"></script>
         <title>Run Test</title>
@@ -39,7 +40,24 @@
         <%@ include file="include/global/header.html"%>
         <%@ include file="include/utils/modal-confirmation.html"%>
 
+
+        <div id="runTestCaseBlockSticky" class="btn-group btn-group-lg" role="group">
+<!--            <div class="col-lg-4">-->
+                <button type="button" class="feedback btn btn-secondary " id="runTestCase">Run TestCase</button>
+<!--            </div>
+            <div class="col-lg-8">-->
+                <button type="button" class="feedback btn btn-primary " id="runTestCaseAndSee">Run TestCase (and See Result)</button>
+<!--            </div>-->
+        </div>
+
         <div class="container-fluid center" id="page-layout">
+            <!--            <div id="mybutton">
+                            <button class="feedback">Run Test Case</button>
+                            <button class="feedback">Run Test Case (and see result)</button>
+                        </div>-->
+
+
+
             <div id="DialogMessagesArea">
                 <div class="alert" id="DialogMessagesAlert"  style="display:none;">
                     <strong><span class="alert-description" id="DialogAlertDescription"></span></strong>
@@ -227,22 +245,22 @@
                                 </div>
                             </div>
 
-                            <div class="row" id="runCampaignUpBlock" style="display: none;">
-                                <div class="col-lg-6">
-                                    <button type="button" class="btn btn-primary btn-lg btn-block"  id="runCampaignUp">Run Campaign</button>
-                                </div>
-                                <div class="col-lg-6">
-                                    <button type="button" class="btn btn-primary btn-lg btn-block" id="runCampaignAndSeeUp">Run Campaign (and See Result)</button>
-                                </div>
-                            </div>
-                            <div class="row" id="runTestCaseUpBlock">
-                                <div class="col-lg-6">
-                                    <button type="button" class="btn btn-primary btn-lg btn-block" id="runTestCaseUp">Run Test Case</button>
-                                </div>
-                                <div class="col-lg-6">
-                                    <button type="button" class="btn btn-primary btn-lg btn-block" id="runTestCaseAndSeeUp">Run Test Case (and See Result)</button>
-                                </div>
-                            </div>
+                            <!--                            <div class="row" id="runCampaignUpBlock" style="display: none;">
+                                                            <div class="col-lg-6">
+                                                                <button type="button" class="btn btn-primary btn-lg btn-block"  id="runCampaignUp">Run Campaign</button>
+                                                            </div>
+                                                            <div class="col-lg-6">
+                                                                <button type="button" class="btn btn-primary btn-lg btn-block" id="runCampaignAndSeeUp">Run Campaign (and See Result)</button>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row" id="runTestCaseUpBlock">
+                                                            <div class="col-lg-6">
+                                                                <button type="button" class="btn btn-primary btn-lg btn-block" id="runTestCaseUp">Run Test Case</button>
+                                                            </div>
+                                                            <div class="col-lg-6">
+                                                                <button type="button" class="btn btn-primary btn-lg btn-block" id="runTestCaseAndSeeUp">Run Test Case (and See Result)</button>
+                                                            </div>
+                                                        </div>-->
 
                         </div>
                     </div>
@@ -399,25 +417,25 @@
                 </div>
             </div>
 
-            <div class="row" id="runCampaignBlock" style="display: none;">
-                <div class="col-lg-6">
-                    <button type="button" class="btn btn-primary btn-lg btn-block"  id="runCampaign">Run Campaign</button>
-                </div>
-                <div class="col-lg-6">
-                    <button type="button" class="btn btn-primary btn-lg btn-block" id="runCampaignAndSee">Run Campaign (and See Result)</button>
-                </div>
-            </div>
-            <div class="row" id="runTestCaseBlock">
-                <div class="col-lg-6">
-                    <button type="button" class="btn btn-primary btn-lg btn-block" id="runTestCase">Run Test Case</button>
-                </div>
-                <div class="col-lg-6">
-                    <button type="button" class="btn btn-primary btn-lg btn-block" id="runTestCaseAndSee">Run Test Case (and See Result)</button>
-                </div>
-            </div>
+            <!--            <div class="row" id="runCampaignBlock" style="display: none;">
+                            <div class="col-lg-6">
+                                <button type="button" class="btn btn-primary btn-lg btn-block"  id="runCampaign">Run Campaign</button>
+                            </div>
+                            <div class="col-lg-6">
+                                <button type="button" class="btn btn-primary btn-lg btn-block" id="runCampaignAndSee">Run Campaign (and See Result)</button>
+                            </div>
+                        </div>
+                        <div class="row" id="runTestCaseBlock">
+                            <div class="col-lg-6">
+                                <button type="button" class="btn btn-primary btn-lg btn-block" id="runTestCase">Run Test Case</button>
+                            </div>
+                            <div class="col-lg-6">
+                                <button type="button" class="btn btn-primary btn-lg btn-block" id="runTestCaseAndSee">Run Test Case (and See Result)</button>
+                            </div>
+                        </div>-->
 
-            <footer class="footer">
-                <div class="container-fluid" id="footer"></div>
+            <footer class="footer marginTop25">
+                <div class="col-xs-6 container-fluid" id="footer"></div>
             </footer>
         </div>
     </body>

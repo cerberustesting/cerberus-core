@@ -854,7 +854,7 @@ function aoColumnsFunc(tableId) {
 
             }
         },
-        {"data": "campaign", "sName": "campaign", "title": doc.getDocLabel("page_testcampaign", "testcampaign_col")},
+        {"data": "campaign", "sName": "campaign", "sWidth": "80px","title": doc.getDocLabel("page_testcampaign", "testcampaign_col")},
         {
             "data": "distribList",
             "sName": "distribList",
@@ -876,7 +876,7 @@ function aoColumnsFunc(tableId) {
         {
             "data": "description",
             "sName": "description",
-            "sWidth": "80px",
+            "sWidth": "180px",
             "title": doc.getDocLabel("page_testcampaign", "description_col")
         }
     ];
@@ -969,13 +969,6 @@ function aoColumnsFunc_TestCase() {
 function aoColumnsFunc_Tag() {
     var doc = new Doc();
     var aoColumns = [
-//                     obj.tag[e], 
-//                     obj.tag[e].tag, 
-//                     obj.tag[e].nbExe, 
-//                     obj.tag[e].nbExeUsefull, 
-//                     obj.tag[e].DateCreated, 
-//                     obj.tag[e].DateEndQueue, 
-
         {"data": "1", "sName": "Tag", "sWidth": "250px", "title": doc.getDocLabel("page_tag", "tag")},
         {"data": "4", "sName": "DateCreated", "sWidth": "150px", "title": doc.getDocLabel("page_tag", "datecreated")},
         {

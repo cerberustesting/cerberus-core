@@ -73,34 +73,34 @@ $.when($.getScript("js/global/global.js")).then(function () {
         });
 
         // Run Campaign button click
-        $("#runCampaign").click(function () {
-            runCampaign(false);
-        });
-        $("#runCampaignUp").click(function () {
-            runCampaign(false);
-        });
-        // Run Campaign button click
-        $("#runCampaignAndSee").click(function () {
-            runCampaign(true);
-        });
-        $("#runCampaignAndSeeUp").click(function () {
-            runCampaign(true);
-        });
+//        $("#runCampaign").click(function () {
+//            runCampaign(false);
+//        });
+//        $("#runCampaignUp").click(function () {
+//            runCampaign(false);
+//        });
+//        // Run Campaign button click
+//        $("#runCampaignAndSee").click(function () {
+//            runCampaign(true);
+//        });
+//        $("#runCampaignAndSeeUp").click(function () {
+//            runCampaign(true);
+//        });
 
         // Run Test Case button click
         $("#runTestCase").click(function () {
             runTestCase(false);
         });
-        $("#runTestCaseUp").click(function () {
-            runTestCase(false);
-        });
+//        $("#runTestCaseUp").click(function () {
+//            runTestCase(false);
+//        });
         // Run Test Case button click
         $("#runTestCaseAndSee").click(function () {
             runTestCase(true);
         });
-        $("#runTestCaseAndSeeUp").click(function () {
-            runTestCase(true);
-        });
+//        $("#runTestCaseAndSeeUp").click(function () {
+//            runTestCase(true);
+//        });
 
         $("#loadFiltersBtn").click(function () {
             loadTestCaseFromFilter(null, null);
@@ -241,12 +241,15 @@ function selectionCampaign() {
         $("#testcaseSelectAll").prop("disabled", true);
         $("#testcaseSelectNone").prop("disabled", true);
 
-        $("#runCampaignBlock").show();
-        $("#runCampaignUpBlock").show();
+//        $("#runCampaignBlock").show();
+//        $("#runCampaignUpBlock").show();
 
         // NEW
-        $("#runTestCaseBlock").hide();
-        $("#runTestCaseUpBlock").hide();
+//        $("#runTestCaseBlock").hide();
+//        $("#runTestCaseUpBlock").hide();
+
+        $('#runTestCase').text("Run Campaign");
+        $('#runTestCaseAndSee').text("Run Campaign (and See Result)");
 
         $("#filtersPanelContainer").hide();
         $("#campaignSelection").show();
@@ -297,13 +300,15 @@ function selectionManual(test, testcase, environment, country) {
 
         $("#campaignSelection").hide();
         $("#filters").show();
-        $("#runCampaignBlock").hide();
-        $("#runCampaignUpBlock").hide();
+//        $("#runCampaignBlock").hide();
+//        $("#runCampaignUpBlock").hide();
         $("#filtersPanelContainer").show();
 
         // NEW
-        $("#runTestCaseBlock").show();
-        $("#runTestCaseUpBlock").show();
+        $('#runTestCase').text("Run TestCase");
+        $('#runTestCaseAndSee').text("Run TestCase (and See Result)");
+//        $("#runTestCaseBlock").show();
+//        $("#runTestCaseUpBlock").show();
 
         loadTestCaseFromFilter(test, testcase);
 
@@ -492,78 +497,91 @@ function loadCampaignParameter(campaign) {
 
 /** FORM SENDING UTILITY FUNCTIONS (VALID FOR SERVLET ADDTOEXECUTIONQUEUE) **/
 
-function runCampaign(doRedirect) {
-
-    clearResponseMessageMainPage();
-
-    var paramSerialized = "campaign=" + $("#campaignSelect").val();
-    paramSerialized += "&browser=" + $("#robotSettingsForm #browser").val();
-    paramSerialized += "&ss_ip=" + $("#robotSettingsForm #seleniumIP").val();
-    paramSerialized += "&ss_p=" + $("#robotSettingsForm #seleniumPort").val();
-    paramSerialized += "&tag=" + $("#executionSettingsForm #tag").val();
-    paramSerialized += "&screenshot=" + $("#executionSettingsForm #screenshot").val();
-    paramSerialized += "&verbose=" + $("#executionSettingsForm #verbose").val();
-    paramSerialized += "&timeout=" + $("#executionSettingsForm #timeout").val();
-    paramSerialized += "&pagesource=" + $("#executionSettingsForm #pageSource").val();
-    paramSerialized += "&seleniumlog=" + $("#executionSettingsForm #seleniumLog").val();
-    paramSerialized += "&manualexecution=" + $("#executionSettingsForm #manualExecution").val();
-    paramSerialized += "&retries=" + $("#executionSettingsForm #retries").val();
-    paramSerialized += "&priority=" + $("#executionSettingsForm #priority").val();
-    paramSerialized += "&outputformat=json";
-
-    var environmentstring = "";
-    var settings = $('input[name="envSettings"]:checked').val();
-    if (settings === "auto") {
-        var envListAuto = $("#envSettingsAuto select").val();
-        if (envListAuto !== null) {
-            for (var index = 0; index < envListAuto.length; index++) {
-                environmentstring += "&environment=" + envListAuto[index];
-            }
-        }
-    } else if (settings === "manual") {
-        environmentstring += "&manualurl=1";
-        environmentstring += "&myhost=" + $("#envSettingsMan #myhost").val();
-        environmentstring += "&mycontextroot=" + $("#envSettingsMan #mycontextroot").val();
-        environmentstring += "&myloginrelativeurl=" + $("#envSettingsMan #myloginrelativeurl").val();
-        environmentstring += "&myenvdata=" + $("#envSettingsMan #myenvdata").val();
-    }
-
-    var countriesstring = "";
-    $("#countryList .countrycb").each(function () {
-        if ($(this).prop("checked")) {
-            countriesstring += "&country=" + $(this).prop("name");
-        }
-    });
-
-    var robotsstring = "";
-    var robotSettings = $("#robotSettingsForm #robot").serialize();
-    if (!isEmpty(robotSettings)) {
-        robotsstring += "&" + robotSettings;
-    }
-
-    showLoader('#page-layout');
-
-    var jqxhr = $.post("AddToExecutionQueueV003", paramSerialized + environmentstring + countriesstring + robotsstring, "json");
-    $.when(jqxhr).then(function (data) {
-        // unblock when remote call returns 
-        hideLoader('#page-layout');
-        data.message = data.message.replace(/\n/g, '<br>');
-        if (getAlertType(data.messageType) === "success") {
-            handleAddToQueueResponse(data, doRedirect);
-        } else {
-            showMessageMainPage(getAlertType(data.messageType), data.message, false);
-        }
-    }).fail(handleErrorAjaxAfterTimeout);
-
-}
+//function runCampaign(doRedirect) {
+//
+//    var doc = new Doc();
+//
+//    clearResponseMessageMainPage();
+//
+//    var paramSerialized = "campaign=" + $("#campaignSelect").val();
+//    paramSerialized += "&browser=" + $("#robotSettingsForm #browser").val();
+//    paramSerialized += "&ss_ip=" + $("#robotSettingsForm #seleniumIP").val();
+//    paramSerialized += "&ss_p=" + $("#robotSettingsForm #seleniumPort").val();
+//    paramSerialized += "&tag=" + $("#executionSettingsForm #tag").val();
+//    paramSerialized += "&screenshot=" + $("#executionSettingsForm #screenshot").val();
+//    paramSerialized += "&verbose=" + $("#executionSettingsForm #verbose").val();
+//    paramSerialized += "&timeout=" + $("#executionSettingsForm #timeout").val();
+//    paramSerialized += "&pagesource=" + $("#executionSettingsForm #pageSource").val();
+//    paramSerialized += "&seleniumlog=" + $("#executionSettingsForm #seleniumLog").val();
+//    paramSerialized += "&manualexecution=" + $("#executionSettingsForm #manualExecution").val();
+//    paramSerialized += "&retries=" + $("#executionSettingsForm #retries").val();
+//    paramSerialized += "&priority=" + $("#executionSettingsForm #priority").val();
+//    paramSerialized += "&outputformat=json";
+//
+//    var environmentstring = "";
+//    var settings = $('input[name="envSettings"]:checked').val();
+//    if (settings === "auto") {
+//        var envListAuto = $("#envSettingsAuto select").val();
+//        if (envListAuto !== null) {
+//            for (var index = 0; index < envListAuto.length; index++) {
+//                environmentstring += "&environment=" + envListAuto[index];
+//            }
+//        }
+//    } else if (settings === "manual") {
+//        environmentstring += "&manualurl=1";
+//        environmentstring += "&myhost=" + $("#envSettingsMan #myhost").val();
+//        environmentstring += "&mycontextroot=" + $("#envSettingsMan #mycontextroot").val();
+//        environmentstring += "&myloginrelativeurl=" + $("#envSettingsMan #myloginrelativeurl").val();
+//        environmentstring += "&myenvdata=" + $("#envSettingsMan #myenvdata").val();
+//    }
+//
+//    var countriesstring = "";
+//    $("#countryList .countrycb").each(function () {
+//        if ($(this).prop("checked")) {
+//            countriesstring += "&country=" + $(this).prop("name");
+//        }
+//    });
+//
+//    var robotsstring = "";
+//    var robotSettings = $("#robotSettingsForm #robot").serialize();
+//    if (!isEmpty(robotSettings)) {
+//        robotsstring += "&" + robotSettings;
+//    }
+//
+//    showLoader('#page-layout');
+//
+//    var jqxhr = $.post("AddToExecutionQueueV003", paramSerialized + environmentstring + countriesstring + robotsstring, "json");
+//    $.when(jqxhr).then(function (data) {
+//        // unblock when remote call returns 
+//        hideLoader('#page-layout');
+//        data.message = data.message.replace(/\n/g, '<br>');
+//        if (getAlertType(data.messageType) === "success") {
+//            handleAddToQueueResponse(data, doRedirect);
+//        } else {
+//            showMessageMainPage(getAlertType(data.messageType), data.message, false);
+//        }
+//    }).fail(handleErrorAjaxAfterTimeout);
+//
+//}
 
 function runTestCase(doRedirect) {
 
     var doc = new Doc();
 
+    var fromCampaign = false;
+    if ($('#selectionPanel').data("LoadedMode") === "campaign") {
+        var fromCampaign = true;
+    }
+
     clearResponseMessageMainPage();
 
-    var paramSerialized = "browser=" + $("#robotSettingsForm #browser").val();
+    var paramSerialized = "";
+    if (fromCampaign) {
+        paramSerialized += "campaign=" + $("#campaignSelect").val();
+        paramSerialized += "&browser=" + $("#robotSettingsForm #browser").val();
+    } else {
+        paramSerialized += "browser=" + $("#robotSettingsForm #browser").val();
+    }
     paramSerialized += "&ss_ip=" + $("#robotSettingsForm #seleniumIP").val();
     paramSerialized += "&ss_p=" + $("#robotSettingsForm #seleniumPort").val();
     paramSerialized += "&tag=" + $("#executionSettingsForm #tag").val();
@@ -578,11 +596,13 @@ function runTestCase(doRedirect) {
     paramSerialized += "&outputformat=json";
 
     var teststring = "";
-    var select = $("#testCaseList option:selected");
-    select.each(function () {
-        var item = $(this).data("item");
-        teststring += "&test=" + item.test + "&testcase=" + item.testCase;
-    });
+    if (!fromCampaign) {
+        var select = $("#testCaseList option:selected");
+        select.each(function () {
+            var item = $(this).data("item");
+            teststring += "&test=" + item.test + "&testcase=" + item.testCase;
+        });
+    }
 
 
     var environmentstring = "";
@@ -615,12 +635,14 @@ function runTestCase(doRedirect) {
         robotsstring += "&" + robotSettings;
     }
 
-    if (teststring === "") {
-        showMessageMainPage("danger", doc.getDocLabel("page_runtest", "select_one_testcase"), false);
-    } else if (environmentstring === "") {
-        showMessageMainPage("danger", doc.getDocLabel("page_runtest", "select_one_env"), false);
-    } else if (countriesstring === "") {
-        showMessageMainPage("danger", doc.getDocLabel("page_runtest", "select_one_country"), false);
+    if (!fromCampaign) {
+        if (teststring === "") {
+            showMessageMainPage("danger", doc.getDocLabel("page_runtest", "select_one_testcase"), false);
+        } else if (environmentstring === "") {
+            showMessageMainPage("danger", doc.getDocLabel("page_runtest", "select_one_env"), false);
+        } else if (countriesstring === "") {
+            showMessageMainPage("danger", doc.getDocLabel("page_runtest", "select_one_country"), false);
+        }
     }
 
     showLoader('#page-layout');

@@ -1115,6 +1115,7 @@ function selectAllQueue(checkboxid, manualExecution, status) {
         if (!isEmpty(manualExecution)) {
             $("[data-line='select" + manualExecution + "-" + status + "']").prop("checked", true);
         } else {
+            $("[data-line='selectA-" + status + "']").prop("checked", true);
             $("[data-line='selectN-" + status + "']").prop("checked", true);
             $("[data-line='selectY-" + status + "']").prop("checked", true);
         }
@@ -1122,6 +1123,7 @@ function selectAllQueue(checkboxid, manualExecution, status) {
         if (!isEmpty(manualExecution)) {
             $("[data-line='select" + manualExecution + "-" + status + "']").prop("checked", false);
         } else {
+            $("[data-line='selectA-" + status + "']").prop("checked", false);
             $("[data-line='selectN-" + status + "']").prop("checked", false);
             $("[data-line='selectY-" + status + "']").prop("checked", false);
         }

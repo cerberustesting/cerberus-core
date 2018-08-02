@@ -10,6 +10,7 @@
 * [ENGINE] Video is now recorded for Android devices >= 4.4 (KitKat).  Just select option Screenshot 3 (Automatic Screenshots on error and Video) or 4 (Systematic Screenshots/Video) to use it
 * [GUI] On Campaign statistics modal, list of past tags are displayed with results.
 * [GUI] On all list screens (testcase, labels, datalib,...) updating an element on a list no longuer force to come back to the 1st page of the list. #981
+* [GUI] Sticky button on RunTestCase page.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
