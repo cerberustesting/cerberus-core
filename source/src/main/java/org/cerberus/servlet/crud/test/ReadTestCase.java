@@ -22,8 +22,11 @@ package org.cerberus.servlet.crud.test;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import java.io.IOException;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -253,13 +256,12 @@ public class ReadTestCase extends HttpServlet {
                 }
             }
         }
-
         AnswerList testCaseList = testCaseService.readByTestByCriteria(system, test, startPosition, length, sortInformation.toString(), searchParameter, individualSearch);
 
         /**
          * Find the list of countries
          */
-        AnswerList testCaseCountryList = testCaseCountryService.readByTestTestCase(system, test, null);
+        AnswerList testCaseCountryList = testCaseCountryService.readByTestTestCase(system, test, null, testCaseList.getDataList());
         /**
          * Iterate on the country retrieved and generate HashMap based on the
          * key Test_TestCase
@@ -278,7 +280,7 @@ public class ReadTestCase extends HttpServlet {
         /**
          * Find the list of labels
          */
-        AnswerList testCaseLabelList = testCaseLabelService.readByTestTestCase(test, null);
+        AnswerList testCaseLabelList = testCaseLabelService.readByTestTestCase(test, null, testCaseList.getDataList());
         /**
          * Iterate on the label retrieved and generate HashMap based on the key
          * Test_TestCase
@@ -370,7 +372,7 @@ public class ReadTestCase extends HttpServlet {
 
             // Country List feed.
             JSONArray countryArray = new JSONArray();
-            AnswerList answerTestCaseCountryList = testCaseCountryService.readByTestTestCase(null, test, testCase);
+            AnswerList answerTestCaseCountryList = testCaseCountryService.readByTestTestCase(null, test, testCase, null);
             for (TestCaseCountry country : (List<TestCaseCountry>) answerTestCaseCountryList.getDataList()) {
                 countryArray.put(convertToJSONObject(country));
             }
@@ -378,7 +380,7 @@ public class ReadTestCase extends HttpServlet {
 
             // Label List feed.
             JSONArray labelArray = new JSONArray();
-            AnswerList answerTestCaseLabelList = testCaseLabelService.readByTestTestCase(test, testCase);
+            AnswerList answerTestCaseLabelList = testCaseLabelService.readByTestTestCase(test, testCase, null);
             for (TestCaseLabel label : (List<TestCaseLabel>) answerTestCaseLabelList.getDataList()) {
                 labelArray.put(convertToJSONObject(label));
             }
@@ -480,7 +482,7 @@ public class ReadTestCase extends HttpServlet {
         //finds the testcase     
         AnswerItem answer = testCaseService.readByKey(test, testCase);
 
-        AnswerList testCaseCountryList = testCaseCountryService.readByTestTestCase(null, test, testCase);
+        AnswerList testCaseCountryList = testCaseCountryService.readByTestTestCase(null, test, testCase, null);
         AnswerList testCaseStepList = testCaseStepService.readByTestTestCase(test, testCase);
         AnswerList testCaseStepActionList = testCaseStepActionService.readByTestTestCase(test, testCase);
         AnswerList testCaseStepActionControlList = testCaseStepActionControlService.readByTestTestCase(test, testCase);

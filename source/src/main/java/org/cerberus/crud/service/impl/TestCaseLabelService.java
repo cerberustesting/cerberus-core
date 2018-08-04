@@ -25,6 +25,7 @@ import java.util.Map;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.ITestCaseLabelDAO;
+import org.cerberus.crud.entity.TestCase;
 import org.cerberus.engine.entity.MessageEvent;
 
 import org.cerberus.engine.entity.MessageGeneral;
@@ -70,8 +71,8 @@ public class TestCaseLabelService implements ITestCaseLabelService {
     }
 
     @Override
-    public AnswerList readByTestTestCase(String test, String testCase) {
-        return testCaseLabelDAO.readByTestTestCase(test, testCase);
+    public AnswerList readByTestTestCase(String test, String testCase, List<TestCase> testCaseList) {
+        return testCaseLabelDAO.readByTestTestCase(test, testCase, testCaseList);
     }
     @Override
     public AnswerList readByTypeSystem(String type, String system) {
@@ -159,7 +160,7 @@ public class TestCaseLabelService implements ITestCaseLabelService {
 
         List<TestCaseLabel> oldList = new ArrayList<>();
         try {
-            oldList = this.convert(this.readByTestTestCase(test, testCase));
+            oldList = this.convert(this.readByTestTestCase(test, testCase, null));
         } catch (CerberusException ex) {
             LOG.error(ex);
         }

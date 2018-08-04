@@ -343,7 +343,7 @@ public class ReadTestCaseExecution extends HttpServlet {
         /**
          * Find the list of labels
          */
-        AnswerList testCaseLabelList = testCaseLabelService.readByTestTestCase(null, null);
+        AnswerList testCaseLabelList = testCaseLabelService.readByTestTestCase(null, null, null);
 
         for (TestCaseExecution testCaseExecution : testCaseExecutions) {
             try {

@@ -352,7 +352,7 @@ public class AddToExecutionQueueV001 extends HttpServlet {
                     // TestCases that are not active are not inserted into queue.
                     if (tc.getTcActive().equals("Y")) {
                         // We only insert testcase that exist for the given country.
-                        for (TestCaseCountry country : testCaseCountryService.convert(testCaseCountryService.readByTestTestCase(null, test, testCase))) {
+                        for (TestCaseCountry country : testCaseCountryService.convert(testCaseCountryService.readByTestTestCase(null, test, testCase, null))) {
                             if (countries.contains(country.getCountry())) {
                                 // for each environment we test that correspondng gp1 is compatible with testcase environment flag activation.
                                 for (String environment : environments) {

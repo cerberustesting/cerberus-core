@@ -36,6 +36,7 @@ import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.ILabelDAO;
 import org.cerberus.crud.dao.ITestCaseLabelDAO;
 import org.cerberus.crud.entity.Label;
+import org.cerberus.crud.entity.TestCase;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.TestCaseLabel;
@@ -391,7 +392,7 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
     }
 
     @Override
-    public AnswerList readByTestTestCase(String test, String testCase) {
+    public AnswerList readByTestTestCase(String test, String testCase, List<TestCase> testCaseList) {
         AnswerList response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -404,6 +405,19 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
         query.append(" LEFT OUTER JOIN label lab on lab.id = tel.labelId  ");
 
         query.append(" WHERE 1=1");
+
+        if ((testCaseList != null) && !testCaseList.isEmpty()) {
+            query.append(" AND (");
+            int j = 0;
+            for (TestCase testCase1 : testCaseList) {
+                if (j != 0) {
+                    query.append(" OR");
+                }
+                query.append(" (tel.`test` = ? and tel.testcase = ?) ");
+                j++;
+            }
+            query.append(" )");
+        }
 
         if (!Strings.isNullOrEmpty(test)) {
             query.append(" AND tel.test = ?");
@@ -422,6 +436,12 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
                 PreparedStatement preStat = connection.prepareStatement(query.toString());
                 Statement stm = connection.createStatement();) {
             int i = 1;
+            if ((testCaseList != null) && !testCaseList.isEmpty()) {
+                for (TestCase testCase1 : testCaseList) {
+                    preStat.setString(i++, testCase1.getTest());
+                    preStat.setString(i++, testCase1.getTestCase());
+                }
+            }
             if (!Strings.isNullOrEmpty(test)) {
                 preStat.setString(i++, test);
             }
@@ -486,7 +506,7 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
 
         query.append("SELECT lab.*, tel.* from testcaselabel tel");
         query.append(" JOIN label lab ON lab.id = tel.labelid");
-        
+
         query.append(" WHERE 1=1");
 
         if (!Strings.isNullOrEmpty(type)) {

@@ -26,9 +26,7 @@ import java.util.concurrent.Future;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.service.IInvariantService;
-import org.cerberus.engine.execution.IExecutionRunService;
 import org.cerberus.engine.execution.IRetriesService;
-import org.cerberus.engine.execution.impl.ExecutionRunService;
 import org.cerberus.engine.threadpool.entity.TestCaseExecutionQueueToTreat;
 import org.cerberus.crud.service.IMyVersionService;
 import org.cerberus.crud.service.IParameterService;
@@ -225,11 +223,11 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                 int const01_current = 0;
                 int const02_current = 0;
                 int const03_current = 0;
-                HashMap<String, Integer> constrains_current = new HashMap<String, Integer>();
+                HashMap<String, Integer> constrains_current = new HashMap<>();
                 constrains_current = getCurrentlyRunning();
 
                 // Getting RobotHost PoolSize
-                HashMap<String, Integer> robot_poolsize = new HashMap<String, Integer>();
+                HashMap<String, Integer> robot_poolsize = new HashMap<>();
                 robot_poolsize = invariantService.readToHashMapGp1IntegerByIdname("ROBOTHOST", poolSizeRobot);
 
                 // Analysing each execution in the database queue.

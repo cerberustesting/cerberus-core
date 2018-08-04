@@ -151,9 +151,13 @@ public class TestCaseDAO implements ITestCaseDAO {
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
         //were applied -- used for pagination p
         query.append("SELECT SQL_CALC_FOUND_ROWS * FROM testcase tec ");
-        query.append(" LEFT OUTER JOIN testcaselabel tel on tec.test = tel.test AND tec.testcase = tel.testcase ");
-        query.append(" LEFT OUTER JOIN label lab on tel.labelId = lab.id ");
         query.append(" LEFT OUTER JOIN application app on app.application = tec.application ");
+        if (!StringUtil.isNullOrEmpty(searchTerm) || individualSearch.get("lab.label") != null
+                || individualSearch.get("lab.labelsSTICKER") != null || individualSearch.get("lab.labelsREQUIREMENT") != null || individualSearch.get("lab.labelsBATTERY") != null) {
+            // We don't join the label table if we don't need to.
+            query.append(" LEFT OUTER JOIN testcaselabel tel on tec.test = tel.test AND tec.testcase = tel.testcase ");
+            query.append(" LEFT OUTER JOIN label lab on tel.labelId = lab.id ");
+        }
 
         searchSQL.append("WHERE 1=1");
 

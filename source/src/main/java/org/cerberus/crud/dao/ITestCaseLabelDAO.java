@@ -24,6 +24,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import org.cerberus.crud.entity.Label;
+import org.cerberus.crud.entity.TestCase;
 
 import org.cerberus.crud.entity.TestCaseLabel;
 import org.cerberus.util.answer.Answer;
@@ -104,9 +105,10 @@ public interface ITestCaseLabelDAO {
      *
      * @param test
      * @param testCase
+     * @param testCaseList
      * @return
      */
-    AnswerList readByTestTestCase(String test, String testCase);
+    AnswerList readByTestTestCase(String test, String testCase, List<TestCase> testCaseList);
     
     /**
      *

@@ -20,6 +20,7 @@
 package org.cerberus.crud.service;
 
 import java.util.List;
+import org.cerberus.crud.entity.TestCase;
 
 import org.cerberus.crud.entity.TestCaseCountry;
 import org.cerberus.exception.CerberusException;
@@ -69,9 +70,10 @@ public interface ITestCaseCountryService {
      * @param system
      * @param test
      * @param testCase
+     * @param testCaseList
      * @return
      */
-    AnswerList<TestCaseCountry> readByTestTestCase(String system, String test, String testCase);
+    AnswerList<TestCaseCountry> readByTestTestCase(String system, String test, String testCase, List<TestCase> testCaseList);
 
     /**
      *

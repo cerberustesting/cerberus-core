@@ -20,6 +20,7 @@
 package org.cerberus.crud.dao;
 
 import java.util.List;
+import org.cerberus.crud.entity.TestCase;
 
 import org.cerberus.crud.entity.TestCaseCountry;
 import org.cerberus.exception.CerberusException;
@@ -58,9 +59,10 @@ public interface ITestCaseCountryDAO {
      * @param system
      * @param test
      * @param testCase
+     * @param testCaseList
      * @return
      */
-    AnswerList<TestCaseCountry> readByVarious1(String system, String test, String testCase);
+    AnswerList<TestCaseCountry> readByVarious1(String system, String test, String testCase, List<TestCase> testCaseList);
 
     /**
      *

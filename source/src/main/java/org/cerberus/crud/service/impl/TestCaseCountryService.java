@@ -24,6 +24,7 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.dao.ITestCaseCountryDAO;
+import org.cerberus.crud.entity.TestCase;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.MessageGeneral;
 
@@ -111,8 +112,8 @@ public class TestCaseCountryService implements ITestCaseCountryService {
     }
 
     @Override
-    public AnswerList<TestCaseCountry> readByTestTestCase(String system, String test, String testCase) {
-        return tccDao.readByVarious1(system, test, testCase);
+    public AnswerList<TestCaseCountry> readByTestTestCase(String system, String test, String testCase, List<TestCase> testCaseList) {
+        return tccDao.readByVarious1(system, test, testCase, testCaseList);
     }
 
     @Override
@@ -163,7 +164,7 @@ public class TestCaseCountryService implements ITestCaseCountryService {
 
         List<TestCaseCountry> oldList = new ArrayList<>();
         try {
-            oldList = this.convert(this.readByTestTestCase(null, test, testCase));
+            oldList = this.convert(this.readByTestTestCase(null, test, testCase, null));
         } catch (CerberusException ex) {
             LOG.error(ex);
         }

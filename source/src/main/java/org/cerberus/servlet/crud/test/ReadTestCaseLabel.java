@@ -249,7 +249,7 @@ public class ReadTestCaseLabel extends HttpServlet {
 
         String test = request.getParameter("test");
         String testcase = request.getParameter("testcase");
-        AnswerList resp = testCaseLabelService.readByTestTestCase(test, testcase);
+        AnswerList resp = testCaseLabelService.readByTestTestCase(test, testcase, null);
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values

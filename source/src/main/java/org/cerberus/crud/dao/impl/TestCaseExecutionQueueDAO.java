@@ -454,6 +454,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
         query.append("left join testcase tec on tec.test=exq.test and tec.testcase=exq.testcase ");
         query.append("left join application app on app.application=tec.application ");
         query.append("left join robot rbt on rbt.robot=exq.robot ");
+//        query.append("left outer join robotexecutor rbt on rbt.robot=exq.robot ");
         query.append("left join countryenvironmentparameters cea on cea.system=app.system and cea.environment=exq.environment and cea.country=exq.country and cea.application=tec.application ");
         query.append("WHERE 1=1 ");
         query.append(SqlUtil.createWhereInClause(" AND exq.state", stateList, true));

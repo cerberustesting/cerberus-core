@@ -257,7 +257,7 @@ public class DuplicateTestCase extends HttpServlet {
                 }
 
                 if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && success) {
-                    List<TestCaseLabel> tclList = testCaseLabelService.readByTestTestCase(originalTest, originalTestCase).getDataList();
+                    List<TestCaseLabel> tclList = testCaseLabelService.readByTestTestCase(originalTest, originalTestCase, null).getDataList();
                     if (!tclList.isEmpty()) {
                         ans = testCaseLabelService.duplicateList(tclList, test, testCase);
                     }

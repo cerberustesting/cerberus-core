@@ -30,6 +30,7 @@ import java.util.List;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.ITestCaseCountryDAO;
+import org.cerberus.crud.entity.TestCase;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.engine.entity.MessageGeneral;
@@ -299,7 +300,7 @@ public class TestCaseCountryDAO implements ITestCaseCountryDAO {
     }
 
     @Override
-    public AnswerList<TestCaseCountry> readByVarious1(String system, String test, String testCase) {
+    public AnswerList<TestCaseCountry> readByVarious1(String system, String test, String testCase, List<TestCase> testCaseList) {
         AnswerList<TestCaseCountry> answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -308,11 +309,24 @@ public class TestCaseCountryDAO implements ITestCaseCountryDAO {
 
         query.append("SELECT * FROM testcasecountry tcc ");
         if (!Strings.isNullOrEmpty(system)) {
-            query.append(" LEFT OUTER JOIN testcase tc on tc.test = tcc.test and tc.testcase = tcc.testcase  ");
-            query.append(" LEFT OUTER JOIN application app on app.application = tc.application ");
+            query.append(" LEFT OUTER JOIN testcase tec on tec.test = tcc.test and tec.testcase = tcc.testcase  ");
+            query.append(" LEFT OUTER JOIN application app on app.application = tec.application ");
         }
 
         query.append(" WHERE 1=1");
+
+        if ((testCaseList != null) && !testCaseList.isEmpty() && testCaseList.size() < 5000) {
+            query.append(" AND (");
+            int j = 0;
+            for (TestCase testCase1 : testCaseList) {
+                if (j != 0) {
+                    query.append(" OR");
+                }
+                query.append(" (tcc.`test` = ? and tcc.testcase = ?) ");
+                j++;
+            }
+            query.append(" )");
+        }
 
         if (!Strings.isNullOrEmpty(system)) {
             query.append(" AND app.`system` = ?");
@@ -330,13 +344,21 @@ public class TestCaseCountryDAO implements ITestCaseCountryDAO {
             LOG.debug("SQL.param.test : " + test);
             LOG.debug("SQL.param.testCase : " + testCase);
         }
-        
+
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
 
             try {
                 int i = 1;
+
+                if ((testCaseList != null) && !testCaseList.isEmpty() && testCaseList.size() < 5000) {
+                    for (TestCase testCase1 : testCaseList) {
+                        preStat.setString(i++, testCase1.getTest());
+                        preStat.setString(i++, testCase1.getTestCase());
+                    }
+                }
+
                 if (!Strings.isNullOrEmpty(system)) {
                     preStat.setString(i++, system);
                 }

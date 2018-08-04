@@ -117,7 +117,7 @@ public class SaveTestCaseLabel extends HttpServlet {
                 }
             }
             
-            List<TestCaseLabel> existingList = testCaseLabelService.readByTestTestCase(test, testcase).getDataList();
+            List<TestCaseLabel> existingList = testCaseLabelService.readByTestTestCase(test, testcase, null).getDataList();
             testCaseLabelService.compareListAndUpdateInsertDeleteElements(test, testcase, toSave);
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCaseLabel")

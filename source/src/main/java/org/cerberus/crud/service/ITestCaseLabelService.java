@@ -21,6 +21,7 @@ package org.cerberus.crud.service;
 
 import java.util.List;
 import java.util.Map;
+import org.cerberus.crud.entity.TestCase;
 
 import org.cerberus.crud.entity.TestCaseLabel;
 import org.cerberus.exception.CerberusException;
@@ -72,9 +73,10 @@ public interface ITestCaseLabelService {
      *
      * @param test
      * @param testCase
+     * @param testCaseList
      * @return
      */
-    AnswerList readByTestTestCase(String test, String testCase);
+    AnswerList readByTestTestCase(String test, String testCase, List<TestCase> testCaseList);
 
     /**
      *

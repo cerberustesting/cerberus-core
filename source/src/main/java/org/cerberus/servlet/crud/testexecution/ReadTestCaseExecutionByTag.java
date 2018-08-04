@@ -41,8 +41,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.Invariant;
 import org.cerberus.crud.entity.Label;
 import org.cerberus.crud.entity.Tag;
+import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseLabel;
+import org.cerberus.crud.factory.IFactoryTestCase;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.ILabelService;
 import org.cerberus.crud.service.ITagService;
@@ -82,6 +84,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
     private ITestCaseExecutionQueueService testCaseExecutionInQueueService;
     private ITestCaseLabelService testCaseLabelService;
     private ILabelService labelService;
+    private IFactoryTestCase factoryTestCase;
 
     private static final Logger LOG = LogManager.getLogger("ReadTestCaseExecutionByTag");
 
@@ -109,6 +112,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
 
         testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
         tagService = appContext.getBean(ITagService.class);
+        factoryTestCase = appContext.getBean(IFactoryTestCase.class);
         testCaseExecutionInQueueService = appContext.getBean(ITestCaseExecutionQueueService.class);
 
         try {
@@ -123,9 +127,28 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
             //Get Data from database
             List<TestCaseExecution> testCaseExecutions = testCaseExecutionService.readLastExecutionAndExecutionInQueueByTag(Tag);
 
+            List<TestCaseLabel> testCaseLabelScopeList = null;
+            if (outputReport.isEmpty() || outputReport.contains("labelStat") || outputReport.contains("table")) {
+                String testCaseKey = "";
+                HashMap<String, TestCase> ttc = new HashMap<>();
+                List<TestCase> tcList = new ArrayList<>();
+                for (TestCaseExecution testCaseExecution : testCaseExecutions) {
+                    testCaseKey = testCaseExecution.getTest() + "__" + testCaseExecution.getTestCase();
+                    if (ttc.get(testCaseKey) == null) {
+                        ttc.put(testCaseKey, factoryTestCase.create(testCaseExecution.getTest(), testCaseExecution.getTestCase()));
+                        tcList.add(factoryTestCase.create(testCaseExecution.getTest(), testCaseExecution.getTestCase()));
+                    }
+
+                }
+
+                testCaseLabelService = appContext.getBean(ITestCaseLabelService.class);
+                AnswerList testCaseLabelList = testCaseLabelService.readByTestTestCase(null, null, tcList);
+                testCaseLabelScopeList = testCaseLabelList.getDataList();
+            }
+
             // Table that contain the list of testcases and corresponding executions
             if (outputReport.isEmpty() || outputReport.contains("table")) {
-                jsonResponse.put("table", generateTestCaseExecutionTable(appContext, testCaseExecutions, statusFilter, countryFilter));
+                jsonResponse.put("table", generateTestCaseExecutionTable(appContext, testCaseExecutions, statusFilter, countryFilter, testCaseLabelScopeList));
             }
             // Executions per Function (or Test).
             if (outputReport.isEmpty() || outputReport.contains("functionChart")) {
@@ -141,7 +164,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
             }
             // Labels Stats
             if (outputReport.isEmpty() || outputReport.contains("labelStat")) {
-                jsonResponse.put("labelStat", generateLabelStats(appContext, request, testCaseExecutions, statusFilter, countryFilter));
+                jsonResponse.put("labelStat", generateLabelStats(appContext, request, testCaseExecutions, statusFilter, countryFilter, testCaseLabelScopeList));
             }
             if (!outputReport.isEmpty()) {
                 //currently used to optimize the homePage
@@ -274,12 +297,10 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         return countryList;
     }
 
-    private JSONObject generateTestCaseExecutionTable(ApplicationContext appContext, List<TestCaseExecution> testCaseExecutions, JSONObject statusFilter, JSONObject countryFilter) {
+    private JSONObject generateTestCaseExecutionTable(ApplicationContext appContext, List<TestCaseExecution> testCaseExecutions, JSONObject statusFilter, JSONObject countryFilter, List<TestCaseLabel> testCaseLabelList) {
         JSONObject testCaseExecutionTable = new JSONObject();
         LinkedHashMap<String, JSONObject> ttc = new LinkedHashMap<String, JSONObject>();
         LinkedHashMap<String, JSONObject> columnMap = new LinkedHashMap<String, JSONObject>();
-        testCaseLabelService = appContext.getBean(ITestCaseLabelService.class);
-        AnswerList testCaseLabelList = testCaseLabelService.readByTestTestCase(null, null);
 
         for (TestCaseExecution testCaseExecution : testCaseExecutions) {
             try {
@@ -341,7 +362,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                          * based on the key Test_TestCase
                          */
                         LinkedHashMap<String, JSONArray> testCaseWithLabel = new LinkedHashMap();
-                        for (TestCaseLabel label : (List<TestCaseLabel>) testCaseLabelList.getDataList()) {
+                        for (TestCaseLabel label : (List<TestCaseLabel>) testCaseLabelList) {
                             if (Label.TYPE_STICKER.equals(label.getLabel().getType())) { // We only display STICKER Type Label in Reporting By Tag Page..
                                 String key = label.getTest() + "_" + label.getTestcase();
 
@@ -636,12 +657,11 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         return result;
     }
 
-    private JSONObject generateLabelStats(ApplicationContext appContext, HttpServletRequest request, List<TestCaseExecution> testCaseExecutions, JSONObject statusFilter, JSONObject countryFilter) throws JSONException {
+    private JSONObject generateLabelStats(ApplicationContext appContext, HttpServletRequest request, List<TestCaseExecution> testCaseExecutions, JSONObject statusFilter, JSONObject countryFilter, List<TestCaseLabel> testCaseLabelList) throws JSONException {
 
         JSONObject jsonResult = new JSONObject();
 
         labelService = appContext.getBean(LabelService.class);
-        testCaseLabelService = appContext.getBean(TestCaseLabelService.class);
         TreeNode node;
         JSONArray jsonArraySTICKER = new JSONArray();
         JSONArray jsonArrayREQUIREMENT = new JSONArray();
@@ -694,10 +714,8 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
 //                    LOG.debug("Label : " + node.getId() + " T : " + node);
             }
 
-            // Building TestCase Hash with List of Labels.
-            AnswerList testCaseLabelList1 = testCaseLabelService.readByTestTestCase(null, null);
             HashMap<String, List<Integer>> testCaseWithLabel1 = new HashMap();
-            for (TestCaseLabel label : (List<TestCaseLabel>) testCaseLabelList1.getDataList()) {
+            for (TestCaseLabel label : (List<TestCaseLabel>) testCaseLabelList) {
 //                LOG.debug("TCLabel : " + label.getLabel() + " T : " + label.getTest() + " C : " + label.getTestcase() + " Type : " + label.getLabel().getType());
                 if ((Label.TYPE_STICKER.equals(label.getLabel().getType()))
                         || (Label.TYPE_REQUIREMENT.equals(label.getLabel().getType()))) {
@@ -798,7 +816,6 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
 
         return jsonResult;
     }
-
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
