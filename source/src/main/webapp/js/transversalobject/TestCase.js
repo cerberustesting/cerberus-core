@@ -992,22 +992,22 @@ function appendApplicationList(defautValue, mySystem) {
 }
 
 function appendTestList(defautValue) {
-//    $('#editTestCaseModal [name="test"]').empty();
-//    $('#editTestCaseModal [name="test"]').select2(getComboConfigTest());
+    $('#editTestCaseModal [name="test"]').empty();
+    $('#editTestCaseModal [name="test"]').select2(getComboConfigTest());
 
-    var user = getUser();
-    $("#editTestCaseModal [name=test]").empty();
-
-    var jqxhr = $.getJSON("ReadTest", "");
-    $.when(jqxhr).then(function (data) {
-        var testList = $("[name=test]");
-
-        for (var index = 0; index < data.contentTable.length; index++) {
-            testList.append($('<option></option>').text(data.contentTable[index].test).val(data.contentTable[index].test));
-        }
-        testList.val(defautValue);
-
-    });
+//    var user = getUser();
+//    $("#editTestCaseModal [name=test]").empty();
+//
+//    var jqxhr = $.getJSON("ReadTest", "");
+//    $.when(jqxhr).then(function (data) {
+//        var testList = $("[name=test]");
+//
+//        for (var index = 0; index < data.contentTable.length; index++) {
+//            testList.append($('<option></option>').text(data.contentTable[index].test).val(data.contentTable[index].test));
+//        }
+//        testList.val(defautValue);
+//
+//    });
 
 // Set Select2 Value.
     var myoption = $('<option></option>').text(defautValue).val(defautValue);
