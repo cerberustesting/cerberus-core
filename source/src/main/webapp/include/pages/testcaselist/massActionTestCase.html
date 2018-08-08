@@ -84,9 +84,35 @@
                             <!--add form-->
                             <form id="massActionTestCaseModalFormAddLabel" name="massActionTestCaseModalFormAddLabel"  title="Massive Update" role="form">
                                 <label for="labelMass" name="labelMassField">Labels from system : </label>
-                                <div style="max-height:500px; overflow: auto">
-                                    <div class="form-group" id="labelListAdd">
-                                        <div id="selectLabelAdd" class="list-group">
+                                
+                                <ul id="tabsLabelAdd" class="nav nav-tabs" data-tabs="tabs">
+                                    <li class="active"><a data-toggle="tab" href="#tabsLAdd-1" id="addLTab1Text" name="tabLabelS">Stickers</a></li>
+                                    <li><a data-toggle="tab" href="#tabsLAdd-2" id="addLTab2Text" name="tabLabelR">Requirements</a></li>
+                                    <li><a data-toggle="tab" href="#tabsLAdd-3" id="addLTab3Text" name="tabLabelB">Batteries</a></li>
+                                </ul>
+                                <div class="tab-content">
+                                    <div class="center tab-pane fade marginTop25 in active" id="tabsLAdd-1">
+                                        <div style="max-height:500px; overflow: auto">
+                                            <div class="form-group" id="labelList">
+                                                <div id="selectLabelAddS" class="list-group">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="center tab-pane fade marginTop25" id="tabsLAdd-2">
+                                        <div style="max-height:500px; overflow: auto">
+                                            <div class="form-group" id="labelList">
+                                                <div id="selectLabelAddR" class="list-group">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="center tab-pane fade marginTop25" id="tabsLAdd-3">
+                                        <div style="max-height:500px; overflow: auto">
+                                            <div class="form-group" id="labelList">
+                                                <div id="selectLabelAddB" class="list-group">
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

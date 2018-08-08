@@ -7817,12 +7817,40 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add("UPDATE `invariant` set `description` = 'Automatic Screenshots on error' where `idname`='SCREENSHOT' and `value` = '1'");
         a.add("UPDATE `invariant` set `description` = 'Systematic Screenshots' where `idname`='SCREENSHOT' and `value` = '2'");
 
-        // 1365
-        a.add("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`)  values "+
-        "('SCREENSHOT', '3', 40, 'Automatic Screenshots on error and Video', '')"+
-        ",('SCREENSHOT', '4', 50, 'Systematic Screenshots/Video', '')");
+        // 1366
+        a.add("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`)  values "
+                + "('SCREENSHOT', '3', 40, 'Automatic Screenshots/Video on error ', '')"
+                + ",('SCREENSHOT', '4', 50, 'Systematic Screenshots/Video', '')");
 
 
+// upcoming robotexecutor management.
+//        a.add(" CREATE TABLE `robotexecutor` ("
+//                + "  `id` int(11) NOT NULL AUTO_INCREMENT,"
+//                + "  `robot` varchar(100) NOT NULL,"
+//                + "  `executor` varchar(100) NOT NULL,"
+//                + "  `active` varchar(1) NOT NULL DEFAULT 'Y',"
+//                + "  `rank` int(11) NOT NULL DEFAULT '10',"
+//                + "  `host`	varchar(150),"
+//                + "  `Port`	varchar(150),"
+//                + "  `host_user`	varchar(255),"
+//                + "  `host_password`	varchar(255),"
+//                + "  `deviceUuid` varchar(255) NOT NULL,"
+//                + "  `deviceName` varchar(255) NOT NULL,"
+//                + "  `description` varchar(255) NOT NULL,"
+//                + "  `DateLastExeSubmitted` timestamp NOT NULL DEFAULT '1970-01-01 01:01:01',"
+//                + "  `UsrCreated` varchar(45) NOT NULL DEFAULT '',"
+//                + "  `DateCreated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,"
+//                + "  `UsrModif` varchar(45) DEFAULT '',"
+//                + "  `DateModif` timestamp NOT NULL DEFAULT '1970-01-01 01:01:01',"
+//                + "  PRIMARY KEY (`id`),"
+//                + "  UNIQUE KEY `IX_robotexecutor_01` (`robot`, `executor`),"
+//                + "  CONSTRAINT `FK_robotexecutor_01` FOREIGN KEY (`robot`) REFERENCES `robot` (`robot`) ON DELETE CASCADE ON UPDATE CASCADE"
+//                + ") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
+
+// INSERT INTO `robotexecutor` (`robot`, `executor`, `active`, `rank`, `host`, `port`, `host_user`, `host_password`, `deviceuuid`, `devicename`, `description`)
+// select robot, 'MAIN', 'Y', 1, host, port, host_user, host_password, '', '', '' from robot;
+        
+        
         return a;
     }
 

@@ -2457,6 +2457,9 @@ function comboConfigTag_format(tag) {
     if (tag.DateCreated) {
         markup += "<div class='select2-result-tag__detail'><i class='fa fa-calendar'></i> " + tag.DateCreated + "</div>";
     }
+    if (tag.nbExeUsefull>0) {
+        markup += "<div class='select2-result-tag__detail " + tag.ciResult + "'> " + tag.nbExeUsefull + " Exe(s)</div>";
+    }
     markup += "</div>";
     markup += "</div>";
 
@@ -2490,7 +2493,7 @@ function getComboConfigTag() {
                         params.page = params.page || 1;
                         return {
                             results: $.map(data.contentTable, function (obj) {
-                                return {id: obj.tag, text: obj.tag, tag: obj.tag, description: obj.description, campaign: obj.campaign, DateCreated: obj.DateCreated};
+                                return {id: obj.tag, text: obj.tag, tag: obj.tag, description: obj.description, campaign: obj.campaign, DateCreated: obj.DateCreated, nbExeUsefull: obj.nbExeUsefull, ciResult: obj.ciResult};
                             }),
                             pagination: {
                                 more: (params.page * 30) < data.iTotalRecords
