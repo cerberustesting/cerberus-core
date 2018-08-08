@@ -53,7 +53,7 @@
                                     <span class="sr-only"></span>
                                 </div>
                             </div>
-                            <div class="col-lg-6 pull-left">
+                            <div class="col-lg-7 pull-left">
                                 <div class="text-nowrap">
                                     <span id="idlabel"></span>
                                     <span name="Separator">Loading...</span>
@@ -71,10 +71,10 @@
                                     <span id="tcDescription" style="font-size:.9em;margin:0px;line-height:1;height:.95em;"></span>
                                 </div>
                                 <div class="text-wrap">
-                                    <span id="exReturnMessage" style="font-size:.9em;margin:0px;line-height:1;height:.95em;font-weight: 900;"></span>
+                                    <span id="exReturnMessage" style="font-size:.9em;margin:0px;line-height:1;height:.95em;font-weight: 900;word-wrap: break-word"></span>
                                 </div>
                             </div>
-                            <div class="col-lg-6" style="padding: 0px;">
+                            <div class="col-lg-5" style="padding: 0px;">
                                 <div id="RefreshQueueButton">
                                     <button id="refreshQueue" class="btn btn-default">Refresh</button>
                                     <button id="editQueue" class="btn btn-default">Edit Queue Entry</button>
