@@ -7821,7 +7821,17 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`)  values "
                 + "('SCREENSHOT', '3', 40, 'Automatic Screenshots/Video on error ', '')"
                 + ",('SCREENSHOT', '4', 50, 'Systematic Screenshots/Video', '')");
-
+        
+        // 1367 
+        // selector invariants
+        b = new StringBuilder();
+        b.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) ");
+        b.append(" VALUES ('INVARIANTPRIVATE', 'SELECTOR', '430', '', ''),");
+        b.append("('SELECTOR', 'xpath=', '6550', '', ''),");
+        b.append("('SELECTOR', 'id=', '6550', '', ''),");
+        b.append("('SELECTOR', 'picture=', '6550', '', ''),");
+        b.append("('SELECTOR', 'data-cerberus=', '6550', '', '');");
+        a.add(b.toString());
 
 // upcoming robotexecutor management.
 //        a.add(" CREATE TABLE `robotexecutor` ("
