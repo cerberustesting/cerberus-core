@@ -74,6 +74,9 @@ public class CIService implements ICIService {
 
             jsonResponse.put("detail_by_declinaison", generateStats(myList));
 
+            jsonResponse.put("nb_of_retry", myList.stream().mapToInt(it -> it.getNbExecutions()-1).sum());
+
+
             return jsonResponse;
         } catch (CerberusException | ParseException | JSONException ex) {
             LOG.error(ex);

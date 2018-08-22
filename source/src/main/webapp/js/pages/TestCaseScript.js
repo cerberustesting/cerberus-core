@@ -798,14 +798,27 @@ function prevent(e) {
     e.preventDefault();
 }
 
-function drawPropertyList(property, index) {
+function drawPropertyList(property, index, isSecondary) {
     var htmlElement = $("<li></li>").addClass("list-group-item list-group-item-calm row").css("margin-left", "0px");
+    
     $(htmlElement).append($("<a ></a>").attr("href", "#propertyLine" + property).text(property));
+
     var deleteBtn = $("<button style='padding:0px;float:right;display:none' class='btn btn-danger add-btn'></button>").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
-
     deleteBtn.attr("disabled", !canUpdate);
-
     $(htmlElement).find("a").append(deleteBtn);
+    
+    // add the color for secondary properties
+    // TO DO: create a new CSS class
+    if ( isSecondary == true ) {
+    	htmlElement.css("background-color","#dfe4e9");
+    	htmlElement.children("a").append("<span class='secondaryproptext'>secondary</span>");
+    	htmlElement.find("span.secondaryproptext").css("padding","0px 10px 0px 10px");
+    	htmlElement.find("span.secondaryproptext").css("float","right");
+    	htmlElement.find("span.secondaryproptext").css("display","block");
+    	htmlElement.find("span.secondaryproptext").css("color","#636e72");
+    	//<span style="padding: 0px 10px 0px 10px;float: right;display: block;color: #636e72;">secondary</span>
+    }
+    
     deleteBtn.click(function (ev) {
 
         if (allDelete !== true) {
@@ -862,8 +875,11 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
     retryPeriodInput.prop("readonly", !canUpdate);
     cacheExpireInput.prop("readonly", !canUpdate);
 
-
-    var content = $("<div class='row property list-group-item'></div>");
+    if ( property.description.indexOf("[secondary]") >= 0 ) {   		
+    	var content = $("<div class='row secondaryProperty list-group-item' style='background-color: #dfe4ea;'></div>");
+    } else {
+    	var content = $("<div class='row property list-group-item'></div>");
+    }    
     var props = $("<div class='col-sm-11' name='propertyLine' id='propertyLine" + property.property + "'></div>");
     var right = $("<div class='col-sm-1 propertyButtons'></div>");
 
@@ -1181,7 +1197,10 @@ function loadProperties(test, testcase, testcaseinfo, propertyToFocus, canUpdate
 
     return new Promise(function (resolve, reject) {
         var array = [];
+        var secondaryPropertiesArray = [];
+        
         var propertyList = [];
+        var secondaryPropertyList = [];
 
         $.ajax({
             url: "GetPropertiesForTestCase",
@@ -1193,18 +1212,33 @@ function loadProperties(test, testcase, testcaseinfo, propertyToFocus, canUpdate
                     return compareStrings(a.property, b.property);
                 })
 
-                for (var index = 0; index < data.length; index++) {
+                for (var index = 0; index < data.length; index++) {        
                     var property = data[index];
-                    array.push(data[index].property);
+                    // check if the property is secondary
+                    var isSecondary = property.description.indexOf("[secondary]") >= 0;
+                    
+                    if (isSecondary) {
+                    	secondaryPropertiesArray.push(data[index].property);
+                    } else {
+                    	array.push(data[index].property);
+                    }
                     property.toDelete = false;
                     var prop = drawProperty(property, testcaseinfo, canUpdate, index);
                     setPlaceholderProperty(prop[0], prop[1]);
-                    propertyList.push(property.property);
+                    
+                    if (isSecondary) {
+                    	secondaryPropertyList.push(property.property);
+                    } else {
+                    	propertyList.push(property.property);
+                    }
                 }
-
+ 
                 localStorage.setItem("properties", JSON.stringify(propertyList));
+                localStorage.setItem("secondaryProperties", JSON.stringify(propertyList));
 
                 sortProperties("#propTable");
+                sortSecondaryProperties("#propTable");
+                
                 var scope = undefined;
                 if (propertyToFocus != undefined && propertyToFocus != null) {
                     $("#propTable #propName").each(function (i) {
@@ -1219,8 +1253,14 @@ function loadProperties(test, testcase, testcaseinfo, propertyToFocus, canUpdate
                 }
 
                 var propertyListUnique = Array.from(new Set(propertyList));
+                var secondaryPropertyListUnique = Array.from(new Set(secondaryPropertyList));
+                              
                 for (var index = 0; index < propertyListUnique.length; index++) {
-                    drawPropertyList(propertyListUnique[index], index);
+                    drawPropertyList(propertyListUnique[index], index, false);
+                }
+                
+                for (var index = 0; index < secondaryPropertyListUnique.length; index++) {
+                    drawPropertyList(secondaryPropertyListUnique[index], index, true);
                 }
 
                 array.sort(function (a, b) {
@@ -1239,6 +1279,26 @@ function loadProperties(test, testcase, testcaseinfo, propertyToFocus, canUpdate
 function sortProperties(identifier) {
     var container = $(identifier);
     var list = container.children(".property");
+    list.sort(function (a, b) {
+
+        var aProp = $(a).find("#masterProp").data("property").property.toLowerCase(),
+                bProp = $(b).find("#masterProp").data("property").property.toLowerCase();
+
+        if (aProp > bProp) {
+            return 1;
+        }
+        if (aProp < bProp) {
+            return -1;
+        }
+        return 0;
+    });
+    container.append(list);
+}
+
+// Temporary function: can be merged with sortProperties by adding one parameter to call the children() function differently
+function sortSecondaryProperties(identifier) {
+    var container = $(identifier);
+    var list = container.children(".secondaryProperty");
     list.sort(function (a, b) {
 
         var aProp = $(a).find("#masterProp").data("property").property.toLowerCase(),
