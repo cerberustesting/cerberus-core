@@ -177,8 +177,8 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
     }
 
     @Override
-    public void updateToStarting(long id) throws CerberusException {
-        testCaseExecutionInQueueDAO.updateToStarting(id);
+    public void updateToStarting(long id, String selectedRobot) throws CerberusException {
+        testCaseExecutionInQueueDAO.updateToStarting(id, selectedRobot);
     }
 
     @Override
@@ -279,8 +279,8 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
         }
         Application applicationObj = testCaseExecutionInQueue.getApplicationObj();
         String application = testCaseExecutionInQueue.getApplicationObj() != null ? testCaseExecutionInQueue.getApplicationObj().getApplication() : "";
-        String ip = testCaseExecutionInQueue.getRobotIP();
-        String port = testCaseExecutionInQueue.getRobotPort();
+        String robotHost = testCaseExecutionInQueue.getRobotIP();
+        String robotPort = testCaseExecutionInQueue.getRobotPort();
         String tag = testCaseExecutionInQueue.getTag();
         int verbose = testCaseExecutionInQueue.getVerbose();
         int screenshot = testCaseExecutionInQueue.getScreenshot();
@@ -303,10 +303,11 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
         if ((testCaseExecutionInQueue.getTestCaseObj() != null) && (testCaseExecutionInQueue.getTestCaseObj().getDescription() != null)) {
             description = testCaseExecutionInQueue.getTestCaseObj().getDescription();
         }
-        TestCaseExecution result = factoryTestCaseExecution.create(0, test, testCase, description, null, null, environment, country, browser, version, platform,
-                browser, start, end, controlStatus, controlMessage, application, applicationObj, ip, "", port, tag, verbose, screenshot, pageSource,
+        TestCaseExecution result = factoryTestCaseExecution.create(0, test, testCase, description, null, null, environment, country, "", "", robotHost, robotPort, robotDecli, 
+                browser, version, platform,
+                browser, start, end, controlStatus, controlMessage, application, applicationObj, "", tag, verbose, screenshot, pageSource,
                 seleniumLog, synchroneous, timeout, outputFormat, "", "", tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL,
-                myEnvData, seleniumIP, seleniumPort, null, null, null, retry, "", null, "", "", "", "", "", manualExecution, "", 0, "", robotDecli);
+                myEnvData, seleniumIP, seleniumPort, null, null, null, retry, "", null, "", "", "", "", "", manualExecution, "", 0, "");
         result.setQueueID(testCaseExecutionInQueue.getId());
         result.setQueueState(testCaseExecutionInQueue.getState().name());
         result.setId(testCaseExecutionInQueue.getExeId());

@@ -22,33 +22,12 @@ package org.cerberus.crud.factory;
 import java.util.List;
 import org.cerberus.crud.entity.Robot;
 import org.cerberus.crud.entity.RobotCapability;
+import org.cerberus.crud.entity.RobotExecutor;
 
 /**
  * @author bcivel
  */
 public interface IFactoryRobot {
-
-    /**
-     * 
-     * @param robotID Autoincrement Id
-     * @param robot Name of the Robot
-     * @param host Host of the Robot
-     * @param port port of the Robot
-     * @param platform platform of the Robot
-     * @param browser browser of the Robot
-     * @param version version of the Robot
-     * @param active Robot active
-     * @param description description of the Robot
-     * @param userAgent userAgent to Use
-     * @param screenSize
-     * @param host_user
-     * @param host_password
-     * @param capabilities
-     * @param robotDecli
-     * @return 
-     */
-    Robot create(Integer robotID, String robot, String host, String port, String platform ,
-                 String browser, String version, String active, String description, String userAgent, String screenSize, String host_user, String host_password, List<RobotCapability> capabilities, String robotDecli);
 
     /**
      *
@@ -60,6 +39,7 @@ public interface IFactoryRobot {
      * @param browser
      * @param version
      * @param active
+     * @param lbexemethod
      * @param description
      * @param userAgent
      * @param screenSize
@@ -68,6 +48,32 @@ public interface IFactoryRobot {
      * @param robotDecli
      * @return
      */
-    Robot create(Integer robotID, String robot, String host, String port, String platform ,
-                 String browser, String version, String active, String description, String userAgent, String screenSize, String host_user, String host_password, String robotDecli);
+    Robot create(Integer robotID, String robot, String host, String port, String platform,
+            String browser, String version, String active, String lbexemethod, String description, String userAgent, String screenSize, String host_user, String host_password, String robotDecli);
+
+    /**
+     *
+     * @param robotID Autoincrement Id
+     * @param robot Name of the Robot
+     * @param host Host of the Robot
+     * @param port port of the Robot
+     * @param platform platform of the Robot
+     * @param browser browser of the Robot
+     * @param version version of the Robot
+     * @param active Robot active
+     * @param lbexemethod
+     * @param description description of the Robot
+     * @param userAgent userAgent to Use
+     * @param screenSize
+     * @param host_user
+     * @param host_password
+     * @param capabilities
+     * @param executors
+     * @param robotDecli
+     * @return
+     */
+    Robot create(Integer robotID, String robot, String host, String port, String platform,
+            String browser, String version, String active, String lbexemethod, String description, String userAgent, String screenSize, String host_user, String host_password, 
+            List<RobotCapability> capabilities, List<RobotExecutor> executors, String robotDecli);
+
 }

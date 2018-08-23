@@ -790,7 +790,7 @@ function aoColumnsFunc_followUp() {
         {"data": "2", "sName": "environment", "sWidth": "50px", "title": doc.getDocLabel("invariant", "ENVIRONMENT")},
         {"data": "3", "sName": "country", "sWidth": "50px", "title": doc.getDocLabel("invariant", "COUNTRY")},
         {"data": "4", "sName": "application", "sWidth": "50px", "title": doc.getDocLabel("application", "Application")},
-        {"data": "5", "sName": "robot", "sWidth": "50px", "title": doc.getDocLabel("robot", "robot")},
+        {"data": "5", "sName": "robot", "sWidth": "50px", "title": doc.getDocLabel("page_testcaseexecutionqueue", "robothost")},
         {"data": "6", "sName": "nbRunning", "sWidth": "50px", "title": doc.getDocLabel("page_testcaseexecutionqueue", "nbRunning")},
         {"data": "7", "sName": "nbPoolSize", "sWidth": "50px", "title": doc.getDocLabel("page_testcaseexecutionqueue", "nbPoolSize")},
         {"data": "8", "sName": "nbInQueue", "sWidth": "50px", "title": doc.getDocLabel("page_testcaseexecutionqueue", "nbInQueue")},

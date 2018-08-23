@@ -60,9 +60,6 @@ $.when($.getScript("js/global/global.js")).then(function () {
             loadRobotInfo($(this).val());
         });
 
-        //load the data that need to be display in any case
-        loadTestCaseEssentialData(test, testcase, environment, country, tag, browser);
-
         var system = getUser().defaultSystem;
 
         $("#SelectionManual").on("click", function () {
@@ -72,35 +69,33 @@ $.when($.getScript("js/global/global.js")).then(function () {
             selectionCampaign();
         });
 
-        // Run Campaign button click
-//        $("#runCampaign").click(function () {
-//            runCampaign(false);
-//        });
-//        $("#runCampaignUp").click(function () {
-//            runCampaign(false);
-//        });
-//        // Run Campaign button click
-//        $("#runCampaignAndSee").click(function () {
-//            runCampaign(true);
-//        });
-//        $("#runCampaignAndSeeUp").click(function () {
-//            runCampaign(true);
-//        });
+        var myCampaign = GetURLParameters("campaign");
+        if (!isEmpty(myCampaign)) {
+            var $option = $('<option></option>').text(myCampaign).val(myCampaign);
+            $("#campaignSelect").append($option).trigger('change'); // append the option and update Select2
+            $.when(
+                    selectionCampaign(),
+                    loadExecForm(tag),
+                    loadRobotForm(browser),
+                    loadHardDefinedSingleSelect("length", [{label: '50', value: 50}, {label: '100', value: 100}, {label: '>100', value: -1}], 0)
+                    ).then(function () {
+                loadCampaign();
+            });
 
+        } else {
+            //load the data that need to be display in any case
+            loadTestCaseEssentialData(test, testcase, environment, country, tag, browser, true);
+        }
+
+        console.info("titi");
         // Run Test Case button click
-        $("#runTestCase").click(function () {
+        $("#runTestCase").on("click", function () {
             runTestCase(false);
         });
-//        $("#runTestCaseUp").click(function () {
-//            runTestCase(false);
-//        });
         // Run Test Case button click
-        $("#runTestCaseAndSee").click(function () {
+        $("#runTestCaseAndSee").on("click", function () {
             runTestCase(true);
         });
-//        $("#runTestCaseAndSeeUp").click(function () {
-//            runTestCase(true);
-//        });
 
         $("#loadFiltersBtn").click(function () {
             loadTestCaseFromFilter(null, null);
@@ -116,19 +111,6 @@ $.when($.getScript("js/global/global.js")).then(function () {
 
         $("#testcaseSelectNone").click(function () {
             $("#testCaseList option").prop("selected", false);
-        });
-
-        $("#resetQueue").click(function (event) {
-            stopPropagation(event);
-            $("#queue").empty();
-            $("#notValidList").empty();
-            updateValidNumber();
-            updateNotValidNumber();
-            $("#notValid").hide();
-        });
-
-        $("#notValidNumber").click(function () {
-            $("#notValidTC").modal("show");
         });
 
         $('[name="envSettings"]').on("change", function () {
@@ -241,13 +223,6 @@ function selectionCampaign() {
         $("#testcaseSelectAll").prop("disabled", true);
         $("#testcaseSelectNone").prop("disabled", true);
 
-//        $("#runCampaignBlock").show();
-//        $("#runCampaignUpBlock").show();
-
-        // NEW
-//        $("#runTestCaseBlock").hide();
-//        $("#runTestCaseUpBlock").hide();
-
         $('#runTestCase').text("Run Campaign");
         $('#runTestCaseAndSee').text("Run Campaign (and See Result)");
 
@@ -300,15 +275,10 @@ function selectionManual(test, testcase, environment, country) {
 
         $("#campaignSelection").hide();
         $("#filters").show();
-//        $("#runCampaignBlock").hide();
-//        $("#runCampaignUpBlock").hide();
         $("#filtersPanelContainer").show();
 
-        // NEW
         $('#runTestCase').text("Run TestCase");
         $('#runTestCaseAndSee').text("Run TestCase (and See Result)");
-//        $("#runTestCaseBlock").show();
-//        $("#runTestCaseUpBlock").show();
 
         loadTestCaseFromFilter(test, testcase);
 
@@ -497,73 +467,6 @@ function loadCampaignParameter(campaign) {
 
 /** FORM SENDING UTILITY FUNCTIONS (VALID FOR SERVLET ADDTOEXECUTIONQUEUE) **/
 
-//function runCampaign(doRedirect) {
-//
-//    var doc = new Doc();
-//
-//    clearResponseMessageMainPage();
-//
-//    var paramSerialized = "campaign=" + $("#campaignSelect").val();
-//    paramSerialized += "&browser=" + $("#robotSettingsForm #browser").val();
-//    paramSerialized += "&ss_ip=" + $("#robotSettingsForm #seleniumIP").val();
-//    paramSerialized += "&ss_p=" + $("#robotSettingsForm #seleniumPort").val();
-//    paramSerialized += "&tag=" + $("#executionSettingsForm #tag").val();
-//    paramSerialized += "&screenshot=" + $("#executionSettingsForm #screenshot").val();
-//    paramSerialized += "&verbose=" + $("#executionSettingsForm #verbose").val();
-//    paramSerialized += "&timeout=" + $("#executionSettingsForm #timeout").val();
-//    paramSerialized += "&pagesource=" + $("#executionSettingsForm #pageSource").val();
-//    paramSerialized += "&seleniumlog=" + $("#executionSettingsForm #seleniumLog").val();
-//    paramSerialized += "&manualexecution=" + $("#executionSettingsForm #manualExecution").val();
-//    paramSerialized += "&retries=" + $("#executionSettingsForm #retries").val();
-//    paramSerialized += "&priority=" + $("#executionSettingsForm #priority").val();
-//    paramSerialized += "&outputformat=json";
-//
-//    var environmentstring = "";
-//    var settings = $('input[name="envSettings"]:checked').val();
-//    if (settings === "auto") {
-//        var envListAuto = $("#envSettingsAuto select").val();
-//        if (envListAuto !== null) {
-//            for (var index = 0; index < envListAuto.length; index++) {
-//                environmentstring += "&environment=" + envListAuto[index];
-//            }
-//        }
-//    } else if (settings === "manual") {
-//        environmentstring += "&manualurl=1";
-//        environmentstring += "&myhost=" + $("#envSettingsMan #myhost").val();
-//        environmentstring += "&mycontextroot=" + $("#envSettingsMan #mycontextroot").val();
-//        environmentstring += "&myloginrelativeurl=" + $("#envSettingsMan #myloginrelativeurl").val();
-//        environmentstring += "&myenvdata=" + $("#envSettingsMan #myenvdata").val();
-//    }
-//
-//    var countriesstring = "";
-//    $("#countryList .countrycb").each(function () {
-//        if ($(this).prop("checked")) {
-//            countriesstring += "&country=" + $(this).prop("name");
-//        }
-//    });
-//
-//    var robotsstring = "";
-//    var robotSettings = $("#robotSettingsForm #robot").serialize();
-//    if (!isEmpty(robotSettings)) {
-//        robotsstring += "&" + robotSettings;
-//    }
-//
-//    showLoader('#page-layout');
-//
-//    var jqxhr = $.post("AddToExecutionQueueV003", paramSerialized + environmentstring + countriesstring + robotsstring, "json");
-//    $.when(jqxhr).then(function (data) {
-//        // unblock when remote call returns 
-//        hideLoader('#page-layout');
-//        data.message = data.message.replace(/\n/g, '<br>');
-//        if (getAlertType(data.messageType) === "success") {
-//            handleAddToQueueResponse(data, doRedirect);
-//        } else {
-//            showMessageMainPage(getAlertType(data.messageType), data.message, false);
-//        }
-//    }).fail(handleErrorAjaxAfterTimeout);
-//
-//}
-
 function runTestCase(doRedirect) {
 
     var doc = new Doc();
@@ -582,8 +485,6 @@ function runTestCase(doRedirect) {
     } else {
         paramSerialized += "browser=" + $("#robotSettingsForm #browser").val();
     }
-    paramSerialized += "&ss_ip=" + $("#robotSettingsForm #seleniumIP").val();
-    paramSerialized += "&ss_p=" + $("#robotSettingsForm #seleniumPort").val();
     paramSerialized += "&tag=" + $("#executionSettingsForm #tag").val();
     paramSerialized += "&screenshot=" + $("#executionSettingsForm #screenshot").val();
     paramSerialized += "&verbose=" + $("#executionSettingsForm #verbose").val();
@@ -633,6 +534,9 @@ function runTestCase(doRedirect) {
     var robotSettings = $("#robotSettingsForm #robot").serialize();
     if (!isEmpty(robotSettings)) {
         robotsstring += "&" + robotSettings;
+    } else {
+        paramSerialized += "&ss_ip=" + $("#robotSettingsForm #seleniumIP").val();
+        paramSerialized += "&ss_p=" + $("#robotSettingsForm #seleniumPort").val();
     }
 
     if (!fromCampaign) {
@@ -962,11 +866,11 @@ function loadRobotForm(browser) {
     return $.when(
             appendRobotList(),
             loadSelect("BROWSER", "browser"),
-            $("#robotSettingsForm [name=platform]").append($('<option></option>').text(doc.getDocLabel("page_runtest", "default")).val("")),
+//            $("#robotSettingsForm [name=platform]").append($('<option></option>').text(doc.getDocLabel("page_runtest", "default")).val("")),
 //            loadSelect("PLATFORM", "platform"),
-            $("#robotSettingsForm [name=screenSize]").append($('<option></option>').text(doc.getDocLabel("page_runtest", "default_full_screen")).val("")),
+//            $("#robotSettingsForm [name=screenSize]").append($('<option></option>').text(doc.getDocLabel("page_runtest", "default_full_screen")).val("")),
 //            loadSelect("screensize", "screenSize")
-            $("#robotSettingsForm [name='screenSize']").autocomplete({source: getInvariantArray("SCREENSIZE", false)})
+//            $("#robotSettingsForm [name='screenSize']").autocomplete({source: getInvariantArray("SCREENSIZE", false)})
             ).then(function () {
         applyRobotPref(browser);
     });
@@ -1061,7 +965,7 @@ function loadTestCaseFilterData(system) {
 }
 
 
-function loadTestCaseEssentialData(test, testcase, environment, country, tag, browser) {
+function loadTestCaseEssentialData(test, testcase, environment, country, tag, browser, doLoadManualSelection) {
     showLoader("#chooseTest");
     $.when(
             loadExecForm(tag),
@@ -1069,8 +973,9 @@ function loadTestCaseEssentialData(test, testcase, environment, country, tag, br
             loadHardDefinedSingleSelect("length", [{label: '50', value: 50}, {label: '100', value: 100}, {label: '>100', value: -1}], 0)
             )
             .then(function () {
-
-                selectionManual(test, testcase, environment, country);
+                if (doLoadManualSelection) {
+                    selectionManual(test, testcase, environment, country);
+                }
             });
 
 }

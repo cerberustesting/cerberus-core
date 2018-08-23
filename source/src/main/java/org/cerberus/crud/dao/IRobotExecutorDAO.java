@@ -24,7 +24,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import org.cerberus.crud.entity.AppServiceContent;
-
+import org.cerberus.crud.entity.RobotExecutor;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
@@ -37,19 +37,26 @@ import org.cerberus.util.answer.AnswerList;
  * @version 1.0, 15/10/13
  * @since 0.9.0
  */
-public interface IAppServiceContentDAO {
+public interface IRobotExecutorDAO {
 
     /**
      *
-     * @param service
-     * @param key
+     * @param robot
+     * @param executor
      * @return
      */
-    AnswerItem<AppServiceContent> readByKey(String service, String key);
+    AnswerItem<RobotExecutor> readByKey(String robot, String executor);
 
     /**
      *
-     * @param service
+     * @param robot
+     * @return
+     */
+    AnswerItem<RobotExecutor> readBestByKey(String robot);
+
+    /**
+     *
+     * @param robot
      * @param active
      * @param startPosition
      * @param length
@@ -59,30 +66,38 @@ public interface IAppServiceContentDAO {
      * @param individualSearch
      * @return
      */
-    AnswerList<AppServiceContent> readByVariousByCriteria(String service, String active, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+    AnswerList<RobotExecutor> readByVariousByCriteria(List<String> robot, String active, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
     /**
      *
      * @param object
      * @return
      */
-    Answer create(AppServiceContent object);
+    Answer create(RobotExecutor object);
 
     /**
      *
      * @param object
      * @return
      */
-    Answer delete(AppServiceContent object);
+    Answer delete(RobotExecutor object);
 
     /**
      *
-     * @param service
-     * @param key
+     * @param robot
+     * @param executor
      * @param object
      * @return
      */
-    Answer update(String service, String key, AppServiceContent object);
+    Answer update(String robot, String executor, RobotExecutor object);
+
+    /**
+     *
+     * @param robot
+     * @param executor
+     * @return
+     */
+    Answer updateLastExe(String robot, String executor);
 
     /**
      * Uses data of ResultSet to create object {@link AppServiceContent}
@@ -93,16 +108,16 @@ public interface IAppServiceContentDAO {
      * {@link java.sql.ResultSet#getString(String)}
      * @see FactoryApplication
      */
-    AppServiceContent loadFromResultSet(ResultSet rs) throws SQLException;
+    RobotExecutor loadFromResultSet(ResultSet rs) throws SQLException;
 
     /**
      *
-     * @param system
+     * @param robot
      * @param searchParameter
      * @param individualSearch
      * @param columnName
      * @return
      */
-    public AnswerList<String> readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+    public AnswerList<String> readDistinctValuesByCriteria(String robot, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 
 }

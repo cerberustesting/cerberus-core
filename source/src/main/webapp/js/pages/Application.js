@@ -100,6 +100,8 @@ function displayPageLabel() {
     $("#var3Header").html(doc.getDocOnline("countryenvironmentparameters", "Var3")
             + '<br>' + doc.getDocOnline("countryenvironmentparameters", "Var4"));
     $("#poolSizeHeader").html(doc.getDocOnline("countryenvironmentparameters", "poolSize"));
+    $("#mobileData").html(doc.getDocOnline("countryenvironmentparameters", "mobileActivity")
+            + '<br>' + doc.getDocOnline("countryenvironmentparameters", "mobilePackage"));
 
     displayInvariantList("system", "SYSTEM", false);
     displayInvariantList("type", "APPLITYPE", false);
@@ -363,10 +365,10 @@ function appendEnvironmentRow(env) {
     var domainInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "domain") + " --\">").addClass("form-control input-sm").val(env.domain);
     var urlInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "URL") + " --\">").addClass("form-control input-sm").val(env.url);
     var urlLoginInput = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "URLLOGIN") + " --\">").addClass("form-control input-sm").val(env.urlLogin);
-    var var1Input = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "var1") + " --\">").addClass("form-control input-sm").val(env.var1);
-    var var2Input = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "var2") + " --\">").addClass("form-control input-sm").val(env.var2);
-    var var3Input = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "var3") + " --\">").addClass("form-control input-sm").val(env.var3);
-    var var4Input = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "var4") + " --\">").addClass("form-control input-sm").val(env.var4);
+    var var1Input = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "Var1") + " --\">").addClass("form-control input-sm").val(env.var1);
+    var var2Input = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "Var2") + " --\">").addClass("form-control input-sm").val(env.var2);
+    var var3Input = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "Var3") + " --\">").addClass("form-control input-sm").val(env.var3);
+    var var4Input = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "Var4") + " --\">").addClass("form-control input-sm").val(env.var4);
     var poolSizeInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "poolSize") + " --\">").addClass("form-control input-sm").val(env.poolSize);
     var mobileActivity = $("<input  maxlength=\"254\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "mobileActivity") + " --\">").addClass("form-control input-sm").val(env.mobileActivity);
     var mobilePackage = $("<input  maxlength=\"254\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "mobilePackage") + " --\">").addClass("form-control input-sm").val(env.mobilePackage);

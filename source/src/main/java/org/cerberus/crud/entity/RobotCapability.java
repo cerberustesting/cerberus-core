@@ -20,6 +20,10 @@
 package org.cerberus.crud.entity;
 
 import java.util.Objects;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * A {@link Robot} capability is a single configuration that can be used by
@@ -31,6 +35,8 @@ import java.util.Objects;
  * @author Aurelien Bourdon
  */
 public class RobotCapability {
+
+    private static final Logger LOG = LogManager.getLogger(RobotCapability.class);
 
     /**
      * The {@link RobotCapability}'s technical identifier
@@ -125,7 +131,7 @@ public class RobotCapability {
     public void setValue(String value) {
         this.value = value;
     }
-    
+
     public boolean hasSameKey(RobotCapability other) {
         if (other == null) {
             return false;
@@ -170,6 +176,21 @@ public class RobotCapability {
             return false;
         }
         return true;
+    }
+
+    public JSONObject toJson() {
+        JSONObject result = new JSONObject();
+        try {
+            result.put("id", this.getId());
+            result.put("robot", this.getRobot());
+            result.put("capability", this.getCapability());
+            result.put("value", this.getValue());
+        } catch (JSONException ex) {
+            LOG.error(ex.toString());
+        } catch (Exception ex) {
+            LOG.error(ex.toString());
+        }
+        return result;
     }
 
 }

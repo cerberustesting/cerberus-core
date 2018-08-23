@@ -136,6 +136,112 @@ public class RobotDAO implements IRobotDAO {
     }
 
     @Override
+    public AnswerList<Robot> readByRobotList(List<String> robotList) {
+        AnswerList<Robot> response = new AnswerList<>();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+        List<Robot> robotListResult = new ArrayList<Robot>();
+        StringBuilder searchSQL = new StringBuilder();
+
+        StringBuilder query = new StringBuilder();
+        //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
+        //were applied -- used for pagination p
+        query.append("SELECT SQL_CALC_FOUND_ROWS * FROM robot rbt ");
+
+        searchSQL.append(" where 1=1 ");
+
+        if ((robotList != null) && (!robotList.isEmpty())) {
+            searchSQL.append(" and (" + SqlUtil.generateInClause("rbt.`robot`", robotList) + ")");
+        }
+        query.append(searchSQL);
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query.toString());
+        }
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            try {
+                int i = 1;
+                if ((robotList != null) && (!robotList.isEmpty())) {
+                    for (String myrobot : robotList) {
+                        preStat.setString(i++, myrobot);
+                    }
+                }
+
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    //gets the data
+                    while (resultSet.next()) {
+                        robotListResult.add(this.loadFromResultSet(resultSet));
+                    }
+
+                    //get the total number of rows
+                    resultSet = preStat.executeQuery("SELECT FOUND_ROWS()");
+                    int nrTotalRows = 0;
+
+                    if (resultSet != null && resultSet.next()) {
+                        nrTotalRows = resultSet.getInt(1);
+                    }
+
+                    if (robotListResult.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
+                        LOG.error("Partial Result in the query.");
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
+                        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
+                        response = new AnswerList<Robot>(robotListResult, nrTotalRows);
+                    } else if (robotListResult.size() <= 0) {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                        response = new AnswerList<Robot>(robotListResult, nrTotalRows);
+                    } else {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+                        response = new AnswerList<Robot>(robotListResult, nrTotalRows);
+                    }
+
+                } catch (SQLException exception) {
+                    LOG.error("Unable to execute query : " + exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+
+                } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
+                }
+
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                if (preStat != null) {
+                    preStat.close();
+                }
+            }
+
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (!this.databaseSpring.isOnTransaction()) {
+                    if (connection != null) {
+                        connection.close();
+                    }
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
+            }
+        }
+
+        response.setResultMessage(msg);
+        response.setDataList(robotListResult);
+        return response;
+    }
+
+    @Override
     public AnswerList<Robot> readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
         AnswerList<Robot> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -283,9 +389,9 @@ public class RobotDAO implements IRobotDAO {
     public Answer create(Robot robot) {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO robot (`robot`, `host`, `port`, `platform`,`browser`, `version`,`active` , `description`, `useragent`, `screensize`, `host_user`, `host_password`, `robotdecli`) ");
+        query.append("INSERT INTO robot (`robot`, `host`, `port`, `platform`,`browser`, `version`,`active` , `description`, `useragent`, `screensize`, `host_user`, `host_password`, `robotdecli`, `lbexemethod`) ");
 
-        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)");
+        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -309,6 +415,7 @@ public class RobotDAO implements IRobotDAO {
                 preStat.setString(i++, StringUtil.isNullOrEmpty(robot.getHostUser()) ? null : robot.getHostUser());
                 preStat.setString(i++, StringUtil.isNullOrEmpty(robot.getHostPassword()) ? null : robot.getHostPassword());
                 preStat.setString(i++, robot.getRobotDecli());
+                preStat.setString(i++, robot.getLbexemethod());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -389,7 +496,7 @@ public class RobotDAO implements IRobotDAO {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
         query.append("UPDATE robot SET robot= ? , host = ? , port = ? ,");
-        query.append("platform = ?, browser = ? , version = ?, active=?, description = ?, useragent = ?, screensize = ?, robotdecli = ?");
+        query.append("platform = ?, browser = ? , version = ?, active=?, description = ?, useragent = ?, screensize = ?, robotdecli = ?, lbexemethod = ?");
         if (robot.getHostUser() != null) {
             query.append(", host_user = ?");
         }
@@ -418,6 +525,7 @@ public class RobotDAO implements IRobotDAO {
                 preStat.setString(cpt++, robot.getUserAgent());
                 preStat.setString(cpt++, robot.getScreenSize());
                 preStat.setString(cpt++, robot.getRobotDecli());
+                preStat.setString(cpt++, robot.getLbexemethod());
                 if (robot.getHostUser() != null) {
                     preStat.setString(cpt++, robot.getHostUser());
                 }
@@ -462,6 +570,7 @@ public class RobotDAO implements IRobotDAO {
         String browser = ParameterParserUtil.parseStringParam(rs.getString("browser"), "");
         String version = ParameterParserUtil.parseStringParam(rs.getString("version"), "");
         String active = ParameterParserUtil.parseStringParam(rs.getString("active"), "");
+        String lbexemethod = ParameterParserUtil.parseStringParam(rs.getString("lbexemethod"), "");
         String description = ParameterParserUtil.parseStringParam(rs.getString("description"), "");
         String userAgent = ParameterParserUtil.parseStringParam(rs.getString("useragent"), "");
         String screenSize = ParameterParserUtil.parseStringParam(rs.getString("screensize"), "");
@@ -471,7 +580,7 @@ public class RobotDAO implements IRobotDAO {
 
         //TODO remove when working in test with mockito and autowired
         factoryRobot = new FactoryRobot();
-        return factoryRobot.create(robotID, robot, host, port, platform, browser, version, active, description, userAgent, screenSize, user, password, robotDecli);
+        return factoryRobot.create(robotID, robot, host, port, platform, browser, version, active, lbexemethod, description, userAgent, screenSize, user, password, robotDecli);
     }
 
     @Override

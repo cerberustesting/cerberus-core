@@ -218,7 +218,7 @@ public interface ITestCaseExecutionQueueDAO {
      * @param id
      * @throws CerberusException
      */
-    void updateToStarting(long id) throws CerberusException;
+    void updateToStarting(long id, String selectedRobot) throws CerberusException;
 
     /**
      *

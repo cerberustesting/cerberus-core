@@ -1,6 +1,6 @@
 <!--Edit Robot page-->
 <div data-backdrop="static" class="modal fade center" id="editRobotModal" role="dialog" aria-labelledby="editRobotModalLabel" aria-hidden="true">
-    <div class="modal-dialog nomargintop nomarginbottom modal-md">
+    <div class="modal-dialog nomargintop nomarginbottom modal-xl">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -39,35 +39,10 @@
                         <ul id="tabsEdit" class="nav nav-tabs" data-tabs="tabs">
                             <li class="active"><a data-toggle="tab" href="#tabsEdit-1" id="editTab1Text" name="tabDefinition">Definition</a></li>
                             <li><a data-toggle="tab" href="#tabsEdit-2" id="editTab2Text" name="tabCapabilities">Capabilities</a></li>
+                            <li><a data-toggle="tab" href="#tabsEdit-3" id="editTab3Text" name="tabExecutors">Executors</a></li>
                         </ul>
                         <div class="tab-content">
                             <div class="center marginTop25 tab-pane fade in active" id="tabsEdit-1">
-                                <div class="panel panel-default" style="padding:10px;background-color: #fafafa;">
-                                    <div class="row">
-                                        <div class="form-group col-sm-7">
-                                            <label for="host" name="hostField">Host</label>
-                                            <input type="text" class="form-control" name="host" id="host" aria-describedby="basic-addon1" maxlength="150">
-                                        </div>
-                                        <div class="form-group col-sm-3">
-                                            <label for="port" name="portField">Port</label>
-                                            <input type="text" class="form-control" name="port" id="port" aria-describedby="basic-addon1" maxlength="20">
-                                        </div>
-                                        <div class="form-group col-sm-2">
-                                            <label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
-                                            <button class="btn btn-primary" data-toggle="collapse" data-target="#hostAuthentification" onclick="return false;"> <span class="glyphicon glyphicon-lock"></span></button>
-                                        </div>
-                                    </div>
-                                    <div class="row collapse" id="hostAuthentification">
-                                        <div class="form-group col-sm-6">
-                                            <label for="hostUsername" name="hostUserField">Host Username</label>
-                                            <input type="text" class="form-control" name="hostUsername" id="hostUsername" aria-describedby="basic-addon1" maxlength="150">
-                                        </div>
-                                        <div class="form-group col-sm-6">
-                                            <label for="hostPassword" name="hostPasswordField">Host Password</label>
-                                            <input type="password" class="form-control" name="hostPassword" id="hostPassword" aria-describedby="basic-addon1" maxlength="20">
-                                        </div>
-                                    </div>
-                                </div>
                                 <div class="panel panel-default" style="padding:10px;background-color: #fafafa;">
                                     <div class="row">
                                         <div class="form-group col-sm-6">
@@ -126,7 +101,27 @@
                                                 <tbody id="editCapabilitiesTableBody">
                                                 </tbody>
                                             </table>
-                                            <button type="button" class="btn btn-default" id="addEditCapability">Add Capability</button>
+                                            <button type="button" class="btn btn-default marginTop20" id="addEditCapability">Add Capability</button>
+                                        </div>
+                                    </div>  
+                                </div>   
+                            </div>
+                            <div class="center tab-pane fade marginTop25" id="tabsEdit-3">
+                                <div class="row">
+                                    <div class="form-group col-sm-12">
+                                        <label for="lbexemethod" name="lbexemethodField">Load Balancing Method</label>
+                                        <select class="form-control"  id="lbexemethod" name="lbexemethod">
+                                        </select>
+                                    </div>
+                                </div>
+                                <div id="listPanelEditExecutors">
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <table class="table table-bordered table-hover nomarginbottom" id="editExecutorsTable">
+                                                <tbody id="editExecutorsTableBody">
+                                                </tbody>
+                                            </table>
+                                            <button type="button" class="btn btn-default marginTop20" id="addEditExecutor">Add Executor</button>
                                         </div>
                                     </div>  
                                 </div>   

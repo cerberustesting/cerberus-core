@@ -29,7 +29,11 @@ public class TestCaseExecutionQueueToTreat {
     private String country;
     private String application;
     private int poolSizeApplication;
-    private String robotHost;
+    private String queueRobot;
+    private String queueRobotHost;
+    private String queueRobotPort;
+    private String appType;
+    private String selectedRobotHost;
 
     /**
      * Invariant Constrains.
@@ -48,6 +52,22 @@ public class TestCaseExecutionQueueToTreat {
 
     public String getDebugFlag() {
         return debugFlag;
+    }
+
+    public String getAppType() {
+        return appType;
+    }
+
+    public void setAppType(String appType) {
+        this.appType = appType;
+    }
+
+    public String getSelectedRobotHost() {
+        return selectedRobotHost;
+    }
+
+    public void setSelectedRobotHost(String selectedRobotHost) {
+        this.selectedRobotHost = selectedRobotHost;
     }
 
     public void setDebugFlag(String debugFlag) {
@@ -94,12 +114,28 @@ public class TestCaseExecutionQueueToTreat {
         this.application = application;
     }
 
-    public String getRobotHost() {
-        return robotHost;
+    public String getQueueRobot() {
+        return queueRobot;
     }
 
-    public void setRobotHost(String robot) {
-        this.robotHost = robot;
+    public void setQueueRobot(String queueRobot) {
+        this.queueRobot = queueRobot;
+    }
+
+    public String getQueueRobotHost() {
+        return queueRobotHost;
+    }
+
+    public void setQueueRobotHost(String robot) {
+        this.queueRobotHost = robot;
+    }
+
+    public String getQueueRobotPort() {
+        return queueRobotPort;
+    }
+
+    public void setQueueRobotPort(String queueRobotPort) {
+        this.queueRobotPort = queueRobotPort;
     }
 
     public int getPoolSizeApplication() {

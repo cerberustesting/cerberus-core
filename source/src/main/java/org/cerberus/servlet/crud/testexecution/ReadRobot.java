@@ -93,6 +93,8 @@ public class ReadRobot extends HttpServlet {
          * Parsing and securing all required parameters.
          */
         String robot = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("robot"), "");
+        boolean withCaps = ParameterParserUtil.parseBooleanParam(request.getParameter("withCapabilities"), false);
+        boolean withExecutors = ParameterParserUtil.parseBooleanParam(request.getParameter("withExecutors"), false);
         Integer robotid = 0;
         boolean robotid_error = false;
         if (request.getParameter("robotid") != null) {
@@ -131,7 +133,7 @@ public class ReadRobot extends HttpServlet {
                     answer = findDistinctValuesOfColumn(appContext, request, columnName);
                     jsonResponse = (JSONObject) answer.getItem();
                 } else {
-                    answer = findRobotList(appContext, userHasPermissions, request);
+                    answer = findRobotList(withCaps, withExecutors, appContext, userHasPermissions, request);
                     jsonResponse = (JSONObject) answer.getItem();
                 }
             }
@@ -196,7 +198,7 @@ public class ReadRobot extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findRobotList(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
+    private AnswerItem findRobotList(boolean withCaps, boolean withExecutors, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
         AnswerItem item = new AnswerItem<>();
         JSONObject object = new JSONObject();
@@ -226,7 +228,7 @@ public class ReadRobot extends HttpServlet {
             }
         }
 
-        AnswerList resp = robotService.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
+        AnswerList resp = robotService.readByCriteria(withCaps, withExecutors, startPosition, length, columnName, sort, searchParameter, individualSearch);
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
@@ -279,11 +281,11 @@ public class ReadRobot extends HttpServlet {
         AnswerItem item = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
-        IRobotService libService = appContext.getBean(IRobotService.class);
+        robotService = appContext.getBean(IRobotService.class);
 
         //finds the project
         try {
-            Robot robotObj = libService.readByKey(robot);
+            Robot robotObj = robotService.readByKey(robot);
 
             if (robotObj != null) {
                 robotObj.setHostPassword(null); // hide the password to the view
@@ -294,8 +296,8 @@ public class ReadRobot extends HttpServlet {
             } else {
                 //if the service returns an OK message then we can get the item and convert it to JSONformat
                 JSONObject response = convertRobotToJSONObject(robotObj);
-                response.put("hasPermissionsUpdate", libService.hasPermissionsUpdate(robotObj, request));
-                response.put("hasPermissionsDelete", libService.hasPermissionsDelete(robotObj, request));
+                response.put("hasPermissionsUpdate", robotService.hasPermissionsUpdate(robotObj, request));
+                response.put("hasPermissionsDelete", robotService.hasPermissionsDelete(robotObj, request));
 
                 object.put("contentTable", response);
 
@@ -306,7 +308,7 @@ public class ReadRobot extends HttpServlet {
             item.setResultMessage(new MessageEvent(e.getMessageError().getCodeString(), e.getMessageError().getDescription()));
         }
 
-        object.put("hasPermissionsCreate", libService.hasPermissionsCreate(null, request));
+        object.put("hasPermissionsCreate", robotService.hasPermissionsCreate(null, request));
 
         item.setItem(object);
 
@@ -315,9 +317,9 @@ public class ReadRobot extends HttpServlet {
 
     private JSONObject convertRobotToJSONObject(Robot robot) throws JSONException {
 
-        Gson gson = new Gson();
-        JSONObject result = new JSONObject(gson.toJson(robot));
-        return result;
+//        Gson gson = new Gson();
+//        JSONObject result = new JSONObject(robot.toJson(true, true));
+        return robot.toJson(true, true);
     }
 
     private AnswerItem findDistinctValuesOfColumn(ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {

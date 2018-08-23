@@ -46,8 +46,16 @@ public interface IRobotDAO {
      *
      * @param robot
      * @return
+     * @throws org.cerberus.exception.CerberusException
      */
     Robot readByKey(String robot) throws CerberusException;
+
+    /**
+     *
+     * @param robotList
+     * @return
+     */
+    AnswerList<Robot> readByRobotList(List<String> robotList);
 
     /**
      *
@@ -91,11 +99,11 @@ public interface IRobotDAO {
     Robot loadFromResultSet(ResultSet rs) throws SQLException;
 
     /**
-     * 
+     *
      * @param searchParameter
      * @param individualSearch
      * @param columnName
-     * @return 
+     * @return
      */
     public AnswerList<List<String>> readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 

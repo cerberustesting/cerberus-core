@@ -25,7 +25,6 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -33,8 +32,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
-import org.cerberus.crud.entity.Robot;
-import org.cerberus.crud.entity.RobotCapability;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionQueue;
@@ -43,7 +40,6 @@ import org.cerberus.crud.factory.IFactoryTestCaseExecution;
 import org.cerberus.crud.factory.IFactoryTestCaseExecutionQueue;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.IParameterService;
-import org.cerberus.crud.service.IRobotService;
 import org.cerberus.crud.service.ITagService;
 import org.cerberus.crud.service.ITestCaseExecutionService;
 import org.cerberus.crud.service.ITestCaseService;
@@ -51,7 +47,6 @@ import org.cerberus.engine.entity.ExecutionUUID;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.engine.execution.IRunTestCaseService;
 import org.cerberus.enums.MessageGeneralEnum;
-import org.cerberus.exception.CerberusException;
 import org.cerberus.exception.FactoryCreationException;
 import org.cerberus.util.DateUtil;
 import org.cerberus.util.ParameterParserUtil;
@@ -83,6 +78,7 @@ public class RunTestCaseV001 extends HttpServlet {
     public static final String PARAMETER_COUNTRY = "Country";
     public static final String PARAMETER_ENVIRONMENT = "Environment";
     public static final String PARAMETER_ROBOT = "robot";
+    public static final String PARAMETER_ROBOTEXECUTOR = "robotexecutor";
     public static final String PARAMETER_ROBOT_IP = "ss_ip";
     public static final String PARAMETER_ROBOT_PORT = "ss_p";
     public static final String PARAMETER_BROWSER = "browser";
@@ -125,18 +121,15 @@ public class RunTestCaseV001 extends HttpServlet {
         logEventService.createForPublicCalls("/RunTestCaseV001", "CALL", "RunTestCaseV001 called : " + request.getRequestURL(), request);
 
         //Tool
-        String ss_ip = ""; // Selenium IP
-        String ss_ip_user = ""; // Selenium Host (optional)
-        String ss_ip_pass = ""; // Selenium Password (optional)
-        String ss_p = ""; // Selenium Port
+        String robot = "";
+        String robotExecutor = "";
+        String robotHost = ""; // Selenium IP
+        String robotPort = ""; // Selenium Port
         String browser = "";
-        String robotDecli = "";
         String version = "";
         String platform = "";
-        String robot = "";
         String active = "";
         String timeout = "";
-        String userAgent = "";
         String screenSize = "";
         boolean synchroneous = true;
         int getPageSource = 0;
@@ -172,8 +165,9 @@ public class RunTestCaseV001 extends HttpServlet {
         screenSize = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("screenSize"), "");
         
         robot = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("robot"), "");
-        ss_ip = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("ss_ip"), "");
-        ss_p = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("ss_p"), "");
+        robotHost = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("ss_ip"), "");
+        robotPort = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("ss_p"), "");
+        robotExecutor = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("robotexecutor"), "");
         browser = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("Browser"), ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("browser"), ""));
         version = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("version"), "");
         platform = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("platform"), "");
@@ -189,8 +183,8 @@ public class RunTestCaseV001 extends HttpServlet {
                 + "- Country [mandatory] : Country where the test case will execute. [" + country + "]\n"
                 + "- Environment : Environment where the test case will execute. This parameter is mandatory only if manualURL is not set to Y. [" + environment + "]\n"
                 + "- robot : robot name on which the test will be executed. [" + robot + "]\n"
-                + "- ss_ip : Host of the Robot where the test will be executed. (Can be overwriten if robot is defined) [" + ss_ip + "]\n"
-                + "- ss_p : Port of the Robot. (Can be overwriten if robot is defined) [" + ss_p + "]\n"
+                + "- ss_ip : Host of the Robot where the test will be executed. (Can be overwriten if robot is defined) [" + robotHost + "]\n"
+                + "- ss_p : Port of the Robot. (Can be overwriten if robot is defined) [" + robotPort + "]\n"
                 + "- browser : Browser to use for the execution. (Can be overwriten if robot is defined) [" + browser + "]\n"
                 + "- version : Version to use for the execution. (Can be overwriten if robot is defined) [" + version + "]\n"
                 + "- platform : Platform to use for the execution. (Can be overwriten if robot is defined) [" + platform + "]\n"
@@ -246,40 +240,6 @@ public class RunTestCaseV001 extends HttpServlet {
             LOG.info("Execution request ignored by cerberus_automaticexecution_enable parameter. " + test + " / " + testCase);
         }
 
-        // If Robot is feeded, we check it exist. If it exist, we overwrite the associated parameters.
-        Robot robObj = null;
-        if (!StringUtil.isNullOrEmpty(robot)) {
-            IRobotService robotService = appContext.getBean(IRobotService.class);
-            try {
-                robObj = robotService.readByKey(robot);
-                // If Robot parameter is defined and we can find the robot, we overwrite the corresponding parameters.
-                ss_ip = ParameterParserUtil.parseStringParam(robObj.getHost(), ss_ip);
-                ss_ip_user = robObj.getHostUser();
-                ss_ip_pass = robObj.getHostPassword();
-                ss_p = ParameterParserUtil.parseStringParam(String.valueOf(robObj.getPort()), ss_p);
-                browser = ParameterParserUtil.parseStringParam(robObj.getBrowser(), browser);
-                robotDecli = ParameterParserUtil.parseStringParam(robObj.getRobotDecli(), "");
-                if (StringUtil.isNullOrEmpty(robotDecli)) {
-                    robotDecli = robObj.getRobot();
-                }
-                version = ParameterParserUtil.parseStringParam(robObj.getVersion(), version);
-                platform = ParameterParserUtil.parseStringParam(robObj.getPlatform(), platform);
-                active = robObj.getActive();
-                userAgent = robObj.getUserAgent();
-                screenSize = robObj.getScreenSize();
-            } catch (CerberusException ex) {
-                errorMessage += "Error - Robot [" + robot + "] does not exist. ";
-                error = true;
-            }
-        } else {
-            robotDecli = browser;
-        }
-        // We cannot execute a testcase on a desactivated Robot.
-        if (active.equals("N")) {
-            errorMessage += "Error - Robot is not Active. ";
-            error = true;
-        }
-
         //verify the format of the ScreenSize. It must be 2 integer separated by a *. For example : 1024*768
         if (!"".equals(screenSize)) {
             if (!screenSize.contains("*")) {
@@ -318,13 +278,11 @@ public class RunTestCaseV001 extends HttpServlet {
             TestCase tCase = factoryTCase.create(test, testCase);
 
             // Building Execution Object.
-            TestCaseExecution tCExecution = factoryTCExecution.create(0, test, testCase, null, null, null, environment, country, browser, version, platform, "",
-                    0, 0, "", "", "", null, ss_ip, null, ss_p, tag, verbose, screenshot, getPageSource, getSeleniumLog, synchroneous, timeout, outputFormat, null,
-                    Infos.getInstance().getProjectNameAndVersion(), tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL, myEnvData, ss_ip, ss_p,
-                    null, new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED), executor, numberOfRetries, screenSize, robObj,
-                    "", "", "", "", "", manualExecution, userAgent, 0, "", robotDecli);
-            tCExecution.setSeleniumIPUser(ss_ip_user);
-            tCExecution.setSeleniumIPPassword(ss_ip_pass);
+            TestCaseExecution tCExecution = factoryTCExecution.create(0, test, testCase, null, null, null, environment, country, robot, robotExecutor, robotHost, robotPort, "", browser, version, platform, "",
+                    0, 0, "", "", "", null, null, tag, verbose, screenshot, getPageSource, getSeleniumLog, synchroneous, timeout, outputFormat, null,
+                    Infos.getInstance().getProjectNameAndVersion(), tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL, myEnvData, robotHost, robotPort,
+                    null, new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED), executor, numberOfRetries, screenSize, null,
+                    "", "", "", "", "", manualExecution, "", 0, "");
 
             /**
              * Set IdFromQueue
@@ -332,7 +290,7 @@ public class RunTestCaseV001 extends HttpServlet {
             try {
                 tCExecution.setQueueID(idFromQueue);
                 
-                TestCaseExecutionQueue queueExecution = factoryTCExecutionQueue.create(idFromQueue, "", test, testCase, country, environment, robot, robotDecli, ss_ip, ss_p, browser, version,
+                TestCaseExecutionQueue queueExecution = factoryTCExecutionQueue.create(idFromQueue, "", test, testCase, country, environment, robot, "", robotHost, robotPort, browser, version,
                         platform, screenSize, 0, myHost, myContextRoot, myLoginRelativeURL, myEnvData, tag, screenshot, verbose, timeout, getPageSource, getSeleniumLog, 0, numberOfRetries,
                         manualExecution, executor, null, null, null);
                 tCExecution.setTestCaseExecutionQueue(queueExecution);
@@ -398,8 +356,8 @@ public class RunTestCaseV001 extends HttpServlet {
                         out.println("<tr><td>PageSource</td><td><span id='PageSource'>" + getPageSource + "</span></td></tr>");
                         out.println("<tr><td>SeleniumLog</td><td><span id='SeleniumLog'>" + getSeleniumLog + "</span></td></tr>");
                         out.println("<tr><td>Robot</td><td><span id='Robot'>" + robot + "</span></td></tr>");
-                        out.println("<tr><td>Selenium Server IP</td><td><span id='SeleniumIP'>" + ss_ip + "</span></td></tr>");
-                        out.println("<tr><td>Selenium Server Port</td><td><span id='SeleniumPort'>" + ss_p + "</span></td></tr>");
+                        out.println("<tr><td>Robot Server IP</td><td><span id='SeleniumIP'>" + robotHost + "</span></td></tr>");
+                        out.println("<tr><td>Robot Server Port</td><td><span id='SeleniumPort'>" + robotPort + "</span></td></tr>");
                         out.println("<tr><td>Timeout</td><td><span id='Timeout'>" + timeout + "</span></td></tr>");
                         out.println("<tr><td>Synchroneous</td><td><span id='Synchroneous'>" + synchroneous + "</span></td></tr>");
                         out.println("<tr><td>Browser</td><td><span id='Browser'>" + browser + "</span></td></tr>");
@@ -446,8 +404,8 @@ public class RunTestCaseV001 extends HttpServlet {
                     out.println("PageSource" + separator + getPageSource);
                     out.println("SeleniumLog" + separator + getSeleniumLog);
                     out.println("Robot" + separator + robot);
-                    out.println("Selenium Server IP" + separator + ss_ip);
-                    out.println("Selenium Server Port" + separator + ss_p);
+                    out.println("Robot Server IP" + separator + robotHost);
+                    out.println("Robot Server Port" + separator + robotPort);
                     out.println("Timeout" + separator + timeout);
                     out.println("Synchroneous" + separator + synchroneous);
                     out.println("Browser" + separator + browser);
@@ -482,8 +440,8 @@ public class RunTestCaseV001 extends HttpServlet {
                             jsonResponse.put("PageSource", getPageSource);
                             jsonResponse.put("SeleniumLog", getSeleniumLog);
                             jsonResponse.put("Robot", robot);
-                            jsonResponse.put("Selenium Server IP", ss_ip);
-                            jsonResponse.put("Selenium Server Port", ss_p);
+                            jsonResponse.put("Robot Server IP", robotHost);
+                            jsonResponse.put("Robot Server Port", robotPort);
                             jsonResponse.put("Timeout", timeout);
                             jsonResponse.put("Synchroneous", synchroneous);
                             jsonResponse.put("Browser", browser);
@@ -556,8 +514,8 @@ public class RunTestCaseV001 extends HttpServlet {
                     out.println("PageSource" + separator + getPageSource);
                     out.println("SeleniumLog" + separator + getSeleniumLog);
                     out.println("Robot" + separator + robot);
-                    out.println("Selenium Server IP" + separator + ss_ip);
-                    out.println("Selenium Server Port" + separator + ss_p);
+                    out.println("Robot Server IP" + separator + robotHost);
+                    out.println("Robot Server Port" + separator + robotPort);
                     out.println("Timeout" + separator + timeout);
                     out.println("Synchroneous" + separator + synchroneous);
                     out.println("Browser" + separator + browser);
@@ -585,8 +543,8 @@ public class RunTestCaseV001 extends HttpServlet {
                         jsonResponse.put("PageSource", getPageSource);
                         jsonResponse.put("SeleniumLog", getSeleniumLog);
                         jsonResponse.put("Robot", robot);
-                        jsonResponse.put("Selenium Server IP", ss_ip);
-                        jsonResponse.put("Selenium Server Port", ss_p);
+                        jsonResponse.put("Robot Server IP", robotHost);
+                        jsonResponse.put("Robot Server Port", robotPort);
                         jsonResponse.put("Timeout", timeout);
                         jsonResponse.put("Synchroneous", synchroneous);
                         jsonResponse.put("Browser", browser);

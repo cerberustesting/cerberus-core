@@ -58,13 +58,29 @@ public interface IRobotService {
 
     /**
      *
+     * @param robotList
+     * @return
+     */
+    AnswerList<Robot> readByRobotList(List<String> robotList);
+
+    /**
+     *
      * @return
      */
     HashMap<String, String> readToHashMapRobotDecli();
 
     /**
      *
+     * @param robotList
+     * @return
+     */
+    HashMap<String, Robot> readToHashMapByRobotList(List<String> robotList);
+
+    /**
+     *
+     * @param withCapabilities
      * @param startPosition
+     * @param withExecutors
      * @param length
      * @param columnName
      * @param sort
@@ -72,7 +88,7 @@ public interface IRobotService {
      * @param individualSearch
      * @return
      */
-    AnswerList<Robot> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+    AnswerList<Robot> readByCriteria(boolean withCapabilities, boolean withExecutors, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
     /**
      *
@@ -91,9 +107,10 @@ public interface IRobotService {
     /**
      *
      * @param robot
+     * @param UsrModif
      * @return
      */
-    Answer update(Robot robot);
+    Answer update(Robot robot, String UsrModif);
 
     /**
      *

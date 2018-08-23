@@ -26,7 +26,6 @@ import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.CountryEnvParam;
 import org.cerberus.crud.entity.CountryEnvironmentParameters;
 import org.cerberus.crud.entity.Robot;
-import org.cerberus.crud.entity.RobotCapability;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionData;
@@ -43,14 +42,15 @@ import org.springframework.stereotype.Service;
 public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
 
     @Override
-    public TestCaseExecution create(long id, String test, String testCase, String description, String build, String revision, String environment, String country,
+    public TestCaseExecution create(long id, String test, String testCase, String description, String build, String revision, String environment, String country, 
+            String robot, String robotExecutor, String robotHost, String robotPort, String robotDecli,
             String browser, String version, String platform, String browserFullVersion, long start, long end, String controlStatus, String controlMessage,
-            String application, Application applicationObj, String ip, String url, String port, String tag, int verbose, int screenshot, int pageSource, int seleniumLog,
+            String application, Application applicationObj, String url, String tag, int verbose, int screenshot, int pageSource, int seleniumLog,
             boolean synchroneous, String timeout, String outputFormat, String status, String crbVersion, TestCase tCase, CountryEnvParam countryEnvParam,
             CountryEnvironmentParameters countryEnvironmentParameters, boolean manualURL, String myHost, String myContextRoot, String myLoginRelativeURL, String myEnvData,
             String seleniumIP, String seleniumPort, List<TestCaseStepExecution> testCaseStepExecution, MessageGeneral resultMessage, String executor,
             int numberOfRetries, String screenSize, Robot robotObj,
-            String conditionOper, String conditionVal1Init, String conditionVal2Init, String conditionVal1, String conditionVal2, String manualExecution, String userAgent, int testCaseVersion, String system, String robotDecli) {
+            String conditionOper, String conditionVal1Init, String conditionVal2Init, String conditionVal1, String conditionVal2, String manualExecution, String userAgent, int testCaseVersion, String system) {
         TestCaseExecution newTce = new TestCaseExecution();
         newTce.setApplicationObj(applicationObj);
         newTce.setApplication(application);
@@ -67,8 +67,11 @@ public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
         newTce.setEnvironment(environment);
         newTce.setEnvironmentData(myEnvData);
         newTce.setId(id);
-        newTce.setIp(ip);
-        newTce.setPort(port);
+        newTce.setRobot(robot);
+        newTce.setRobotExecutor(robotExecutor);
+        newTce.setRobotHost(robotHost);
+        newTce.setRobotPort(robotPort);
+        newTce.setRobotDecli(robotDecli);
         newTce.setRevision(revision);
         newTce.setStart(start);
         newTce.setStatus(status);
@@ -110,7 +113,6 @@ public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
         newTce.setManualExecution(manualExecution);
         newTce.setUserAgent(userAgent);
         newTce.setDescription(description);
-        newTce.setRobotDecli(robotDecli);
         newTce.setSystem(system);
         // List objects
         List<TestCaseExecutionFile> objectFileList = new ArrayList<>();

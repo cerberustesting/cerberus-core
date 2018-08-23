@@ -18,8 +18,9 @@
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-var HOST_PASSWORD_DEFAULT = "********";
-var hostUserBeforeUpdate=null;
+//var HOST_PASSWORD_DEFAULT = "********";
+//var hostUserBeforeUpdate = null;
+var availableHost = [];
 
 /***
  * Open the modal with robot information.
@@ -38,7 +39,7 @@ function openModalRobot(robot, mode) {
     // Init the Saved data to false.
     $('#editRobotModal').data("Saved", false);
     $('#editRobotModal').data("robot", undefined);
-    
+
     if (mode === "EDIT") {
         editRobotClick(robot);
     } else if (mode === "ADD") {
@@ -77,10 +78,12 @@ function initModalRobot() {
     $("#editRobotModal [name='hostPassword']").html(doc.getDocOnline("robot", "hostPassword"));
     $("#editRobotModal [name='hostUserName']").html(doc.getDocOnline("robot", "hostUserName"));
     $("#editRobotModal [name='robotdecliField']").html(doc.getDocOnline("robot", "robotdecli"));
-    
+    $("#editRobotModal [name='lbexemethodField']").html(doc.getDocOnline("robot", "lbexemethod"));
+
     displayInvariantList("robotActive", "ROBOTACTIVE", false);
     displayInvariantList("robotBrowser", "BROWSER", false, undefined, "");
     displayInvariantList("robotPlatform", "PLATFORM", false, undefined, "");
+    displayInvariantList("lbexemethod", "ROBOTLBMETHOD", false);
 
     var availableUserAgent = getInvariantArray("USERAGENT", false);
     $("#editRobotModal [name='useragent']").autocomplete({
@@ -99,6 +102,7 @@ function initModalRobot() {
     getSelectInvariant("CAPABILITY", true);
     // Adding rows in modals.
     $("#addEditCapability").click(addNewCapabilityRow.bind(null, "editCapabilitiesTableBody"));
+    $("#addEditExecutor").click(addNewExecutorRow.bind(null, "editExecutorsTableBody"));
 
 
     $("#editRobotButton").off("click");
@@ -219,9 +223,20 @@ function confirmRobotModalHandler(mode) {
         }
     }
 
+    // Getting Data from Executor TAB
+    var executorTable = $("#editExecutorsTableBody tr");
+    var executors = [];
+    for (var i = 0; i < executorTable.length; i++) {
+        var executor = $(executorTable[i]).data("executor");
+        if (!executor.toDelete) {
+            executors.push(executor);
+        }
+    }
+
     // Get the header data from the form.
     var data = convertSerialToJSONObject(formEdit.serialize());
     data.capabilities = JSON.stringify(capabilities);
+    data.executors = JSON.stringify(executors);
 
     var tcElement = formEdit.find("#robotName");
     if (isEmpty(data.robot)) {
@@ -235,19 +250,19 @@ function confirmRobotModalHandler(mode) {
 
 
     // we send to the server
-    if(data.hostUsername !== hostUserBeforeUpdate || data.hostPassword !== HOST_PASSWORD_DEFAULT) {
-        data.hostUsernameToSend=data.hostUsername;
-
-        if(data.hostPassword === HOST_PASSWORD_DEFAULT) {
-            $("#hostPassword").parent().addClass("has-error");
-            var localMessage = new Message("danger", "Please specify the new host password !");
-            showMessage(localMessage, $('#editRobotModal'));
-            return;
-        } else {
-            $("#hostPassword").parent().removeClass("has-error");
-            data.hostPasswordToSend = data.hostPassword;
-        }
-    }
+//    if (data.hostUsername !== hostUserBeforeUpdate || data.hostPassword !== HOST_PASSWORD_DEFAULT) {
+//        data.hostUsernameToSend = data.hostUsername;
+//
+//        if (data.hostPassword === HOST_PASSWORD_DEFAULT) {
+//            $("#hostPassword").parent().addClass("has-error");
+//            var localMessage = new Message("danger", "Please specify the new host password !");
+//            showMessage(localMessage, $('#editRobotModal'));
+//            return;
+//        } else {
+//            $("#hostPassword").parent().removeClass("has-error");
+//            data.hostPasswordToSend = data.hostPassword;
+//        }
+//    }
 
     showLoaderInModal('#editRobotModal');
 
@@ -270,7 +285,10 @@ function confirmRobotModalHandler(mode) {
             screensize: data.screensize,
             robotDecli: data.robotdecli,
             description: data.description,
-            capabilities: data.capabilities},
+            lbexemethod: data.lbexemethod,
+            capabilities: data.capabilities,
+            executors: data.executors
+        },
         success: function (dataMessage) {
 //            data = JSON.parse(data);
             hideLoaderInModal('#editRobotModal');
@@ -304,7 +322,7 @@ function feedRobotModal(robot, modalId, mode) {
 
     if (mode === "DUPLICATE" || mode === "EDIT") {
         $.ajax({
-            url: "ReadRobot",
+            url: "ReadRobot?withCapabilities=true&withExecutors=true",
             async: true,
             method: "POST",
             data: {
@@ -376,8 +394,6 @@ function feedRobotModalData(robot, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#robotid").prop("value", "");
         formEdit.find("#robotName").prop("value", "");
         formEdit.find("#active").val("Y");
-        formEdit.find("#host").prop("value", "");
-        formEdit.find("#port").prop("value", "");
         formEdit.find("#platform").val("");
         formEdit.find("#browser").val("");
         formEdit.find("#version").prop("value", "");
@@ -385,9 +401,10 @@ function feedRobotModalData(robot, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#screensize").prop("value", "");
         formEdit.find("#robotdecli").prop("value", "");
         formEdit.find("#Description").prop("value", "");
-        formEdit.find("#hostUsername").prop("value", "");
-        formEdit.find("#hostPassword").prop("value", "");
-        $('#addCapabilitiesTableBody tr').remove();
+//        formEdit.find("#host").prop("value", "");
+//        formEdit.find("#port").prop("value", "");
+//        formEdit.find("#hostUsername").prop("value", "");
+//        formEdit.find("#hostPassword").prop("value", "");
     } else {
         if (mode === "EDIT") {
             formEdit.find("#robotid").prop("value", robot.robotID);
@@ -396,8 +413,6 @@ function feedRobotModalData(robot, modalId, mode, hasPermissionsUpdate) {
         }
         formEdit.find("#robotName").prop("value", robot.robot);
         formEdit.find("#active").val(robot.active);
-        formEdit.find("#host").prop("value", robot.host);
-        formEdit.find("#port").prop("value", robot.port);
         formEdit.find("#platform").val(robot.platform);
         formEdit.find("#browser").val(robot.browser);
         formEdit.find("#version").prop("value", robot.version);
@@ -405,15 +420,18 @@ function feedRobotModalData(robot, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#screensize").prop("value", robot.screenSize);
         formEdit.find("#robotdecli").prop("value", robot.robotDecli);
         formEdit.find("#Description").prop("value", robot.description);
-        formEdit.find("#hostUsername").prop("value", (robot.hostUser === undefined) ? "" : robot.hostUser);
-        hostUserBeforeUpdate=robot.hostUser;
-        if(robot.hostUser !== undefined && robot.hostUser !== "") {
-            formEdit.find("#hostPassword").prop("value", HOST_PASSWORD_DEFAULT); // don't set the reel password
-        } else {
-            formEdit.find("#hostPassword").prop("value", "");
-        }
-        $('#addCapabilitiesTableBody tr').remove();
+        formEdit.find("#lbexemethod").val(robot.lbexemethod);
+//        formEdit.find("#host").prop("value", robot.host);
+//        formEdit.find("#port").prop("value", robot.port);
+//        formEdit.find("#hostUsername").prop("value", (robot.hostUser === undefined) ? "" : robot.hostUser);
+//        hostUserBeforeUpdate=robot.hostUser;
+//        if(robot.hostUser !== undefined && robot.hostUser !== "") {
+//            formEdit.find("#hostPassword").prop("value", HOST_PASSWORD_DEFAULT); // don't set the reel password
+//        } else {
+//            formEdit.find("#hostPassword").prop("value", "");
+//        }
         loadCapabilitiesTable("editCapabilitiesTableBody", robot.capabilities);
+        loadExecutorsTable("editExecutorsTableBody", robot.executors);
     }
 
     // Authorities
@@ -430,6 +448,7 @@ function feedRobotModalData(robot, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#port").prop("readonly", false);
         formEdit.find("#platform").removeAttr("disabled");
         formEdit.find("#browser").removeAttr("disabled");
+        formEdit.find("#lbexemethod").removeAttr("disabled");
         formEdit.find("#version").prop("readonly", false);
         formEdit.find("#useragent").prop("readonly", false);
         formEdit.find("#screensize").prop("readonly", false);
@@ -444,6 +463,7 @@ function feedRobotModalData(robot, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#port").prop("readonly", "readonly");
         formEdit.find("#platform").prop("disabled", "disabled");
         formEdit.find("#browser").prop("disabled", "disabled");
+        formEdit.find("#lbexemethod").prop("disabled", "disabled");
         formEdit.find("#version").prop("readonly", "readonly");
         formEdit.find("#useragent").prop("readonly", "readonly");
         formEdit.find("#screensize").prop("readonly", "readonly");
@@ -459,6 +479,14 @@ function loadCapabilitiesTable(tableBody, capabilities) {
     $.each(capabilities, function (idx, capability) {
         capability.toDelete = false;
         appendCapabilityRow(tableBody, capability);
+    });
+}
+
+function loadExecutorsTable(tableBody, executors) {
+    $('#' + tableBody + ' tr').remove();
+    $.each(executors, function (idx, executor) {
+        executor.toDelete = false;
+        appendExecutorRow(tableBody, executor);
     });
 }
 
@@ -495,11 +523,116 @@ function appendCapabilityRow(tableBody, capability) {
     table.append(row);
 }
 
+function appendExecutorRow(tableBody, executor) {
+    var doc = new Doc();
+    var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
+    var selectActive = getSelectInvariant("ROBOTEXECUTORACTIVE", false);
+    var nameInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("robotexecutor", "executor") + " --\">").addClass("form-control input-sm").val(executor.executor);
+    var rankInput = $("<input  placeholder=\"-- " + doc.getDocLabel("robotexecutor", "rank") + " --\">").addClass("form-control input-sm").val(executor.rank);
+    var hostInput = $("<input  placeholder=\"-- " + doc.getDocLabel("robotexecutor", "host") + " --\">").addClass("form-control input-sm").val(executor.host);
+    var portInput = $("<input  placeholder=\"-- " + doc.getDocLabel("robotexecutor", "Port") + " --\">").addClass("form-control input-sm").val(executor.port);
+    var hostUserInput = $("<input  placeholder=\"-- " + doc.getDocLabel("robotexecutor", "host_user") + " --\">").addClass("form-control input-sm").val(executor.hostUser);
+    var hostPasswordInput = $("<input  placeholder=\"-- " + doc.getDocLabel("robotexecutor", "host_password") + " --\">").addClass("form-control input-sm").val(executor.hostPassword);
+    var deviceUuidInput = $("<input  placeholder=\"-- " + doc.getDocLabel("robotexecutor", "deviceUuid") + " --\">").addClass("form-control input-sm").val(executor.deviceUuid);
+    var deviceNameInput = $("<input  placeholder=\"-- " + doc.getDocLabel("robotexecutor", "deviceName") + " --\">").addClass("form-control input-sm").val(executor.deviceName);
+    var table = $("#" + tableBody);
+
+
+
+    var row = $("<tr></tr>");
+    var td1 = $("<td></td>").append(deleteBtn);
+
+    var name = $("<div class='form-group col-sm-12'></div>").append("<label for='name'>" + doc.getDocOnline("robotexecutor", "executor") + "</label>").append(nameInput);
+    var drow01 = $("<div class='row'></div>").append(name);
+    var td2 = $("<td></td>").append(drow01);
+
+    var active = $("<div class='form-group col-sm-6'></div>").append("<label for='host'>" + doc.getDocOnline("robotexecutor", "active") + "</label>").append(selectActive.val(executor.active));
+    var rank = $("<div class='form-group col-sm-6'></div>").append("<label for='host'>" + doc.getDocOnline("robotexecutor", "rank") + "</label>").append(rankInput);
+    var host = $("<div class='form-group col-sm-6'></div>").append("<label for='host'>" + doc.getDocOnline("robotexecutor", "host") + "</label>").append(hostInput);
+    var port = $("<div class='form-group col-sm-6'></div>").append("<label for='host'>" + doc.getDocOnline("robotexecutor", "Port") + "</label>").append(portInput);
+    var hostuser = $("<div class='form-group col-sm-6'></div>").append("<label for='host'>" + doc.getDocOnline("robotexecutor", "host_user") + "</label>").append(hostUserInput);
+    var hostpass = $("<div class='form-group col-sm-6'></div>").append("<label for='host'>" + doc.getDocOnline("robotexecutor", "host_password") + "</label>").append(hostPasswordInput);
+    var duuid = $("<div class='form-group col-sm-6'></div>").append("<label for='host'>" + doc.getDocOnline("robotexecutor", "deviceUuid") + "</label>").append(deviceUuidInput);
+    var dname = $("<div class='form-group col-sm-6'></div>").append("<label for='host'>" + doc.getDocOnline("robotexecutor", "deviceName") + "</label>").append(deviceNameInput);
+    var drow1 = $("<div class='row'></div>").append(active).append(rank);
+    var drow2 = $("<div class='row'></div>").append(host).append(port);
+    var drow3 = $("<div class='row'></div>").append(hostuser).append(hostpass);
+    var drow4 = $("<div class='row'></div>").append(duuid).append(dname);
+    var td3 = $("<td></td>").append(drow1).append(drow2).append(drow3).append(drow4);
+    deleteBtn.click(function () {
+        executor.toDelete = (executor.toDelete) ? false : true;
+        if (executor.toDelete) {
+            row.addClass("danger");
+        } else {
+            row.removeClass("danger");
+        }
+    });
+    selectActive.change(function () {
+        executor.active = $(this).val();
+    });
+    nameInput.change(function () {
+        executor.executor = $(this).val();
+    });
+    rankInput.change(function () {
+        executor.rank = $(this).val();
+    });
+    hostInput.change(function () {
+        executor.host = $(this).val();
+    });
+    portInput.change(function () {
+        executor.port = $(this).val();
+    });
+    hostUserInput.change(function () {
+        executor.hostUser = $(this).val();
+    });
+    hostPasswordInput.change(function () {
+        executor.hostPassword = $(this).val();
+    });
+    deviceNameInput.change(function () {
+        executor.deviceName = $(this).val();
+    });
+    deviceUuidInput.change(function () {
+        executor.deviceUuid = $(this).val();
+    });
+    hostInput.autocomplete({
+        source: getInvariantArray("ROBOTHOST", false)
+    });
+
+    row.append(td1);
+    row.append(td2);
+    row.append(td3);
+    executor.active = selectActive.prop("value"); // Value that has been requested by dtb parameter may not exist in combo vlaues so we take the real selected value.
+    row.data("executor", executor);
+    table.append(row);
+}
+
+
 function addNewCapabilityRow(tableBody) {
     var newCapability = {
+        toDelete: false,
+        id: 0,
         capability: "",
         value: ""
     };
     appendCapabilityRow(tableBody, newCapability);
 }
 
+function addNewExecutorRow(tableBody) {
+    var nbExecutorTable = $("#editExecutorsTableBody tr").length;
+    nbExecutorTable++;
+    var newExecutor = {
+        toDelete: false,
+        ID: 0,
+        executor: "EXE-" + nbExecutorTable,
+        active: "Y",
+        rank: nbExecutorTable,
+        host: "",
+        port: "",
+        hostUser: "",
+        hostPassword: "",
+        deviceUuid: "",
+        deviceName: "",
+        description: ""
+    };
+    appendExecutorRow(tableBody, newExecutor);
+}

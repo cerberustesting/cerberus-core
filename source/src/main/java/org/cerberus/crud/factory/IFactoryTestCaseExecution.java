@@ -44,6 +44,8 @@ public interface IFactoryTestCaseExecution {
      * @param revision
      * @param environment
      * @param country
+     * @param robot
+     * @param robotExecutor
      * @param browser
      * @param version
      * @param platform
@@ -95,12 +97,13 @@ public interface IFactoryTestCaseExecution {
      * @param robotDecli
      * @return
      */
-    TestCaseExecution create(long id, String test, String testCase, String description, String build, String revision, String environment,
-            String country, String browser, String version, String platform, String browserFullVersion, long start, long end, String controlStatus, String controlMessage,
-            String application, Application applicationObj, String ip, String url, String port, String tag, int verbose, int screenshot, int pageSource, int seleniumLog, boolean synchroneous, String timeout,
+    TestCaseExecution create(long id, String test, String testCase, String description, String build, String revision, String environment, String country, 
+            String robot, String robotExecutor, String ip, String port, String robotDecli, 
+            String browser, String version, String platform, String browserFullVersion, long start, long end, String controlStatus, String controlMessage,
+            String application, Application applicationObj, String url, String tag, int verbose, int screenshot, int pageSource, int seleniumLog, boolean synchroneous, String timeout,
             String outputFormat, String status, String crbVersion, TestCase tCase, CountryEnvParam countryEnvParam,
             CountryEnvironmentParameters countryEnvironmentParameters, boolean manualURL, String myHost, String myContextRoot, String myLoginRelativeURL, String myEnvData,
             String seleniumIP, String seleniumPort, List<TestCaseStepExecution> testCaseStepExecution, MessageGeneral resultMessage,
             String executor, int numberOfRetries, String screenSize, Robot robotObj,
-            String conditionOper, String conditionVal1Init, String conditionVal2Init, String conditionVal1, String conditionVal2, String manualExecution, String userAgent, int testCaseVersion, String system, String robotDecli);
+            String conditionOper, String conditionVal1Init, String conditionVal2Init, String conditionVal1, String conditionVal2, String manualExecution, String userAgent, int testCaseVersion, String system);
 }

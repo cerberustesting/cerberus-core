@@ -77,15 +77,16 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     @Override
     public long insertTCExecution(TestCaseExecution tCExecution) throws CerberusException {
         boolean throwEx = false;
-        final String query = "INSERT INTO testcaseexecution(test, testcase, description, build, revision, environment, environmentData, country, browser, application, ip, "
-                + "url, port, tag, status, start, controlstatus, controlMessage, crbversion, browserFullVersion, executor, screensize,"
-                + "conditionOper, conditionVal1Init, conditionVal2Init, conditionVal1, conditionVal2, manualExecution, UserAgent, queueId, testCaseVersion, system, robotdecli) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        final String query = "INSERT INTO testcaseexecution(test, testcase, description, build, revision, environment, environmentData, country, browser, application, robothost, "
+                + "url, robotport, tag, status, start, controlstatus, controlMessage, crbversion, browserFullVersion, executor, screensize,"
+                + "conditionOper, conditionVal1Init, conditionVal2Init, conditionVal1, conditionVal2, manualExecution, UserAgent, queueId, testCaseVersion, system, robotdecli, robot, robotexecutor) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
             LOG.debug("SQL.param.id : " + tCExecution.getId());
+            LOG.debug("SQL.param.robotexecutor : " + tCExecution.getRobotExecutor());
         }
 
         Connection connection = this.databaseSpring.connect();
@@ -103,9 +104,9 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 preStat.setString(i++, tCExecution.getCountry());
                 preStat.setString(i++, tCExecution.getBrowser());
                 preStat.setString(i++, tCExecution.getApplicationObj().getApplication());
-                preStat.setString(i++, tCExecution.getIp());
+                preStat.setString(i++, tCExecution.getRobotHost());
                 preStat.setString(i++, tCExecution.getUrl());
-                preStat.setString(i++, tCExecution.getPort());
+                preStat.setString(i++, tCExecution.getRobotPort());
                 preStat.setString(i++, tCExecution.getTag());
                 preStat.setString(i++, tCExecution.getStatus());
                 preStat.setTimestamp(i++, new Timestamp(tCExecution.getStart()));
@@ -126,6 +127,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 preStat.setInt(i++, tCExecution.getTestCaseVersion());
                 preStat.setString(i++, tCExecution.getSystem());
                 preStat.setString(i++, tCExecution.getRobotDecli());
+                preStat.setString(i++, tCExecution.getRobot());
+                preStat.setString(i++, tCExecution.getRobotExecutor());
 
                 preStat.executeUpdate();
                 ResultSet resultSet = preStat.getGeneratedKeys();
@@ -168,10 +171,11 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     public void updateTCExecution(TestCaseExecution tCExecution) throws CerberusException {
         boolean throwEx = false;
         final String query = "UPDATE testcaseexecution SET test = ?, testcase = ?, description = ?, build = ?, revision = ?, environment = ?, environmentData = ?, country = ?"
-                + ", browser = ?, application = ?, ip = ?, url = ?, port = ?, tag = ?, status = ?"
+                + ", browser = ?, application = ?, robothost = ?, url = ?, robotport = ?, tag = ?, status = ?"
                 + ", start = ?, end = ? , controlstatus = ?, controlMessage = ?, crbversion = ? "
                 + ", browserFullVersion = ?, version = ?, platform = ?, executor = ?, screensize = ? "
-                + ", ConditionOper = ?, ConditionVal1Init = ?, ConditionVal2Init = ?, ConditionVal1 = ?, ConditionVal2 = ?, ManualExecution = ?, UserAgent = ?, queueId = ?, testCaseVersion = ?, system = ? , robotdecli = ? WHERE id = ?";
+                + ", ConditionOper = ?, ConditionVal1Init = ?, ConditionVal2Init = ?, ConditionVal1 = ?, ConditionVal2 = ?, ManualExecution = ?, UserAgent = ?, queueId = ?, testCaseVersion = ?, system = ? "
+                + ", robotdecli = ?, robot = ?, robotexecutor = ? WHERE id = ?";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -194,9 +198,9 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 preStat.setString(i++, tCExecution.getCountry());
                 preStat.setString(i++, tCExecution.getBrowser());
                 preStat.setString(i++, tCExecution.getApplicationObj().getApplication());
-                preStat.setString(i++, tCExecution.getIp());
+                preStat.setString(i++, tCExecution.getRobotHost());
                 preStat.setString(i++, tCExecution.getUrl());
-                preStat.setString(i++, tCExecution.getPort());
+                preStat.setString(i++, tCExecution.getRobotPort());
                 preStat.setString(i++, tCExecution.getTag());
                 preStat.setString(i++, tCExecution.getStatus());
                 preStat.setTimestamp(i++, new Timestamp(tCExecution.getStart()));
@@ -224,6 +228,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 preStat.setInt(i++, tCExecution.getTestCaseVersion());
                 preStat.setString(i++, tCExecution.getSystem());
                 preStat.setString(i++, tCExecution.getRobotDecli());
+                preStat.setString(i++, tCExecution.getRobot());
+                preStat.setString(i++, tCExecution.getRobotExecutor());
                 preStat.setLong(i++, tCExecution.getId());
 
                 preStat.executeUpdate();
@@ -1037,9 +1043,11 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             query.append(" or exe.`controlstatus` like ? ");
             query.append(" or exe.`controlmessage` like ? ");
             query.append(" or exe.`application` like ? ");
-            query.append(" or exe.`ip` like ? ");
             query.append(" or exe.`url` like ? ");
-            query.append(" or exe.`port` like ? ");
+            query.append(" or exe.`robot` like ? ");
+            query.append(" or exe.`robotexecutor` like ? ");
+            query.append(" or exe.`robothost` like ? ");
+            query.append(" or exe.`robotport` like ? ");
             query.append(" or exe.`tag` like ? ");
             query.append(" or exe.`end` like ? ");
             query.append(" or exe.`status` like ? ");
@@ -1078,6 +1086,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             int i = 1;
             if (!Strings.isNullOrEmpty(searchTerm)) {
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
@@ -1723,6 +1733,11 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         String environment = ParameterParserUtil.parseStringParam(resultSet.getString("exe.environment"), "");
         String environmentData = ParameterParserUtil.parseStringParam(resultSet.getString("exe.environmentData"), "");
         String country = ParameterParserUtil.parseStringParam(resultSet.getString("exe.country"), "");
+        String robot = ParameterParserUtil.parseStringParam(resultSet.getString("exe.robot"), ""); // Host the Selenium IP
+        String robotExecutor = ParameterParserUtil.parseStringParam(resultSet.getString("exe.robotExecutor"), ""); // Host the Selenium IP
+        String robotHost = ParameterParserUtil.parseStringParam(resultSet.getString("exe.robotHost"), ""); // Host the Selenium IP
+        String robotPort = ParameterParserUtil.parseStringParam(resultSet.getString("exe.robotPort"), ""); // host the Selenium Port
+        String robotDecli = ParameterParserUtil.parseStringParam(resultSet.getString("exe.robotdecli"), "");
         String browser = ParameterParserUtil.parseStringParam(resultSet.getString("exe.browser"), "");
         String version = ParameterParserUtil.parseStringParam(resultSet.getString("exe.version"), "");
         String platform = ParameterParserUtil.parseStringParam(resultSet.getString("exe.platform"), "");
@@ -1732,9 +1747,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         String controlStatus = ParameterParserUtil.parseStringParam(resultSet.getString("exe.controlStatus"), "");
         String controlMessage = ParameterParserUtil.parseStringParam(resultSet.getString("exe.controlMessage"), "");
         String application = ParameterParserUtil.parseStringParam(resultSet.getString("exe.application"), "");
-        String ip = ParameterParserUtil.parseStringParam(resultSet.getString("exe.ip"), ""); // Host the Selenium IP
         String url = ParameterParserUtil.parseStringParam(resultSet.getString("exe.url"), "");
-        String port = ParameterParserUtil.parseStringParam(resultSet.getString("exe.port"), ""); // host the Selenium Port
         String tag = ParameterParserUtil.parseStringParam(resultSet.getString("exe.tag"), "");
         String status = ParameterParserUtil.parseStringParam(resultSet.getString("exe.status"), "");
         String crbVersion = ParameterParserUtil.parseStringParam(resultSet.getString("exe.crbVersion"), "");
@@ -1748,14 +1761,13 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         String manualExecution = ParameterParserUtil.parseStringParam(resultSet.getString("exe.manualExecution"), "N");
         String userAgent = ParameterParserUtil.parseStringParam(resultSet.getString("exe.userAgent"), "");
         String system = ParameterParserUtil.parseStringParam(resultSet.getString("exe.system"), "");
-        String robotDecli = ParameterParserUtil.parseStringParam(resultSet.getString("exe.robotdecli"), "");
         long queueId = ParameterParserUtil.parseLongParam(resultSet.getString("exe.queueId"), 0);
         int testCaseVersion = ParameterParserUtil.parseIntegerParam(resultSet.getInt("exe.testCaseVersion"), 0);
         TestCaseExecution result = factoryTCExecution.create(id, test, testcase, description, build, revision, environment,
-                country, browser, version, platform, browserFullVersion, start, end, controlStatus, controlMessage, application, null, ip, url,
-                port, tag, 0, 0, 0, 0, true, "", "", status, crbVersion, null, null, null,
+                country, robot, robotExecutor, robotHost, robotPort, robotDecli, browser, version, platform, browserFullVersion, start, end, controlStatus, controlMessage, application, null, url,
+                tag, 0, 0, 0, 0, true, "", "", status, crbVersion, null, null, null,
                 false, null, null, null, environmentData, null, null, null, null, executor, 0, screenSize, null,
-                conditionOper, conditionVal1Init, conditionVal2Init, conditionVal1, conditionVal2, manualExecution, userAgent, testCaseVersion, system, robotDecli);
+                conditionOper, conditionVal1Init, conditionVal2Init, conditionVal1, conditionVal2, manualExecution, userAgent, testCaseVersion, system);
         result.setQueueID(queueId);
         return result;
     }
@@ -1814,9 +1826,11 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             query.append(" or exe.`controlstatus` like ? ");
             query.append(" or exe.`controlmessage` like ? ");
             query.append(" or exe.`application` like ? ");
-            query.append(" or exe.`ip` like ? ");
             query.append(" or exe.`url` like ? ");
-            query.append(" or exe.`port` like ? ");
+            query.append(" or exe.`robot` like ? ");
+            query.append(" or exe.`robotexecutor` like ? ");
+            query.append(" or exe.`robothost` like ? ");
+            query.append(" or exe.`robotport` like ? ");
             query.append(" or exe.`tag` like ? ");
             query.append(" or exe.`finished` like ? ");
             query.append(" or exe.`status` like ? ");
@@ -1848,6 +1862,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             int i = 1;
 
             if (!Strings.isNullOrEmpty(searchParameter)) {
+                preStat.setString(i++, "%" + searchParameter + "%");
+                preStat.setString(i++, "%" + searchParameter + "%");
                 preStat.setString(i++, "%" + searchParameter + "%");
                 preStat.setString(i++, "%" + searchParameter + "%");
                 preStat.setString(i++, "%" + searchParameter + "%");

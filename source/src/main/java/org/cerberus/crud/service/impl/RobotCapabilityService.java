@@ -137,7 +137,7 @@ public class RobotCapabilityService implements IRobotCapabilityService {
     }
 
     @Override
-    public Answer compareListAndUpdateInsertDeleteElements(String robot, List<RobotCapability> newCapabilities) {
+    public Answer compareListAndUpdateInsertDeleteElements(String robot, List<RobotCapability> newCapabilities, String usrModif) {
         // Check arguments
         if (robot == null || newCapabilities == null) {
             return new Answer(new MessageEvent(MessageEventEnum.DATA_OPERATION_VALIDATIONS_ERROR).resolveDescription("DESCRIPTION", "null robot or capabilities"));
