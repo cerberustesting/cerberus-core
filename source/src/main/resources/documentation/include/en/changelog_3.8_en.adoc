@@ -22,4 +22,4 @@
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
-* none
+* SQL 1370 and 1371 can be quite long on systems with lots of executions.
