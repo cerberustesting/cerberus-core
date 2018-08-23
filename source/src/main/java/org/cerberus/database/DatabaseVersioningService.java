@@ -7831,6 +7831,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append("('SELECTOR', 'id=', '6550', '', ''),");
         b.append("('SELECTOR', 'picture=', '6550', '', ''),");
         b.append("('SELECTOR', 'data-cerberus=', '6550', '', '');");
+        a.add(b.toString());
 
         // 1368-1373
         a.add(" CREATE TABLE `robotexecutor` ("
