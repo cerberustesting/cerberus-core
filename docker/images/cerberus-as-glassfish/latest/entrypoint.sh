@@ -135,7 +135,7 @@ function main() {
 
     if [ -d /tmp/lib/ ]; then
         echo "* Copy library"
-        yes | cp -rf  /tmp/lib/ ${GLASSFISH_HOME}/glassfish/lib
+        yes | cp -rf  /tmp/lib/* ${GLASSFISH_HOME}/glassfish/lib/
     fi
 
     # Check if setup has already been done, and if not, then execute it
