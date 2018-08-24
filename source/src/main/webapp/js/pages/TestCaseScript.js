@@ -21,11 +21,9 @@
 var canUpdate = false;
 var allDelete = false;
 var Tags = [];
-$.when($.getScript("js/global/global.js")).then(function () {
-    $(document).ready(function () {
-    	
+$.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.js")).then(function () {
+    $(document).ready(function () {  	
     	initModalDataLib();
-
         $("#nav-property").on('mouseenter', 'a', function (ev) {
             try {
                 $(this).find("button").show();
@@ -39,25 +37,21 @@ $.when($.getScript("js/global/global.js")).then(function () {
             } catch (e) {
             }
         });
-
         $('#propName').trigger("change");
 
         $('#propName').change(function () {
             openModalAppServiceFromHere();
         });
-
         $('#createApplicationObjectButton').click(function () {
             openModalApplicationObject(undefined, undefined, "ADD", "testCaseScript");
 
         });
-
         $(window).bind('beforeunload', function () {
             if (getModif()) {
                 return true; // Display alert Message that a modification has
                 // been done
             }
         });
-
 
         var doc = new Doc();
         var stepList = [];
@@ -72,22 +66,17 @@ $.when($.getScript("js/global/global.js")).then(function () {
         getSelectInvariant("ACTIONFORCEEXESTATUS", false, true);
         getSelectInvariant("STEPLOOP", false, true);
         getSelectInvariant("STEPCONDITIONOPER", false, true);
-
         loadLibraryStep();
         bindToggleCollapse();
-
         var test = GetURLParameter("test");
         var testcase = GetURLParameter("testcase");
         var step = GetURLParameter("step");
         var property = GetURLParameter("property");
         var tabactive = GetURLParameter("tabactive");
-
         displayHeaderLabel(doc);
         displayGlobalLabel(doc);
         displayFooter(doc);
-
         displayPageLabel(doc);
-
         $("#addStepModal [name='buttonAdd']").html(doc.getDocLabel("page_global", "btn_add"));
 
         $.ajax({
@@ -231,6 +220,12 @@ $.when($.getScript("js/global/global.js")).then(function () {
                             "object",
                             "system"
                         ];
+                        var availableIdentifiers = [
+                            "data-cerberus",
+                            "picture",
+                            "id",
+                            "xpath"
+                        ];
 
                         Tags = [
                             {
@@ -261,13 +256,13 @@ $.when($.getScript("js/global/global.js")).then(function () {
                                 addAfter: "%",
                                 isCreatable: false
                             },
-                            //                            {
-//                                array: availableServices,
-//                                regex: null,
-//                                addBefore: "",
-//                                addAfter: ".",
-//                                isCreatable: false
-//                            },
+                            {
+                                array: availableIdentifiers,
+                                regex: "^[A-Za-z]",
+                                addBefore: "",
+                                addAfter: "=",
+                                isCreatable: false
+                            },
                             {
                                 array: availableTags,
                                 regex: "%",
@@ -367,7 +362,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
                 // Really do add step action
                 addStep(event);
 
-                // Restore the saveScript button status#sa
+                // Restore the saveScript button status
                 $("#saveScript").attr("disabled", typeof saveScriptOldStatus !== typeof undefined && saveScriptOldStatus !== false);
             });
             $('#addStepModal').on('hidden.bs.modal', function () {
@@ -2171,8 +2166,6 @@ function Action(json, parentStep, canUpdate) {
         this.conditionVal1 = json.conditionVal1;
         this.conditionVal2 = json.conditionVal2;
         this.screenshotFileName = json.screenshotFileName;
-        this.selector1 = json.value1.substr(0, json.value1.indexOf("=")+1);
-        this.selector2 = json.value2.substr(0, json.value2.indexOf("=")+1);
         this.value1 = json.value1;
         this.value2 = json.value2;
         this.controlList = [];
@@ -2190,8 +2183,6 @@ function Action(json, parentStep, canUpdate) {
         this.conditionVal1 = "";
         this.conditionVal2 = "";
         this.screenshotFileName = "";
-        this.selector1 = "";
-        this.selector2 = "";
         this.value1 = "";
         this.value2 = "";
         this.controlList = [];
@@ -2328,12 +2319,10 @@ Action.prototype.generateContent = function () {
     descContainer.append(descriptionField);
 
     var actionList = $("<select></select>").addClass("form-control input-sm");
-    var selector1List = $("<select></select>").addClass("form-control input-sm");
-    var selector2List = $("<select></select>").addClass("form-control input-sm");
 
     var value1Field = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control input-sm");
     var value2Field = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control input-sm");
-    
+
     var actionconditionoper = $("<select></select>").addClass("form-control input-sm");
     var actionconditionval1 = $("<input>").attr("type", "text").addClass("form-control input-sm");
     var actionconditionval2 = $("<input>").attr("type", "text").addClass("form-control input-sm");
@@ -2382,27 +2371,12 @@ Action.prototype.generateContent = function () {
     actionList.off("change").on("change", function () {
         setModif(true);
         obj.action = actionList.val();
+
         setPlaceholderAction($(this).parents(".action"));
         $(actionList).parent().parent().find(".input-group-btn").remove();
         $(actionList).parent().parent().find("input").trigger("input", ["first"])
 
     });
-    
-    selector1List = getSelectInvariant("SELECTOR", false, true).css("width", "100%").attr("id", "selector1Select");
-    selector1List.val(this.value1.substr(0, this.value1.indexOf("=")+1));
-    selector1List.off("change").on("change", function(){
-    	setModif(true);
-    	obj.selector1 = selector1List.val();
-    	obj.value1 = obj.selector1 + obj.value1.split("=")[1];
-    })
-    
-    selector2List = getSelectInvariant("SELECTOR", false, true).css("width", "100%").attr("id", "selector2Select");
-    selector2List.val(this.value2.substr(0, this.value2.indexOf("=")+1));
-    selector2List.off("change").on("change", function(){
-    	setModif(true);
-    	obj.selector2 = selector2List.val();
-    	obj.value2 = obj.selector2 + obj.value2.split("=")[1];
-    })
 
     forceExeStatusList = getSelectInvariant("ACTIONFORCEEXESTATUS", false, true).css("width", "100%");
     forceExeStatusList.val(this.forceExeStatus);
@@ -2411,31 +2385,29 @@ Action.prototype.generateContent = function () {
         obj.forceExeStatus = forceExeStatusList.val();
     });
 
-    value1Field.val(this.value1.split("=")[1]);
+    value1Field.val(this.value1);
     value1Field.css("width", "100%");
     value1Field.on("change", function () {
-        setModif(true);  
-        obj.value1 = obj.selector1 + value1Field.val();
+        setModif(true);
+        obj.value1 = value1Field.val();
     });
 
-    value2Field.val(this.value2.split("=")[1]);
+    value2Field.val(this.value2);
     value2Field.css("width", "100%");
     value2Field.on("change", function () {
         setModif(true);
-        obj.value2 = obj.selector2 + value2Field.val();
+        obj.value2 = value2Field.val();
     });
 
 
     firstRow.append(descContainer);
     secondRow.append($("<div></div>").addClass("col-lg-2 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "action_field"))).append(actionList));
-    secondRow.append($("<div></div>").addClass("col-lg-2 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "action_field"))).append(selector1List));
-    secondRow.append($("<div></div>").addClass("col-lg-4").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value1_field"))).append(value1Field));
+    secondRow.append($("<div></div>").addClass("col-lg-5").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value1_field"))).append(value1Field));
     /*
      * if(secondRow.find("col-lg-6").find("label").text() === "Chemin vers
      * l'élement" ){ console.log(".append(choiceField)") }
      */
-    secondRow.append($("<div></div>").addClass("col-lg-2 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "action_field"))).append(selector2List));
-    secondRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value2_field"))).append(value2Field));
+    secondRow.append($("<div></div>").addClass("col-lg-5 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value2_field"))).append(value2Field));
     thirdRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_operation_field"))).append(actionconditionoper));
     thirdRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_parameter_field"))).append(actionconditionval1));
     thirdRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_parameter_field"))).append(actionconditionval2));
@@ -2924,208 +2896,136 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
         }
 
         $(document).on('focus', "div.step-action .content div.fieldRow input:not('.description')", function (e, state) {
-            var currentAction = $(this).parent().parent().find("#actionSelect").val();
-
+            let currentAction = $(this).parent().parent().find("#actionSelect").val();          
             if (currentAction === "callService" || currentAction === "calculateProperty") {
-                $(this).autocomplete({
-                    minLength: 1,
-                    messages: {
-                        noResults: '',
-                        results: function () {
-                        }
-                    },
-
-                    select: function (event, ui) {
-                        var selectedObj = ui.item;
-                        $(this).val(selectedObj.value.replace("%", ''));
-                        $(this).trigger('input');
-                        $(this).autocomplete("close")
-                    },
-
-                    close: function (event, ui) {
-                        val = $(this).val();
-                        return false;
-                    }
-
-                }).data("ui-autocomplete")._renderItem = function (ul, item) {
-                    return $("<li>")
-                            .data("ui-autocomplete-item", item)
-                            .append("<a>" + item.label + "</a>")
-                            .appendTo(ul);
-                };
+            	autocompleteSpecificFields($(this));
             } else {
-                autocompleteVariable($(this), Tags);
+            	autocompleteWithTags($(this), Tags);
             }
         })
-
-        $(document).on('input', "div.step-action .content div.fieldRow:nth-child(2) input", function (e, state) {
-            e = e.currentTarget;
-            var doc = new Doc();
-            if ($(e).parent().parent().find("select").val() === "callService") {
-                if (state !== "first") {
-                    // prevent multiple autocomplete handler on $(e)
-                    $(e).autocomplete('option', 'source', function (request, response) {
-                        if (state === "first") {
-                            $(e).autocomplete("close");
-                        } else {
-                            $.ajax({
-                                url: "ReadAppService?service=" + $(e).val() + "&limit=15",
-                                dataType: "json",
-                                success: function (data) {
-                                    var MyArray = $.map(data.contentTable, function (item) {
-                                        return {
-                                            label: item.service,
-                                            value: item.service
-                                        };
-                                    });
-                                    response($.ui.autocomplete.filter(MyArray, request.term));
-                                }
-                            })
-                        }
-                    })
-                }
-                $.ajax({
-                    url: "ReadAppService?service=" + $(e).val(),
-                    dataType: "json",
-                    success: function (data) {
-                        var dataContent = data.contentTable
-                        $(e).parent().find(".input-group-btn").remove();
-                        if (dataContent != undefined) {
-                            var editEntry = $('<span class="input-group-btn ' + $(e).val() + '"><button id="editEntry" onclick="openModalAppService(\'' + $(e).val() + '\',\'EDIT\'  ,\'TestCase\' );"\n\
+        
+        $(document).on('settingsButton', "div.step-action .content div.fieldRow:nth-child(2) input", function (e){
+        	var doc = new Doc();
+        	let currentAction = $(this).parent().parent().find("#actionSelect").val();
+        	let htmlElement = $(this);
+        	$(htmlElement).parent().find(".input-group-btn").remove();
+        	switch (currentAction) {
+        		case 'callService':
+        			if(htmlElement.val()){
+        				$.ajax({
+            				url: "ReadAppService?service=" + htmlElement.val(),
+            				dataType: "json",
+            				success: function (data) {
+            					var dataContent = data.contentTable
+            					if (dataContent != undefined) {
+            						var editEntry = $('<span class="input-group-btn ' + encodeURIComponent(htmlElement.val()) + '"><button id="editEntry" onclick="openModalAppService(\'' + encodeURIComponent(htmlElement.val()) + '\',\'EDIT\'  ,\'TestCase\' );"\n\
+            							class="buttonObject btn btn-default input-sm " \n\
+            							title="' + doc.getDocLabel("page_applicationObject", "button_edit") + '" type="button">\n\
+            							<span class="glyphicon glyphicon-pencil"></span></button></span>');
+            						$(htmlElement).parent().append(editEntry);
+            					} else {
+            						var addEntry = '<span class="input-group-btn ' + encodeURIComponent(htmlElement.val()) + '"><button id="editEntry" onclick="openModalAppService(\'' + encodeURIComponent(htmlElement.val()) + '\',\'ADD\'  ,\'TestCase\' );"\n\
+            							class="buttonObject btn btn-default input-sm " \n\
+            							title="' + doc.getDocLabel("page_applicationObject", "button_create") + '" type="button">\n\
+            							<span class="glyphicon glyphicon-plus"></span></button></span>';
+            						$(htmlElement).parent().append(addEntry);
+            					}
+            				}
+            			});
+        			}       			
+        			break;
+        		case 'calculateProperty':
+        			let data = loadGuiProperties()
+        			var viewEntry = $('<span class="input-group-btn ' + $(htmlElement).val() + '"><button id="editEntry" data-toggle="modal" data-target="#modalProperty" "\n\
+        				class="buttonObject btn btn-default input-sm " \n\
+  						title="' + doc.getDocLabel("page_applicationObject", "button_edit") + '" type="button">\n\
+        				<span class="glyphicon glyphicon-eye-open"></span></button></span>');
+        			if (data[$(htmlElement).val()]) {
+        				viewEntry.find("button").off("click").on("click", function () {
+        					let firstRow = $('<p style="text-align:center" > Type : ' + data[$(htmlElement).val()].type + '</p>');
+        					let secondRow = $('<p style="text-align:center"> Value : ' + data[$(htmlElement).val()].value + '</p>');
+        					$("#modalProperty").find("h5").text("test");
+        					$("#modalProperty").find("#firstRowProperty").find("p").remove();
+        					$("#modalProperty").find("#secondRowProperty").find("p").remove();
+        					$("#modalProperty").find("#firstRowProperty").append(firstRow);
+        					$("#modalProperty").find("#secondRowProperty").append(secondRow);
+        				});
+        				$(htmlElement).parent().append(viewEntry);
+        			}
+        			break; 
+        		default:
+	        		var name = undefined;
+	                var nameNotExist = undefined;
+	                var objectNotExist = false;
+	                var typeNotExist = undefined;
+	                var doc = new Doc();
+	                var checkObject = [];
+	                var betweenPercent = $(htmlElement).val().match(new RegExp(/%[^%]*%/g));
+	                if (betweenPercent !== null && betweenPercent.length > 0) {	
+	                    var i = betweenPercent.length - 1;
+	                    while (i >= 0) {
+	                        var findname = betweenPercent[i].match(/\.[^\.]*(\.|.$)/g);	
+	                        if (betweenPercent[i].startsWith("%object.") && findname !== null && findname.length > 0) {
+	                            name = findname[0];
+	                            name = name.slice(1, name.length - 1);
+	                            $(htmlElement).parent().parent().parent().parent().find("#ApplicationObjectImg").attr("src", "ReadApplicationObjectImage?application=" + tcInfo.application + "&object=" + name + "&time=" + new Date().getTime());
+	                            if (!objectIntoTagToUseExist(TagsToUse[1], name)) {
+	                                var addEntry = $('<span class="input-group-btn many ' + name + '"><button id="editEntry" onclick="openModalApplicationObject(\'' + tcInfo.application + '\', \'' + name + '\',\'ADD\'  ,\'testCaseScript\' );"\n\
+											class="buttonObject btn btn-default input-sm " \n\
+											title="' + name + '" type="button">\n\
+									<span class="glyphicon glyphicon-plus"></span></button></span>');	
+	                                objectNotExist = true;
+	                                nameNotExist = name;
+	                                typeNotExist = "applicationObject";	
+	                                $(htmlElement).parent().append(addEntry);	
+	                            } else if (objectIntoTagToUseExist(TagsToUse[1], name)) {
+	                                var editEntry = '<span class="input-group-btn many ' + name + '"><button id="editEntry" onclick="openModalApplicationObject(\'' + tcInfo.application + '\', \'' + name + '\',\'EDIT\'  ,\'testCaseScript\' );"\n\
 									class="buttonObject btn btn-default input-sm " \n\
-									title="' + doc.getDocLabel("page_applicationObject", "button_edit") + '" type="button">\n\
-							<span class="glyphicon glyphicon-pencil"></span></button></span>');
-                            $(e).parent().append(editEntry);
-                        } else {
-                            var addEntry = '<span class="input-group-btn ' + encodeURIComponent($(e).val()) + '"><button id="editEntry" onclick="openModalAppService(\'' + $(e).val() + '\',\'ADD\'  ,\'TestCase\' );"\n\
-							class="buttonObject btn btn-default input-sm " \n\
-							title="' + doc.getDocLabel("page_applicationObject", "button_create") + '" type="button">\n\
-							<span class="glyphicon glyphicon-plus"></span></button></span>';
-                            $(e).parent().append(addEntry);
-                        }
-                    }
-                });
-            } else if ($(e).parent().parent().find("select").val() === "calculateProperty") {
-
-                var data = loadGuiProperties()
-
-                if (state !== "first") {
-                    $(e).parent().parent().parent().parent().find(".input-group-btn").remove()
-                    $(e).autocomplete('option', 'source', function (request, response) {
-                        var MyArray = $.map(data, function (item) {
-                            return {
-                                label: item.name,
-                                value: item.name
-                            };
-                        });
-                        response($.ui.autocomplete.filter(MyArray, request.term));
-                    })
-                }
-
-                var viewEntry = $('<span class="input-group-btn ' + $(e).val() + '"><button id="editEntry" data-toggle="modal" data-target="#modalProperty" "\n\
-						class="buttonObject btn btn-default input-sm " \n\
-						title="' + doc.getDocLabel("page_applicationObject", "button_edit") + '" type="button">\n\
-				<span class="glyphicon glyphicon-eye-open"></span></button></span>');
-
-                if (data[$(e).val()]) {
-
-                    viewEntry.find("button").off("click").on("click", function () {
-                        let firstRow = $('<p style="text-align:center" > Type : ' + data[$(e).val()].type + '</p>');
-                        let secondRow = $('<p style="text-align:center"> Value : ' + data[$(e).val()].value + '</p>');
-                        $("#modalProperty").find("h5").text("test");
-                        $("#modalProperty").find("#firstRowProperty").find("p").remove();
-                        $("#modalProperty").find("#secondRowProperty").find("p").remove();
-                        $("#modalProperty").find("#firstRowProperty").append(firstRow);
-                        $("#modalProperty").find("#secondRowProperty").append(secondRow);
-                    });
-
-                    $(e).parent().append(viewEntry);
-                }
-            } else {
-
-                if (state !== "first") {
-                    $(e).parent().find(".input-group-btn").remove()
-                }
-
-                var name = undefined;
-                var nameNotExist = undefined;
-                var objectNotExist = false;
-                var typeNotExist = undefined;
-                var doc = new Doc();
-                var checkObject = [];
-                var betweenPercent = $(e).val().match(new RegExp(/%[^%]*%/g));
-
-                var data = loadGuiProperties()
-
-                if (betweenPercent !== null && betweenPercent.length > 0) {
-
-                    var i = betweenPercent.length - 1;
-                    while (i >= 0) {
-                        var findname = betweenPercent[i].match(/\.[^\.]*(\.|.$)/g);
-
-                        if (betweenPercent[i].startsWith("%object.") && findname !== null && findname.length > 0) {
-
-                            name = findname[0];
-                            name = name.slice(1, name.length - 1);
-
-                            $(e).parent().parent().parent().parent().find("#ApplicationObjectImg").attr("src", "ReadApplicationObjectImage?application=" + tcInfo.application + "&object=" + name + "&time=" + new Date().getTime());
-
-                            if (!objectIntoTagToUseExist(TagsToUse[1], name)) {
-
-                                var addEntry = $('<span class="input-group-btn many ' + name + '"><button id="editEntry" onclick="openModalApplicationObject(\'' + tcInfo.application + '\', \'' + name + '\',\'ADD\'  ,\'testCaseScript\' );"\n\
-										class="buttonObject btn btn-default input-sm " \n\
-										title="' + name + '" type="button">\n\
-								<span class="glyphicon glyphicon-plus"></span></button></span>');
-
-                                objectNotExist = true;
-                                nameNotExist = name;
-                                typeNotExist = "applicationObject";
-
-                                $(e).parent().append(addEntry);
-
-                            } else if (objectIntoTagToUseExist(TagsToUse[1], name)) {
-
-                                var editEntry = '<span class="input-group-btn many ' + name + '"><button id="editEntry" onclick="openModalApplicationObject(\'' + tcInfo.application + '\', \'' + name + '\',\'EDIT\'  ,\'testCaseScript\' );"\n\
-								class="buttonObject btn btn-default input-sm " \n\
-								title="' + name + '" type="button">\n\
-								<span class="glyphicon glyphicon-pencil"></span></button></span>';
-                                $(e).parent().append(editEntry);
-
-                            }
-                        } else if (betweenPercent[i].startsWith("%property.") && findname !== null && findname.length > 0) {
-
-                            name = findname[0];
-                            name = name.slice(1, name.length - 1);
-
-                            if (objectIntoTagToUseExist(TagsToUse[2], name)) {
-                                var viewEntry = $('<span class="input-group-btn many ' + name + '"><button id="editEntry" data-toggle="modal" data-target="#modalProperty" "\n\
-										class="buttonObject btn btn-default input-sm " \n\
-										title="' + name + '" type="button">\n\
-								<span class="glyphicon glyphicon-eye-open"></span></button></span>');
-
-                                if (data[name]) {
-                                    let property = name
-                                    viewEntry.find("button").on("click", function () {
-                                        let firstRow = $('<p style="text-align:center" > Type : ' + data[property].type + '</p>');
-                                        let secondRow = $('<p style="text-align:center"> Value : ' + data[property].value + '</p>');
-                                        $("#modalProperty").find("#firstRowProperty").find("p").remove();
-                                        $("#modalProperty").find("#secondRowProperty").find("p").remove();
-                                        $("#modalProperty").find("#firstRowProperty").append(firstRow);
-                                        $("#modalProperty").find("#secondRowProperty").append(secondRow);
-                                        $("#modalProperty").find(".modal-title").html(property);
-                                    });
-                                    $(e).parent().append(viewEntry);
-                                }
-                            }
-                        }
-
-                        i--;
-                    }
-                }
-            }
-
+									title="' + name + '" type="button">\n\
+									<span class="glyphicon glyphicon-pencil"></span></button></span>';
+	                                $(htmlElement).parent().append(editEntry);
+	                            }
+	                        } else if (betweenPercent[i].startsWith("%property.") && findname !== null && findname.length > 0) {	
+	                        	let data = loadGuiProperties()
+	                            name = findname[0];
+	                            name = name.slice(1, name.length - 1);	
+	                            if (objectIntoTagToUseExist(TagsToUse[2], name)) {
+	                                var viewEntry = $('<span class="input-group-btn many ' + name + '"><button id="editEntry" data-toggle="modal" data-target="#modalProperty" "\n\
+											class="buttonObject btn btn-default input-sm " \n\
+											title="' + name + '" type="button">\n\
+									<span class="glyphicon glyphicon-eye-open"></span></button></span>');
+	                                if (data[name]) {
+	                                    let property = name
+	                                    viewEntry.find("button").on("click", function () {
+	                                        let firstRow = $('<p style="text-align:center" > Type : ' + data[property].type + '</p>');
+	                                        let secondRow = $('<p style="text-align:center"> Value : ' + data[property].value + '</p>');
+	                                        $("#modalProperty").find("#firstRowProperty").find("p").remove();
+	                                        $("#modalProperty").find("#secondRowProperty").find("p").remove();
+	                                        $("#modalProperty").find("#firstRowProperty").append(firstRow);
+	                                        $("#modalProperty").find("#secondRowProperty").append(secondRow);
+	                                        $("#modalProperty").find(".modal-title").html(property);
+	                                    });
+	                                    $(htmlElement).parent().append(viewEntry);
+	                                }
+	                            }
+	                        }	
+	                        i--;
+	                    }
+	                }
+        		}
         })
-        $("div.step-action .content div.fieldRow:nth-child(2) input").trigger("input", ['first'])
+
+        $(document).on('input', "div.step-action .content div.fieldRow:nth-child(2) input", function (e) {
+        	let data = loadGuiProperties()
+            if ($(this).parent().parent().find("select").val() === "callService") {           	
+            	let url = "ReadAppService?service=" + $(this).val() + "&limit=15";
+            	modifyAutocompleteSource($(this), url)
+            } else if ($(this).parent().parent().find("select").val() === "calculateProperty") {               
+            	modifyAutocompleteSource($(this), null, data);
+            } 
+        	$(this).trigger("settingsButton")
+        })
+        $("div.step-action .content div.fieldRow:nth-child(2) input").trigger("settingsButton")
     }
 })();
 
@@ -3264,79 +3164,79 @@ function setPlaceholderAction(actionElement) {
      */
     var placeHoldersList = {
         "fr": [
-            {"type": "Unknown", "selector1": null, "object": null, "selector2": null ,"property": null},
-            {"type": "dragAndDrop", "selector1": "Selecteur 1", "object": "Chemin de l'élement", "selector2": "Selecteur 2", "property": "destination de l'élément"},
-            {"type": "click", "selector1": "Selecteur 1", "object": "Chemin vers l'élement à cliquer", "selector2": null, "property": null},
-            {"type": "mouseLeftButtonPress", "selector1": "Selecteur 1", "object": "Chemin vers l'élement à cibler", "selector2": null, "property": null},
-            {"type": "mouseLeftButtonRelease", "selector1": "Selecteur 1", "object": "Chemin vers l'élement", "selector2": null, "property": null},
-            {"type": "doubleClick", "selector1": "Selecteur 1", "object": "Chemin vers l'élement à double-cliquer", "selector2": null, "property": null},
-            {"type": "rightClick", "selector1": "Selecteur 1", "object": "Chemin vers l'élement à clicker avec le bouton droit", "selector2": null, "property": null},
-            {"type": "mouseOver", "selector1": "Selecteur 1", "object": "Chemin vers l'élement", "selector2": null, "property": null},
-            {"type": "focusToIframe", "selector1": "Selecteur 1", "object": "Chemin vers l'élement de l'iFrame à cibler", "selector2": null, "property": null},
-            {"type": "focusDefaultIframe", "selector1": null, "object": null, "selector2": null, "property": null},
-            {"type": "switchToWindow", "selector1": null, "object": "Titre ou url de la fenêtre", "selector2": null, "property": null},
-            {"type": "manageDialog", "selector1": null, "object": "ok ou cancel", "selector2": null, "property": null},
-            {"type": "openUrlWithBase", "selector1": null, "object": "URI à appeler (ex : /index.html)", "selector2": null, "property": null},
-            {"type": "openUrlLogin", "selector1": null, "object": null, "selector2": null, "property": null},
-            {"type": "openUrl", "selector1": null, "object": "URL à appeler (ex : http://www.domain.com)", "selector2": null, "property": null},
-            {"type": "executeJS", "selector1": null, "object": "JavaScript à executer", "selector2": null, "property": null},
-            {"type": "executeCommand", "selector1": null, "object": "Commande (ex : \"grep\")", "selector2": null, "property": "Arguments (ex : \"--name toto\")"},
-            {"type": "openApp", "selector1": null, "object": "Nom ou chemin de l'application, package pour android", "selector2": null, "property": "[Optionnel, obligatoire pour Android] Activity"},
-            {"type": "closeApp", "selector1": null, "object": "Nom ou chemin de l'application", "selector2": null, "property": null},
-            {"type": "select", "selector1": "Selecteur 1", "object": "Chemin vers l'élement", "selector2": "Selecteur 2", "property": "Chemin vers l'option"},
-            {"type": "keypress", "selector1": "Selecteur 1", "object": "[opt] Chemin vers l'élement à cibler", "selector2": null, "property": "Touche à presser"},
-            {"type": "type", "selector1": "Selecteur 1", "object": "Chemin vers l'élement", "selector2": null, "property": "Texte à entrer"},
-            {"type": "hideKeyboard", "selector1": null, "object": null, "selector2": null, "property": null},
-            {"type": "swipe", "selector1": null, "object": "Action (UP DOWN LEFT RIGHT CUSTOM...)", "selector2": null, "property": "Direction x;y;z;y"},
-            {"type": "wait", "selector1": "Selecteur 1", "object": "Valeur(ms) ou élement", "selector2": null, "property": null},
-            {"type": "waitVanish", "selector1": "Selecteur 1", "object": "Element", "selector2": null, "property": null},
-            {"type": "callService", "selector1": null, "object": "Nom du Service", "selector2": null, "property": null},
-            {"type": "executeSqlUpdate", "selector1": null, "object": "Nom de Base de donnée", "selector2": null, "property": "Script à executer"},
-            {"type": "scrollTo", "selector1": "Selecteur 1", "object": "element (id, xpath, ..., et text=)", "selector2": null, "property": "Nombre maximum de scroll vers le bas (8 par defaut)"},
-            {"type": "installApp", "selector1": null, "object": "Chemin vers l'application (ex : /root/toto.apk)", "selector2": null, "property": null},
-            {"type": "removeApp", "selector1": null, "object": "Package de l'application (ex : com.cerberus.appmobile)", "selector2": null, "property": null},
-            {"type": "executeSqlStoredProcedure", "selector1": null, "object": "Nom de Base de donnée", "selector2": null, "property": "Procedure Stoquée à executer"},
-            {"type": "calculateProperty", "selector1": null, "object": "Nom d'une Proprieté", "selector2": null, "property": "[opt] Nom d'une autre propriété"},
-            {"type": "doNothing", "selector1": null, "object": null, "selector2": null, "property": null},
-            {"type": "mouseOverAndWait", "selector1": "Action Depreciée", "object": "Action Depreciée", "selector2": "Action Depreciée", "property": "Action Depreciée"},
-            {"type": "removeDifference", "selector1": "Action Depreciée", "object": "Action Depreciée", "selector2": "Action Depreciée", "property": "Action Depreciée"}
+            {"type": "Unknown", "object": null, "property": null},
+            {"type": "dragAndDrop", "object": "Chemin de l'élement", "property": "destination de l'élément"},
+            {"type": "click", "object": "Chemin vers l'élement à cliquer", "property": null},
+            {"type": "mouseLeftButtonPress", "object": "Chemin vers l'élement à cibler", "property": null},
+            {"type": "mouseLeftButtonRelease", "object": "Chemin vers l'élement", "property": null},
+            {"type": "doubleClick", "object": "Chemin vers l'élement à double-cliquer", "property": null},
+            {"type": "rightClick", "object": "Chemin vers l'élement à clicker avec le bouton droit", "property": null},
+            {"type": "mouseOver", "object": "Chemin vers l'élement", "property": null},
+            {"type": "focusToIframe", "object": "Chemin vers l'élement de l'iFrame à cibler", "property": null},
+            {"type": "focusDefaultIframe", "object": null, "property": null},
+            {"type": "switchToWindow", "object": "Titre ou url de la fenêtre", "property": null},
+            {"type": "manageDialog", "object": "ok ou cancel", "property": null},
+            {"type": "openUrlWithBase", "object": "URI à appeler (ex : /index.html)", "property": null},
+            {"type": "openUrlLogin", "object": null, "property": null},
+            {"type": "openUrl", "object": "URL à appeler (ex : http://www.domain.com)", "property": null},
+            {"type": "executeJS", "object": "JavaScript à executer", "property": null},
+            {"type": "executeCommand", "object": "Commande (ex : \"grep\")", "property": "Arguments (ex : \"--name toto\")"},
+            {"type": "openApp", "object": "Nom ou chemin de l'application, package pour android", "property": "[Optionnel, obligatoire pour Android] Activity"},
+            {"type": "closeApp", "object": "Nom ou chemin de l'application", "property": null},
+            {"type": "select", "object": "Chemin vers l'élement", "property": "Chemin vers l'option"},
+            {"type": "keypress", "object": "[opt] Chemin vers l'élement à cibler", "property": "Touche à presser"},
+            {"type": "type", "object": "Chemin vers l'élement", "property": "Texte à entrer"},
+            {"type": "hideKeyboard", "object": null, "property": null},
+            {"type": "swipe", "object": "Action (UP DOWN LEFT RIGHT CUSTOM...)", "property": "Direction x;y;z;y"},
+            {"type": "wait", "object": "Valeur(ms) ou élement", "property": null},
+            {"type": "waitVanish", "object": "Element", "property": null},
+            {"type": "callService", "object": "Nom du Service", "property": null},
+            {"type": "executeSqlUpdate", "object": "Nom de Base de donnée", "property": "Script à executer"},
+            {"type": "scrollTo", "object": "element (id, xpath, ..., et text=)", "property": "Nombre maximum de scroll vers le bas (8 par defaut)"},
+            {"type": "installApp", "object": "Chemin vers l'application (ex : /root/toto.apk)", "property": null},
+            {"type": "removeApp", "object": "Package de l'application (ex : com.cerberus.appmobile)", "property": null},
+            {"type": "executeSqlStoredProcedure", "object": "Nom de Base de donnée", "property": "Procedure Stoquée à executer"},
+            {"type": "calculateProperty", "object": "Nom d'une Proprieté", "property": "[opt] Nom d'une autre propriété"},
+            {"type": "doNothing", "object": null, "property": null},
+            {"type": "mouseOverAndWait", "object": "Action Depreciée", "property": "Action Depreciée"},
+            {"type": "removeDifference", "object": "Action Depreciée", "property": "Action Depreciée"}
         ], "en": [
-            {"type": "Unknown", "selector1": null, "object": null, "selector2": null, "property": null},
-            {"type": "dragAndDrop", "selector1": "Selector 1", "object": "Element path", "selector2": "Selector 2", "property": "Destination Element Path"},
-            {"type": "click", "selector1": "Selector 1", "object": "Element path", "selector2": null, "property": null},
-            {"type": "mouseLeftButtonPress", "selector1": "Selector 1", "object": "Element path", "selector2": null, "property": null},
-            {"type": "mouseLeftButtonRelease", "selector1": "Selector 1", "object": "Element path", "selector2": null, "property": null},
-            {"type": "doubleClick", "selector1": "Selector 1", "object": "Element path", "selector2": null, "property": null},
-            {"type": "rightClick", "selector1": "Selector 1", "object": "Element path", "selector2": null, "property": null},
-            {"type": "mouseOver", "selector1": "Selector 1", "object": "Element path", "selector2": null, "property": null},
-            {"type": "focusToIframe", "selector1": "Selector 1", "object": "Element path of the target iFrame", "selector2": null, "property": null},
-            {"type": "focusDefaultIframe", "selector1": null, "object": null, "selector2": null, "property": null},
-            {"type": "switchToWindow", "selector1": null, "object": "Window title or url", "selector2": null, "property": null},
-            {"type": "manageDialog", "selector1": null, "object": "ok or cancel", "selector2": null, "property": null},
-            {"type": "openUrlWithBase", "selector1": null, "object": "URI to call  (ex : /index.html)", "selector2": null, "property": null},
-            {"type": "openUrlLogin", "selector1": null, "object": null, "selector2": null, "property": null},
-            {"type": "openUrl", "selector1": null, "object": "URL to call (ex : http://www.domain.com)", "selector2": null, "property": null},
-            {"type": "executeJS", "selector1": null, "object": "JavaScript to execute", "selector2": null, "property": null},
-            {"type": "executeCommand", "selector1": null, "object": "Command (ex : \"grep\")", "selector2": null, "property": "Arguments (ex : \"--name toto\")"},
-            {"type": "openApp", "selector1": null, "object": "Application name or path or package for Android", "selector2": null, "property": "[Optional, required for Android] Activity"},
-            {"type": "closeApp", "selector1": null, "object": "Application name or path", "selector2": null, "property": null},
-            {"type": "select", "selector1": "Selector 1", "object": "Element path", "selector2": "Selector 2", "property": "Option path"},
-            {"type": "keypress", "selector1": "Selector 1", "object": "[opt] Target element path", "selector2": null, "property": "Key to press"},
-            {"type": "type", "selector1": "Selector 1", "object": "Element path", "selector2": null, "property": "Text to type"},
-            {"type": "hideKeyboard", "selector1": null, "object": null, "selector2": null, "property": null},
-            {"type": "swipe", "selector1": null, "object": "Action (UP DOWN LEFT RIGHT CUSTOM...)", "selector2": null, "property": "Direction x;y;z;y"},
-            {"type": "wait", "selector1": "Selector 1", "object": "Duration(ms) or Element", "selector2": null, "property": null},
-            {"type": "waitVanish", "selector1": "Selector 1", "object": "Element", "selector2": null, "property": null},
-            {"type": "callService", "selector1": null, "object": "Service Name", "selector2": null, "property": null},
-            {"type": "executeSqlUpdate", "selector1": null, "object": "Database Name", "selector2": null, "property": "Script"},
-            {"type": "executeSqlStoredProcedure", "selector1": null, "object": "Database Name", "selector2": null, "property": "Stored Procedure"},
-            {"type": "calculateProperty", "selector1": null, "object": "Property Name", "selector2": null, "property": "[opt] Name of an other property"},
-            {"type": "scrollTo", "selector1": "Selector 1", "object": "element ('id=ressource-id'. Empty if you want use text)", "selector2": null, "property": "text (empty if you want use element)"},
-            {"type": "installApp", "selector1": null, "object": "Application path (ex : /root/toto.apk)", "selector2": null, "property": null},
-            {"type": "removeApp", "selector1": null, "object": "Application package (ex : com.cerberus.appmobile)", "selector2": null, "property": null},
-            {"type": "doNothing", "selector1": null, "object": null, "selector2": null, "property": null},
-            {"type": "mouseOverAndWait", "selector1": "[Deprecated]", "object": "[Deprecated]", "selector2": "[Deprecated]", "property": "[Deprecated]"},
-            {"type": "removeDifference", "selector1": "[Deprecated]", "object": "[Deprecated]", "selector2": "[Deprecated]", "property": "[Deprecated]"}
+            {"type": "Unknown", "object": null, "property": null},
+            {"type": "dragAndDrop", "object": "Element path", "property": "Destination Element Path"},
+            {"type": "click", "object": "Element path", "property": null},
+            {"type": "mouseLeftButtonPress", "object": "Element path", "property": null},
+            {"type": "mouseLeftButtonRelease", "object": "Element path", "property": null},
+            {"type": "doubleClick", "object": "Element path", "property": null},
+            {"type": "rightClick", "object": "Element path", "property": null},
+            {"type": "mouseOver", "object": "Element path", "property": null},
+            {"type": "focusToIframe", "object": "Element path of the target iFrame", "property": null},
+            {"type": "focusDefaultIframe", "object": null, "property": null},
+            {"type": "switchToWindow", "object": "Window title or url", "property": null},
+            {"type": "manageDialog", "object": "ok or cancel", "property": null},
+            {"type": "openUrlWithBase", "object": "URI to call  (ex : /index.html)", "property": null},
+            {"type": "openUrlLogin", "object": null, "property": null},
+            {"type": "openUrl", "object": "URL to call (ex : http://www.domain.com)", "property": null},
+            {"type": "executeJS", "object": "JavaScript to execute", "property": null},
+            {"type": "executeCommand", "object": "Command (ex : \"grep\")", "property": "Arguments (ex : \"--name toto\")"},
+            {"type": "openApp", "object": "Application name or path or package for Android", "property": "[Optional, required for Android] Activity"},
+            {"type": "closeApp", "object": "Application name or path", "property": null},
+            {"type": "select", "object": "Element path", "property": "Option path"},
+            {"type": "keypress", "object": "[opt] Target element path", "property": "Key to press"},
+            {"type": "type", "object": "Element path", "property": "Text to type"},
+            {"type": "hideKeyboard", "object": null, "property": null},
+            {"type": "swipe", "object": "Action (UP DOWN LEFT RIGHT CUSTOM...)", "property": "Direction x;y;z;y"},
+            {"type": "wait", "object": "Duration(ms) or Element", "property": null},
+            {"type": "waitVanish", "object": "Element", "property": null},
+            {"type": "callService", "object": "Service Name", "property": null},
+            {"type": "executeSqlUpdate", "object": "Database Name", "property": "Script"},
+            {"type": "executeSqlStoredProcedure", "object": "Database Name", "property": "Stored Procedure"},
+            {"type": "calculateProperty", "object": "Property Name", "property": "[opt] Name of an other property"},
+            {"type": "scrollTo", "object": "element ('id=ressource-id'. Empty if you want use text)", "property": "text (empty if you want use element)"},
+            {"type": "installApp", "object": "Application path (ex : /root/toto.apk)", "property": null},
+            {"type": "removeApp", "object": "Application package (ex : com.cerberus.appmobile)", "property": null},
+            {"type": "doNothing", "object": null, "property": null},
+            {"type": "mouseOverAndWait", "object": "[Deprecated]", "property": "[Deprecated]"},
+            {"type": "removeDifference", "object": "[Deprecated]", "property": "[Deprecated]"}
         ]
     };
 
@@ -3346,33 +3246,17 @@ function setPlaceholderAction(actionElement) {
     $(actionElement).find('select#actionSelect option:selected').each(function (i, e) {
         for (var i = 0; i < placeHolders.length; i++) {
             if (placeHolders[i].type === e.value) {
-            	if (placeHolders[i].selector1 !== null) {
+                if (placeHolders[i].object !== null) {
                     $(e).parent().parent().next().show();
-                    $(e).parent().parent().next().find('label').text(placeHolders[i].selector1);
+                    $(e).parent().parent().next().find('label').text(placeHolders[i].object);
                 } else {
                     $(e).parent().parent().next().hide();
                 }
-                if (placeHolders[i].object !== null) {
+                if (placeHolders[i].property !== null) {
                     $(e).parent().parent().next().next().show();
-                    $(e).parent().parent().next().next().find('label').text(placeHolders[i].object);
+                    $(e).parent().parent().next().next().find('label').text(placeHolders[i].property);
                 } else {
                     $(e).parent().parent().next().next().hide();
-                }
-                if (placeHolders[i].selector2 !== null) {
-                    $(e).parent().parent().next().next().next().show();
-                    $(e).parent().parent().next().next().removeClass("col-lg-4").addClass("col-lg-3");
-                    $(e).parent().parent().next().next().next().next().removeClass("col-lg-4").addClass("col-lg-3");
-                    $(e).parent().parent().next().next().next().find('label').text(placeHolders[i].selector2);
-                } else {
-                    $(e).parent().parent().next().next().next().hide();
-                    $(e).parent().parent().next().next().removeClass("col-lg-3").addClass("col-lg-4");
-                    $(e).parent().parent().next().next().next().next().removeClass("col-lg-3").addClass("col-lg-4");
-                }
-                if (placeHolders[i].property !== null) {
-                    $(e).parent().parent().next().next().next().next().show();
-                    $(e).parent().parent().next().next().next().next().find('label').text(placeHolders[i].property);
-                } else {
-                    $(e).parent().parent().next().next().next().next().hide();
                 }
             }
         }
@@ -4767,4 +4651,3 @@ function tec_keyispressed(e) {
         }
     return true;
 }
-

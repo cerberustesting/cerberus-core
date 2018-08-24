@@ -115,7 +115,7 @@ public class RobotCapabilityServiceTest {
         rc5.setCapability("capability(6)");
         rc5.setValue("value(6)");
         
-        robotCapabilityService.compareListAndUpdateInsertDeleteElements(ROBOT_NAME, Arrays.asList(rc1, rc2, rc3, rc5, rc6));
+        robotCapabilityService.compareListAndUpdateInsertDeleteElements(ROBOT_NAME, Arrays.asList(rc1, rc2, rc3, rc5, rc6), "");
         
         verify(robotCapabilityDAO).create(rc5);
         verify(robotCapabilityDAO).create(rc6);

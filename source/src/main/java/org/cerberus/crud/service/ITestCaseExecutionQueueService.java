@@ -233,9 +233,10 @@ public interface ITestCaseExecutionQueueService {
     /**
      *
      * @param id
+     * @param selectedRobot
      * @throws CerberusException
      */
-    void updateToStarting(long id) throws CerberusException;
+    void updateToStarting(long id, String selectedRobot) throws CerberusException;
 
     /**
      *

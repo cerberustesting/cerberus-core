@@ -28,7 +28,9 @@ import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.IRobotDAO;
 import org.cerberus.crud.entity.Robot;
 import org.cerberus.crud.entity.RobotCapability;
+import org.cerberus.crud.entity.RobotExecutor;
 import org.cerberus.crud.service.IRobotCapabilityService;
+import org.cerberus.crud.service.IRobotExecutorService;
 import org.cerberus.crud.service.IRobotService;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.enums.MessageEventEnum;
@@ -56,9 +58,10 @@ public class RobotService implements IRobotService {
 
     @Autowired
     private IRobotDAO robotDao;
-
     @Autowired
     private IRobotCapabilityService robotCapabilityService;
+    @Autowired
+    private IRobotExecutorService robotExecutorService;
 
     @Override
     public AnswerItem<Robot> readByKeyTech(Integer robotid) {
@@ -67,12 +70,20 @@ public class RobotService implements IRobotService {
 
     @Override
     public Robot readByKey(String robot) throws CerberusException {
-        return fillCapabilities(robotDao.readByKey(robot));
+        Robot resultRobot = robotDao.readByKey(robot);
+        resultRobot = fillCapabilities(resultRobot);
+        resultRobot = fillExecutors(resultRobot);
+        return resultRobot;
     }
 
     @Override
     public AnswerList<Robot> readAll() {
-        return readByCriteria(0, 0, "robot", "asc", null, null);
+        return readByCriteria(false, false, 0, 0, "robot", "asc", null, null);
+    }
+
+    @Override
+    public AnswerList<Robot> readByRobotList(List<String> robotList) {
+        return robotDao.readByRobotList(robotList);
     }
 
     @Override
@@ -88,9 +99,24 @@ public class RobotService implements IRobotService {
     }
 
     @Override
-    public AnswerList<Robot> readByCriteria(int startPosition, int length, String columnName, String sort,
+    public HashMap<String, Robot> readToHashMapByRobotList(List<String> robotList) {
+        HashMap<String, Robot> result = new HashMap<>();
+
+        AnswerList<Robot> answer = readByRobotList(robotList); //TODO: handle if the response does not turn ok
+        for (Robot rob : (List<Robot>) answer.getDataList()) {
+            result.put(rob.getRobot(), rob);
+        }
+        return result;
+    }
+
+    @Override
+    public AnswerList<Robot> readByCriteria(boolean withCapabilities, boolean withExecutors, int startPosition, int length, String columnName, String sort,
             String searchParameter, Map<String, List<String>> individualSearch) {
-        return fillCapabilities(robotDao.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch));
+        if (withCapabilities) {
+            return fillCapabilities(robotDao.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch));
+        } else {
+            return robotDao.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
+        }
     }
 
     @Override
@@ -105,7 +131,13 @@ public class RobotService implements IRobotService {
         for (RobotCapability capability : robot.getCapabilities()) {
             Answer robotCapabilityAnswer = robotCapabilityService.create(capability);
             // We try to create as many capabilities as possible, even if an error occurred.
-            AnswerUtil.agregateAnswer(finalAnswer, robotCapabilityAnswer);
+            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, robotCapabilityAnswer);
+        }
+        // Then, create its capabilities
+        for (RobotExecutor executor : robot.getExecutors()) {
+            Answer robotExecutorAnswer = robotExecutorService.create(executor);
+            // We try to create as many capabilities as possible, even if an error occurred.
+            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, robotExecutorAnswer);
         }
         return finalAnswer;
     }
@@ -118,15 +150,12 @@ public class RobotService implements IRobotService {
             return finalAnswer;
         }
 
-        // Second, delete its capabilities
-        AnswerUtil.agregateAnswer(finalAnswer, robotCapabilityService.delete(robot.getCapabilities()));
-
         // Finally return aggregated answer
         return finalAnswer;
     }
 
     @Override
-    public Answer update(Robot robot) {
+    public Answer update(Robot robot, String usrModif) {
         // First, update the robot
         Answer finalAnswer = robotDao.update(robot);
         if (!finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
@@ -134,7 +163,10 @@ public class RobotService implements IRobotService {
         }
 
         // Second, update its capabilities
-        AnswerUtil.agregateAnswer(finalAnswer, robotCapabilityService.compareListAndUpdateInsertDeleteElements(robot.getRobot(), robot.getCapabilities()));
+        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, robotCapabilityService.compareListAndUpdateInsertDeleteElements(robot.getRobot(), robot.getCapabilities(), usrModif));
+
+        // Then, update its executors
+        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, robotExecutorService.compareListAndUpdateInsertDeleteElements(robot.getRobot(), robot.getExecutors(), usrModif));
 
         // Finally return aggregated answer
         return finalAnswer;
@@ -193,6 +225,11 @@ public class RobotService implements IRobotService {
 
     private Robot fillCapabilities(Robot robotItem) throws CerberusException {
         robotItem.setCapabilities(robotCapabilityService.convert(robotCapabilityService.readByRobot(robotItem.getRobot())));
+        return robotItem;
+    }
+
+    private Robot fillExecutors(Robot robotItem) throws CerberusException {
+        robotItem.setExecutors(robotExecutorService.convert(robotExecutorService.readByRobot(robotItem.getRobot())));
         return robotItem;
     }
 

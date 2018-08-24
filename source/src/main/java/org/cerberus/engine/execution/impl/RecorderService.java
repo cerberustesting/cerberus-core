@@ -22,6 +22,8 @@ package org.cerberus.engine.execution.impl;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
@@ -44,6 +46,7 @@ import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.version.Infos;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -104,8 +107,8 @@ public class RecorderService implements IRecorderService {
          * parameter is eq to 2 or screenshot parameter is eq to 1 with the
          * correct doScreenshot flag on the last action MessageEvent.
          */
-        if (    Screenshot.printScreenSystematicaly(myExecution.getScreenshot()) ||
-                Screenshot.printScreenOnError(myExecution.getScreenshot()) && (doScreenshot)) {
+        if (Screenshot.printScreenSystematicaly(myExecution.getScreenshot())
+                || Screenshot.printScreenOnError(myExecution.getScreenshot()) && (doScreenshot)) {
             if (applicationType.equals(Application.TYPE_GUI)
                     || applicationType.equals(Application.TYPE_APK)
                     || applicationType.equals(Application.TYPE_IPA)
@@ -559,6 +562,56 @@ public class RecorderService implements IRecorderService {
     }
 
     @Override
+    public TestCaseExecutionFile recordCapabilities(TestCaseExecution testCaseExecution, List<RobotCapability> capsInputList, List<RobotCapability> capFinalList) {
+        TestCaseExecutionFile object = null;
+
+        LOG.debug("Starting to save Robot caps file.");
+
+        if ((capsInputList == null) && (capFinalList == null)) {
+            LOG.debug("No caps to record.");
+            return null;
+        }
+
+        JSONObject outputMessage = new JSONObject();
+
+        try {
+
+            JSONObject capsInput = new JSONObject();
+            if (capsInputList != null) {
+                for (RobotCapability robotCapability : capsInputList) {
+                    capsInput.append(robotCapability.getCapability(), robotCapability.getValue());
+                }
+            }
+            outputMessage.put("RequestedCapabilities", capsInput);
+            
+            JSONObject capsFinal = new JSONObject();
+            if (capFinalList != null) {
+                for (RobotCapability robotCapability : capFinalList) {
+                    capsFinal.append(robotCapability.getCapability(), robotCapability.getValue());
+                }
+            }
+            outputMessage.put("FinalCapabilities", capsFinal);
+
+            // RESULT.
+            Recorder recorder = this.initFilenames(testCaseExecution.getId(), null, null, null, null, null, null, null, 0, "robot_caps", "json", false);
+            recordFile(recorder.getFullPath(), recorder.getFileName(), outputMessage.toString());
+
+            // Index file created to database.
+            object = testCaseExecutionFileFactory.create(0, testCaseExecution.getId(), recorder.getLevel(), "Robot Caps", recorder.getRelativeFilenameURL(), "JSON", "", null, "", null);
+            testCaseExecutionFileService.save(object);
+
+        } catch (CerberusException ex) {
+            LOG.error(ex.toString(), ex);
+        } catch (JSONException ex) {
+            Logger.getLogger(RecorderService.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            LOG.error(ex.toString(), ex);
+        }
+
+        return object;
+    }
+
+    @Override
     public TestCaseExecutionFile recordSeleniumLog(TestCaseExecution testCaseExecution) {
         TestCaseExecutionFile object = null;
         // Used for logging purposes
@@ -631,12 +684,10 @@ public class RecorderService implements IRecorderService {
 
     }
 
-
     public void addFileToTestCaseExecution(TestCaseExecution tce, Recorder recorder, String fileDesc, String fileType) {
         TestCaseExecutionFile object = testCaseExecutionFileFactory.create(0, tce.getId(), recorder.getLevel(), fileDesc, recorder.getRelativeFilenameURL(), fileType, "", null, "", null);
         testCaseExecutionFileService.save(object);
     }
-
 
     /**
      * Auxiliary method that saves a file

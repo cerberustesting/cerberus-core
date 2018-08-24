@@ -7833,34 +7833,50 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append("('SELECTOR', 'data-cerberus=', '6550', '', '');");
         a.add(b.toString());
 
-// upcoming robotexecutor management.
-//        a.add(" CREATE TABLE `robotexecutor` ("
-//                + "  `id` int(11) NOT NULL AUTO_INCREMENT,"
-//                + "  `robot` varchar(100) NOT NULL,"
-//                + "  `executor` varchar(100) NOT NULL,"
-//                + "  `active` varchar(1) NOT NULL DEFAULT 'Y',"
-//                + "  `rank` int(11) NOT NULL DEFAULT '10',"
-//                + "  `host`	varchar(150),"
-//                + "  `Port`	varchar(150),"
-//                + "  `host_user`	varchar(255),"
-//                + "  `host_password`	varchar(255),"
-//                + "  `deviceUuid` varchar(255) NOT NULL,"
-//                + "  `deviceName` varchar(255) NOT NULL,"
-//                + "  `description` varchar(255) NOT NULL,"
-//                + "  `DateLastExeSubmitted` timestamp NOT NULL DEFAULT '1970-01-01 01:01:01',"
-//                + "  `UsrCreated` varchar(45) NOT NULL DEFAULT '',"
-//                + "  `DateCreated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,"
-//                + "  `UsrModif` varchar(45) DEFAULT '',"
-//                + "  `DateModif` timestamp NOT NULL DEFAULT '1970-01-01 01:01:01',"
-//                + "  PRIMARY KEY (`id`),"
-//                + "  UNIQUE KEY `IX_robotexecutor_01` (`robot`, `executor`),"
-//                + "  CONSTRAINT `FK_robotexecutor_01` FOREIGN KEY (`robot`) REFERENCES `robot` (`robot`) ON DELETE CASCADE ON UPDATE CASCADE"
-//                + ") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
+        // 1368-1374
+        a.add(" CREATE TABLE `robotexecutor` ("
+                + "  `id` int(11) NOT NULL AUTO_INCREMENT,"
+                + "  `robot` varchar(100) NOT NULL,"
+                + "  `executor` varchar(100) NOT NULL,"
+                + "  `active` varchar(1) NOT NULL DEFAULT 'Y',"
+                + "  `rank` int(11) NOT NULL DEFAULT '10',"
+                + "  `host`	varchar(150),"
+                + "  `Port`	varchar(150),"
+                + "  `host_user`	varchar(255),"
+                + "  `host_password`	varchar(255),"
+                + "  `deviceUuid` varchar(255) NOT NULL,"
+                + "  `deviceName` varchar(255) NOT NULL,"
+                + "  `description` varchar(255) NOT NULL,"
+                + "  `DateLastExeSubmitted` BIGINT(20) NOT NULL DEFAULT 0,"
+                + "  `UsrCreated` varchar(45) NOT NULL DEFAULT '',"
+                + "  `DateCreated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,"
+                + "  `UsrModif` varchar(45) DEFAULT '',"
+                + "  `DateModif` timestamp NOT NULL DEFAULT '1970-01-01 01:01:01',"
+                + "  PRIMARY KEY (`id`),"
+                + "  UNIQUE KEY `IX_robotexecutor_01` (`robot`, `executor`),"
+                + "  CONSTRAINT `FK_robotexecutor_01` FOREIGN KEY (`robot`) REFERENCES `robot` (`robot`) ON DELETE CASCADE ON UPDATE CASCADE"
+                + ") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
+        a.add("INSERT INTO `robotexecutor` (`robot`, `executor`, `active`, `rank`, `host`, `port`, `host_user`, `host_password`, `deviceuuid`, `devicename`, `description`)"
+                + "select robot, 'MAIN', 'Y', 1, host, port, host_user, host_password, '', '', '' from robot ON DUPLICATE KEY UPDATE description='';");
+        a.add("ALTER TABLE `testcaseexecution` "
+                + "ADD COLUMN `robot` VARCHAR(100) NULL DEFAULT NULL AFTER `Country`, "
+                + "ADD COLUMN `robotexecutor` VARCHAR(100) NULL DEFAULT NULL AFTER `robot`, "
+                + "CHANGE COLUMN `IP` `RobotHost` VARCHAR(150) NULL DEFAULT NULL AFTER `robotexecutor`,"
+                + "CHANGE COLUMN `Port` `RobotPort` VARCHAR(150) NULL DEFAULT NULL AFTER `RobotHost`;");
+        a.add("ALTER TABLE `testcaseexecutionqueue` ADD COLUMN `SelectedRobotHost` VARCHAR(150) NULL DEFAULT '' AFTER `DebugFlag`;");
+        a.add("ALTER TABLE `robot` ADD COLUMN `lbexemethod` VARCHAR(45) NOT NULL DEFAULT '' AFTER `robotdecli`;");
+        b = new StringBuilder();
+        b.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ");
+        b.append(" ('ROBOTLBMETHOD', 'BYRANKING', '20', '', ''),");
+        b.append(" ('ROBOTLBMETHOD', 'ROUNDROBIN', '10', '', ''),");
+        b.append(" ('INVARIANTPRIVATE','ROBOTLBMETHOD', '830','Load Balancing Rule.', ''),");
+        b.append(" ('ROBOTEXECUTORACTIVE', 'N', '20', '', ''),");
+        b.append(" ('ROBOTEXECUTORACTIVE', 'Y', '10', '', ''),");
+        b.append(" ('INVARIANTPRIVATE','ROBOTEXECUTORACTIVE', '840','Activation flag for Robot Executor.', '')");
+        a.add(b.toString());
 
-// INSERT INTO `robotexecutor` (`robot`, `executor`, `active`, `rank`, `host`, `port`, `host_user`, `host_password`, `deviceuuid`, `devicename`, `description`)
-// select robot, 'MAIN', 'Y', 1, host, port, host_user, host_password, '', '', '' from robot;
-        
-        
+        a.add("ALTER TABLE `robotexecutor` ADD COLUMN `devicePort` int(8)");
+
         return a;
     }
 

@@ -176,11 +176,11 @@
                                 </div>
                             </div>
                             <div class="row" id="panelDuration">
-                                <div class="col-lg-6">
+                                <div class="col-sm-6">
                                     <label for="endExe">End : (When all execution queue has been closed)</label>
                                     <input type="text" class="form-control" name="endExe" id="endExe" readonly aria-describedby="basic-addon1" >
                                 </div>
-                                <div class="col-lg-6">
+                                <div class="col-sm-6">
                                     <label for="durExe">Duration (Minutes) :</label>
                                     <input type="text" class="form-control" name="durExe" id="durExe" readonly aria-describedby="basic-addon1" >
                                 </div>
@@ -192,13 +192,16 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-lg-6">
+                                <div class="col-sm-4">
                                     <label for="TagUsrCreated">Created by :</label>
                                     <input type="text" class="form-control" name="TagUsrCreated" id="TagUsrCreated" readonly aria-describedby="basic-addon1" >
                                 </div>
-                                <div class="col-lg-6">
+                                <div class="col-sm-4" id="TagcampaignCel1">
                                     <label for="Tagcampaign">Campaign :</label>
                                     <input type="text" class="form-control" name="Tagcampaign" id="Tagcampaign" readonly aria-describedby="basic-addon1" >
+                                </div>
+                                <div class="input-group-btn col-sm-4" id="TagcampaignCel2">
+                                    <a id="buttonRunCampaign"><button type="button" class="btn btn-default" style="margin-left: 10px;margin-top: 20px;">Run Campaign</button></a>
                                 </div>
                             </div>
                         </div>

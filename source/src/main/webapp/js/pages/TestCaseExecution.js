@@ -271,14 +271,13 @@ function displayPageLabel(doc) {
     $("#more").text(doc.getDocLabel("page_executiondetail", "more_detail"));
     $("#testCaseDetails label[for='application']").text(doc.getDocLabel("page_executiondetail", "application"));
     $("#testCaseDetails label[for='browser']").text(doc.getDocLabel("page_executiondetail", "browser"));
-    $("#testCaseDetails label[for='browserfull']").text(doc.getDocLabel("page_executiondetail", "browserfull"));
     $("#testCaseDetails label[for='country']").text(doc.getDocLabel("page_executiondetail", "country"));
     $("#testCaseDetails label[for='environment']").text(doc.getDocLabel("page_executiondetail", "environment"));
     $("#testCaseDetails label[for='status']").text(doc.getDocLabel("page_executiondetail", "status"));
     $("#testCaseDetails label[for='controlstatus2']").text(doc.getDocLabel("page_executiondetail", "controlstatus"));
     $("#testCaseDetails label[for='controlmessage']").text(doc.getDocLabel("page_executiondetail", "controlmessage"));
-    $("#testCaseDetails label[for='ip']").text(doc.getDocLabel("page_executiondetail", "ip"));
-    $("#testCaseDetails label[for='port']").text(doc.getDocLabel("page_executiondetail", "port"));
+    $("#testCaseDetails label[for='robothost']").text(doc.getDocLabel("page_executiondetail", "robothost"));
+    $("#testCaseDetails label[for='robotport']").text(doc.getDocLabel("page_executiondetail", "robotport"));
     $("#testCaseDetails label[for='platform']").text(doc.getDocLabel("page_executiondetail", "platform"));
     $("#testCaseDetails label[for='cerberusversion']").text(doc.getDocLabel("page_executiondetail", "cerberusversion"));
     $("#testCaseDetails label[for='executor']").text(doc.getDocLabel("page_executiondetail", "executor"));
@@ -295,6 +294,8 @@ function displayPageLabel(doc) {
     $("#testCaseDetails label[for='exetestcase']").text(doc.getDocLabel("testcase", "TestCase"));
     $("#testCaseDetails label[for='testcaseversion']").text(doc.getDocLabel("testcase", "TestCaseVersion"));
     $("#testCaseDetails label[for='system']").text(doc.getDocLabel("invariant", "SYSTEM"));
+    $("#testCaseDetails label[for='robot']").text(doc.getDocLabel("robot", "robot"));
+    $("#testCaseDetails label[for='robotexe']").text(doc.getDocLabel("robotexecutor", "executor"));
     $("#testCaseDetails label[for='robotdecli']").text(doc.getDocLabel("robot", "robotdecli"));
     $("#testCaseDetails label[for='build']").text(doc.getDocLabel("page_executiondetail", "build"));
     $("#testCaseDetails label[for='version']").text(doc.getDocLabel("page_executiondetail", "version"));
@@ -579,8 +580,10 @@ function setConfigPanel(data) {
     configPanel.find("input#id").val(data.id);
     configPanel.find("input#controlstatus2").val(data.controlStatus);
     configPanel.find("textarea#controlmessage").val(data.controlMessage);
-    configPanel.find("input#ip").val(data.ip);
-    configPanel.find("input#port").val(data.port);
+    configPanel.find("input#robot").val(data.robot);
+    configPanel.find("input#robotexe").val(data.robotExecutor);
+    configPanel.find("input#robothost").val(data.robotHost);
+    configPanel.find("input#robotport").val(data.robotPort);
     configPanel.find("input#platform").val(data.platform);
     configPanel.find("input#revision").val(data.revision);
     configPanel.find("input#cerberusversion").val(data.crbVersion);

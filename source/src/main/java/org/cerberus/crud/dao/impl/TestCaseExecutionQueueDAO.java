@@ -97,6 +97,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
     private static final String COLUMN_STATE = "State";
     private static final String COLUMN_PRIORITY = "Priority";
     private static final String COLUMN_DEBUGFLAG = "DebugFlag";
+    private static final String COLUMN_SELECTEDROBOTHOST = "SelectedRobotHost";
     private static final String COLUMN_EXEID = "ExeId";
     private static final String COLUMN_USRCREATED = "UsrCreated";
     private static final String COLUMN_DATECREATED = "DateCreated";
@@ -449,12 +450,10 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
 
         final StringBuilder query = new StringBuilder();
 
-        query.append("SELECT exq.id, exq.manualexecution, app.System, cea.environment, cea.country, cea.application, cea.poolsize, exq.robotIP, rbt.host, exq.DebugFlag, app.type ");
+        query.append("SELECT exq.id, exq.manualexecution, app.System, cea.environment, cea.country, cea.application, cea.poolsize, exq.robot, exq.robotIP, exq.robotPort, exq.DebugFlag, exq.selectedRobotHost, app.type ");
         query.append("from testcaseexecutionqueue exq ");
         query.append("left join testcase tec on tec.test=exq.test and tec.testcase=exq.testcase ");
         query.append("left join application app on app.application=tec.application ");
-        query.append("left join robot rbt on rbt.robot=exq.robot ");
-//        query.append("left outer join robotexecutor rbt on rbt.robot=exq.robot ");
         query.append("left join countryenvironmentparameters cea on cea.system=app.system and cea.environment=exq.environment and cea.country=exq.country and cea.application=tec.application ");
         query.append("WHERE 1=1 ");
         query.append(SqlUtil.createWhereInClause(" AND exq.state", stateList, true));
@@ -1452,6 +1451,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
             LOG.debug("SQL.param.exeid : " + object.getExeId());
             LOG.debug("SQL.param.comment : " + object.getComment());
             LOG.debug("SQL.param.state : " + object.getState());
+            LOG.debug("SQL.param.ManualExecution : " + object.getManualExecution());
         }
 
         try (Connection connection = this.databaseSpring.connect();
@@ -1483,7 +1483,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
             preStat.setInt(i++, object.getPageSource());
             preStat.setInt(i++, object.getSeleniumLog());
             preStat.setInt(i++, object.getRetries());
-            preStat.setString(i++, object.getManualExecution());
+            preStat.setString(i++, object.getManualExecution() == null ? "N" : object.getManualExecution());
             String user = object.getUsrCreated() == null ? "" : object.getUsrCreated();
             preStat.setString(i++, user);
             if (object.getState() == null) {
@@ -1790,9 +1790,9 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
     }
 
     @Override
-    public void updateToStarting(long id) throws CerberusException {
+    public void updateToStarting(long id, String selectedRobot) throws CerberusException {
         String queryUpdate = "UPDATE `" + TABLE + "` "
-                + "SET `" + COLUMN_STATE + "` = 'STARTING', `" + COLUMN_REQUEST_DATE + "` = now(), `" + COLUMN_DATEMODIF + "` = now() "
+                + "SET `" + COLUMN_STATE + "` = 'STARTING', `" + COLUMN_SELECTEDROBOTHOST + "` = ?, `" + COLUMN_REQUEST_DATE + "` = now(), `" + COLUMN_DATEMODIF + "` = now() "
                 + "WHERE `" + COLUMN_ID + "` = ? "
                 + "AND `" + COLUMN_STATE + "` = 'WAITING'";
 
@@ -1806,7 +1806,8 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                 Connection connection = databaseSpring.connect();
                 PreparedStatement updateStateStatement = connection.prepareStatement(queryUpdate)) {
 
-            updateStateStatement.setLong(1, id);
+            updateStateStatement.setString(1, selectedRobot);
+            updateStateStatement.setLong(2, id);
 
             int updateResult = updateStateStatement.executeUpdate();
             if (updateResult <= 0) {
@@ -2193,19 +2194,29 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
              * Robot host is feed only if application type really required a
              * robot. data comes from robot by priority or exe when exist.
              */
-            String robotHost = "";
+            String queueRobot = "";
+            String queueRobotHost = "";
+            String queueRobotPort = "";
             String appType = resultSet.getString("app.type");
             if (appType == null) {
                 appType = "";
             }
+            inQueue.setAppType(appType);
+
             // If application type require a selenium/appium/sikuli server, we get the robot host from robot and not execution queue.
             if ((appType.equals(Application.TYPE_APK)) || (appType.equals(Application.TYPE_GUI)) || (appType.equals(Application.TYPE_FAT)) || (appType.equals(Application.TYPE_IPA))) {
-                robotHost = resultSet.getString("rbt.host");
-                if (StringUtil.isNullOrEmpty(robotHost)) {
-                    robotHost = resultSet.getString("exq.robotIP");
+//                robotHost = resultSet.getString("rbt.host");
+                queueRobot = resultSet.getString("exq.robot");
+                if (StringUtil.isNullOrEmpty(queueRobotHost)) {
+                    queueRobotHost = resultSet.getString("exq.robotIP");
+                    queueRobotPort = resultSet.getString("exq.robotPort");
                 }
             }
-            inQueue.setRobotHost(robotHost);
+            inQueue.setQueueRobot(queueRobot);
+            inQueue.setQueueRobotHost(queueRobotHost);
+            inQueue.setQueueRobotPort(queueRobotPort);
+            inQueue.setSelectedRobotHost(resultSet.getString("exq.SelectedRobotHost"));
+
         } catch (Exception e) {
             LOG.debug("Exception in load queue from resultset : " + e.toString());
         }

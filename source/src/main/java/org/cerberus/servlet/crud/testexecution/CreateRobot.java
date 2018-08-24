@@ -22,6 +22,7 @@ package org.cerberus.servlet.crud.testexecution;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -35,8 +36,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.Robot;
 import org.cerberus.crud.entity.RobotCapability;
+import org.cerberus.crud.entity.RobotExecutor;
 import org.cerberus.crud.factory.IFactoryRobot;
+import org.cerberus.crud.factory.IFactoryRobotExecutor;
 import org.cerberus.crud.service.ILogEventService;
+import org.cerberus.crud.service.IRobotExecutorService;
 import org.cerberus.crud.service.IRobotService;
 import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.engine.entity.MessageEvent;
@@ -45,6 +49,7 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.owasp.html.PolicyFactory;
@@ -77,6 +82,7 @@ public class CreateRobot extends HttpServlet {
         JSONObject jsonResponse = new JSONObject();
         Answer ans = new Answer();
         Gson gson = new Gson();
+        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         ans.setResultMessage(msg);
@@ -91,23 +97,28 @@ public class CreateRobot extends HttpServlet {
         // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
         // Parameter that needs to be secured --> We SECURE+DECODE them
         String robot = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("robot"), null, charset);
-        String port = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("port"), null, charset);
         String platform = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("platform"), null, charset);
         String browser = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("browser"), null, charset);
         String version = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("version"), "", charset);
         String active = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("active"), "Y", charset);
-        String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("description"), "", charset);
+        String description = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("description"), "", charset);
         String userAgent = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("useragent"), "", charset);
         String screenSize = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("screensize"), "", charset);
-        String robotDecli = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("robotDecli"), "", charset);
-        String hostUser = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("hostUsername"), null, charset);
-        String hostPassword = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("hostPassword"), null, charset);
+        String robotDecli = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("robotDecli"), "", charset);
+        String lbexemethod = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("lbexemethod"), "", charset);
+//        String host = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("host"), null, charset);
+//        String port = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("port"), null, charset);
+//        String hostUser = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("hostUsername"), null, charset);
+//        String hostPassword = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("hostPassword"), null, charset);
+
         List<RobotCapability> capabilities = (List<RobotCapability>) (request.getParameter("capabilities") == null ? Collections.emptyList() : gson.fromJson(request.getParameter("capabilities"), new TypeToken<List<RobotCapability>>() {
         }.getType()));
 
+        JSONArray objExecutorArray = new JSONArray(request.getParameter("executors"));
+        List<RobotExecutor> executors = new ArrayList<>();
+        executors = getExecutorsFromParameter(robot, request, appContext, objExecutorArray);
 
         // Parameter that we cannot secure as we need the html --> We DECODE them
-        String host = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("host"), null, charset);
         // Securing capabilities by setting them the associated robot name
         // Check also if there is no duplicated capability
         Map<String, Object> capabilityMap = new HashMap<String, Object>();
@@ -115,6 +126,13 @@ public class CreateRobot extends HttpServlet {
             capabilityMap.put(capability.getCapability(), null);
             capability.setRobot(robot);
         }
+
+        Map<String, Object> executorMap = new HashMap<String, Object>();
+        for (RobotExecutor executor : executors) {
+            executorMap.put(executor.getExecutor(), null);
+            executor.setRobot(robot);
+        }
+
         Integer robotid = 0;
         boolean robotid_error = false;
         try {
@@ -134,12 +152,6 @@ public class CreateRobot extends HttpServlet {
                     .replace("%OPERATION%", "Create")
                     .replace("%REASON%", "Robot name is missing."));
             ans.setResultMessage(msg);
-        } else if (StringUtil.isNullOrEmpty(host)) {
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-            msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot")
-                    .replace("%OPERATION%", "Create")
-                    .replace("%REASON%", "Robot host is missing."));
-            ans.setResultMessage(msg);
         } else if (StringUtil.isNullOrEmpty(platform)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot")
@@ -158,15 +170,26 @@ public class CreateRobot extends HttpServlet {
                     .replace("%OPERATION%", "Create")
                     .replace("%REASON%", "There is at least one duplicated capability. Please edit or remove it to continue."));
             ans.setResultMessage(msg);
+        } else if (executorMap.size() != executors.size()) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot")
+                    .replace("%OPERATION%", "Create")
+                    .replace("%REASON%", "There is at least one duplicated executor. Please edit or remove it to continue."));
+            ans.setResultMessage(msg);
+        } else if (executorMap.size() <1) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot")
+                    .replace("%OPERATION%", "Create")
+                    .replace("%REASON%", "You need to specify at least 1 executor with non empty host in order to submit execution. Please add it from Executor TAB to continue."));
+            ans.setResultMessage(msg);
         } else {
             /**
              * All data seems cleans so we can call the services.
              */
-            ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             IRobotService robotService = appContext.getBean(IRobotService.class);
             IFactoryRobot robotFactory = appContext.getBean(IFactoryRobot.class);
 
-            Robot robotData = robotFactory.create(robotid, robot, host, port, platform, browser, version, active, description, userAgent, screenSize, hostUser, hostPassword, capabilities, robotDecli);
+            Robot robotData = robotFactory.create(robotid, robot, "", "", platform, browser, version, active, lbexemethod, description, userAgent, screenSize, "", "", capabilities, executors, robotDecli);
             ans = robotService.create(robotData);
 
             if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
@@ -187,6 +210,49 @@ public class CreateRobot extends HttpServlet {
         response.getWriter().print(jsonResponse);
         response.getWriter().flush();
 
+    }
+
+    private List<RobotExecutor> getExecutorsFromParameter(String robot, HttpServletRequest request, ApplicationContext appContext, JSONArray json) throws JSONException, CerberusException {
+        List<RobotExecutor> reList = new ArrayList<>();
+        IFactoryRobotExecutor reFactory = appContext.getBean(IFactoryRobotExecutor.class);
+        IRobotExecutorService reService = appContext.getBean(IRobotExecutorService.class);
+        PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
+        String charset = request.getCharacterEncoding();
+        List<RobotExecutor> reList1 = reService.convert(reService.readByRobot(robot));
+
+        for (int i = 0; i < json.length(); i++) {
+            JSONObject reJson = json.getJSONObject(i);
+
+            boolean delete = reJson.getBoolean("toDelete");
+            Integer id = reJson.getInt("ID");
+            String executor = reJson.getString("executor");
+            String active = reJson.getString("active");
+            Integer rank = reJson.getInt("rank");
+            String host = reJson.getString("host");
+            String port = reJson.getString("port");
+            String host_user = reJson.getString("hostUser");
+            String deviceName = reJson.getString("deviceName");
+            String deviceUuid = reJson.getString("deviceUuid");
+            Integer devicePort = reJson.getInt("devicePort");
+            String description = reJson.getString("description");
+
+            String host_password = reJson.getString("hostPassword");
+            if (host_password.equals("XXXXXXXXXX")) {
+                host_password = "";
+                for (RobotExecutor robotExecutor : reList1) {
+                    if (robotExecutor.getID() == id) {
+                        host_password = robotExecutor.getHostPassword();
+                        LOG.debug("Password not changed so reset to original value : " + robotExecutor.getHostPassword());
+                    }
+                }
+            }
+
+            if (!delete) {
+                RobotExecutor reo = reFactory.create(i, robot, executor, active, rank, host, port, host_user, host_password, deviceUuid, deviceName, devicePort, description, "", null, "", null);
+                reList.add(reo);
+            }
+        }
+        return reList;
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

@@ -271,6 +271,15 @@ function loadReportingData(selectTag) {
             $("#endLastExe").val(data.functionChart.globalEnd);
             $("#TagUsrCreated").val(data.tagObject.UsrCreated);
             $("#Tagcampaign").val(data.tagObject.campaign);
+            if (isEmpty(data.tagObject.campaign)) {
+                $("#TagcampaignCel1").addClass("hidden");
+                $("#TagcampaignCel2").addClass("hidden");
+            } else {
+                $("#TagcampaignCel1").removeClass("hidden");
+                $("#TagcampaignCel2").removeClass("hidden");
+                $("#buttonRunCampaign").attr("href", "./RunTests.jsp?campaign=" + data.tagObject.campaign);
+            }
+
             $("#durExe").val(data.tagDuration);
             if (data.tagDuration >= 0) {
                 $("#panelDuration").removeClass("hidden");

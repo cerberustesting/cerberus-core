@@ -5,13 +5,21 @@
 *Improvements / New features*
 [square]
 * [GUI] Major Label screen improvements. Label screen now display full hierarchy for all types of label (Sticker, Requirement and Battery)
-* [GUI] Label hierarchy is also displayed on ReportByTag page.
-* [GUI] On TestCase header modal, the 3 types of labels are now split per type 1 tab for STICKER, another for BATTERY and a last one for REQUIREMENT
-* [ENGINE] Video is now recorded for Android devices >= 4.4 (KitKat).  Just select option Screenshot 3 (Automatic Screenshots on error and Video) or 4 (Systematic Screenshots/Video) to use it
-* [GUI] On Campaign statistics modal, list of past tags are displayed with results.
+* [GUI] Label hierarchy is also displayed on ReportByTag page. Corresponding result and execution statistics are agregated by hierarchy.
+* [GUI] On TestCase header modal, the 3 types of labels are now split per type 1 tab for STICKER, another for BATTERY and a last one for REQUIREMENT.
+* [GUI] TestCase mass updates also have label split per type.
+* [ENGINE] Video is now recorded for Android devices >= 4.4 (KitKat).  Just select option Screenshot 3 (Automatic Screenshots on error and Video) or 4 (Systematic Screenshots/Video) to use it.
+* [GUI] On Campaign list screen, view modal now has a statistics TAB that list all past tags with results and statistics.
+* [GUI] On Campaign list screen and ReportByTag Screen, a new action button allow to trigger the execution of the campaign directly from RunTest Page.
 * [GUI] On all list screens (testcase, labels, datalib,...) updating an element on a list no longuer force to come back to the 1st page of the list. #981
 * [GUI] Sticky button on RunTestCase page.
+* [ENGINE] Robot can now have multiple 'executor'. That allow to spread the execution on a given robot to multiple selenium servers (or Appium or Sikuli servers). That allow more parralelism of queued execution and faster campaign executions.
+* [GUI] On Robot modal, the host, port, user and password are to be defined on a new TAB called 'Executor'. Multiple executors can be added to a robot with loadbalancing rule that can be ROUNDROBIN or BYRANKING.
+* [PERF] Performance optimisations on queue management jobs (reducing the nb of SQL).
+* [PERF] TestCase List screen and ReportByTag screens should be faster to navigate on systems that have quite a lot of labels defined.
+* [ENGINE] Capabilities sent to the robot server are now reported from execution page (both requested capabilities at robot level and final capabilities that are decoded and automaticly added by the engine).
+* [GUI] When creating a new TestCase, Test can now be created 'on the fly' without beeing forced to have it created before.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
-* none
+* SQL 1370 and 1371 can be quite long on systems with lots of executions.

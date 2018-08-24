@@ -48,6 +48,10 @@ public class TestCaseExecution {
     private String environment;
     private String environmentData;
     private String country;
+    private String robot;
+    private String robotExecutor;
+    private String robotHost; // Host the Selenium IP
+    private String robotPort; // host the Selenium Port
     private String robotDecli;
     private String browser;
     private String version;
@@ -59,8 +63,6 @@ public class TestCaseExecution {
     private String controlMessage;
     private String application;
     private String url;
-    private String ip; // Host the Selenium IP
-    private String port; // host the Selenium Port
     private String tag;
     private String status;
     private String crbVersion;
@@ -128,6 +130,7 @@ public class TestCaseExecution {
     private Selenium selenium;
     private Session session;
     private Robot robotObj;
+    private RobotExecutor robotExecutorObj;
     private AppService lastServiceCalled;
     private Integer nbExecutions; // Has the nb of execution that was necessary to execute the testcase.
     // Global parameters.
@@ -163,6 +166,14 @@ public class TestCaseExecution {
     public static final String MANUAL_Y = "Y";
     public static final String MANUAL_N = "N";
     public static final String MANUAL_A = "A";
+
+    public RobotExecutor getRobotExecutorObj() {
+        return robotExecutorObj;
+    }
+
+    public void setRobotExecutorObj(RobotExecutor robotExecutorObj) {
+        this.robotExecutorObj = robotExecutorObj;
+    }
 
     public Robot getRobotObj() {
         return robotObj;
@@ -752,20 +763,36 @@ public class TestCaseExecution {
         this.id = id;
     }
 
-    public String getIp() {
-        return ip;
+    public String getRobot() {
+        return robot;
     }
 
-    public void setIp(String ip) {
-        this.ip = ip;
+    public void setRobot(String robot) {
+        this.robot = robot;
     }
 
-    public String getPort() {
-        return port;
+    public String getRobotExecutor() {
+        return robotExecutor;
     }
 
-    public void setPort(String port) {
-        this.port = port;
+    public void setRobotExecutor(String robotExecutor) {
+        this.robotExecutor = robotExecutor;
+    }
+
+    public String getRobotHost() {
+        return robotHost;
+    }
+
+    public void setRobotHost(String robotHost) {
+        this.robotHost = robotHost;
+    }
+
+    public String getRobotPort() {
+        return robotPort;
+    }
+
+    public void setRobotPort(String robotPort) {
+        this.robotPort = robotPort;
     }
 
     public String getRevision() {
@@ -892,9 +919,11 @@ public class TestCaseExecution {
             result.put("controlStatus", this.getControlStatus());
             result.put("controlMessage", this.getControlMessage());
             result.put("application", this.getApplication());
-            result.put("ip", this.getIp());
+            result.put("robot", this.getRobot());
+            result.put("robotExecutor", this.getRobotExecutor());
+            result.put("robotHost", this.getRobotHost());
+            result.put("robotPort", this.getRobotPort());
             result.put("url", this.getUrl());
-            result.put("port", this.getPort());
             result.put("tag", this.getTag());
             result.put("verbose", this.getVerbose());
             result.put("status", this.getStatus());

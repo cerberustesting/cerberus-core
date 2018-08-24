@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import org.apache.commons.fileupload.FileItem;
 import org.cerberus.crud.entity.AppService;
+import org.cerberus.crud.entity.RobotCapability;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionFile;
 import org.cerberus.crud.entity.TestCaseStepActionControlExecution;
@@ -94,6 +95,17 @@ public interface IRecorderService {
      */
     TestCaseExecutionFile recordProperty(Long runId, String property, int propertyIndex, String content);
 
+    
+    /**
+     *
+     * @param testCaseExecution
+     * @param capsInputList
+     * @param capsFinalList
+     * @return
+     */
+    TestCaseExecutionFile recordCapabilities(TestCaseExecution testCaseExecution, List<RobotCapability> capsInputList, List<RobotCapability> capsFinalList);
+
+    
     /**
      *
      * @param testCaseStepActionControlExecution

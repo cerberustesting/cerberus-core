@@ -48,7 +48,6 @@ public class ExecutionQueueThreadPool {
     public void init() {
         executor = Executors.newCachedThreadPool();
         totalNumberOfThread = 0;
-        size = 0;
         inExecution = 0;
         LOG.debug("Starting ExecutionQueueThreadPool.");
     }

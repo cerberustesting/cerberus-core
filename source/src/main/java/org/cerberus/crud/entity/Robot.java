@@ -22,12 +22,19 @@ package org.cerberus.crud.entity;
 import org.cerberus.util.StringUtil;
 
 import java.util.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  *
  * @author bcivel
  */
 public class Robot {
+
+    private static final Logger LOG = LogManager.getLogger(Robot.class);
 
     private Integer robotID;
     private String robot;
@@ -39,16 +46,29 @@ public class Robot {
     private String browser;
     private String version;
     private String active;
+    private String lbexemethod; // Contain the method used in order to spread the load against all executors of the robot.
     private String description;
     private String userAgent;
     private String robotDecli;
     private String screenSize;
+
+    public static final String LOADBALANCINGEXECUTORMETHOD_ROUNDROBIN = "ROUNDROBIN";
+    public static final String LOADBALANCINGEXECUTORMETHOD_BYRANKING = "BYRANKING";
 
     /**
      * From here are data outside database model.
      */
     private List<RobotCapability> capabilities;
     private List<RobotCapability> capabilitiesDecoded;
+    private List<RobotExecutor> executors;
+
+    public List<RobotExecutor> getExecutors() {
+        return executors;
+    }
+
+    public void setExecutors(List<RobotExecutor> executors) {
+        this.executors = executors;
+    }
 
     public List<RobotCapability> getCapabilitiesDecoded() {
         return capabilitiesDecoded;
@@ -56,6 +76,14 @@ public class Robot {
 
     public void setCapabilitiesDecoded(List<RobotCapability> capabilitiesDecoded) {
         this.capabilitiesDecoded = capabilitiesDecoded;
+    }
+
+    public String getLbexemethod() {
+        return lbexemethod;
+    }
+
+    public void setLbexemethod(String lbexemethod) {
+        this.lbexemethod = lbexemethod;
     }
 
     public String getRobotDecli() {
@@ -186,4 +214,59 @@ public class Robot {
     public void setHostPassword(String hostPassword) {
         this.hostPassword = hostPassword;
     }
+
+    /**
+     * Convert the current TestCaseExecution into JSON format
+     *
+     * @param withChilds boolean that define if childs should be included
+     * @param secured
+     * @return TestCaseExecution in JSONObject format
+     */
+    public JSONObject toJson(boolean withChilds, boolean secured) {
+        JSONObject result = new JSONObject();
+        try {
+            result.put("hostUser", this.getHostUser());
+            result.put("active", this.getActive());
+            result.put("description", this.getDescription());
+            result.put("userAgent", this.getUserAgent());
+            result.put("robotID", this.getRobotID());
+            result.put("version", this.getVersion());
+            result.put("platform", this.getPlatform());
+            result.put("robot", this.getRobot());
+            result.put("robotDecli", this.getRobotDecli());
+            result.put("screenSize", this.getScreenSize());
+            result.put("port", this.getPort());
+            result.put("browser", this.getBrowser());
+            result.put("host", this.getHost());
+            result.put("lbexemethod", this.getLbexemethod());
+
+            if (withChilds) {
+                // Looping on ** Capabilities **
+                JSONArray arrayCap = new JSONArray();
+                if (this.getCapabilities() != null) {
+                    for (Object capability : this.getCapabilities()) {
+                        arrayCap.put(((RobotCapability) capability).toJson());
+                    }
+                }
+                result.put("capabilities", arrayCap);
+
+                // Looping on ** Executors **
+                JSONArray arrayExecutor = new JSONArray();
+                if (this.getExecutors()!= null) {
+                    for (Object executor : this.getExecutors()) {
+                        arrayExecutor.put(((RobotExecutor) executor).toJson(secured));
+                    }
+                }
+                result.put("executors", arrayExecutor);
+
+            }
+
+        } catch (JSONException ex) {
+            LOG.error(ex.toString());
+        } catch (Exception ex) {
+            LOG.error(ex.toString());
+        }
+        return result;
+    }
+
 }

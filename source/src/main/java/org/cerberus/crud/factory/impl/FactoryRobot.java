@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.cerberus.crud.entity.Robot;
 import org.cerberus.crud.entity.RobotCapability;
+import org.cerberus.crud.entity.RobotExecutor;
 import org.cerberus.crud.factory.IFactoryRobot;
 import org.springframework.stereotype.Service;
 
@@ -34,14 +35,14 @@ public class FactoryRobot implements IFactoryRobot {
 
     @Override
     public Robot create(Integer robotID, String robot, String host, String port, String platform,
-            String browser, String version, String active, String description, String userAgent, String screenSize, String hostUser, String hostPassword, String robotDecli) {
-        Robot r = create(robotID, robot, host, port, platform, browser, version, active, description, userAgent, screenSize, hostUser, hostPassword, new ArrayList<>(), robotDecli);
+            String browser, String version, String active, String lbexemethod, String description, String userAgent, String screenSize, String hostUser, String hostPassword, String robotDecli) {
+        Robot r = create(robotID, robot, host, port, platform, browser, version, active, lbexemethod, description, userAgent, screenSize, hostUser, hostPassword, new ArrayList<>(), new ArrayList<>(), robotDecli);
         return r;
     }
 
     @Override
-    public Robot create(Integer robotID, String robot, String host, String port, String platform, String browser, String version, String active, String description, String userAgent,
-             String screenSize, String hostUser, String hostPassword, List<RobotCapability> capabilities, String robotDecli) {
+    public Robot create(Integer robotID, String robot, String host, String port, String platform, String browser, String version, String active, String lbexemethod, String description, String userAgent,
+             String screenSize, String hostUser, String hostPassword, List<RobotCapability> capabilities, List<RobotExecutor> executors, String robotDecli) {
         Robot newRobot = new Robot();
         newRobot.setRobotID(robotID);
         newRobot.setRobot(robot);
@@ -51,6 +52,7 @@ public class FactoryRobot implements IFactoryRobot {
         newRobot.setBrowser(browser);
         newRobot.setVersion(version);
         newRobot.setActive(active);
+        newRobot.setLbexemethod(lbexemethod);
         newRobot.setDescription(description);
         newRobot.setUserAgent(userAgent);
         newRobot.setCapabilities(capabilities);

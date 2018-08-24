@@ -849,8 +849,12 @@ function aoColumnsFunc(tableId) {
                                         class="viewTestcampaign btn btn-default btn-xs margin-right5" \n\
                                         name="viewTestcampaign" title="' + doc.getDocLabel("page_testcampaign", "button_view") + '" type="button">\n\
                                         <span class="glyphicon glyphicon-eye-open"></span></button>';
+                var Runcampaign = '<a id="runcampaign" class="btn btn-primary btn-xs margin-right5"\n\
+                                    href="./RunTests.jsp?campaign=' + encodeURIComponent(obj["campaign"]) + '" title="' + doc.getDocLabel("page_testcampaign", "button_run") + '" >\n\
+                                    <span class="glyphicon glyphicon-play"></span>\n\
+                                    </a>';
 
-                return '<div class="center btn-group">' + editTestcampaign + removeTestcampaign + viewTestcampaign + '</div>';
+                return '<div class="center btn-group">' + editTestcampaign + removeTestcampaign + viewTestcampaign + Runcampaign +'</div>';
 
             }
         },
@@ -969,7 +973,7 @@ function aoColumnsFunc_TestCase() {
 function aoColumnsFunc_Tag() {
     var doc = new Doc();
     var aoColumns = [
-        {"data": "1", "sName": "Tag", "sWidth": "250px", "title": doc.getDocLabel("page_tag", "tag")},
+        {"data": "1", "sName": "Tag", "sWidth": "250px", "title": doc.getDocOnline("tag", "tag")},
         {"data": "4", "sName": "DateCreated", "sWidth": "150px", "title": doc.getDocLabel("page_tag", "datecreated")},
         {
             "data": "6",
@@ -982,7 +986,7 @@ function aoColumnsFunc_Tag() {
                     return '<div class="progress-bar status' + obj[0].ciResult + '" role="progressbar" style="width:100%">' + obj[0].ciResult + '</div>';
                 }
             },
-            "title": doc.getDocLabel("page_tag", "ciresult")
+            "title": doc.getDocOnline("tag", "ciresult")
         },
         {
             "data": null,
@@ -1001,9 +1005,9 @@ function aoColumnsFunc_Tag() {
             "mRender": function (data, type, obj) {
                 return getDuration(obj[0]);
             },
-            "title": doc.getDocLabel("page_tag", "duration")
+            "title": doc.getDocOnline("page_tag", "duration")
         },
-        {"data": "3", "sName": "nbExeUsefull", "sWidth": "40px", "title": doc.getDocLabel("page_tag", "nbexeuseful")},
+        {"data": "3", "sName": "nbExeUsefull", "sWidth": "40px", "title": doc.getDocOnline("tag", "nbexeusefull")},
         {
             "data": null,
             "sName": "reliability",
@@ -1011,7 +1015,7 @@ function aoColumnsFunc_Tag() {
             "mRender": function (data, type, obj) {
                 return reliability(obj[0]);
             },
-            "title": doc.getDocLabel("page_tag", "reliability")
+            "title": doc.getDocOnline("page_tag", "reliability")
         },
         {
             "data": null,
@@ -1024,11 +1028,11 @@ function aoColumnsFunc_Tag() {
                 }
                 return "exepermin";
             },
-            "title": doc.getDocLabel("page_tag", "exepermin")
+            "title": doc.getDocOnline("page_tag", "exepermin")
         },
-        {"data": "2", "sName": "nbExe", "sWidth": "40px", "title": doc.getDocLabel("page_tag", "nbexe")},
-        {"data": "7", "sName": "ciscore", "sWidth": "40px", "title": doc.getDocLabel("page_tag", "ciscore")},
-        {"data": "5", "sName": "DateEndQueue", "sWidth": "150px", "title": doc.getDocLabel("page_tag", "dateend")}
+        {"data": "2", "sName": "nbExe", "sWidth": "40px", "title": doc.getDocOnline("tag", "nbexe")},
+        {"data": "7", "sName": "ciscore", "sWidth": "40px", "title": doc.getDocOnline("tag", "ciscore")},
+        {"data": "5", "sName": "DateEndQueue", "sWidth": "150px", "title": doc.getDocOnline("tag", "dateendqueue")}
     ];
     return aoColumns;
 }

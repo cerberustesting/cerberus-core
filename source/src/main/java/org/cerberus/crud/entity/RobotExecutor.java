@@ -20,13 +20,19 @@
 package org.cerberus.crud.entity;
 
 import java.sql.Timestamp;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.util.StringUtil;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  *
  * @author bcivel
  */
 public class RobotExecutor {
+
+    private static final Logger LOG = LogManager.getLogger(RobotExecutor.class);
 
     private Integer ID;
     private String robot;
@@ -39,7 +45,9 @@ public class RobotExecutor {
     private String hostPassword;
     private String deviceUuid;
     private String deviceName;
+    private Integer devicePort;
     private String description;
+    private long dateLastExeSubmitted;
     private String UsrCreated;
     private Timestamp DateCreated;
     private String UsrModif;
@@ -67,6 +75,14 @@ public class RobotExecutor {
 
     public void setExecutor(String executor) {
         this.executor = executor;
+    }
+
+    public long getDateLastExeSubmitted() {
+        return dateLastExeSubmitted;
+    }
+
+    public void setDateLastExeSubmitted(long dateLastExeSubmitted) {
+        this.dateLastExeSubmitted = dateLastExeSubmitted;
     }
 
     public String getActive() {
@@ -169,6 +185,14 @@ public class RobotExecutor {
         return DateModif;
     }
 
+    public Integer getDevicePort() {
+        return devicePort;
+    }
+
+    public void setDevicePort(Integer devicePort) {
+        this.devicePort = devicePort;
+    }
+
     /**
      * From here are data outside database model.
      */
@@ -183,6 +207,132 @@ public class RobotExecutor {
         }
 
         return credential + this.getHost();
+    }
+
+    public boolean hasSameKey(RobotExecutor obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+
+        final RobotExecutor other = (RobotExecutor) obj;
+        if ((this.robot == null) ? (other.robot != null) : !this.robot.equals(other.robot)) {
+            return false;
+        }
+        if ((this.executor == null) ? (other.executor != null) : !this.executor.equals(other.executor)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+
+        int hash = 3;
+        hash = 67 * hash + (this.robot != null ? this.robot.hashCode() : 0);
+        hash = 67 * hash + (this.executor != null ? this.executor.hashCode() : 0);
+        hash = 67 * hash + this.rank;
+        hash = 67 * hash + (this.host != null ? this.host.hashCode() : 0);
+        hash = 67 * hash + (this.port != null ? this.port.hashCode() : 0);
+        hash = 67 * hash + (this.hostUser != null ? this.hostUser.hashCode() : 0);
+        hash = 67 * hash + (this.hostPassword != null ? this.hostPassword.hashCode() : 0);
+        hash = 67 * hash + (this.deviceUuid != null ? this.deviceUuid.hashCode() : 0);
+        hash = 67 * hash + (this.deviceName != null ? this.deviceName.hashCode() : 0);
+        hash = 67 * hash + (this.active != null ? this.active.hashCode() : 0);
+        hash = 67 * hash + (this.description != null ? this.description.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final RobotExecutor other = (RobotExecutor) obj;
+        if ((this.robot == null) ? (other.robot != null) : !this.robot.equals(other.robot)) {
+            return false;
+        }
+        if ((this.executor == null) ? (other.executor != null) : !this.executor.equals(other.executor)) {
+            return false;
+        }
+        if (this.rank != other.rank) {
+            return false;
+        }
+        if ((this.host == null) ? (other.host != null) : !this.host.equals(other.host)) {
+            return false;
+        }
+        if ((this.port == null) ? (other.port != null) : !this.port.equals(other.port)) {
+            return false;
+        }
+        if ((this.hostUser == null) ? (other.hostUser != null) : !this.hostUser.equals(other.hostUser)) {
+            return false;
+        }
+        if ((this.hostPassword == null) ? (other.hostPassword != null) : !this.hostPassword.equals(other.hostPassword)) {
+            return false;
+        }
+        if ((this.deviceUuid == null) ? (other.deviceUuid != null) : !this.deviceUuid.equals(other.deviceUuid)) {
+            return false;
+        }
+        if ((this.deviceName == null) ? (other.deviceName != null) : !this.deviceName.equals(other.deviceName)) {
+            return false;
+        }
+        if ((this.devicePort == null) ? (other.devicePort != null) : !this.devicePort.equals(other.devicePort)) {
+            return false;
+        }
+        if ((this.active == null) ? (other.active != null) : !this.active.equals(other.active)) {
+            return false;
+        }
+        if ((this.description == null) ? (other.description != null) : !this.description.equals(other.description)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return robot + " - " + executor + " - " + host;
+    }
+
+    public JSONObject toJson(boolean secured) {
+        JSONObject result = new JSONObject();
+        try {
+            result.put("DateCreated", this.getDateCreated());
+            result.put("DateModif", this.getDateModif());
+            result.put("ID", this.getID());
+            result.put("UsrCreated", this.getUsrCreated());
+            result.put("UsrModif", this.getUsrModif());
+            result.put("active", this.getActive());
+            result.put("description", this.getDescription());
+            result.put("deviceName", this.getDeviceName());
+            result.put("deviceUuid", this.getDeviceUuid());
+            result.put("devicePort", this.getDevicePort());
+            result.put("executor", this.getExecutor());
+            result.put("host", this.getHost());
+            if (secured) {
+                if (this.getHostPassword() != null && !this.getHostPassword().equals("")) {
+                    result.put("hostPassword", "XXXXXXXXXX");
+                } else {
+                    result.put("hostPassword", "");
+                }
+            } else {
+                result.put("hostPassword", this.getHostPassword());
+            }
+            result.put("hostUser", this.getHostUser());
+            result.put("port", this.getPort());
+            result.put("rank", this.getRank());
+            result.put("robot", this.getRobot());
+        } catch (JSONException ex) {
+            LOG.error(ex.toString());
+        } catch (Exception ex) {
+            LOG.error(ex.toString());
+        }
+        return result;
     }
 
 }

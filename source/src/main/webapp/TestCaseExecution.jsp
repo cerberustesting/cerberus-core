@@ -402,14 +402,34 @@
                             <div class="row">
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label for="ip">IP</label>
-                                        <input type="text" class="form-control" id="ip" placeholder="IP" readonly>
+                                        <label for="robot">Robot</label>
+                                        <input type="text" class="form-control" id="robot" placeholder="Robot" readonly>
                                     </div>
                                 </div>
                                 <div class="col-sm-3">
                                     <div class="form-group">
-                                        <label for="port">Port</label>
-                                        <input type="text" class="form-control" id="port" placeholder="Port" readonly>
+                                        <label for="robotdecli">Robot Declination</label>
+                                        <input type="text" class="form-control" id="robotdecli" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <div class="form-group">
+                                        <label for="robotexe">Robot Executor</label>
+                                        <input type="text" class="form-control" id="robotexe" placeholder="Robot Executor" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-sm-3">
+                                    <div class="form-group">
+                                        <label for="robothost">Robot Host</label>
+                                        <input type="text" class="form-control" id="robothost" placeholder="Robot Host" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-sm-3">
+                                    <div class="form-group">
+                                        <label for="robotport">Robot Port</label>
+                                        <input type="text" class="form-control" id="robotport" placeholder="Robot Port" readonly>
                                     </div>
                                 </div>
                             </div>
@@ -432,12 +452,6 @@
                                         <input type="text" class="form-control" id="version" placeholder="Version" readonly>
                                     </div>
                                 </div>
-                                <div class="col-sm-3">
-                                    <div class="form-group">
-                                        <label for="browserfull">Browser Full Version</label>
-                                        <input type="text" class="form-control" id="browserfull" placeholder="Browser Full Version" readonly>
-                                    </div>
-                                </div>
                             </div>
                             <div class="row">
                                 <div class="col-sm-6">
@@ -450,12 +464,6 @@
                                     <div class="form-group">
                                         <label for="screenSize">Screen Size</label>
                                         <input type="text" class="form-control" id="screenSize" placeholder="Screen Size" readonly>
-                                    </div>
-                                </div>
-                                <div class="col-sm-3">
-                                    <div class="form-group">
-                                        <label for="robotdecli">Robot Declination</label>
-                                        <input type="text" class="form-control" id="robotdecli" readonly>
                                     </div>
                                 </div>
                             </div>
