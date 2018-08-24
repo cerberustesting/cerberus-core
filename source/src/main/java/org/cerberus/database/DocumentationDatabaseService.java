@@ -425,6 +425,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('robotexecutor','deviceUuid','','fr','UUID du Device','Lorsque défini, renseigne automatiquement la capability \\'deviceUuid\\.',NULL)");
         b.append(",('robotexecutor','deviceName','','en','Device Name','When defined, it feed the \\'deviceName\\' capability..',NULL)");
         b.append(",('robotexecutor','deviceName','','fr','Nom du Device','Lorsque défini, renseigne automatiquement la capability \\'deviceName\\.',NULL)");
+        b.append(",('robotexecutor','devicePort','','en','Device Port','Specify an unuque port > 8200 for each device to run parallel tests',NULL)");
+        b.append(",('robotexecutor','devicePort','','fr','Port du device','Preciser un port > 8200 différent pour chaque device pour exécuter des tests en parallèle',NULL)");
         b.append(",('robotexecutor','description','','en','Description','',NULL)");
         b.append(",('robotexecutor','description','','fr','Description','',NULL)");
         b.append(",('robotexecutor','dateLastExeSubmitted','','en','Timestamp of last Exe Submitted','',NULL)");

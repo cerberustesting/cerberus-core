@@ -298,7 +298,7 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
     public Answer create(RobotExecutor object) {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO robotexecutor (`robot`, `executor`, `active`, `rank`, `host`, `port`, `host_user`, `host_password`, `deviceuuid`, `devicename`, `description`, `usrcreated`) ");
+        query.append("INSERT INTO robotexecutor (`robot`, `executor`, `active`, `rank`, `host`, `port`, `host_user`, `host_password`, `deviceuuid`, `devicename`, `deviceport`, `description`, `usrcreated`) ");
         query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?)");
 
         // Debug message on SQL.
@@ -320,6 +320,7 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
                 preStat.setString(i++, object.getHostPassword());
                 preStat.setString(i++, object.getDeviceUuid());
                 preStat.setString(i++, object.getDeviceName());
+                preStat.setInt(i++, object.getDevicePort());
                 preStat.setString(i++, object.getDescription());
                 preStat.setString(i++, object.getUsrCreated());
                 preStat.executeUpdate();
@@ -377,7 +378,7 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
     @Override
     public Answer update(String robot, String executor, RobotExecutor object) {
         MessageEvent msg = null;
-        final String query = "UPDATE robotexecutor SET `robot` = ?, `executor` = ?, description = ?, active = ?, `rank` = ?, `host` = ?, `port` = ?, `host_user` = ?, `host_password` = ?, `deviceuuid` = ?, `devicename` = ?, "
+        final String query = "UPDATE robotexecutor SET `robot` = ?, `executor` = ?, description = ?, active = ?, `rank` = ?, `host` = ?, `port` = ?, `host_user` = ?, `host_password` = ?, `deviceuuid` = ?, `devicename` = ?, `deviceport` = ?, "
                 + "dateModif = NOW(), usrModif= ?  WHERE `robot` = ? and `executor` = ?";
 
         // Debug message on SQL.
@@ -401,6 +402,7 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
             preStat.setString(i++, object.getHostPassword());
             preStat.setString(i++, object.getDeviceUuid());
             preStat.setString(i++, object.getDeviceName());
+            preStat.setInt(i++, object.getDevicePort());
             preStat.setString(i++, object.getUsrModif());
             preStat.setString(i++, robot);
             preStat.setString(i++, executor);
@@ -460,6 +462,7 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
         String host_password = ParameterParserUtil.parseStringParam(rs.getString("rbe.host_password"), "");
         String deviceuuid = ParameterParserUtil.parseStringParam(rs.getString("rbe.deviceuuid"), "");
         String devicename = ParameterParserUtil.parseStringParam(rs.getString("rbe.devicename"), "");
+        Integer deviceport = rs.getInt("rbe.deviceport");
         String description = ParameterParserUtil.parseStringParam(rs.getString("rbe.description"), "");
         long dateLastExe = rs.getLong("rbe.DateLastExeSubmitted");
         String usrModif = ParameterParserUtil.parseStringParam(rs.getString("rbe.UsrModif"), "");
@@ -469,7 +472,7 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
 
         //TODO remove when working in test with mockito and autowired
         factoryRobotExecutor = new FactoryRobotExecutor();
-        return factoryRobotExecutor.create(id, robot, executor, active, rank, host, port, host_user, host_password, deviceuuid, devicename, description, usrCreated, dateCreated, usrModif, dateModif);
+        return factoryRobotExecutor.create(id, robot, executor, active, rank, host, port, host_user, host_password, deviceuuid, devicename, deviceport, description, usrCreated, dateCreated, usrModif, dateModif);
     }
 
     @Override

@@ -7833,7 +7833,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append("('SELECTOR', 'data-cerberus=', '6550', '', '');");
         a.add(b.toString());
 
-        // 1368-1373
+        // 1368-1374
         a.add(" CREATE TABLE `robotexecutor` ("
                 + "  `id` int(11) NOT NULL AUTO_INCREMENT,"
                 + "  `robot` varchar(100) NOT NULL,"
@@ -7874,6 +7874,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append(" ('ROBOTEXECUTORACTIVE', 'Y', '10', '', ''),");
         b.append(" ('INVARIANTPRIVATE','ROBOTEXECUTORACTIVE', '840','Activation flag for Robot Executor.', '')");
         a.add(b.toString());
+
+        a.add("ALTER TABLE `robotexecutor` ADD COLUMN `devicePort` int(8)");
 
         return a;
     }

@@ -45,6 +45,7 @@ public class RobotExecutor {
     private String hostPassword;
     private String deviceUuid;
     private String deviceName;
+    private Integer devicePort;
     private String description;
     private long dateLastExeSubmitted;
     private String UsrCreated;
@@ -184,6 +185,14 @@ public class RobotExecutor {
         return DateModif;
     }
 
+    public Integer getDevicePort() {
+        return devicePort;
+    }
+
+    public void setDevicePort(Integer devicePort) {
+        this.devicePort = devicePort;
+    }
+
     /**
      * From here are data outside database model.
      */
@@ -273,6 +282,9 @@ public class RobotExecutor {
         if ((this.deviceName == null) ? (other.deviceName != null) : !this.deviceName.equals(other.deviceName)) {
             return false;
         }
+        if ((this.devicePort == null) ? (other.devicePort != null) : !this.devicePort.equals(other.devicePort)) {
+            return false;
+        }
         if ((this.active == null) ? (other.active != null) : !this.active.equals(other.active)) {
             return false;
         }
@@ -299,6 +311,7 @@ public class RobotExecutor {
             result.put("description", this.getDescription());
             result.put("deviceName", this.getDeviceName());
             result.put("deviceUuid", this.getDeviceUuid());
+            result.put("devicePort", this.getDevicePort());
             result.put("executor", this.getExecutor());
             result.put("host", this.getHost());
             if (secured) {

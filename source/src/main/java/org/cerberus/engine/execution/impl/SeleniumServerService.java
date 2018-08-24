@@ -447,11 +447,9 @@ public class SeleniumServerService implements ISeleniumServerService {
          */
         if (!StringUtil.isNullOrEmpty(tCExecution.getPlatform())) {
             caps.setCapability("platform", tCExecution.getPlatform());
-            additionalCapabilities.add(factoryRobotCapability.create(0, "", "platform", tCExecution.getPlatform()));
         }
         if (!StringUtil.isNullOrEmpty(tCExecution.getVersion())) {
             caps.setCapability("version", tCExecution.getVersion());
-            additionalCapabilities.add(factoryRobotCapability.create(0, "", "version", tCExecution.getVersion()));
         }
 
         /**
@@ -463,29 +461,36 @@ public class SeleniumServerService implements ISeleniumServerService {
             // Set the app capability with the application path
             if (!StringUtil.isNullOrEmpty(tCExecution.getMyHost())) {
                 caps.setCapability("app", tCExecution.getMyHost());
-                additionalCapabilities.add(factoryRobotCapability.create(0, "", "app", tCExecution.getMyHost()));
             } else {
                 caps.setCapability("app", tCExecution.getCountryEnvironmentParameters().getIp());
-                additionalCapabilities.add(factoryRobotCapability.create(0, "", "app", tCExecution.getCountryEnvironmentParameters().getIp()));
             }
             if (!StringUtil.isNullOrEmpty(tCExecution.getCountryEnvironmentParameters().getMobileActivity()) && tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
                 caps.setCapability("appWaitActivity", tCExecution.getCountryEnvironmentParameters().getMobileActivity());
-                additionalCapabilities.add(factoryRobotCapability.create(0, "", "appWaitActivity", tCExecution.getCountryEnvironmentParameters().getMobileActivity()));
             }
 
             if (tCExecution.getRobotExecutorObj() != null) {
                 // Setting deviceUuid and device name from executor.
                 if (!StringUtil.isNullOrEmpty(tCExecution.getRobotExecutorObj().getDeviceUuid())) {
-                    caps.setCapability("deviceUUID", tCExecution.getRobotExecutorObj().getDeviceUuid());
-                    additionalCapabilities.add(factoryRobotCapability.create(0, "", "deviceUUID", tCExecution.getRobotExecutorObj().getDeviceUuid()));
+                    caps.setCapability("udid", tCExecution.getRobotExecutorObj().getDeviceUuid());
                 }
                 if (!StringUtil.isNullOrEmpty(tCExecution.getRobotExecutorObj().getDeviceName())) {
                     caps.setCapability("deviceName", tCExecution.getRobotExecutorObj().getDeviceName());
-                    additionalCapabilities.add(factoryRobotCapability.create(0, "", "deviceName", tCExecution.getRobotExecutorObj().getDeviceName()));
+                }
+                if (!StringUtil.isNullOrEmpty(tCExecution.getRobotExecutorObj().getDeviceName())) {
+                    caps.setCapability("systemPort", tCExecution.getRobotExecutorObj().getDevicePort()+"");
                 }
             }
 
+            if(tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK) && caps.getCapability("automationName") == null) {
+                caps.setCapability("automationName", "UIAutomator2"); // use UIAutomator2 by default
+            }
+
         }
+
+        for(Map.Entry cap : caps.asMap().entrySet()) {
+            additionalCapabilities.add(factoryRobotCapability.create(0, "", cap.getKey().toString(), cap.getValue().toString()));
+        }
+
 
         /**
          * We record Selenium log at the end of the execution.

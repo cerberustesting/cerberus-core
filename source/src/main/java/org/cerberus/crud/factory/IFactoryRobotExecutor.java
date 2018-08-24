@@ -47,6 +47,6 @@ public interface IFactoryRobotExecutor {
      * @param DateModif
      * @return
      */
-    RobotExecutor create(Integer ID, String robot, String executor, String active, Integer rank, String host, String port, String hostUser, String hostPassword, String deviceUuid, String deviceName, String description,
+    RobotExecutor create(Integer ID, String robot, String executor, String active, Integer rank, String host, String port, String hostUser, String hostPassword, String deviceUuid, String deviceName, Integer devicePort, String description,
             String UsrCreated, Timestamp DateCreated, String UsrModif, Timestamp DateModif);
 }

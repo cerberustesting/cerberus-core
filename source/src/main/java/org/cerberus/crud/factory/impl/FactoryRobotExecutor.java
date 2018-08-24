@@ -31,7 +31,7 @@ import org.springframework.stereotype.Service;
 public class FactoryRobotExecutor implements IFactoryRobotExecutor {
 
     @Override
-    public RobotExecutor create(Integer ID, String robot, String executor, String active, Integer rank, String host, String port, String hostUser, String hostPassword, String deviceUuid, String deviceName, String description,
+    public RobotExecutor create(Integer ID, String robot, String executor, String active, Integer rank, String host, String port, String hostUser, String hostPassword, String deviceUuid, String deviceName, Integer devicePort, String description,
             String UsrCreated, Timestamp DateCreated, String UsrModif, Timestamp DateModif) {
         RobotExecutor newRobot = new RobotExecutor();
         newRobot.setID(ID);
@@ -50,6 +50,7 @@ public class FactoryRobotExecutor implements IFactoryRobotExecutor {
         newRobot.setDateCreated(DateCreated);
         newRobot.setUsrModif(UsrModif);
         newRobot.setDateModif(DateModif);
+        newRobot.setDevicePort(devicePort);
         return newRobot;
     }
 
