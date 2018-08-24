@@ -246,6 +246,14 @@
                                         <div class="panel-body collapse in" id="propertiesPanel">
                                             <div id="propTable" class="list-group">
                                             </div>
+                                            <div id="secondaryPropTableHeader" class="list-group" style="display:none;">
+                                            	<p><label for="secondaryPropertiesTitle">Secondary Properties [<span id="secondaryPropCount"></span>]</label>
+                                            		<button id="showSecondaryProp" type="button" class="btn btn-default pull-right"><span class="glyphicon glyphicon-collapse-down"></span> Show All</button>
+                                            		<button id="hideSecondaryProp" type="button" class="btn btn-default pull-right"><span class="glyphicon glyphicon-collapse-up"></span> Hide All</button>
+                                            	</p>
+                                            	<div id="secondaryPropTable">
+                                            	</div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

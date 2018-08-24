@@ -249,6 +249,16 @@ function initPage(id) {
     $("[name='buttonSave']").hide();
     $("#addProperty").hide();
     $("#duplicateButtons").hide();
+    
+    var secondaryPropertiesTable = $("#secondaryPropTable");
+    secondaryPropertiesTable.hide();
+    $("#showSecondaryProp").click(function () {
+    	secondaryPropertiesTable.show();
+    });
+    $("#hideSecondaryProp").click(function () {
+    	secondaryPropertiesTable.hide();
+    });
+    
 
     var wrap = $(window);
 }
@@ -750,14 +760,38 @@ function createProperties(propList) {
     var doc = new Doc();
 
     var table = $("#propTable");
+    var secondaryProptable = $("#secondaryPropTable");
+    var secondaryPropCount = 0;
 
     for (var ind = 0; ind < propList.length; ind++) {
-        var property = propList[ind];
-        drawProperty(property, table);
+    	
+    	var isThereAnySecondaryProperty = false;
+    	var property = propList[ind];
+    	var isSecondary = property.description.indexOf("[secondary]") >= 0;
+    	
+    	if (isSecondary == true ){
+    		// draw the Property in the second list
+    		drawProperty(property, secondaryProptable, true);
+    		isThereAnySecondaryProperty = true;
+    	} else {
+    		// draw the Property in the main list
+            drawProperty(property, table, false);
+    	}
+    	
+    	// Avoid displaying the secondary properties section title if there is no secondary properties
+    	if (isThereAnySecondaryProperty){ 
+    		// display the name of the secondary Properties container
+    		$('#secondaryPropTableHeader').css("display","block");
+    		// TO DO : link it to the docTable
+    		secondaryPropCount++;
+    		console.log(secondaryPropCount);
+    		$('#secondaryPropCount').html(secondaryPropCount); 		
+    	}
     }
 }
 
-function drawProperty(property, table) {
+// Noux: I added the isSecondary in case we need the information, but for now I can manage the display by using the table parameter
+function drawProperty(property, table, isSecondary) {
     var generateHeaderContent = $("<div></div>").addClass("content");
     var firstRow = $("<div></div>").addClass("row");
     var contentField = $("<div></div>").addClass("col-sm-12");
@@ -765,7 +799,7 @@ function drawProperty(property, table) {
     var propertyName = $("<h4>").attr("style", "font-size:0.9em;margin:0px;line-height:1;height:0.9em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
     var returnMessageField = $("<h4>").attr("style", "font-size:.9em;margin:0px;line-height:1;height:.95em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
     var descriptionField = $("<h4>").attr("style", "font-size:1.2em;margin:0px;line-height:1;height:1.2em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
-
+    
     returnMessageField.append(safeLinkify(property.rMessage));
     descriptionField.append(property.value);
 
