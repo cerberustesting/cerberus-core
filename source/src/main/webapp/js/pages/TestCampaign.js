@@ -1054,7 +1054,6 @@ function getGreenToRed(percent) {
 function result(tag) {
     var progress = "";
     if (tag.nbExeUsefull > 0) {
-//        var per = 30;
         progress += "<div class=\"progress-bar statusOK\" role=\"progressbar\" style=\"width:" + (tag.nbOK * 100 / tag.nbExeUsefull) + "%;\">" + Math.round((tag.nbOK * 100 / tag.nbExeUsefull) * 10) / 10 + "%</div>";
         progress += "<div class=\"progress-bar statusKO\" role=\"progressbar\" style=\"width:" + (tag.nbKO * 100 / tag.nbExeUsefull) + "%;\">" + Math.round((tag.nbKO * 100 / tag.nbExeUsefull) * 10) / 10 + "%</div>";
         progress += "<div class=\"progress-bar statusFA\" role=\"progressbar\" style=\"width:" + (tag.nbFA * 100 / tag.nbExeUsefull) + "%;\">" + Math.round((tag.nbFA * 100 / tag.nbExeUsefull) * 10) / 10 + "%</div>";
