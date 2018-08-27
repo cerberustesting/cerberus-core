@@ -95,12 +95,10 @@ function autocompleteWithTags(identifier, Tags) {
                         //If We find the separator, then we filter with the already written part
                         if ((identifier.match(new RegExp(Tags[tag].regex)) || []).length > 0) {
                             var arrayLabels = [];
-
                             if (Tags[tag].regex === "%object\\.") {
                                 Tags[tag].array.forEach(function (data) {
                                     arrayLabels.push(data.object);
                                 });
-
                             } else {
                                 arrayLabels = Tags[tag].array;
                             }
@@ -122,13 +120,11 @@ function autocompleteWithTags(identifier, Tags) {
                     var direction = "top";
                     if (idx < 4)
                         direction = "bottom";
-
                     $(data).tooltip({
                         animated: 'fade',
                         placement: direction,
                         html: true
                     });
-
                     var parent = $(data).parent().parent();
                     if (parent.hasClass("ui-autocomplete")) {
                         parent.css("min-height", "120px"); // add height to do place to display tooltip. else overflow:auto hide tooltip
@@ -244,6 +240,54 @@ function loadApplicationObject(dataInit) {
     });
 }
 
+function loadProperties(testcaseinfo, canUpdate) {
+    return new Promise(function (resolve, reject) {
+        var array = [];
+        var secondaryPropertiesArray = [];      
+        var propertyList = [];
+        var secondaryPropertyList = [];
+        $.ajax({
+            url: "GetPropertiesForTestCase",
+            data: {test: testcaseinfo.test, testcase: testcaseinfo.testcase},
+            async: true,
+            success: function (data) {
+                data.sort(function (a, b) {
+                    return compareStrings(a.property, b.property);
+                })
+                for (var index = 0; index < data.length; index++) {        
+                    var property = data[index];
+                    // check if the property is secondary
+                    var isSecondary = property.description.indexOf("[secondary]") >= 0;                    
+                    if (isSecondary) {
+                    	secondaryPropertiesArray.push(data[index].property);
+                    } else {
+                    	array.push(data[index].property);
+                    }
+                    property.toDelete = false;                
+                    if (isSecondary) {
+                    	secondaryPropertyList.push(property.property);
+                    } else {
+                    	propertyList.push(property.property);
+                    }
+                }
+                var propertyListUnique = Array.from(new Set(propertyList));
+                var secondaryPropertyListUnique = Array.from(new Set(secondaryPropertyList));                            
+                for (var index = 0; index < propertyListUnique.length; index++) {
+                    drawPropertyList(propertyListUnique[index], index, false);
+                }              
+                for (var index = 0; index < secondaryPropertyListUnique.length; index++) {
+                    drawPropertyList(secondaryPropertyListUnique[index], index, true);
+                }
+                array.sort(function (a, b) {
+                    return compareStrings(a, b);
+                })
+                resolve(propertyListUnique);
+            },
+            error: showUnexpectedError
+        });
+    });
+}
+
 function propertiesToArray(propList){
 	var propertyArray = [];
 	for (var index = 0; index < propList.length; index++) {
@@ -252,41 +296,22 @@ function propertiesToArray(propList){
 	return propertyArray;
 }
 
-function initTags(data,application,availableTags){
-	
-	var inheritedProperties = null;
-	var propertiesPromise = null;
-	var objectsPromise = null;
-	
-	if(data!= null){
-		inheritedProperties = propertiesToArray(data.inheritedProp);
-	    propertiesPromise = loadProperties(test, testcase, data.info, property, data.hasPermissionsUpdate);
-	    objectsPromise = loadApplicationObject(data);
-	}else{
-		objectsPromise = loadApplicationObject(application);
+function initTags(configs){	
+	var inheritedProperties = [], propertiesPromise = [] ,objectsPromise = [], availableTags = [];	
+	if(configs.property){
+		inheritedProperties = propertiesToArray(configs.property.inheritedProp);
+	    propertiesPromise = loadProperties(configs.property.info, configs.property.hasPermissionsUpdate);
+	    objectsPromise = loadApplicationObject(configs.property.info.application)
 	}
-	
-	/**
-	{
-		"system": true,
-		"object": true,
-		"property": false
-	}
-	**/
-	
-	if(availableTags === null )
-
-    return Promise.all([propertiesPromise,objectsPromise]).then(function (data2) {
-    	var properties, availableProperties = '';
-        var availableObjects = data2[1];
-        
-        if(data){
-        	properties = data2[0];
-        	availableProperties = properties.concat(inheritedProperties.filter(function (item) {
-                   return properties.indexOf(item) < 0;
-               }));
-        }
-
+	if(configs.object && !configs.property) objectsPromise = loadApplicationObject(configs.object);
+	$.each(configs, (key,value) => {
+		if (value) availableTags.push(key)
+	})
+    return Promise.all([propertiesPromise,objectsPromise]).then(function (data) {
+    	var properties = data[0], availableObjects = data[1];
+    	var availableProperties = properties.concat(inheritedProperties.filter(function (item) {
+               return properties.indexOf(item) < 0;
+           }));     
         var availableObjectProperties = [
             "value",
             "picturepath",
@@ -312,14 +337,13 @@ function initTags(data,application,availableTags){
             "YESTERDAY-yyyy", "YESTERDAY-MM", "YESTERDAY-dd", "YESTERDAY-doy", "YESTERDAY-HH", "YESTERDAY-mm", "YESTERDAY-ss",
             "TOMORROW-yyyy", "TOMORROW-MM", "TOMORROW-dd", "TOMORROW-doy"
         ];
-        
+       
         var availableIdentifiers = [
             "data-cerberus",
             "picture",
             "id",
             "xpath"
         ];
-
         tags = [
             {
                 array: availableObjectProperties,
@@ -368,11 +392,16 @@ function initTags(data,application,availableTags){
     });
 }
 
-function initAutocomplete(el,data,application){
-	var tags = initTags(data,application).then(function(tags){
+function initAutocompleteWithTags(el,configs){
+	var tags = initTags(configs).then(function(tags){
 		$(el).each(data => {
 			autocompleteWithTags(el[data], tags);
 		})
-	});
-	
+	});	
+}
+
+function initAutocompleteforSpecificFields(el){
+	$(el).each(data => {
+		autocompleteWithTags(el[data], tags);
+	})
 }

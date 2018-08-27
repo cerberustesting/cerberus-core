@@ -168,9 +168,7 @@ $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.j
                 data: {test: test, testCase: testcase, withStep: true},
                 dataType: "json",
                 success: function (data) {
-
                     canUpdate = data.hasPermissionsUpdate;
-
                     testcaseinfo = data.info;
                     loadTestCaseInfo(data.info);
                     json = data.stepList;
@@ -179,141 +177,38 @@ $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.j
                         return compareStrings(a.property, b.property);
                     })
                     createStepList(json, stepList, step, data.hasPermissionsUpdate, data.hasPermissionsStepLibrary);
-                    var inheritedProperties = drawInheritedProperty(data.inheritedProp);
-
-                    var propertiesPromise = loadProperties(test, testcase, data.info, property, data.hasPermissionsUpdate);
-                    var objectsPromise = loadApplicationObject(data);
-
-                    Promise.all([propertiesPromise, objectsPromise]).then(function (data2) {
-                        var properties = data2[0];
-                        var availableObjects = data2[1];
-                        var availableProperties = properties.concat(inheritedProperties.filter(function (item) {
-                            return properties.indexOf(item) < 0;
-                        }));
-                        var availableObjectProperties = [
-                            "value",
-                            "picturepath",
-                            "pictureurl"
-                        ];
-                        var availableSystemValues = [
-                            "SYSTEM",
-                            "APPLI",
-                            "BROWSER",
-                            "APP_DOMAIN", "APP_HOST", "APP_CONTEXTROOT", "EXEURL", "APP_VAR1", "APP_VAR2", "APP_VAR3", "APP_VAR4",
-                            "ENV", "ENVGP",
-                            "COUNTRY", "COUNTRYGP1", "COUNTRYGP2", "COUNTRYGP3", "COUNTRYGP4", "COUNTRYGP5", "COUNTRYGP6", "COUNTRYGP7", "COUNTRYGP8", "COUNTRYGP9",
-                            "TEST",
-                            "TESTCASE", "TESTCASEDESCRIPTION",
-                            "SSIP", "SSPORT",
-                            "TAG",
-                            "EXECUTIONID",
-                            "EXESTART", "EXEELAPSEDMS",
-                            "EXESTORAGEURL",
-                            "STEP.n.n.RETURNCODE", "CURRENTSTEP_INDEX", "CURRENTSTEP_STARTISO", "CURRENTSTEP_ELAPSEDMS", "CURRENTSTEP_SORT",
-                            "LASTSERVICE_HTTPCODE",
-                            "TODAY-yyyy", "TODAY-MM", "TODAY-dd", "TODAY-doy", "TODAY-HH", "TODAY-mm", "TODAY-ss",
-                            "YESTERDAY-yyyy", "YESTERDAY-MM", "YESTERDAY-dd", "YESTERDAY-doy", "YESTERDAY-HH", "YESTERDAY-mm", "YESTERDAY-ss",
-                            "TOMORROW-yyyy", "TOMORROW-MM", "TOMORROW-dd", "TOMORROW-doy"
-                        ];
-                        var availableTags = [
-                            "property",
-                            "object",
-                            "system"
-                        ];
-                        var availableIdentifiers = [
-                            "data-cerberus",
-                            "picture",
-                            "id",
-                            "xpath"
-                        ];
-
-                        Tags = [
-                            {
-                                array: availableObjectProperties,
-                                regex: "%object\\.[^\\.]*\\.",
-                                addBefore: "",
-                                addAfter: "%",
-                                isCreatable: false
-                            },
-                            {
-                                array: availableObjects,
-                                regex: "%object\\.",
-                                addBefore: "",
-                                addAfter: ".",
-                                isCreatable: true
-                            },
-                            {
-                                array: availableProperties,
-                                regex: "%property\\.",
-                                addBefore: "",
-                                addAfter: "%",
-                                isCreatable: true
-                            },
-                            {
-                                array: availableSystemValues,
-                                regex: "%system\\.",
-                                addBefore: "",
-                                addAfter: "%",
-                                isCreatable: false
-                            },
-                            {
-                                array: availableIdentifiers,
-                                regex: "^[A-Za-z]",
-                                addBefore: "",
-                                addAfter: "=",
-                                isCreatable: false
-                            },
-                            {
-                                array: availableTags,
-                                regex: "%",
-                                addBefore: "",
-                                addAfter: ".",
-                                isCreatable: false
-                            },
-                        ];
-
-                        autocompleteAllFields(Tags, data.info, test, testcase);
-
-                        // Manage authorities when data is fully loadable.
-                        $("#deleteTestCase").attr("disabled", !data.hasPermissionsDelete);
-                        $("#addStep").attr("disabled", !data.hasPermissionsUpdate);
-                        $("#deleteStep").attr("disabled", !data.hasPermissionsUpdate);
-                        $("#saveScript").attr("disabled", !data.hasPermissionsUpdate);
-                        $("#addActionBottom").attr("disabled", !data.hasPermissionsUpdate);
-                        $("#addProperty").attr("disabled", !data.hasPermissionsUpdate);
-                        // $("#saveProperty1").attr("disabled",
-                        // !data.hasPermissionsUpdate);
-                        // $("#saveProperty2").attr("disabled",
-                        // !data.hasPermissionsUpdate);
-
-                    });
-
+                    drawInheritedProperty(data.inheritedProp);                  
+                    autocompleteAllFields(data);
+                    // Manage authorities when data is fully loadable.
+                    $("#deleteTestCase").attr("disabled", !data.hasPermissionsDelete);
+                    $("#addStep").attr("disabled", !data.hasPermissionsUpdate);
+                    $("#deleteStep").attr("disabled", !data.hasPermissionsUpdate);
+                    $("#saveScript").attr("disabled", !data.hasPermissionsUpdate);
+                    $("#addActionBottom").attr("disabled", !data.hasPermissionsUpdate);
+                    $("#addProperty").attr("disabled", !data.hasPermissionsUpdate);
+                    // $("#saveProperty1").attr("disabled",
+                    // !data.hasPermissionsUpdate);
+                    // $("#saveProperty2").attr("disabled",
+                    // !data.hasPermissionsUpdate);
                     // Building full list of country from testcase.
                     var myCountry = [];
                     $.each(testcaseinfo.countryList, function (index) {
                         myCountry.push(index);
                     });
-
                     $("#manageProp").click(function () {
                         editPropertiesModalClick(test, testcase, testcaseinfo, undefined, undefined, data.hasPermissionsUpdate);
                     });
-
                     // Button Add Property insert a new Property
                     $("#addProperty").click(function () {
-
                         if (myCountry.length <= 0) {
                             showMessageMainPage("danger", doc.getDocLabel("page_testcasescript", "warning_nocountry"), false);
-
                         } else {
-
-
                             // Store the current saveScript button status and
                             // disable it
                             var saveScriptOldStatus = $("#saveScript").attr("disabled");
                             $("#saveScript").attr("disabled", true);
                             // clone the country list
                             var newCountryList = myCountry.slice(0);
-
                             var newProperty = {
                                 property: "",
                                 description: "",
@@ -330,38 +225,28 @@ $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.j
                                 retryPeriod: "",
                                 toDelete: false
                             };
-
                             var prop = drawProperty(newProperty, testcaseinfo, true, document.getElementsByClassName("property").length);
                             setPlaceholderProperty(prop[0], prop[1]);
-
                             $(prop[0]).find("#propName").focus();
                             // autocompleteAllFields();
-
                             // Restore the saveScript button status
                             $("#saveScript").attr("disabled", typeof saveScriptOldStatus !== typeof undefined && saveScriptOldStatus !== false);
                         }
-
                     });
-
                     $('[data-toggle="tooltip"]').tooltip();
-
                     $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
                         initModification();
                     });
                 },
                 error: showUnexpectedError
             });
-
             $("#propertiesModal [name='buttonSave']").click(editPropertiesModalSaveHandler);
-
             $("#addStep").click({stepList: stepList}, function (event) {
                 // Store the current saveScript button status and disable it
                 var saveScriptOldStatus = $("#saveScript").attr("disabled");
                 $("#saveScript").attr("disabled", true);
-
                 // Really do add step action
                 addStep(event);
-
                 // Restore the saveScript button status
                 $("#saveScript").attr("disabled", typeof saveScriptOldStatus !== typeof undefined && saveScriptOldStatus !== false);
             });
@@ -378,11 +263,8 @@ $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.j
                 });
                 importInfoIdx = 0;
             });
-
             $("#deleteStep").click(function () {
-
                 var step = $("#stepList .active").data("item");
-
                 if (step.isStepInUseByOtherTestCase) {
                     showStepUsesLibraryInConfirmationModal(step);
                 } else {
@@ -390,11 +272,9 @@ $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.j
                     step.setDelete();
                 }
             });
-
             $("#addAction").click(function () {
                 addActionAndFocus()
             });
-
             // CONTEXT SAVE MENU
             $("#saveScript").click(saveScript);
             $("#saveScriptAs").click(function () {
@@ -1060,24 +940,17 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
 
 function drawInheritedProperty(propList) {
     var doc = new Doc();
-    var propertyArray = [];
-
     var selectType = getSelectInvariant("PROPERTYTYPE", false, true).attr("disabled", true);
     selectType.attr("name", "inheritPropertyType");
     var selectDB = getSelectInvariant("PROPERTYDATABASE", false, true).attr("disabled", true);
     var selectNature = getSelectInvariant("PROPERTYNATURE", false, true).attr("disabled", true);
     var table = $("#inheritedPropPanel");
-
     for (var index = 0; index < propList.length; index++) {
         var property = propList[index];
-        propertyArray.push(propList[index].property);
-
         var test = property.fromTest;
         var testcase = property.fromTestCase;
-
         var moreBtn = $("<button class='btn btn-default add-btn'></button>").append($("<span></span>").addClass("glyphicon glyphicon-chevron-down"));
         var editBtn = $("<a href='./TestCaseScript.jsp?test=" + test + "&testcase=" + testcase + "&property=" + property.property + "' class='btn btn-primary add-btn'></a>").append($("<span></span>").addClass("glyphicon glyphicon-pencil"));
-
         var propertyInput = $("<input id='propName' name='propName' style='width: 100%; font-size: 16px; font-weight: 600;' placeholder='" + doc.getDocLabel("page_testcasescript", "feed_propertyname") + "' readonly='readonly'>").addClass("form-control input-sm").val(property.property);
         var descriptionInput = $("<textarea rows='1' id='propDescription' placeholder='" + doc.getDocLabel("page_testcasescript", "feed_propertydescription") + "' readonly='readonly'>").addClass("form-control input-sm").val(property.description);
         var valueInput = $("<pre id='inheritPropertyValue" + index + "' style='min-height:150px'  rows='1' placeholder='" + doc.getDocLabel("page_applicationObject", "Value") + "' readonly='readonly'></textarea>").addClass("form-control input-sm").text(property.value1);
@@ -1087,11 +960,9 @@ function drawInheritedProperty(propList) {
         var cacheExpireInput = $("<input placeholder='0' readonly='readonly'>").addClass("form-control input-sm").val(property.cacheExpire);
         var retryNbInput = $("<input placeholder='" + doc.getDocLabel("testcasecountryproperties", "RetryNb") + "' readonly='readonly'>").addClass("form-control input-sm").val(property.retryNb);
         var retryPeriodInput = $("<input placeholder='" + doc.getDocLabel("testcasecountryproperties", "RetryPeriod") + "' readonly='readonly'>").addClass("form-control input-sm").val(property.retryPeriod);
-
         var content = $("<div class='row property list-group-item disabled'></div>");
         var props = $("<div class='col-sm-11' name='inheritPropertyLine' id='inheritPropertyLine" + property.property + "'></div>");
         var right = $("<div class='col-sm-1 propertyButtons'></div>");
-
         var row1 = $("<div class='row' id='masterProp' name='masterProp' style='margin-top:10px;'></div>");
         var row2 = $("<div class='row' name='masterProp'></div>");
         var row3 = $("<div class='row' style='display:none;'></div>");
@@ -1110,7 +981,6 @@ function drawInheritedProperty(propList) {
         var cacheExpire = $("<div class='col-sm-2 form-group' name='fieldExpire'></div>").append($("<label></label>").text("cacheExpire")).append(cacheExpireInput);
         var retryNb = $("<div class='col-sm-2 form-group' name='fieldRetryNb'></div>").append($("<label></label>").text(doc.getDocLabel("testcasecountryproperties", "RetryNb"))).append(retryNbInput);
         var retryPeriod = $("<div class='col-sm-2 form-group' name='fieldRetryPeriod'></div>").append($("<label></label>").text(doc.getDocLabel("testcasecountryproperties", "RetryPeriod"))).append(retryPeriodInput);
-
         var selectAllBtn = $("<button disabled></button>").addClass("btn btn-default btn-sm").append($("<span></span>").addClass("glyphicon glyphicon-check")).click(function () {
             country.find("input[type='checkbox']").prop('checked', true);
         });
@@ -1118,7 +988,6 @@ function drawInheritedProperty(propList) {
             country.find("input[type='checkbox']").prop('checked', false);
         });
         var btnRow = $("<div class='col-sm-2'></div>").css("margin-top", "5px").css("margin-bottom", "5px").append(selectAllBtn).append(selectNoneBtn);
-
         moreBtn.click(function () {
             if ($(this).find("span").hasClass("glyphicon-chevron-down")) {
                 $(this).find("span").removeClass("glyphicon-chevron-down");
@@ -1129,22 +998,18 @@ function drawInheritedProperty(propList) {
             }
             $(this).parent().parent().find(".row:not([name='masterProp'])").toggle();
         });
-
         row1.data("property", property);
         row1.append(propertyName);
         row1.append(description);
         props.append(row1);
-
         row4.append(btnRow);
         row4.append(country);
         props.append(row4);
-
         row2.append(type);
         row2.append(db);
         row2.append(value);
         row2.append(value2);
         props.append(row2);
-
         row3.append(db);
         row3.append(length);
         row3.append(cacheExpire);
@@ -1153,42 +1018,18 @@ function drawInheritedProperty(propList) {
         row3.append(retryNb);
         row3.append(retryPeriod);
         props.append(row3);
-
         right.append(moreBtn);
         right.append(editBtn);
-
         content.append(props).append(right);
         table.append(content);
-
         var htmlElement = $("<li></li>").addClass("list-group-item list-group-item-calm row").css("margin-left", "0px");
         $(htmlElement).append($("<a></a>").attr("href", "#inheritPropertyLine" + property.property).text(property.property));
-
         $("#inheritPropList").append(htmlElement);
     }
-
     sortProperties("#inheritedPropPanel");
-    return propertyArray;
 }
 
-
-function loadServices() {
-    return new Promise(function (resolve, reject) {
-        var array = [];
-        var propertyList = [];
-
-        $.ajax({
-            url: "ReadAppService",
-            async: true,
-            success: function (data) {
-                resolve(data.contentTable);
-            },
-            error: showUnexpectedError
-        });
-    })
-}
-
-
-function loadProperties(test, testcase, testcaseinfo, propertyToFocus, canUpdate) {
+function loadPropertiesAndDraw(test, testcase, testcaseinfo, propertyToFocus, canUpdate) {
 
     return new Promise(function (resolve, reject) {
         var array = [];
@@ -2881,7 +2722,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
     };
 
     // function accessible everywhere that has access to TagsToUse
-    autocompleteAllFields = function (Tags, info, thistest, thistestcase) {
+    autocompleteAllFields = function (data, Tags, info, thistest, thistestcase) {
         if (Tags !== undefined) {
             TagsToUse = Tags;
         }
@@ -2894,13 +2735,21 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
         if (thistestcase !== undefined) {
             testcase = thistestcase;
         }
+        
+        console.log(data);
+        
+        var configs = {
+    		"system": true,
+    		"object": true,
+    		"property": data
+        }
 
         $(document).on('focus', "div.step-action .content div.fieldRow input:not('.description')", function (e, state) {
             let currentAction = $(this).parent().parent().find("#actionSelect").val();          
             if (currentAction === "callService" || currentAction === "calculateProperty") {
-            	autocompleteSpecificFields($(this));
+            	initAutocompleteforSpecificFields([$(this)]);
             } else {
-            	autocompleteWithTags($(this), Tags);
+            	initAutocompleteWithTags([$(this)], configs);
             }
         })
         
@@ -3059,7 +2908,7 @@ function deleteTestCaseHandlerClick() {
 
 editPropertiesModalClick = function (test, testcase, info, propertyToAdd, propertyToFocus, canUpdate) {
     // $("#propTable").empty();
-    loadProperties(test, testcase, info, propertyToFocus, canUpdate).then(function () {
+    loadPropertiesAndDraw(test, testcase, info, propertyToFocus, canUpdate).then(function () {
         autocompleteAllFields();
     });
     if (propertyToAdd !== undefined && propertyToAdd !== null) {

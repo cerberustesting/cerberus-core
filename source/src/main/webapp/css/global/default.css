@@ -37,7 +37,11 @@
 
 .modal {
     overflow: auto !important;
-    z-index: 9999 !important;
+    z-index: 9998 !important;
+}
+
+ul.ui-autocomplete {
+	z-index: 9999 !important;
 }
 
 .select2-dropdown{
