@@ -94,8 +94,6 @@ function autocompleteWithTags(identifier, Tags) {
                     while (tag < Tags.length && !found) {
                         //If We find the separator, then we filter with the already written part
                         if ((identifier.match(new RegExp(Tags[tag].regex)) || []).length > 0) {
-                        	console.log(identifier)
-                        	console.log(Tags[tag].regex)
                             var arrayLabels = [];
 
                             if (Tags[tag].regex === "%object\\.") {
@@ -230,3 +228,151 @@ function modifyAutocompleteSource(identifier, url, data){
 	})
 }
 
+function loadApplicationObject(dataInit) {
+    return new Promise(function (resolve, reject) {
+        var array = [];
+        $.ajax({
+            url: "ReadApplicationObject?application=" + dataInit,
+            dataType: "json",
+            success: function (data) {
+                for (var i = 0; i < data.contentTable.length; i++) {
+                    array.push(data.contentTable[i]);
+                }
+                resolve(array);
+            }
+        });
+    });
+}
+
+function propertiesToArray(propList){
+	var propertyArray = [];
+	for (var index = 0; index < propList.length; index++) {
+        propertyArray.push(propList[index].property);
+	}
+	return propertyArray;
+}
+
+function initTags(data,application,availableTags){
+	
+	var inheritedProperties = null;
+	var propertiesPromise = null;
+	var objectsPromise = null;
+	
+	if(data!= null){
+		inheritedProperties = propertiesToArray(data.inheritedProp);
+	    propertiesPromise = loadProperties(test, testcase, data.info, property, data.hasPermissionsUpdate);
+	    objectsPromise = loadApplicationObject(data);
+	}else{
+		objectsPromise = loadApplicationObject(application);
+	}
+	
+	/**
+	{
+		"system": true,
+		"object": true,
+		"property": false
+	}
+	**/
+	
+	if(availableTags === null )
+
+    return Promise.all([propertiesPromise,objectsPromise]).then(function (data2) {
+    	var properties, availableProperties = '';
+        var availableObjects = data2[1];
+        
+        if(data){
+        	properties = data2[0];
+        	availableProperties = properties.concat(inheritedProperties.filter(function (item) {
+                   return properties.indexOf(item) < 0;
+               }));
+        }
+
+        var availableObjectProperties = [
+            "value",
+            "picturepath",
+            "pictureurl"
+        ];
+        var availableSystemValues = [
+            "SYSTEM",
+            "APPLI",
+            "BROWSER",
+            "APP_DOMAIN", "APP_HOST", "APP_CONTEXTROOT", "EXEURL", "APP_VAR1", "APP_VAR2", "APP_VAR3", "APP_VAR4",
+            "ENV", "ENVGP",
+            "COUNTRY", "COUNTRYGP1", "COUNTRYGP2", "COUNTRYGP3", "COUNTRYGP4", "COUNTRYGP5", "COUNTRYGP6", "COUNTRYGP7", "COUNTRYGP8", "COUNTRYGP9",
+            "TEST",
+            "TESTCASE", "TESTCASEDESCRIPTION",
+            "SSIP", "SSPORT",
+            "TAG",
+            "EXECUTIONID",
+            "EXESTART", "EXEELAPSEDMS",
+            "EXESTORAGEURL",
+            "STEP.n.n.RETURNCODE", "CURRENTSTEP_INDEX", "CURRENTSTEP_STARTISO", "CURRENTSTEP_ELAPSEDMS", "CURRENTSTEP_SORT",
+            "LASTSERVICE_HTTPCODE",
+            "TODAY-yyyy", "TODAY-MM", "TODAY-dd", "TODAY-doy", "TODAY-HH", "TODAY-mm", "TODAY-ss",
+            "YESTERDAY-yyyy", "YESTERDAY-MM", "YESTERDAY-dd", "YESTERDAY-doy", "YESTERDAY-HH", "YESTERDAY-mm", "YESTERDAY-ss",
+            "TOMORROW-yyyy", "TOMORROW-MM", "TOMORROW-dd", "TOMORROW-doy"
+        ];
+        
+        var availableIdentifiers = [
+            "data-cerberus",
+            "picture",
+            "id",
+            "xpath"
+        ];
+
+        tags = [
+            {
+                array: availableObjectProperties,
+                regex: "%object\\.[^\\.]*\\.",
+                addBefore: "",
+                addAfter: "%",
+                isCreatable: false
+            },
+            {
+                array: availableObjects,
+                regex: "%object\\.",
+                addBefore: "",
+                addAfter: ".",
+                isCreatable: true
+            },
+            {
+                array: availableProperties,
+                regex: "%property\\.",
+                addBefore: "",
+                addAfter: "%",
+                isCreatable: true
+            },
+            {
+                array: availableSystemValues,
+                regex: "%system\\.",
+                addBefore: "",
+                addAfter: "%",
+                isCreatable: false
+            },
+            {
+                array: availableIdentifiers,
+                regex: "^[A-Za-z]",
+                addBefore: "",
+                addAfter: "=",
+                isCreatable: false
+            },
+            {
+                array: availableTags,
+                regex: "%",
+                addBefore: "",
+                addAfter: ".",
+                isCreatable: false
+            },
+        ];
+        return tags;       
+    });
+}
+
+function initAutocomplete(el,data,application){
+	var tags = initTags(data,application).then(function(tags){
+		$(el).each(data => {
+			autocompleteWithTags(el[data], tags);
+		})
+	});
+	
+}
