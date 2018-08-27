@@ -527,15 +527,15 @@ function appendExecutorRow(tableBody, executor) {
     var doc = new Doc();
     var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
     var selectActive = getSelectInvariant("ROBOTEXECUTORACTIVE", false);
-    var nameInput = $("<input name='executor' maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("robotexecutor", "executor") + " --\">").addClass("form-control input-sm").val(executor.executor);
-    var rankInput = $("<input name='rank' placeholder=\"-- " + doc.getDocLabel("robotexecutor", "rank") + " --\">").addClass("form-control input-sm").val(executor.rank);
-    var hostInput = $("<input name='host' placeholder=\"-- " + doc.getDocLabel("robotexecutor", "host") + " --\">").addClass("form-control input-sm").val(executor.host);
-    var portInput = $("<input name='portInput' placeholder=\"-- " + doc.getDocLabel("robotexecutor", "Port") + " --\">").addClass("form-control input-sm").val(executor.port);
-    var hostUserInput = $("<input name='hostuser' placeholder=\"-- " + doc.getDocLabel("robotexecutor", "host_user") + " --\">").addClass("form-control input-sm").val(executor.hostUser);
-    var hostPasswordInput = $("<input name='hostpasswordinput' placeholder=\"-- " + doc.getDocLabel("robotexecutor", "host_password") + " --\">").addClass("form-control input-sm").val(executor.hostPassword);
-    var deviceUuidInput = $("<input name='deviceuuidinput' placeholder=\"-- " + doc.getDocLabel("robotexecutor", "deviceUuid") + " --\">").addClass("form-control input-sm").val(executor.deviceUuid);
-    var deviceNameInput = $("<input name='devicenameinput' placeholder=\"-- " + doc.getDocLabel("robotexecutor", "deviceName") + " --\">").addClass("form-control input-sm").val(executor.deviceName);
-    var devicePortInput = $("<input name='deviceportinput' placeholder=\"-- " + doc.getDocLabel("robotexecutor", "devicePort") + " --\">").addClass("form-control input-sm").val(executor.devicePort);
+    var nameInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("robotexecutor", "executor") + " --\">").addClass("form-control input-sm").val(executor.executor);
+    var rankInput = $("<input  placeholder=\"-- " + doc.getDocLabel("robotexecutor", "rank") + " --\">").addClass("form-control input-sm").val(executor.rank);
+    var hostInput = $("<input  placeholder=\"-- " + doc.getDocLabel("robotexecutor", "host") + " --\">").addClass("form-control input-sm").val(executor.host);
+    var portInput = $("<input  placeholder=\"-- " + doc.getDocLabel("robotexecutor", "Port") + " --\">").addClass("form-control input-sm").val(executor.port);
+    var hostUserInput = $("<input  placeholder=\"-- " + doc.getDocLabel("robotexecutor", "host_user") + " --\">").addClass("form-control input-sm").val(executor.hostUser);
+    var hostPasswordInput = $("<input  placeholder=\"-- " + doc.getDocLabel("robotexecutor", "host_password") + " --\">").addClass("form-control input-sm").val(executor.hostPassword);
+    var deviceUuidInput = $("<input  placeholder=\"-- " + doc.getDocLabel("robotexecutor", "deviceUuid") + " --\">").addClass("form-control input-sm").val(executor.deviceUuid);
+    var deviceNameInput = $("<input  placeholder=\"-- " + doc.getDocLabel("robotexecutor", "deviceName") + " --\">").addClass("form-control input-sm").val(executor.deviceName);
+    var devicePortInput = $("<input  placeholder=\"-- " + doc.getDocLabel("robotexecutor", "devicePort") + " --\">").addClass("form-control input-sm").val(executor.devicePort);
     var table = $("#" + tableBody);
 
 
@@ -553,7 +553,7 @@ function appendExecutorRow(tableBody, executor) {
     var port = $("<div class='form-group col-sm-6'></div>").append("<label for='port'>" + doc.getDocOnline("robotexecutor", "Port") + "</label>").append(portInput);
     var hostuser = $("<div class='form-group col-sm-6'></div>").append("<label for='hostuser'>" + doc.getDocOnline("robotexecutor", "host_user") + "</label>").append(hostUserInput);
     var hostpass = $("<div class='form-group col-sm-6'></div>").append("<label for='hostpassword'>" + doc.getDocOnline("robotexecutor", "host_password") + "</label>").append(hostPasswordInput);
-    var duuid = $("<div class='form-group col-sm-5'></div>").append("<label for='deviceuuid'>" + doc.getDocOnline("robotexecutor", "deviceUuid") + "</label>").append(deviceUuidInput);
+    var duuid = $("<div class='form-group col-sm-5'></div>").append("<label for='deviceuuid'>" + doc.getDocOnline("robotexecutor", "deviceUdid") + "</label>").append(deviceUuidInput);
     var dname = $("<div class='form-group col-sm-5'></div>").append("<label for='devicename'>" + doc.getDocOnline("robotexecutor", "deviceName") + "</label>").append(deviceNameInput);
     var dport = $("<div class='form-group col-sm-2'></div>").append("<label for='deviceport'>" + doc.getDocOnline("robotexecutor", "devicePort") + "</label>").append(devicePortInput);
     var drow1 = $("<div class='row'></div>").append(active).append(rank);
@@ -593,8 +593,8 @@ function appendExecutorRow(tableBody, executor) {
     deviceNameInput.change(function () {
         executor.deviceName = $(this).val();
     });
-    deviceUuidInput.change(function () {
-        executor.deviceUuid = $(this).val();
+    deviceUdidInput.change(function () {
+        executor.deviceUdid = $(this).val();
     });
     devicePortInput.change(function () {
         executor.devicePort = $(this).val();

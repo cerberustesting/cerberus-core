@@ -469,7 +469,7 @@ public class SeleniumServerService implements ISeleniumServerService {
             }
 
             if (tCExecution.getRobotExecutorObj() != null) {
-                // Setting deviceUuid and device name from executor.
+                // Setting deviceUdid and device name from executor.
                 if (!StringUtil.isNullOrEmpty(tCExecution.getRobotExecutorObj().getDeviceUuid())) {
                     caps.setCapability("udid", tCExecution.getRobotExecutorObj().getDeviceUuid());
                 }
