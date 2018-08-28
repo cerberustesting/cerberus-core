@@ -233,7 +233,10 @@ public class CreateRobot extends HttpServlet {
             String host_user = reJson.getString("hostUser");
             String deviceName = reJson.getString("deviceName");
             String deviceUdid = reJson.getString("deviceUdid");
-            Integer devicePort = reJson.getInt("devicePort");
+            Integer devicePort = null;
+            if(reJson.has("devicePort") && !StringUtil.isNullOrEmpty(reJson.getString("devicePort"))) {
+                devicePort = reJson.getInt("devicePort");
+            }
             String description = reJson.getString("description");
 
             String host_password = reJson.getString("hostPassword");

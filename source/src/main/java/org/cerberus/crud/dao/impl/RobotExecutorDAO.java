@@ -315,8 +315,10 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
                 preStat.setString(i++, object.getHostPassword());
                 preStat.setString(i++, object.getDeviceUuid());
                 preStat.setString(i++, object.getDeviceName());
-                preStat.setInt(i++, object.getDevicePort());
-                preStat.setString(i++, object.getDescription());
+                if(object.getDevicePort() != null)
+                    preStat.setInt(i++, object.getDevicePort());
+                else
+                    preStat.setNull(i++, Types.INTEGER);                preStat.setString(i++, object.getDescription());
                 preStat.setString(i++, object.getUsrCreated());
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
