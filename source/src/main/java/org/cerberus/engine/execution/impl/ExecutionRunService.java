@@ -295,7 +295,7 @@ public class ExecutionRunService implements IExecutionRunService {
 
                 } catch (CerberusException ex) {
                     throw new CerberusException(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_ROBOTNOTEXIST)
-                            .resolveDescription("ROBOT", tCExecution.getRobot()));
+                            .resolveDescription("ROBOT", tCExecution.getRobot()), ex);
                 }
             } else {
                 tCExecution.setRobotDecli(browser);
@@ -314,6 +314,17 @@ public class ExecutionRunService implements IExecutionRunService {
                     if (tCExecution.getRobotObj() != null) {
                         List<RobotCapability> caps = tCExecution.getRobotObj().getCapabilities();
                         List<RobotCapability> capsDecoded = new ArrayList<>();
+
+                        // TODO ce n'est pas ça encore, faut faire ça au moment ou il recupère l'ip / port
+                        if(tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
+                            int portNumber = 8200;
+
+                            portNumber++;
+                        }
+
+
+
+
                         for (RobotCapability cap : caps) {
 
                             String capDecoded = "";

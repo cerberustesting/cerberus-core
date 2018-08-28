@@ -113,7 +113,7 @@ public class ReadRobot extends HttpServlet {
         }
         String columnName = ParameterParserUtil.parseStringParam(request.getParameter("columnName"), "");
 
-        // Global boolean on the servlet that define if the user has permition to edit and delete object.
+        // Global boolean xon the servlet that define if the user has permition to edit and delete object.
         boolean userHasPermissions = request.isUserInRole("Integrator");
 
         // Init Answer with potencial error from Parsing parameter.

@@ -7833,7 +7833,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append("('SELECTOR', 'data-cerberus=', '6550', '', '');");
         a.add(b.toString());
 
-        // 1368-1373
+        // 1368-1374
         a.add(" CREATE TABLE `robotexecutor` ("
                 + "  `id` int(11) NOT NULL AUTO_INCREMENT,"
                 + "  `robot` varchar(100) NOT NULL,"
@@ -7874,6 +7874,20 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append(" ('ROBOTEXECUTORACTIVE', 'Y', '10', '', ''),");
         b.append(" ('INVARIANTPRIVATE','ROBOTEXECUTORACTIVE', '840','Activation flag for Robot Executor.', '')");
         a.add(b.toString());
+
+        a.add("ALTER TABLE `robotexecutor` ADD COLUMN `devicePort` int(8)");
+        a.add("ALTER TABLE `robotexecutor` CHANGE COLUMN `deviceUuid` `deviceUdid` varchar(255) NOT NULL");
+
+
+        // 1374 - 1380 data migration from capabilities to robotExecution
+        a.add("UPDATE `robotexecutor` r1 SET  `deviceUdid`= (SELECT value FROM robotcapability r2 where r1.robot = r2.robot and r2.capability = 'udid' union all select '' as value  limit 1) where `deviceUdid` is null or `deviceUdid` = ''");
+        a.add("UPDATE `robotexecutor` r1 SET  `devicename`= (SELECT value FROM robotcapability r2 where r1.robot = r2.robot and r2.capability = 'deviceName' union all select '' as value  limit 1)  where `deviceName` is null or `deviceName` = ''");
+        a.add("UPDATE `robotexecutor` r1 SET  `devicePort`= (SELECT value FROM robotcapability r2 where r1.robot = r2.robot and r2.capability = 'systemPort')  where `devicePort` is  null");
+
+        a.add("DELETE FROM `robotcapability` WHERE capability = 'udid' and value in (select  re.deviceUdid from `robotexecutor` re)");
+        a.add("DELETE FROM `robotcapability` WHERE capability = 'deviceName' and value in (select  re.deviceName from `robotexecutor` re)");
+        a.add("DELETE FROM `robotcapability` WHERE capability = 'systemPort' and value in (select  re.devicePort from `robotexecutor` re)");
+
 
         return a;
     }

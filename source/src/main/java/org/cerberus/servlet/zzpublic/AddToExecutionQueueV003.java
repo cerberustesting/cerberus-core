@@ -365,11 +365,16 @@ public class AddToExecutionQueueV003 extends HttpServlet {
         if (!error) {
 
             int nbtescase = selectTest.size();
+            if (environments == null) {
+                environments = new ArrayList<>();
+                environments.add("MANUAL");
+            }
             int nbenv = environments.size();
             int nbcountries = countries.size();
 
             // Part 0: Load to memory Environments and robots.
             Map<String, String> invariantEnvMap = invariantService.readToHashMapGp1StringByIdname("ENVIRONMENT", "");
+            invariantEnvMap.put("MANUAL", "");
             Map<String, String> robotMap = robotService.readToHashMapRobotDecli();
 
             // Part 1: Getting all possible Execution from test cases + countries + environments + browsers which have been sent to this servlet.
@@ -399,10 +404,12 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                                     if (((envGp1.equals("PROD")) && (tc.getActivePROD().equalsIgnoreCase("Y")))
                                             || ((envGp1.equals("UAT")) && (tc.getActiveUAT().equalsIgnoreCase("Y")))
                                             || ((envGp1.equals("QA")) && (tc.getActiveQA().equalsIgnoreCase("Y")))
-                                            || (envGp1.equals("DEV"))) {
+                                            || (envGp1.equals("DEV"))
+                                            || (envGp1.equals(""))) {
                                         // Getting Application in order to check application type against browser.
                                         Application app = applicationService.convert(applicationService.readByKey(tc.getApplication()));
-                                        if (envMap.containsKey(app.getSystem() + LOCAL_SEPARATOR + country.getCountry() + LOCAL_SEPARATOR + environment)) {
+                                        if ((envMap.containsKey(app.getSystem() + LOCAL_SEPARATOR + country.getCountry() + LOCAL_SEPARATOR + environment))
+                                                || (environment.equals("MANUAL"))) {
 
                                             // Create Tag only if not already done and defined.
                                             if (!StringUtil.isNullOrEmpty(tag) && !tagAlreadyAdded) {

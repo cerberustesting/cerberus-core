@@ -165,7 +165,7 @@ public class RobotService implements IRobotService {
         // Second, update its capabilities
         finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, robotCapabilityService.compareListAndUpdateInsertDeleteElements(robot.getRobot(), robot.getCapabilities(), usrModif));
 
-        // Then, update its capabilities
+        // Then, update its executors
         finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, robotExecutorService.compareListAndUpdateInsertDeleteElements(robot.getRobot(), robot.getExecutors(), usrModif));
 
         // Finally return aggregated answer

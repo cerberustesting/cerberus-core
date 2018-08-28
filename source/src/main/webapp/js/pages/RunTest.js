@@ -891,6 +891,7 @@ function applyExecPref(tag) {
         $("#seleniumLog").val(pref.SeleniumLog);
         $("#timeout").val(pref.timeout);
         $("#retries").val(pref.retries);
+        $("#priority").val(pref.priority);
         $("#manualExecution").val(pref.manualExecution);
     }
 }
