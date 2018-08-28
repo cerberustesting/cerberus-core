@@ -178,10 +178,9 @@ function autocompleteSpecificFields(identifier){
             results: function () {
             }
         },
-        select: function (event, ui) {
-            var selectedObj = ui.item;
-            $(this).val(selectedObj.value.replace("%", ''));
-            $(this).trigger('input');
+        select: function (event, ui) {     
+            this.value = ui.item.value;
+            $(this).trigger("input").trigger("change");
             return false;
         },
         close: function (event, ui) {
@@ -241,6 +240,7 @@ function loadApplicationObject(dataInit) {
 }
 
 function loadProperties(testcaseinfo, canUpdate) {
+	console.log(testcaseinfo)
     return new Promise(function (resolve, reject) {
         var array = [];
         var secondaryPropertiesArray = [];      
@@ -248,7 +248,7 @@ function loadProperties(testcaseinfo, canUpdate) {
         var secondaryPropertyList = [];
         $.ajax({
             url: "GetPropertiesForTestCase",
-            data: {test: testcaseinfo.test, testcase: testcaseinfo.testcase},
+            data: {test: testcaseinfo.test, testcase: testcaseinfo.testCase},
             async: true,
             success: function (data) {
                 data.sort(function (a, b) {
@@ -281,6 +281,7 @@ function loadProperties(testcaseinfo, canUpdate) {
                 array.sort(function (a, b) {
                     return compareStrings(a, b);
                 })
+
                 resolve(propertyListUnique);
             },
             error: showUnexpectedError
@@ -296,7 +297,7 @@ function propertiesToArray(propList){
 	return propertyArray;
 }
 
-function initTags(configs){	
+function initTags(configs){
 	var inheritedProperties = [], propertiesPromise = [] ,objectsPromise = [], availableTags = [];	
 	if(configs.property){
 		inheritedProperties = propertiesToArray(configs.property.inheritedProp);
@@ -337,7 +338,6 @@ function initTags(configs){
             "YESTERDAY-yyyy", "YESTERDAY-MM", "YESTERDAY-dd", "YESTERDAY-doy", "YESTERDAY-HH", "YESTERDAY-mm", "YESTERDAY-ss",
             "TOMORROW-yyyy", "TOMORROW-MM", "TOMORROW-dd", "TOMORROW-doy"
         ];
-       
         var availableIdentifiers = [
             "data-cerberus",
             "picture",
@@ -402,6 +402,6 @@ function initAutocompleteWithTags(el,configs){
 
 function initAutocompleteforSpecificFields(el){
 	$(el).each(data => {
-		autocompleteWithTags(el[data], tags);
+		autocompleteSpecificFields(el[data]);
 	})
 }

@@ -61,9 +61,13 @@ function initModalAppService() {
     $("[name='lbl_lastModified']").html(doc.getDocOnline("transversal", "DateModif"));
     $("[name='lbl_lastModifier']").html(doc.getDocOnline("transversal", "UsrModif"));
     
+    var configs = {
+    	'system': true,
+    	'object': false,
+    	'property': false
+    }
     
-    
-    initAutocomplete([$("[name='servicePath']")], null, 'Cerberus');
+    initAutocompleteWithTags([$("[name='servicePath']")], configs);
 
     $('[data-toggle="popover"]').popover({
         'placement': 'auto',
