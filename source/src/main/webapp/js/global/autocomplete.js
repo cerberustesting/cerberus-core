@@ -66,7 +66,7 @@ function autocompleteWithTags(identifier, Tags) {
 	        $("span[role='status']").hide();
 	    })
         .autocomplete({
-            minLength: 1,
+            minLength: 0,
             messages: {
                 noResults: '',
                 results: function () {
@@ -87,7 +87,7 @@ function autocompleteWithTags(identifier, Tags) {
  
                     //If there is a pair number of % it means there is no open variable that needs to be autocompleted
 
-                if ((this.term.match(/%/g) || []).length % 2 > 0 || (this.term.match("^[A-Za-z]") && !this.term.includes("%"))) {
+                if ((this.term.match(/%/g) || []).length % 2 > 0 || (this.term.match("^$") && !this.term.includes("%"))) {
                     //Start Iterating on Tags
                     var tag = 0;
                     var found = false;                       
@@ -240,7 +240,6 @@ function loadApplicationObject(dataInit) {
 }
 
 function loadProperties(testcaseinfo, canUpdate) {
-	console.log(testcaseinfo)
     return new Promise(function (resolve, reject) {
         var array = [];
         var secondaryPropertiesArray = [];      
@@ -375,7 +374,7 @@ function initTags(configs){
             },
             {
                 array: availableIdentifiers,
-                regex: "^[A-Za-z]",
+                regex: "^$",
                 addBefore: "",
                 addAfter: "=",
                 isCreatable: false
