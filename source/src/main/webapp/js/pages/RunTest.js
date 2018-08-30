@@ -87,7 +87,6 @@ $.when($.getScript("js/global/global.js")).then(function () {
             loadTestCaseEssentialData(test, testcase, environment, country, tag, browser, true);
         }
 
-        console.info("titi");
         // Run Test Case button click
         $("#runTestCase").on("click", function () {
             runTestCase(false);
@@ -865,7 +864,7 @@ function loadRobotForm(browser) {
     var doc = new Doc();
     return $.when(
             appendRobotList(),
-            loadSelect("BROWSER", "browser"),
+            loadSelect("BROWSER", "browser")
 //            $("#robotSettingsForm [name=platform]").append($('<option></option>').text(doc.getDocLabel("page_runtest", "default")).val("")),
 //            loadSelect("PLATFORM", "platform"),
 //            $("#robotSettingsForm [name=screenSize]").append($('<option></option>').text(doc.getDocLabel("page_runtest", "default_full_screen")).val("")),
