@@ -64,10 +64,11 @@ function initModalAppService() {
     var configs = {
     	'system': true,
     	'object': false,
-    	'property': false
+    	'propertie': false,
+    	'identifier': false
     }
     
-    initAutocompleteWithTags([$("[name='servicePath']")], configs);
+    initAutocompleteWithTags([$("[name='servicePath']")], configs, null);
 
     $('[data-toggle="popover"]').popover({
         'placement': 'auto',

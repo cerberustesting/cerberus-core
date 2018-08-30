@@ -180,15 +180,16 @@ $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.j
                     })
                     createStepList(json, stepList, step, data.hasPermissionsUpdate, data.hasPermissionsStepLibrary);
                     drawInheritedProperty(data.inheritedProp);
-                    
+                   
                     var configs = {
-                    	'system':true,
+                    	'system': true,
                     	'object': data.info.application,
-                    	'property': data
+                    	'property': data,
+                    	'identifier': true
                     }
-                    
-                    var tags = initTags(configs).then(function(tags){
-                    	autocompleteAllFields(configs, tags);
+                    var context = data
+                    initTags(configs,context).then(function(tags){
+                    	autocompleteAllFields(configs,context,tags);
                 	});	
                     
                     loadPropertiesAndDraw(test, testcase, data.info, property, data.hasPermissionsUpdate);
@@ -2766,9 +2767,9 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 (function () {
     // var accessible only in closure
     var TagsToUse = [];
-    
     var tcInfo = [];
-
+    var contextInfo = [];
+    
     getTags = function () {
         return TagsToUse;
     };
@@ -2777,7 +2778,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
     };
 
     // function accessible everywhere that has access to TagsToUse
-    autocompleteAllFields = function (configs, Tags) {
+    autocompleteAllFields = function (configs, context, Tags) {
         if (Tags !== undefined) {
             TagsToUse = Tags;
         }
@@ -2785,13 +2786,17 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
         if(configs !== undefined) {
         	tcInfo = configs.property.info;
         }
+        
+        if(context !== undefined) {
+        	contextInfo = context;
+        }
 
         $(document).on('focus', ".content div.fieldRow input:not('.description')", function (e) {
             let currentAction = $(this).parent().parent().find("#actionSelect").val();          
             if (currentAction === "callService" || currentAction === "calculateProperty") {
             	initAutocompleteforSpecificFields($(this));
             } else {
-            	initAutocompleteWithTags($(this), configs);
+            	initAutocompleteWithTags($(this), configs, contextInfo);
             }
         })
         

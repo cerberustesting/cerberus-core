@@ -170,6 +170,11 @@ function autocompleteWithTags(identifier, Tags) {
         });
 }
 
+/**
+ * Function that allow to autoComplete Input with empty data
+ * @param {type} identifier jquery identifier to find the input to affect the autocomplete
+ *
+ */
 function autocompleteSpecificFields(identifier){
 	$(identifier).autocomplete({
         minLength: 1,
@@ -239,6 +244,12 @@ function loadApplicationObject(dataInit) {
     });
 }
 
+/**
+ * 
+ * @param testcaseinfo
+ * @param canUpdate
+ * @returns
+ */
 function loadProperties(testcaseinfo, canUpdate) {
     return new Promise(function (resolve, reject) {
         var array = [];
@@ -296,22 +307,24 @@ function propertiesToArray(propList){
 	return propertyArray;
 }
 
-function initTags(configs){
-	var inheritedProperties = [], propertiesPromise = [] ,objectsPromise = [], availableTags = [];	
-	if(configs.property){
-		inheritedProperties = propertiesToArray(configs.property.inheritedProp);
-	    propertiesPromise = loadProperties(configs.property.info, configs.property.hasPermissionsUpdate);
-	    objectsPromise = loadApplicationObject(configs.property.info.application)
+function initTags(configs,context){
+	var inheritedProperties = [], propertiesPromise = [] ,objectsPromise = [];	
+	if(configs.property && context instanceof Array){
+		inheritedProperties = propertiesToArray(context.inheritedProp);
+	    propertiesPromise = loadProperties(context.info, context.hasPermissionsUpdate);
+	    objectsPromise = loadApplicationObject(context.info.application)
 	}
-	if(configs.object && !configs.property) objectsPromise = loadApplicationObject(configs.object);
-	$.each(configs, (key,value) => {
-		if (value) availableTags.push(key)
-	})
+	if(configs.object && !configs.property && context instanceof String) objectsPromise = loadApplicationObject(context);
     return Promise.all([propertiesPromise,objectsPromise]).then(function (data) {
     	var properties = data[0], availableObjects = data[1];
     	var availableProperties = properties.concat(inheritedProperties.filter(function (item) {
                return properties.indexOf(item) < 0;
-           }));     
+           }));    
+    	var availableTags = [
+    		"property",
+    		"system",
+    		"object"
+    	];
         var availableObjectProperties = [
             "value",
             "picturepath",
@@ -345,6 +358,7 @@ function initTags(configs){
         ];
         tags = [
             {
+            	name: 'objectProperty',
                 array: availableObjectProperties,
                 regex: "%object\\.[^\\.]*\\.",
                 addBefore: "",
@@ -352,6 +366,7 @@ function initTags(configs){
                 isCreatable: false
             },
             {
+            	name: 'object',
                 array: availableObjects,
                 regex: "%object\\.",
                 addBefore: "",
@@ -359,6 +374,7 @@ function initTags(configs){
                 isCreatable: true
             },
             {
+            	name: 'property',
                 array: availableProperties,
                 regex: "%property\\.",
                 addBefore: "",
@@ -366,33 +382,53 @@ function initTags(configs){
                 isCreatable: true
             },
             {
+            	name: 'system',
                 array: availableSystemValues,
                 regex: "%system\\.",
                 addBefore: "",
                 addAfter: "%",
                 isCreatable: false
-            },
+            },            
             {
-                array: availableIdentifiers,
-                regex: "^$",
-                addBefore: "",
-                addAfter: "=",
-                isCreatable: false
-            },
-            {
+            	name: 'tag',
                 array: availableTags,
                 regex: "%",
                 addBefore: "",
                 addAfter: ".",
                 isCreatable: false
-            },
+            }
         ];
+        
+        if(configs.identifier){
+        	tags.push({
+            	name: 'indentifier',
+                array: availableIdentifiers,
+                regex: "^$",
+                addBefore: "",
+                addAfter: "=",
+                isCreatable: false
+            })
+        }
         return tags;       
     });
 }
 
-function initAutocompleteWithTags(el,configs){
-	var tags = initTags(configs).then(function(tags){
+/**
+ * Function that allow to autoComplete many inputs using tags
+ * @param el : Array of HTMLElement
+ * @param configs : Object
+ * example : var configs = {
+ *   	'system': true,
+ *   	'object': false,
+ *   	'propertie': false,
+ *   	'identifier': true
+ *   }
+ * @param context : Object || String
+ * context is an object (data returns from servlet ReadTestCase) or a String (application name)
+ * @returns
+ */
+function initAutocompleteWithTags(el,configs,context){
+	initTags(configs,context).then(function(tags){
 		$(el).each(data => {
 			autocompleteWithTags(el[data], tags);
 		})
