@@ -84,10 +84,10 @@ function autocompleteWithTags(identifier, Tags) {
                 var selectionStart = this.element[0].selectionStart;
                 var stringToAnalyse = this.term.substring(0, selectionStart);
                 var identifier = stringToAnalyse.substring(stringToAnalyse.lastIndexOf("%"));
- 
+                
                     //If there is a pair number of % it means there is no open variable that needs to be autocompleted
 
-                if ((this.term.match(/%/g) || []).length % 2 > 0 || (this.term.match("^$") && !this.term.includes("%"))) {
+                if ((this.term.match(/%/g) || []).length % 2 > 0 || (this.term.match("((^[a-zA-Z])|(^$))") && !this.term.includes("%"))) {
                     //Start Iterating on Tags
                     var tag = 0;
                     var found = false;                       
@@ -167,7 +167,9 @@ function autocompleteWithTags(identifier, Tags) {
                 //searching the same input again
                 return false;
             }
-        });
+        }).click(function(){
+        	$(this).autocomplete("search");
+        })  
 }
 
 /**
@@ -309,7 +311,7 @@ function propertiesToArray(propList){
 
 function initTags(configs,context){
 	var inheritedProperties = [], propertiesPromise = [] ,objectsPromise = [];	
-	if(configs.property && context instanceof Array){
+	if(configs.property && context instanceof Object){
 		inheritedProperties = propertiesToArray(context.inheritedProp);
 	    propertiesPromise = loadProperties(context.info, context.hasPermissionsUpdate);
 	    objectsPromise = loadApplicationObject(context.info.application)
@@ -403,7 +405,7 @@ function initTags(configs,context){
         	tags.push({
             	name: 'indentifier',
                 array: availableIdentifiers,
-                regex: "^$",
+                regex: "((^[a-zA-Z])|(^$))",
                 addBefore: "",
                 addAfter: "=",
                 isCreatable: false

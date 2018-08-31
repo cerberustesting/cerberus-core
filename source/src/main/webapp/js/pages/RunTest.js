@@ -87,7 +87,6 @@ $.when($.getScript("js/global/global.js")).then(function () {
             loadTestCaseEssentialData(test, testcase, environment, country, tag, browser, true);
         }
 
-        console.info("titi");
         // Run Test Case button click
         $("#runTestCase").on("click", function () {
             runTestCase(false);
@@ -784,58 +783,52 @@ function appendRobotList() {
 }
 
 function loadRobotInfo(robot) {
+	
+	if(!(robot instanceof Array)){
+		robot = [robot]
+	}
+	
+    if (robot[0] !== "") {
+        // We can edit Robot.
+        $("#robotEdit").removeClass("disabled");
+        $('#robotEdit').unbind("click");
+        $("#robotEdit").click(function (e) {
+            openModalRobot_FromRunTest(robot[0], "EDIT");
+        });
 
-    if (robot.length > 1) {
-        disableRobotFields();
-        $("#robotSettings #seleniumIP").val("");
-        $("#robotSettings #seleniumPort").val("");
-        $("#robotSettings #browser").val("");
+        $.ajax({
+            url: "ReadRobot",
+            method: "GET",
+            data: {robot: robot[0]},
+            dataType: "json",
+            async: true,
+            success: function (data) {
+                disableRobotFields();
+                $("#robotSettings #seleniumIP").val(data.contentTable.host);
+                $("#robotSettings #seleniumPort").val(data.contentTable.port);
+                $("#robotSettings #browser").val(data.contentTable.browser);
+            }
+        });
+    } else {
+        var pref = JSON.parse(localStorage.getItem("robotSettings"));
+        enableRobotFields();
+        // No need to edit Robot.
         $("#robotEdit").addClass("disabled");
         $('#robotEdit').unbind("click");
+        $("#saveRobotPreferences").removeClass("disabled");
 
-    } else {
-        if (robot[0] !== "") {
-            // We can edit Robot.
-            $("#robotEdit").removeClass("disabled");
-            $('#robotEdit').unbind("click");
-            $("#robotEdit").click(function (e) {
-                openModalRobot_FromRunTest(robot[0], "EDIT");
-            });
-
-            $.ajax({
-                url: "ReadRobot",
-                method: "GET",
-                data: {robot: robot[0]},
-                dataType: "json",
-                async: true,
-                success: function (data) {
-                    disableRobotFields();
-                    $("#robotSettings #seleniumIP").val(data.contentTable.host);
-                    $("#robotSettings #seleniumPort").val(data.contentTable.port);
-                    $("#robotSettings #browser").val(data.contentTable.browser);
-                }
-            });
+        if (pref !== undefined && pref.robot === "") {
+            $("#robotSettings #robot").val(pref.robot);
+            $("#robotSettings #seleniumIP").val(pref.ss_ip);
+            $("#robotSettings #seleniumPort").val(pref.ss_p);
+            $("#robotSettings #browser").val(pref.browser);
         } else {
-            var pref = JSON.parse(localStorage.getItem("robotSettings"));
-            enableRobotFields();
-            // No need to edit Robot.
-            $("#robotEdit").addClass("disabled");
-            $('#robotEdit').unbind("click");
-            $("#saveRobotPreferences").removeClass("disabled");
-
-            if (pref !== undefined && pref.robot === "") {
-                $("#robotSettings #robot").val(pref.robot);
-                $("#robotSettings #seleniumIP").val(pref.ss_ip);
-                $("#robotSettings #seleniumPort").val(pref.ss_p);
-                $("#robotSettings #browser").val(pref.browser);
-            } else {
-                $("#robotSettings #seleniumIP").val("");
-                $("#robotSettings #seleniumPort").val("");
-                $("#robotSettings #browser").val("");
-            }
+            $("#robotSettings #seleniumIP").val("");
+            $("#robotSettings #seleniumPort").val("");
+            $("#robotSettings #browser").val("");
         }
-
     }
+    
 }
 
 function saveRobotPreferences() {
