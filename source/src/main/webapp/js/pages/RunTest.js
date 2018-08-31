@@ -803,9 +803,10 @@ function loadRobotInfo(robot) {
             dataType: "json",
             async: true,
             success: function (data) {
+            	console.log(data);
                 disableRobotFields();
-                $("#robotSettings #seleniumIP").val(data.contentTable.host);
-                $("#robotSettings #seleniumPort").val(data.contentTable.port);
+                $("#robotSettings #seleniumIP").val(data.contentTable.executors[0].host);
+                $("#robotSettings #seleniumPort").val(data.contentTable.executors[0].port);
                 $("#robotSettings #browser").val(data.contentTable.browser);
             }
         });
