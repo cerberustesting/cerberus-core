@@ -358,6 +358,7 @@ function feedRobotModal(robot, modalId, mode) {
         robotObj1.screenSize = "";
         robotObj1.robotDecli = "";
         robotObj1.description = "";
+        robotObj1.lbexemethod = "BYRANKING";
         var hasPermissions = true;
         feedRobotModalData(robotObj1, modalId, mode, hasPermissions);
 
@@ -401,10 +402,7 @@ function feedRobotModalData(robot, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#screensize").prop("value", "");
         formEdit.find("#robotdecli").prop("value", "");
         formEdit.find("#Description").prop("value", "");
-//        formEdit.find("#host").prop("value", "");
-//        formEdit.find("#port").prop("value", "");
-//        formEdit.find("#hostUsername").prop("value", "");
-//        formEdit.find("#hostPassword").prop("value", "");
+        formEdit.find("#lbexemethod").val("ROUNDROBIN");
     } else {
         if (mode === "EDIT") {
             formEdit.find("#robotid").prop("value", robot.robotID);
@@ -421,15 +419,6 @@ function feedRobotModalData(robot, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#robotdecli").prop("value", robot.robotDecli);
         formEdit.find("#Description").prop("value", robot.description);
         formEdit.find("#lbexemethod").val(robot.lbexemethod);
-//        formEdit.find("#host").prop("value", robot.host);
-//        formEdit.find("#port").prop("value", robot.port);
-//        formEdit.find("#hostUsername").prop("value", (robot.hostUser === undefined) ? "" : robot.hostUser);
-//        hostUserBeforeUpdate=robot.hostUser;
-//        if(robot.hostUser !== undefined && robot.hostUser !== "") {
-//            formEdit.find("#hostPassword").prop("value", HOST_PASSWORD_DEFAULT); // don't set the reel password
-//        } else {
-//            formEdit.find("#hostPassword").prop("value", "");
-//        }
         loadCapabilitiesTable("editCapabilitiesTableBody", robot.capabilities);
         loadExecutorsTable("editExecutorsTableBody", robot.executors);
     }
@@ -606,7 +595,7 @@ function appendExecutorRow(tableBody, executor) {
     row.append(td1);
     row.append(td2);
     row.append(td3);
-    executor.active = selectActive.prop("value"); // Value that has been requested by dtb parameter may not exist in combo vlaues so we take the real selected value.
+//    executor.active = selectActive.prop("value"); // Value that has been requested by dtb parameter may not exist in combo values so we take the real selected value.
     row.data("executor", executor);
     table.append(row);
 }
