@@ -33,7 +33,6 @@ import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.execution.IConditionService;
 import org.cerberus.engine.execution.IIdentifierService;
 import org.cerberus.engine.gwt.IControlService;
-import org.cerberus.engine.gwt.impl.String;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.service.json.IJsonService;
 import org.cerberus.service.sikuli.ISikuliService;
@@ -146,11 +145,11 @@ public class ConditionService implements IConditionService {
                 mes.setDescription(mes.getDescription().replace("%COND%", conditionOper));
                 break;
                 
-            case TestCaseStepAction.CONDITIONOPER_IFTEXTINELEMENT :
+                /*case TestCaseStepAction.CONDITIONOPER_IFTEXTINELEMENT :
             case TestCaseStepAction.CONDITIONOPER_IFTEXTNOTINELEMENT :	
             	ans = evaluateCondition_ifTextInElement(tCExecution, conditionValue1, conditionValue2, conditionOper);
             	mes = ans.getResultMessage();
-            	break;
+            	break;*/
 
             default:
                 mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_UNKNOWNCONDITION);
@@ -170,7 +169,7 @@ public class ConditionService implements IConditionService {
         return ans;
     }
     
-    private AnswerItem<Boolean> evaluateCondition_ifTextInElement (TestCaseExecution tCExecution, String path, String expected, String conditionOper){
+    /*private AnswerItem<Boolean> evaluateCondition_ifTextInElement (TestCaseExecution tCExecution, String path, String expected, String conditionOper){
         if (LOG.isDebugEnabled()) {
             LOG.debug("Condition: ifTextInElement on " + path + " element against value: " + expected);
            
@@ -211,7 +210,7 @@ public class ConditionService implements IConditionService {
         }       	
         	ans.setResultMessage(resultCondMes);
         	return ans;      
-    }
+    }*/
     
     private AnswerItem<Boolean> evaluateCondition_ifPropertyExist(String conditionOper, String conditionValue1, TestCaseExecution tCExecution) {
         if (LOG.isDebugEnabled()) {

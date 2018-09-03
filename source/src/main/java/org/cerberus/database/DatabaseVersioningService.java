@@ -7879,7 +7879,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add("ALTER TABLE `robotexecutor` CHANGE COLUMN `deviceUuid` `deviceUdid` varchar(255) NOT NULL");
 
 
-        // 1374 - 1380 data migration from capabilities to robotExecution
+        // 1374 - 1381 data migration from capabilities to robotExecution
         a.add("UPDATE `robotexecutor` r1 SET  `deviceUdid`= (SELECT value FROM robotcapability r2 where r1.robot = r2.robot and r2.capability = 'udid' union all select '' as value  limit 1) where `deviceUdid` is null or `deviceUdid` = ''");
         a.add("UPDATE `robotexecutor` r1 SET  `devicename`= (SELECT value FROM robotcapability r2 where r1.robot = r2.robot and r2.capability = 'deviceName' union all select '' as value  limit 1)  where `deviceName` is null or `deviceName` = ''");
         a.add("UPDATE `robotexecutor` r1 SET  `devicePort`= (SELECT value FROM robotcapability r2 where r1.robot = r2.robot and r2.capability = 'systemPort')  where `devicePort` is  null");
@@ -7888,6 +7888,9 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add("DELETE FROM `robotcapability` WHERE capability = 'deviceName' and value in (select  re.deviceName from `robotexecutor` re)");
         a.add("DELETE FROM `robotcapability` WHERE capability = 'systemPort' and value in (select  re.devicePort from `robotexecutor` re)");
 
+        // 1382
+        // introduction of 'Rank' attribute to manage properties in Front differently depending on the Rank
+        a.add("ALTER TABLE `testcasecountryproperties` ADD COLUMN `Rank` int(2) not null default 1");
 
         return a;
     }
