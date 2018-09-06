@@ -129,7 +129,7 @@ public class DataLibService implements IDataLibService {
                 nbRowsRequested = 1;
             }
         } catch (NumberFormatException e) {
-            LOG.error(e.toString());
+            LOG.error(e.toString(), e);
         }
 
         /**

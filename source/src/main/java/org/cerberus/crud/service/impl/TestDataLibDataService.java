@@ -122,7 +122,7 @@ public class TestDataLibDataService implements ITestDataLibDataService {
         try {
             oldList = this.convert(this.readByVarious(testDataLibId, null, null, null));
         } catch (CerberusException ex) {
-            LOG.error(ex);
+            LOG.error(ex, ex);
         }
 
         /**

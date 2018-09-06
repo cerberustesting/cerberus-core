@@ -293,7 +293,7 @@ public class RecorderService implements IRecorderService {
             testCaseExecutionFileService.saveManual(object);
 
         } catch (CerberusException e) {
-            LOG.error(logPrefix + e.toString());
+            LOG.error(logPrefix + e.toString(), e);
         }
         a.setResultMessage(msg);
         a.setItem(object);
@@ -360,9 +360,9 @@ public class RecorderService implements IRecorderService {
                 LOG.debug(logPrefix + "Screenshot done in : " + recorder.getRelativeFilenameURL());
 
             } catch (IOException ex) {
-                LOG.error(logPrefix + ex.toString());
+                LOG.error(logPrefix + ex.toString(), ex);
             } catch (CerberusException ex) {
-                LOG.error(logPrefix + ex.toString());
+                LOG.error(logPrefix + ex.toString(), ex);
             }
         } else {
             LOG.warn(logPrefix + "Screenshot returned null.");
@@ -401,15 +401,15 @@ public class RecorderService implements IRecorderService {
                 testCaseExecutionFileService.save(object);
 
             } catch (FileNotFoundException ex) {
-                LOG.error(logPrefix + ex.toString());
+                LOG.error(logPrefix + ex.toString(), ex);
 
             } catch (IOException ex) {
-                LOG.error(logPrefix + ex.toString());
+                LOG.error(logPrefix + ex.toString(), ex);
             }
 
             LOG.debug(logPrefix + "Page Source file saved in : " + recorder.getRelativeFilenameURL());
         } catch (CerberusException ex) {
-            LOG.error(logPrefix + ex.toString());
+            LOG.error(logPrefix + ex.toString(), ex);
         }
         return object;
     }
@@ -511,7 +511,7 @@ public class RecorderService implements IRecorderService {
                 objectFileList.add(object);
             }
         } catch (Exception ex) {
-            LOG.error(logPrefix + ex.toString());
+            LOG.error(logPrefix + ex.toString(), ex);
         }
         return objectFileList;
     }
@@ -535,7 +535,7 @@ public class RecorderService implements IRecorderService {
             testCaseExecutionFileService.save(object);
 
         } catch (CerberusException | JSONException ex) {
-            LOG.error(logPrefix + "TestDataLib file was not saved due to unexpected error." + ex.toString());
+            LOG.error(logPrefix + "TestDataLib file was not saved due to unexpected error." + ex.toString(), ex);
         }
         return object;
     }
@@ -647,15 +647,15 @@ public class RecorderService implements IRecorderService {
                         testCaseExecutionFileService.save(object);
 
                     } catch (FileNotFoundException ex) {
-                        LOG.error(logPrefix + ex.toString());
+                        LOG.error(logPrefix + ex.toString(), ex);
                     } catch (IOException ex) {
-                        LOG.error(logPrefix + ex.toString());
+                        LOG.error(logPrefix + ex.toString(), ex);
                     }
 
                     LOG.debug(logPrefix + "Selenium log recorded in : " + recorder.getRelativeFilenameURL());
 
                 } catch (CerberusException ex) {
-                    LOG.error(logPrefix + ex.toString());
+                    LOG.error(logPrefix + ex.toString(), ex);
                 }
             }
         } else {
@@ -679,7 +679,7 @@ public class RecorderService implements IRecorderService {
             testCaseExecutionFileService.save(executionId, recorder.getLevel(), "Image", recorder.getRelativeFilenameURL(), "JPG", "");
 
         } catch (Exception ex) {
-            LOG.error("File: " + UploadedfileName + " failed to be uploaded/saved: " + ex.toString());
+            LOG.error("File: " + UploadedfileName + " failed to be uploaded/saved: " + ex.toString(), ex);
         }
 
     }
@@ -817,7 +817,7 @@ public class RecorderService implements IRecorderService {
             newRecorder.setRelativeFilenameURL(relativeFilenameURL);
 
         } catch (Exception ex) {
-            LOG.error("Error on data init. " + ex.toString());
+            LOG.error("Error on data init. " + ex.toString(), ex);
         }
 
         return newRecorder;

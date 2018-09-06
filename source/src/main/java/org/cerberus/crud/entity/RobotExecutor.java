@@ -328,9 +328,9 @@ public class RobotExecutor {
             result.put("rank", this.getRank());
             result.put("robot", this.getRobot());
         } catch (JSONException ex) {
-            LOG.error(ex.toString());
+            LOG.error(ex.toString(), ex);
         } catch (Exception ex) {
-            LOG.error(ex.toString());
+            LOG.error(ex.toString(), ex);
         }
         return result;
     }

@@ -409,7 +409,7 @@ public class ServiceService implements IServiceService {
             result.setResultMessage(message);
             return result;
         } catch (Exception ex) {
-            LOG.error("Exception when performing CallService Action. " + ex.toString());
+            LOG.error("Exception when performing CallService Action. " + ex.toString(), ex);
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
             message.setDescription(message.getDescription().replace("%SERVICENAME%", service));
             message.setDescription(message.getDescription().replace("%DESCRIPTION%", "Cerberus exception on CallService : " + ex.toString()));

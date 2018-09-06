@@ -377,11 +377,11 @@ public class ExecutionCheckService implements IExecutionCheckService {
             } catch (ParseException exception) {
                 LOG.error("Error when parsing maintenance start and/or end."
                         + tCExecution.getCountryEnvParam().getSystem() + tCExecution.getCountryEnvParam().getCountry()
-                        + tCExecution.getCountryEnvParam().getEnvironment() + " " + tCExecution.getCountryEnvParam().getMaintenanceStr() + tCExecution.getCountryEnvParam().getMaintenanceEnd() + exception.toString());
+                        + tCExecution.getCountryEnvParam().getEnvironment() + " " + tCExecution.getCountryEnvParam().getMaintenanceStr() + tCExecution.getCountryEnvParam().getMaintenanceEnd() + exception.toString(), exception);
             } catch (Exception exception) {
                 LOG.error("Error when parsing maintenance start and/or end."
                         + tCExecution.getCountryEnvParam().getSystem() + tCExecution.getCountryEnvParam().getCountry()
-                        + tCExecution.getCountryEnvParam().getEnvironment() + " " + tCExecution.getCountryEnvParam().getMaintenanceStr() + tCExecution.getCountryEnvParam().getMaintenanceEnd() + exception.toString());
+                        + tCExecution.getCountryEnvParam().getEnvironment() + " " + tCExecution.getCountryEnvParam().getMaintenanceStr() + tCExecution.getCountryEnvParam().getMaintenanceEnd() + exception.toString(), exception);
             }
             message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_ENVIRONMENT_UNDER_MAINTENANCE);
             message.resolveDescription("START", tCExecution.getCountryEnvParam().getMaintenanceStr())

@@ -166,7 +166,7 @@ public class TestCaseCountryService implements ITestCaseCountryService {
         try {
             oldList = this.convert(this.readByTestTestCase(null, test, testCase, null));
         } catch (CerberusException ex) {
-            LOG.error(ex);
+            LOG.error(ex, ex);
         }
 
         /**

@@ -295,7 +295,7 @@ public class RunTestCaseV001 extends HttpServlet {
                         manualExecution, executor, null, null, null);
                 tCExecution.setTestCaseExecutionQueue(queueExecution);
             } catch (FactoryCreationException ex) {
-                LOG.error(ex);
+                LOG.error(ex, ex);
             }
 
             /**

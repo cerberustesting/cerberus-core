@@ -71,7 +71,7 @@ public class VideoRecorderAPK extends VideoRecorder {
                     try { // wait video is terminated
                         Thread.sleep(TIME_BY_VIDEO_SAMPLE * 1000);
                     } catch (InterruptedException e) {
-                        LOG.error("failed to sleep ...");
+                        LOG.error("failed to sleep ...", e);
                     }
                 } while (running.get());
             });

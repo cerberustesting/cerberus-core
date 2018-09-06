@@ -322,7 +322,7 @@ public class SQLService implements ISQLService {
                 msg.setDescription(msg.getDescription().replace("%DATABASE%", database));
             }
         } catch (CerberusException ex) {
-            LOG.error(ex.toString());
+            LOG.error(ex.toString(), ex);
         }
         return msg;
     }
@@ -397,7 +397,7 @@ public class SQLService implements ISQLService {
                 msg.setDescription(msg.getDescription().replace("%DATABASE%", database));
             }
         } catch (CerberusException ex) {
-            LOG.error(ex.toString());
+            LOG.error(ex.toString(), ex);
         }
         return msg;
     }

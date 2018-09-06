@@ -101,7 +101,7 @@ public class CountryEnvDeployTypeService implements ICountryEnvDeployTypeService
         try {
             oldList = this.convert(this.readByVarious(system, country, environement, null));
         } catch (CerberusException ex) {
-            LOG.error(ex);
+            LOG.error(ex, ex);
         }
 
         /**

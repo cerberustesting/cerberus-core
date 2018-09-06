@@ -633,7 +633,7 @@ public class SeleniumServerService implements ISeleniumServerService {
                 // Wait 2 sec till HAR is exported
                 Thread.sleep(2000);
             } catch (InterruptedException ex) {
-                LOG.error(ex.toString());
+                LOG.error(ex.toString(), ex);
             }
 
             if (session.getAppiumDriver() != null && tce.getCountryEnvironmentParameters() != null
@@ -677,9 +677,9 @@ public class SeleniumServerService implements ISeleniumServerService {
             }
 
         } catch (IOException ex) {
-            LOG.error(ex.toString());
+            LOG.error(ex.toString(), ex);
         } catch (JSONException ex) {
-            LOG.error(ex.toString());
+            LOG.error(ex.toString(), ex);
         }
     }
 

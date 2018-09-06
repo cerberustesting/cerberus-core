@@ -531,7 +531,7 @@ public class RestService implements IRestService {
                 if(httpclient != null)
                     httpclient.close();
             } catch (IOException ex) {
-                LOG.error(ex.toString());
+                LOG.error(ex.toString(), ex);
             }
         }
 

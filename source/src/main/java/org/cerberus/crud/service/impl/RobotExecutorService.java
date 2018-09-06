@@ -224,7 +224,7 @@ public class RobotExecutorService implements IRobotExecutorService {
         try {
             oldList = this.convert(this.readByVarious(robotList, null));
         } catch (CerberusException ex) {
-            LOG.error(ex);
+            LOG.error(ex, ex);
         }
 
         /**
