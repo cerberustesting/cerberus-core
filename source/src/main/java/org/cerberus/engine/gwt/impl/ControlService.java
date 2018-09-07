@@ -862,7 +862,7 @@ public class ControlService implements IControlService {
 
     }
 
-    private MessageEvent verifyTextInElement(TestCaseExecution tCExecution, String path, String expected) {
+    public MessageEvent verifyTextInElement(TestCaseExecution tCExecution, String path, String expected) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Control: verifyTextInElement on " + path + " element against value: " + expected);
         }
@@ -969,7 +969,7 @@ public class ControlService implements IControlService {
 
     }
 
-    private MessageEvent verifyTextNotInElement(TestCaseExecution tCExecution, String path, String expected) {
+    public MessageEvent verifyTextNotInElement(TestCaseExecution tCExecution, String path, String expected) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Control: verifyTextNotInElement on " + path + " element against value: " + expected);
         }
@@ -1077,6 +1077,8 @@ public class ControlService implements IControlService {
 
     }
 
+    
+    
     private MessageEvent VerifyRegexInElement(TestCaseExecution tCExecution, String path, String regex) {
         LOG.debug("Control : verifyRegexInElement on : " + path + " element against value : " + regex);
         MessageEvent mes;

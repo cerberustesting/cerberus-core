@@ -19,7 +19,9 @@
  */
 package org.cerberus.engine.gwt;
 
+import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseStepActionControlExecution;
+import org.cerberus.engine.entity.MessageEvent;
 
 /**
  * {Insert class description here}
@@ -31,4 +33,9 @@ import org.cerberus.crud.entity.TestCaseStepActionControlExecution;
 public interface IControlService {
 
     TestCaseStepActionControlExecution doControl(TestCaseStepActionControlExecution testCaseStepActionControlExecution);
+
+	MessageEvent verifyTextInElement(TestCaseExecution tCExecution, String path, String expected);
+
+	MessageEvent verifyTextNotInElement(TestCaseExecution tCExecution, String path, String expected);
+
 }

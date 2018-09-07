@@ -380,6 +380,7 @@ public enum MessageEventEnum {
     STEP_PENDING(499, "PE", "Step %STEP%.%STEPINDEX% running...", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     // *********** CONDITION OPERATION ***********
     CONDITIONEVAL_NOTPOSSIBLE(1199, "FA", "can't evaluate this condition, no webdriver set on a manual execution", false, false, false, MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_NOCONNECTION),
+    CONDITIONEVAL_NOPATHFOUND(1198, "FA", "Impossible to execute condition, the path is probably wrong", false, false, false, MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_NOCONNECTION),
     CONDITIONEVAL_PENDING(1200, "PE", "Evaluating Condition...", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     CONDITIONEVAL_FAILED_UNKNOWNCONDITION(1290, "FA", "condition '%COND%' do not exist.", false, false, false, MessageGeneralEnum.EXECUTION_FA_CONDITION),
     CONDITIONEVAL_FAILED_DECODE_GENERICERROR(1215, "FA", "Error when decoding '%VALUE%'.", false, false, false, MessageGeneralEnum.EXECUTION_FA_CONDITION),

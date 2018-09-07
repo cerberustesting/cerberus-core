@@ -7884,9 +7884,20 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add("DELETE FROM `robotcapability` WHERE capability = 'deviceName' and value in (select  re.deviceName from `robotexecutor` re)");
         a.add("DELETE FROM `robotcapability` WHERE capability = 'systemPort' and value in (select  re.devicePort from `robotexecutor` re)");
 
-        // 1383 Introduction of 'Rank' attribute to manage properties in Front differently depending on the Rank
+        // 1382 Introduction of 'Rank' attribute to manage properties in Front differently depending on the Rank
         a.add("ALTER TABLE `testcasecountryproperties` ADD COLUMN `Rank` int(2) not null default 1");
 
+        //Insert the invariant IfTextInElement and IfTextNotInElement for Condition-Step-Action-Execution
+        // 1383
+        b = new StringBuilder();
+        b.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ");
+        b.append("('ACTIONCONDITIONOPER', 'ifTextInElement', 280, 'Only execute if text is present in element.')");
+        b.append(",('ACTIONCONDITIONOPER', 'ifTextNotInElement', 270, 'Only execute if text is not present in element.')");
+        b.append(",('STEPCONDITIONOPER', 'ifTextInElement', 270, 'Only execute if text is present in element.')");
+        b.append(",('STEPCONDITIONOPER', 'ifTextNotInElement', 280, 'Only execute if text is not present in element.')");
+        a.add(b.toString());
+        
+        
         return a;
     }
 
