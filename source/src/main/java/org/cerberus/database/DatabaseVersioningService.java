@@ -7891,8 +7891,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // 1383
         b = new StringBuilder();
         b.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ");
-        b.append("('ACTIONCONDITIONOPER', 'ifTextInElement', 280, 'Only execute if text is present in element.')");
-        b.append(",('ACTIONCONDITIONOPER', 'ifTextNotInElement', 270, 'Only execute if text is not present in element.')");
+        b.append("('ACTIONCONDITIONOPER', 'ifTextInElement', 270, 'Only execute if text is present in element.')");
+        b.append(",('ACTIONCONDITIONOPER', 'ifTextNotInElement', 280, 'Only execute if text is not present in element.')");
         b.append(",('STEPCONDITIONOPER', 'ifTextInElement', 270, 'Only execute if text is present in element.')");
         b.append(",('STEPCONDITIONOPER', 'ifTextNotInElement', 280, 'Only execute if text is not present in element.')");
         a.add(b.toString());

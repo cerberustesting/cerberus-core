@@ -32,10 +32,29 @@ import org.cerberus.engine.entity.MessageEvent;
  */
 public interface IControlService {
 
+    /**
+     *
+     * @param testCaseStepActionControlExecution
+     * @return
+     */
     TestCaseStepActionControlExecution doControl(TestCaseStepActionControlExecution testCaseStepActionControlExecution);
 
-	MessageEvent verifyTextInElement(TestCaseExecution tCExecution, String path, String expected);
+    /**
+     *
+     * @param tCExecution
+     * @param path
+     * @param expected
+     * @return
+     */
+    MessageEvent verifyTextInElement(TestCaseExecution tCExecution, String path, String expected);
 
-	MessageEvent verifyTextNotInElement(TestCaseExecution tCExecution, String path, String expected);
+    /**
+     *
+     * @param tCExecution
+     * @param path
+     * @param expected
+     * @return
+     */
+    MessageEvent verifyTextNotInElement(TestCaseExecution tCExecution, String path, String expected);
 
 }

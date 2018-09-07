@@ -44,7 +44,6 @@ import org.openqa.selenium.WebDriverException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-
 /**
  * {Insert class description here}
  *
@@ -144,17 +143,17 @@ public class ConditionService implements IConditionService {
                 mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_NEVER);
                 mes.setDescription(mes.getDescription().replace("%COND%", conditionOper));
                 break;
-                
-            case TestCaseStepAction.CONDITIONOPER_IFTEXTINELEMENT :
-            	ans = evaluateCondition_ifTextInElement(tCExecution, conditionValue1, conditionValue2, conditionOper);
-            	mes = ans.getResultMessage();
-            	break;
 
-            case TestCaseStepAction.CONDITIONOPER_IFTEXTNOTINELEMENT :	
-            	ans = evaluateCondition_ifTextNotInElement(tCExecution, conditionValue1, conditionValue2, conditionOper);
-            	mes = ans.getResultMessage();
-            	break;
-            	
+            case TestCaseStepAction.CONDITIONOPER_IFTEXTINELEMENT:
+                ans = evaluateCondition_ifTextInElement(tCExecution, conditionValue1, conditionValue2, conditionOper);
+                mes = ans.getResultMessage();
+                break;
+
+            case TestCaseStepAction.CONDITIONOPER_IFTEXTNOTINELEMENT:
+                ans = evaluateCondition_ifTextNotInElement(tCExecution, conditionValue1, conditionValue2, conditionOper);
+                mes = ans.getResultMessage();
+                break;
+
             default:
                 mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_UNKNOWNCONDITION);
                 mes.setDescription(mes.getDescription().replace("%COND%", conditionOper));
@@ -172,67 +171,63 @@ public class ConditionService implements IConditionService {
         ans.setResultMessage(mes);
         return ans;
     }
-    
-    private AnswerItem<Boolean> evaluateCondition_ifTextInElement (TestCaseExecution tCExecution, String path, String expected, String conditionOper){
+
+    private AnswerItem<Boolean> evaluateCondition_ifTextInElement(TestCaseExecution tCExecution, String path, String expected, String conditionOper) {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Condition: ifTextInElement on " + path + " element against value: " + expected);
-           
-        }
-        AnswerItem ans = new AnswerItem<Boolean>();
-        MessageEvent resultMes = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
-        resultMes = controlService.verifyTextInElement(tCExecution, path, expected);
-        
-
-        
-        if( "OK".equals(resultMes.getCodeString())) {       	
-        
-        	MessageEvent resultCondMes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_TEXTINELEMENT);  	    	
-        	ans.setItem(true); 
-        	ans.setResultMessage(resultCondMes);
-        	return ans; 
-       
-        }else{       	
-
-        	MessageEvent resultCondMes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_TEXTINELEMENT);
-        	resultCondMes.setDescription(resultCondMes.getDescription().replace("%ERRORMESS%",resultMes.getDescription()));
-        	ans.setItem(false); 
-        	ans.setResultMessage(resultCondMes);
-        	return ans; 
+            LOG.debug("Checking ifTextInElement on " + path + " element against value: " + expected);
 
         }
-        
+        AnswerItem<Boolean> ans = new AnswerItem<>();
+        MessageEvent resultControlMes = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
+        resultControlMes = controlService.verifyTextInElement(tCExecution, path, expected);
+
+        if ("OK".equals(resultControlMes.getCodeString())) {
+
+            MessageEvent resultCondMes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_TEXTINELEMENT);
+            ans.setItem(true);
+            ans.setResultMessage(resultCondMes);
+            return ans;
+
+        } else {
+
+            MessageEvent resultCondMes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_TEXTINELEMENT);
+            resultCondMes.setDescription(resultCondMes.getDescription().replace("%ERRORMESS%", resultControlMes.getDescription()));
+            ans.setItem(false);
+            ans.setResultMessage(resultCondMes);
+            return ans;
+
+        }
 
     }
-    
-    private AnswerItem<Boolean> evaluateCondition_ifTextNotInElement (TestCaseExecution tCExecution, String path, String expected, String conditionOper){
+
+    private AnswerItem<Boolean> evaluateCondition_ifTextNotInElement(TestCaseExecution tCExecution, String path, String expected, String conditionOper) {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Condition: ifTextInElement on " + path + " element against value: " + expected);
-           
+            LOG.debug("Checking ifTextInElement on " + path + " element against value: " + expected);
+
         }
-        AnswerItem ans = new AnswerItem<Boolean>();
+        AnswerItem<Boolean> ans = new AnswerItem<>();
         MessageEvent resultMes = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
         resultMes = controlService.verifyTextNotInElement(tCExecution, path, expected);
- 
-        if("OK".equals(resultMes.getCodeString())) {       	
-        	
-        	MessageEvent resultCondMes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_TEXTNOTINELEMENT);
-        	ans.setItem(true);  
-        	ans.setResultMessage(resultCondMes);
-        	return ans;
-       
-        }else{       	
-     
-        	MessageEvent resultCondMes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_TEXTNOTINELEMENT);
-            resultCondMes.setDescription(resultCondMes.getDescription().replace("%ERRORMESS%",resultMes.getDescription()));
-        	ans.setItem(false); 
-        	ans.setResultMessage(resultCondMes);
-        	return ans;
-       
-        }  	
-        
+
+        if ("OK".equals(resultMes.getCodeString())) {
+
+            MessageEvent resultCondMes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_TEXTNOTINELEMENT);
+            ans.setItem(true);
+            ans.setResultMessage(resultCondMes);
+            return ans;
+
+        } else {
+
+            MessageEvent resultCondMes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_TEXTNOTINELEMENT);
+            resultCondMes.setDescription(resultCondMes.getDescription().replace("%ERRORMESS%", resultMes.getDescription()));
+            ans.setItem(false);
+            ans.setResultMessage(resultCondMes);
+            return ans;
+
+        }
+
     }
-    
-    
+
     private AnswerItem<Boolean> evaluateCondition_ifPropertyExist(String conditionOper, String conditionValue1, TestCaseExecution tCExecution) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Checking if property Exist");
@@ -269,7 +264,7 @@ public class ConditionService implements IConditionService {
         ans.setResultMessage(mes);
         return ans;
     }
-	
+
     private AnswerItem<Boolean> evaluateCondition_ifElementPresent(String conditionOper, String conditionValue1, TestCaseExecution tCExecution) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Checking if Element Present");
@@ -277,10 +272,9 @@ public class ConditionService implements IConditionService {
         AnswerItem ans = new AnswerItem<>();
         MessageEvent mes;
 
-        if(tCExecution.getManualExecution().equals("Y")) {
-        	mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_NOTPOSSIBLE);
-        }
-        else if (StringUtil.isNullOrEmpty(conditionValue1)) {
+        if (tCExecution.getManualExecution().equals("Y")) {
+            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_NOTPOSSIBLE);
+        } else if (StringUtil.isNullOrEmpty(conditionValue1)) {
             mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_IFELEMENTPRESENT_MISSINGPARAMETER);
             mes.setDescription(mes.getDescription().replace("%COND%", conditionOper));
         } else {
@@ -368,12 +362,10 @@ public class ConditionService implements IConditionService {
         }
         AnswerItem ans = new AnswerItem<>();
         MessageEvent mes;
-        
 
-        if(tCExecution.getManualExecution().equals("Y")) {
-        	mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_NOTPOSSIBLE);
-        }
-        else if (StringUtil.isNullOrEmpty(conditionValue1)) {
+        if (tCExecution.getManualExecution().equals("Y")) {
+            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_NOTPOSSIBLE);
+        } else if (StringUtil.isNullOrEmpty(conditionValue1)) {
             mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_IFELEMENTNOTPRESENT_MISSINGPARAMETER);
             mes.setDescription(mes.getDescription().replace("%COND%", conditionOper));
         } else {
@@ -512,8 +504,6 @@ public class ConditionService implements IConditionService {
         ans.setResultMessage(mes);
         return ans;
     }
-    
-    
 
     private AnswerItem<Boolean> evaluateCondition_ifStringGreater(String conditionOper, String conditionValue1, String conditionValue2) {
         if (LOG.isDebugEnabled()) {
