@@ -44,9 +44,11 @@ public interface IFactoryTestCaseCountryProperties {
      * @param retryNb
      * @param retryPeriod
      * @param cacheExpire
+     * @param rank
      * @return
      */
     TestCaseCountryProperties create(String test, String testCase, String country, String property, String description,
-            String type, String database, String value1, String value2, String length, int rowLimit, String nature, int retryNb, int retryPeriod, int cacheExpire);
+            String type, String database, String value1, String value2, String length, int rowLimit, String nature, int retryNb, 
+            int retryPeriod, int cacheExpire, int rank);
 
 }

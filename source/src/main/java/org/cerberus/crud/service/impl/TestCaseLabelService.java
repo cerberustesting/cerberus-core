@@ -162,7 +162,7 @@ public class TestCaseLabelService implements ITestCaseLabelService {
         try {
             oldList = this.convert(this.readByTestTestCase(test, testCase, null));
         } catch (CerberusException ex) {
-            LOG.error(ex);
+            LOG.error(ex, ex);
         }
 
         /**

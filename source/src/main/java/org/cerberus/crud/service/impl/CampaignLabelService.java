@@ -160,7 +160,7 @@ public class CampaignLabelService implements ICampaignLabelService {
         try {
             oldList = this.convert(this.readByVarious(campaign));
         } catch (CerberusException ex) {
-            LOG.error(ex);
+            LOG.error(ex, ex);
         }
 
         /**

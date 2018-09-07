@@ -262,9 +262,9 @@ public class Robot {
             }
 
         } catch (JSONException ex) {
-            LOG.error(ex.toString());
+            LOG.error(ex.toString(), ex);
         } catch (Exception ex) {
-            LOG.error(ex.toString());
+            LOG.error(ex.toString(), ex);
         }
         return result;
     }

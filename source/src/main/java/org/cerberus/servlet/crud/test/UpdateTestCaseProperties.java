@@ -184,6 +184,7 @@ public class UpdateTestCaseProperties extends HttpServlet {
             String length = propJson.getString("length");
             int rowLimit = propJson.getInt("rowLimit");
             int retryNb = propJson.optInt("retryNb");
+            int rank = propJson.optInt("rank");
             int retryPeriod = propJson.optInt("retryPeriod");
             String nature = propJson.getString("nature");
             String database = propJson.getString("database");
@@ -192,7 +193,7 @@ public class UpdateTestCaseProperties extends HttpServlet {
                 for (int j = 0; j < countries.length(); j++) {
                     String country = countries.getString(j);
 
-                    testCaseCountryProp.add(testCaseCountryPropertiesFactory.create(test, testCase, country, property, description, type, database, value, value2, length, rowLimit, nature, retryNb, retryPeriod, 0));
+                    testCaseCountryProp.add(testCaseCountryPropertiesFactory.create(test, testCase, country, property, description, type, database, value, value2, length, rowLimit, nature, retryNb, retryPeriod, 0, rank));
                 }
             }
         }

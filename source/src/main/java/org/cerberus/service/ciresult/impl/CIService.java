@@ -61,7 +61,7 @@ public class CIService implements ICIService {
             List<TestCaseExecution> myList = testExecutionService.readLastExecutionAndExecutionInQueueByTag(tag);
             return getCIResult(tag, myList);
         } catch (CerberusException | ParseException ex) {
-            LOG.error(ex);
+            LOG.error(ex, ex);
         }
         return null;
     }
@@ -79,7 +79,7 @@ public class CIService implements ICIService {
 
             return jsonResponse;
         } catch (CerberusException | ParseException | JSONException ex) {
-            LOG.error(ex);
+            LOG.error(ex, ex);
         }
         return null;
     }
@@ -234,7 +234,7 @@ public class CIService implements ICIService {
             return jsonResponse;
 
         } catch (JSONException ex) {
-            LOG.error(ex);
+            LOG.error(ex, ex);
         }
         return null;
     }

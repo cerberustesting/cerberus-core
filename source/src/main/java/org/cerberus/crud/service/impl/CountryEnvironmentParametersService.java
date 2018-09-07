@@ -115,7 +115,7 @@ public class CountryEnvironmentParametersService implements ICountryEnvironmentP
         try {
             oldList = this.convert(this.readByVarious(system, country, environement, null));
         } catch (CerberusException ex) {
-            LOG.error(ex);
+            LOG.error(ex, ex);
         }
 
         /**
@@ -173,7 +173,7 @@ public class CountryEnvironmentParametersService implements ICountryEnvironmentP
         try {
             oldList = this.convert(this.readByVarious(system, null, null, application));
         } catch (CerberusException ex) {
-            LOG.error(ex);
+            LOG.error(ex, ex);
         }
 
         /**

@@ -276,7 +276,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
             statusList.put("QU", ParameterParserUtil.parseStringParam(request.getParameter("QU"), "off"));
             statusList.put("QE", ParameterParserUtil.parseStringParam(request.getParameter("QE"), "off"));
         } catch (JSONException ex) {
-            LOG.error("Error on getStatusList : " + ex);
+            LOG.error("Error on getStatusList : " + ex, ex);
         }
 
         return statusList;
@@ -291,7 +291,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                 countryList.put(country.getValue(), ParameterParserUtil.parseStringParam(request.getParameter(country.getValue()), "off"));
             }
         } catch (JSONException ex) {
-            LOG.error("Error on getCountryList : " + ex);
+            LOG.error("Error on getCountryList : " + ex, ex);
         }
 
         return countryList;
@@ -391,9 +391,9 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                 testCaseExecutionTable.put("iTotalDisplayRecords", ttc.size());
                 testCaseExecutionTable.put("tableColumns", treeMap.values());
             } catch (JSONException ex) {
-                LOG.error("Error on generateTestCaseExecutionTable : " + ex);
+                LOG.error("Error on generateTestCaseExecutionTable : " + ex, ex);
             } catch (Exception ex) {
-                LOG.error("Error on generateTestCaseExecutionTable : " + ex);
+                LOG.error("Error on generateTestCaseExecutionTable : " + ex, ex);
             }
         }
         return testCaseExecutionTable;

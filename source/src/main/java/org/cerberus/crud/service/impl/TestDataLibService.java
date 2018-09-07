@@ -112,7 +112,7 @@ public class TestDataLibService implements ITestDataLibService {
             String maxSecurityFetch1 = parameterService.findParameterByKey("cerberus_testdatalib_fetchmax", system).getValue();
             maxSecurityFetch = Integer.valueOf(maxSecurityFetch1);
         } catch (CerberusException ex) {
-            LOG.error(ex);
+            LOG.error(ex, ex);
         }
         int maxFetch = maxSecurityFetch;
         if (rowLimit > 0 && rowLimit < maxSecurityFetch) {

@@ -109,7 +109,7 @@ public class CountryEnvironmentDatabaseService implements ICountryEnvironmentDat
         try {
             oldList = this.convert(this.readByVarious(system, country, environement));
         } catch (CerberusException ex) {
-            LOG.error(ex);
+            LOG.error(ex, ex);
         }
 
         /**

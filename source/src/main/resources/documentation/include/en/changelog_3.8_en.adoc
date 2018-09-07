@@ -4,6 +4,7 @@
 
 *Improvements / New features*
 [square]
+* [ENGINE] ifTextInElement added on the Condition operation list for the test-case-step-action
 * [GUI] Major Label screen improvements. Label screen now display full hierarchy for all types of label (Sticker, Requirement and Battery)
 * [GUI] Label hierarchy is also displayed on ReportByTag page. Corresponding result and execution statistics are agregated by hierarchy.
 * [GUI] On TestCase header modal, the 3 types of labels are now split per type 1 tab for STICKER, another for BATTERY and a last one for REQUIREMENT.

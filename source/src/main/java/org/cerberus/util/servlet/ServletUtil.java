@@ -68,7 +68,7 @@ public final class ServletUtil {
                 Thread.sleep(timeToWait);
 
             } catch (InterruptedException ex) {
-                LOG.error(ex);
+                LOG.error(ex, ex);
             }
         }
 

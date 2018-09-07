@@ -125,7 +125,7 @@ public class CampaignParameterService implements ICampaignParameterService {
         try {
             oldList = this.convert(this.readByCampaign(campaign));
         } catch (CerberusException ex) {
-            LOG.error(ex);
+            LOG.error(ex, ex);
         }
 
         /**

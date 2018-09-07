@@ -42,6 +42,7 @@ public class TestCaseCountryProperties {
     private int cacheExpire;
     private int retryNb;
     private int retryPeriod;
+    private int Rank;
 
     /**
      * From here are data outside database model.
@@ -246,8 +247,16 @@ public class TestCaseCountryProperties {
         }
         return true;
     }
+    
+    public int getRank() {
+		return Rank;
+	}
 
-    @Override
+	public void setRank(int Rank) {
+		this.Rank = Rank;
+	}
+
+	@Override
     public int hashCode() {
         int hash = 5;
         hash = 83 * hash + (this.test != null ? this.test.hashCode() : 0);

@@ -293,8 +293,8 @@ public class SoapService implements ISoapService {
 
                 // Create the Proxy.
                 SocketAddress sockaddr = new InetSocketAddress(proxyHost, proxyPort);
-                try(Socket socket = new Socket();){
-                	socket.connect(sockaddr, 10000);
+                try (Socket socket = new Socket();) {
+                    socket.connect(sockaddr, 10000);
                     Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(socket.getInetAddress(), proxyPort));
 
                     if (parameterService.getParameterBooleanByKey("cerberus_proxyauthentification_active", system, DEFAULT_PROXYAUTHENT_ACTIVATE)) {
@@ -310,8 +310,8 @@ public class SoapService implements ISoapService {
                     }
                     // Call with Proxy.
                     soapResponse = sendSOAPMessage(input, servicePath, proxy, timeOutMs);
-                }catch(Exception e) {
-                	LOG.warn(e.toString());
+                } catch (Exception e) {
+                    LOG.warn(e.toString(), e);
                 }
             } else {
 
@@ -349,7 +349,7 @@ public class SoapService implements ISoapService {
             result.setItem(serviceSOAP);
 
         } catch (SOAPException | UnsupportedOperationException | IOException | SAXException | ParserConfigurationException | CerberusException e) {
-            LOG.error(e.toString());
+            LOG.error(e.toString(), e);
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
             message.setDescription(message.getDescription()
                     .replace("%SERVICEPATH%", servicePath)
@@ -366,7 +366,7 @@ public class SoapService implements ISoapService {
                     out.close();
                 }
             } catch (SOAPException | IOException ex) {
-                LOG.error(ex);
+                LOG.error(ex, ex);
             } finally {
                 result.setResultMessage(message);
             }
