@@ -105,24 +105,29 @@ public class VideoRecorderAPK extends VideoRecorder {
                 List<String> videosPath = new LinkedList<>();
 
                 for (int i = 0; i < cpt; i++) {
-
                     Recorder recorder = recorderService.initFilenames(1l, test, testCase, null, null, null, null, "video-part", i, videoName + i, "mp4", false);
 
                     String videoStr = videoName + i + ".mp4";
                     String videoCompletePath = "/sdcard/" + videoStr;
                     String videoCompletePathTarget = recorder.getFullFilename();
 
-                    byte[] video = driver.pullFile(videoCompletePath);
+                    try {
+                        byte[] video = driver.pullFile(videoCompletePath);
 
-                    FileUtils.writeByteArrayToFile(new File(videoCompletePathTarget), video);
+                        FileUtils.writeByteArrayToFile(new File(videoCompletePathTarget), video);
 
-                    // Index file created to database.
-                    recorderService.addFileToTestCaseExecution(testCaseExecution, recorder, "Video", "MP4");
+                        // Index file created to database.
+                        recorderService.addFileToTestCaseExecution(testCaseExecution, recorder, "Video", "MP4");
 
-                    videosPath.add(videoCompletePathTarget);
-
-                    // delete it from mobile
-                    executeCommand("rm " + videoCompletePath);
+                        videosPath.add(videoCompletePathTarget);
+                    } catch(Exception e) {
+                        LOG.error("Failed to pull video " + videoCompletePath);
+                        throw e;
+                    }
+                    finally {
+                        // delete it from mobile
+                        executeCommand("rm " + videoCompletePath);
+                    }
 
                 }
 
@@ -136,7 +141,7 @@ public class VideoRecorderAPK extends VideoRecorder {
 
 
     private void executeCommand(String cmd) throws IllegalArgumentException {
-        AndroidDriver driver = ((AndroidDriver) session.getAppiumDriver());
+        AndroidDriver driver = (AndroidDriver) session.getAppiumDriver();
 
         Map<String, Object> argss = new HashMap<>();
         argss.put("command", cmd);
