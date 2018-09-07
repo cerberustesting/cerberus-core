@@ -76,7 +76,7 @@ public class SaveTestCaseLabel extends HttpServlet {
         ans.setResultMessage(msg);
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        String charset = request.getCharacterEncoding();
+        String charset = request.getCharacterEncoding() == null ? "UTF-8" : request.getCharacterEncoding();
         String usr = request.getUserPrincipal().getName();
 
         testCaseLabelService = appContext.getBean(ITestCaseLabelService.class);

@@ -72,7 +72,7 @@ public class NewRelease extends HttpServlet {
             throws ServletException, IOException {
         PrintWriter out = response.getWriter();
 
-        String charset = request.getCharacterEncoding();
+        String charset = request.getCharacterEncoding() == null ? "UTF-8" : request.getCharacterEncoding();
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
 

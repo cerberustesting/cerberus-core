@@ -270,7 +270,7 @@ public class AddToExecutionQueue extends HttpServlet {
      */
     private List<TestCaseExecutionQueue> getTestCasesToInsert(HttpServletRequest request) throws ParameterException, CerberusException {
 
-        final String charset = request.getCharacterEncoding();
+        final String charset = request.getCharacterEncoding() == null ? "UTF-8" : request.getCharacterEncoding();
 
         // Select test cases and associated parameters to run
         List<Map<String, String>> selectedTests;

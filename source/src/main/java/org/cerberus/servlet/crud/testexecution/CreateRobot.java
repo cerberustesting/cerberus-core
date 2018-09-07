@@ -89,7 +89,7 @@ public class CreateRobot extends HttpServlet {
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
         response.setContentType("application/json");
-        String charset = request.getCharacterEncoding();
+        String charset = request.getCharacterEncoding() == null ? "UTF-8" : request.getCharacterEncoding();
 
         /**
          * Parsing and securing all required parameters.
@@ -217,7 +217,7 @@ public class CreateRobot extends HttpServlet {
         IFactoryRobotExecutor reFactory = appContext.getBean(IFactoryRobotExecutor.class);
         IRobotExecutorService reService = appContext.getBean(IRobotExecutorService.class);
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
-        String charset = request.getCharacterEncoding();
+        String charset = request.getCharacterEncoding() == null ? "UTF-8" : request.getCharacterEncoding();
         List<RobotExecutor> reList1 = reService.convert(reService.readByRobot(robot));
 
         for (int i = 0; i < json.length(); i++) {

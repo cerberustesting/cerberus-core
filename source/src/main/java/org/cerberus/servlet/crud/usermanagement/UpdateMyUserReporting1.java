@@ -59,7 +59,7 @@ public class UpdateMyUserReporting1 extends HttpServlet {
         
 
         String login = request.getUserPrincipal().getName();
-        String charset = request.getCharacterEncoding();
+        String charset = request.getCharacterEncoding() == null ? "UTF-8" : request.getCharacterEncoding();
         /**
          * Parse parameters - list of values
          */

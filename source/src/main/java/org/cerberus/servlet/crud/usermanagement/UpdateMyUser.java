@@ -60,7 +60,7 @@ public class UpdateMyUser extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         //TODO create class Validator to validate all parameter from page
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
-        String charset = request.getCharacterEncoding();
+        String charset = request.getCharacterEncoding() == null ? "UTF-8" : request.getCharacterEncoding();
         String login = request.getUserPrincipal().getName();
         String column = request.getParameter("column");
         String value = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("value"), "", charset);

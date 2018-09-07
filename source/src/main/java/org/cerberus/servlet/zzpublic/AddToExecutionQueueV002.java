@@ -149,7 +149,7 @@ public class AddToExecutionQueueV002 extends HttpServlet {
      */
     private void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         PrintWriter out = response.getWriter();
-        final String charset = request.getCharacterEncoding();
+        final String charset = request.getCharacterEncoding() == null ? "UTF-8" : request.getCharacterEncoding();
         Date requestDate = new Date();
 
         // Loading Services.

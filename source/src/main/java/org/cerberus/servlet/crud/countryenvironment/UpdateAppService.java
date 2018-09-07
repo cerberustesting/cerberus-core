@@ -95,7 +95,7 @@ public class UpdateAppService extends HttpServlet {
         ans.setResultMessage(msg);
 
         response.setContentType("text/html;charset=UTF-8");
-        String charset = request.getCharacterEncoding();
+        String charset = request.getCharacterEncoding() == null ? "UTF-8" : request.getCharacterEncoding();
         
         Map<String, String> fileData = new HashMap<String, String>();
         FileItem file = null;

@@ -74,7 +74,7 @@ public class UpdateParameter extends HttpServlet {
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         ans.setResultMessage(msg);
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
-        String charset = request.getCharacterEncoding();
+        String charset = request.getCharacterEncoding() == null ? "UTF-8" : request.getCharacterEncoding();
         ILogEventService logEventService;
 
         String id = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("id"), "", charset);

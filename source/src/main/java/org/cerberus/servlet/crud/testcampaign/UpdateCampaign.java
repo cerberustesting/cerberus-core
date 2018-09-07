@@ -85,7 +85,7 @@ public class UpdateCampaign extends HttpServlet {
         response.setContentType("application/json");
         response.setCharacterEncoding("utf8");
         PrintWriter out = response.getWriter();
-        String charset = request.getCharacterEncoding();
+        String charset = request.getCharacterEncoding() == null ? "UTF-8" : request.getCharacterEncoding();
 
         // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
         // Parameter that needs to be secured --> We SECURE+DECODE them

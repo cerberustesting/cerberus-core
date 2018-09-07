@@ -612,7 +612,7 @@ public class ReadTestCaseExecution extends HttpServlet {
         /**
          * Parse all parameters used in the search.
          */
-        String charset = request.getCharacterEncoding();
+        String charset = request.getCharacterEncoding() == null ? "UTF-8" : request.getCharacterEncoding();
         /**
          * Parse parameters - list of values
          */

@@ -70,7 +70,7 @@ public class ReadApplicationObjectImage extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, CerberusException {
-        String charset = request.getCharacterEncoding();
+        String charset = request.getCharacterEncoding() == null ? "UTF-8" : request.getCharacterEncoding();
 
         String application = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("application"), "", charset);
         String object = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("object"), "", charset);

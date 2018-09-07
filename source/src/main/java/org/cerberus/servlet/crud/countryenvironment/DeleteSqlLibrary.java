@@ -70,7 +70,7 @@ public class DeleteSqlLibrary extends HttpServlet {
 
         response.setContentType("application/json");
 
-        String charset = request.getCharacterEncoding();
+        String charset = request.getCharacterEncoding() == null ? "UTF-8" : request.getCharacterEncoding();
         String name = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("name"), null, charset);
 
         ISqlLibraryService sqlLibraryService = appContext.getBean(ISqlLibraryService.class);
