@@ -179,114 +179,32 @@ $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.j
                         return compareStrings(a.property, b.property);
                     })
                     createStepList(json, stepList, step, data.hasPermissionsUpdate, data.hasPermissionsStepLibrary);
-                    var inheritedProperties = drawInheritedProperty(data.inheritedProp);
-
-                    var propertiesPromise = loadProperties(test, testcase, data.info, property, data.hasPermissionsUpdate);
-                    var objectsPromise = loadApplicationObject(data);
-
-                    Promise.all([propertiesPromise, objectsPromise]).then(function (data2) {
-                        var properties = data2[0];
-                        var availableObjects = data2[1];
-                        var availableProperties = properties.concat(inheritedProperties.filter(function (item) {
-                            return properties.indexOf(item) < 0;
-                        }));
-                        var availableObjectProperties = [
-                            "value",
-                            "picturepath",
-                            "pictureurl"
-                        ];
-                        var availableSystemValues = [
-                            "SYSTEM",
-                            "APPLI",
-                            "BROWSER",
-                            "APP_DOMAIN", "APP_HOST", "APP_CONTEXTROOT", "EXEURL", "APP_VAR1", "APP_VAR2", "APP_VAR3", "APP_VAR4",
-                            "ENV", "ENVGP",
-                            "COUNTRY", "COUNTRYGP1", "COUNTRYGP2", "COUNTRYGP3", "COUNTRYGP4", "COUNTRYGP5", "COUNTRYGP6", "COUNTRYGP7", "COUNTRYGP8", "COUNTRYGP9",
-                            "TEST",
-                            "TESTCASE", "TESTCASEDESCRIPTION",
-                            "SSIP", "SSPORT",
-                            "TAG",
-                            "EXECUTIONID",
-                            "EXESTART", "EXEELAPSEDMS",
-                            "EXESTORAGEURL",
-                            "STEP.n.n.RETURNCODE", "CURRENTSTEP_INDEX", "CURRENTSTEP_STARTISO", "CURRENTSTEP_ELAPSEDMS", "CURRENTSTEP_SORT",
-                            "LASTSERVICE_HTTPCODE",
-                            "TODAY-yyyy", "TODAY-MM", "TODAY-dd", "TODAY-doy", "TODAY-HH", "TODAY-mm", "TODAY-ss",
-                            "YESTERDAY-yyyy", "YESTERDAY-MM", "YESTERDAY-dd", "YESTERDAY-doy", "YESTERDAY-HH", "YESTERDAY-mm", "YESTERDAY-ss",
-                            "TOMORROW-yyyy", "TOMORROW-MM", "TOMORROW-dd", "TOMORROW-doy"
-                        ];
-                        var availableTags = [
-                            "property",
-                            "object",
-                            "system"
-                        ];
-                        var availableIdentifiers = [
-                            "data-cerberus",
-                            "picture",
-                            "id",
-                            "xpath"
-                        ];
-
-                        Tags = [
-                            {
-                                array: availableObjectProperties,
-                                regex: "%object\\.[^\\.]*\\.",
-                                addBefore: "",
-                                addAfter: "%",
-                                isCreatable: false
-                            },
-                            {
-                                array: availableObjects,
-                                regex: "%object\\.",
-                                addBefore: "",
-                                addAfter: ".",
-                                isCreatable: true
-                            },
-                            {
-                                array: availableProperties,
-                                regex: "%property\\.",
-                                addBefore: "",
-                                addAfter: "%",
-                                isCreatable: true
-                            },
-                            {
-                                array: availableSystemValues,
-                                regex: "%system\\.",
-                                addBefore: "",
-                                addAfter: "%",
-                                isCreatable: false
-                            },
-                            {
-                                array: availableIdentifiers,
-                                regex: "^[A-Za-z]",
-                                addBefore: "",
-                                addAfter: "=",
-                                isCreatable: false
-                            },
-                            {
-                                array: availableTags,
-                                regex: "%",
-                                addBefore: "",
-                                addAfter: ".",
-                                isCreatable: false
-                            },
-                        ];
-
-                        autocompleteAllFields(Tags, data.info, test, testcase);
-
-                        // Manage authorities when data is fully loadable.
-                        $("#deleteTestCase").attr("disabled", !data.hasPermissionsDelete);
-                        $("#addStep").attr("disabled", !data.hasPermissionsUpdate);
-                        $("#deleteStep").attr("disabled", !data.hasPermissionsUpdate);
-                        $("#saveScript").attr("disabled", !data.hasPermissionsUpdate);
-                        $("#addActionBottom").attr("disabled", !data.hasPermissionsUpdate);
-                        $("#addProperty").attr("disabled", !data.hasPermissionsUpdate);
-                        // $("#saveProperty1").attr("disabled",
-                        // !data.hasPermissionsUpdate);
-                        // $("#saveProperty2").attr("disabled",
-                        // !data.hasPermissionsUpdate);
-
-                    });
+                    drawInheritedProperty(data.inheritedProp);
+                   
+                    var configs = {
+                    	'system': true,
+                    	'object': data.info.application,
+                    	'property': data,
+                    	'identifier': true
+                    }
+                    var context = data
+                    initTags(configs,context).then(function(tags){
+                    	autocompleteAllFields(configs,context,tags);
+                	});	
+                    
+                    loadPropertiesAndDraw(test, testcase, data.info, property, data.hasPermissionsUpdate);
+                    
+                    // Manage authorities when data is fully loadable.
+                    $("#deleteTestCase").attr("disabled", !data.hasPermissionsDelete);
+                    $("#addStep").attr("disabled", !data.hasPermissionsUpdate);
+                    $("#deleteStep").attr("disabled", !data.hasPermissionsUpdate);
+                    $("#saveScript").attr("disabled", !data.hasPermissionsUpdate);
+                    $("#addActionBottom").attr("disabled", !data.hasPermissionsUpdate);
+                    $("#addProperty").attr("disabled", !data.hasPermissionsUpdate);
+                    // $("#saveProperty1").attr("disabled",
+                    // !data.hasPermissionsUpdate);
+                    // $("#saveProperty2").attr("disabled",
+                    // !data.hasPermissionsUpdate);
 
                     // Building full list of country from testcase.
                     var myCountry = [];
@@ -1058,10 +976,16 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
     return [props, property];
 }
 
+function propertiesToArray(propList){
+	var propertyArray = [];
+	for (var index = 0; index < propList.length; index++) {
+        propertyArray.push(propList[index].property);
+	}
+	return propertyArray;
+}
+
 function drawInheritedProperty(propList) {
     var doc = new Doc();
-    var propertyArray = [];
-
     var selectType = getSelectInvariant("PROPERTYTYPE", false, true).attr("disabled", true);
     selectType.attr("name", "inheritPropertyType");
     var selectDB = getSelectInvariant("PROPERTYDATABASE", false, true).attr("disabled", true);
@@ -1070,8 +994,6 @@ function drawInheritedProperty(propList) {
 
     for (var index = 0; index < propList.length; index++) {
         var property = propList[index];
-        propertyArray.push(propList[index].property);
-
         var test = property.fromTest;
         var testcase = property.fromTestCase;
 
@@ -1167,28 +1089,9 @@ function drawInheritedProperty(propList) {
     }
 
     sortProperties("#inheritedPropPanel");
-    return propertyArray;
 }
 
-
-function loadServices() {
-    return new Promise(function (resolve, reject) {
-        var array = [];
-        var propertyList = [];
-
-        $.ajax({
-            url: "ReadAppService",
-            async: true,
-            success: function (data) {
-                resolve(data.contentTable);
-            },
-            error: showUnexpectedError
-        });
-    })
-}
-
-
-function loadProperties(test, testcase, testcaseinfo, propertyToFocus, canUpdate) {
+function loadPropertiesAndDraw(test, testcase, testcaseinfo, propertyToFocus, canUpdate) {
 
     return new Promise(function (resolve, reject) {
         var array = [];
@@ -1629,11 +1532,11 @@ function loadLibraryStep(search) {
     });
 }
 
-function loadApplicationObject(dataInit) {
+function loadApplicationObject(application) {
     return new Promise(function (resolve, reject) {
         var array = [];
         $.ajax({
-            url: "ReadApplicationObject?application=" + dataInit.info.application,
+            url: "ReadApplicationObject?application=" + application,
             dataType: "json",
             success: function (data) {
                 for (var i = 0; i < data.contentTable.length; i++) {
@@ -2371,11 +2274,8 @@ Action.prototype.generateContent = function () {
     actionList.off("change").on("change", function () {
         setModif(true);
         obj.action = actionList.val();
-
         setPlaceholderAction($(this).parents(".action"));
         $(actionList).parent().parent().find(".input-group-btn").remove();
-        $(actionList).parent().parent().find("input").trigger("input", ["first"])
-
     });
 
     forceExeStatusList = getSelectInvariant("ACTIONFORCEEXESTATUS", false, true).css("width", "100%");
@@ -2867,44 +2767,40 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
 (function () {
     // var accessible only in closure
     var TagsToUse = [];
-    var tcInfo;
-    var test;
-    var testcase;
+    var tcInfo = [];
+    var contextInfo = [];
+    
     getTags = function () {
         return TagsToUse;
     };
     setTags = function (tags) {
         TagsToUse = tags;
     };
-    testUI = function (test) {
-
-    };
 
     // function accessible everywhere that has access to TagsToUse
-    autocompleteAllFields = function (Tags, info, thistest, thistestcase) {
+    autocompleteAllFields = function (configs, context, Tags) {
         if (Tags !== undefined) {
             TagsToUse = Tags;
         }
-        if (info !== undefined) {
-            tcInfo = info;
+              
+        if(configs !== undefined) {
+        	tcInfo = configs.property.info;
         }
-        if (thistest !== undefined) {
-            test = thistest;
-        }
-        if (thistestcase !== undefined) {
-            testcase = thistestcase;
+        
+        if(context !== undefined) {
+        	contextInfo = context;
         }
 
-        $(document).on('focus', "div.step-action .content div.fieldRow input:not('.description')", function (e, state) {
+        $(document).on('focus', ".content div.fieldRow input:not('.description')", function (e) {
             let currentAction = $(this).parent().parent().find("#actionSelect").val();          
             if (currentAction === "callService" || currentAction === "calculateProperty") {
-            	autocompleteSpecificFields($(this));
+            	initAutocompleteforSpecificFields($(this));
             } else {
-            	autocompleteWithTags($(this), Tags);
+            	initAutocompleteWithTags($(this), configs, contextInfo);
             }
         })
         
-        $(document).on('settingsButton', "div.step-action .content div.fieldRow:nth-child(2) input", function (e){
+        $(document).on('settingsButton', ".content div.fieldRow input:not('.description')", function (e){
         	var doc = new Doc();
         	let currentAction = $(this).parent().parent().find("#actionSelect").val();
         	let htmlElement = $(this);
@@ -3015,7 +2911,7 @@ var autocompleteAllFields, getTags, setTags, handlerToDeleteOnStepChange = [];
         		}
         })
 
-        $(document).on('input', "div.step-action .content div.fieldRow:nth-child(2) input", function (e) {
+        $(document).on('input', ".content div.fieldRow input:not('.description')", function (e) {
         	let data = loadGuiProperties()
             if ($(this).parent().parent().find("select").val() === "callService") {           	
             	let url = "ReadAppService?service=" + $(this).val() + "&limit=15";
@@ -3059,7 +2955,7 @@ function deleteTestCaseHandlerClick() {
 
 editPropertiesModalClick = function (test, testcase, info, propertyToAdd, propertyToFocus, canUpdate) {
     // $("#propTable").empty();
-    loadProperties(test, testcase, info, propertyToFocus, canUpdate).then(function () {
+	loadPropertiesAndDraw(test, testcase, info, propertyToFocus, canUpdate).then(function () {
         autocompleteAllFields();
     });
     if (propertyToAdd !== undefined && propertyToAdd !== null) {

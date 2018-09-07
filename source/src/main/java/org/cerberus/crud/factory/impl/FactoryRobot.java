@@ -56,6 +56,7 @@ public class FactoryRobot implements IFactoryRobot {
         newRobot.setDescription(description);
         newRobot.setUserAgent(userAgent);
         newRobot.setCapabilities(capabilities);
+        newRobot.setExecutors(executors);
         newRobot.setScreenSize(screenSize);
         newRobot.setHostUser(hostUser);
         newRobot.setHostPassword(hostPassword);

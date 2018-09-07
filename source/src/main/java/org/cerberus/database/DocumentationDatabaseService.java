@@ -421,8 +421,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('robotexecutor','host_user','','fr','Nom d\\'Utilisateur pour l\\'hote','En cas d\\'authentification, Nom de l\\'utilisateur à utiliser pour l\\'Executor.',NULL)");
         b.append(",('robotexecutor','host_password','','en','Host Password','In case of authentification this is the user password that will be used.',NULL)");
         b.append(",('robotexecutor','host_password','','fr','Mot de passe de l\\'utilisateur','En cas d\\'authentification, Mot de passe à utiliser pour l\\'Executor.',NULL)");
-        b.append(",('robotexecutor','deviceUuid','','en','Device UUID','When defined, it feed the \\'deviceUuid\\' capability..',NULL)");
-        b.append(",('robotexecutor','deviceUuid','','fr','UUID du Device','Lorsque défini, renseigne automatiquement la capability \\'deviceUuid\\.',NULL)");
+        b.append(",('robotexecutor','deviceUdid','','en','Device UDID','When defined, it feed the \\'deviceUdid\\' capability..',NULL)");
+        b.append(",('robotexecutor','deviceUdid','','fr','UDID du Device','Lorsque défini, renseigne automatiquement la capability \\'deviceUdid\\.',NULL)");
         b.append(",('robotexecutor','deviceName','','en','Device Name','When defined, it feed the \\'deviceName\\' capability..',NULL)");
         b.append(",('robotexecutor','deviceName','','fr','Nom du Device','Lorsque défini, renseigne automatiquement la capability \\'deviceName\\.',NULL)");
         b.append(",('robotexecutor','devicePort','','en','Device Port','Specify an unuque port > 8200 for each device to run parallel tests',NULL)");

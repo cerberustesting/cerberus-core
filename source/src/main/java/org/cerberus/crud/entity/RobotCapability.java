@@ -186,9 +186,9 @@ public class RobotCapability {
             result.put("capability", this.getCapability());
             result.put("value", this.getValue());
         } catch (JSONException ex) {
-            LOG.error(ex.toString());
+            LOG.error(ex.toString(), ex);
         } catch (Exception ex) {
-            LOG.error(ex.toString());
+            LOG.error(ex.toString(), ex);
         }
         return result;
     }

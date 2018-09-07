@@ -128,7 +128,7 @@ public class CreateNotDefinedProperty extends HttpServlet {
                             "",
                             "0",
                             0,
-                            "STATIC", 0, 10000, 0
+                            "STATIC", 0, 10000, 0, 1
                     ));
                 }
 

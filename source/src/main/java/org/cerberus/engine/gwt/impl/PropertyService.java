@@ -291,7 +291,7 @@ public class PropertyService implements IPropertyService {
             }
 
         } catch (Exception ex) {
-            LOG.error("Exception catched inside getExecutionDataFromList : " + ex);
+            LOG.error("Exception catched inside getExecutionDataFromList : " + ex, ex);
         }
         return tecd;
 
@@ -666,7 +666,7 @@ public class PropertyService implements IPropertyService {
                             Thread.sleep(periodms);
                             LOG.debug("Attempt #" + execution_count + " " + testCaseCountryProperty.getProperty() + " " + testCaseCountryProperty.getValue1() + " Waiting " + periodms + " ms");
                         } catch (InterruptedException ex) {
-                            LOG.error(ex.toString());
+                            LOG.error(ex.toString(), ex);
                         }
                     }
 
@@ -803,7 +803,7 @@ public class PropertyService implements IPropertyService {
                         }
                     } catch (JSONException ex) {
                         java.util.logging.Logger.getLogger(PropertyService.class.getName()).log(Level.SEVERE, null, ex);
-                        LOG.error(ex);
+                        LOG.error(ex, ex);
                     }
                     testCaseExecutionData.setDataLibRawData(result);
                     //Record result in filessytem.
@@ -814,7 +814,7 @@ public class PropertyService implements IPropertyService {
             }
 
         } catch (CerberusEventException ex) {
-            LOG.error(ex.toString());
+            LOG.error(ex.toString(), ex);
             testCaseExecutionData.setEnd(new Date().getTime());
             testCaseExecutionData.setPropertyResultMessage(ex.getMessageError());
         }
@@ -1134,13 +1134,13 @@ public class PropertyService implements IPropertyService {
                 }
             }
         } catch (CerberusException exception) {
-            LOG.error(exception.toString());
+            LOG.error(exception.toString(), exception);
             MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_TESTDATA_PROPERTYDONOTEXIST);
             res.setDescription(res.getDescription().replace("%PROPERTY%", testCaseExecutionData.getValue1()));
             testCaseExecutionData.setPropertyResultMessage(res);
 
         } catch (CerberusEventException ex) {
-            LOG.error(ex.toString());
+            LOG.error(ex.toString(), ex);
             MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
             message.setDescription(message.getDescription().replace("%SOAPNAME%", testCaseExecutionData.getValue1()));
             message.setDescription(message.getDescription().replace("%DESCRIPTION%", ex.getMessageError().getDescription()));
@@ -1333,7 +1333,7 @@ public class PropertyService implements IPropertyService {
             }
         } catch (Exception exception) {
             if (LOG.isDebugEnabled()) {
-                LOG.error(exception.toString());
+                LOG.error(exception.toString(), exception);
             }
             MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMJSON_PARAMETERNOTFOUND);
             res.setDescription(res.getDescription().replace("%URL%", testCaseExecutionData.getValue2()));
@@ -1379,7 +1379,7 @@ public class PropertyService implements IPropertyService {
                     }
                 }
             } catch (CerberusEventException cex) {
-                LOG.error(cex.toString());
+                LOG.error(cex.toString(), cex);
             }
 
             String decodedLength = null;
@@ -1395,7 +1395,7 @@ public class PropertyService implements IPropertyService {
                     return testCaseExecutionData;
                 }
             } catch (CerberusEventException cex) {
-                LOG.error(cex.toString());
+                LOG.error(cex.toString(), cex);
             }
 
             // We cast from string to integer ((String)testcasecountryproperty field `length` -> (Integer)testcaseexecutiondata field `length`)
@@ -1407,7 +1407,7 @@ public class PropertyService implements IPropertyService {
                     testCaseExecutionData.setLength(decodedLength);
 
                 } catch (NumberFormatException e) {
-                    LOG.error(e.toString());
+                    LOG.error(e.toString(), e);
                     MessageEvent msg = new MessageEvent(MessageEventEnum.CASTING_OPERATION_FAILED);
                     msg.setDescription(msg.getDescription().replace("%ERROR%", e.toString()));
                     msg.setDescription(msg.getDescription().replace("%FIELD%", "field length"));

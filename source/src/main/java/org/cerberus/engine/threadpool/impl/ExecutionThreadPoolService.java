@@ -308,12 +308,12 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                         exelist = robot_executor.get(robot);
                         if (exelist == null || exelist.size() < 1) {
                             exelist = new ArrayList<>();
-                            exelist.add(factoryRobotExecutor.create(0, "", "", "Y", 1, "", "", "", "", "", "", null,"", "", null, "", null));
+                            exelist.add(factoryRobotExecutor.create(0, "", "", "Y", 1, "", "", "", "", "", "", null, "", "", null, "", null));
                         }
                     } else {
                         // Application does not require a robot so we create a fake one with empty data.
                         exelist = new ArrayList<>();
-                        exelist.add(factoryRobotExecutor.create(0, "", "", "Y", 1, "", "", "", "", "", "", null,"", "", null, "", null));
+                        exelist.add(factoryRobotExecutor.create(0, "", "", "Y", 1, "", "", "", "", "", "", null, "", "", null, "", null));
                     }
 
                     // Looping other every potential executor on the corresponding robot.
@@ -396,7 +396,9 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                                         // Flag on database that execution has been selected.
                                         robotExecutorService.updateLastExe(robot, robotExecutor);
                                         // Update robot_executor HasMap for next queued executions in the current batch. If Algo is based on Ranking, nothing needs to be changed.
-                                        if (Robot.LOADBALANCINGEXECUTORMETHOD_ROUNDROBIN.equals(robot_header.get(robot).getLbexemethod()) && exelist.size() > 1) {
+                                        if ((robot_header.get(robot) != null)
+                                                && (Robot.LOADBALANCINGEXECUTORMETHOD_ROUNDROBIN.equals(robot_header.get(robot).getLbexemethod()))
+                                                && (exelist.size() > 1)) {
                                             tmpExelist = robot_executor.get(robot);
                                             newTmpExelist = new ArrayList<>();
                                             RobotExecutor lastRobotExecutor = null;
@@ -438,7 +440,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                                         }
 
                                     } catch (Exception e) {
-                                        LOG.error("Failed to add Queueid : " + exe.getId() + " into the queue : " + e.getMessage());
+                                        LOG.error("Failed to add Queueid : " + exe.getId() + " into the queue : " + e.getMessage(), e);
                                     }
 
                                 }

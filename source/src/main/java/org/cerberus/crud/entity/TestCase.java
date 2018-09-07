@@ -488,7 +488,7 @@ public class TestCase {
             }
             result.put("testCaseStepList", array);
         } catch (JSONException ex) {
-            LOG.error(ex.toString());
+            LOG.error(ex.toString(), ex);
         }
         return result;
     }

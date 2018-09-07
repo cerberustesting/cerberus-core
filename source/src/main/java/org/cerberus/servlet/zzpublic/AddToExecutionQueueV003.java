@@ -505,7 +505,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                     errorMessages.add(errorMessageTmp);
                     continue;
                 } catch (JSONException ex) {
-                    LOG.error(ex);
+                    LOG.error(ex, ex);
                 }
             }
 

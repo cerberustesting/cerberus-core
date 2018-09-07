@@ -297,7 +297,7 @@ public class ExecutionStartService implements IExecutionStartService {
                 mes.setDescription(mes.getDescription().replace("%COUNTRY%", tCExecution.getCountry()));
                 mes.setDescription(mes.getDescription().replace("%ENV%", tCExecution.getEnvironment()));
                 mes.setDescription(mes.getDescription().replace("%APPLI%", tCExecution.getTestCaseObj().getApplication()));
-                LOG.error(mes.getDescription());
+                LOG.error(mes.getDescription(), ex);
                 throw new CerberusException(mes);
             }
             LOG.debug("Country/Environment/Application Information Loaded. " + tCExecution.getCountry() + " - " + tCExecution.getEnvironment() + " - " + tCExecution.getApplicationObj().getApplication());

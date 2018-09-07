@@ -51,7 +51,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
             preStat.execute(SQLString);
             LOG.info("'" + SQLString + "' Executed successfully.");
         } catch (Exception exception1) {
-            LOG.error(exception1.toString());
+            LOG.error(exception1.toString(), exception1);
             return exception1.toString();
         }
         return "OK";
@@ -7822,8 +7822,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
                 + "('SCREENSHOT', '3', 40, 'Automatic Screenshots/Video on error ', '')"
                 + ",('SCREENSHOT', '4', 50, 'Systematic Screenshots/Video', '')");
         
-        // 1367 
-        // selector invariants
+        // 1367 Selector invariants
         b = new StringBuilder();
         b.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) ");
         b.append(" VALUES ('INVARIANTPRIVATE', 'SELECTOR', '430', '', ''),");
@@ -7833,7 +7832,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append("('SELECTOR', 'data-cerberus=', '6550', '', '');");
         a.add(b.toString());
 
-        // 1368-1374
+        // 1368-1375 Robot Executor.
         a.add(" CREATE TABLE `robotexecutor` ("
                 + "  `id` int(11) NOT NULL AUTO_INCREMENT,"
                 + "  `robot` varchar(100) NOT NULL,"
@@ -7874,9 +7873,31 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append(" ('ROBOTEXECUTORACTIVE', 'Y', '10', '', ''),");
         b.append(" ('INVARIANTPRIVATE','ROBOTEXECUTORACTIVE', '840','Activation flag for Robot Executor.', '')");
         a.add(b.toString());
-
         a.add("ALTER TABLE `robotexecutor` ADD COLUMN `devicePort` int(8)");
+        a.add("ALTER TABLE `robotexecutor` CHANGE COLUMN `deviceUuid` `deviceUdid` varchar(255) NOT NULL");
 
+        // 1376 - 1381 Data migration from capabilities to robotExecution
+        a.add("UPDATE `robotexecutor` r1 SET  `deviceUdid`= (SELECT value FROM robotcapability r2 where r1.robot = r2.robot and r2.capability = 'udid' union all select '' as value  limit 1) where `deviceUdid` is null or `deviceUdid` = ''");
+        a.add("UPDATE `robotexecutor` r1 SET  `devicename`= (SELECT value FROM robotcapability r2 where r1.robot = r2.robot and r2.capability = 'deviceName' union all select '' as value  limit 1)  where `deviceName` is null or `deviceName` = ''");
+        a.add("UPDATE `robotexecutor` r1 SET  `devicePort`= (SELECT value FROM robotcapability r2 where r1.robot = r2.robot and r2.capability = 'systemPort')  where `devicePort` is  null");
+        a.add("DELETE FROM `robotcapability` WHERE capability = 'udid' and value in (select  re.deviceUdid from `robotexecutor` re)");
+        a.add("DELETE FROM `robotcapability` WHERE capability = 'deviceName' and value in (select  re.deviceName from `robotexecutor` re)");
+        a.add("DELETE FROM `robotcapability` WHERE capability = 'systemPort' and value in (select  re.devicePort from `robotexecutor` re)");
+
+        // 1382 Introduction of 'Rank' attribute to manage properties in Front differently depending on the Rank
+        a.add("ALTER TABLE `testcasecountryproperties` ADD COLUMN `Rank` int(2) not null default 1");
+
+        //Insert the invariant IfTextInElement and IfTextNotInElement for Condition-Step-Action-Execution
+        // 1383
+        b = new StringBuilder();
+        b.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ");
+        b.append("('ACTIONCONDITIONOPER', 'ifTextInElement', 270, 'Only execute if text is present in element.')");
+        b.append(",('ACTIONCONDITIONOPER', 'ifTextNotInElement', 280, 'Only execute if text is not present in element.')");
+        b.append(",('STEPCONDITIONOPER', 'ifTextInElement', 270, 'Only execute if text is present in element.')");
+        b.append(",('STEPCONDITIONOPER', 'ifTextNotInElement', 280, 'Only execute if text is not present in element.')");
+        a.add(b.toString());
+        
+        
         return a;
     }
 

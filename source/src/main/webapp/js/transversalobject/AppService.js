@@ -24,7 +24,6 @@ function openModalAppService(service, mode, page = undefined) {
     if ($('#editSoapLibraryModal').data("initLabel") === undefined) {
         initModalAppService()
         $('#editSoapLibraryModal').data("initLabel", true);
-
     }
 
     if (mode === "EDIT") {
@@ -61,6 +60,15 @@ function initModalAppService() {
     $("[name='lbl_creator']").html(doc.getDocOnline("transversal", "UsrCreated"));
     $("[name='lbl_lastModified']").html(doc.getDocOnline("transversal", "DateModif"));
     $("[name='lbl_lastModifier']").html(doc.getDocOnline("transversal", "UsrModif"));
+    
+    var configs = {
+    	'system': true,
+    	'object': false,
+    	'propertie': false,
+    	'identifier': false
+    }
+    
+    initAutocompleteWithTags([$("[name='servicePath']")], configs, null);
 
     $('[data-toggle="popover"]').popover({
         'placement': 'auto',
@@ -327,7 +335,6 @@ function feedAppServiceModal(serviceName, modalId, mode) {
     var formEdit = $('#' + modalId);
 
     if (mode === "DUPLICATE" || mode === "EDIT") {
-
         $.ajax({
             url: "ReadAppService?service=" + serviceName,
             async: true,
@@ -353,7 +360,7 @@ function feedAppServiceModal(serviceName, modalId, mode) {
     } else {
         var serviceObj1 = {};
         var hasPermissions = true;
-        serviceObj1.service = "";
+        serviceObj1.service = serviceName;
         serviceObj1.application = "";
         serviceObj1.type = "REST";
         serviceObj1.method = "GET";

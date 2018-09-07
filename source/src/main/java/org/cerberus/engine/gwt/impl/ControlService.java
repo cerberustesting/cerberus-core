@@ -678,8 +678,8 @@ public class ControlService implements IControlService {
                 try {
                     Identifier identifier = identifierService.convertStringToIdentifier(element);
                     Identifier childIdentifier = identifierService.convertStringToIdentifier(childElement);
-                    if(this.webdriverService.isElementPresent(tCExecution.getSession(), identifier)) {
-                    	if (this.webdriverService.isElementInElement(tCExecution.getSession(), identifier, childIdentifier)) {
+                    if (this.webdriverService.isElementPresent(tCExecution.getSession(), identifier)) {
+                        if (this.webdriverService.isElementInElement(tCExecution.getSession(), identifier, childIdentifier)) {
                             mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_ELEMENTINELEMENT);
                             mes.setDescription(mes.getDescription().replace("%STRING2%", element).replace("%STRING1%", childElement));
                             return mes;
@@ -688,14 +688,14 @@ public class ControlService implements IControlService {
                             mes.setDescription(mes.getDescription().replace("%STRING2%", element).replace("%STRING1%", childElement));
                             return mes;
                         }
-                    }else {
-                    	mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NO_SUCH_ELEMENT);
+                    } else {
+                        mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NO_SUCH_ELEMENT);
                         mes.setDescription(mes.getDescription().replace("%SELEX%", new NoSuchElementException("").toString()).replace("%ELEMENT%", element));
                         return mes;
                     }
                 } catch (WebDriverException exception) {
                     return parseWebDriverException(exception);
-                } 
+                }
             } else {
                 mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENTINELEMENT);
                 mes.setDescription(mes.getDescription().replace("%STRING2%", element).replace("%STRING1%", childElement));
@@ -862,7 +862,7 @@ public class ControlService implements IControlService {
 
     }
 
-    private MessageEvent verifyTextInElement(TestCaseExecution tCExecution, String path, String expected) {
+    public MessageEvent verifyTextInElement(TestCaseExecution tCExecution, String path, String expected) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Control: verifyTextInElement on " + path + " element against value: " + expected);
         }
@@ -969,7 +969,7 @@ public class ControlService implements IControlService {
 
     }
 
-    private MessageEvent verifyTextNotInElement(TestCaseExecution tCExecution, String path, String expected) {
+    public MessageEvent verifyTextNotInElement(TestCaseExecution tCExecution, String path, String expected) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Control: verifyTextNotInElement on " + path + " element against value: " + expected);
         }

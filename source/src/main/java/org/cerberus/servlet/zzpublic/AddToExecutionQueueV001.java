@@ -168,7 +168,7 @@ public class AddToExecutionQueueV001 extends HttpServlet {
         // Default message to unexpected error.
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        
+
         AnswerItem<List<TestCase>> testcases = null;
 
         /**
@@ -265,7 +265,7 @@ public class AddToExecutionQueueV001 extends HttpServlet {
             Timestamp timestamp = new Timestamp(System.currentTimeMillis());
             String mytimestamp = sdf.format(timestamp);
             tag += mytimestamp;
-            
+
         } else if (tag.length() > 255) {
 
             errorMessage.append("Error - Parameter " + PARAMETER_TAG + " is too big. Maximum size if 255. Current size is : " + tag.length());
@@ -291,17 +291,17 @@ public class AddToExecutionQueueV001 extends HttpServlet {
                 // If no countries are found, there is no need to get the testcase list. None will be returned.
                 selectedTests = new ArrayList<>();
                 testcases = testCaseService.findTestCaseByCampaignNameAndCountries(campaign, countries.toArray(new String[countries.size()]));
-                
+
                 ListIterator<TestCase> it = testcases.getItem().listIterator();
-                while(it.hasNext()){
-                   TestCase str = it.next();
-                   selectedTests.add(new HashMap<String, String>() {
-                       {
-                           put(PARAMETER_SELECTED_TEST_KEY_TEST, str.getTest());
-                           put(PARAMETER_SELECTED_TEST_KEY_TESTCASE, str.getTestCase());
-                       }
-                   });
-                  
+                while (it.hasNext()) {
+                    TestCase str = it.next();
+                    selectedTests.add(new HashMap<String, String>() {
+                        {
+                            put(PARAMETER_SELECTED_TEST_KEY_TEST, str.getTest());
+                            put(PARAMETER_SELECTED_TEST_KEY_TESTCASE, str.getTestCase());
+                        }
+                    });
+
                 }
             }
         }
@@ -443,12 +443,12 @@ public class AddToExecutionQueueV001 extends HttpServlet {
                 }
                 errorMessage.append(errorMessageTmp.toString());
             }
-            
+
             errorMessage.append(nbExe);
             errorMessage.append(" execution(s) succesfully inserted to queue. ");
-            
-            if(testcases.getResultMessage().getSource() == MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT) {
-            	errorMessage.append(testcases.getResultMessage().getDescription());
+
+            if (testcases.getResultMessage().getSource() == MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT) {
+                errorMessage.append(testcases.getResultMessage().getDescription());
             }
 
             // Message that everything went fine.

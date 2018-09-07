@@ -117,6 +117,8 @@ public class TestCaseStepAction {
     public static final String CONDITIONOPER_IFSTRINGGREATER = "ifStringGreater";
     public static final String CONDITIONOPER_IFSTRINGMINOR = "ifStringMinor";
     public static final String CONDITIONOPER_IFSTRINGCONTAINS = "ifStringContains";
+    public static final String CONDITIONOPER_IFTEXTINELEMENT = "ifTextInElement";
+    public static final String CONDITIONOPER_IFTEXTNOTINELEMENT = "ifTextNotInElement";
     public static final String CONDITIONOPER_NEVER = "never";
 
     public String getConditionOper() {

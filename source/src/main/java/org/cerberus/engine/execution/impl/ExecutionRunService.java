@@ -192,7 +192,7 @@ public class ExecutionRunService implements IExecutionRunService {
                     myExeSysVer = factoryTestCaseExecutionSysVer.create(runID, tCExecution.getApplicationObj().getSystem(), tCExecution.getBuild(), tCExecution.getRevision());
                     testCaseExecutionSysVerService.insertTestCaseExecutionSysVer(myExeSysVer);
                 } catch (CerberusException ex) {
-                    LOG.error(logPrefix + ex.getMessage());
+                    LOG.error(logPrefix + ex.getMessage(), ex);
                 }
                 LOG.debug(logPrefix + "Main System Version Registered.");
 
@@ -214,7 +214,7 @@ public class ExecutionRunService implements IExecutionRunService {
                             testCaseExecutionSysVerService.insertTestCaseExecutionSysVer(myExeSysVer);
                         } catch (CerberusException ex) {
                             // Referencial Integrity link between countryEnvLink and CountryEnvParam table should secure that exception to never happen.
-                            LOG.error(logPrefix + ex.getMessage());
+                            LOG.error(logPrefix + ex.getMessage(), ex);
                             throw new CerberusException(ex.getMessageError());
                         }
                     }
@@ -850,7 +850,7 @@ public class ExecutionRunService implements IExecutionRunService {
                     try {
                         tCExecution.addFileList(recorderService.recordSeleniumLog(tCExecution));
                     } catch (Exception ex) {
-                        LOG.error(logPrefix + "Exception Getting Selenium Logs " + tCExecution.getId() + " Exception :" + ex.toString());
+                        LOG.error(logPrefix + "Exception Getting Selenium Logs " + tCExecution.getId() + " Exception :" + ex.toString(), ex);
                     }
 
                 } else { // We don't execute the testcase linked with condition.
@@ -899,7 +899,7 @@ public class ExecutionRunService implements IExecutionRunService {
                 }
                 tCExecution = this.stopTestCase(tCExecution);
             } catch (Exception ex) {
-                LOG.error(logPrefix + "Exception Stopping Test " + tCExecution.getId() + " Exception :" + ex.toString());
+                LOG.error(logPrefix + "Exception Stopping Test " + tCExecution.getId() + " Exception :" + ex.toString(), ex);
             }
 
             /**
@@ -914,7 +914,7 @@ public class ExecutionRunService implements IExecutionRunService {
                 executionUUID.removeExecutionUUID(tCExecution.getExecutionUUID());
                 LOG.debug(logPrefix + "Clean ExecutionUUID");
             } catch (Exception ex) {
-                LOG.error(logPrefix + "Exception cleaning Memory: " + ex.toString());
+                LOG.error(logPrefix + "Exception cleaning Memory: " + ex.toString(), ex);
             }
 
             /**

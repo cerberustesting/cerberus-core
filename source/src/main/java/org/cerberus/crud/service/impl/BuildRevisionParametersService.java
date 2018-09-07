@@ -168,7 +168,7 @@ public class BuildRevisionParametersService implements IBuildRevisionParametersS
                 return false;
             }
         } catch (CerberusException ex) {
-            LOG.error(ex);
+            LOG.error(ex, ex);
         }
         return true;
     }

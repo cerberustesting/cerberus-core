@@ -446,11 +446,9 @@ public class TestCaseExecutionData {
             }
 
         } catch (JSONException ex) {
-            LOG.error(this.getId() + " - " + this.getProperty() + " - " + this.getIndex());
-            LOG.error(ex);
+            LOG.error(this.getId() + " - " + this.getProperty() + " - " + this.getIndex(), ex);
         } catch (Exception ex) {
-            LOG.error(this.getId() + " - " + this.getProperty() + " - " + this.getIndex());
-            LOG.error(ex);
+            LOG.error(this.getId() + " - " + this.getProperty() + " - " + this.getIndex(), ex);
         }
         return result;
     }

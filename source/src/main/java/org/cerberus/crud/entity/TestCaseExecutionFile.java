@@ -54,8 +54,7 @@ public class TestCaseExecutionFile {
     public static final String FILETYPE_JPEG = "JPEG";
     public static final String FILETYPE_BIN = "BIN";
     public static final String FILETYPE_PDF = "PDF";
-    
-    
+
     public long getId() {
         return id;
     }
@@ -145,7 +144,7 @@ public class TestCaseExecutionFile {
             result.put("fileName", this.getFileName());
             result.put("fileType", this.getFileType());
         } catch (JSONException ex) {
-            LOG.error(ex.toString());
+            LOG.error(ex.toString(), ex);
         }
         return result;
     }

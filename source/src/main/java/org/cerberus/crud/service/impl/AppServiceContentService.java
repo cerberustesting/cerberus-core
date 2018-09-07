@@ -155,7 +155,7 @@ public class AppServiceContentService implements IAppServiceContentService {
         try {
             oldList = this.convert(this.readByVarious(service, null));
         } catch (CerberusException ex) {
-            LOG.error(ex);
+            LOG.error(ex, ex);
         }
 
         /**

@@ -43,7 +43,7 @@ public class RobotExecutor {
     private String port;
     private String hostUser;
     private String hostPassword;
-    private String deviceUuid;
+    private String deviceUdid;
     private String deviceName;
     private Integer devicePort;
     private String description;
@@ -134,11 +134,11 @@ public class RobotExecutor {
     }
 
     public String getDeviceUuid() {
-        return deviceUuid;
+        return deviceUdid;
     }
 
-    public void setDeviceUuid(String deviceUuid) {
-        this.deviceUuid = deviceUuid;
+    public void setDeviceUuid(String deviceUdid) {
+        this.deviceUdid = deviceUdid;
     }
 
     public String getDeviceName() {
@@ -238,7 +238,7 @@ public class RobotExecutor {
         hash = 67 * hash + (this.port != null ? this.port.hashCode() : 0);
         hash = 67 * hash + (this.hostUser != null ? this.hostUser.hashCode() : 0);
         hash = 67 * hash + (this.hostPassword != null ? this.hostPassword.hashCode() : 0);
-        hash = 67 * hash + (this.deviceUuid != null ? this.deviceUuid.hashCode() : 0);
+        hash = 67 * hash + (this.deviceUdid != null ? this.deviceUdid.hashCode() : 0);
         hash = 67 * hash + (this.deviceName != null ? this.deviceName.hashCode() : 0);
         hash = 67 * hash + (this.active != null ? this.active.hashCode() : 0);
         hash = 67 * hash + (this.description != null ? this.description.hashCode() : 0);
@@ -276,7 +276,7 @@ public class RobotExecutor {
         if ((this.hostPassword == null) ? (other.hostPassword != null) : !this.hostPassword.equals(other.hostPassword)) {
             return false;
         }
-        if ((this.deviceUuid == null) ? (other.deviceUuid != null) : !this.deviceUuid.equals(other.deviceUuid)) {
+        if ((this.deviceUdid == null) ? (other.deviceUdid != null) : !this.deviceUdid.equals(other.deviceUdid)) {
             return false;
         }
         if ((this.deviceName == null) ? (other.deviceName != null) : !this.deviceName.equals(other.deviceName)) {
@@ -310,7 +310,7 @@ public class RobotExecutor {
             result.put("active", this.getActive());
             result.put("description", this.getDescription());
             result.put("deviceName", this.getDeviceName());
-            result.put("deviceUuid", this.getDeviceUuid());
+            result.put("deviceUdid", this.getDeviceUuid());
             result.put("devicePort", this.getDevicePort());
             result.put("executor", this.getExecutor());
             result.put("host", this.getHost());
@@ -328,9 +328,9 @@ public class RobotExecutor {
             result.put("rank", this.getRank());
             result.put("robot", this.getRobot());
         } catch (JSONException ex) {
-            LOG.error(ex.toString());
+            LOG.error(ex.toString(), ex);
         } catch (Exception ex) {
-            LOG.error(ex.toString());
+            LOG.error(ex.toString(), ex);
         }
         return result;
     }

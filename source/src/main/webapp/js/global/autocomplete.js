@@ -66,7 +66,7 @@ function autocompleteWithTags(identifier, Tags) {
 	        $("span[role='status']").hide();
 	    })
         .autocomplete({
-            minLength: 1,
+            minLength: 0,
             messages: {
                 noResults: '',
                 results: function () {
@@ -84,25 +84,21 @@ function autocompleteWithTags(identifier, Tags) {
                 var selectionStart = this.element[0].selectionStart;
                 var stringToAnalyse = this.term.substring(0, selectionStart);
                 var identifier = stringToAnalyse.substring(stringToAnalyse.lastIndexOf("%"));
- 
+                
                     //If there is a pair number of % it means there is no open variable that needs to be autocompleted
 
-                if ((this.term.match(/%/g) || []).length % 2 > 0 || (this.term.match("^[A-Za-z]") && !this.term.includes("%"))) {
+                if ((this.term.match(/%/g) || []).length % 2 > 0 || (this.term.match("((^[a-zA-Z])|(^$))") && !this.term.includes("%"))) {
                     //Start Iterating on Tags
                     var tag = 0;
                     var found = false;                       
                     while (tag < Tags.length && !found) {
                         //If We find the separator, then we filter with the already written part
                         if ((identifier.match(new RegExp(Tags[tag].regex)) || []).length > 0) {
-                        	console.log(identifier)
-                        	console.log(Tags[tag].regex)
                             var arrayLabels = [];
-
                             if (Tags[tag].regex === "%object\\.") {
                                 Tags[tag].array.forEach(function (data) {
                                     arrayLabels.push(data.object);
                                 });
-
                             } else {
                                 arrayLabels = Tags[tag].array;
                             }
@@ -124,13 +120,11 @@ function autocompleteWithTags(identifier, Tags) {
                     var direction = "top";
                     if (idx < 4)
                         direction = "bottom";
-
                     $(data).tooltip({
                         animated: 'fade',
                         placement: direction,
                         html: true
                     });
-
                     var parent = $(data).parent().parent();
                     if (parent.hasClass("ui-autocomplete")) {
                         parent.css("min-height", "120px"); // add height to do place to display tooltip. else overflow:auto hide tooltip
@@ -173,9 +167,16 @@ function autocompleteWithTags(identifier, Tags) {
                 //searching the same input again
                 return false;
             }
-        });
+        }).click(function(){
+        	$(this).autocomplete("search");
+        })  
 }
 
+/**
+ * Function that allow to autoComplete Input with empty data
+ * @param {type} identifier jquery identifier to find the input to affect the autocomplete
+ *
+ */
 function autocompleteSpecificFields(identifier){
 	$(identifier).autocomplete({
         minLength: 1,
@@ -184,10 +185,9 @@ function autocompleteSpecificFields(identifier){
             results: function () {
             }
         },
-        select: function (event, ui) {
-            var selectedObj = ui.item;
-            $(this).val(selectedObj.value.replace("%", ''));
-            $(this).trigger('input');
+        select: function (event, ui) {     
+            this.value = ui.item.value;
+            $(this).trigger("input").trigger("change");
             return false;
         },
         close: function (event, ui) {
@@ -230,3 +230,215 @@ function modifyAutocompleteSource(identifier, url, data){
 	})
 }
 
+function loadApplicationObject(dataInit) {
+    return new Promise(function (resolve, reject) {
+        var array = [];
+        $.ajax({
+            url: "ReadApplicationObject?application=" + dataInit,
+            dataType: "json",
+            success: function (data) {
+                for (var i = 0; i < data.contentTable.length; i++) {
+                    array.push(data.contentTable[i]);
+                }
+                resolve(array);
+            }
+        });
+    });
+}
+
+/**
+ * 
+ * @param testcaseinfo
+ * @param canUpdate
+ * @returns
+ */
+function loadProperties(testcaseinfo, canUpdate) {
+    return new Promise(function (resolve, reject) {
+        var array = [];
+        var secondaryPropertiesArray = [];      
+        var propertyList = [];
+        var secondaryPropertyList = [];
+        $.ajax({
+            url: "GetPropertiesForTestCase",
+            data: {test: testcaseinfo.test, testcase: testcaseinfo.testCase},
+            async: true,
+            success: function (data) {
+                data.sort(function (a, b) {
+                    return compareStrings(a.property, b.property);
+                })
+                for (var index = 0; index < data.length; index++) {        
+                    var property = data[index];
+                    // check if the property is secondary
+                    var isSecondary = property.description.indexOf("[secondary]") >= 0;                    
+                    if (isSecondary) {
+                    	secondaryPropertiesArray.push(data[index].property);
+                    } else {
+                    	array.push(data[index].property);
+                    }
+                    property.toDelete = false;                
+                    if (isSecondary) {
+                    	secondaryPropertyList.push(property.property);
+                    } else {
+                    	propertyList.push(property.property);
+                    }
+                }
+                var propertyListUnique = Array.from(new Set(propertyList));
+                var secondaryPropertyListUnique = Array.from(new Set(secondaryPropertyList));                            
+                for (var index = 0; index < propertyListUnique.length; index++) {
+                    drawPropertyList(propertyListUnique[index], index, false);
+                }              
+                for (var index = 0; index < secondaryPropertyListUnique.length; index++) {
+                    drawPropertyList(secondaryPropertyListUnique[index], index, true);
+                }
+                array.sort(function (a, b) {
+                    return compareStrings(a, b);
+                })
+
+                resolve(propertyListUnique);
+            },
+            error: showUnexpectedError
+        });
+    });
+}
+
+function propertiesToArray(propList){
+	var propertyArray = [];
+	for (var index = 0; index < propList.length; index++) {
+        propertyArray.push(propList[index].property);
+	}
+	return propertyArray;
+}
+
+function initTags(configs,context){
+	var inheritedProperties = [], propertiesPromise = [] ,objectsPromise = [];	
+	if(configs.property && context instanceof Object){
+		inheritedProperties = propertiesToArray(context.inheritedProp);
+	    propertiesPromise = loadProperties(context.info, context.hasPermissionsUpdate);
+	    objectsPromise = loadApplicationObject(context.info.application)
+	}
+	if(configs.object && !configs.property && context instanceof String) objectsPromise = loadApplicationObject(context);
+    return Promise.all([propertiesPromise,objectsPromise]).then(function (data) {
+    	var properties = data[0], availableObjects = data[1];
+    	var availableProperties = properties.concat(inheritedProperties.filter(function (item) {
+               return properties.indexOf(item) < 0;
+           }));    
+    	var availableTags = [
+    		"property",
+    		"system",
+    		"object"
+    	];
+        var availableObjectProperties = [
+            "value",
+            "picturepath",
+            "pictureurl"
+        ];
+        var availableSystemValues = [
+            "SYSTEM",
+            "APPLI",
+            "BROWSER",
+            "APP_DOMAIN", "APP_HOST", "APP_CONTEXTROOT", "EXEURL", "APP_VAR1", "APP_VAR2", "APP_VAR3", "APP_VAR4",
+            "ENV", "ENVGP",
+            "COUNTRY", "COUNTRYGP1", "COUNTRYGP2", "COUNTRYGP3", "COUNTRYGP4", "COUNTRYGP5", "COUNTRYGP6", "COUNTRYGP7", "COUNTRYGP8", "COUNTRYGP9",
+            "TEST",
+            "TESTCASE", "TESTCASEDESCRIPTION",
+            "SSIP", "SSPORT",
+            "TAG",
+            "EXECUTIONID",
+            "EXESTART", "EXEELAPSEDMS",
+            "EXESTORAGEURL",
+            "STEP.n.n.RETURNCODE", "CURRENTSTEP_INDEX", "CURRENTSTEP_STARTISO", "CURRENTSTEP_ELAPSEDMS", "CURRENTSTEP_SORT",
+            "LASTSERVICE_HTTPCODE",
+            "TODAY-yyyy", "TODAY-MM", "TODAY-dd", "TODAY-doy", "TODAY-HH", "TODAY-mm", "TODAY-ss",
+            "YESTERDAY-yyyy", "YESTERDAY-MM", "YESTERDAY-dd", "YESTERDAY-doy", "YESTERDAY-HH", "YESTERDAY-mm", "YESTERDAY-ss",
+            "TOMORROW-yyyy", "TOMORROW-MM", "TOMORROW-dd", "TOMORROW-doy"
+        ];
+        var availableIdentifiers = [
+            "data-cerberus",
+            "picture",
+            "id",
+            "xpath"
+        ];
+        tags = [
+            {
+            	name: 'objectProperty',
+                array: availableObjectProperties,
+                regex: "%object\\.[^\\.]*\\.",
+                addBefore: "",
+                addAfter: "%",
+                isCreatable: false
+            },
+            {
+            	name: 'object',
+                array: availableObjects,
+                regex: "%object\\.",
+                addBefore: "",
+                addAfter: ".",
+                isCreatable: true
+            },
+            {
+            	name: 'property',
+                array: availableProperties,
+                regex: "%property\\.",
+                addBefore: "",
+                addAfter: "%",
+                isCreatable: true
+            },
+            {
+            	name: 'system',
+                array: availableSystemValues,
+                regex: "%system\\.",
+                addBefore: "",
+                addAfter: "%",
+                isCreatable: false
+            },            
+            {
+            	name: 'tag',
+                array: availableTags,
+                regex: "%",
+                addBefore: "",
+                addAfter: ".",
+                isCreatable: false
+            }
+        ];
+        
+        if(configs.identifier){
+        	tags.push({
+            	name: 'indentifier',
+                array: availableIdentifiers,
+                regex: "((^[a-zA-Z])|(^$))",
+                addBefore: "",
+                addAfter: "=",
+                isCreatable: false
+            })
+        }
+        return tags;       
+    });
+}
+
+/**
+ * Function that allow to autoComplete many inputs using tags
+ * @param el : Array of HTMLElement
+ * @param configs : Object
+ * example : var configs = {
+ *   	'system': true,
+ *   	'object': false,
+ *   	'propertie': false,
+ *   	'identifier': true
+ *   }
+ * @param context : Object || String
+ * context is an object (data returns from servlet ReadTestCase) or a String (application name)
+ * @returns
+ */
+function initAutocompleteWithTags(el,configs,context){
+	initTags(configs,context).then(function(tags){
+		$(el).each(data => {
+			autocompleteWithTags(el[data], tags);
+		})
+	});	
+}
+
+function initAutocompleteforSpecificFields(el){
+	$(el).each(data => {
+		autocompleteSpecificFields(el[data]);
+	})
+}

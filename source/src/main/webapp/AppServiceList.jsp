@@ -28,6 +28,7 @@
     <title>Service Library</title>
     <script type="text/javascript" src="js/pages/AppServiceList.js"></script>
     <script type="text/javascript" src="js/transversalobject/AppService.js"></script>
+    <script type="text/javascript" src="js/global/autocomplete.js"></script>
 </head>
 <body>
 <%@ include file="include/global/header.html" %>

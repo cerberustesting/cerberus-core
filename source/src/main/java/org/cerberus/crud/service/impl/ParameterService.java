@@ -84,7 +84,7 @@ public class ParameterService implements IParameterService {
             myParameter = this.findParameterByKey(key, system);
             outPutResult = StringUtil.parseBoolean(myParameter.getValue());
         } catch (CerberusException | NumberFormatException ex) {
-            LOG.error("Error when trying to retreive parameter : '" + key + "' for system : '" + system + "'. Default value returned : '" + defaultValue + "'. Trace : " + ex);
+            LOG.error("Error when trying to retreive parameter : '" + key + "' for system : '" + system + "'. Default value returned : '" + defaultValue + "'. Trace : " + ex, ex);
         }
         LOG.debug("Success loading parameter : '" + key + "' for system : '" + system + "'. Value returned : '" + outPutResult + "'");
         return outPutResult;
@@ -98,7 +98,7 @@ public class ParameterService implements IParameterService {
             myParameter = this.findParameterByKey(key, system);
             outPutResult = Integer.valueOf(myParameter.getValue());
         } catch (CerberusException | NumberFormatException ex) {
-            LOG.error("Error when trying to retreive parameter : '" + key + "' for system : '" + system + "'. Default value returned : '" + defaultValue + "'. Trace : " + ex);
+            LOG.error("Error when trying to retreive parameter : '" + key + "' for system : '" + system + "'. Default value returned : '" + defaultValue + "'. Trace : " + ex, ex);
         }
         LOG.debug("Success loading parameter : '" + key + "' for system : '" + system + "'. Value returned : '" + outPutResult + "'");
         return outPutResult;
@@ -112,7 +112,7 @@ public class ParameterService implements IParameterService {
             myParameter = this.findParameterByKey(key, system);
             outPutResult = Long.parseLong(myParameter.getValue());
         } catch (CerberusException | NumberFormatException ex) {
-            LOG.error("Error when trying to retreive parameter : '" + key + "' for system : '" + system + "'. Default value returned : '" + defaultValue + "'. Trace : " + ex);
+            LOG.error("Error when trying to retreive parameter : '" + key + "' for system : '" + system + "'. Default value returned : '" + defaultValue + "'. Trace : " + ex, ex);
         }
         LOG.debug("Success loading parameter : '" + key + "' for system : '" + system + "'. Value returned : '" + outPutResult + "'");
         return outPutResult;
@@ -126,7 +126,7 @@ public class ParameterService implements IParameterService {
             myParameter = this.findParameterByKey(key, system);
             outPutResult = Float.valueOf(myParameter.getValue());
         } catch (CerberusException | NumberFormatException ex) {
-            LOG.error("Error when trying to retreive parameter : '" + key + "' for system : '" + system + "'. Default value returned : '" + defaultValue + "'. Trace : " + ex);
+            LOG.error("Error when trying to retreive parameter : '" + key + "' for system : '" + system + "'. Default value returned : '" + defaultValue + "'. Trace : " + ex, ex);
         }
         LOG.debug("Success loading parameter : '" + key + "' for system : '" + system + "'. Value returned : '" + outPutResult + "'");
         return outPutResult;
@@ -140,7 +140,7 @@ public class ParameterService implements IParameterService {
             myParameter = this.findParameterByKey(key, system);
             outPutResult = myParameter.getValue();
         } catch (CerberusException ex) {
-            LOG.error("Error when trying to retreive parameter : '" + key + "' for system : '" + system + "'. Default value returned : '" + defaultValue + "'. Trace : " + ex);
+            LOG.error("Error when trying to retreive parameter : '" + key + "' for system : '" + system + "'. Default value returned : '" + defaultValue + "'. Trace : " + ex, ex);
         }
         LOG.debug("Success loading parameter : '" + key + "' for system : '" + system + "'. Value returned : '" + outPutResult + "'");
         return outPutResult;
