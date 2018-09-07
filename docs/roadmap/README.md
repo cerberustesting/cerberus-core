@@ -78,6 +78,7 @@ Allow to have several host/port/user/pass for a given Robot.
 ## Description
 
 Integrate [Keycloak](https://www.keycloak.org/)
+Issue : #1180
  
 ## Benefit
 * allow centralised authenticitation and better integration (google auth or Office 365 authen)
