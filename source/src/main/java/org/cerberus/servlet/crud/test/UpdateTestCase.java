@@ -262,7 +262,7 @@ public class UpdateTestCase extends HttpServlet {
     }// </editor-fold>
 
     private TestCase getTestCaseFromRequest(HttpServletRequest request, TestCase tc) throws CerberusException, JSONException, UnsupportedEncodingException {
-        String charset = request.getCharacterEncoding();
+        String charset = request.getCharacterEncoding() == null ? "UTF-8" : request.getCharacterEncoding();
 
         // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
         tc.setImplementer(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("implementer"), tc.getImplementer()));

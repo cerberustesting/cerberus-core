@@ -100,7 +100,7 @@ public class CreateUpdateTestCaseExecutionFile extends HttpServlet {
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
         response.setContentType("application/json");
-        String charset = request.getCharacterEncoding();
+        String charset = request.getCharacterEncoding() == null ? "UTF-8" : request.getCharacterEncoding();
         
         Map<String, String> fileData = new HashMap<String, String>();
         FileItem file = null;

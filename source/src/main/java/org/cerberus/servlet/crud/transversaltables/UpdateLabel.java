@@ -75,7 +75,7 @@ public class UpdateLabel extends HttpServlet {
         ans.setResultMessage(msg);
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        String charset = request.getCharacterEncoding();
+        String charset = request.getCharacterEncoding() == null ? "UTF-8" : request.getCharacterEncoding();
 
         ILabelService labelService = appContext.getBean(ILabelService.class);
         IFactoryLabel labelFactory = appContext.getBean(IFactoryLabel.class);

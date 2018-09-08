@@ -70,7 +70,7 @@ public class DisableEnvironmentV000 extends HttpServlet {
             throws ServletException, IOException {
         PrintWriter out = response.getWriter();
 
-        String charset = request.getCharacterEncoding();
+        String charset = request.getCharacterEncoding() == null ? "UTF-8" : request.getCharacterEncoding();
 
         // Loading Services.
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());

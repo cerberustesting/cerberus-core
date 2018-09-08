@@ -74,7 +74,7 @@ public class ReadInvariant extends HttpServlet {
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
         invariantService = appContext.getBean(InvariantService.class);
-        String charset = request.getCharacterEncoding();
+        String charset = request.getCharacterEncoding() == null ? "UTF-8" : request.getCharacterEncoding();
 
         response.setContentType("application/json");
         response.setCharacterEncoding("utf8");

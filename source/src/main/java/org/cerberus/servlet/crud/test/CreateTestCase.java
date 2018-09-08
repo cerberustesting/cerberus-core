@@ -286,7 +286,7 @@ public class CreateTestCase extends HttpServlet {
         TestCase tc = new TestCase();
 
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
-        String charset = request.getCharacterEncoding();
+        String charset = request.getCharacterEncoding() == null ? "UTF-8" : request.getCharacterEncoding();
 
         // Parameter that needs to be secured --> We SECURE+DECODE them
         tc.setImplementer(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("implementer"), "", charset));

@@ -55,7 +55,7 @@ public class CreateBatchInvariant extends HttpServlet {
 
     private final String OBJECT_NAME = "BatchInvariant";
     private static final Logger LOG = LogManager.getLogger(CreateBatchInvariant.class);
-    
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -75,13 +75,13 @@ public class CreateBatchInvariant extends HttpServlet {
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         ans.setResultMessage(msg);
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
-        String charset = request.getCharacterEncoding();
+        String charset = request.getCharacterEncoding() == null ? "UTF-8" : request.getCharacterEncoding();
 
         response.setContentType("application/json");
 
         // Calling Servlet Transversal Util.
         ServletUtil.servletStart(request);
-        
+
         /**
          * Parsing and securing all required parameters.
          */
