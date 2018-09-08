@@ -477,23 +477,22 @@ public class SeleniumServerService implements ISeleniumServerService {
                     caps.setCapability("deviceName", tCExecution.getRobotExecutorObj().getDeviceName());
                 }
                 if (!StringUtil.isNullOrEmpty(tCExecution.getRobotExecutorObj().getDeviceName())) {
-                    caps.setCapability("systemPort", tCExecution.getRobotExecutorObj().getDevicePort()+"");
+                    caps.setCapability("systemPort", tCExecution.getRobotExecutorObj().getDevicePort() + "");
                 }
             }
 
-            if(tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK) && caps.getCapability("automationName") == null) {
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK) && caps.getCapability("automationName") == null) {
                 caps.setCapability("automationName", "UIAutomator2"); // use UIAutomator2 by default
             }
 
         }
 
-        for(Map.Entry cap : caps.asMap().entrySet()) {
+        for (Map.Entry cap : caps.asMap().entrySet()) {
             additionalCapabilities.add(factoryRobotCapability.create(0, "", cap.getKey().toString(), cap.getValue().toString()));
         }
 
-
         /**
-         * We record Selenium log at the end of the execution.
+         * We record Caps list at the execution level.
          */
         try {
             List<RobotCapability> inputCapabilities = new ArrayList<>();

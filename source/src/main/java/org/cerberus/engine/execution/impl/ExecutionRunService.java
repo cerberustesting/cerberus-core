@@ -318,12 +318,8 @@ public class ExecutionRunService implements IExecutionRunService {
                         // TODO ce n'est pas ça encore, faut faire ça au moment ou il recupère l'ip / port
                         if(tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
                             int portNumber = 8200;
-
                             portNumber++;
                         }
-
-
-
 
                         for (RobotCapability cap : caps) {
 
