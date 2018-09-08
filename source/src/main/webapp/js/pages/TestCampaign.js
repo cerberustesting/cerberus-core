@@ -84,16 +84,16 @@ function displayPageLabel() {
     $("[name='editTestcampaignField']").html(doc.getDocLabel("page_testcampaign", "edittestcampaign_field"));
     $("[name='addTestcampaignField']").html(doc.getDocLabel("page_testcampaign", "addtestcampaign_field"));
     $("[name='campaignField']").html(doc.getDocLabel("page_testcampaign", "campaign_field"));
-    $("[name='descriptionField']").html(doc.getDocLabel("page_testcampaign", "description_field"));
+    $("[name='descriptionField']").html(doc.getDocOnline("page_testcampaign", "description_field"));
     $("[name='tabDescription']").html(doc.getDocLabel("page_testcampaign", "description_tab"));
     $("[name='tabLabels']").html(doc.getDocLabel("label", "label"));
     $("[name='tabParameters']").html(doc.getDocLabel("page_testcampaign", "parameter_tab"));
     $("[name='buttonClose']").html(doc.getDocLabel("page_testcampaign", "close_btn"));
     $("[name='buttonAdd']").html(doc.getDocLabel("page_testcampaign", "save_btn"));
 
-    $("[name='distriblistField']").html(doc.getDocLabel("testcampaign", "distribList"));
-    $("[name='notifystartField']").html(doc.getDocLabel("testcampaign", "notifyStartTagExecution"));
-    $("[name='notifyendField']").html(doc.getDocLabel("testcampaign", "notifyEndTagExecution"));
+    $("[name='distriblistField']").html(doc.getDocOnline("testcampaign", "distribList"));
+    $("[name='notifystartField']").html(doc.getDocOnline("testcampaign", "notifyStartTagExecution"));
+    $("[name='notifyendField']").html(doc.getDocOnline("testcampaign", "notifyEndTagExecution"));
 
     displayHeaderLabel(doc);
 

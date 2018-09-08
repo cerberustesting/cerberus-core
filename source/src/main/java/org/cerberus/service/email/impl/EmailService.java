@@ -53,57 +53,64 @@ public class EmailService implements IEmailService {
 
     @Override
     public void sendHtmlMail(Email cerberusEmail) throws Exception {
+        if (!StringUtil.isNullOrEmpty(cerberusEmail.getHost())
+                && !"mail.com".equals(cerberusEmail.getHost())) {
+            // Smtp host is defined and not equal to default value.
 
-        HtmlEmail email = new HtmlEmail();
-        email.setSmtpPort(cerberusEmail.getSmtpPort());
-        email.setHostName(cerberusEmail.getHost());
-        email.setFrom(cerberusEmail.getFrom());
-        email.setSubject(cerberusEmail.getSubject());
-        email.setHtmlMsg(cerberusEmail.getBody());
-        if (cerberusEmail.isSetTls()) {
-            email = (HtmlEmail) email.setStartTLSEnabled(true);
-        }
+            HtmlEmail email = new HtmlEmail();
+            email.setSmtpPort(cerberusEmail.getSmtpPort());
+            email.setHostName(cerberusEmail.getHost());
+            email.setFrom(cerberusEmail.getFrom());
+            email.setSubject(cerberusEmail.getSubject());
+            email.setHtmlMsg(cerberusEmail.getBody());
+            if (cerberusEmail.isSetTls()) {
+                email = (HtmlEmail) email.setStartTLSEnabled(true);
+            }
 //        email.setTLS(cerberusEmail.isSetTls());
-        email.setDebug(true);
+            email.setDebug(true);
 
-        if (!StringUtils.isNullOrEmpty(cerberusEmail.getUserName()) || !StringUtils.isNullOrEmpty(cerberusEmail.getPassword())) {
-            email.setAuthentication(cerberusEmail.getUserName(), cerberusEmail.getPassword());
-        }
-
-        String[] destinataire = cerberusEmail.getTo().split(";");
-        for (int i = 0; i < destinataire.length; i++) {
-            String name;
-            String emailaddress;
-            if (destinataire[i].contains("<")) {
-                String[] destinatairedata = destinataire[i].split("<");
-                name = destinatairedata[0].trim();
-                emailaddress = destinatairedata[1].replace(">", "").trim();
-            } else {
-                name = "";
-                emailaddress = destinataire[i];
+            if (!StringUtils.isNullOrEmpty(cerberusEmail.getUserName()) || !StringUtils.isNullOrEmpty(cerberusEmail.getPassword())) {
+                email.setAuthentication(cerberusEmail.getUserName(), cerberusEmail.getPassword());
             }
-            email.addTo(emailaddress, name);
-        }
 
-        if (!StringUtil.isNullOrEmpty(cerberusEmail.getCc())) {
-            String[] copy = cerberusEmail.getCc().split(";");
-
-            for (int i = 0; i < copy.length; i++) {
-                String namecc;
-                String emailaddresscc;
-                if (copy[i].contains("<")) {
-                    String[] copydata = copy[i].split("<");
-                    namecc = copydata[0].trim();
-                    emailaddresscc = copydata[1].replace(">", "").trim();
+            String[] destinataire = cerberusEmail.getTo().split(";");
+            for (int i = 0; i < destinataire.length; i++) {
+                String name;
+                String emailaddress;
+                if (destinataire[i].contains("<")) {
+                    String[] destinatairedata = destinataire[i].split("<");
+                    name = destinatairedata[0].trim();
+                    emailaddress = destinatairedata[1].replace(">", "").trim();
                 } else {
-                    namecc = "";
-                    emailaddresscc = copy[i];
+                    name = "";
+                    emailaddress = destinataire[i];
                 }
-                email.addCc(emailaddresscc, namecc);
+                email.addTo(emailaddress, name);
             }
-        }
 
-        email.send();
+            if (!StringUtil.isNullOrEmpty(cerberusEmail.getCc())) {
+                String[] copy = cerberusEmail.getCc().split(";");
+
+                for (int i = 0; i < copy.length; i++) {
+                    String namecc;
+                    String emailaddresscc;
+                    if (copy[i].contains("<")) {
+                        String[] copydata = copy[i].split("<");
+                        namecc = copydata[0].trim();
+                        emailaddresscc = copydata[1].replace(">", "").trim();
+                    } else {
+                        namecc = "";
+                        emailaddresscc = copy[i];
+                    }
+                    email.addCc(emailaddresscc, namecc);
+                }
+            }
+
+            email.send();
+
+        } else {
+            LOG.debug("Mail not send because smtp host not defined or default. smtp : " + cerberusEmail.getHost());
+        }
 
     }
 
