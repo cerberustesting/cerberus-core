@@ -402,66 +402,70 @@ function loadCampaignContent(campaign) {
 }
 
 function loadCampaignParameter(campaign) {
-    $.ajax({
-        url: "ReadCampaignParameter",
-        method: "GET",
-        data: {campaign: campaign},
-        datatype: "json",
-        async: true,
-        success: function (data) {
-            var robot = [];
-            var env = [];
-            var countries = [];
+    if (!isEmpty(campaign)) {
+        
+        $.ajax({
+            url: "ReadCampaignParameter",
+            method: "GET",
+            data: {campaign: campaign},
+            datatype: "json",
+            async: true,
+            success: function (data) {
+                var robot = [];
+                var env = [];
+                var countries = [];
 
-            for (var index = 0; index < data.contentTable.length; index++) {
-                var type = data.contentTable[index].parameter;
-                var value = data.contentTable[index].value;
+                for (var index = 0; index < data.contentTable.length; index++) {
+                    var type = data.contentTable[index].parameter;
+                    var value = data.contentTable[index].value;
 
-                if (type === "ROBOT") {
-                    robot.push(value);
-                } else if (type === "ENVIRONMENT") {
-                    env.push(value);
-                } else if (type === "COUNTRY") {
-                    countries.push(value);
+                    if (type === "ROBOT") {
+                        robot.push(value);
+                    } else if (type === "ENVIRONMENT") {
+                        env.push(value);
+                    } else if (type === "COUNTRY") {
+                        countries.push(value);
+                    }
                 }
+
+                // Environments
+                $("#envSettingsAuto select").val(env);
+                $("input[name='envSettings'][value='auto']").click();
+
+                // Country
+                $("#countryList input.countrycb").each(function () {
+                    var country = $(this).prop("name");
+
+                    if (countries.indexOf(country) !== -1) {
+                        $(this).prop("checked", true);
+                    } else {
+                        $(this).prop("checked", false);
+                    }
+                });
+
+                // Robot
+                $("#robot option").each(function () {
+                    var selected = false;
+                    for (var index = 0; index < robot.length; index++) {
+
+                        if (robot[index] === $(this).val()) {
+                            $("#robot").find('option[value="' + $(this).val() + '"]').prop("selected", true);
+                            selected = true;
+                        }
+                        if (!selected) {
+                            $("#robot").find('option[value="' + $(this).val() + '"]').prop("selected", false);
+
+                        }
+                    }
+
+
+                });
+                loadRobotInfo(robot);
+
             }
+        });
 
-            // Environments
-            $("#envSettingsAuto select").val(env);
-            $("input[name='envSettings'][value='auto']").click();
-
-            // Country
-            $("#countryList input.countrycb").each(function () {
-                var country = $(this).prop("name");
-
-                if (countries.indexOf(country) !== -1) {
-                    $(this).prop("checked", true);
-                } else {
-                    $(this).prop("checked", false);
-                }
-            });
-
-            // Robot
-            $("#robot option").each(function () {
-                var selected = false;
-                for (var index = 0; index < robot.length; index++) {
-
-                    if (robot[index] === $(this).val()) {
-                        $("#robot").find('option[value="' + $(this).val() + '"]').prop("selected", true);
-                        selected = true;
-                    }
-                    if (!selected) {
-                        $("#robot").find('option[value="' + $(this).val() + '"]').prop("selected", false);
-
-                    }
-                }
-
-
-            });
-            loadRobotInfo(robot);
-
-        }
-    });
+    }
 }
 
 /** FORM SENDING UTILITY FUNCTIONS (VALID FOR SERVLET ADDTOEXECUTIONQUEUE) **/
@@ -479,12 +483,9 @@ function runTestCase(doRedirect) {
 
     var paramSerialized = "";
     if (fromCampaign) {
-        paramSerialized += "campaign=" + $("#campaignSelect").val();
-        paramSerialized += "&browser=" + $("#robotSettingsForm #browser").val();
-    } else {
-        paramSerialized += "browser=" + $("#robotSettingsForm #browser").val();
+        paramSerialized += "campaign=" + $("#campaignSelect").val() + "&";
     }
-    paramSerialized += "&tag=" + $("#executionSettingsForm #tag").val();
+    paramSerialized += "tag=" + $("#executionSettingsForm #tag").val();
     paramSerialized += "&screenshot=" + $("#executionSettingsForm #screenshot").val();
     paramSerialized += "&verbose=" + $("#executionSettingsForm #verbose").val();
     paramSerialized += "&timeout=" + $("#executionSettingsForm #timeout").val();
@@ -531,11 +532,12 @@ function runTestCase(doRedirect) {
 
     var robotsstring = "";
     var robotSettings = $("#robotSettingsForm #robot").serialize();
-    if (!isEmpty(robotSettings)) {
+    if (robotSettings !== "robot=") {
         robotsstring += "&" + robotSettings;
     } else {
         paramSerialized += "&ss_ip=" + $("#robotSettingsForm #seleniumIP").val();
         paramSerialized += "&ss_p=" + $("#robotSettingsForm #seleniumPort").val();
+        paramSerialized += "&browser=" + $("#robotSettingsForm #browser").val();
     }
 
     if (!fromCampaign) {
@@ -783,11 +785,11 @@ function appendRobotList() {
 }
 
 function loadRobotInfo(robot) {
-	
-	if(!(robot instanceof Array)){
-		robot = [robot]
-	}
-	
+
+    if (!(robot instanceof Array)) {
+        robot = [robot]
+    }
+
     if (robot[0] !== "") {
         // We can edit Robot.
         $("#robotEdit").removeClass("disabled");
@@ -803,7 +805,6 @@ function loadRobotInfo(robot) {
             dataType: "json",
             async: true,
             success: function (data) {
-            	console.log(data);
                 disableRobotFields();
                 $("#robotSettings #seleniumIP").val(data.contentTable.executors[0].host);
                 $("#robotSettings #seleniumPort").val(data.contentTable.executors[0].port);
@@ -829,7 +830,7 @@ function loadRobotInfo(robot) {
             $("#robotSettings #browser").val("");
         }
     }
-    
+
 }
 
 function saveRobotPreferences() {
