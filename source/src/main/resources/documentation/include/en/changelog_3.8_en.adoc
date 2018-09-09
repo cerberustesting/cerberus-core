@@ -1,6 +1,7 @@
 *Bug fixes*
 [square]
 * [ENGINE] Bug on Manual execution that sometimes could generate an FA status has been fixed. Happened when manual execution require a Selenium action/control/property.
+* [ENGINE] Fixed Service URL calculation with manualurl parameter set to 1 or 2. #1819
 
 *Improvements / New features*
 [square]
@@ -20,6 +21,7 @@
 * [PERF] TestCase List screen and ReportByTag screens should be faster to navigate on systems that have quite a lot of labels defined.
 * [ENGINE] Capabilities sent to the robot server are now reported from execution page (both requested capabilities at robot level and final capabilities that are decoded and automaticly added by the engine).
 * [GUI] When creating a new TestCase, Test can now be created 'on the fly' without beeing forced to have it created before.
+* [GUI] Added autocomplete on element on some actions/controls/conditions testcase fields.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

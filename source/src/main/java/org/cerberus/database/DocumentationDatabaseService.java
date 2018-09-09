@@ -1625,12 +1625,12 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_runtest','select_one_testcase','','fr','Sélectionner au moins un cas de test !','',NULL)");
         b.append(",('page_runtest','select_robot','','en','Select a robot','',NULL)");
         b.append(",('page_runtest','select_robot','','fr','Sélectionner un robot','',NULL)");
-        b.append(",('page_runtest','seleniumlog','','en','Selenium Log','',NULL)");
-        b.append(",('page_runtest','seleniumlog','','fr','Log de Selenium','',NULL)");
-        b.append(",('page_runtest','selenium_ip','','en','Selenium Server IP','',NULL)");
-        b.append(",('page_runtest','selenium_ip','','fr','IP du serveur Selenium','',NULL)");
-        b.append(",('page_runtest','selenium_port','','en','Selenium Server Port','',NULL)");
-        b.append(",('page_runtest','selenium_port','','fr','Port du serveur Selenium','',NULL)");
+        b.append(",('page_runtest','seleniumlog','','en','Robot Log','',NULL)");
+        b.append(",('page_runtest','seleniumlog','','fr','Log du Robot','',NULL)");
+        b.append(",('page_runtest','selenium_ip','','en','Robot Server IP','',NULL)");
+        b.append(",('page_runtest','selenium_ip','','fr','IP du Robot','',NULL)");
+        b.append(",('page_runtest','selenium_port','','en','Robot Server Port','',NULL)");
+        b.append(",('page_runtest','selenium_port','','fr','Port du Robot','',NULL)");
         b.append(",('page_runtest','size','','en','Size','',NULL)");
         b.append(",('page_runtest','size','','fr','Taille','',NULL)");
         b.append(",('page_runtest','status','','en','Status','',NULL)");

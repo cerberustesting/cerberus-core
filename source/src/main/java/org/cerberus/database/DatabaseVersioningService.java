@@ -7821,7 +7821,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`)  values "
                 + "('SCREENSHOT', '3', 40, 'Automatic Screenshots/Video on error ', '')"
                 + ",('SCREENSHOT', '4', 50, 'Systematic Screenshots/Video', '')");
-        
+
         // 1367 Selector invariants
         b = new StringBuilder();
         b.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) ");
@@ -7896,8 +7896,11 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append(",('STEPCONDITIONOPER', 'ifTextInElement', 270, 'Only execute if text is present in element.')");
         b.append(",('STEPCONDITIONOPER', 'ifTextNotInElement', 280, 'Only execute if text is not present in element.')");
         a.add(b.toString());
-        
-        
+
+        //Missing invariant on manual URL.
+        // 1384
+        a.add("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ('MANUALURL', '2', 300, 'Activate Application URL Manual definition only on defined parameters.')");
+
         return a;
     }
 

@@ -125,8 +125,8 @@ public class ServiceService implements IServiceService {
                     if (StringUtil.isNullOrEmpty(database)) {
 
                         // We reformat servicePath in order to add the context from the application execution.
-                        servicePath = StringUtil.getURLFromString(tCExecution.getCountryEnvironmentParameters().getIp(),
-                                tCExecution.getCountryEnvironmentParameters().getUrl(), appService.getServicePath(), "http://");
+                        servicePath = StringUtil.getURLFromString(tCExecution.getUrl(),
+                                "", appService.getServicePath(), "http://");
 
                     } else {
 
