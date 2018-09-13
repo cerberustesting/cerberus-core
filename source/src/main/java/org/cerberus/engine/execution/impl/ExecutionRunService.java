@@ -229,7 +229,7 @@ public class ExecutionRunService implements IExecutionRunService {
             RobotExecutor robExeObj = null;
             String robotHost = "";
             String robotPort = "";
-            String browser = "";
+            String browser = tCExecution.getBrowser();
             String robotDecli = "";
             String version = "";
             String platform = "";
