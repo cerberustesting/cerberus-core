@@ -36,6 +36,7 @@ import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
@@ -49,37 +50,37 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class RobotExecutorService implements IRobotExecutorService {
-    
+
     @Autowired
     private IRobotExecutorDAO robotExecutorDAO;
     @Autowired
     private IRobotService robotService;
-    
+
     private static final Logger LOG = LogManager.getLogger(RobotExecutorService.class);
-    
+
     private final String OBJECT_NAME = "Robot Executor";
-    
+
     @Override
     public AnswerItem<RobotExecutor> readByKey(String robot, String executor) {
         return robotExecutorDAO.readByKey(robot, executor);
     }
-    
+
     @Override
     public AnswerItem<RobotExecutor> readBestByKey(String robot) {
         return robotExecutorDAO.readBestByKey(robot);
     }
-    
+
     @Override
     public AnswerList<RobotExecutor> readAll() {
         return readByRobotByCriteria(null, null, 0, 0, "rank", "asc", null, null);
     }
-    
+
     @Override
     public AnswerList<RobotExecutor> readByVarious(List<String> robot, String active) {
         // For each robot in the list we get the list of RobotExecutor
         return robotExecutorDAO.readByVariousByCriteria(robot, active, 0, 0, "rank", "asc", null, null);
     }
-    
+
     @Override
     public AnswerList<RobotExecutor> readByRobot(String robot) {
         List<String> robotList = new ArrayList<>();
@@ -87,25 +88,27 @@ public class RobotExecutorService implements IRobotExecutorService {
         // For each robot in the list we get the list of RobotExecutor
         return robotExecutorDAO.readByVariousByCriteria(robotList, null, 0, 0, "rank", "asc", null, null);
     }
-    
+
     @Override
     public AnswerList<RobotExecutor> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
         return robotExecutorDAO.readByVariousByCriteria(null, null, startPosition, length, columnName, sort, searchParameter, individualSearch);
     }
-    
+
     @Override
     public AnswerList<RobotExecutor> readByRobotByCriteria(List<String> robot, String active, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
         return robotExecutorDAO.readByVariousByCriteria(robot, active, startPosition, length, columnName, sort, searchParameter, individualSearch);
     }
-    
+
     @Override
     public HashMap<String, List<RobotExecutor>> getExecutorListFromRobotHash(HashMap<String, List<RobotExecutor>> robot_executors) {
         List<String> robotList = new ArrayList<>();
         for (Map.Entry<String, List<RobotExecutor>> entry : robot_executors.entrySet()) {
             String key = entry.getKey();
-            robotList.add(key);
+            if (!StringUtil.isNullOrEmpty(key)) {
+                robotList.add(key);
+            }
         }
-        
+
         try {
             for (String myrobot : robotList) {
                 //For each necessary robot, we get the Loadbalancing rule and corresponding list of executors in the correct order.
@@ -136,35 +139,35 @@ public class RobotExecutorService implements IRobotExecutorService {
 //        }
         return robot_executors;
     }
-    
+
     @Override
     public boolean exist(String robot, String executor) {
         AnswerItem objectAnswer = readByKey(robot, executor);
         return (objectAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) && (objectAnswer.getItem() != null); // Call was successfull and object was found.
     }
-    
+
     @Override
     public Answer create(RobotExecutor object) {
         return robotExecutorDAO.create(object);
     }
-    
+
     @Override
     public Answer createList(List<RobotExecutor> objectList, String usrCreate) {
         Answer ans = new Answer(null);
         for (RobotExecutor objectToCreate : objectList) {
-            if (usrCreate != null){
+            if (usrCreate != null) {
                 objectToCreate.setUsrCreated(usrCreate);
             }
             ans = this.create(objectToCreate);
         }
         return ans;
     }
-    
+
     @Override
     public Answer delete(RobotExecutor object) {
         return robotExecutorDAO.delete(object);
     }
-    
+
     @Override
     public Answer deleteList(List<RobotExecutor> objectList) {
         Answer ans = new Answer(null);
@@ -173,17 +176,17 @@ public class RobotExecutorService implements IRobotExecutorService {
         }
         return ans;
     }
-    
+
     @Override
     public Answer update(String service, String key, RobotExecutor object) {
         return robotExecutorDAO.update(service, key, object);
     }
-    
+
     @Override
     public Answer updateLastExe(String robot, String executor) {
         return robotExecutorDAO.updateLastExe(robot, executor);
     }
-    
+
     @Override
     public RobotExecutor convert(AnswerItem<RobotExecutor> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
@@ -192,7 +195,7 @@ public class RobotExecutorService implements IRobotExecutorService {
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
-    
+
     @Override
     public List<RobotExecutor> convert(AnswerList<RobotExecutor> answerList) throws CerberusException {
         if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
@@ -201,7 +204,7 @@ public class RobotExecutorService implements IRobotExecutorService {
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
-    
+
     @Override
     public void convert(Answer answer) throws CerberusException {
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
@@ -210,16 +213,16 @@ public class RobotExecutorService implements IRobotExecutorService {
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
-    
+
     @Override
     public Answer compareListAndUpdateInsertDeleteElements(String robot, List<RobotExecutor> newList, String usrModif) {
         Answer ans = new Answer(null);
         List<String> robotList = new ArrayList<>();
         robotList.add(robot);
-        
+
         MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
         Answer finalAnswer = new Answer(msg1);
-        
+
         List<RobotExecutor> oldList = new ArrayList<>();
         try {
             oldList = this.convert(this.readByVarious(robotList, null));
@@ -234,7 +237,7 @@ public class RobotExecutorService implements IRobotExecutorService {
         List<RobotExecutor> listToUpdateOrInsert = new ArrayList<>(newList);
         listToUpdateOrInsert.removeAll(oldList);
         List<RobotExecutor> listToUpdateOrInsertToIterate = new ArrayList<>(listToUpdateOrInsert);
-        
+
         for (RobotExecutor objectDifference : listToUpdateOrInsertToIterate) {
             for (RobotExecutor objectInDatabase : oldList) {
                 if (objectDifference.hasSameKey(objectInDatabase)) {
@@ -252,7 +255,7 @@ public class RobotExecutorService implements IRobotExecutorService {
         List<RobotExecutor> listToDelete = new ArrayList<>(oldList);
         listToDelete.removeAll(newList);
         List<RobotExecutor> listToDeleteToIterate = new ArrayList<>(listToDelete);
-        
+
         for (RobotExecutor tcsDifference : listToDeleteToIterate) {
             for (RobotExecutor tcsInPage : newList) {
                 if (tcsDifference.hasSameKey(tcsInPage)) {
@@ -270,13 +273,13 @@ public class RobotExecutorService implements IRobotExecutorService {
             ans = this.createList(listToUpdateOrInsert, usrModif);
             finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
         }
-        
+
         return finalAnswer;
     }
-    
+
     @Override
     public AnswerList<String> readDistinctValuesByCriteria(String service, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
         return robotExecutorDAO.readDistinctValuesByCriteria(service, searchParameter, individualSearch, columnName);
     }
-    
+
 }

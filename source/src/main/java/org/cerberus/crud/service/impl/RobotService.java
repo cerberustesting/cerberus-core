@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.service.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,8 +72,10 @@ public class RobotService implements IRobotService {
     @Override
     public Robot readByKey(String robot) throws CerberusException {
         Robot resultRobot = robotDao.readByKey(robot);
-        resultRobot = fillCapabilities(resultRobot);
-        resultRobot = fillExecutors(resultRobot);
+        if (resultRobot != null) {
+            resultRobot = fillCapabilities(resultRobot);
+            resultRobot = fillExecutors(resultRobot);
+        }
         return resultRobot;
     }
 
@@ -224,12 +227,16 @@ public class RobotService implements IRobotService {
     }
 
     private Robot fillCapabilities(Robot robotItem) throws CerberusException {
-        robotItem.setCapabilities(robotCapabilityService.convert(robotCapabilityService.readByRobot(robotItem.getRobot())));
+        if (robotItem != null) {
+            robotItem.setCapabilities(robotCapabilityService.convert(robotCapabilityService.readByRobot(robotItem.getRobot())));
+        }
         return robotItem;
     }
 
     private Robot fillExecutors(Robot robotItem) throws CerberusException {
-        robotItem.setExecutors(robotExecutorService.convert(robotExecutorService.readByRobot(robotItem.getRobot())));
+        if (robotItem != null) {
+            robotItem.setExecutors(robotExecutorService.convert(robotExecutorService.readByRobot(robotItem.getRobot())));
+        }
         return robotItem;
     }
 
