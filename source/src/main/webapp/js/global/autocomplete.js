@@ -283,13 +283,17 @@ function loadProperties(testcaseinfo, canUpdate) {
                     }
                 }
                 var propertyListUnique = Array.from(new Set(propertyList));
-                var secondaryPropertyListUnique = Array.from(new Set(secondaryPropertyList));                            
-                for (var index = 0; index < propertyListUnique.length; index++) {
-                    drawPropertyList(propertyListUnique[index], index, false);
-                }              
-                for (var index = 0; index < secondaryPropertyListUnique.length; index++) {
-                    drawPropertyList(secondaryPropertyListUnique[index], index, true);
-                }
+                var secondaryPropertyListUnique = Array.from(new Set(secondaryPropertyList));
+                
+                // The drawPropertyList functions has been commented because it is already managed by 
+                // loadPropertiesAndDraw function in TestCaseScript.js
+                /*
+                	for (var index = 0; index < propertyListUnique.length; index++) {
+                    //drawPropertyList(propertyListUnique[index], index, false);
+                	}              
+                	for (var index = 0; index < secondaryPropertyListUnique.length; index++) {
+                    //drawPropertyList(secondaryPropertyListUnique[index], index, true);
+                	}*/
                 array.sort(function (a, b) {
                     return compareStrings(a, b);
                 })

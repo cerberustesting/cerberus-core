@@ -318,7 +318,7 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
         /**
          * Iterate on (Object From Page - Object From Database) If Object in
          * Database has same key : Update and remove from the list. If Object in
-         * database does ot exist : Insert it.
+         * database does not exist : Insert it.
          */
         List<TestCaseCountryProperties> listToUpdateOrInsert = new ArrayList<>(newList);
         listToUpdateOrInsert.removeAll(oldList);

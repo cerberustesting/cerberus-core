@@ -122,7 +122,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Test Case")
                     .replace("%OPERATION%", "Update")
-                    .replace("%REASON%", "mendatory fields are missing."));
+                    .replace("%REASON%", "mandatory fields are missing."));
             ans.setResultMessage(msg);
         } else {
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
