@@ -772,6 +772,7 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
     var cacheExpireInput = $("<input type='number' placeholder=''>").addClass("form-control input-sm").val(property.cacheExpire);
     var retryNbInput = $("<input placeholder='" + doc.getDocLabel("testcasecountryproperties", "RetryNb") + "'>").addClass("form-control input-sm").val(property.retryNb);
     var retryPeriodInput = $("<input placeholder='" + doc.getDocLabel("testcasecountryproperties", "RetryPeriod") + "'>").addClass("form-control input-sm").val(property.retryPeriod);
+    var rankInput = $("<input type='number' placeholder='" + doc.getDocLabel("testcasecountryproperties", "Rank") + "'>").addClass("form-control input-sm").val(1);
     var table = $("#propTable");
 
     selectType.attr("disabled", !canUpdate);
@@ -814,8 +815,9 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
 
     var nature = $("<div class='col-sm-2 form-group' name='fieldNature'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "nature_field"))).append(selectNature.val(property.nature));
     var retryNb = $("<div class='col-sm-2 form-group' name='fieldRetryNb'></div>").append($("<label></label>").text(doc.getDocLabel("testcasecountryproperties", "RetryNb"))).append(retryNbInput);
-    var retryPeriod = $("<div class='col-sm-2 form-group' name='fieldRetryPeriod'></div>").append($("<label></label>").text(doc.getDocLabel("testcasecountryproperties", "RetryPeriod"))).append(retryPeriodInput);
-
+    var retryPeriod = $("<div class='col-sm-1 form-group' name='fieldRetryPeriod'></div>").append($("<label></label>").text(doc.getDocLabel("testcasecountryproperties", "RetryPeriod"))).append(retryPeriodInput);
+    var rank = $("<div class='col-sm-1 form-group' name='rank' style='display:none;'></div>").append($("<label></label>").text(doc.getDocLabel("testcasecountryproperties", "Rank"))).append(rankInput);
+    
     var selectAllBtn = $("<button></button>").addClass("btn btn-default btn-sm").append($("<span></span>").addClass("glyphicon glyphicon-check")).click(function () {
         country.find("input[type='checkbox']").prop('checked', true).trigger("change");
     });
@@ -967,6 +969,7 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
     row3.append(retryNb);
     row3.append(retryPeriod);
     row3.append(cacheExpire);
+    row3.append(rank);
     props.append(row3);
 
     right.append(moreBtn).append(deleteBtn);
@@ -1074,6 +1077,7 @@ function drawInheritedProperty(propList) {
         row3.append(nature);
         row3.append(retryNb);
         row3.append(retryPeriod);
+        row3.append(rank);
         props.append(row3);
 
         right.append(moreBtn);
@@ -3653,7 +3657,8 @@ function setPlaceholderProperty(propertyElement, property) {
                 "rowLimit": null,
                 "nature": "Nature",
                 "retry": null,
-                "period": null
+                "period": null,
+                "rank": "Rank"
             },
             {
                 "type": "getFromSql",
@@ -3667,7 +3672,8 @@ function setPlaceholderProperty(propertyElement, property) {
                 "rowLimit": "Row Limit",
                 "nature": "Nature",
                 "retry": "Number of retry (until non-empty result)",
-                "period": "Retry period (ms)"
+                "period": "Retry period (ms)",
+                "rank": "Rank"
             },
             {
                 "type": "getFromDataLib",
@@ -3681,7 +3687,8 @@ function setPlaceholderProperty(propertyElement, property) {
                 "rowLimit": "[opt] Row Limit",
                 "nature": "Nature",
                 "retry": "Number of retry (until non-empty result)",
-                "period": "Retry period (ms)"
+                "period": "Retry period (ms)",
+                "rank": "Rank"
             },
             {
                 "type": "getFromHtml",
@@ -3695,7 +3702,8 @@ function setPlaceholderProperty(propertyElement, property) {
                 "rowLimit": null,
                 "nature": null,
                 "retry": null,
-                "period": null
+                "period": null,
+                "rank": "Rank"
             },
             {
                 "type": "getFromHtmlVisible",
@@ -3709,7 +3717,8 @@ function setPlaceholderProperty(propertyElement, property) {
                 "rowLimit": null,
                 "nature": null,
                 "retry": null,
-                "period": null
+                "period": null,
+                "rank": "Rank"
             },
             {
                 "type": "getFromJS",
@@ -3723,7 +3732,8 @@ function setPlaceholderProperty(propertyElement, property) {
                 "rowLimit": null,
                 "nature": null,
                 "retry": null,
-                "period": null
+                "period": null,
+                "rank": "Rank"
             },
             {
                 "type": "getAttributeFromHtml",
@@ -3737,7 +3747,8 @@ function setPlaceholderProperty(propertyElement, property) {
                 "rowLimit": null,
                 "nature": null,
                 "retry": null,
-                "period": null
+                "period": null,
+                "rank": "Rank"
             },
             {
                 "type": "getFromCookie",
@@ -3751,7 +3762,8 @@ function setPlaceholderProperty(propertyElement, property) {
                 "rowLimit": null,
                 "nature": null,
                 "retry": null,
-                "period": null
+                "period": null,
+                "rank": "Rank"
             },
             {
                 "type": "getFromXml",
@@ -3765,7 +3777,8 @@ function setPlaceholderProperty(propertyElement, property) {
                 "rowLimit": null,
                 "nature": null,
                 "retry": null,
-                "period": null
+                "period": null,
+                "rank": "Rank"
             },
             {
                 "type": "getDifferencesFromXml",
@@ -3779,7 +3792,8 @@ function setPlaceholderProperty(propertyElement, property) {
                 "rowLimit": null,
                 "nature": null,
                 "retry": null,
-                "period": null
+                "period": null,
+                "rank": "Rank"
             },
             {
                 "type": "getFromJson",
@@ -3793,7 +3807,8 @@ function setPlaceholderProperty(propertyElement, property) {
                 "rowLimit": null,
                 "nature": null,
                 "retry": null,
-                "period": null
+                "period": null,
+                "rank": "Rank"
             },
             {
                 "type": "getFromGroovy",
@@ -3807,7 +3822,8 @@ function setPlaceholderProperty(propertyElement, property) {
                 "rowLimit": null,
                 "nature": null,
                 "retry": null,
-                "period": null
+                "period": null,
+                "rank": "Rank"
             },
             {
                 "type": "getFromCommand",
@@ -3821,7 +3837,8 @@ function setPlaceholderProperty(propertyElement, property) {
                 "rowLimit": null,
                 "nature": null,
                 "retry": null,
-                "period": null
+                "period": null,
+                "rank": "Rank"
             },
             {
                 "type": "executeSoapFromLib",
@@ -3835,7 +3852,8 @@ function setPlaceholderProperty(propertyElement, property) {
                 "rowLimit": null,
                 "nature": null,
                 "retry": null,
-                "period": null
+                "period": null,
+                "rank": "Rank"
             },
             {
                 "type": "executeSqlFromLib",
@@ -3849,7 +3867,8 @@ function setPlaceholderProperty(propertyElement, property) {
                 "rowLimit": null,
                 "nature": null,
                 "retry": null,
-                "period": null
+                "period": null,
+                "rank": "Rank"
             }
         ]
     };
@@ -3998,6 +4017,15 @@ function setPlaceholderProperty(propertyElement, property) {
                 } else {
                     $(e).parents("div[name='propertyLine']").find("div[name='fieldRetryPeriod']").hide();
                 }
+                if (placeHolders[i].rank !== null) {
+                	// condition will always be true
+                    //$(e).parents("div[name='propertyLine']").find("div[name='rank']").show();
+                    $(e).parents("div[name='propertyLine']").find("div[name='rank'] label").html(placeHolders[i].rank);
+                } else {
+                    $(e).parents("div[name='propertyLine']").find("div[name='fieldRetryPeriod']").hide();
+                }
+                
+                
             }
         }
     });
