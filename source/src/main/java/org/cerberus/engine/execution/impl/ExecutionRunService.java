@@ -1194,6 +1194,7 @@ public class ExecutionRunService implements IExecutionRunService {
                             .replace("%MES%", conditionAnswer.getResultMessage().getDescription()));
                     testCaseStepActionExecution.setExecutionResultMessage(mes);
                     testCaseStepExecution.setExecutionResultMessage(testCaseStepActionExecution.getExecutionResultMessage());
+                    testCaseStepActionExecution.setStopExecution(true);
                     testCaseStepExecution.setStopExecution(testCaseStepActionExecution.isStopExecution());
 
                     testCaseStepActionExecution.setActionResultMessage(new MessageEvent(MessageEventEnum.CONDITION_TESTCASEACTION_FAILED)
