@@ -173,7 +173,7 @@ function loadExecutionInformation(executionId, stepList, sockets) {
                     } //on "écoute" pour savoir si la connexion vers le serveur websocket s'est bien faite
                     socket.onmessage = function (e) {
                         var data = JSON.parse(e.data);
-                        updatePage(data, stepList);
+                            updatePage(data, stepList);
                     } //on récupère les messages provenant du serveur websocket
                     socket.onclose = function (e) {
                     } //on est informé lors de la fermeture de la connexion vers le serveur
@@ -249,16 +249,16 @@ function initPage(id) {
     $("[name='buttonSave']").hide();
     $("#addProperty").hide();
     $("#duplicateButtons").hide();
-    
+
     var secondaryPropertiesTable = $("#secondaryPropTable");
     secondaryPropertiesTable.hide();
     $("#showSecondaryProp").click(function () {
-    	secondaryPropertiesTable.show();
+        secondaryPropertiesTable.show();
     });
     $("#hideSecondaryProp").click(function () {
-    	secondaryPropertiesTable.hide();
+        secondaryPropertiesTable.hide();
     });
-    
+
 
     var wrap = $(window);
 }
@@ -445,7 +445,8 @@ function updatePage(data, stepList) {
 
 function createVideo(videos) {
 
-    if(videos == undefined || videos.length == 0) return;
+    if (videos == undefined || videos.length == 0)
+        return;
 
     $("#tabsScriptEdit").append("<li><a data-toggle=\"tab\" href=\"#tabVideo\" id=\"editTabVideo\" name=\"tabVideo\">Video</a></li>");
 
@@ -453,33 +454,33 @@ function createVideo(videos) {
     var menuEntry = "";
     var videoEntry = "";
 
-    var videoIndex=0;
+    var videoIndex = 0;
 
-    videos.forEach( function(video) {
-        menuEntry += "            <a href=\"javascript:void(0);\" id=\"anchorToVideo" + videoIndex + "\" name=\"anchorToVideo\" index=\"" + videoIndex + "\" class=\"list-group-item row " + (videoIndex==0 ? "active" : "") + " \" style=\"margin-left: 0px; margin-right: 0px;\">Part " + (videoIndex+1) + "/" + videos.length + " </a>\n";
+    videos.forEach(function (video) {
+        menuEntry += "            <a href=\"javascript:void(0);\" id=\"anchorToVideo" + videoIndex + "\" name=\"anchorToVideo\" index=\"" + videoIndex + "\" class=\"list-group-item row " + (videoIndex == 0 ? "active" : "") + " \" style=\"margin-left: 0px; margin-right: 0px;\">Part " + (videoIndex + 1) + "/" + videos.length + " </a>\n";
 
         videoEntry +=
-            "<source  id=\"video" + videoIndex + "\" index=\"" + videoIndex + "\" name='videoObject' " + (videoIndex==0 ? "class='active'" : "") + " src=\"ReadTestCaseExecutionMedia?filename=" + video + "&filedesc=Video&filetype=MP4\" type=\"video/mp4\">\n";
+                "<source  id=\"video" + videoIndex + "\" index=\"" + videoIndex + "\" name='videoObject' " + (videoIndex == 0 ? "class='active'" : "") + " src=\"ReadTestCaseExecutionMedia?filename=" + video + "&filedesc=Video&filetype=MP4\" type=\"video/mp4\">\n";
 
         videoIndex++;
     });
 
     $("#testCaseDetails > div").append(
-        "<div class=\"center marginTop25 tab-pane fade\" id=\"tabVideo\">\n" +
-        "   <div class=\"row\">" +
-        "       <div class=\"col-md-2\">\n" +
-        "           <div class=\"list-group step-list side-item\">" +
-                        menuEntry +
-        "           </div>\n" +
-        "       </div>" +
-        "       <div class=\"col-md-10\">" +
-        "           <video id=\"videoTest\" poster=\"images/loading_2.gif\" width=\"500\" height=\"700\" controls style=\"background:black\">" +
-                    videoEntry +
-        "           Your browser does not support the video tag." +
-        "           </video>\n"+
-        "       </div>" +
-        "   </div>" +
-        "</div>");
+            "<div class=\"center marginTop25 tab-pane fade\" id=\"tabVideo\">\n" +
+            "   <div class=\"row\">" +
+            "       <div class=\"col-md-2\">\n" +
+            "           <div class=\"list-group step-list side-item\">" +
+            menuEntry +
+            "           </div>\n" +
+            "       </div>" +
+            "       <div class=\"col-md-10\">" +
+            "           <video id=\"videoTest\" poster=\"images/loading_2.gif\" width=\"500\" height=\"700\" controls style=\"background:black\">" +
+            videoEntry +
+            "           Your browser does not support the video tag." +
+            "           </video>\n" +
+            "       </div>" +
+            "   </div>" +
+            "</div>");
 
 
     var myvid = $('#videoTest').get(0);
@@ -492,18 +493,19 @@ function createVideo(videos) {
         $("[name='videoObject']").removeClass("active");
         $("#video" + $(this).attr("index")).addClass("active");
         var activesource = $("#videoTest source.active");
-        myvid.src =activesource.attr("src");
+        myvid.src = activesource.attr("src");
         myvid.play();
     })
 
     // automaticaly stream  the next part
-    myvid.addEventListener('ended', function(e) {
+    myvid.addEventListener('ended', function (e) {
         // get the active source and the next video source.
         // I set it so if there's no next, it loops to the first one
         var activesource = $("#videoTest source.active");
         var nextsource = $("#videoTest source.active + source");
 
-        if(nextsource.length === 0) nextsource =  $("#videoTest source:first-child");
+        if (nextsource.length === 0)
+            nextsource = $("#videoTest source:first-child");
 
         $("[name='anchorToVideo']").removeClass("active");
         $("#anchorToVideo" + nextsource.attr("index")).addClass("active");
@@ -517,7 +519,7 @@ function createVideo(videos) {
         myvid.play();
     });
 
-    $("#editTabVideo").click(function() { // automaticaly play video when you arrive on the video page
+    $("#editTabVideo").click(function () { // automaticaly play video when you arrive on the video page
         myvid.play();
     });
 
@@ -767,29 +769,29 @@ function createProperties(propList) {
     var secondaryPropCount = 0;
 
     for (var ind = 0; ind < propList.length; ind++) {
-    	
-    	var isThereAnySecondaryProperty = false;
-    	var property = propList[ind];
-    	var isSecondary = property.description.indexOf("[secondary]") >= 0;
-    	
-    	if (isSecondary == true ){
-    		// draw the Property in the second list
-    		drawProperty(property, secondaryProptable, true);
-    		isThereAnySecondaryProperty = true;
-    	} else {
-    		// draw the Property in the main list
+
+        var isThereAnySecondaryProperty = false;
+        var property = propList[ind];
+        var isSecondary = property.description.indexOf("[secondary]") >= 0;
+
+        if (isSecondary == true) {
+            // draw the Property in the second list
+            drawProperty(property, secondaryProptable, true);
+            isThereAnySecondaryProperty = true;
+        } else {
+            // draw the Property in the main list
             drawProperty(property, table, false);
-    	}
-    	
-    	// Avoid displaying the secondary properties section title if there is no secondary properties
-    	if (isThereAnySecondaryProperty){ 
-    		// display the name of the secondary Properties container
-    		$('#secondaryPropTableHeader').css("display","block");
-    		// TO DO : link it to the docTable
-    		secondaryPropCount++;
-    		console.log(secondaryPropCount);
-    		$('#secondaryPropCount').html(secondaryPropCount); 		
-    	}
+        }
+
+        // Avoid displaying the secondary properties section title if there is no secondary properties
+        if (isThereAnySecondaryProperty) {
+            // display the name of the secondary Properties container
+            $('#secondaryPropTableHeader').css("display", "block");
+            // TO DO : link it to the docTable
+            secondaryPropCount++;
+            console.log(secondaryPropCount);
+            $('#secondaryPropCount').html(secondaryPropCount);
+        }
     }
 }
 
@@ -802,7 +804,7 @@ function drawProperty(property, table, isSecondary) {
     var propertyName = $("<h4>").attr("style", "font-size:0.9em;margin:0px;line-height:1;height:0.9em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
     var returnMessageField = $("<h4>").attr("style", "font-size:.9em;margin:0px;line-height:1;height:.95em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
     var descriptionField = $("<h4>").attr("style", "font-size:1.2em;margin:0px;line-height:1;height:1.2em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
-    
+
     returnMessageField.append(safeLinkify(property.rMessage));
     descriptionField.append(property.value);
 

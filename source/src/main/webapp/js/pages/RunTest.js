@@ -403,7 +403,7 @@ function loadCampaignContent(campaign) {
 
 function loadCampaignParameter(campaign) {
     if (!isEmpty(campaign)) {
-        
+
         $.ajax({
             url: "ReadCampaignParameter",
             method: "GET",
@@ -806,8 +806,26 @@ function loadRobotInfo(robot) {
             async: true,
             success: function (data) {
                 disableRobotFields();
-                $("#robotSettings #seleniumIP").val(data.contentTable.executors[0].host);
-                $("#robotSettings #seleniumPort").val(data.contentTable.executors[0].port);
+                // Get Robot IP and Port from Executor.
+                var ExeHost = "No executor found...";
+                var ExePort = "";
+                var nbExe = 0;
+                for (var i = 0; i < data.contentTable.executors.length; i++) {
+                    var curExecutor = data.contentTable.executors[i];
+                    if (curExecutor.active === "Y") {
+                        nbExe++;
+                        if (nbExe < 2) {
+                            ExeHost = curExecutor.host;
+                            ExePort = curExecutor.port;
+                        }
+                    }
+                }
+                if (nbExe > 1) {
+                    ExeHost += " (and " + (nbExe - 1) + " more...)";
+                    ExePort += " (and " + (nbExe - 1) + " more...)";
+                }
+                $("#robotSettings #seleniumIP").val(ExeHost);
+                $("#robotSettings #seleniumPort").val(ExePort);
                 $("#robotSettings #browser").val(data.contentTable.browser);
             }
         });

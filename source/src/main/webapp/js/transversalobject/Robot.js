@@ -482,7 +482,7 @@ function loadExecutorsTable(tableBody, executors) {
 function appendCapabilityRow(tableBody, capability) {
     var doc = new Doc();
     var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
-    var selectCapability = getSelectInvariant("CAPABILITY", false);
+    var selectCapability = getSelectInvariant("CAPABILITY", false, true);
     var valueInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("robot", "capabilityValue") + " --\">").addClass("form-control input-sm").val(capability.value);
     var table = $("#" + tableBody);
 
@@ -507,7 +507,7 @@ function appendCapabilityRow(tableBody, capability) {
     row.append(deleteBtnRow);
     row.append(cap);
     row.append(value);
-    capability.capability = selectCapability.prop("value"); // Value that has been requested by dtb parameter may not exist in combo vlaues so we take the real selected value.
+    capability.capability = selectCapability.prop("value"); // Value that has been requested by dtb parameter may not exist in combo values so we take the real selected value.
     row.data("capability", capability);
     table.append(row);
 }
