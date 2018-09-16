@@ -246,6 +246,7 @@ $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.j
                                 nature: "STATIC",
                                 retryNb: "",
                                 retryPeriod: "",
+                                rank : 1,
                                 toDelete: false
                             };
 
@@ -772,7 +773,8 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
     var cacheExpireInput = $("<input type='number' placeholder=''>").addClass("form-control input-sm").val(property.cacheExpire);
     var retryNbInput = $("<input placeholder='" + doc.getDocLabel("testcasecountryproperties", "RetryNb") + "'>").addClass("form-control input-sm").val(property.retryNb);
     var retryPeriodInput = $("<input placeholder='" + doc.getDocLabel("testcasecountryproperties", "RetryPeriod") + "'>").addClass("form-control input-sm").val(property.retryPeriod);
-    var rankInput = $("<input type='number' placeholder='" + doc.getDocLabel("testcasecountryproperties", "Rank") + "'>").addClass("form-control input-sm").val(1);
+    //console.log('rank: '+property.rank);
+    var rankInput = $("<input type='number' placeholder='" + doc.getDocLabel("testcasecountryproperties", "Rank") + "'>").addClass("form-control input-sm").val(property.rank);
     var table = $("#propTable");
 
     selectType.attr("disabled", !canUpdate);
@@ -788,6 +790,7 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
     retryNbInput.prop("readonly", !canUpdate);
     retryPeriodInput.prop("readonly", !canUpdate);
     cacheExpireInput.prop("readonly", !canUpdate);
+    rankInput.prop("readonly", !canUpdate);
 
     if ( property.description.indexOf("[secondary]") >= 0 ) {   		
     	var content = $("<div class='row secondaryProperty list-group-item' style='background-color: #dfe4ea;'></div>");
@@ -945,6 +948,10 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
 
     retryPeriodInput.change(function () {
         property.retryPeriod = $(this).val();
+    });
+    
+    rank.change(function() {
+    	property.rank = $(this).val();
     });
 
     row1.data("property", property);
@@ -2982,6 +2989,7 @@ editPropertiesModalClick = function (test, testcase, info, propertyToAdd, proper
             nature: "STATIC",
             retryNb: 0,
             retryPeriod: 0,
+            rank: 1,
             toDelete: false
         };
 
@@ -4506,7 +4514,8 @@ function addPropertyWithAce(keywordValue) {
                 nature: "STATIC",
                 retryNb: "",
                 retryPeriod: "",
-                toDelete: false
+                toDelete: false,
+                rank: 1
             };
 
             var prop = drawProperty(newProperty, testcaseinfo, true, $("div[name='propertyLine']").length);

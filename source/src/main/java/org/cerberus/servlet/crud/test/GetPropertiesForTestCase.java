@@ -87,6 +87,7 @@ public class GetPropertiesForTestCase extends HttpServlet {
                     propertyFound.put("retryNb", prop.getRetryNb());
                     propertyFound.put("retryPeriod", prop.getRetryPeriod());
                     propertyFound.put("cacheExpire", prop.getCacheExpire());
+                    propertyFound.put("rank", prop.getRank());
                     
                     List<String> countriesSelected = testCaseCountryPropertiesService.findCountryByProperty(prop);
                     JSONArray countries = new JSONArray();
