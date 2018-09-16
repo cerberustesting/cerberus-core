@@ -1012,7 +1012,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
     @Override
     public Answer update(TestCaseCountryProperties object) {
         MessageEvent msg = null;
-        final String query = "UPDATE testcasecountryproperties SET `Description` = ?, `Type` = ? ,`Database` = ? ,Value1 = ?,Value2 = ?,`Length` = ?,  RowLimit = ?,  `Nature` = ?,  `RetryNb` = ?,  `RetryPeriod` = ? ,  `CacheExpire` = ? WHERE Test = ? AND TestCase = ? AND Country = ? AND hex(`Property`) like hex(?)";
+        final String query = "UPDATE testcasecountryproperties SET `Description` = ?, `Type` = ? ,`Database` = ? ,Value1 = ?, Value2 = ?,`Length` = ?,  RowLimit = ?,  `Nature` = ?,  `RetryNb` = ?,  `RetryPeriod` = ? , `CacheExpire` = ?, `Rank` = ? WHERE Test = ? AND TestCase = ? AND Country = ? AND hex(`Property`) like hex(?)";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -1033,10 +1033,11 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                 preStat.setInt(9, object.getRetryNb());
                 preStat.setInt(10, object.getRetryPeriod());
                 preStat.setInt(11, object.getCacheExpire());
-                preStat.setString(12, object.getTest());
-                preStat.setString(13, object.getTestCase());
-                preStat.setString(14, object.getCountry());
-                preStat.setString(15, object.getProperty());
+                preStat.setInt(12, object.getRank());
+                preStat.setString(13, object.getTest());
+                preStat.setString(14, object.getTestCase());
+                preStat.setString(15, object.getCountry());
+                preStat.setString(16, object.getProperty());             
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
