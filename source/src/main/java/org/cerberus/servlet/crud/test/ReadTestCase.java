@@ -538,6 +538,7 @@ public class ReadTestCase extends HttpServlet {
                     propertyFound.put("length", prop.getLength());
                     propertyFound.put("rowLimit", prop.getRowLimit());
                     propertyFound.put("nature", prop.getNature());
+                    propertyFound.put("rank", prop.getRank());
                     List<String> countriesSelected = testCaseCountryPropertiesService.findCountryByProperty(prop);
                     JSONArray countries = new JSONArray();
                     for (String country : countriesSelected) {
