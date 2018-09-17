@@ -773,7 +773,6 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
     var cacheExpireInput = $("<input type='number' placeholder=''>").addClass("form-control input-sm").val(property.cacheExpire);
     var retryNbInput = $("<input placeholder='" + doc.getDocLabel("testcasecountryproperties", "RetryNb") + "'>").addClass("form-control input-sm").val(property.retryNb);
     var retryPeriodInput = $("<input placeholder='" + doc.getDocLabel("testcasecountryproperties", "RetryPeriod") + "'>").addClass("form-control input-sm").val(property.retryPeriod);
-    //console.log('rank: '+property.rank);
     var rankInput = $("<input type='number' placeholder='" + doc.getDocLabel("testcasecountryproperties", "Rank") + "'>").addClass("form-control input-sm").val(property.rank);
     var table = $("#propTable");
 
@@ -792,8 +791,10 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
     cacheExpireInput.prop("readonly", !canUpdate);
     rankInput.prop("readonly", !canUpdate);
 
-    if ( property.description.indexOf("[secondary]") >= 0 ) {   		
-    	var content = $("<div class='row secondaryProperty list-group-item' style='background-color: #dfe4ea;'></div>");
+    // if the property is secondary
+    var isSecondary = property.description.indexOf("[secondary]") >= 0;
+    if (isSecondary) {   		
+    	var content = $("<div class='row secondaryProperty list-group-item list-group-item-secondary'></div>");
     } else {
     	var content = $("<div class='row property list-group-item'></div>");
     }    
@@ -832,6 +833,7 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
     var btnRow = $("<div class='col-sm-2'></div>").css("margin-top", "5px").css("margin-bottom", "5px").append(selectAllBtn).append(selectNoneBtn);
 
     deleteBtn.click(function () {
+    	// trigger when any deleteBtn is clicked
         var stopAllDelete = false;
         var stopNothing = false;
         var linkToProperty = null;
@@ -839,9 +841,15 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
         property.toDelete = (property.toDelete) ? false : true;
 
         if (property.toDelete) {
+        	if (isSecondary) {
+        		content.removeClass("list-group-item-secondary");
+        	}
             content.addClass("list-group-item-danger");
         } else {
             content.removeClass("list-group-item-danger");
+            if (isSecondary){
+            	content.addClass("list-group-item-secondary");
+            }
         }
 
         $(table).find("div.list-group-item").each(function () {
@@ -880,10 +888,13 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
         // go though every link and look for the right one
         if (linkToProperty !== null) {
             if (allDelete === true && nothing === false) {
-                linkToProperty.css("background-color", "#c94350");
+            	// set color to red  
+                linkToProperty.css("background-color", "#c94350"); 
             } else if (nothing === true) {
+            	// set color to white 
                 linkToProperty.css("background-color", "#fff");
             } else {
+            	// set color to pink
                 linkToProperty.css("background-color", "#f2dede");
             }
 
@@ -1018,6 +1029,8 @@ function drawInheritedProperty(propList) {
         var rowLimitInput = $("<input placeholder='" + doc.getDocLabel("page_testcasescript", "row_limit") + "' readonly='readonly'>").addClass("form-control input-sm").val(property.rowLimit);
         var cacheExpireInput = $("<input placeholder='0' readonly='readonly'>").addClass("form-control input-sm").val(property.cacheExpire);
         var retryNbInput = $("<input placeholder='" + doc.getDocLabel("testcasecountryproperties", "RetryNb") + "' readonly='readonly'>").addClass("form-control input-sm").val(property.retryNb);
+        var rankInput = $("<input type='number' placeholder='" + doc.getDocLabel("testcasecountryproperties", "Rank") + "' readonly='readonly'>").addClass("form-control input-sm").val(property.rank);
+        
         var retryPeriodInput = $("<input placeholder='" + doc.getDocLabel("testcasecountryproperties", "RetryPeriod") + "' readonly='readonly'>").addClass("form-control input-sm").val(property.retryPeriod);
 
         var content = $("<div class='row property list-group-item disabled'></div>");
@@ -1041,8 +1054,10 @@ function drawInheritedProperty(propList) {
         var nature = $("<div class='col-sm-2 form-group' name='fieldNature'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "nature_field"))).append(selectNature.val(property.nature));
         var cacheExpire = $("<div class='col-sm-2 form-group' name='fieldExpire'></div>").append($("<label></label>").text("cacheExpire")).append(cacheExpireInput);
         var retryNb = $("<div class='col-sm-2 form-group' name='fieldRetryNb'></div>").append($("<label></label>").text(doc.getDocLabel("testcasecountryproperties", "RetryNb"))).append(retryNbInput);
-        var retryPeriod = $("<div class='col-sm-2 form-group' name='fieldRetryPeriod'></div>").append($("<label></label>").text(doc.getDocLabel("testcasecountryproperties", "RetryPeriod"))).append(retryPeriodInput);
+        var retryPeriod = $("<div class='col-sm-1 form-group' name='fieldRetryPeriod'></div>").append($("<label></label>").text(doc.getDocLabel("testcasecountryproperties", "RetryPeriod"))).append(retryPeriodInput);
+        var rank = $("<div class='col-sm-1 form-group' name='Rank'></div>").append($("<label></label>").text(doc.getDocLabel("testcasecountryproperties", "Rank"))).append(rankInput);
 
+        
         var selectAllBtn = $("<button disabled></button>").addClass("btn btn-default btn-sm").append($("<span></span>").addClass("glyphicon glyphicon-check")).click(function () {
             country.find("input[type='checkbox']").prop('checked', true);
         });

@@ -342,6 +342,10 @@ color: red !important;
     color: #FFFFFF;
 }
 
+.list-group-item-secondary {
+	background-color: #dfe4ea;
+}
+
 .list-group-item-warning.active {
     background-color: #f0ad4e;
     color: #FFFFFF;
