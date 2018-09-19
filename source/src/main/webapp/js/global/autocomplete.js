@@ -162,14 +162,14 @@ function autocompleteWithTags(identifier, Tags) {
                 return false;
             },
             close: function (event, ui) {
-                val = $(this).val();
-                $(this).autocomplete("search", val); //keep autocomplete open by
-                //searching the same input again
+                $(this).autocomplete(close);
                 return false;
             }
         }).click(function(){
         	$(this).autocomplete("search");
-        })  
+        })
+    
+
 }
 
 /**
@@ -226,6 +226,7 @@ function modifyAutocompleteSource(identifier, url, data){
 	            };
 	        });
 	        response($.ui.autocomplete.filter(MyArray, request.term));
+	        
 		}	        
 	})
 }
