@@ -1093,9 +1093,10 @@ function generateTooltip(data) {
     } else {
         htmlRes = '<div><span class=\'bold\'>Execution ID :</span> ' + data.ID + '</div>';
     }
-    htmlRes += '<div><span class=\'bold\'>Country : </span>' + data.Country + '</div>' +
+    htmlRes += 
             '<div><span class=\'bold\'>Environment : </span>' + data.Environment + '</div>' +
-            '<div><span class=\'bold\'>Browser : </span>' + data.RobotDecli + '</div>' +
+            '<div><span class=\'bold\'>Country : </span>' + data.Country + '</div>' +
+            '<div><span class=\'bold\'>Robot Decli : </span>' + data.RobotDecli + '</div>' +
             '<div><span class=\'bold\'>Start : </span>' + new Date(data.Start) + '</div>' +
             '<div><span class=\'bold\'>End : </span>' + new Date(data.End) + '</div>' +
             '<div>' + ctrlmessage + '</div>';

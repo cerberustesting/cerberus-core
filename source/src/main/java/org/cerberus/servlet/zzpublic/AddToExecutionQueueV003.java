@@ -200,17 +200,17 @@ public class AddToExecutionQueueV003 extends HttpServlet {
 
         // Execution parameters.
         String tag = ParameterParserUtil.parseStringParam(request.getParameter(PARAMETER_TAG), "");
-        String robotIP = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter(PARAMETER_ROBOT_IP), null, charset);
-        String robotPort = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter(PARAMETER_ROBOT_PORT), null, charset);
+        String robotIP = ParameterParserUtil.parseStringParamAndDecode(request.getParameter(PARAMETER_ROBOT_IP), null, charset);
+        String robotPort = ParameterParserUtil.parseStringParamAndDecode(request.getParameter(PARAMETER_ROBOT_PORT), null, charset);
         String browser = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter(PARAMETER_BROWSER), null, charset);
         String browserVersion = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter(PARAMETER_BROWSER_VERSION), null, charset);
         String platform = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter(PARAMETER_PLATFORM), null, charset);
         String screenSize = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter(PARAMETER_SCREENSIZE), null, charset);
         int manualURL = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_MANUAL_URL), DEFAULT_VALUE_MANUAL_URL, charset);
-        String manualHost = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter(PARAMETER_MANUAL_HOST), null, charset);
-        String manualContextRoot = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter(PARAMETER_MANUAL_CONTEXT_ROOT), null, charset);
-        String manualLoginRelativeURL = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter(PARAMETER_MANUAL_LOGIN_RELATIVE_URL), null, charset);
-        String manualEnvData = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter(PARAMETER_MANUAL_ENV_DATA), null, charset);
+        String manualHost = ParameterParserUtil.parseStringParamAndDecode(request.getParameter(PARAMETER_MANUAL_HOST), null, charset);
+        String manualContextRoot = ParameterParserUtil.parseStringParamAndDecode(request.getParameter(PARAMETER_MANUAL_CONTEXT_ROOT), null, charset);
+        String manualLoginRelativeURL = ParameterParserUtil.parseStringParamAndDecode(request.getParameter(PARAMETER_MANUAL_LOGIN_RELATIVE_URL), null, charset);
+        String manualEnvData = ParameterParserUtil.parseStringParamAndDecode(request.getParameter(PARAMETER_MANUAL_ENV_DATA), null, charset);
         int screenshot = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_SCREENSHOT), DEFAULT_VALUE_SCREENSHOT, charset);
         int verbose = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_VERBOSE), DEFAULT_VALUE_VERBOSE, charset);
         String timeout = request.getParameter(PARAMETER_TIMEOUT);
@@ -356,10 +356,17 @@ public class AddToExecutionQueueV003 extends HttpServlet {
         boolean tagAlreadyAdded = false;
 
         int nbrobot = 0;
-        if (robots == null || robots.isEmpty()) {
-            nbrobot = 1;
+        if (StringUtil.isNullOrEmpty(robotIP)) {
+            if (robots == null || robots.isEmpty()) {
+                nbrobot = 1;
+            } else {
+                nbrobot = robots.size();
+            }
         } else {
-            nbrobot = robots.size();
+            // Whene RobotIP is feeded, we do not consider the robot definition.
+            nbrobot = 1;
+            robots = new ArrayList<>();
+            robots.add("");
         }
 
         // Starting the request only if previous parameters exist.

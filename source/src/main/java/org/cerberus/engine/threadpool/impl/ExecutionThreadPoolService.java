@@ -305,10 +305,15 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                     appType = exe.getAppType();
                     if ((appType.equals(Application.TYPE_APK)) || (appType.equals(Application.TYPE_GUI)) || (appType.equals(Application.TYPE_FAT)) || (appType.equals(Application.TYPE_IPA))) {
                         // Application require a robot so we can get the list of executors.
-                        exelist = robot_executor.get(robot);
-                        if (exelist == null || exelist.size() < 1) {
+                        if (StringUtil.isNullOrEmpty(robot)) {
                             exelist = new ArrayList<>();
-                            exelist.add(factoryRobotExecutor.create(0, "", "", "Y", 1, "", "", "", "", "", "", null, "", "", null, "", null));
+                            exelist.add(factoryRobotExecutor.create(0, "", "", "Y", 1, exe.getQueueRobotHost(), exe.getQueueRobotPort(), "", "", "", "", null, "", "", null, "", null));
+                        } else {
+                            exelist = robot_executor.get(robot);
+                            if (exelist == null || exelist.size() < 1) {
+                                exelist = new ArrayList<>();
+                                exelist.add(factoryRobotExecutor.create(0, "", "", "Y", 1, "", "", "", "", "", "", null, "", "", null, "", null));
+                            }
                         }
                     } else {
                         // Application does not require a robot so we create a fake one with empty data.
