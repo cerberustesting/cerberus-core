@@ -74,6 +74,8 @@ function displayPageLabel() {
     $("[name='buttonClose']").html(doc.getDocLabel("page_global", "buttonClose"));
     $("[name='buttonConfirm']").html(doc.getDocLabel("page_global", "buttonConfirm"));
     $("[name='buttonDismiss']").html(doc.getDocLabel("page_global", "buttonDismiss"));
+    $("#editAppDefinition").html(doc.getDocLabel("page_global", "tab_definition"));
+    $("#editAppAdvanced").html(doc.getDocLabel("page_global", "tab_advanced"));
     $("[name='applicationField']").html(doc.getDocOnline("application", "Application"));
     $("[name='descriptionField']").html(doc.getDocOnline("application", "Description"));
     $("[name='sortField']").html(doc.getDocOnline("application", "sort"));

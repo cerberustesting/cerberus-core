@@ -1280,6 +1280,10 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_global','warning','','fr','Attention','',NULL)");
         b.append(",('page_global','btn_bulkrename','','en','Bulk Rename','',NULL)");
         b.append(",('page_global','btn_bulkrename','','fr','Renommer massivement','',NULL)");
+        b.append(",('page_global','tab_definition','','en','Definition','',NULL)");
+        b.append(",('page_global','tab_definition','','fr','Définition','',NULL)");
+        b.append(",('page_global','tab_advanced','','en','Advanced','',NULL)");
+        b.append(",('page_global','tab_advanced','','fr','Avancé','',NULL)");
         b.append(",('page_header','logout','','en','Logout','',NULL)");
         b.append(",('page_header','logout','','fr','Déconnexion','',NULL)");
         b.append(",('page_header','menuAdmin','','en','Administration','',NULL)");
