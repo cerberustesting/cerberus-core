@@ -369,9 +369,12 @@ Below you will find useful properties :
 
 | *Value* | *Description*   
 | %system.SYSTEM% | System value 
-| %system.APPLI% |	Application reference
+| %system.APPLI% |	Application name
 | %system.BROWSER% |	Browser name of the current execution.
-| %system.APP_DOMAIN% |	Domain of the Application
+| %system.ROBOT% |	Robot name of the current execution.
+| %system.ROBOTDECLI% |	Robot declination name of the current execution.
+| %system.SCREENSIZE% |	Robot screensize of the current execution.
+| %system.APP_DOMAIN% |	Domain of the Application (defined at application level)
 | %system.APP_HOST% |	Host of the tested Application
 | %system.APP_CONTEXTROOT% |	Context Root of the tested Application
 | %system.EXEURL% |	Full Url of the tested Application

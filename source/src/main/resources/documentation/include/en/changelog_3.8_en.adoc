@@ -22,6 +22,7 @@
 * [ENGINE] Capabilities sent to the robot server are now reported from execution page (both requested capabilities at robot level and final capabilities that are decoded and automaticly added by the engine).
 * [GUI] When creating a new TestCase, Test can now be created 'on the fly' without beeing forced to have it created before.
 * [GUI] Added autocomplete on element on some actions/controls/conditions testcase fields.
+* [ENGINE] Added %system.SCREENSIZE% variable. #1852
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
