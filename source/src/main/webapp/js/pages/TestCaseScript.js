@@ -610,6 +610,9 @@ function saveScript(property) {
         if ($(properties[i]).data("property").property === "") {
             propertyWithoutName = true;
         }
+        if (!$.isNumeric($(properties[i]).data("property").rank) ) {
+            $(properties[i]).data("property").rank = 1;
+        }
         propArr.push($(properties[i]).data("property"));
     }
 
@@ -730,7 +733,8 @@ function drawPropertyList(property, index, isSecondary) {
     	htmlElement.find("span.secondaryproptext").css("float","right");
     	htmlElement.find("span.secondaryproptext").css("display","block");
     	htmlElement.find("span.secondaryproptext").css("color","#636e72");
-    	//<span style="padding: 0px 10px 0px 10px;float: right;display: block;color: #636e72;">secondary</span>
+    	// <span style="padding: 0px 10px 0px 10px;float: right;display:
+		// block;color: #636e72;">secondary</span>
     }
     
     deleteBtn.click(function (ev) {
@@ -773,7 +777,7 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
     var cacheExpireInput = $("<input type='number' placeholder=''>").addClass("form-control input-sm").val(property.cacheExpire);
     var retryNbInput = $("<input placeholder='" + doc.getDocLabel("testcasecountryproperties", "RetryNb") + "'>").addClass("form-control input-sm").val(property.retryNb);
     var retryPeriodInput = $("<input placeholder='" + doc.getDocLabel("testcasecountryproperties", "RetryPeriod") + "'>").addClass("form-control input-sm").val(property.retryPeriod);
-    var rankInput = $("<input type='number' placeholder='" + doc.getDocLabel("testcasecountryproperties", "Rank") + "'>").addClass("form-control input-sm").val(property.rank);
+    var rankInput = $("<input placeholder='" + doc.getDocLabel("testcasecountryproperties", "Rank") + "'>").addClass("form-control input-sm").val(property.rank);
     var table = $("#propTable");
 
     selectType.attr("disabled", !canUpdate);
@@ -792,7 +796,8 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
     rankInput.prop("readonly", !canUpdate);
 
     // if the property is secondary
-    var isSecondary = property.description.indexOf("[secondary]") >= 0;
+    //var isSecondary = property.description.indexOf("[secondary]") >= 0;
+    var isSecondary = property.rank == 2;
     if (isSecondary) {   		
     	var content = $("<div class='row secondaryProperty list-group-item list-group-item-secondary'></div>");
     } else {
@@ -888,10 +893,10 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
         // go though every link and look for the right one
         if (linkToProperty !== null) {
             if (allDelete === true && nothing === false) {
-            	// set color to red  
+            	// set color to red
                 linkToProperty.css("background-color", "#c94350"); 
             } else if (nothing === true) {
-            	// set color to white 
+            	// set color to white
                 linkToProperty.css("background-color", "#fff");
             } else {
             	// set color to pink
@@ -961,7 +966,7 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
         property.retryPeriod = $(this).val();
     });
     
-    rank.change(function() {
+    rankInput.change(function() {
     	property.rank = $(this).val();
     });
 
@@ -1139,7 +1144,8 @@ function loadPropertiesAndDraw(test, testcase, testcaseinfo, propertyToFocus, ca
                 for (var index = 0; index < data.length; index++) {        
                     var property = data[index];
                     // check if the property is secondary
-                    var isSecondary = property.description.indexOf("[secondary]") >= 0;
+                    var isSecondary = property.rank == 2;
+                    //var isSecondary = property.description.indexOf("[secondary]") >= 0;
                     
                     if (isSecondary) {
                     	secondaryPropertiesArray.push(data[index].property);
@@ -1219,7 +1225,8 @@ function sortProperties(identifier) {
     container.append(list);
 }
 
-// Temporary function: can be merged with sortProperties by adding one parameter to call the children() function differently
+// Temporary function: can be merged with sortProperties by adding one parameter
+// to call the children() function differently
 function sortSecondaryProperties(identifier) {
     var container = $(identifier);
     var list = container.children(".secondaryProperty");
@@ -2330,9 +2337,9 @@ Action.prototype.generateContent = function () {
     secondRow.append($("<div></div>").addClass("col-lg-2 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "action_field"))).append(actionList));
     secondRow.append($("<div></div>").addClass("col-lg-5").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value1_field"))).append(value1Field));
     /*
-     * if(secondRow.find("col-lg-6").find("label").text() === "Chemin vers
-     * l'élement" ){ console.log(".append(choiceField)") }
-     */
+	 * if(secondRow.find("col-lg-6").find("label").text() === "Chemin vers
+	 * l'élement" ){ console.log(".append(choiceField)") }
+	 */
     secondRow.append($("<div></div>").addClass("col-lg-5 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value2_field"))).append(value2Field));
     thirdRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_operation_field"))).append(actionconditionoper));
     thirdRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_parameter_field"))).append(actionconditionval1));
@@ -2689,7 +2696,7 @@ Control.prototype.getJsonData = function () {
 /**
  * Call Add Action and focus to next description when focusing on description
  * and clicking on enter
- *
+ * 
  * @returns {undefined}
  */
 function listenEnterKeypressWhenFocusingOnDescription(element) {
@@ -2742,11 +2749,11 @@ function addControlAndFocus(oldAction, control) {
 
 /**
  * Find into tag array if object exist
- *
+ * 
  * @param tagToUse
  * @param label
  *            string to search
- *
+ * 
  * @return a boolean : true if exist, false if not exist
  */
 function objectIntoTagToUseExist(tagToUse, label) {
@@ -3083,8 +3090,8 @@ function editPropertiesModalSaveHandler() {
 
 function setPlaceholderAction(actionElement) {
     /**
-     * Todo : GetFromDatabase
-     */
+	 * Todo : GetFromDatabase
+	 */
     var placeHoldersList = {
         "fr": [
             {"type": "Unknown", "object": null, "property": null},
@@ -3188,8 +3195,8 @@ function setPlaceholderAction(actionElement) {
 
 function setPlaceholderControl(controlElement) {
     /**
-     * Todo : GetFromDatabase
-     */
+	 * Todo : GetFromDatabase
+	 */
     var placeHoldersList = {
         "fr": [
             {"type": "Unknown", "controlValue": null, "controlProp": null, "fatal": null},
@@ -3452,8 +3459,8 @@ function setPlaceholderControl(controlElement) {
 
 function setPlaceholderProperty(propertyElement, property) {
     /**
-     * Todo : GetFromDatabase Translate for FR
-     */
+	 * Todo : GetFromDatabase Translate for FR
+	 */
 
     var placeHoldersList = {
         "fr": [
@@ -4042,7 +4049,7 @@ function setPlaceholderProperty(propertyElement, property) {
                 }
                 if (placeHolders[i].rank !== null) {
                 	// condition will always be true
-                    //$(e).parents("div[name='propertyLine']").find("div[name='rank']").show();
+                    // $(e).parents("div[name='propertyLine']").find("div[name='rank']").show();
                     $(e).parents("div[name='propertyLine']").find("div[name='rank'] label").html(placeHolders[i].rank);
                 } else {
                     $(e).parents("div[name='propertyLine']").find("div[name='fieldRetryPeriod']").hide();
