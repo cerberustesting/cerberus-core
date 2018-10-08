@@ -345,7 +345,7 @@ public class SeleniumServerService implements ISeleniumServerService {
              * get the Real UserAgent from the browser.
              */
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
-                    && !caps.getPlatform().equals(Platform.ANDROID)) {
+                    && !caps.getPlatform().equals(Platform.ANDROID) && !caps.getPlatform().equals(Platform.IOS)) {
                 if (!caps.getBrowserName().equals(BrowserType.CHROME)) {
                     driver.manage().window().maximize();
                 }
