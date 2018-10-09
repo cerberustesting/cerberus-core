@@ -1,7 +1,7 @@
 @echo off
 
 rem #########################################################
-rem #          Cerberus Application Deploy Script           #
+rem #          Cerberus Application Stop                    #
 rem #########################################################
 
 CALL %CD%\00Config.bat

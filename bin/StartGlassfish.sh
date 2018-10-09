@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #########################################################
-#          Cerberus Application Deploy Script           #
+#          Cerberus Application Start                   #
 #########################################################
 
 . `dirname $0`/00Config.sh
@@ -12,3 +12,5 @@ cd $MYPATH
 
 ### Starting instance.
 $GLASSFISHPATH/asadmin start-domain
+
+cd -

@@ -40,3 +40,4 @@ $GLASSFISHPATH/asadmin set server-config.security-service.default-realm=security
 $GLASSFISHPATH/asadmin stop-domain
 $GLASSFISHPATH/asadmin start-domain
 
+cd -
