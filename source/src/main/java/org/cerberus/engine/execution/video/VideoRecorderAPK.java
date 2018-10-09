@@ -57,23 +57,27 @@ public class VideoRecorderAPK extends VideoRecorder {
 
             running.set(true);
             threadRecorder = new Thread(() -> {
-                // todo decouper par 20s et réassembler la vidéo,
+                try {
+                    do {
 
-                do {
+                        String cmdtoRecord = "nohup screenrecord --bit-rate 5000000 --time-limit " + TIME_BY_VIDEO_SAMPLE + " /sdcard/" + videoName + cpt++ + ".mp4 >> /sdcard/logtotovideo.log 2>&1 &";
 
-                    String cmdtoRecord = "nohup screenrecord --bit-rate 5000000 --time-limit " + TIME_BY_VIDEO_SAMPLE + " /sdcard/" + videoName + cpt++ + ".mp4 &";
+                        // execute screenrecord on background on mobile
+                        executeCommand("echo '" + cmdtoRecord + "' > /sdcard/cmdtoRecord.sh");
+                        executeCommand("ps | echo $(grep screenrecord) | cut -d \" \" -f2 | xargs kill -INT && sleep 1");
+                        executeCommand("sh /sdcard/cmdtoRecord.sh > /dev/null 2>/dev/null &");
 
-                    // execute screenrecord on background on mobile
-                    executeCommand("echo '" + cmdtoRecord + "' > /sdcard/cmdtoRecord.sh");
-                    executeCommand("sh /sdcard/cmdtoRecord.sh > /dev/null 2>/dev/null &");
 
+                        try { // wait video is terminated
+                            Thread.sleep(TIME_BY_VIDEO_SAMPLE * 1000);
+                        } catch (InterruptedException e) {
+                            LOG.error("failed to sleep ...", e);
+                        }
+                    } while (running.get());
+                }catch( Exception e) {
+                    LOG.error("error during register video " + videoName + cpt + ".mp4", e);
+                }
 
-                    try { // wait video is terminated
-                        Thread.sleep(TIME_BY_VIDEO_SAMPLE * 1000);
-                    } catch (InterruptedException e) {
-                        LOG.error("failed to sleep ...", e);
-                    }
-                } while (running.get());
             });
             threadRecorder.start();
 
@@ -87,6 +91,7 @@ public class VideoRecorderAPK extends VideoRecorder {
 
     public void endRecordVideo() {
 
+        AppiumDriver driver = null;
         try {
             String applicationType = testCaseExecution.getApplicationObj().getType();
 
@@ -100,7 +105,7 @@ public class VideoRecorderAPK extends VideoRecorder {
 
                 String test = testCaseExecution.getTest();
                 String testCase = testCaseExecution.getTestCase();
-                AppiumDriver driver = session.getAppiumDriver();
+                driver = session.getAppiumDriver();
 
                 List<String> videosPath = new LinkedList<>();
 
@@ -121,8 +126,7 @@ public class VideoRecorderAPK extends VideoRecorder {
 
                         videosPath.add(videoCompletePathTarget);
                     } catch(Exception e) {
-                        LOG.error("Failed to pull video " + videoCompletePath);
-                        throw e;
+                        LOG.error("Failed to pull video on " + driver.getCapabilities().getCapability("deviceUDID") + " " + videoCompletePath);
                     }
                     finally {
                         // delete it from mobile
@@ -134,7 +138,7 @@ public class VideoRecorderAPK extends VideoRecorder {
             }
         } catch (Exception ex) {
             // log erreur, but don't fail ! Video is not a bloquant functionnality
-            LOG.error("Failed to end video : " + ex.toString(), ex);
+            LOG.error("Failed to end video on " +  (driver != null ? driver.getCapabilities().getCapability("deviceUDID") : "") + " : " + ex.toString(), ex);
         }
 
     }
@@ -147,7 +151,7 @@ public class VideoRecorderAPK extends VideoRecorder {
         argss.put("command", cmd);
         argss.put("args", Lists.newArrayList(""));
 
-        LOG.info(cmd + " : " + driver.executeScript("mobile: shell", argss).toString());
+        LOG.info(cmd + " : " + driver.executeScript("mobile: shell", argss).toString() + " on " + driver.getCapabilities().getCapability("deviceUDID"));
     }
 
 }
