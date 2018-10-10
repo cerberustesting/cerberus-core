@@ -43,4 +43,5 @@ $GLASSFISHPATH/asadmin undeploy --target server --cascade=true Cerberus-3.5
 $GLASSFISHPATH/asadmin undeploy --target server --cascade=true Cerberus-3.6
 $GLASSFISHPATH/asadmin undeploy --target server --cascade=true Cerberus-3.7
 $GLASSFISHPATH/asadmin undeploy --target server --cascade=true Cerberus-3.7.1
-$GLASSFISHPATH/asadmin deploy --target server --contextroot Cerberus --availabilityenabled=true $MYPATH/../Cerberus-3.7.1.war
+$GLASSFISHPATH/asadmin undeploy --target server --cascade=true Cerberus-3.8
+$GLASSFISHPATH/asadmin deploy --target server --contextroot Cerberus --availabilityenabled=true $MYPATH/../Cerberus-3.8.war
