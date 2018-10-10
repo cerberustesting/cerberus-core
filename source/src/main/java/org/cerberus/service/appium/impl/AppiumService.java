@@ -361,10 +361,12 @@ public abstract class AppiumService implements IAppiumService {
         int i = 0;
 
         do{
-
             boolean isPresent = driver.findElements(element).size()>0;
             if(isPresent){
-                return true;
+                Object elmtObj = driver.findElements(element).get(0);
+
+                if(elmtObj != null && ((MobileElement) elmtObj).isDisplayed())
+                    return true;
             }
             else{
                 scroll(driver, pressX, bottomY, pressX, topY);}
