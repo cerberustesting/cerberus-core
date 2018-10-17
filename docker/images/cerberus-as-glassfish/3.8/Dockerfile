@@ -15,7 +15,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Cerberus. If not, see <http://www.gnu.org/licenses/>.
-FROM oracle/glassfish:5.0-web
+#FROM oracle/glassfish:5.0-web
+FROM nicodeur/glassfish:5.0-web
 MAINTAINER cerberustesting
 
 # Database related environment variables
@@ -55,10 +56,10 @@ RUN yum install -y dos2unix
 # Get and extract the Cerberus package
 # Use RUN instead of ADD to avoid re-download (see https://github.com/docker/docker/issues/15717)
 
-#RUN curl -L -o /tmp/${CERBERUS_PACKAGE_NAME}.zip https://github.com/cerberustesting/cerberus-source/releases/download/cerberus-testing-${CERBERUS_VERSION}/Cerberus-${CERBERUS_VERSION}.zip && \
+RUN curl -L -o /tmp/${CERBERUS_PACKAGE_NAME}.zip https://github.com/cerberustesting/cerberus-source/releases/download/cerberus-testing-${CERBERUS_VERSION}/Cerberus-${CERBERUS_VERSION}.zip
 
 
-COPY Cerberus.zip /tmp/${CERBERUS_PACKAGE_NAME}.zip
+#COPY Cerberus.zip /tmp/${CERBERUS_PACKAGE_NAME}.zip
 RUN unzip -q -d /tmp /tmp/${CERBERUS_PACKAGE_NAME}.zip
 
 # Get and extract the MySQL connector library
