@@ -2,15 +2,28 @@
 
 [Cerberus](http://www.cerberus-testing.org/) is an user-friendly automated testing framework.
 
-This project is the entry point to release Cerberus project modules.
+This folder is the entry point to release Cerberus project.
 
 ## Get started
 
-This project defines a set of release processes, each of them represented by a `.cmds` file.
+This folder defines a set of release processes, each of them represented by a `.cmds` file.
 
-A `.cmds` file gathers all necessary commands to be executed in order to apply a release process. These commands can be executed thanks to the [runcmds](https://github.com/abourdon/runcmds) command execution tool.
+A `release.cmds` file gathers all necessary commands to be executed in order to apply a release process. That file can be executed thanks to the [runcmds](https://github.com/abourdon/runcmds) command execution tool.
  
-Finally, each `.cmds` file contains a documentation header part to describe how to use it.
+Finally, the `release.cmds` file contains a documentation header part to describe how to use it.
+
+Prerequisits are 
+
+* Have a installed version of maven :
+`
+sudo apt install maven
+`
+
+* JDK installation.
+`
+export JAVA_HOME=/opt/ibm/java-x86_64-60/
+export PATH=$JAVA_HOME/bin:$PATH
+`
 
 ### Cerberus github release
 
@@ -18,10 +31,13 @@ Finally, each `.cmds` file contains a documentation header part to describe how 
 ### Step 1 : Run the script that perform the release
 
 Go to your cerberus/release folder
+
 `
     cd <path_to_cerberusclone>/release/
 `
+
 And run the release cmd :
+
 `
  ./runcmds.sh
        -e RELEASE_VERSION <release version> 
@@ -30,17 +46,15 @@ And run the release cmd :
        -s ./release.cmds
 `
 
-`release.cmds` will clone a cerberus on release/cerberus-testing, change some version on bin/*.sh script and make a `mvn release`.
-
 NB : If under Windows, you can submit the command from docker bash.
 
 ### Step 2 : Copy paste changelog on github
 
 * Click on 'Draft new release'.
-* Choose xnew.ynew branch
-* Put in title : cerberus-testing-xnew-ynew
-* copy/paste adoc file under ressource/documentation/include/en/changelog_xdev_ydev.adoc to centent.
-* Upload Cerberus-xnew.ynew.zip and Cerberus-xnew.ynew.war
+* Choose 'cerberus-testing-xnew.ynew' branch
+* Put in title : cerberus-testing-xnew.ynew
+* copy/paste adoc file under source/src/main/resources/ressource/documentation/include/en/changelog_xdev_ydev.adoc to content.
+* Upload Cerberus-xnew.ynew.zip and Cerberus-xnew.ynew.war from source/target/
 * Press 'Create Release'
 
 ### Cerberus docker release
