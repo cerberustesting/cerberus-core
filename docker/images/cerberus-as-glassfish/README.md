@@ -17,10 +17,6 @@ latest  | Use the latest Cerberus version    | [latest/Dockerfile](https://githu
 3.7   | Use the 3.7 Cerberus version     | [3.7/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/3.7/Dockerfile)
 3.6   | Use the 3.6 Cerberus version     | [3.6/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/3.6/Dockerfile)
 3.5   | Use the 3.5 Cerberus version     | [3.5/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/3.5/Dockerfile)
-${RELEASE_VERSION}   | Use the ${RELEASE_VERSION} Cerberus version     | [${RELEASE_VERSION}/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/${RELEASE_VERSION}/Dockerfile)
-${RELEASE_VERSION}   | Use the ${RELEASE_VERSION} Cerberus version     | [${RELEASE_VERSION}/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/${RELEASE_VERSION}/Dockerfile)
-3.4   | Use the 3.4 Cerberus version     | [3.4/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/3.4/Dockerfile)
-3.4   | Use the 3.4 Cerberus version     | [3.4/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/3.4/Dockerfile)
 3.4   | Use the 3.4 Cerberus version     | [3.4/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/3.4/Dockerfile)
 3.3   | Use the 3.3 Cerberus version     | [3.3/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/3.3/Dockerfile)
 3.2   | Use the 3.2 Cerberus version     | [3.2/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/3.2/Dockerfile)
@@ -124,27 +120,31 @@ Cerberus server logs can be persisted by using the following command:
 
 Where `/your/local/cerberus/server/logs/directory` is the directory to store the Glassfish logs out of your Docker host.
 
-### Cerberus screenshots
+### Cerberus medias
 
 From the [1.1.5](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/1.1.5/Dockerfile) version, the new `/usr/local/glassfish4/glassfish/domains/domain1/docroot/CerberusPictures` directory is created to store Cerberus execution screenshots.
 Don't forget to map it to an existing folder out of your Docker host in order to make them persistent. Example:
 
     docker run [...] -v /your/local/cerberus/screenshots/directory:/usr/local/glassfish4/glassfish/domains/domain1/docroot/CerberusPictures cerberus/cerberus-as-glassfish:latest
 
-Where `/your/local/cerberus/screenshots/directory` is the directory to store the Cerberus execution screenshots out of your Docker host.
+Where `/your/local/cerberus/screenshots/directory` is the directory to store the Cerberus media files out of your Docker host.
 
 To apply this runtime configuration to Cerberus instance, then:
 
 1. Open your favorite web browser to the Cerberus base URL (`<docker_host>:18080/Cerberus` by default)
 2. Go to _Administration_ -> _Parameters_
-3. Search the `cerberus_picture_path` parameter
-4. Set to the `/usr/local/glassfish4/glassfish/domains/domain1/docroot/CerberusPictures/` value (note the important trailing `/`)
-5. Save changes
-3. Search the `cerberus_picture_url` parameter
-4. Set to the Cerberus base URL value (`<docker_host>:18080/CerberusPictures/` by default, note the important trailing `/`)
-5. Save changes
+3. Search the following parameters and set the corresponding values : 
 
-From the [1.1.6](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/1.1.6/Dockerfile) version, `cerberus_picture_path` and `cerberus_picture_url` parameters have been respectively renamed `cerberus_mediastorage_path` and `cerberus_mediastorage_path`.
+Parameter            | Value
+------------------------|---------------------------------------------------------
+`cerberus_applicationobject_path`                  | `/usr/local/glassfish4/glassfish/domains/domain1/docroot/CerberusMedias/objects/`
+`cerberus_exeautomedia_path`                  | `/usr/local/glassfish4/glassfish/domains/domain1/docroot/CerberusMedias/executions/`
+`cerberus_exemanualmedia_path`                  | `/usr/local/glassfish4/glassfish/domains/domain1/docroot/CerberusMedias/executions-manual/`
+`cerberus_ftpfile_path`                  | `/usr/local/glassfish4/glassfish/domains/domain1/docroot/CerberusMedias/ftpfiles/`
+`cerberus_testdatalibcsv_path`                  | `/usr/local/glassfish4/glassfish/domains/domain1/docroot/CerberusMedias/csvdata/`
+
+4. Save changes
+
 
 ### Glassfish data
 You can share this volume to persist Glassfish seetings : 
