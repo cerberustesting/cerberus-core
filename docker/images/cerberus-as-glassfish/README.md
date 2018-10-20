@@ -53,6 +53,10 @@ To run image by connecting to a MySQL Cerberus database located at `<database_ho
 
     docker run -d -P -e DATABASE_HOST='<database_host>' -e DATABASE_PORT='<database_port>' cerberustesting/cerberus-as-glassfish:latest
 
+Example : 
+
+    docker run -d -P -e DATABASE_HOST='192.168.1.1' -e DATABASE_PORT='13306' -p 18080:8080 -p 14848:4848 -v /your/local/cerberus/screenshots/directory:/usr/local/glassfish4/glassfish/domains/domain1/docroot/CerberusPictures cerberustesting/cerberus-as-glassfish:latest
+
 ### Docker compose
 An example of docker-compose file is available [here](https://github.com/cerberustesting/cerberus-source/tree/master/docker/compositions/cerberus-glassfish-mysql)
 
