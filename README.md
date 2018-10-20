@@ -9,7 +9,7 @@ User-friendly automated testing framework.
 
 Check out all information about Cerberus from its [dedicated web site](http://www.cerberus-testing.org/)!
 
-Full Documentation is available [here](https://cerberustesting.github.io/documentation_en.html)
+Full Documentation is available [here](https://cerberustesting.github.io/documentation_en.html) and a youtube channel [here](https://www.youtube.com/channel/UCkG4csTjR0V5gl77BHhldBQ)
 
 A demo site is available [here](http://demo.cerberus-testing.org)
 
