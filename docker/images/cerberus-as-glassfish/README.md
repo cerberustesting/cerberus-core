@@ -119,7 +119,7 @@ You can share this volume to persist Glassfish settings :
 
 ## Example 
 
-    docker run -d -P -e DATABASE_HOST='192.168.1.1' -e DATABASE_PORT='13306' -p 18080:8080 -p 14848:4848 -v /your/local/cerberus/server/logs/directory:/usr/local/glassfish5/glassfish/domains/domain1/logs  -v /your/local/cerberus/medias/directory:/usr/local/glassfish5/glassfish/domains/domain1/docroot/CerberusMedias cerberustesting/cerberus-as-glassfish:latest
+    docker run -d -P -e DATABASE_HOST='192.168.1.1' -e DATABASE_PORT='13306' -p 18080:8080 -p 14848:4848 -v <path_to_your_server_log_directory>:/usr/local/glassfish5/glassfish/domains/domain1/logs  -v <path_to_your_cerberus_media_directory>:/opt/CerberusMedias cerberustesting/cerberus-as-glassfish:latest
 
 
 ## Configure the running Cerberus instance
@@ -148,11 +148,11 @@ To apply this runtime configuration to Cerberus instance, then:
 
 Parameter            | Value
 ------------------------|---------------------------------------------------------
-`cerberus_applicationobject_path`                  | `/usr/local/glassfish5/glassfish/domains/domain1/docroot/CerberusMedias/objects/`
-`cerberus_exeautomedia_path`                  | `/usr/local/glassfish5/glassfish/domains/domain1/docroot/CerberusMedias/executions/`
-`cerberus_exemanualmedia_path`                  | `/usr/local/glassfish5/glassfish/domains/domain1/docroot/CerberusMedias/executions-manual/`
-`cerberus_ftpfile_path`                  | `/usr/local/glassfish5/glassfish/domains/domain1/docroot/CerberusMedias/ftpfiles/`
-`cerberus_testdatalibcsv_path`                  | `/usr/local/glassfish5/glassfish/domains/domain1/docroot/CerberusMedias/csvdata/`
+`cerberus_applicationobject_path`                  | `/opt/CerberusMedias/objects/`
+`cerberus_exeautomedia_path`                  | `/opt/CerberusMedias/executions/`
+`cerberus_exemanualmedia_path`                  | `/opt/CerberusMedias/executions-manual/`
+`cerberus_ftpfile_path`                  | `/opt/CerberusMedias/ftpfiles/`
+`cerberus_testdatalibcsv_path`                  | `/opt/CerberusMedias/csvdata/`
 
 4. Save changes
 
