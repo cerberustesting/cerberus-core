@@ -181,7 +181,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 
         b = new StringBuilder();
         b.append("INSERT INTO `parameter` VALUES ('cerberus_homepage_nbbuildhistorydetail','5','Define the number of build/revision that are displayed in the homepage.')");
-        b.append(",('cerberus_picture_path','/opt/cerberus-screenshots/','Path to store the Cerberus Selenium Screenshot')");
+        b.append(",('cerberus_picture_path','/opt/CerberusMedias/executions/','Path to store the Cerberus Selenium Screenshot')");
         b.append(",('cerberus_picture_url','http://localhost/CerberusPictures/','Link to the Cerberus Selenium Screenshot. The following variable can be used : %ID% and %SCREENSHOT%')");
         b.append(",('cerberus_reporting_url','http://IP/Cerberus/ReportingExecution.jsp?Application=%appli%&TcActive=Y&Priority=All&Environment=%env%&Build=%build%&Revision=%rev%&Country=%country%&Status=WORKING&Apply=Apply','URL to Cerberus reporting screen. the following variables can be used : %country%, %env%,  %appli%, %build% and %rev%.')");
         b.append(",('cerberus_selenium_plugins_path','/tmp/','Path to load firefox plugins (Firebug + netExport) to do network traffic')");
@@ -5652,7 +5652,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // 959
         b = new StringBuilder();
         b.append("INSERT INTO `parameter` VALUES ");
-        b.append("('','cerberus_applicationobject_path','','Path whare you will store all the files you upload in application object');");
+        b.append("('','cerberus_applicationobject_path','/opt/CerberusMedias/objects/','Path whare you will store all the files you upload in application object');");
         a.add(b.toString());
 
         // Create Table Application Object
@@ -7343,7 +7343,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // 1269
         b = new StringBuilder();
         b.append("INSERT INTO `parameter` (`system`,`param`, `value`, `description`) VALUES ");
-        b.append("  ('','cerberus_testdatalibcsv_path', '/path/to/csv', 'Default path for the csv file location')");
+        b.append("  ('','cerberus_testdatalibcsv_path', '/opt/CerberusMedias/csvdata/', 'Default path for the csv file location')");
         a.add(b.toString());
 
         // ADD requirement additional data
@@ -7397,7 +7397,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // 1276-1277
         b = new StringBuilder();
         b.append("INSERT INTO `parameter` (`system`,`param`, `value`, `description`) VALUES ");
-        b.append("  ('','cerberus_exemanualmedia_path', '/path/to/exemanualmedia', 'Path to store the Cerberus Media files for Manual executions.')");
+        b.append("  ('','cerberus_exemanualmedia_path', '/opt/CerberusMedias/executions-manual/', 'Path to store the Cerberus Media files for Manual executions.')");
         a.add(b.toString());
         b = new StringBuilder();
         b.append("UPDATE `parameter` SET `param`='cerberus_exeautomedia_path', `description`='Path to store the Cerberus Media files for Automatic executions (like Selenium Screenshot or SOAP requests and responses).' WHERE `param`='cerberus_mediastorage_path';");
@@ -7732,7 +7732,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 
         // Add ftp file path parameter
         // 1345
-        a.add("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ('', 'cerberus_ftpfile_path', '', 'Path to store local files which will be stored into ftpServer');");
+        a.add("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ('', 'cerberus_ftpfile_path', '/opt/CerberusMedias/ftpfiles/', 'Path to store local files which will be stored into ftpServer');");
 
         // Add forceExe to Step.
         // 1346-1347
