@@ -21,6 +21,7 @@
 #
 # How to run:
 #   - $ wget https://raw.githubusercontent.com/cerberustesting/cerberus-source/master/docker/compositions/cerberus-glassfish-mysql/default.yml
+#   - modify default.yml according to your local config.
 #   - $ docker-compose up -f default.yml
 #   - Waiting for images startup
 #   - Open your favorite browser and go to <docker_host>:18080/Cerberus, where <docker_host> is your Docker host
@@ -31,9 +32,9 @@
 #   - 14848: Glassfsh administration console access
 #
 # Volumes:
-#   - MySQL data directory                      : FROM /var/lib/mysql                                                    TO ../localdata/mysql-db           (SERVICE cerberus-db-mysql)
-#   - Cerberus execution screenshots directory  : FROM /glassfish5/glassfish/domains/cerberus                             TO ../localdata/cerberus-domains   (SERVICE cerberus-as-glassfish)
-#   - Cerberus server logs directory            : FROM /glassfish5/glassfish/domains/cerberus/logs                       TO ../localdata/logs               (SERVICE cerberus-as-glassfish)
+#   - MySQL data directory               : FROM /var/lib/mysql                             TO ../localdata/mysql-db         (SERVICE cerberus-db-mysql)
+#   - Cerberus Media directory           : FROM /opt/CerberusMedias                        TO ../localdata/cerberusmedias   (SERVICE cerberus-as-glassfish)
+#   - Cerberus server directory          : FROM /glassfish5/glassfish/domains/cerberus     TO ../localdata/server           (SERVICE cerberus-as-glassfish)
 #     ** IMPORTANT **
 #     The default mapping values are for test only. Don't forget to change them to be more relevant with your configuration.
 version: '2'
@@ -42,9 +43,8 @@ services:
     image: cerberustesting/cerberus-db-mysql:latest
     expose:
       - "3306"
-# If you want expose database, you can use it.
-#    ports:
-#      - "13306:3306"
+    ports:
+      - "13306:3306"
     volumes:
       - ./localdata/mysql-db:/var/lib/mysql
       - /etc/localtime:/etc/localtime:ro
@@ -53,7 +53,7 @@ services:
     image: cerberustesting/cerberus-as-glassfish:latest
     environment:
       - DATABASE_HOST=cerberus-db-mysql
-      - DATABASE_PORT=3306
+      - DATABASE_PORT=13306
       - GLASSFISH_DOMAIN=cerberus
 # If you want custom glasfish admin password. It's recommanded for a production instance
 #      - GLASSFISH_ADMIN_PASSWORD=custompassword
@@ -61,9 +61,9 @@ services:
       - "18080:8080"
       - "14848:4848"
     volumes:
-      - ./localdata/cerberus-domains:/glassfish5/glassfish/domains/cerberus  # allow to persist database pool connection / custom glassfish settings
-      - ./localdata/lib:/tmp/lib/ # allow to add jdbc library to connect database to cerberus
-      - ./localdata/screenshots:/opt/cerberus-screenshots/
+      - ./localdata/server:/glassfish5/glassfish/domains/cerberus  # allow to persist database pool connection / custom glassfish settings
+#      - ./localdata/lib:/tmp/lib/ # allow to add jdbc library to connect database to cerberus. Uncomment only if folder not empty.
+      - ./localdata/cerberusmedia:/opt/CerberusMedias/
       - /etc/localtime:/etc/localtime:ro
     restart: always
     depends_on:
