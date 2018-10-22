@@ -25,10 +25,9 @@ A common use is to map the `/var/lib/mysql` volume outside container. To do this
 
     -v <path_to_your_data_directory>:/var/lib/mysql
 
-Example :
+## Full Example
 
     docker run -d -P -p 13306:3306 -v <path_to_your_data_directory>:/var/lib/mysql cerberustesting/cerberus-db-mysql:latest
-
 
 ## Environment variables
 
