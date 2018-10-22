@@ -117,9 +117,9 @@ You can share this volume to persist Glassfish settings :
 *  <local_path>/lib:/usr/local/glassfish5/glassfish/lib
 
 
-## Example 
+## Full Example
 
-    docker run -d -P -e DATABASE_HOST='192.168.1.1' -e DATABASE_PORT='13306' -p 18080:8080 -p 14848:4848 -v <path_to_your_server_log_directory>:/usr/local/glassfish5/glassfish/domains/domain1/logs  -v <path_to_your_cerberus_media_directory>:/opt/CerberusMedias cerberustesting/cerberus-as-glassfish:latest
+    docker run -d -P -e DATABASE_HOST='192.168.1.1' -e DATABASE_PORT='13306' -p 18080:8080 -p 14848:4848 -v <path_to_your_server_log_directory>:/glassfish5/glassfish/domains/cerberus/logs  -v <path_to_your_cerberus_media_directory>:/opt/CerberusMedias cerberustesting/cerberus-as-glassfish:latest
 
 
 ## Configure the running Cerberus instance
