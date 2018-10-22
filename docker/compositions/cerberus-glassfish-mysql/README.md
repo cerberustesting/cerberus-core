@@ -107,9 +107,9 @@ Hereafter list of mapped volumes:
 Service                 | Data volume (Source)                                                          | Host volume (Destination, default values)     | Description
 ------------------------|-------------------------------------------------------------------------------|-----------------------------------------------| -----------------------------------------------
 `cerberus-db-mysql`     | `/var/lib/mysql`                                                              | `./localdata/mysql-db`                        | The MySQL local database directory
-`cerberus-as-glassfish` | `/opt/CerberusMedias/`                                                  | `./localdata/CerberusMedias`                     | The Cerberus media directory (hosting execution screenshot for ex.)
-`cerberus-as-glassfish` | `/glassfish5/glassfish/domain/cerberus/logs`                                  | `./localdata/logs`                            | The Cerberus Glassfish server logs directory
-`cerberus-as-glassfish` | `/glassfish5/glassfish/domain/cerberus`                                       | `./localdata/cerberus-domain`                 | The Cerberus Glassfish domain. Allow to persist connection pool and custom glassfish seetings
+`cerberus-as-glassfish` | `/opt/CerberusMedias/`                                                  | `./localdata/cerberusmedia`                     | The Cerberus media directory (hosting execution screenshot for ex.)
+`cerberus-as-glassfish` | `/tmp/lib/`                                  | `./localdata/lib`                            | Temporary folder in order to upload jdbc drivers for Glassfish
+`cerberus-as-glassfish` | `/glassfish5/glassfish/domain/cerberus`                                       | `./localdata/server`                 | The Cerberus Glassfish domain. Allow to persist connection pool and custom glassfish seetings
 
 
 Don't forget to change host volume default values to fit to your need.
