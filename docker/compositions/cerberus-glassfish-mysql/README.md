@@ -12,7 +12,9 @@ It runs also a [Selenium Grid](http://www.seleniumhq.org/docs/07_selenium_grid.j
 
 ### Get started
 
- 1. [Download the default Docker composition](https://raw.githubusercontent.com/cerberustesting/cerberus-source/master/docker/compositions/cerberus-glassfish-mysql/default.yml)
+ 1. [Download the default Docker composition](https://raw.githubusercontent.com/cerberustesting/cerberus-source/master/docker/compositions/cerberus-glassfish-mysql/default.yml).
+ 
+_Note: Optionaly adapt it according to your local config._
 
  2. Execute at the root path
 	
@@ -29,9 +31,7 @@ It runs also a [Selenium Grid](http://www.seleniumhq.org/docs/07_selenium_grid.j
    * User `admin`, password `admin`
    * User `cerberus`, password `cerberus`
    
- 7. Set runtime configuration, as explained from the version-related [`cerberus-as-glassfish` README](https://github.com/cerberustesting/cerberus-source/tree/master/docker/images/cerberus-as-glassfish/README.md).
-
-_Note: It is not yet possible to change a user's password, except by modifying its value directly in the database._
+ 7. Set runtime configuration, as explained from the version-related [`cerberus-as-glassfish` README](https://github.com/cerberustesting/cerberus-source/tree/master/docker/images/cerberus-as-glassfish/README.md) under section 'Configure the running Cerberus instance'.
 
 ### How to run Web Application tests
 
@@ -107,11 +107,9 @@ Hereafter list of mapped volumes:
 Service                 | Data volume (Source)                                                          | Host volume (Destination, default values)     | Description
 ------------------------|-------------------------------------------------------------------------------|-----------------------------------------------| -----------------------------------------------
 `cerberus-db-mysql`     | `/var/lib/mysql`                                                              | `./localdata/mysql-db`                        | The MySQL local database directory
-`cerberus-as-glassfish` | `/opt/cerberus-screenshots/`                                                  | `./localdata/screenshots`                     | The Cerberus execution screenshots directory
-`cerberus-as-glassfish` | `/glassfish5/glassfish/domain/cerberus/logs`                                  | `./localdata/logs`                            | The Cerberus logs directory
+`cerberus-as-glassfish` | `/opt/CerberusMedias/`                                                  | `./localdata/CerberusMedias`                     | The Cerberus media directory (hosting execution screenshot for ex.)
+`cerberus-as-glassfish` | `/glassfish5/glassfish/domain/cerberus/logs`                                  | `./localdata/logs`                            | The Cerberus Glassfish server logs directory
 `cerberus-as-glassfish` | `/glassfish5/glassfish/domain/cerberus`                                       | `./localdata/cerberus-domain`                 | The Cerberus Glassfish domain. Allow to persist connection pool and custom glassfish seetings
-
-/glassfish5/glassfish/domain/cerberus
 
 
 Don't forget to change host volume default values to fit to your need.
