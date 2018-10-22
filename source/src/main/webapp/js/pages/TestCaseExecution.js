@@ -772,7 +772,8 @@ function createProperties(propList) {
 
         var isThereAnySecondaryProperty = false;
         var property = propList[ind];
-        var isSecondary = property.description.indexOf("[secondary]") >= 0;
+        //var isSecondary = property.description.indexOf("[secondary]") >= 0;
+        var isSecondary = property.rank == 2;
 
         if (isSecondary == true) {
             // draw the Property in the second list

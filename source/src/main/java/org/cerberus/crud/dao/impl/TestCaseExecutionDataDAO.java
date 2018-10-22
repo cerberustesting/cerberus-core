@@ -481,10 +481,10 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
     public Answer create(TestCaseExecutionData object) {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO testcaseexecutiondata (`id`, `property`, `index`, `description`, `value`, `type`, `value1`, `value2`, `rc`, ");
+        query.append("INSERT INTO testcaseexecutiondata (`id`, `property`, `index`, `description`, `value`, `type`, `rank`, `value1`, `value2`, `rc`, ");
         query.append("`rmessage`, `start`, `end`, `startlong`, `endlong`, `database`, `value1Init`,`value2Init`,`lengthInit`,`length`, `rowLimit`, `nature`, `retrynb`, `retryperiod`, ");
         query.append("`system`, `environment`, `country`, `dataLib`, `jsonResult`, `FromCache`) ");
-        query.append("VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        query.append("VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -509,6 +509,7 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
                 preStat.setString(i++, object.getDescription());
                 preStat.setString(i++, ParameterParserUtil.securePassword(StringUtil.getLeftString(object.getValue(), 65000), object.getProperty()));
                 preStat.setString(i++, object.getType());
+                preStat.setInt(i++, object.getRank());
                 preStat.setString(i++, ParameterParserUtil.securePassword(StringUtil.getLeftString(object.getValue1(), 65000), object.getProperty()));
                 preStat.setString(i++, ParameterParserUtil.securePassword(StringUtil.getLeftString(object.getValue2(), 65000), object.getProperty()));
                 preStat.setString(i++, object.getRC());
@@ -618,7 +619,7 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
 
-        query.append("UPDATE testcaseexecutiondata SET DESCRIPTION = ?, VALUE = ?, TYPE = ?, VALUE1 = ?, VALUE2 = ?, rc = ?, rmessage = ?, start = ?, ");
+        query.append("UPDATE testcaseexecutiondata SET DESCRIPTION = ?, VALUE = ?, TYPE = ?, `Rank` = ?, VALUE1 = ?, VALUE2 = ?, rc = ?, rmessage = ?, start = ?, ");
         query.append("END = ?, startlong = ?, endlong = ?, `database` = ?, `value1Init` = ?, `value2Init` = ?, ");
         query.append("`lengthInit` = ?, `length` = ?, `rowLimit` = ?, `nature` = ?, `retrynb` = ?, `retryperiod` = ?, ");
         query.append("`system` = ?, `environment` = ?, `country` = ?, `dataLib` = ?, `jsonResult` = ? , `FromCache` = ? ");
@@ -644,6 +645,7 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
                 preStat.setString(i++, object.getDescription());
                 preStat.setString(i++, ParameterParserUtil.securePassword(StringUtil.getLeftString(object.getValue(), 65000), object.getProperty()));
                 preStat.setString(i++, object.getType());
+                preStat.setInt(i++, object.getRank());
                 preStat.setString(i++, ParameterParserUtil.securePassword(StringUtil.getLeftString(object.getValue1(), 65000), object.getProperty()));
                 preStat.setString(i++, StringUtil.getLeftString(object.getValue2(), 65000));
                 preStat.setString(i++, object.getRC());
@@ -705,6 +707,7 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
         String description = resultSet.getString("exd.description");
         String value = resultSet.getString("exd.value");
         String type = resultSet.getString("exd.type");
+        int rank = resultSet.getInt("exd.rank");
         String value1 = resultSet.getString("exd.value1");
         String value2 = resultSet.getString("exd.value2");
         String value1Init = resultSet.getString("exd.value1Init");
@@ -730,7 +733,7 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
         String fromCache = resultSet.getString("exd.FromCache");
 
         factoryTestCaseExecutionData = new FactoryTestCaseExecutionData();
-        return factoryTestCaseExecutionData.create(id, property, index, description, value, type, value1, value2, returnCode, returnMessage,
+        return factoryTestCaseExecutionData.create(id, property, index, description, value, type, rank, value1, value2, returnCode, returnMessage,
                 start, end, startLong, endLong, null, retryNb, retryPeriod, database, value1Init, value2Init, lengthInit, length, rowLimit, nature,
                 system, environment, country, dataLib, jsonResult, fromCache);
     }

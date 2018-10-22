@@ -35,7 +35,7 @@ import org.springframework.stereotype.Service;
 public class FactoryTestCaseExecutionData implements IFactoryTestCaseExecutionData {
 
     @Override
-    public TestCaseExecutionData create(long id, String property, int index, String description, String value, String type, String value1, String value2,
+    public TestCaseExecutionData create(long id, String property, int index, String description, String value, String type, int rank, String value1, String value2,
             String rC, String rMessage, long start, long end, long startLong, long endLong, MessageEvent message, int retrynb, int retryperiod,
             String database, String value1Init, String value2Init, String lengthInit, String length, int rowLimit, String nature,
             String system, String environment, String country, String dataLib, String jsonResult, String fromCache) {
@@ -44,6 +44,7 @@ public class FactoryTestCaseExecutionData implements IFactoryTestCaseExecutionDa
         testCaseExecutionData.setProperty(property);
         testCaseExecutionData.setIndex(index);
         testCaseExecutionData.setType(type);
+        testCaseExecutionData.setRank(rank);
         testCaseExecutionData.setValue(value);
         testCaseExecutionData.setDatabase(database);
         testCaseExecutionData.setValue1Init(value1Init);

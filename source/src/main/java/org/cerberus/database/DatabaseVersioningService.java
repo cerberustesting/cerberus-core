@@ -7901,6 +7901,9 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // 1384
         a.add("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ('MANUALURL', '2', 300, 'Activate Application URL Manual definition only on defined parameters.')");
 
+        // Insert 'Rank' attributes in the text case execution data table (for TestCaseExecution.jsp)
+        // 1385
+        a.add("ALTER TABLE `testcaseexecutiondata` ADD COLUMN `Rank` int(2) not null default 1 AFTER `Type`");
         return a;
     }
 
