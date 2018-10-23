@@ -57,7 +57,7 @@ services:
     image: cerberustesting/cerberus-as-glassfish:latest
     environment:
       - DATABASE_HOST=cerberus-db-mysql
-      - DATABASE_PORT=3306
+      - DATABASE_PORT=13306
       - GLASSFISH_DOMAIN=cerberus
 # If you want custom glasfish admin password. It's recommanded for a production instance
 #      - GLASSFISH_ADMIN_PASSWORD=custompassword
