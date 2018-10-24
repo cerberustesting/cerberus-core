@@ -15,7 +15,10 @@
 
 Dependency on :
 * other testcase
+ I can link a testcase B with a testcase A so that incase they are executed on the same tag, B will not trigger until A is finished.
+ Also, when puting a dependency between 2 testcases, properties will be shared. That means that Execution of the second testcase will get the property list and value from the first execution.
 * wait for event
+ I can link a testcase with a specific 'event' so that the testcase will not be triggered until the event is produced. Event can be produced by calling a public service sending the event name + the corresponding tag.
  
 ## Benefit
 * Allow single campaign for batch executions.
