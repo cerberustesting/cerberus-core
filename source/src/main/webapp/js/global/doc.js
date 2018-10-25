@@ -109,7 +109,7 @@ Doc.prototype.getDocLabel = function (docTable, docField) {
     } catch (err) {
         var res;
         res = docField + " -- Missing doc !!!";
-        return res;
+        return res;     
     }
 };
 
@@ -144,10 +144,12 @@ Doc.prototype.getDocOnline = function (docTable, docField) {
     var user = getUser();
 
     try {
-        if (!(this.table.hasOwnProperty(docTable)))
-            throw "docTable " + docTable + " not found";
-        if (!(this.table[docTable].hasOwnProperty(docField)))
+        if (!(this.table.hasOwnProperty(docTable))){
+        	 throw "docTable " + docTable + " not found";
+        }   
+        if (!(this.table[docTable].hasOwnProperty(docField))){
             throw "docField " + docField + " not found";
+        }
         if (!(this.table[docTable][docField].havedocDesc)) { // If the entry has no detail documentation, we do not display the ? with access to the detail.
             res = this.table[docTable][docField].docLabel;
         } else {
@@ -156,9 +158,10 @@ Doc.prototype.getDocOnline = function (docTable, docField) {
                 linkToDoc = "</br><br><a href='./Documentation.jsp#" + this.table[docTable][docField].docAnchor + "'><span class=\"glyphicon glyphicon-search\"> Documentation</span></a>";
             }
             res = this.table[docTable][docField].docLabel +
-            " <a data-html='true'  class=\"docOnline\" onclick=\"stopPropagation(event)\" \n\
+            " <a tabindex='1' data-html='true'  class=\"docOnline\" onclick=\"stopPropagation(event)\" \n\
             data-toggle='popover' \n\
             data-placement='auto' \n\
+            data-trigger='hover' \n\
             title='" + this.table[docTable][docField].docLabel + "' \n\
             data-content='" + $("<div>" + this.table[docTable][docField].docDesc.split("'").join("&#8217;") + linkToDoc + "</div>").prop('outerHTML') + "'>\n\
             <span class=\"glyphicon glyphicon-question-sign\"></span></a>";
