@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionQueue;
+import org.cerberus.engine.threadpool.entity.TestCaseExecutionQueueToTreat;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -79,13 +80,19 @@ public interface ITestCaseExecutionQueueService {
      *
      * @return @throws CerberusException
      */
-    AnswerList readQueueToTreat() throws CerberusException;
+    AnswerList<TestCaseExecutionQueueToTreat> readQueueToTreat() throws CerberusException;
 
     /**
      *
      * @return @throws CerberusException
      */
-    AnswerList readQueueRunning() throws CerberusException;
+    AnswerList<TestCaseExecutionQueueToTreat> readQueueRunning() throws CerberusException;
+
+    /**
+     *
+     * @return @throws CerberusException
+     */
+    AnswerList<TestCaseExecutionQueueToTreat> readQueueToTreatOrRunning() throws CerberusException;
 
     /**
      *
@@ -93,7 +100,7 @@ public interface ITestCaseExecutionQueueService {
      * @return
      * @throws org.cerberus.exception.CerberusException
      */
-    AnswerList readQueueOpen(String tag) throws CerberusException;
+    AnswerList<TestCaseExecutionQueue> readQueueOpen(String tag) throws CerberusException;
 
     /**
      *

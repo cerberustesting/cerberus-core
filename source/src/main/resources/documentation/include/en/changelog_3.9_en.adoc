@@ -1,6 +1,8 @@
 *Bug fixes*
 [square]
-* none
+* 'cerberus_queueexecution_defaultrobothost_threadpoolsize parameter' was not correctly working. It was not used in case no constrain is defined at robot level. #1855 
+* Issue when robot host contain double dash (//). #1856
+* secured that constrain2 poolsize always appear on queue management page. #1856
 
 *Improvements / New features*
 [square]

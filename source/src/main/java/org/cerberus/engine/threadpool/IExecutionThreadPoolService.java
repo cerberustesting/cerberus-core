@@ -25,10 +25,25 @@ import java.util.HashMap;
 
 public interface IExecutionThreadPoolService {
 
+    /**
+     *
+     * @return
+     * @throws CerberusException
+     */
     HashMap<String, Integer> getCurrentlyRunning() throws CerberusException;
 
+    /**
+     *
+     * @return
+     * @throws CerberusException
+     */
     HashMap<String, Integer> getCurrentlyPoolSizes() throws CerberusException;
 
+    /**
+     *
+     * @return
+     * @throws CerberusException
+     */
     HashMap<String, Integer> getCurrentlyToTreat() throws CerberusException;
 
     /**
@@ -41,5 +56,10 @@ public interface IExecutionThreadPoolService {
      */
     void executeNextInQueue(boolean forceExecution) throws CerberusException;
 
+    /**
+     *
+     * @param forceExecution
+     * @throws CerberusException
+     */
     void executeNextInQueueAsynchroneously(boolean forceExecution) throws CerberusException;
 }
