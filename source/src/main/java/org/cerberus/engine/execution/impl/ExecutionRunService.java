@@ -79,7 +79,7 @@ import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.enums.Screenshot;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.service.email.IEmailService;
+import org.cerberus.service.notification.INotificationService;
 import org.cerberus.service.sikuli.ISikuliService;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
@@ -156,7 +156,7 @@ public class ExecutionRunService implements IExecutionRunService {
     @Autowired
     private ITagService tagService;
     @Autowired
-    private IEmailService emailService;
+    private INotificationService notificationService;
     @Autowired
     private IRetriesService retriesService;
     @Autowired
@@ -955,7 +955,7 @@ public class ExecutionRunService implements IExecutionRunService {
                                 tagService.updateEndOfQueueData(tCExecution.getTag());
                                 if (!StringUtil.isNullOrEmpty(currentTag.getCampaign())) {
                                     // We get the campaig here and potencially send the notification.
-                                    emailService.generateAndSendNotifyEndTagExecution(tCExecution.getTag(), currentTag.getCampaign());
+                                    notificationService.generateAndSendNotifyEndTagExecution(tCExecution.getTag(), currentTag.getCampaign());
                                 }
                             } else {
                                 LOG.debug(logPrefix + "Still executions in queue on tag : " + tCExecution.getTag() + " - " + answerListQueue.getDataList().size() + " " + answerListQueue.getMessageCodeString());

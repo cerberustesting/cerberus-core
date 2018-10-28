@@ -32,7 +32,7 @@ import org.cerberus.crud.service.IUserService;
 import org.cerberus.crud.service.impl.ParameterService;
 import org.cerberus.crud.service.impl.UserService;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.service.email.IEmailService;
+import org.cerberus.service.notification.INotificationService;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -65,7 +65,7 @@ public class ForgotPassword extends HttpServlet {
         try (PrintWriter out = response.getWriter()) {
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             IUserService userService = appContext.getBean(UserService.class);
-            IEmailService emailService = appContext.getBean(IEmailService.class);
+            INotificationService notificationService = appContext.getBean(INotificationService.class);
             IParameterService parameterService = appContext.getBean(ParameterService.class);
             String system = "";
             JSONObject jsonResponse = new JSONObject();
@@ -108,7 +108,7 @@ public class ForgotPassword extends HttpServlet {
             /**
              * Send an email with the hash as a parameter
              */
-            Answer mailSent = new Answer(emailService.generateAndSendForgotPasswordEmail(user));
+            Answer mailSent = new Answer(notificationService.generateAndSendForgotPasswordEmail(user));
 
             if (!mailSent.isCodeStringEquals("OK")) {
                 jsonResponse.put("messageType", "Error");

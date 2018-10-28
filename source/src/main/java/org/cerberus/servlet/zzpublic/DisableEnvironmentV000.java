@@ -44,7 +44,7 @@ import org.cerberus.util.servlet.ServletUtil;
 import org.cerberus.version.Infos;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-import org.cerberus.service.email.IEmailService;
+import org.cerberus.service.notification.INotificationService;
 
 /**
  * @author vertigo
@@ -77,7 +77,7 @@ public class DisableEnvironmentV000 extends HttpServlet {
         ICountryEnvParamService countryEnvParamService = appContext.getBean(ICountryEnvParamService.class);
         IInvariantService invariantService = appContext.getBean(IInvariantService.class);
         IBuildRevisionInvariantService buildRevisionInvariantService = appContext.getBean(IBuildRevisionInvariantService.class);
-        IEmailService emailService = appContext.getBean(IEmailService.class);
+        INotificationService notificationService = appContext.getBean(INotificationService.class);
         ICountryEnvParam_logService countryEnvParam_logService = appContext.getBean(ICountryEnvParam_logService.class);
         IParameterService parameterService = appContext.getBean(IParameterService.class);
 
@@ -183,7 +183,7 @@ public class DisableEnvironmentV000 extends HttpServlet {
                     String eMailContent;
                     String OutputMessage = "";
 
-                    MessageEvent me = emailService.generateAndSendDisableEnvEmail(cepData.getSystem(), cepData.getCountry(), cepData.getEnvironment());
+                    MessageEvent me = notificationService.generateAndSendDisableEnvEmail(cepData.getSystem(), cepData.getCountry(), cepData.getEnvironment());
 
                     if (!"OK".equals(me.getMessage().getCodeString())) {
                         LOG.warn(Infos.getInstance().getProjectNameAndVersion() + " - Exception catched." + me.getMessage().getDescription());

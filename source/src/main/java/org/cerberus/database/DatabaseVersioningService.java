@@ -7904,6 +7904,38 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // Insert 'Rank' attributes in the text case execution data table (for TestCaseExecution.jsp)
         // 1385
         a.add("ALTER TABLE `testcaseexecutiondata` ADD COLUMN `Rank` int(2) not null default 1 AFTER `Type`");
+
+        // New parameter.
+        // 1386
+        a.add("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ('', 'cerberus_notification_tagexecutionend_tclistmax', '100', 'Limit the number of rows produced on testcase list detail table.');");
+
+        // 1387
+        a.add("UPDATE `parameter` SET value=replace(value,'<td>%CIRESULT%</td>','<td style=\"background-color:%CIRESULTCOLOR%; font-style:bold\">%CIRESULT%</td>'), description = 'Cerberus End of tag execution notification email body. %TAG%, %URLTAGREPORT%, %CAMPAIGN%, %TAGDURATION%, %TAGSTART%, %TAGEND%, %CIRESULT%, %CIRESULTCOLOR%, %CISCORE%, %CISCORETHRESHOLD%, %TAGGLOBALSTATUS% and %TAGTCDETAIL% can be used as variables.' where param='cerberus_notification_tagexecutionend_body';");
+
+        // 1388
+        b = new StringBuilder(); // replace color yellow by no color
+        b.append("ALTER TABLE `campaign` ");
+        b.append("ADD COLUMN `SlackNotifyStartTagExecution` VARCHAR(5) NULL DEFAULT 'N' AFTER `NotifyEndTagExecution`,");
+        b.append("ADD COLUMN `SlackNotifyEndTagExecution` VARCHAR(5) NULL DEFAULT 'N' AFTER `SlackNotifyStartTagExecution`,");
+        b.append("ADD COLUMN `SlackWebhook` VARCHAR(200) NOT NULL DEFAULT '' AFTER `SlackNotifyEndTagExecution`,");
+        b.append("ADD COLUMN `SlackChannel` VARCHAR(100) NOT NULL DEFAULT '' AFTER `SlackWebhook`,");
+        b.append("ADD COLUMN CIScoreThreshold VARCHAR(45) NULL DEFAULT NULL AFTER `SlackChannel`,");
+        b.append("ADD COLUMN Tag VARCHAR(255) NULL DEFAULT NULL AFTER `CIScoreThreshold`,");
+        b.append("ADD COLUMN Verbose VARCHAR(5) NULL DEFAULT NULL AFTER `Tag`,");
+        b.append("ADD COLUMN Screenshot VARCHAR(5) NULL DEFAULT NULL AFTER `Verbose`,");
+        b.append("ADD COLUMN PageSource VARCHAR(5) NULL DEFAULT NULL AFTER `Screenshot`,");
+        b.append("ADD COLUMN RobotLog VARCHAR(5) NULL DEFAULT NULL AFTER `PageSource`,");
+        b.append("ADD COLUMN Timeout VARCHAR(10) NULL DEFAULT NULL AFTER `RobotLog`,");
+        b.append("ADD COLUMN Retries VARCHAR(5) NULL DEFAULT NULL AFTER `Timeout`,");
+        b.append("ADD COLUMN Priority VARCHAR(45) NULL DEFAULT NULL  AFTER `Retries`,");
+        b.append("ADD COLUMN ManualExecution VARCHAR(1) NULL DEFAULT NULL AFTER `Priority`,");
+        b.append("ADD COLUMN LongDescription TEXT AFTER `Description`,");
+        b.append("ADD COLUMN `UsrCreated` VARCHAR(45) NOT NULL DEFAULT '' AFTER `LongDescription`,");
+        b.append("ADD COLUMN `DateCreated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `UsrCreated`,");
+        b.append("ADD COLUMN `UsrModif` VARCHAR(45) DEFAULT '' AFTER `DateCreated`,");
+        b.append("ADD COLUMN `DateModif` timestamp NOT NULL DEFAULT '1970-01-01 01:01:01' AFTER `UsrModif`;");
+        a.add(b.toString());
+
         return a;
     }
 

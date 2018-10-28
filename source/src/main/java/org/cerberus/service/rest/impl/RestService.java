@@ -68,7 +68,6 @@ import org.cerberus.service.proxy.IProxyService;
 import org.cerberus.service.rest.IRestService;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
-import org.openqa.selenium.Cookie;
 import org.openqa.selenium.WebDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -173,7 +172,7 @@ public class RestService implements IRestService {
             headerList.add(factoryAppServiceHeader.create(null, "cerberus-token", token, "Y", 0, "", "", null, "", null));
         }
 
-        CloseableHttpClient httpclient=null;
+        CloseableHttpClient httpclient = null;
         HttpClientBuilder httpclientBuilder;
         if (proxyService.useProxy(servicePath, system)) {
 
@@ -215,7 +214,7 @@ public class RestService implements IRestService {
         }
 
         // if it is an GUI REST, share the GUI context with api call
-        if(tcexecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
+        if ((tcexecution != null) && (tcexecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI))) {
             WebDriver driver = tcexecution.getSession().getDriver();
 
             BasicCookieStore cookieStore = new BasicCookieStore();
@@ -233,9 +232,9 @@ public class RestService implements IRestService {
 
         try {
 
-            boolean acceptUnsignedSsl = parameterService.getParameterBooleanByKey("cerberus_accept_unsigned_ssl_certificate", system,true);
+            boolean acceptUnsignedSsl = parameterService.getParameterBooleanByKey("cerberus_accept_unsigned_ssl_certificate", system, true);
 
-            if(acceptUnsignedSsl) {
+            if (acceptUnsignedSsl) {
                 // authorize non valide certificat ssl
                 SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(null, new TrustSelfSignedStrategy() {
                     public boolean isTrusted(X509Certificate[] chain, String authType) throws CertificateException {
@@ -249,8 +248,6 @@ public class RestService implements IRestService {
             }
 
             httpclient = httpclientBuilder.build();
-
-
 
             RequestConfig requestConfig;
             // Timeout setup.
@@ -528,8 +525,9 @@ public class RestService implements IRestService {
             return result;
         } finally {
             try {
-                if(httpclient != null)
+                if (httpclient != null) {
                     httpclient.close();
+                }
             } catch (IOException ex) {
                 LOG.error(ex.toString(), ex);
             }

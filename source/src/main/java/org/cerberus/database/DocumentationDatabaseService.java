@@ -1218,8 +1218,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_global','btn_savetableconfig','','fr','Sauvegarder','',NULL)");
         b.append(",('page_global','btn_showHideColumns','','en','Show/Hide','',NULL)");
         b.append(",('page_global','btn_showHideColumns','','fr','Afficher/Cacher','',NULL)");
-        b.append(",('page_global','buttonAdd','','en','Save','',NULL)");
-        b.append(",('page_global','buttonAdd','','fr','Sauvegarder','',NULL)");
+        b.append(",('page_global','buttonAdd','','en','Create','',NULL)");
+        b.append(",('page_global','buttonAdd','','fr','Créer','',NULL)");
         b.append(",('page_global','buttonClose','','en','Close','',NULL)");
         b.append(",('page_global','buttonClose','','fr','Fermer','',NULL)");
         b.append(",('page_global','buttonConfirm','','en','Yes','',NULL)");
@@ -1352,7 +1352,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_header','menuTest','','fr','Test','',NULL)");
         b.append(",('page_header','menuTestBattery','','en','TestCase Battery','',NULL)");
         b.append(",('page_header','menuTestBattery','','fr','Batterie de Cas de Test','',NULL)");
-        b.append(",('page_header','menuTestCampaign','','en','Test Campaign','',NULL)");
+        b.append(",('page_header','menuTestCampaign','','en','Campaign','',NULL)");
         b.append(",('page_header','menuTestCampaign','','fr','Campagne de Test','',NULL)");
         b.append(",('page_header','menuTestCase','','en','TestCase','',NULL)");
         b.append(",('page_header','menuTestCase','','fr','Cas De Test','',NULL)");
@@ -1843,8 +1843,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_testcampaign','description_tab','','fr','Description','',NULL)");
         b.append(",('page_testcampaign','edittestcampaign_field','','en','Edit Campaign','',NULL)");
         b.append(",('page_testcampaign','edittestcampaign_field','','fr','Modifier la Campagne','',NULL)");
-        b.append(",('page_testcampaign','message_remove','','en','Are you sure?','',NULL)");
-        b.append(",('page_testcampaign','message_remove','','fr','Êtes-vous sûrs?','',NULL)");
+        b.append(",('page_testcampaign','message_remove','','en','Are you sure you want to remove the campaign \\'%NAME%\\' ?','',NULL)");
+        b.append(",('page_testcampaign','message_remove','','fr','Êtes-vous sûrs de supprimer la campagne \\'%NAME%\\'?','',NULL)");
         b.append(",('page_testcampaign','parameter_col','','en','Parameter','',NULL)");
         b.append(",('page_testcampaign','parameter_col','','fr','Paramètre','',NULL)");
         b.append(",('page_testcampaign','parameter_tab','','en','Parameter','',NULL)");

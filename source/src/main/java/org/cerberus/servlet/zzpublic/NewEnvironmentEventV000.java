@@ -42,7 +42,7 @@ import org.cerberus.util.answer.AnswerUtil;
 import org.cerberus.version.Infos;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-import org.cerberus.service.email.IEmailService;
+import org.cerberus.service.notification.INotificationService;
 
 /**
  * @author vertigo
@@ -81,7 +81,7 @@ public class NewEnvironmentEventV000 extends HttpServlet {
         IInvariantService invariantService = appContext.getBean(IInvariantService.class);
         IBatchInvariantService batchInvariantService = appContext.getBean(IBatchInvariantService.class);
         IBuildRevisionBatchService buildRevisionBatchService = appContext.getBean(IBuildRevisionBatchService.class);
-        IEmailService emailService = appContext.getBean(IEmailService.class);
+        INotificationService notificationService = appContext.getBean(INotificationService.class);
 
         // Parsing all parameters.
         String system = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("system"), "", charset);
@@ -166,7 +166,7 @@ public class NewEnvironmentEventV000 extends HttpServlet {
                  * Email notification.
                  */
                 String OutputMessage = "";
-                MessageEvent me = emailService.generateAndSendNewChainEmail(cepData.getSystem(), cepData.getCountry(), cepData.getEnvironment(), event);
+                MessageEvent me = notificationService.generateAndSendNewChainEmail(cepData.getSystem(), cepData.getCountry(), cepData.getEnvironment(), event);
 
                 if (!"OK".equals(me.getMessage().getCodeString())) {
                     LOG.warn(Infos.getInstance().getProjectNameAndVersion() + " - Exception catched." + me.getMessage().getDescription());

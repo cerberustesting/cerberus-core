@@ -22,17 +22,8 @@ package org.cerberus.service.email.impl;
 import org.cerberus.service.email.entity.Email;
 import com.mysql.jdbc.StringUtils;
 import org.apache.commons.mail.HtmlEmail;
-import org.cerberus.crud.entity.Campaign;
-import org.cerberus.crud.entity.User;
-import org.cerberus.crud.service.ICampaignService;
-import org.cerberus.engine.entity.MessageEvent;
-import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.service.ciresult.ICIService;
-import org.cerberus.service.email.IEmailGenerationService;
 import org.cerberus.service.email.IEmailService;
 import org.cerberus.util.StringUtil;
-import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -43,13 +34,6 @@ import org.springframework.stereotype.Service;
 public class EmailService implements IEmailService {
 
     private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(EmailService.class);
-
-    @Autowired
-    private IEmailGenerationService emailGenerationService;
-    @Autowired
-    private ICampaignService campaignService;
-    @Autowired
-    private ICIService ciService;
 
     @Override
     public void sendHtmlMail(Email cerberusEmail) throws Exception {
@@ -112,188 +96,6 @@ public class EmailService implements IEmailService {
             LOG.debug("Mail not send because smtp host not defined or default. smtp : " + cerberusEmail.getHost());
         }
 
-    }
-
-    @Override
-    public MessageEvent generateAndSendAccountCreationEmail(User user) {
-
-        Email email = null;
-        try {
-            email = emailGenerationService.generateAccountCreationEmail(user);
-        } catch (Exception ex) {
-            LOG.warn("Exception generating email for account creation :" + ex);
-            return new MessageEvent(MessageEventEnum.GENERIC_ERROR).resolveDescription("REASON", ex.toString());
-        }
-
-        try {
-            this.sendHtmlMail(email);
-        } catch (Exception ex) {
-            LOG.warn("Exception sending email for account creation :" + ex);
-            return new MessageEvent(MessageEventEnum.GENERIC_ERROR).resolveDescription("REASON", ex.toString());
-        }
-
-        return new MessageEvent(MessageEventEnum.GENERIC_OK);
-    }
-
-    @Override
-    public MessageEvent generateAndSendForgotPasswordEmail(User user) {
-
-        Email email = null;
-        try {
-            email = emailGenerationService.generateForgotPasswordEmail(user);
-        } catch (Exception ex) {
-            LOG.warn("Exception generating email for forgot password :" + ex);
-            return new MessageEvent(MessageEventEnum.GENERIC_ERROR).resolveDescription("REASON", ex.toString());
-        }
-
-        try {
-            this.sendHtmlMail(email);
-        } catch (Exception ex) {
-            LOG.warn("Exception sending email for forgot password :" + ex);
-            return new MessageEvent(MessageEventEnum.GENERIC_ERROR).resolveDescription("REASON", ex.toString());
-        }
-
-        return new MessageEvent(MessageEventEnum.GENERIC_OK);
-    }
-
-    @Override
-    public MessageEvent generateAndSendRevisionChangeEmail(String system, String country, String env, String build, String revision) {
-
-        Email email = null;
-        try {
-            email = emailGenerationService.generateRevisionChangeEmail(system, country, env, build, revision);
-        } catch (Exception ex) {
-            LOG.warn("Exception generating email for revision change :" + ex);
-            return new MessageEvent(MessageEventEnum.GENERIC_ERROR).resolveDescription("REASON", ex.toString());
-        }
-
-        try {
-            this.sendHtmlMail(email);
-        } catch (Exception ex) {
-            LOG.warn("Exception sending email for revision change :" + ex);
-            return new MessageEvent(MessageEventEnum.GENERIC_ERROR).resolveDescription("REASON", ex.toString());
-        }
-
-        return new MessageEvent(MessageEventEnum.GENERIC_OK);
-    }
-
-    @Override
-    public MessageEvent generateAndSendDisableEnvEmail(String system, String country, String env) {
-
-        Email email = null;
-        try {
-            email = emailGenerationService.generateDisableEnvEmail(system, country, env);
-        } catch (Exception ex) {
-            LOG.warn("Exception generating email for disabling environment :" + ex);
-            return new MessageEvent(MessageEventEnum.GENERIC_ERROR).resolveDescription("REASON", ex.toString());
-        }
-
-        try {
-            this.sendHtmlMail(email);
-        } catch (Exception ex) {
-            LOG.warn("Exception sending email for disabling environment :" + ex);
-            return new MessageEvent(MessageEventEnum.GENERIC_ERROR).resolveDescription("REASON", ex.toString());
-        }
-
-        return new MessageEvent(MessageEventEnum.GENERIC_OK);
-    }
-
-    @Override
-    public MessageEvent generateAndSendNewChainEmail(String system, String country, String env, String chain) {
-
-        Email email = null;
-        try {
-            email = emailGenerationService.generateNewChainEmail(system, country, env, chain);
-        } catch (Exception ex) {
-            LOG.warn("Exception generating email for new chain :" + ex);
-            return new MessageEvent(MessageEventEnum.GENERIC_ERROR).resolveDescription("REASON", ex.toString());
-        }
-
-        try {
-            this.sendHtmlMail(email);
-        } catch (Exception ex) {
-            LOG.warn("Exception sending email for new chain :" + ex);
-            return new MessageEvent(MessageEventEnum.GENERIC_ERROR).resolveDescription("REASON", ex.toString());
-        }
-
-        return new MessageEvent(MessageEventEnum.GENERIC_OK);
-    }
-
-    @Override
-    public MessageEvent generateAndSendNotifyStartTagExecution(String tag, String campaign) {
-
-        try {
-            Campaign myCampaign = campaignService.convert(campaignService.readByKey(campaign));
-            if (!StringUtil.isNullOrEmpty(myCampaign.getDistribList()) && myCampaign.getNotifyStartTagExecution().equalsIgnoreCase("Y")) {
-
-                Email email = null;
-
-                email = emailGenerationService.generateNotifyStartTagExecution(tag, campaign, myCampaign.getDistribList());
-
-                try {
-
-                } catch (Exception ex) {
-                    LOG.warn("Exception generating email for Start Tag Execution :" + ex);
-                    return new MessageEvent(MessageEventEnum.GENERIC_ERROR).resolveDescription("REASON", ex.toString());
-                }
-
-                try {
-                    this.sendHtmlMail(email);
-                } catch (Exception ex) {
-                    LOG.warn("Exception sending email for Start Tag Execution :" + ex);
-                    return new MessageEvent(MessageEventEnum.GENERIC_ERROR).resolveDescription("REASON", ex.toString());
-                }
-            }
-        } catch (Exception ex) {
-            LOG.warn("Exception generating email for Start Tag Execution :" + ex);
-            return new MessageEvent(MessageEventEnum.GENERIC_ERROR).resolveDescription("REASON", ex.toString());
-        }
-
-        return new MessageEvent(MessageEventEnum.GENERIC_OK);
-    }
-
-    @Override
-    public MessageEvent generateAndSendNotifyEndTagExecution(String tag, String campaign) {
-
-        try {
-            Campaign myCampaign = campaignService.convert(campaignService.readByKey(campaign));
-            if (!StringUtil.isNullOrEmpty(myCampaign.getDistribList())) {
-                // Distribution List is not empty
-
-                if (myCampaign.getNotifyEndTagExecution().equalsIgnoreCase(Campaign.NOTIFYSTARTTAGEXECUTION_Y)
-                        || myCampaign.getNotifyEndTagExecution().equalsIgnoreCase(Campaign.NOTIFYSTARTTAGEXECUTION_CIKO)) {
-                    // Flag is activated.
-
-                    JSONObject jsonResponse = new JSONObject();
-                    jsonResponse = ciService.getCIResult(tag);
-
-                    if (myCampaign.getNotifyEndTagExecution().equalsIgnoreCase(Campaign.NOTIFYSTARTTAGEXECUTION_Y)
-                            || (myCampaign.getNotifyEndTagExecution().equalsIgnoreCase(Campaign.NOTIFYSTARTTAGEXECUTION_CIKO) && jsonResponse.getString("result").equalsIgnoreCase("KO"))) {
-                        // Flag is Y or CIKO with KO result.
-
-                        Email email = null;
-                        try {
-                            email = emailGenerationService.generateNotifyEndTagExecution(tag, campaign, myCampaign.getDistribList());
-                        } catch (Exception ex) {
-                            LOG.warn("Exception generating email for End Tag Execution :" + ex);
-                            return new MessageEvent(MessageEventEnum.GENERIC_ERROR).resolveDescription("REASON", ex.toString());
-                        }
-
-                        try {
-                            this.sendHtmlMail(email);
-                        } catch (Exception ex) {
-                            LOG.warn("Exception sending email for End Tag Execution :" + ex);
-                            return new MessageEvent(MessageEventEnum.GENERIC_ERROR).resolveDescription("REASON", ex.toString());
-                        }
-                    }
-                }
-
-            }
-        } catch (Exception ex) {
-            LOG.warn("Exception generating email for End Tag Execution :" + ex);
-            return new MessageEvent(MessageEventEnum.GENERIC_ERROR).resolveDescription("REASON", ex.toString());
-        }
-        return new MessageEvent(MessageEventEnum.GENERIC_OK);
     }
 
 }

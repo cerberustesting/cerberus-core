@@ -44,7 +44,7 @@ import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-import org.cerberus.service.email.IEmailService;
+import org.cerberus.service.notification.INotificationService;
 
 /**
  * @author vertigo
@@ -89,7 +89,7 @@ public class DisableEnvironment extends HttpServlet {
 //        AnswerItem answer = new AnswerItem<>(msg);
         String eMailContent = "";
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        IEmailService emailService = appContext.getBean(IEmailService.class);
+        INotificationService notificationService = appContext.getBean(INotificationService.class);
         ICountryEnvParamService countryEnvParamService = appContext.getBean(ICountryEnvParamService.class);
         ICountryEnvParam_logService countryEnvParam_logService = appContext.getBean(ICountryEnvParam_logService.class);
         ILogEventService logEventService = appContext.getBean(LogEventService.class);
@@ -156,7 +156,7 @@ public class DisableEnvironment extends HttpServlet {
                      * Email notification.
                      */
                     String OutputMessage = "";
-                    MessageEvent me = emailService.generateAndSendDisableEnvEmail(system, country, env);
+                    MessageEvent me = notificationService.generateAndSendDisableEnvEmail(system, country, env);
 
                     if (!"OK".equals(me.getMessage().getCodeString())) {
                         LOG.warn(Infos.getInstance().getProjectNameAndVersion() + " - Exception catched." + me.getMessage().getDescription());

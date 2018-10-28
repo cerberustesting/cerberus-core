@@ -93,9 +93,25 @@ public class UpdateCampaign extends HttpServlet {
         String c = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("Campaign"), null, charset);
         String notifystart = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("NotifyStart"), null, charset);
         String notifyend = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("NotifyEnd"), null, charset);
-        String desc = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("Description"), null, charset);
+        String slackNotifyStartTagExecution = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("NotifySlackStart"), "N", charset);
+        String slackNotifyEndTagExecution = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("NotifySlackEnd"), "N", charset);
         // Parameter that we cannot secure as we need the html --> We DECODE them
         String distriblist = ParameterParserUtil.parseStringParam(request.getParameter("DistribList"), "");
+        String desc = ParameterParserUtil.parseStringParam(request.getParameter("Description"), null);
+        String longDesc = ParameterParserUtil.parseStringParam(request.getParameter("LongDescription"), null);
+
+        String slackWebhook = ParameterParserUtil.parseStringParam(request.getParameter("SlackWebhook"), "");
+        String slackChannel = ParameterParserUtil.parseStringParam(request.getParameter("SlackChannel"), "");
+        String cIScoreThreshold = ParameterParserUtil.parseStringParam(request.getParameter("CIScoreThreshold"), "");
+        String tag = ParameterParserUtil.parseStringParam(request.getParameter("Tag"), "");
+        String verbose = ParameterParserUtil.parseStringParam(request.getParameter("Verbose"), "");
+        String screenshot = ParameterParserUtil.parseStringParam(request.getParameter("Screenshot"), "");
+        String pageSource = ParameterParserUtil.parseStringParam(request.getParameter("PageSource"), "");
+        String robotLog = ParameterParserUtil.parseStringParam(request.getParameter("RobotLog"), "");
+        String timeout = ParameterParserUtil.parseStringParam(request.getParameter("Timeout"), "");
+        String retries = ParameterParserUtil.parseStringParam(request.getParameter("Retries"), "");
+        String priority = ParameterParserUtil.parseStringParam(request.getParameter("Priority"), "");
+        String manualExecution = ParameterParserUtil.parseStringParam(request.getParameter("ManualExecution"), "");
 
         if (StringUtil.isNullOrEmpty(c)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
@@ -123,6 +139,22 @@ public class UpdateCampaign extends HttpServlet {
                 camp.setNotifyStartTagExecution(notifystart);
                 camp.setNotifyEndTagExecution(notifyend);
                 camp.setDescription(desc);
+                camp.setLongDescription(longDesc);
+                camp.setSlackChannel(slackChannel);
+                camp.setSlackNotifyEndTagExecution(slackNotifyEndTagExecution);
+                camp.setSlackNotifyStartTagExecution(slackNotifyStartTagExecution);
+                camp.setSlackWebhook(slackWebhook);
+                camp.setCIScoreThreshold(cIScoreThreshold);
+                camp.setTag(tag);
+                camp.setVerbose(verbose);
+                camp.setScreenshot(screenshot);
+                camp.setPageSource(pageSource);
+                camp.setRobotLog(robotLog);
+                camp.setTimeout(timeout);
+                camp.setRetries(retries);
+                camp.setPriority(priority);
+                camp.setManualExecution(manualExecution);
+                camp.setUsrModif(request.getRemoteUser());
                 finalAnswer = campaignService.update(camp);
                 if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                     /**

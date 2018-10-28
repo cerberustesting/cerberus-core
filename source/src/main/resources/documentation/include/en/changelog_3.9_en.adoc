@@ -4,7 +4,8 @@
 
 *Improvements / New features*
 [square]
-* none
+* New parameter 'cerberus_notification_tagexecutionend_tclistmax' in order to limit the table size of the end of campaign execution EMail (default to 100). That prevent hughe mails in case of completly failed cmapaign execution.
+* New Slack connector that can be configured at campaign level in order to notify at the beginning and end of campaign execution. Slack WebHook and channel can be configured at campaign level.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

@@ -39,7 +39,7 @@ import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-import org.cerberus.service.email.IEmailService;
+import org.cerberus.service.notification.INotificationService;
 
 /**
  * @author vertigo
@@ -85,7 +85,7 @@ public class NewChain extends HttpServlet {
         // Init Answer with potencial error from Parsing parameter.
 //        AnswerItem answer = new AnswerItem<>(msg);
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        IEmailService emailService = appContext.getBean(IEmailService.class);
+        INotificationService notificationService = appContext.getBean(INotificationService.class);
         ICountryEnvParamService countryEnvParamService = appContext.getBean(ICountryEnvParamService.class);
         IBuildRevisionBatchService buildRevisionBatchService = appContext.getBean(IBuildRevisionBatchService.class);
         ILogEventService logEventService = appContext.getBean(ILogEventService.class);
@@ -142,7 +142,7 @@ public class NewChain extends HttpServlet {
                  * Email notification.
                  */
                 String OutputMessage = "";
-                MessageEvent me = emailService.generateAndSendNewChainEmail(system, country, env, chain);
+                MessageEvent me = notificationService.generateAndSendNewChainEmail(system, country, env, chain);
 
                 if (!"OK".equals(me.getMessage().getCodeString())) {
                     LOG.warn(Infos.getInstance().getProjectNameAndVersion() + " - Exception catched." + me.getMessage().getDescription());

@@ -17,16 +17,32 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.service.email;
+package org.cerberus.service.slack;
 
-import org.cerberus.service.email.entity.Email;
+import org.json.JSONObject;
 
 /**
  *
  * @author bcivel
  */
-public interface IEmailService {
+public interface ISlackGenerationService {
 
-    public void sendHtmlMail(Email cerberusEmail) throws Exception;
+    /**
+     *
+     * @param tag
+     * @param channel
+     * @return
+     * @throws Exception
+     */
+    public JSONObject generateNotifyStartTagExecution(String tag, String channel) throws Exception;
+
+    /**
+     *
+     * @param tag
+     * @param channel
+     * @return
+     * @throws Exception
+     */
+    public JSONObject generateNotifyEndTagExecution(String tag, String channel) throws Exception;
 
 }

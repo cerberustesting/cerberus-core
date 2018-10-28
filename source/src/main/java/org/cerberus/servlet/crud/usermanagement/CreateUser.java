@@ -51,7 +51,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 import org.cerberus.crud.factory.IFactoryUserGroup;
 import org.cerberus.util.answer.AnswerUtil;
-import org.cerberus.service.email.IEmailService;
+import org.cerberus.service.notification.INotificationService;
 
 /**
  * @author bcivel
@@ -80,7 +80,7 @@ public class CreateUser extends HttpServlet {
         String charset = request.getCharacterEncoding() == null ? "UTF-8" : request.getCharacterEncoding();
 
         IParameterService parameterService = appContext.getBean(ParameterService.class);
-        IEmailService emailService = appContext.getBean(IEmailService.class);
+        INotificationService notificationService = appContext.getBean(INotificationService.class);
         String system = "";
 
         String password = parameterService.findParameterByKey("cerberus_accountcreation_defaultpassword", system).getValue();
@@ -144,7 +144,7 @@ public class CreateUser extends HttpServlet {
                 String sendNotification = parameterService.findParameterByKey("cerberus_notification_accountcreation_activatenotification", system).getValue();
 
                 if (sendNotification.equalsIgnoreCase("Y")) {
-                    Answer msgSent = new Answer(emailService.generateAndSendAccountCreationEmail(userData));
+                    Answer msgSent = new Answer(notificationService.generateAndSendAccountCreationEmail(userData));
                     ans = AnswerUtil.agregateAnswer(ans, msgSent);
                 }
                 /**

@@ -20,6 +20,7 @@
 package org.cerberus.crud.entity;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.util.List;
 import javax.xml.bind.annotation.XmlTransient;
 import org.codehaus.jackson.annotate.JsonIgnore;
@@ -49,7 +50,26 @@ public class Campaign implements Serializable {
     private String distribList;
     private String notifyStartTagExecution;
     private String notifyEndTagExecution;
+    private String SlackNotifyStartTagExecution;
+    private String SlackNotifyEndTagExecution;
+    private String SlackWebhook;
+    private String SlackChannel;
+    private String CIScoreThreshold;
+    private String Tag;
+    private String Verbose;
+    private String Screenshot;
+    private String PageSource;
+    private String RobotLog;
+    private String Timeout;
+    private String Retries;
+    private String Priority;
+    private String ManualExecution;
     private String description;
+    private String longDescription;
+    private String UsrCreated;
+    private Timestamp DateCreated;
+    private String UsrModif;
+    private Timestamp DateModif;
 
     private List<CampaignParameter> campaignParameterList;
 
@@ -71,6 +91,150 @@ public class Campaign implements Serializable {
         this.campaignID = campaignID;
         this.campaign = campaign;
         this.description = description;
+    }
+
+    public String getSlackNotifyStartTagExecution() {
+        return SlackNotifyStartTagExecution;
+    }
+
+    public void setSlackNotifyStartTagExecution(String SlackNotifyStartTagExecution) {
+        this.SlackNotifyStartTagExecution = SlackNotifyStartTagExecution;
+    }
+
+    public String getSlackNotifyEndTagExecution() {
+        return SlackNotifyEndTagExecution;
+    }
+
+    public void setSlackNotifyEndTagExecution(String SlackNotifyEndTagExecution) {
+        this.SlackNotifyEndTagExecution = SlackNotifyEndTagExecution;
+    }
+
+    public String getSlackWebhook() {
+        return SlackWebhook;
+    }
+
+    public void setSlackWebhook(String SlackWebhook) {
+        this.SlackWebhook = SlackWebhook;
+    }
+
+    public String getSlackChannel() {
+        return SlackChannel;
+    }
+
+    public void setSlackChannel(String SlackChannel) {
+        this.SlackChannel = SlackChannel;
+    }
+
+    public String getCIScoreThreshold() {
+        return CIScoreThreshold;
+    }
+
+    public void setCIScoreThreshold(String CIScoreThreshold) {
+        this.CIScoreThreshold = CIScoreThreshold;
+    }
+
+    public String getTag() {
+        return Tag;
+    }
+
+    public void setTag(String Tag) {
+        this.Tag = Tag;
+    }
+
+    public String getVerbose() {
+        return Verbose;
+    }
+
+    public void setVerbose(String Verbose) {
+        this.Verbose = Verbose;
+    }
+
+    public String getScreenshot() {
+        return Screenshot;
+    }
+
+    public void setScreenshot(String Screenshot) {
+        this.Screenshot = Screenshot;
+    }
+
+    public String getPageSource() {
+        return PageSource;
+    }
+
+    public void setPageSource(String PageSource) {
+        this.PageSource = PageSource;
+    }
+
+    public String getRobotLog() {
+        return RobotLog;
+    }
+
+    public void setRobotLog(String RobotLog) {
+        this.RobotLog = RobotLog;
+    }
+
+    public String getTimeout() {
+        return Timeout;
+    }
+
+    public void setTimeout(String Timeout) {
+        this.Timeout = Timeout;
+    }
+
+    public String getRetries() {
+        return Retries;
+    }
+
+    public void setRetries(String Retries) {
+        this.Retries = Retries;
+    }
+
+    public String getPriority() {
+        return Priority;
+    }
+
+    public void setPriority(String Priority) {
+        this.Priority = Priority;
+    }
+
+    public String getManualExecution() {
+        return ManualExecution;
+    }
+
+    public void setManualExecution(String ManualExecution) {
+        this.ManualExecution = ManualExecution;
+    }
+
+    public String getUsrCreated() {
+        return UsrCreated;
+    }
+
+    public void setUsrCreated(String UsrCreated) {
+        this.UsrCreated = UsrCreated;
+    }
+
+    public Timestamp getDateCreated() {
+        return DateCreated;
+    }
+
+    public void setDateCreated(Timestamp DateCreated) {
+        this.DateCreated = DateCreated;
+    }
+
+    public String getUsrModif() {
+        return UsrModif;
+    }
+
+    public void setUsrModif(String UsrModif) {
+        this.UsrModif = UsrModif;
+    }
+
+    public Timestamp getDateModif() {
+        return DateModif;
+    }
+
+    public void setDateModif(Timestamp DateModif) {
+        this.DateModif = DateModif;
     }
 
     public Integer getCampaignID() {
@@ -113,6 +277,14 @@ public class Campaign implements Serializable {
         this.notifyEndTagExecution = notifyEndTagExecution;
     }
 
+    public String getLongDescription() {
+        return longDescription;
+    }
+
+    public void setLongDescription(String longDescription) {
+        this.longDescription = longDescription;
+    }
+
     public String getDescription() {
         return description;
     }
@@ -130,7 +302,6 @@ public class Campaign implements Serializable {
     public void setCampaignParameterList(List<CampaignParameter> campaignParameterList) {
         this.campaignParameterList = campaignParameterList;
     }
-
 
     @Override
     public int hashCode() {
