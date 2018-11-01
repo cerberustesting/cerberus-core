@@ -80,7 +80,7 @@ import javax.net.ssl.SSLContext;
  */
 @Service
 public class RestService implements IRestService {
-
+    
     @Autowired
     IRecorderService recorderService;
     @Autowired
@@ -104,14 +104,14 @@ public class RestService implements IRestService {
     private static final boolean DEFAULT_PROXYAUTHENT_ACTIVATE = false;
     private static final String DEFAULT_PROXYAUTHENT_USER = "squid";
     private static final String DEFAULT_PROXYAUTHENT_PASSWORD = "squid";
-
+    
     private static final Logger LOG = LogManager.getLogger(RestService.class);
-
+    
     private AppService executeHTTPCall(CloseableHttpClient httpclient, HttpRequestBase httpget) throws Exception {
         try {
             // Create a custom response handler
             ResponseHandler<AppService> responseHandler = new ResponseHandler<AppService>() {
-
+                
                 @Override
                 public AppService handleResponse(final HttpResponse response)
                         throws ClientProtocolException, IOException {
@@ -130,10 +130,10 @@ public class RestService implements IRestService {
                     myResponse.setResponseHTTPBody(entity != null ? EntityUtils.toString(entity) : null);
                     return myResponse;
                 }
-
+                
             };
             return httpclient.execute(httpget, responseHandler);
-
+            
         } catch (Exception ex) {
             LOG.error(ex.toString(), ex);
             throw ex;
@@ -141,7 +141,7 @@ public class RestService implements IRestService {
             httpclient.close();
         }
     }
-
+    
     @Override
     public AnswerItem<AppService> callREST(String servicePath, String requestString, String method,
             List<AppServiceHeader> headerList, List<AppServiceContent> contentList, String token, int timeOutMs,
@@ -156,7 +156,7 @@ public class RestService implements IRestService {
         serviceREST.setProxyUser(null);
         serviceREST.setTimeoutms(timeOutMs);
         MessageEvent message = null;
-
+        
         if (StringUtil.isNullOrEmpty(servicePath)) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_SERVICEPATHMISSING);
             result.setResultMessage(message);
@@ -171,41 +171,41 @@ public class RestService implements IRestService {
         if (!StringUtil.isNullOrEmpty(token)) {
             headerList.add(factoryAppServiceHeader.create(null, "cerberus-token", token, "Y", 0, "", "", null, "", null));
         }
-
+        
         CloseableHttpClient httpclient = null;
         HttpClientBuilder httpclientBuilder;
         if (proxyService.useProxy(servicePath, system)) {
-
+            
             String proxyHost = parameterService.getParameterStringByKey("cerberus_proxy_host", system,
                     DEFAULT_PROXY_HOST);
             int proxyPort = parameterService.getParameterIntegerByKey("cerberus_proxy_port", system,
                     DEFAULT_PROXY_PORT);
-
+            
             serviceREST.setProxy(true);
             serviceREST.setProxyHost(proxyHost);
             serviceREST.setProxyPort(proxyPort);
-
+            
             HttpHost proxyHostObject = new HttpHost(proxyHost, proxyPort);
-
+            
             if (parameterService.getParameterBooleanByKey("cerberus_proxyauthentification_active", system,
                     DEFAULT_PROXYAUTHENT_ACTIVATE)) {
-
+                
                 String proxyUser = parameterService.getParameterStringByKey("cerberus_proxyauthentification_user", system, DEFAULT_PROXYAUTHENT_USER);
                 String proxyPassword = parameterService.getParameterStringByKey("cerberus_proxyauthentification_password", system, DEFAULT_PROXYAUTHENT_PASSWORD);
-
+                
                 serviceREST.setProxyWithCredential(true);
                 serviceREST.setProxyUser(proxyUser);
-
+                
                 CredentialsProvider credsProvider = new BasicCredentialsProvider();
                 credsProvider.setCredentials(new AuthScope(proxyHost, proxyPort), new UsernamePasswordCredentials(proxyUser, proxyPassword));
-
+                
                 LOG.debug("Activating Proxy With Authentification.");
                 httpclientBuilder = HttpClientBuilder.create().setProxy(proxyHostObject)
                         .setProxyAuthenticationStrategy(new ProxyAuthenticationStrategy())
                         .setDefaultCredentialsProvider(credsProvider);
-
+                
             } else {
-
+                
                 LOG.debug("Activating Proxy (No Authentification).");
                 httpclientBuilder = HttpClientBuilder.create().setProxy(proxyHostObject);
             }
@@ -216,9 +216,9 @@ public class RestService implements IRestService {
         // if it is an GUI REST, share the GUI context with api call
         if ((tcexecution != null) && (tcexecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI))) {
             WebDriver driver = tcexecution.getSession().getDriver();
-
+            
             BasicCookieStore cookieStore = new BasicCookieStore();
-
+            
             driver.manage().getCookies().forEach(cookieSelenium -> {
                 BasicClientCookie cookie = new BasicClientCookie(cookieSelenium.getName(), cookieSelenium.getValue());
                 cookie.setDomain(cookieSelenium.getDomain());
@@ -226,39 +226,40 @@ public class RestService implements IRestService {
                 cookie.setExpiryDate(cookieSelenium.getExpiry());
                 cookieStore.addCookie(cookie);
             });
-
+            
             httpclientBuilder.setDefaultCookieStore(cookieStore);
         }
-
+        
         try {
-
+            
             boolean acceptUnsignedSsl = parameterService.getParameterBooleanByKey("cerberus_accept_unsigned_ssl_certificate", system, true);
-
+            
             if (acceptUnsignedSsl) {
+                LOG.debug("Trusting all SSL Certificates.");
                 // authorize non valide certificat ssl
                 SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(null, new TrustSelfSignedStrategy() {
                     public boolean isTrusted(X509Certificate[] chain, String authType) throws CertificateException {
                         return true;
                     }
                 }).build();
-
+                
                 httpclientBuilder
                         .setSSLContext(sslContext)
                         .setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE);
             }
-
+            
             httpclient = httpclientBuilder.build();
-
+            
             RequestConfig requestConfig;
             // Timeout setup.
             requestConfig = RequestConfig.custom().setConnectTimeout(timeOutMs).setConnectionRequestTimeout(timeOutMs)
                     .setSocketTimeout(timeOutMs).build();
-
+            
             AppService responseHttp = null;
-
+            
             switch (method) {
                 case AppService.METHOD_HTTPGET:
-
+                    
                     LOG.info("Start preparing the REST Call (GET). " + servicePath + " - " + requestString);
 
                     // Adding query string from requestString
@@ -267,7 +268,7 @@ public class RestService implements IRestService {
                     // Adding query string from contentList
                     String newRequestString = AppServiceService.convertContentListToQueryString(contentList);
                     servicePath = StringUtil.addQueryString(servicePath, newRequestString);
-
+                    
                     serviceREST.setServicePath(servicePath);
                     HttpGet httpGet = new HttpGet(servicePath);
 
@@ -284,22 +285,22 @@ public class RestService implements IRestService {
 
                     // Saving the service before the call Just in case it goes wrong (ex : timeout).
                     result.setItem(serviceREST);
-
+                    
                     LOG.info("Executing request " + httpGet.getRequestLine());
                     responseHttp = executeHTTPCall(httpclient, httpGet);
-
+                    
                     if (responseHttp != null) {
                         serviceREST.setResponseHTTPBody(responseHttp.getResponseHTTPBody());
                         serviceREST.setResponseHTTPCode(responseHttp.getResponseHTTPCode());
                         serviceREST.setResponseHTTPVersion(responseHttp.getResponseHTTPVersion());
                         serviceREST.setResponseHeaderList(responseHttp.getResponseHeaderList());
                     }
-
+                    
                     break;
                 case AppService.METHOD_HTTPPOST:
-
+                    
                     LOG.info("Start preparing the REST Call (POST). " + servicePath);
-
+                    
                     serviceREST.setServicePath(servicePath);
                     HttpPost httpPost = new HttpPost(servicePath);
 
@@ -332,10 +333,10 @@ public class RestService implements IRestService {
 
                     // Saving the service before the call Just in case it goes wrong (ex : timeout).
                     result.setItem(serviceREST);
-
+                    
                     LOG.info("Executing request " + httpPost.getRequestLine());
                     responseHttp = executeHTTPCall(httpclient, httpPost);
-
+                    
                     if (responseHttp != null) {
                         serviceREST.setResponseHTTPBody(responseHttp.getResponseHTTPBody());
                         serviceREST.setResponseHTTPCode(responseHttp.getResponseHTTPCode());
@@ -349,10 +350,10 @@ public class RestService implements IRestService {
                                 + timeOutMs + ")"));
                         result.setResultMessage(message);
                         return result;
-
+                        
                     }
                     break;
-
+                
                 case AppService.METHOD_HTTPDELETE:
                     LOG.info("Start preparing the REST Call (DELETE). " + servicePath);
                     servicePath = StringUtil.addQueryString(servicePath, requestString);
@@ -370,22 +371,22 @@ public class RestService implements IRestService {
 
                     // Saving the service before the call Just in case it goes wrong (ex : timeout).
                     result.setItem(serviceREST);
-
+                    
                     LOG.info("Executing request " + httpDelete.getRequestLine());
                     responseHttp = executeHTTPCall(httpclient, httpDelete);
-
+                    
                     if (responseHttp != null) {
                         serviceREST.setResponseHTTPBody(responseHttp.getResponseHTTPBody());
                         serviceREST.setResponseHTTPCode(responseHttp.getResponseHTTPCode());
                         serviceREST.setResponseHTTPVersion(responseHttp.getResponseHTTPVersion());
                         serviceREST.setResponseHeaderList(responseHttp.getResponseHeaderList());
                     }
-
+                    
                     break;
-
+                
                 case AppService.METHOD_HTTPPUT:
                     LOG.info("Start preparing the REST Call (PUT). " + servicePath);
-
+                    
                     serviceREST.setServicePath(servicePath);
                     HttpPut httpPut = new HttpPut(servicePath);
 
@@ -418,10 +419,10 @@ public class RestService implements IRestService {
 
                     // Saving the service before the call Just in case it goes wrong (ex : timeout).
                     result.setItem(serviceREST);
-
+                    
                     LOG.info("Executing request " + httpPut.getRequestLine());
                     responseHttp = executeHTTPCall(httpclient, httpPut);
-
+                    
                     if (responseHttp != null) {
                         serviceREST.setResponseHTTPBody(responseHttp.getResponseHTTPBody());
                         serviceREST.setResponseHTTPCode(responseHttp.getResponseHTTPCode());
@@ -435,13 +436,13 @@ public class RestService implements IRestService {
                                 + timeOutMs + ")"));
                         result.setResultMessage(message);
                         return result;
-
+                        
                     }
                     break;
-
+                
                 case AppService.METHOD_HTTPPATCH:
                     LOG.info("Start preparing the REST Call (PUT). " + servicePath);
-
+                    
                     serviceREST.setServicePath(servicePath);
                     HttpPatch httpPatch = new HttpPatch(servicePath);
 
@@ -474,10 +475,10 @@ public class RestService implements IRestService {
 
                     // Saving the service before the call Just in case it goes wrong (ex : timeout).
                     result.setItem(serviceREST);
-
+                    
                     LOG.info("Executing request " + httpPatch.getRequestLine());
                     responseHttp = executeHTTPCall(httpclient, httpPatch);
-
+                    
                     if (responseHttp != null) {
                         serviceREST.setResponseHTTPBody(responseHttp.getResponseHTTPBody());
                         serviceREST.setResponseHTTPCode(responseHttp.getResponseHTTPCode());
@@ -491,23 +492,23 @@ public class RestService implements IRestService {
                                 + timeOutMs + ")"));
                         result.setResultMessage(message);
                         return result;
-
+                        
                     }
                     break;
-
+                
             }
 
             // Get result Content Type.
             if (responseHttp != null) {
                 serviceREST.setResponseHTTPBodyContentType(AppServiceService.guessContentType(serviceREST, AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON));
             }
-
+            
             result.setItem(serviceREST);
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CALLSERVICE);
             message.setDescription(message.getDescription().replace("%SERVICEMETHOD%", method));
             message.setDescription(message.getDescription().replace("%SERVICEPATH%", servicePath));
             result.setResultMessage(message);
-
+            
         } catch (SocketTimeoutException ex) {
             LOG.info("Exception when performing the REST Call. " + ex.toString());
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_TIMEOUT);
@@ -532,8 +533,8 @@ public class RestService implements IRestService {
                 LOG.error(ex.toString(), ex);
             }
         }
-
+        
         return result;
     }
-
+    
 }
