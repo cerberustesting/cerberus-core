@@ -78,7 +78,7 @@ function displayPageLabel() {
     $("#editAppAdvanced").html(doc.getDocLabel("page_global", "tab_advanced"));
     $("[name='applicationField']").html(doc.getDocOnline("application", "Application"));
     $("[name='descriptionField']").html(doc.getDocOnline("application", "Description"));
-    $("[name='sortField']").html(doc.getDocOnline("application", "sort"));
+    //$("[name='sortField']").html(doc.getDocOnline("application", "sort"));
     $("[name='typeField']").html(doc.getDocOnline("application", "type"));
     $("[name='systemField']").html(doc.getDocOnline("application", "system"));
     $("[name='subsystemField']").html(doc.getDocOnline("application", "subsystem"));
@@ -306,7 +306,7 @@ function editEntryClick(id, system) {
         formEdit.find("#originalApplication").prop("value", obj["application"]);
         formEdit.find("#application").prop("value", obj["application"]);
         formEdit.find("#description").prop("value", obj["description"]);
-        formEdit.find("#sort").prop("value", obj["sort"]);
+        //formEdit.find("#sort").prop("value", obj["sort"]);
         formEdit.find("#type").prop("value", obj["type"]);
         formEdit.find("#system").prop("value", obj["system"]);
         formEdit.find("#subsystem").prop("value", obj["subsystem"]);
@@ -318,7 +318,7 @@ function editEntryClick(id, system) {
 
         if (!(data["hasPermissions"])) { // If readonly, we only readonly all fields
             formEdit.find("#description").prop("readonly", "readonly");
-            formEdit.find("#sort").prop("readonly", "readonly");
+            //formEdit.find("#sort").prop("readonly", "readonly");
             formEdit.find("#type").prop("disabled", "disabled");
             formEdit.find("#system").prop("disabled", "disabled");
             formEdit.find("#subsystem").prop("readonly", "readonly");

@@ -27,60 +27,45 @@
                                 <input type="text" class="form-control input-sm" name="originalApplication" id="originalApplication" style="display:none;"/>
                             </div>
                         </div>
+                        <div class="row">
+                           <div class="form-group col-xs-12">
+                           		<label for="description" name="descriptionField">Description</label>
+                           		<input type="text" class="form-control" name="description" id="description" aria-describedby="basic-addon1" maxlength="200">
+                        	</div>
+                        </div>
                         <!-- tabs definition-->
                         <ul id="tabsEdit" class="nav nav-tabs" data-tabs="tabs">
                             <li class="active"><a data-toggle="tab" href="#tabsEdit-1" id="tab1Text" name="tabsEdit1">Definition</a></li>
                             <li><a data-toggle="tab" href="#tabsEdit-2" id="tab2Text" name="tabsEdit2">Environment</a></li>
                             <li><a data-toggle="tab" href="#tabsEdit-4" id="tab4Text" name="tabsEdit4">Bug Tracker</a></li>
                             <li><a data-toggle="tab" href="#tabsEdit-3" id="tab3Text" name="tabsEdit3">Object</a></li>
+                            <li><a data-toggle="tab" href="#tabsEdit-5" id="tab5Text" name="tabsEdit5">Deployment</a></li>
                         </ul>
                         <div class="tab-content">
-                            <div class="center marginTop25 tab-pane fade in active" id="tabsEdit-1">
+                            <div class="center marginTop25 tab-pane fade in active" id="tabsEdit-1">                               
                                 <div class="row">
-                                    <div class="form-group col-xs-12">
-                                        <label for="description" name="descriptionField">Description</label>
-                                        <input type="text" class="form-control" name="description" id="description" aria-describedby="basic-addon1" maxlength="200">
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group col-xs-6">
+                                    <!--   <div class="form-group col-xs-6">
                                         <label for="sort" name="sortField">Sort</label>
                                         <input type="text" class="form-control" name="sort" id="sort" aria-describedby="basic-addon1" maxlength="10">
                                     </div>
+                                    -->
                                     <div class="form-group col-xs-6">
                                         <label for="type" name="typeField">Type</label>
                                         <select class="form-control"  id="type" name="type">
                                         </select>
                                     </div>
-                                </div>
-                                <div class="row">
                                     <div class="form-group col-xs-6">
                                         <label for="system" name="systemField">System</label>
                                         <select class="form-control"  id="system" name="system">
                                         </select>
                                     </div>
-                                    <div class="form-group col-xs-6">
-                                        <label for="SubSystem" name="subsystemField">Sub System</label>
-                                        <input type="text" class="form-control" name="subsystem" id="subsystem" aria-describedby="basic-addon1" maxlength="200">
-                                    </div>
                                 </div>
                                 <div class="row">
                                     <div class="form-group col-xs-12">
-                                        <label for="svnurl" name="svnurlField">Description</label>
-                                        <input type="text" class="form-control" name="svnurl" id="svnurl" aria-describedby="basic-addon1" maxlength="150">
+                                        <label for="SubSystem" name="subsystemField">Sub System</label>
+                                        <input type="text" class="form-control" name="subsystem" id="subsystem" aria-describedby="basic-addon1" maxlength="200">
                                     </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group col-xs-6">
-                                        <label for="deploytype" name="deploytypeField">Deploy Type</label>
-                                        <select class="form-control"  id="deploytype" name="deploytype">
-                                        </select>
-                                    </div>
-                                    <div class="form-group col-xs-6">
-                                        <label for="mavengroupid" name="mavengroupidField">Maven Group Id</label>
-                                        <input type="text" class="form-control" name="mavengroupid" id="mavengroupid" aria-describedby="basic-addon1" maxlength="50">
-                                    </div>
-                                </div>
+                                </div> 
                             </div>
                             <div class="center marginTop25 tab-pane fade" id="tabsEdit-4">
                                 <div class="row">
@@ -97,6 +82,12 @@
                                                   class="form-control" maxlength="5000"></textarea>
                                     </div>
                                 </div>
+                            </div>
+                            <div class="center tab-pane fade marginTop25" id="tabsEdit-3">
+                                <div id="applicationObjectList">
+                                    <table id="applicationObjectsTable" class="table table-bordered table-hover display" name="applicationObjectsTable"></table>
+                                 	<div class="marginBottom20"></div>
+                                 </div>
                             </div>
                             <div class="center tab-pane fade marginTop25" id="tabsEdit-2">
                                 <div id="listPanelEnvironment">
@@ -124,10 +115,23 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="center tab-pane fade marginTop25" id="tabsEdit-3">
-                                <div id="applicationObjectList">
-                                    <table id="applicationObjectsTable" class="table table-bordered table-hover display" name="applicationObjectsTable"></table>
-                                    <div class="marginBottom20"></div>
+                            <div class="center marginTop25 tab-pane fade" id="tabsEdit-5">                                                             
+                                <div class="row">
+                                    <div class="form-group col-xs-12">
+                                        <label for="svnurl" name="svnurlField">SVN URL</label>
+                                        <input type="text" class="form-control" name="svnurl" id="svnurl" aria-describedby="basic-addon1" maxlength="150">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-xs-6">
+                                        <label for="deploytype" name="deploytypeField">Deploy Type</label>
+                                        <select class="form-control"  id="deploytype" name="deploytype">
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-xs-6">
+                                        <label for="mavengroupid" name="mavengroupidField">Maven Group Id</label>
+                                        <input type="text" class="form-control" name="mavengroupid" id="mavengroupid" aria-describedby="basic-addon1" maxlength="50">
+                                    </div>
                                 </div>
                             </div>
                         </div>
