@@ -356,10 +356,6 @@
     	background-color:white;
     }
 
-    .pull-right{
-    	min-width:269px;
-    }
-    
     #burger{
     	display:inline-block;
     	position:absolute;

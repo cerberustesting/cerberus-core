@@ -248,14 +248,14 @@ public class SeleniumServerService implements ISeleniumServerService {
 //                    appiumDriver = new AndroidDriver(executor, caps);
 //                    }
                     driver = (WebDriver) appiumDriver;
-                } else if (caps.getPlatform().is(Platform.MAC)) {
+//                } else if (caps.getPlatform().is(Platform.MAC)) {
                     // Appium does not support connection from HTTPCommandExecutor. When connecting from Executor, it stops to work after a couple of instructions.
 //                    if (executor == null) {
-                    appiumDriver = new IOSDriver(url, caps);
+//                    appiumDriver = new IOSDriver(url, caps);
 //                    } else {
 //                    appiumDriver = new IOSDriver(executor, caps);
 //                    }
-                    driver = (WebDriver) appiumDriver;
+//                    driver = (WebDriver) appiumDriver;
                 } else {
                     // Appium does not support connection from HTTPCommandExecutor. When connecting from Executor, it stops to work after a couple of instructions.
 //                    if (executor == null) {
@@ -415,6 +415,11 @@ public class SeleniumServerService implements ISeleniumServerService {
         }
 
         /**
+         * Set Browser Capabilities
+         */
+        caps = this.setCapabilityBrowser(caps, tCExecution.getBrowser(), tCExecution);
+
+        /**
          * Loop on RobotCapabilities to feed DesiredCapabilities Capability must
          * be String, Integer or Boolean
          */
@@ -425,12 +430,14 @@ public class SeleniumServerService implements ISeleniumServerService {
         if (additionalCapabilities != null) {
             for (RobotCapability additionalCapability : additionalCapabilities) {
                 LOG.debug("RobotCaps on Robot : " + " " + additionalCapability.getRobot() + " caps : " + additionalCapability.getCapability() + " Value : " + additionalCapability.getValue());
-                if (StringUtil.isBoolean(additionalCapability.getValue())) {
-                    caps.setCapability(additionalCapability.getCapability(), StringUtil.parseBoolean(additionalCapability.getValue()));
-                } else if (StringUtil.isInteger(additionalCapability.getValue())) {
-                    caps.setCapability(additionalCapability.getCapability(), Integer.valueOf(additionalCapability.getValue()));
-                } else {
-                    caps.setCapability(additionalCapability.getCapability(), additionalCapability.getValue());
+                if ((caps.getCapability(additionalCapability.getCapability()) == null)) { // caps does not already exist so we can set it.
+                    if (StringUtil.isBoolean(additionalCapability.getValue())) {
+                        caps.setCapability(additionalCapability.getCapability(), StringUtil.parseBoolean(additionalCapability.getValue()));
+                    } else if (StringUtil.isInteger(additionalCapability.getValue())) {
+                        caps.setCapability(additionalCapability.getCapability(), Integer.valueOf(additionalCapability.getValue()));
+                    } else {
+                        caps.setCapability(additionalCapability.getCapability(), additionalCapability.getValue());
+                    }
                 }
             }
         } else {
@@ -438,17 +445,14 @@ public class SeleniumServerService implements ISeleniumServerService {
         }
 
         /**
-         * Set Browser Capabilities
-         */
-        caps = this.setCapabilityBrowser(caps, tCExecution.getBrowser(), tCExecution, additionalCapabilities);
-
-        /**
          * Feed DesiredCapabilities with values get from Robot
          */
-        if (!StringUtil.isNullOrEmpty(tCExecution.getPlatform())) {
+        if ((!StringUtil.isNullOrEmpty(tCExecution.getPlatform()))
+                && (caps.getCapability("platform") == null)) {
             caps.setCapability("platform", tCExecution.getPlatform());
         }
-        if (!StringUtil.isNullOrEmpty(tCExecution.getVersion())) {
+        if ((!StringUtil.isNullOrEmpty(tCExecution.getVersion()))
+                && (caps.getCapability("version") == null)) {
             caps.setCapability("version", tCExecution.getVersion());
         }
 
@@ -460,24 +464,36 @@ public class SeleniumServerService implements ISeleniumServerService {
                 || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
             // Set the app capability with the application path
             if (!StringUtil.isNullOrEmpty(tCExecution.getMyHost())) {
-                caps.setCapability("app", tCExecution.getMyHost());
+                if ((caps.getCapability("app") == null)) {
+                    caps.setCapability("app", tCExecution.getMyHost());
+                }
             } else {
-                caps.setCapability("app", tCExecution.getCountryEnvironmentParameters().getIp());
+                if ((caps.getCapability("app") == null)) {
+                    caps.setCapability("app", tCExecution.getCountryEnvironmentParameters().getIp());
+                }
             }
             if (!StringUtil.isNullOrEmpty(tCExecution.getCountryEnvironmentParameters().getMobileActivity()) && tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
-                caps.setCapability("appWaitActivity", tCExecution.getCountryEnvironmentParameters().getMobileActivity());
+                if ((caps.getCapability("appWaitActivity") == null)) {
+                    caps.setCapability("appWaitActivity", tCExecution.getCountryEnvironmentParameters().getMobileActivity());
+                }
             }
 
             if (tCExecution.getRobotExecutorObj() != null) {
                 // Setting deviceUdid and device name from executor.
                 if (!StringUtil.isNullOrEmpty(tCExecution.getRobotExecutorObj().getDeviceUuid())) {
-                    caps.setCapability("udid", tCExecution.getRobotExecutorObj().getDeviceUuid());
+                    if ((caps.getCapability("udid") == null)) {
+                        caps.setCapability("udid", tCExecution.getRobotExecutorObj().getDeviceUuid());
+                    }
                 }
                 if (!StringUtil.isNullOrEmpty(tCExecution.getRobotExecutorObj().getDeviceName())) {
-                    caps.setCapability("deviceName", tCExecution.getRobotExecutorObj().getDeviceName());
+                    if ((caps.getCapability("deviceName") == null)) {
+                        caps.setCapability("deviceName", tCExecution.getRobotExecutorObj().getDeviceName());
+                    }
                 }
                 if (!StringUtil.isNullOrEmpty(tCExecution.getRobotExecutorObj().getDeviceName())) {
-                    caps.setCapability("systemPort", tCExecution.getRobotExecutorObj().getDevicePort() + "");
+                    if ((caps.getCapability("systemPort") == null)) {
+                        caps.setCapability("systemPort", tCExecution.getRobotExecutorObj().getDevicePort() + "");
+                    }
                 }
             }
 
@@ -487,20 +503,24 @@ public class SeleniumServerService implements ISeleniumServerService {
 
         }
 
-        for (Map.Entry cap : caps.asMap().entrySet()) {
-            additionalCapabilities.add(factoryRobotCapability.create(0, "", cap.getKey().toString(), cap.getValue().toString()));
-        }
-
         /**
          * We record Caps list at the execution level.
          */
         try {
+
+            // Init additionalFinalCapabilities and set it from real caps.
+            List<RobotCapability> additionalFinalCapabilities = new ArrayList<>();
+            for (Map.Entry cap : caps.asMap().entrySet()) {
+                additionalFinalCapabilities.add(factoryRobotCapability.create(0, "", cap.getKey().toString(), cap.getValue().toString()));
+            }
+
+            // Init inputCapabilities and set it from Robot values.
             List<RobotCapability> inputCapabilities = new ArrayList<>();
             if (tCExecution.getRobotObj() != null) {
                 inputCapabilities = tCExecution.getRobotObj().getCapabilities();
             }
 
-            tCExecution.addFileList(recorderService.recordCapabilities(tCExecution, inputCapabilities, additionalCapabilities));
+            tCExecution.addFileList(recorderService.recordCapabilities(tCExecution, inputCapabilities, additionalFinalCapabilities));
         } catch (Exception ex) {
             LOG.error("Exception Saving Robot Caps " + tCExecution.getId() + " Exception :" + ex.toString(), ex);
         }
@@ -517,7 +537,7 @@ public class SeleniumServerService implements ISeleniumServerService {
      * @return
      * @throws CerberusException
      */
-    private DesiredCapabilities setCapabilityBrowser(DesiredCapabilities capabilities, String browser, TestCaseExecution tCExecution, List<RobotCapability> additionalCapabilities) throws CerberusException {
+    private DesiredCapabilities setCapabilityBrowser(DesiredCapabilities capabilities, String browser, TestCaseExecution tCExecution) throws CerberusException {
         try {
             if (browser.equalsIgnoreCase("firefox")) {
                 capabilities = DesiredCapabilities.firefox();
@@ -542,11 +562,11 @@ public class SeleniumServerService implements ISeleniumServerService {
                     profile.setPreference("general.useragent.override", usedUserAgent);
                 }
                 capabilities.setCapability(FirefoxDriver.PROFILE, profile);
-                try {
-                    additionalCapabilities.add(factoryRobotCapability.create(0, "", FirefoxDriver.PROFILE, profile.toJson()));
-                } catch (IOException ex) {
-                    LOG.error("", ex);
-                }
+//                try {
+//                    additionalCapabilities.add(factoryRobotCapability.create(0, "", FirefoxDriver.PROFILE, profile.toJson()));
+//                } catch (IOException ex) {
+//                    LOG.error("", ex);
+//                }
 
             } else if (browser.equalsIgnoreCase("IE")) {
                 capabilities = DesiredCapabilities.internetExplorer();
@@ -565,7 +585,7 @@ public class SeleniumServerService implements ISeleniumServerService {
                     options.addArguments("--user-agent=" + usedUserAgent);
                 }
                 capabilities.setCapability(ChromeOptions.CAPABILITY, options);
-                additionalCapabilities.add(factoryRobotCapability.create(0, "", ChromeOptions.CAPABILITY, options.toString()));
+//                additionalCapabilities.add(factoryRobotCapability.create(0, "", ChromeOptions.CAPABILITY, options.toString()));
 
             } else if (browser.contains("android")) {
                 capabilities = DesiredCapabilities.android();

@@ -22,13 +22,12 @@
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
         initPage();
-
-
     });
 });
 
 function initPage() {
 
+    displayPageLabel();
     var table = loadTable();
 
     // MASS ACTION
@@ -92,8 +91,8 @@ function initMassActionModal() {
 function displayPageLabel() {
     var doc = new Doc();
 
-	displayHeaderLabel(doc);
-	displayGlobalLabel(doc);
+    displayHeaderLabel(doc);
+    displayGlobalLabel(doc);
     $("#testCaseListLabel").html(doc.getDocOnline("page_testcaselist", "testcaselist"));
     displayFooter(doc);
 
@@ -132,7 +131,7 @@ function loadTable(selectTest, sortColumn) {
         if (label !== "" && label !== null) {
             filterOnColumn("testCaseTable", "labels", label);
         }
-        
+
         // Mass action 
         $("#selectAll").click(selectAll);
 
