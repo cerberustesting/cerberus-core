@@ -527,6 +527,12 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('testcase','ToBuild','','fr','Jusqu\\'au Sprint','','_cas_de_test')");
         b.append(",('testcase','ToRev','','en','To Rev',' ','_testcase')");
         b.append(",('testcase','ToRev','','fr','Jusqu\\'à la Revision','','_cas_de_test')");
+        b.append(",('testcase','versionActivation','','en','Version Activation','Activation parameters for specific versions','_testcase')");
+        b.append(",('testcase','versionActivation','','fr','Version Activation','Paramètres pour activation suivant les version d\\'application  ','_cas_de_test')");
+        b.append(",('testcase','activationConditions','','en','Activation Conditions','Testcase execution conditions','_testcase')");
+        b.append(",('testcase','activationConditions','','fr','Conditions d\\'Activation','Conditions d\\'execution du cas de test','_cas_de_test')");
+        b.append(",('testcase','robotConstraints','','en','Robot Constraints','Specific robot parameters for the test case','_testcase')");
+        b.append(",('testcase','robotConstraints','','fr','Contraintes Robot','Paramètres robot spécifiques au cas de test','_cas_de_test')");
         b.append(",('testcasecountryproperties','Database','','en','DTB','Database where the SQL will be executed.<br>This is only applicable if the property type is <code class=\\'doc-fixed\\'>executeSql</code> or <code class=\\'doc-fixed\\'>executeSqlFromLib</code>.',NULL)");
         b.append(",('testcasecountryproperties','Description','','en','Description','Description of the property.',NULL)");
         b.append(",('testcasecountryproperties','Length','','en','Length','It is the length parameter of the property.<br>The parameter usage depend on the <code class=\\'doc-fixed\\'>type</code> of the property.',NULL)");

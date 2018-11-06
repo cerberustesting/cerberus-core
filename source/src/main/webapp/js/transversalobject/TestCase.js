@@ -63,7 +63,6 @@ function initModalTestCase() {
     $("[name='refOriginField']").html(doc.getDocOnline("testcase", "RefOrigine"));
     $("[name='projectField']").html(doc.getDocOnline("project", "idproject"));
     $("[name='ticketField']").html(doc.getDocOnline("testcase", "ticket"));
-    $("[name='functionField']").html(doc.getDocOnline("testcase", "Function"));
     $("[name='applicationField']").html(doc.getDocOnline("application", "Application"));
     $("[name='statusField']").html(doc.getDocOnline("testcase", "Status"));
     $("[name='bugIdField']").html(doc.getDocOnline("testcase", "BugID"));
@@ -74,7 +73,6 @@ function initModalTestCase() {
     $("[name='shortDescField']").html(doc.getDocOnline("testcase", "Description"));
     $("[name='behaviorOrValueExpectedField']").html(doc.getDocOnline("testcase", "BehaviorOrValueExpected"));
     $("[name='shortDescField']").html(doc.getDocOnline("testcase", "Description"));
-    $("[name='howToField']").html(doc.getDocOnline("testcase", "HowTo"));
     $("[name='descriptionField']").html(doc.getDocOnline("test", "Description"));
     $("[name='creatorField']").html(doc.getDocOnline("testcase", "Creator"));
     $("[name='implementerField']").html(doc.getDocOnline("testcase", "Implementer"));
@@ -94,6 +92,9 @@ function initModalTestCase() {
     $("[name='conditionVal1Field']").html(doc.getDocOnline("testcase", "ConditionVal1"));
     $("[name='conditionVal2Field']").html(doc.getDocOnline("testcase", "ConditionVal2"));
     $("[name='commentField']").html(doc.getDocOnline("testcase", "Comment"));
+    $("[name='versionActivation']").html(doc.getDocLabel("testcase", "versionActivation"));
+    $("[name='activationConditions']").html(doc.getDocLabel("testcase", "activationConditions"));
+    $("[name='robotConstraints']").html(doc.getDocLabel("testcase", "robotConstraints"));
     $("#filters").html(doc.getDocOnline("page_testcaselist", "filters"));
     $("[name='btnLoad']").html(doc.getDocLabel("page_global", "buttonLoad"));
     $("[name='testField']").html(doc.getDocLabel("test", "Test"));
@@ -420,9 +421,7 @@ function confirmTestCaseModalHandler(mode) {
             comment: data.comment,
             fromRev: data.fromRev,
             fromSprint: data.fromSprint,
-            function: data.function,
             group: data.group,
-            howTo: data.howTo,
             implementer: data.implementer,
             origin: data.origin,
             priority: data.priority,
@@ -550,14 +549,11 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
 
     var observer = new MutationObserver(function (mutations, me) {
         var behaviorOrValueExpected = tinyMCE.get('behaviorOrValueExpected');
-        var howTo = tinyMCE.get('howTo')
-        if (howTo != null && behaviorOrValueExpected != null) {
+        if (behaviorOrValueExpected != null) {
             if (isEmpty(testCase)) {
                 tinyMCE.get('behaviorOrValueExpected').setContent("");
-                tinyMCE.get('howTo').setContent("");
             } else {
                 tinyMCE.get('behaviorOrValueExpected').setContent(testCase.behaviorOrValueExpected);
-                tinyMCE.get('howTo').setContent(testCase.behaviorOrValueExpected);
             }
 
             me.disconnect()
@@ -607,7 +603,6 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#refOrigin").prop("value", "");
         formEdit.find("#project").prop("value", "");
         formEdit.find("#ticket").prop("value", "");
-        formEdit.find("#function").prop("value", "");
         formEdit.find("#group").val("AUTOMATED");
         formEdit.find("#priority option:nth(0)").attr("selected", "selected");
         formEdit.find("#actQA").val("Y");
@@ -632,7 +627,6 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#refOrigin").prop("value", testCase.refOrigine);
         formEdit.find("#project").prop("value", testCase.project);
         formEdit.find("#ticket").prop("value", testCase.ticket);
-        formEdit.find("#function").prop("value", testCase.function);
         formEdit.find("#group").prop("value", testCase.group);
         formEdit.find("#priority").prop("value", testCase.priority);
         formEdit.find("#actQA").prop("value", testCase.activeQA);
@@ -667,7 +661,6 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#origin").prop("disabled", "disabled");
         formEdit.find("#project").prop("disabled", "disabled");
         formEdit.find("#ticket").prop("readonly", "readonly");
-        formEdit.find("#function").prop("readonly", "readonly");
         formEdit.find("#application").prop("disabled", "disabled");
         formEdit.find("#status").prop("disabled", "disabled");
         formEdit.find("#group").prop("disabled", "disabled");
@@ -680,8 +673,6 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#shortDesc").prop("readonly", "readonly");
         if (tinyMCE.get('behaviorOrValueExpected') !== null)
             tinyMCE.get('behaviorOrValueExpected').getBody().setAttribute('contenteditable', false);
-        if (tinyMCE.get('howTo') !== null)
-            tinyMCE.get('howTo').getBody().setAttribute('contenteditable', false);
         formEdit.find("#active").prop("disabled", "disabled");
         formEdit.find("#fromSprint").prop("disabled", "disabled");
         formEdit.find("#fromRev").prop("disabled", "disabled");
@@ -709,7 +700,6 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#origin").removeProp("disabled");
         formEdit.find("#project").removeProp("disabled");
         formEdit.find("#ticket").removeProp("readonly");
-        formEdit.find("#function").removeProp("readonly");
         formEdit.find("#application").removeProp("disabled");
         formEdit.find("#status").removeProp("disabled");
         formEdit.find("#group").removeProp("disabled");
@@ -722,8 +712,6 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#shortDesc").removeProp("readonly");
         if (tinyMCE.get('behaviorOrValueExpected') !== null)
             tinyMCE.get('behaviorOrValueExpected').getBody().setAttribute('contenteditable', true);
-        if (tinyMCE.get('howTo') !== null)
-            tinyMCE.get('howTo').getBody().setAttribute('contenteditable', true);
         formEdit.find("#active").removeProp("disabled");
         formEdit.find("#fromSprint").removeProp("disabled");
         formEdit.find("#fromRev").removeProp("disabled");
