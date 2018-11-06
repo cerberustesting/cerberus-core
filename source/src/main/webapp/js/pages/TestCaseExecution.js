@@ -895,6 +895,7 @@ function getPropertyContent(property) {
     var timeField = $("<input type='text' class='form-control' id='time'>").prop("readonly", true);
     var valueField = $("<textarea type='text' rows='1' class='form-control' id='value'>").prop("readonly", true);
     var returnCodeField = $("<input type='text' class='form-control' id='returncode'>").prop("readonly", true);
+    var rankField = $("<input type='text' class='form-control' id='rank'>").prop("readonly", true);
 
     var returnMessageField = $("<textarea style='width:100%;' class='form-control input-sm' id='returnmessage'>");
 //    returnMessageField.prop("readonly", true);
@@ -911,6 +912,10 @@ function getPropertyContent(property) {
     var retryPeriodField = $("<input type='text' class='form-control' id='retryPeriod'>").prop("readonly", true);
 
     var typeGroup = $("<div class='form-group'></div>").append($("<label for='type'>" + doc.getDocLabel("testcaseexecutiondata", "type") + "</label>")).append(typeField);
+    
+    // add rank
+    var rankGroup = $("<div class='form-group'></div>").append($("<label for='rank'>" + doc.getDocLabel("testcasecountryproperties", "Rank") + "</label>")).append(rankField);
+    
     var descGroup = $("<div class='form-group'></div>").append($("<label for='description'>" + doc.getDocLabel("page_executiondetail", "description") + "</label>")).append(descField);
     var value1Group = $("<div class='form-group'></div>").append($("<label for='value1'>" + doc.getDocLabel("page_executiondetail", "value1") + "</label>")).append(value1Field);
     var value1InitGroup = $("<div class='form-group'></div>").append($("<label for='value1init'>" + doc.getDocLabel("page_executiondetail", "value1init") + "</label>")).append(value1InitField);
@@ -931,6 +936,7 @@ function getPropertyContent(property) {
     databaseField.val(property.database);
     descField.val(property.description);
     typeField.val(property.type);
+    rankField.val(property.rank);
     value1Field.val(property.value1);
     value1InitField.val(property.value1Init);
     value2Field.val(property.value2);
@@ -955,7 +961,8 @@ function getPropertyContent(property) {
     row2.append($("<div></div>").addClass("col-sm-2"));
     row2.append($("<div></div>").addClass("col-sm-5").append(value1InitGroup));
     row2.append($("<div></div>").addClass("col-sm-5").append(value2InitGroup));
-    row3.append($("<div></div>").addClass("col-sm-2").append(typeGroup));
+    row3.append($("<div></div>").addClass("col-sm-1").append(typeGroup));
+    row3.append($("<div></div>").addClass("col-sm-1").append(rankGroup));
     row3.append($("<div></div>").addClass("col-sm-5").append(value1Group));
     row3.append($("<div></div>").addClass("col-sm-5").append(value2Group));
     row4.append($("<div></div>").addClass("col-sm-2").append(indexGroup));
@@ -1048,6 +1055,7 @@ function createPropertiesOld(propList) {
         var propertyName = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "property_field"))).append(propertyInput);
         var description = $("<div class='col-sm-8 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "description_field"))).append(descriptionInput);
         var type = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "type_field"))).append(selectType.clone().val(property.type));
+        var type = $("<div class='col-sm-1 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("testcasecountryproperties", "Rank"))).append(selectType.clone().val(property.type));
         var db = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "db_field"))).append(selectDB.clone().val(property.database));
         var value = $("<div class='col-sm-8 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value_field"))).append(valueInput);
         var value1 = $("<div class='col-sm-6 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value1_field"))).append(value1Input);

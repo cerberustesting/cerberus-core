@@ -423,6 +423,7 @@ public class TestCaseExecutionData {
             result.put("database", this.getDatabase());
             result.put("value", this.getValue());
             result.put("type", this.getType());
+            result.put("rank", this.getRank());
             result.put("value1Init", this.getValue1Init());
             result.put("value2Init", this.getValue2Init());
             result.put("value1", this.getValue1());

@@ -144,6 +144,10 @@
         margin-top:32px;
     }
 }
+.secondaryProperty{
+	border-left: 6px solid #7f8c8d;
+}
+
 .control {
     position:relative;
     font-size: 11px;
