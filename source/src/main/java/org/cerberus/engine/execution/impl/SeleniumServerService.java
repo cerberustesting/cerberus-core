@@ -452,6 +452,22 @@ public class SeleniumServerService implements ISeleniumServerService {
             caps.setCapability("version", tCExecution.getVersion());
         }
 
+
+
+        if (tCExecution.getRobotExecutorObj() != null) {
+            // Setting deviceUdid and device name from executor.
+            if (!StringUtil.isNullOrEmpty(tCExecution.getRobotExecutorObj().getDeviceUuid())) {
+                caps.setCapability("udid", tCExecution.getRobotExecutorObj().getDeviceUuid());
+            }
+            if (!StringUtil.isNullOrEmpty(tCExecution.getRobotExecutorObj().getDeviceName())) {
+                caps.setCapability("deviceName", tCExecution.getRobotExecutorObj().getDeviceName());
+            }
+            if (!StringUtil.isNullOrEmpty(tCExecution.getRobotExecutorObj().getDeviceName())) {
+                caps.setCapability("systemPort", tCExecution.getRobotExecutorObj().getDevicePort() + "");
+            }
+        }
+
+
         /**
          * if application is a mobile one, then set the "app" capability to the
          * application binary path
@@ -466,19 +482,6 @@ public class SeleniumServerService implements ISeleniumServerService {
             }
             if (!StringUtil.isNullOrEmpty(tCExecution.getCountryEnvironmentParameters().getMobileActivity()) && tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
                 caps.setCapability("appWaitActivity", tCExecution.getCountryEnvironmentParameters().getMobileActivity());
-            }
-
-            if (tCExecution.getRobotExecutorObj() != null) {
-                // Setting deviceUdid and device name from executor.
-                if (!StringUtil.isNullOrEmpty(tCExecution.getRobotExecutorObj().getDeviceUuid())) {
-                    caps.setCapability("udid", tCExecution.getRobotExecutorObj().getDeviceUuid());
-                }
-                if (!StringUtil.isNullOrEmpty(tCExecution.getRobotExecutorObj().getDeviceName())) {
-                    caps.setCapability("deviceName", tCExecution.getRobotExecutorObj().getDeviceName());
-                }
-                if (!StringUtil.isNullOrEmpty(tCExecution.getRobotExecutorObj().getDeviceName())) {
-                    caps.setCapability("systemPort", tCExecution.getRobotExecutorObj().getDevicePort() + "");
-                }
             }
 
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK) && caps.getCapability("automationName") == null) {
