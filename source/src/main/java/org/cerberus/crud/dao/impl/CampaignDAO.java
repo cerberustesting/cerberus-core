@@ -24,6 +24,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -208,14 +209,14 @@ public class CampaignDAO implements ICampaignDAO {
                 PreparedStatement preStat = connection.prepareStatement(query.toString())) {
             // Prepare and execute query
             preStat.setString(1, key);
-            
-            try(ResultSet resultSet = preStat.executeQuery();) {
-            	while (resultSet.next()) {
+
+            try (ResultSet resultSet = preStat.executeQuery();) {
+                while (resultSet.next()) {
                     ans.setItem(loadFromResultSet(resultSet));
                 }
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
                         .resolveDescription("OPERATION", "SELECT");
-            }catch (SQLException exception) {
+            } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
@@ -243,18 +244,18 @@ public class CampaignDAO implements ICampaignDAO {
                 PreparedStatement preStat = connection.prepareStatement(query.toString())) {
             // Prepare and execute query
             preStat.setInt(1, key);
-            try(ResultSet resultSet = preStat.executeQuery()){
-            	while (resultSet.next()) {
+            try (ResultSet resultSet = preStat.executeQuery()) {
+                while (resultSet.next()) {
                     ans.setItem(loadFromResultSet(resultSet));
                 }
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
                         .resolveDescription("OPERATION", "SELECT");
-            }catch (SQLException exception) {
+            } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
 
-            } 
+            }
         } catch (Exception e) {
             LOG.warn("Unable to execute query : " + e.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
@@ -306,7 +307,7 @@ public class CampaignDAO implements ICampaignDAO {
         }
         try (Connection connection = databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(query.toString());
-        		Statement stm = connection.createStatement();) {
+                Statement stm = connection.createStatement();) {
 
             int i = 1;
             if (!StringUtil.isNullOrEmpty(searchTerm)) {
@@ -318,13 +319,13 @@ public class CampaignDAO implements ICampaignDAO {
                 preStat.setString(i++, individualColumnSearchValue);
             }
 
-            try(ResultSet resultSet = preStat.executeQuery();
-            		ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
-            	//gets the data
+            try (ResultSet resultSet = preStat.executeQuery();
+                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+                //gets the data
                 while (resultSet.next()) {
                     distinctValues.add(resultSet.getString("distinctValues") == null ? "" : resultSet.getString("distinctValues"));
                 }
-                
+
                 int nrTotalRows = 0;
 
                 if (rowSet != null && rowSet.next()) {
@@ -344,7 +345,7 @@ public class CampaignDAO implements ICampaignDAO {
                     msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
                     answer = new AnswerList<>(distinctValues, nrTotalRows);
                 }
-            }catch (SQLException exception) {
+            } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
@@ -368,8 +369,11 @@ public class CampaignDAO implements ICampaignDAO {
     public Answer create(Campaign object) {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO campaign (`campaign`, `DistribList`, `NotifyStartTagExecution`, `NotifyEndTagExecution`, `Description`) ");
-        query.append("VALUES (?,?,?,?,?)");
+        query.append("INSERT INTO campaign (`campaign`, `DistribList`, `NotifyStartTagExecution`, `NotifyEndTagExecution`"
+                + ", SlackNotifyStartTagExecution, SlackNotifyEndTagExecution, SlackWebhook, SlackChannel"
+                + ", CIScoreThreshold, Tag, Verbose, Screenshot, PageSource, RobotLog, Timeout, Retries, Priority, ManualExecution"
+                + ", `Description`, LongDescription, UsrCreated) ");
+        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -384,7 +388,23 @@ public class CampaignDAO implements ICampaignDAO {
                 preStat.setString(i++, object.getDistribList());
                 preStat.setString(i++, object.getNotifyStartTagExecution());
                 preStat.setString(i++, object.getNotifyEndTagExecution());
+                preStat.setString(i++, object.getSlackNotifyStartTagExecution());
+                preStat.setString(i++, object.getSlackNotifyEndTagExecution());
+                preStat.setString(i++, object.getSlackWebhook());
+                preStat.setString(i++, object.getSlackChannel());
+                preStat.setString(i++, object.getCIScoreThreshold());
+                preStat.setString(i++, object.getTag());
+                preStat.setString(i++, object.getVerbose());
+                preStat.setString(i++, object.getScreenshot());
+                preStat.setString(i++, object.getPageSource());
+                preStat.setString(i++, object.getRobotLog());
+                preStat.setString(i++, object.getTimeout());
+                preStat.setString(i++, object.getRetries());
+                preStat.setString(i++, object.getPriority());
+                preStat.setString(i++, object.getManualExecution());
                 preStat.setString(i++, object.getDescription());
+                preStat.setString(i++, object.getLongDescription());
+                preStat.setString(i++, object.getUsrCreated());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -422,7 +442,10 @@ public class CampaignDAO implements ICampaignDAO {
     @Override
     public Answer update(Campaign object) {
         MessageEvent msg = null;
-        final String query = "UPDATE campaign cpg SET campaign = ?, DistribList = ?, NotifyStartTagExecution = ?, NotifyEndTagExecution = ?, Description = ? WHERE campaignID = ?";
+        final String query = "UPDATE campaign cpg SET campaign = ?, DistribList = ?, NotifyStartTagExecution = ?, NotifyEndTagExecution = ?"
+                + ", SlackNotifyStartTagExecution = ?,  SlackNotifyEndTagExecution = ?, SlackWebhook = ?, SlackChannel = ?"
+                + ", CIScoreThreshold = ?, Tag = ?, Verbose = ?, Screenshot = ?, PageSource = ?, RobotLog = ?, Timeout = ?, Retries = ?, Priority = ?, ManualExecution = ?"
+                + ", Description = ?, LongDescription = ?, UsrModif = ?, DateModif =  NOW() WHERE campaignID = ?";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -437,7 +460,23 @@ public class CampaignDAO implements ICampaignDAO {
                 preStat.setString(i++, object.getDistribList());
                 preStat.setString(i++, object.getNotifyStartTagExecution());
                 preStat.setString(i++, object.getNotifyEndTagExecution());
+                preStat.setString(i++, object.getSlackNotifyStartTagExecution());
+                preStat.setString(i++, object.getSlackNotifyEndTagExecution());
+                preStat.setString(i++, object.getSlackWebhook());
+                preStat.setString(i++, object.getSlackChannel());
+                preStat.setString(i++, object.getCIScoreThreshold());
+                preStat.setString(i++, object.getTag());
+                preStat.setString(i++, object.getVerbose());
+                preStat.setString(i++, object.getScreenshot());
+                preStat.setString(i++, object.getPageSource());
+                preStat.setString(i++, object.getRobotLog());
+                preStat.setString(i++, object.getTimeout());
+                preStat.setString(i++, object.getRetries());
+                preStat.setString(i++, object.getPriority());
+                preStat.setString(i++, object.getManualExecution());
                 preStat.setString(i++, object.getDescription());
+                preStat.setString(i++, object.getLongDescription());
+                preStat.setString(i++, object.getUsrModif());
                 preStat.setInt(i++, object.getCampaignID());
 
                 preStat.executeUpdate();
@@ -514,9 +553,36 @@ public class CampaignDAO implements ICampaignDAO {
         String distribList = ParameterParserUtil.parseStringParam(rs.getString("cpg.DistribList"), "");
         String notifyStartTagExecution = ParameterParserUtil.parseStringParam(rs.getString("cpg.NotifyStartTagExecution"), "N");
         String notifyEndTagExecution = ParameterParserUtil.parseStringParam(rs.getString("cpg.NotifyEndTagExecution"), "N");
-        String desc = ParameterParserUtil.parseStringParam(rs.getString("cpg.description"), "");
 
-        return factoryCampaign.create(campID, camp, distribList, notifyStartTagExecution, notifyEndTagExecution, desc);
+        String slackNotifyStartTagExecution = ParameterParserUtil.parseStringParam(rs.getString("cpg.SlackNotifyStartTagExecution"), "N");
+        String slackNotifyEndTagExecution = ParameterParserUtil.parseStringParam(rs.getString("cpg.SlackNotifyEndTagExecution"), "N");
+        String slackWebhook = ParameterParserUtil.parseStringParam(rs.getString("cpg.SlackWebhook"), "");
+        String slackChannel = ParameterParserUtil.parseStringParam(rs.getString("cpg.SlackChannel"), "");
+
+        String cIScoreThreshold = ParameterParserUtil.parseStringParam(rs.getString("cpg.CIScoreThreshold"), "");
+        String tag = ParameterParserUtil.parseStringParam(rs.getString("cpg.Tag"), "");
+        String verbose = ParameterParserUtil.parseStringParam(rs.getString("cpg.Verbose"), "");
+        String screenshot = ParameterParserUtil.parseStringParam(rs.getString("cpg.Screenshot"), "");
+        String pageSource = ParameterParserUtil.parseStringParam(rs.getString("cpg.PageSource"), "");
+        String robotLog = ParameterParserUtil.parseStringParam(rs.getString("cpg.RobotLog"), "");
+        String timeout = ParameterParserUtil.parseStringParam(rs.getString("cpg.Timeout"), "");
+        String retries = ParameterParserUtil.parseStringParam(rs.getString("cpg.Retries"), "");
+        String priority = ParameterParserUtil.parseStringParam(rs.getString("cpg.Priority"), "");
+        String manualExecution = ParameterParserUtil.parseStringParam(rs.getString("cpg.ManualExecution"), "");
+
+        String desc = ParameterParserUtil.parseStringParam(rs.getString("cpg.description"), "");
+        String longDesc = ParameterParserUtil.parseStringParam(rs.getString("cpg.LongDescription"), "");
+        String usrModif = ParameterParserUtil.parseStringParam(rs.getString("cpg.UsrModif"), "");
+        String usrCreated = ParameterParserUtil.parseStringParam(rs.getString("cpg.UsrCreated"), "");
+        Timestamp dateModif = rs.getTimestamp("cpg.DateModif");
+        Timestamp dateCreated = rs.getTimestamp("cpg.DateCreated");
+
+        return factoryCampaign.create(campID, camp, distribList, notifyStartTagExecution, notifyEndTagExecution,
+                slackNotifyStartTagExecution, slackNotifyEndTagExecution, slackWebhook, slackChannel,
+                cIScoreThreshold,
+                tag, verbose, screenshot, pageSource, robotLog, timeout, retries, priority, manualExecution,
+                desc, longDesc,
+                usrCreated, dateCreated, usrModif, dateModif);
     }
 
 }

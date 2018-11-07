@@ -527,6 +527,12 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('testcase','ToBuild','','fr','Jusqu\\'au Sprint','','_cas_de_test')");
         b.append(",('testcase','ToRev','','en','To Rev',' ','_testcase')");
         b.append(",('testcase','ToRev','','fr','Jusqu\\'à la Revision','','_cas_de_test')");
+        b.append(",('testcase','versionActivation','','en','Version Activation','Activation parameters for specific versions','_testcase')");
+        b.append(",('testcase','versionActivation','','fr','Version Activation','Paramètres pour activation suivant les version d\\'application  ','_cas_de_test')");
+        b.append(",('testcase','activationConditions','','en','Activation Conditions','Testcase execution conditions','_testcase')");
+        b.append(",('testcase','activationConditions','','fr','Conditions d\\'Activation','Conditions d\\'execution du cas de test','_cas_de_test')");
+        b.append(",('testcase','robotConstraints','','en','Robot Constraints','Specific robot parameters for the test case','_testcase')");
+        b.append(",('testcase','robotConstraints','','fr','Contraintes Robot','Paramètres robot spécifiques au cas de test','_cas_de_test')");
         b.append(",('testcasecountryproperties','Database','','en','DTB','Database where the SQL will be executed.<br>This is only applicable if the property type is <code class=\\'doc-fixed\\'>executeSql</code> or <code class=\\'doc-fixed\\'>executeSqlFromLib</code>.',NULL)");
         b.append(",('testcasecountryproperties','Description','','en','Description','Description of the property.',NULL)");
         b.append(",('testcasecountryproperties','Length','','en','Length','It is the length parameter of the property.<br>The parameter usage depend on the <code class=\\'doc-fixed\\'>type</code> of the property.',NULL)");
@@ -1218,8 +1224,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_global','btn_savetableconfig','','fr','Sauvegarder','',NULL)");
         b.append(",('page_global','btn_showHideColumns','','en','Show/Hide','',NULL)");
         b.append(",('page_global','btn_showHideColumns','','fr','Afficher/Cacher','',NULL)");
-        b.append(",('page_global','buttonAdd','','en','Save','',NULL)");
-        b.append(",('page_global','buttonAdd','','fr','Sauvegarder','',NULL)");
+        b.append(",('page_global','buttonAdd','','en','Create','',NULL)");
+        b.append(",('page_global','buttonAdd','','fr','Créer','',NULL)");
         b.append(",('page_global','buttonClose','','en','Close','',NULL)");
         b.append(",('page_global','buttonClose','','fr','Fermer','',NULL)");
         b.append(",('page_global','buttonConfirm','','en','Yes','',NULL)");
@@ -1352,7 +1358,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_header','menuTest','','fr','Test','',NULL)");
         b.append(",('page_header','menuTestBattery','','en','TestCase Battery','',NULL)");
         b.append(",('page_header','menuTestBattery','','fr','Batterie de Cas de Test','',NULL)");
-        b.append(",('page_header','menuTestCampaign','','en','Test Campaign','',NULL)");
+        b.append(",('page_header','menuTestCampaign','','en','Campaign','',NULL)");
         b.append(",('page_header','menuTestCampaign','','fr','Campagne de Test','',NULL)");
         b.append(",('page_header','menuTestCase','','en','TestCase','',NULL)");
         b.append(",('page_header','menuTestCase','','fr','Cas De Test','',NULL)");
@@ -1843,8 +1849,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_testcampaign','description_tab','','fr','Description','',NULL)");
         b.append(",('page_testcampaign','edittestcampaign_field','','en','Edit Campaign','',NULL)");
         b.append(",('page_testcampaign','edittestcampaign_field','','fr','Modifier la Campagne','',NULL)");
-        b.append(",('page_testcampaign','message_remove','','en','Are you sure?','',NULL)");
-        b.append(",('page_testcampaign','message_remove','','fr','Êtes-vous sûrs?','',NULL)");
+        b.append(",('page_testcampaign','message_remove','','en','Are you sure you want to remove the campaign \\'%NAME%\\' ?','',NULL)");
+        b.append(",('page_testcampaign','message_remove','','fr','Êtes-vous sûrs de supprimer la campagne \\'%NAME%\\'?','',NULL)");
         b.append(",('page_testcampaign','parameter_col','','en','Parameter','',NULL)");
         b.append(",('page_testcampaign','parameter_col','','fr','Paramètre','',NULL)");
         b.append(",('page_testcampaign','parameter_tab','','en','Parameter','',NULL)");

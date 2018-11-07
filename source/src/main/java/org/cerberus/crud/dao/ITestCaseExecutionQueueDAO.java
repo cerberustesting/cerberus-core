@@ -28,6 +28,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import org.cerberus.engine.threadpool.entity.TestCaseExecutionQueueToTreat;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 
@@ -79,14 +80,14 @@ public interface ITestCaseExecutionQueueDAO {
      * object enriched with TestCase and Application objects
      * @throws CerberusException
      */
-    public AnswerList readByVarious1(String tag, List<String> stateList, boolean withDependencies) throws CerberusException;
+    public AnswerList<TestCaseExecutionQueue> readByVarious1(String tag, List<String> stateList, boolean withDependencies) throws CerberusException;
 
     /**
      *
      * @param stateList list of state to filter.
      * @return @throws CerberusException
      */
-    public AnswerList readByVarious2(List<String> stateList) throws CerberusException;
+    public AnswerList<TestCaseExecutionQueueToTreat> readByVarious2(List<String> stateList) throws CerberusException;
 
     /**
      *

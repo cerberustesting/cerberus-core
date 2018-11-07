@@ -19,8 +19,6 @@
  */
 package org.cerberus.service.email;
 
-import org.cerberus.crud.entity.User;
-import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.service.email.entity.Email;
 
 /**
@@ -30,65 +28,5 @@ import org.cerberus.service.email.entity.Email;
 public interface IEmailService {
 
     public void sendHtmlMail(Email cerberusEmail) throws Exception;
-
-    /**
-     *
-     * @param user
-     * @return
-     */
-    public MessageEvent generateAndSendAccountCreationEmail(User user);
-
-    /**
-     *
-     * @param user
-     * @return
-     */
-    public MessageEvent generateAndSendForgotPasswordEmail(User user);
-
-    /**
-     *
-     * @param system
-     * @param country
-     * @param env
-     * @param build
-     * @param revision
-     * @return
-     */
-    public MessageEvent generateAndSendRevisionChangeEmail(String system, String country, String env, String build, String revision);
-
-    /**
-     *
-     * @param system
-     * @param country
-     * @param env
-     * @return
-     */
-    public MessageEvent generateAndSendDisableEnvEmail(String system, String country, String env);
-
-    /**
-     *
-     * @param system
-     * @param country
-     * @param env
-     * @param chain
-     * @return
-     */
-    public MessageEvent generateAndSendNewChainEmail(String system, String country, String env, String chain);
-
-    /**
-     *
-     * @param tag
-     * @param campaign
-     * @return
-     */
-    public MessageEvent generateAndSendNotifyStartTagExecution(String tag, String campaign);
-
-    /**
-     *
-     * @param tag
-     * @param campaign
-     * @return
-     */
-    public MessageEvent generateAndSendNotifyEndTagExecution(String tag, String campaign);
 
 }

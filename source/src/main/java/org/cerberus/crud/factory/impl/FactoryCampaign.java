@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.factory.impl;
 
+import java.sql.Timestamp;
 import org.cerberus.crud.entity.Campaign;
 import org.cerberus.crud.factory.IFactoryCampaign;
 import org.springframework.stereotype.Service;
@@ -31,14 +32,40 @@ import org.springframework.stereotype.Service;
 public class FactoryCampaign implements IFactoryCampaign {
 
     @Override
-    public Campaign create(Integer campaignID, String campaign, String distribList, String notifyStartTagExecution, String notifyEndTagExecution, String description) {
+    public Campaign create(Integer campaignID, String campaign,
+            String distribList, String notifyStartTagExecution, String notifyEndTagExecution,
+            String SlackNotifyStartTagExecution, String SlackNotifyEndTagExecution, String SlackWebhook, String SlackChannel,
+            String CIScoreThreshold,
+            String Tag, String Verbose, String Screenshot, String PageSource, String RobotLog, String Timeout, String Retries, String Priority, String ManualExecution,
+            String description, String longDescription,
+            String UsrCreated, Timestamp DateCreated, String UsrModif, Timestamp DateModif) {
         Campaign newObject = new Campaign();
         newObject.setCampaignID(campaignID);
         newObject.setCampaign(campaign);
         newObject.setDistribList(distribList);
         newObject.setNotifyStartTagExecution(notifyStartTagExecution);
         newObject.setNotifyEndTagExecution(notifyEndTagExecution);
+        newObject.setSlackNotifyStartTagExecution(SlackNotifyStartTagExecution);
+        newObject.setSlackNotifyEndTagExecution(SlackNotifyEndTagExecution);
+        newObject.setSlackWebhook(SlackWebhook);
+        newObject.setSlackChannel(SlackChannel);
+        newObject.setCIScoreThreshold(CIScoreThreshold);
+        newObject.setTag(Tag);
+        newObject.setVerbose(Verbose);
+        newObject.setScreenshot(Screenshot);
+        newObject.setPageSource(PageSource);
+        newObject.setRobotLog(RobotLog);
+        newObject.setTimeout(Timeout);
+        newObject.setRetries(Retries);
+        newObject.setPriority(Priority);
+        newObject.setManualExecution(ManualExecution);
         newObject.setDescription(description);
+        newObject.setLongDescription(longDescription);
+        newObject.setUsrCreated(UsrCreated);
+        newObject.setDateCreated(DateCreated);
+        newObject.setUsrModif(UsrModif);
+        newObject.setDateModif(DateModif);
+
         return newObject;
     }
 

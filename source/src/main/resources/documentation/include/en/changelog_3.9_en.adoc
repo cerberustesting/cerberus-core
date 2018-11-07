@@ -1,0 +1,17 @@
+*Bug fixes*
+[square]
+* 'cerberus_queueexecution_defaultrobothost_threadpoolsize parameter' was not correctly working. It was not used in case no constrain is defined at robot level. #1855 
+* Issue when robot host contain double dash (//). #1856
+* secured that constrain2 poolsize always appear on queue management page. #1856
+* Fixed capability management that prevent specific capabilities to be sent to Appium or Selenium Robots.
+* Force Execution flag at action level now also works for failed condition execution.
+
+*Improvements / New features*
+[square]
+* New parameter 'cerberus_notification_tagexecutionend_tclistmax' in order to limit the table size of the end of campaign execution EMail (default to 100). That prevent hughe mails in case of completly failed cmapaign execution.
+* New Slack connector that can be configured at campaign level in order to notify at the beginning and end of campaign execution. Slack WebHook and channel can be configured at campaign level.
+* REST service now allow Request data on DELETE Method. #1670
+
+*Warning to be considered before applying the version (deprecated features)*
+[square]
+* none

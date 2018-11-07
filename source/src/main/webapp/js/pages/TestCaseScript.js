@@ -4049,7 +4049,7 @@ function setPlaceholderProperty(propertyElement, property) {
                 }
                 if (placeHolders[i].rank !== null) {
                 	// condition will always be true
-                    // $(e).parents("div[name='propertyLine']").find("div[name='rank']").show();
+                    //$(e).parents("div[name='propertyLine']").find("div[name='rank']").show();
                     $(e).parents("div[name='propertyLine']").find("div[name='rank'] label").html(placeHolders[i].rank);
                 } else {
                     $(e).parents("div[name='propertyLine']").find("div[name='fieldRetryPeriod']").hide();

@@ -23,11 +23,14 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.SocketTimeoutException;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.concurrent.NotThreadSafe;
+import javax.net.ssl.SSLContext;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
@@ -40,7 +43,7 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPatch;
 import org.apache.http.client.methods.HttpPost;
@@ -49,14 +52,22 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.entity.InputStreamEntity;
-import org.apache.http.impl.client.*;
+import org.apache.http.impl.client.BasicCookieStore;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.ProxyAuthenticationStrategy;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.util.EntityUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-import org.cerberus.crud.entity.*;
+import org.apache.logging.log4j.Logger;
+import org.cerberus.crud.entity.AppService;
+import org.cerberus.crud.entity.AppServiceContent;
+import org.cerberus.crud.entity.AppServiceHeader;
+import org.cerberus.crud.entity.Application;
+import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.factory.IFactoryAppService;
 import org.cerberus.crud.factory.IFactoryAppServiceHeader;
 import org.cerberus.crud.service.IAppServiceService;
@@ -68,12 +79,9 @@ import org.cerberus.service.proxy.IProxyService;
 import org.cerberus.service.rest.IRestService;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
-import org.openqa.selenium.Cookie;
 import org.openqa.selenium.WebDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import javax.net.ssl.SSLContext;
 
 /**
  *
@@ -107,6 +115,30 @@ public class RestService implements IRestService {
     private static final String DEFAULT_PROXYAUTHENT_PASSWORD = "squid";
 
     private static final Logger LOG = LogManager.getLogger(RestService.class);
+
+    @NotThreadSafe
+    class HttpDeleteWithBody extends HttpEntityEnclosingRequestBase {
+
+        public static final String METHOD_NAME = "DELETE";
+
+        public String getMethod() {
+            return METHOD_NAME;
+        }
+
+        public HttpDeleteWithBody(final String uri) {
+            super();
+            setURI(URI.create(uri));
+        }
+
+        public HttpDeleteWithBody(final URI uri) {
+            super();
+            setURI(uri);
+        }
+
+        public HttpDeleteWithBody() {
+            super();
+        }
+    }
 
     private AppService executeHTTPCall(CloseableHttpClient httpclient, HttpRequestBase httpget) throws Exception {
         try {
@@ -173,7 +205,7 @@ public class RestService implements IRestService {
             headerList.add(factoryAppServiceHeader.create(null, "cerberus-token", token, "Y", 0, "", "", null, "", null));
         }
 
-        CloseableHttpClient httpclient=null;
+        CloseableHttpClient httpclient = null;
         HttpClientBuilder httpclientBuilder;
         if (proxyService.useProxy(servicePath, system)) {
 
@@ -215,7 +247,7 @@ public class RestService implements IRestService {
         }
 
         // if it is an GUI REST, share the GUI context with api call
-        if(tcexecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
+        if ((tcexecution != null) && (tcexecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI))) {
             WebDriver driver = tcexecution.getSession().getDriver();
 
             BasicCookieStore cookieStore = new BasicCookieStore();
@@ -233,9 +265,10 @@ public class RestService implements IRestService {
 
         try {
 
-            boolean acceptUnsignedSsl = parameterService.getParameterBooleanByKey("cerberus_accept_unsigned_ssl_certificate", system,true);
+            boolean acceptUnsignedSsl = parameterService.getParameterBooleanByKey("cerberus_accept_unsigned_ssl_certificate", system, true);
 
-            if(acceptUnsignedSsl) {
+            if (acceptUnsignedSsl) {
+                LOG.debug("Trusting all SSL Certificates.");
                 // authorize non valide certificat ssl
                 SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(null, new TrustSelfSignedStrategy() {
                     public boolean isTrusted(X509Certificate[] chain, String authType) throws CertificateException {
@@ -249,8 +282,6 @@ public class RestService implements IRestService {
             }
 
             httpclient = httpclientBuilder.build();
-
-
 
             RequestConfig requestConfig;
             // Timeout setup.
@@ -357,13 +388,32 @@ public class RestService implements IRestService {
                     break;
 
                 case AppService.METHOD_HTTPDELETE:
+
                     LOG.info("Start preparing the REST Call (DELETE). " + servicePath);
-                    servicePath = StringUtil.addQueryString(servicePath, requestString);
+
                     serviceREST.setServicePath(servicePath);
-                    HttpDelete httpDelete = new HttpDelete(servicePath);
+                    HttpDeleteWithBody httpDelete = new HttpDeleteWithBody(servicePath);
 
                     // Timeout setup.
                     httpDelete.setConfig(requestConfig);
+
+                    // Content
+                    if (!(StringUtil.isNullOrEmpty(requestString))) {
+                        // If requestString is defined, we POST it.
+                        InputStream stream = new ByteArrayInputStream(requestString.getBytes(StandardCharsets.UTF_8));
+                        InputStreamEntity reqEntity = new InputStreamEntity(stream);
+                        reqEntity.setChunked(true);
+                        httpDelete.setEntity(reqEntity);
+                        serviceREST.setServiceRequest(requestString);
+                    } else {
+                        // If requestString is not defined, we POST the list of key/value request.
+                        List<NameValuePair> nvps = new ArrayList<>();
+                        for (AppServiceContent contentVal : contentList) {
+                            nvps.add(new BasicNameValuePair(contentVal.getKey(), contentVal.getValue()));
+                        }
+                        httpDelete.setEntity(new UrlEncodedFormEntity(nvps));
+                        serviceREST.setContentList(contentList);
+                    }
 
                     // Header.
                     for (AppServiceHeader contentHeader : headerList) {
@@ -528,8 +578,9 @@ public class RestService implements IRestService {
             return result;
         } finally {
             try {
-                if(httpclient != null)
+                if (httpclient != null) {
                     httpclient.close();
+                }
             } catch (IOException ex) {
                 LOG.error(ex.toString(), ex);
             }

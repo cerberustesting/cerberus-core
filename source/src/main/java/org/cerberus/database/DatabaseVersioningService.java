@@ -181,7 +181,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 
         b = new StringBuilder();
         b.append("INSERT INTO `parameter` VALUES ('cerberus_homepage_nbbuildhistorydetail','5','Define the number of build/revision that are displayed in the homepage.')");
-        b.append(",('cerberus_picture_path','/opt/cerberus-screenshots/','Path to store the Cerberus Selenium Screenshot')");
+        b.append(",('cerberus_picture_path','/opt/CerberusMedias/executions/','Path to store the Cerberus Selenium Screenshot')");
         b.append(",('cerberus_picture_url','http://localhost/CerberusPictures/','Link to the Cerberus Selenium Screenshot. The following variable can be used : %ID% and %SCREENSHOT%')");
         b.append(",('cerberus_reporting_url','http://IP/Cerberus/ReportingExecution.jsp?Application=%appli%&TcActive=Y&Priority=All&Environment=%env%&Build=%build%&Revision=%rev%&Country=%country%&Status=WORKING&Apply=Apply','URL to Cerberus reporting screen. the following variables can be used : %country%, %env%,  %appli%, %build% and %rev%.')");
         b.append(",('cerberus_selenium_plugins_path','/tmp/','Path to load firefox plugins (Firebug + netExport) to do network traffic')");
@@ -5652,7 +5652,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // 959
         b = new StringBuilder();
         b.append("INSERT INTO `parameter` VALUES ");
-        b.append("('','cerberus_applicationobject_path','','Path whare you will store all the files you upload in application object');");
+        b.append("('','cerberus_applicationobject_path','/opt/CerberusMedias/objects/','Path whare you will store all the files you upload in application object');");
         a.add(b.toString());
 
         // Create Table Application Object
@@ -7343,7 +7343,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // 1269
         b = new StringBuilder();
         b.append("INSERT INTO `parameter` (`system`,`param`, `value`, `description`) VALUES ");
-        b.append("  ('','cerberus_testdatalibcsv_path', '/path/to/csv', 'Default path for the csv file location')");
+        b.append("  ('','cerberus_testdatalibcsv_path', '/opt/CerberusMedias/csvdata/', 'Default path for the csv file location')");
         a.add(b.toString());
 
         // ADD requirement additional data
@@ -7397,7 +7397,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // 1276-1277
         b = new StringBuilder();
         b.append("INSERT INTO `parameter` (`system`,`param`, `value`, `description`) VALUES ");
-        b.append("  ('','cerberus_exemanualmedia_path', '/path/to/exemanualmedia', 'Path to store the Cerberus Media files for Manual executions.')");
+        b.append("  ('','cerberus_exemanualmedia_path', '/opt/CerberusMedias/executions-manual/', 'Path to store the Cerberus Media files for Manual executions.')");
         a.add(b.toString());
         b = new StringBuilder();
         b.append("UPDATE `parameter` SET `param`='cerberus_exeautomedia_path', `description`='Path to store the Cerberus Media files for Automatic executions (like Selenium Screenshot or SOAP requests and responses).' WHERE `param`='cerberus_mediastorage_path';");
@@ -7732,7 +7732,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 
         // Add ftp file path parameter
         // 1345
-        a.add("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ('', 'cerberus_ftpfile_path', '', 'Path to store local files which will be stored into ftpServer');");
+        a.add("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ('', 'cerberus_ftpfile_path', '/opt/CerberusMedias/ftpfiles/', 'Path to store local files which will be stored into ftpServer');");
 
         // Add forceExe to Step.
         // 1346-1347
@@ -7900,6 +7900,41 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         //Missing invariant on manual URL.
         // 1384
         a.add("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ('MANUALURL', '2', 300, 'Activate Application URL Manual definition only on defined parameters.')");
+
+        // Insert 'Rank' attributes in the text case execution data table (for TestCaseExecution.jsp)
+        // 1385
+        a.add("ALTER TABLE `testcaseexecutiondata` ADD COLUMN `Rank` int(2) not null default 1 AFTER `Type`");
+
+        // New parameter.
+        // 1386
+        a.add("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ('', 'cerberus_notification_tagexecutionend_tclistmax', '100', 'Limit the number of rows produced on testcase list detail table.');");
+
+        // 1387
+        a.add("UPDATE `parameter` SET value=replace(value,'<td>%CIRESULT%</td>','<td style=\"background-color:%CIRESULTCOLOR%; font-style:bold\">%CIRESULT%</td>'), description = 'Cerberus End of tag execution notification email body. %TAG%, %URLTAGREPORT%, %CAMPAIGN%, %TAGDURATION%, %TAGSTART%, %TAGEND%, %CIRESULT%, %CIRESULTCOLOR%, %CISCORE%, %CISCORETHRESHOLD%, %TAGGLOBALSTATUS% and %TAGTCDETAIL% can be used as variables.' where param='cerberus_notification_tagexecutionend_body';");
+
+        // 1388
+        b = new StringBuilder(); // replace color yellow by no color
+        b.append("ALTER TABLE `campaign` ");
+        b.append("ADD COLUMN `SlackNotifyStartTagExecution` VARCHAR(5) NULL DEFAULT 'N' AFTER `NotifyEndTagExecution`,");
+        b.append("ADD COLUMN `SlackNotifyEndTagExecution` VARCHAR(5) NULL DEFAULT 'N' AFTER `SlackNotifyStartTagExecution`,");
+        b.append("ADD COLUMN `SlackWebhook` VARCHAR(200) NOT NULL DEFAULT '' AFTER `SlackNotifyEndTagExecution`,");
+        b.append("ADD COLUMN `SlackChannel` VARCHAR(100) NOT NULL DEFAULT '' AFTER `SlackWebhook`,");
+        b.append("ADD COLUMN CIScoreThreshold VARCHAR(45) NULL DEFAULT NULL AFTER `SlackChannel`,");
+        b.append("ADD COLUMN Tag VARCHAR(255) NULL DEFAULT NULL AFTER `CIScoreThreshold`,");
+        b.append("ADD COLUMN Verbose VARCHAR(5) NULL DEFAULT NULL AFTER `Tag`,");
+        b.append("ADD COLUMN Screenshot VARCHAR(5) NULL DEFAULT NULL AFTER `Verbose`,");
+        b.append("ADD COLUMN PageSource VARCHAR(5) NULL DEFAULT NULL AFTER `Screenshot`,");
+        b.append("ADD COLUMN RobotLog VARCHAR(5) NULL DEFAULT NULL AFTER `PageSource`,");
+        b.append("ADD COLUMN Timeout VARCHAR(10) NULL DEFAULT NULL AFTER `RobotLog`,");
+        b.append("ADD COLUMN Retries VARCHAR(5) NULL DEFAULT NULL AFTER `Timeout`,");
+        b.append("ADD COLUMN Priority VARCHAR(45) NULL DEFAULT NULL  AFTER `Retries`,");
+        b.append("ADD COLUMN ManualExecution VARCHAR(1) NULL DEFAULT NULL AFTER `Priority`,");
+        b.append("ADD COLUMN LongDescription TEXT AFTER `Description`,");
+        b.append("ADD COLUMN `UsrCreated` VARCHAR(45) NOT NULL DEFAULT '' AFTER `LongDescription`,");
+        b.append("ADD COLUMN `DateCreated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `UsrCreated`,");
+        b.append("ADD COLUMN `UsrModif` VARCHAR(45) DEFAULT '' AFTER `DateCreated`,");
+        b.append("ADD COLUMN `DateModif` timestamp NOT NULL DEFAULT '1970-01-01 01:01:01' AFTER `UsrModif`;");
+        a.add(b.toString());
 
         return a;
     }

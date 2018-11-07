@@ -26,22 +26,22 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <%@ include file="include/global/dependenciesInclusions.html" %>
     <title>Testcampaign</title>
-    <script type="text/javascript" src="js/pages/TestCampaign.js"></script>
+    <script type="text/javascript" src="js/pages/CampaignList.js"></script>
+    <script type="text/javascript" src="js/transversalobject/Campaign.js"></script>
 </head>
 <body>
 <%@ include file="include/global/header.html" %>
 <div class="container-fluid center" id="page-layout">
     <%@ include file="include/global/messagesArea.html"%>
     <%@ include file="include/utils/modal-confirmation.html"%>
-    <%@ include file="include/pages/testcampaign/editTestcampaign.html"%>
     <%@ include file="include/pages/testcampaign/viewTestcampaign.html"%>
-    <%@ include file="include/pages/testcampaign/addTestcampaign.html"%>
+    <%@ include file="include/transversalobject/Campaign.html"%>
 
     <h1 class="page-title-line" id="title">Test Campaigns</h1>
     <div class="panel panel-default">
         <div class="panel-heading" id="testcampaignListLabel">
             <span class="glyphicon glyphicon-list"></span>
-            TestCampaigns
+            Test Campaigns
         </div>
         <div class="panel-body" id="testcampaignList">
             <table id="testcampaignsTable" class="table table-bordered table-hover display" name="testcampaignsTable"></table>

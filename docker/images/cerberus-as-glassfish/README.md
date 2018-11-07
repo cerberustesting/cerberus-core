@@ -11,15 +11,12 @@ Hereafter list of available tags:
 Tag     | Description                        | Source
 --------|------------------------------------|-------------------------------
 latest  | Use the latest Cerberus version    | [latest/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/latest/Dockerfile)
+3.8   | Use the 3.8 Cerberus version     | [3.8/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/3.8/Dockerfile)
 3.7.1   | Use the 3.7.1 Cerberus version     | [3.7.1/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/3.7.1/Dockerfile)
 3.7   | Use the 3.7 Cerberus version     | [3.7/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/3.7/Dockerfile)
 3.7   | Use the 3.7 Cerberus version     | [3.7/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/3.7/Dockerfile)
 3.6   | Use the 3.6 Cerberus version     | [3.6/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/3.6/Dockerfile)
 3.5   | Use the 3.5 Cerberus version     | [3.5/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/3.5/Dockerfile)
-${RELEASE_VERSION}   | Use the ${RELEASE_VERSION} Cerberus version     | [${RELEASE_VERSION}/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/${RELEASE_VERSION}/Dockerfile)
-${RELEASE_VERSION}   | Use the ${RELEASE_VERSION} Cerberus version     | [${RELEASE_VERSION}/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/${RELEASE_VERSION}/Dockerfile)
-3.4   | Use the 3.4 Cerberus version     | [3.4/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/3.4/Dockerfile)
-3.4   | Use the 3.4 Cerberus version     | [3.4/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/3.4/Dockerfile)
 3.4   | Use the 3.4 Cerberus version     | [3.4/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/3.4/Dockerfile)
 3.3   | Use the 3.3 Cerberus version     | [3.3/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/3.3/Dockerfile)
 3.2   | Use the 3.2 Cerberus version     | [3.2/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/3.2/Dockerfile)
@@ -52,30 +49,7 @@ This image can simply be run by using the following command:
 
 Note the use of the `-d` and `-P` arguments to let image be run as deamon and open ports outside container which is the common use.
 
-To run image by connecting to a MySQL Cerberus database located at `<database_host>:<database_port>` you could run (assume we are using default values for name, username, and password):
-
-    docker run -d -P -e DATABASE_HOST='<database_host>' -e DATABASE_PORT='<database_port>' cerberustesting/cerberus-as-glassfish:latest
-
-### Docker compose
-An example of docker-compose file is available [here](https://github.com/cerberustesting/cerberus-source/tree/master/docker/compositions/cerberus-glassfish-mysql)
-
-### Configure the running Cerberus instance
-
-**Important**: Additional runtime configuration has to be made:
-
-#### Set the Cerberus base URL
-
-The Cerberus base URL has to be known by Cerberus. To do so, Cerberus has to be configured as the following:
-
-1. Open your favorite web browser to the Cerberus base URL (`<docker_host>:18080/Cerberus` by default)
-2. Go to _Administration_ -> _Parameters_
-3. Search the `cerberus_url` parameter
-4. Set to the Cerberus base URL (`<docker_host>:18080/Cerberus` by default)
-5. Save changes 
-
-Note that specific configuration could be made if using [Volumes](#volumes) mapping.
-
-## Environment variables
+### Image Environment variables
 
 Hereafter list of environment variables that could be overridden when starting the image.
 
@@ -90,7 +64,12 @@ Environment variable                    | Definition                            
 `GLASSFISH_DOMAIN`                      | Glassfish domain name (cerberus by default | `domain1`
 `GLASSFISH_ADMIN_PASSWORD`              | Glassfish admin password                  | `admin`
 
-## Exposed ports
+
+To run image by connecting to a MySQL Cerberus database located at `<database_host>:<database_port>` you could run (assume we are using default values for name, username, and password):
+
+    docker run -d -P -e DATABASE_HOST='<database_host>' -e DATABASE_PORT='<database_port>' cerberustesting/cerberus-as-glassfish:latest
+
+### Image Exposed ports
 
 Hereafter list of exposed ports when image is running (inherited from the [Glassfish image](https://hub.docker.com/_/glassfish/)).
 
@@ -113,42 +92,74 @@ With this example, you could access to the Glassfish administration console by r
 
     <docker_host>:14848
 
-## Volumes
+### Image Volumes
 
-### Cerberus server logs
+#### Cerberus server logs
 
 Cerberus server logs can be persisted by using the following command:
 
-    docker run [...] -v /your/local/cerberus/server/logs/directory:/usr/local/glassfish4/glassfish/domains/domain1/logs cerberus/cerberus-as-glassfish:latest
+    docker run [...] -v /your/local/cerberus/server/logs/directory:/usr/local/glassfish5/glassfish/domains/domain1/logs cerberus/cerberus-as-glassfish:latest
 
 Where `/your/local/cerberus/server/logs/directory` is the directory to store the Glassfish logs out of your Docker host.
 
-### Cerberus screenshots
+#### Cerberus medias
 
-From the [1.1.5](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/1.1.5/Dockerfile) version, the new `/usr/local/glassfish4/glassfish/domains/domain1/docroot/CerberusPictures` directory is created to store Cerberus execution screenshots.
+From the [1.1.5](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/1.1.5/Dockerfile) version, the new `/usr/local/glassfish5/glassfish/domains/domain1/docroot/CerberusMedias` directory is created to store Cerberus medias (execution screenshots,...).
 Don't forget to map it to an existing folder out of your Docker host in order to make them persistent. Example:
 
-    docker run [...] -v /your/local/cerberus/screenshots/directory:/usr/local/glassfish4/glassfish/domains/domain1/docroot/CerberusPictures cerberus/cerberus-as-glassfish:latest
+    docker run [...] -v /your/local/cerberus/medias/directory:/usr/local/glassfish5/glassfish/domains/domain1/docroot/CerberusMedias cerberus/cerberus-as-glassfish:latest
 
-Where `/your/local/cerberus/screenshots/directory` is the directory to store the Cerberus execution screenshots out of your Docker host.
+Where `/your/local/cerberus/medias/directory` is the directory to store the Cerberus media files out of your Docker host.
+
+#### Glassfish data
+You can share this volume to persist Glassfish settings : 
+*  <local_path>/medias:/usr/local/glassfish5/glassfish/domains/<domain_name>
+*  <local_path>/lib:/usr/local/glassfish5/glassfish/lib
+
+
+## Full Example
+
+    docker run -d -P -e DATABASE_HOST='192.168.1.1' -e DATABASE_PORT='13306' -p 18080:8080 -p 14848:4848 -v <path_to_your_server_log_directory>:/glassfish5/glassfish/domains/cerberus/logs  -v <path_to_your_cerberus_media_directory>:/opt/CerberusMedias cerberustesting/cerberus-as-glassfish:latest
+
+
+## Configure the running Cerberus instance
+
+**Important**: Additional runtime configuration has to be made:
+
+### Set the Cerberus base URL
+
+The Cerberus base URL has to be known by Cerberus. To do so, Cerberus has to be configured as the following:
+
+1. Open your favorite web browser to the Cerberus base URL (`<docker_host>:18080/Cerberus` by default)
+2. Go to _Administration_ -> _Parameters_
+3. Search the `cerberus_url` parameter
+4. Set to the Cerberus base URL (`<docker_host>:18080/Cerberus` by default)
+5. Save changes 
+
+Note that specific configuration could be made if using [Volumes](#volumes) mapping.
+
+### Set the Media Paths
 
 To apply this runtime configuration to Cerberus instance, then:
 
 1. Open your favorite web browser to the Cerberus base URL (`<docker_host>:18080/Cerberus` by default)
 2. Go to _Administration_ -> _Parameters_
-3. Search the `cerberus_picture_path` parameter
-4. Set to the `/usr/local/glassfish4/glassfish/domains/domain1/docroot/CerberusPictures/` value (note the important trailing `/`)
-5. Save changes
-3. Search the `cerberus_picture_url` parameter
-4. Set to the Cerberus base URL value (`<docker_host>:18080/CerberusPictures/` by default, note the important trailing `/`)
-5. Save changes
+3. Search the following parameters and set the corresponding values : 
 
-From the [1.1.6](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-glassfish/1.1.6/Dockerfile) version, `cerberus_picture_path` and `cerberus_picture_url` parameters have been respectively renamed `cerberus_mediastorage_path` and `cerberus_mediastorage_path`.
+Parameter            | Value
+------------------------|---------------------------------------------------------
+`cerberus_applicationobject_path`                  | `/opt/CerberusMedias/objects/`
+`cerberus_exeautomedia_path`                  | `/opt/CerberusMedias/executions/`
+`cerberus_exemanualmedia_path`                  | `/opt/CerberusMedias/executions-manual/`
+`cerberus_ftpfile_path`                  | `/opt/CerberusMedias/ftpfiles/`
+`cerberus_testdatalibcsv_path`                  | `/opt/CerberusMedias/csvdata/`
 
-### Glassfish data
-You can share this volume to persist Glassfish seetings : 
-*  <local_path>/screenshots:/usr/local/glassfish4/glassfish/domains/<domain_name>
-*  <local_path>/lib:/usr/local/glassfish4/glassfish/lib
+4. Save changes
+
+
+
+## Docker compose
+An example of docker-compose file is available [here](https://github.com/cerberustesting/cerberus-source/tree/master/docker/compositions/cerberus-glassfish-mysql)
 
 
 ## License

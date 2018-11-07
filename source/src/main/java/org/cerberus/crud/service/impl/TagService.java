@@ -36,7 +36,7 @@ import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.ciresult.ICIService;
-import org.cerberus.service.email.IEmailService;
+import org.cerberus.service.notification.INotificationService;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -57,7 +57,7 @@ public class TagService implements ITagService {
     @Autowired
     private IFactoryTag factoryTag;
     @Autowired
-    private IEmailService emailService;
+    private INotificationService notificationService;
     @Autowired
     private ITestCaseExecutionService testCaseExecutionService;
     @Autowired
@@ -176,7 +176,7 @@ public class TagService implements ITagService {
         if (tag == null) {
             Answer ans = tagDAO.create(factoryTag.create(0, tagS, "", campaign, null, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", user, null, user, null));
             if (!StringUtil.isNullOrEmpty(campaign)) {
-                emailService.generateAndSendNotifyStartTagExecution(tagS, campaign);
+                notificationService.generateAndSendNotifyStartTagExecution(tagS, campaign);
             }
             return ans;
             // If campaign is not empty, we could notify the Start of campaign execution.

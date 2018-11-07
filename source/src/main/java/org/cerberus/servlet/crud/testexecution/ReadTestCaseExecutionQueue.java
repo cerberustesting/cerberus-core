@@ -275,7 +275,7 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
                 String column = entry.getKey();
                 Integer name = entry.getValue();
                 if (!("".equals(column))) {
-                    String[] data = column.split("\\/\\/");
+                    String[] data = column.split("\\/\\/\\/\\/");
                     JSONObject jsonObject = new JSONObject();
                     switch (data[0]) {
                         case TestCaseExecutionQueueToTreat.CONSTRAIN1_GLOBAL:
@@ -319,7 +319,9 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
                                 jsonObject.put("robot", "");
                                 jsonObject.put("invariantExist", false);
                             }
-                            jsonObject.put("nbInQueue", ParameterParserUtil.parseIntegerParam(mapInQueue.get(column), 0));
+                            // We cannot determine the Nb of execution in the queue attached to a given Robot as it could be spread by ROUNDROBIN or BYRANKING. The result is subject to change depending on duration of each execution.
+                            // jsonObject.put("nbInQueue", ParameterParserUtil.parseIntegerParam(mapInQueue.get(column), 0));
+                            jsonObject.put("nbInQueue", "");
                             jsonObject.put("nbPoolSize", ParameterParserUtil.parseIntegerParam(mapPoolSize.get(column), 0));
                             jsonObject.put("nbRunning", ParameterParserUtil.parseIntegerParam(name, 0));
                             jsonObject.put("hasPermissionsUpdate", parameterService.hasPermissionsUpdate("cerberus_queueexecution_global_threadpoolsize", request));

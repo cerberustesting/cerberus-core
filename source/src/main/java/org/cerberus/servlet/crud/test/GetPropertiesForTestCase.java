@@ -78,6 +78,7 @@ public class GetPropertiesForTestCase extends HttpServlet {
                     propertyFound.put("property", prop.getProperty());
                     propertyFound.put("description", prop.getDescription());
                     propertyFound.put("type", prop.getType());
+                    propertyFound.put("rank", prop.getRank());
                     propertyFound.put("database", prop.getDatabase());
                     propertyFound.put("value1", prop.getValue1());
                     propertyFound.put("value2", prop.getValue2());

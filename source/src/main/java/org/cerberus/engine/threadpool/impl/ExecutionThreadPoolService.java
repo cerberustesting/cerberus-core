@@ -59,7 +59,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
 
     private static final Logger LOG = LogManager.getLogger(ExecutionThreadPoolService.class);
 
-    private static final String CONST_SEPARATOR = "//";
+    private static final String CONST_SEPARATOR = "////";
 
     @Autowired
     private ITestCaseExecutionQueueService tceiqService;
@@ -119,7 +119,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
     @Override
     public HashMap<String, Integer> getCurrentlyPoolSizes() throws CerberusException {
         AnswerList answer = new AnswerList<>();
-        HashMap<String, Integer> constrains_current = new HashMap<String, Integer>();
+        HashMap<String, Integer> constrains_current = new HashMap<>();
 
         String const01_key = TestCaseExecutionQueueToTreat.CONSTRAIN1_GLOBAL;
         int poolSizeGeneral = parameterService.getParameterIntegerByKey("cerberus_queueexecution_global_threadpoolsize", "", 12);
@@ -131,7 +131,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
         robot_poolsize = invariantService.readToHashMapGp1IntegerByIdname("ROBOTHOST", poolSizeRobot);
 
         // Getting all executions to be treated.
-        answer = tceiqService.readQueueToTreat();
+        answer = tceiqService.readQueueToTreatOrRunning();
         List<TestCaseExecutionQueueToTreat> executionsToTreat = (List<TestCaseExecutionQueueToTreat>) answer.getDataList();
         // Calculate constrain values.
         for (TestCaseExecutionQueueToTreat exe : executionsToTreat) {
@@ -145,7 +145,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
             if (robot_poolsize.containsKey(exe.getSelectedRobotHost())) {
                 robot_poolsize_final = ParameterParserUtil.parseIntegerParam(robot_poolsize.get(exe.getSelectedRobotHost()), poolSizeRobot);
             } else {
-                robot_poolsize_final = 0;
+                robot_poolsize_final = poolSizeRobot;
             }
             constrains_current.put(const03_key, robot_poolsize_final);
         }
@@ -334,7 +334,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                         if (robothost_poolsize.containsKey(robotHost)) {
                             robothost_poolsize_final = ParameterParserUtil.parseIntegerParam(robothost_poolsize.get(robotHost), poolSizeRobot);
                         } else {
-                            robothost_poolsize_final = 0;
+                            robothost_poolsize_final = poolSizeRobot;
                         }
 
                         LOG.debug("Pool Values : poolGen " + poolSizeGeneral + " poolApp " + exe.getPoolSizeApplication() + " poolRobotHost " + robothost_poolsize_final);

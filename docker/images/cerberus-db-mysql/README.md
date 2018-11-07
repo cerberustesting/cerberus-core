@@ -17,13 +17,17 @@ latest  | Use the latest compatible MySQL version       | [latest/Dockerfile](ht
 
 This image can simply be run by using the following command:
 
-    docker run -d -P cerberus/cerberus-db-mysql:latest
+    docker run -d -P cerberustesting/cerberus-db-mysql:latest
 
 Note the use of the `-d` and `-P` arguments to let image be run as deamon and open ports outside container which is the common use.
 
 A common use is to map the `/var/lib/mysql` volume outside container. To do this, simply add the following argument to the previous command :
 
     -v <path_to_your_data_directory>:/var/lib/mysql
+
+## Full Example
+
+    docker run -d -P -p 13306:3306 -v <path_to_your_data_directory>:/var/lib/mysql cerberustesting/cerberus-db-mysql:latest
 
 ## Environment variables
 

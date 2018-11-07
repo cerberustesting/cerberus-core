@@ -22,22 +22,12 @@
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
         initPage();
-
-        $('[data-toggle="popover"]').popover({
-            'placement': 'auto',
-            'container': 'body'}
-        );
     });
 });
 
 function initPage() {
-    var doc = new Doc();
 
-    displayHeaderLabel(doc);
-    displayGlobalLabel(doc);
-    displayPageLabel(doc);
-    displayFooter(doc);
-
+    displayPageLabel();
     var table = loadTable();
 
     // MASS ACTION
@@ -53,6 +43,10 @@ function initPage() {
     $('#editTestCaseModal').data("initLabel", true);
     initMassActionModal();
 
+    $('[data-toggle="popover"]').popover({
+        'placement': 'auto',
+        'container': 'body'}
+    );
 }
 
 function initMassActionModal() {
@@ -94,8 +88,14 @@ function initMassActionModal() {
     });
 }
 
-function displayPageLabel(doc) {
+function displayPageLabel() {
+    var doc = new Doc();
+
+    displayHeaderLabel(doc);
+    displayGlobalLabel(doc);
     $("#testCaseListLabel").html(doc.getDocOnline("page_testcaselist", "testcaselist"));
+    displayFooter(doc);
+
 }
 
 function loadTable(selectTest, sortColumn) {
@@ -131,7 +131,7 @@ function loadTable(selectTest, sortColumn) {
         if (label !== "" && label !== null) {
             filterOnColumn("testCaseTable", "labels", label);
         }
-        
+
         // Mass action 
         $("#selectAll").click(selectAll);
 

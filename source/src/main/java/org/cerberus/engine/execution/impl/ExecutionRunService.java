@@ -79,7 +79,7 @@ import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.enums.Screenshot;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.service.email.IEmailService;
+import org.cerberus.service.notification.INotificationService;
 import org.cerberus.service.sikuli.ISikuliService;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
@@ -156,7 +156,7 @@ public class ExecutionRunService implements IExecutionRunService {
     @Autowired
     private ITagService tagService;
     @Autowired
-    private IEmailService emailService;
+    private INotificationService notificationService;
     @Autowired
     private IRetriesService retriesService;
     @Autowired
@@ -316,7 +316,7 @@ public class ExecutionRunService implements IExecutionRunService {
                         List<RobotCapability> capsDecoded = new ArrayList<>();
 
                         // TODO ce n'est pas ça encore, faut faire ça au moment ou il recupère l'ip / port
-                        if(tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
+                        if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
                             int portNumber = 8200;
                             portNumber++;
                         }
@@ -955,7 +955,7 @@ public class ExecutionRunService implements IExecutionRunService {
                                 tagService.updateEndOfQueueData(tCExecution.getTag());
                                 if (!StringUtil.isNullOrEmpty(currentTag.getCampaign())) {
                                     // We get the campaig here and potencially send the notification.
-                                    emailService.generateAndSendNotifyEndTagExecution(tCExecution.getTag(), currentTag.getCampaign());
+                                    notificationService.generateAndSendNotifyEndTagExecution(tCExecution.getTag(), currentTag.getCampaign());
                                 }
                             } else {
                                 LOG.debug(logPrefix + "Still executions in queue on tag : " + tCExecution.getTag() + " - " + answerListQueue.getDataList().size() + " " + answerListQueue.getMessageCodeString());
@@ -1194,8 +1194,6 @@ public class ExecutionRunService implements IExecutionRunService {
                             .replace("%MES%", conditionAnswer.getResultMessage().getDescription()));
                     testCaseStepActionExecution.setExecutionResultMessage(mes);
                     testCaseStepExecution.setExecutionResultMessage(testCaseStepActionExecution.getExecutionResultMessage());
-                    testCaseStepActionExecution.setStopExecution(true);
-                    testCaseStepExecution.setStopExecution(testCaseStepActionExecution.isStopExecution());
 
                     testCaseStepActionExecution.setActionResultMessage(new MessageEvent(MessageEventEnum.CONDITION_TESTCASEACTION_FAILED)
                             .resolveDescription("AREA", "")
@@ -1207,14 +1205,28 @@ public class ExecutionRunService implements IExecutionRunService {
                             .resolveDescription("COND", testCaseStepActionExecution.getConditionOper())
                             .resolveDescription("MESSAGE", conditionAnswer.getResultMessage().getDescription()));
 
+                    if (testCaseStepActionExecution.getForceExeStatus().equals("PE")) {
+                        testCaseStepActionExecution.setStopExecution(false);
+                        MessageEvent actionMes = testCaseStepActionExecution.getActionResultMessage();
+                        actionMes.setDescription(testCaseStepActionExecution.getActionResultMessage().getDescription() + " -- Execution forced to continue.");
+                        testCaseStepActionExecution.setActionResultMessage(actionMes);
+                    } else {
+                        testCaseStepActionExecution.setStopExecution(true);
+                    }
+
+                    testCaseStepExecution.setStopExecution(testCaseStepActionExecution.isStopExecution());
+
                     testCaseStepActionExecution.setEnd(new Date().getTime());
 
                     this.testCaseStepActionExecutionService.updateTestCaseStepActionExecution(testCaseStepActionExecution);
                     LOG.debug("Action interupted due to condition error.");
                     // We stop any further Action execution.
-                    break;
+                    if (testCaseStepActionExecution.isStopExecution()) {
+                        break;
+                    }
                 }
             } else {
+
                 testCaseStepActionExecution.setEnd(new Date().getTime());
                 testCaseStepExecution.setExecutionResultMessage(testCaseStepActionExecution.getExecutionResultMessage());
                 testCaseStepExecution.setStepResultMessage(testCaseStepActionExecution.getActionResultMessage());

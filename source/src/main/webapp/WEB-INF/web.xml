@@ -1666,7 +1666,7 @@
             <url-pattern>/Test.jsp</url-pattern>
             <url-pattern>/TestCaseScript.jsp</url-pattern>
             <url-pattern>/TestCaseList.jsp</url-pattern>
-            <url-pattern>/TestCampaign.jsp</url-pattern>
+            <url-pattern>/CampaignList.jsp</url-pattern>
         </web-resource-collection>
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>
@@ -1708,7 +1708,7 @@
             <web-resource-name>jsp</web-resource-name>
             <description>jsp</description>
             <url-pattern>/SqlLibrary.jsp</url-pattern>
-            <url-pattern>/TestDataLib.jsp</url-pattern>
+            <url-pattern>/TestDataLibList.jsp</url-pattern>
             <url-pattern>/Label.jsp</url-pattern>
         </web-resource-collection>
         <web-resource-collection>
@@ -2016,6 +2016,7 @@
             <url-pattern>/ResultCIV001</url-pattern>
             <url-pattern>/ResultCIV002</url-pattern>
             <url-pattern>/ResultCIV003</url-pattern>
+            <url-pattern>/ResultCIV004</url-pattern>
             <url-pattern>/GetConnectionPoolName</url-pattern>
             <url-pattern>/SaveManualExecution</url-pattern>
             <url-pattern>/SaveManualExecutionPicture</url-pattern>

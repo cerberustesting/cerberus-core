@@ -40,9 +40,9 @@
         <title>Login</title>
     </head>
     <body style="background-color: #fff">
-      <%@ include file="include/utils/modal-confirmation.html"%>
+        <%@ include file="include/utils/modal-confirmation.html"%>
 
-    <script type="text/javascript">
+        <script type="text/javascript">
             envTuning("<%=System.getProperty("org.cerberus.environment")%>");
         </script>
 
@@ -73,10 +73,10 @@
 
 
         <div class="body-login">
-            <div class="col-md-2"></div>
+            <div class="col-md-3"></div>
 
 
-            <div class="col-md-8 panel panel-default panel-login" >
+            <div class="col-md-6 panel panel-default panel-login" >
 
                 <div class="col-md-12">
                     <%@ include file="include/global/messagesArea.html"%>
@@ -90,12 +90,14 @@
                     <div class="col-md-6">
 
                         <form method="post" action="j_security_check" id="login-box">
+
                             <H2>Cerberus Login</H2>
                             <em>V<%=cerberusVersion%></em><br>
                             <span class="text-info">
                                 <%= cerberusWelcomeMessage%>
                             </span>
                             <br><br>
+
 
                             <div class="form-group">
                                 <label>
@@ -119,37 +121,59 @@
                                     <input name="j_password" autocomplete class="form-control" type="password" placeholder="Password" title="Password" value="" size="30" maxlength="20">
                                 </div>
                             </div>
-                            <button id="forgot-password" type="button" name="forgotPassword" class="btn btn-default" onclick="showForgotPasswordFormulary()">Forgot password</button>
-                            <button id="Login" name="Login" class="btn btn-primary" value="Submit" alt="Submit" onclick="sessionStorage.clear()">Login</button>
-                        </form>
 
-                        <div id="forgot-password-box" style="display:none">
-                            <form action="#" id="forgotpassword-box">
-                                <H2>Forgot password</H2>
-                                <em>V<%=cerberusVersion%></em><br>
-                                <span class="text-info">
-                                    Please enter your username. An email will be sent to your associated email address with a link to reset your password. <br />
-                                    <%= cerberusWelcomeMessage%>
-                                </span>
-                                <br><br>
-                                <div class="form-group">
-                                    <label>
-                                        Username:
-                                    </label>
-                                    <div class="input-group">
-                                        <span class="input-group-addon " id="user-icon2">
-                                            <span class="glyphicon glyphicon-user"></span>
-                                        </span>
-                                        <input name="login" class="form-control" id="loginForgotPassword" title="Username" placeholder="Username" value="" size="30" maxlength="10" aria-describedby="user-icon2" autofocus>
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <div class="form-group">
+                                        <button id="Login" name="Login" class="btn btn-primary col-md-6 col-xs-12 pull-right" value="Submit" alt="Submit" onclick="sessionStorage.clear()">Login</button>
                                     </div>
                                 </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <button id="forgot-password" type="button" name="forgotPassword" class="btn-link pull-right" onclick="showForgotPasswordFormulary()">Forgot password</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
 
-                                <br><br>
 
+                        <div class="row">
+                            <div id="forgot-password-box" style="display:none">
+                                <form action="#" id="forgotpassword-box">
+                                    <div class="col-md-12">
+                                        <H2>Forgot password</H2>
+                                        <em>V<%=cerberusVersion%></em><br>
+                                        <span class="text-info">
+                                            Please enter your username. An email will be sent to your associated email address with a link to reset your password. <br />
+                                            <%= cerberusWelcomeMessage%>
+                                        </span>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label>
+                                                Username:
+                                            </label>
+                                            <div class="input-group">
+                                                <span class="input-group-addon " id="user-icon2">
+                                                    <span class="glyphicon glyphicon-user"></span>
+                                                </span>
+                                                <input name="login" class="form-control" id="loginForgotPassword" title="Username" placeholder="Username" value="" size="30" maxlength="10" aria-describedby="user-icon2" autofocus>
+                                            </div>
+                                        </div>
+                                    </div>
 
-                                <button id="cancel-forgot-password" type="button" name="cancelForgotPassword" class="btn btn-default" onclick="showLoginBoxFormulary()">Cancel</button>
-                                <button id="RecoverPassword" name="RecoverPassword" value="Submit" class="btn btn-primary" onclick="forgotPassword()">Send me an email</button>
-                            </form>
+                                    <div class="col-xs-12">
+                                        <button id="RecoverPassword" name="RecoverPassword" value="Submit" class="btn btn-primary col-md-6 col-xs-12 pull-right" onclick="forgotPassword()">Send me an email</button>
+                                    </div>
+
+                                    <div class="col-xs-12">
+                                        <button id="cancel-forgot-password" type="button" name="cancelForgotPassword" class="btn-link pull-right" onclick="showLoginBoxFormulary()">Cancel</button>
+                                    </div>
+
+                                </form>
+                            </div>
                         </div>
 
                     </div>

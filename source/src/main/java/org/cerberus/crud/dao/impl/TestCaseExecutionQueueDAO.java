@@ -363,7 +363,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
     }
 
     @Override
-    public AnswerList readByVarious1(String tag, List<String> stateList, boolean withDependencies) throws CerberusException {
+    public AnswerList<TestCaseExecutionQueue> readByVarious1(String tag, List<String> stateList, boolean withDependencies) throws CerberusException {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
         AnswerList answer = new AnswerList<>();
 
@@ -444,7 +444,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
     }
 
     @Override
-    public AnswerList readByVarious2(List<String> stateList) throws CerberusException {
+    public AnswerList<TestCaseExecutionQueueToTreat> readByVarious2(List<String> stateList) throws CerberusException {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
         AnswerList answer = new AnswerList<>();
 

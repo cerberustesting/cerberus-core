@@ -33,6 +33,7 @@ import org.cerberus.crud.factory.IFactoryTestCaseExecution;
 import org.cerberus.crud.service.ITagSystemService;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.engine.entity.MessageGeneral;
+import org.cerberus.engine.threadpool.entity.TestCaseExecutionQueueToTreat;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
@@ -82,14 +83,14 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
     }
 
     @Override
-    public AnswerList readQueueToTreat() throws CerberusException {
+    public AnswerList<TestCaseExecutionQueueToTreat> readQueueToTreat() throws CerberusException {
         List<String> stateList = new ArrayList<>();
         stateList.add(TestCaseExecutionQueue.State.QUEUED.name());
         return testCaseExecutionInQueueDAO.readByVarious2(stateList);
     }
 
     @Override
-    public AnswerList readQueueRunning() throws CerberusException {
+    public AnswerList<TestCaseExecutionQueueToTreat> readQueueRunning() throws CerberusException {
         List<String> stateList = new ArrayList<>();
         stateList.add(TestCaseExecutionQueue.State.WAITING.name());
         stateList.add(TestCaseExecutionQueue.State.STARTING.name());
@@ -98,7 +99,17 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
     }
 
     @Override
-    public AnswerList readQueueOpen(String tag) throws CerberusException {
+    public AnswerList<TestCaseExecutionQueueToTreat> readQueueToTreatOrRunning() throws CerberusException {
+        List<String> stateList = new ArrayList<>();
+        stateList.add(TestCaseExecutionQueue.State.QUEUED.name());
+        stateList.add(TestCaseExecutionQueue.State.WAITING.name());
+        stateList.add(TestCaseExecutionQueue.State.STARTING.name());
+        stateList.add(TestCaseExecutionQueue.State.EXECUTING.name());
+        return testCaseExecutionInQueueDAO.readByVarious2(stateList);
+    }
+
+    @Override
+    public AnswerList<TestCaseExecutionQueue> readQueueOpen(String tag) throws CerberusException {
         List<String> stateList = new ArrayList<>();
         stateList.add(TestCaseExecutionQueue.State.QUEUED.name());
         stateList.add(TestCaseExecutionQueue.State.WAITING.name());
