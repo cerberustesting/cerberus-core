@@ -430,7 +430,8 @@ public class SeleniumServerService implements ISeleniumServerService {
         if (additionalCapabilities != null) {
             for (RobotCapability additionalCapability : additionalCapabilities) {
                 LOG.debug("RobotCaps on Robot : " + " " + additionalCapability.getRobot() + " caps : " + additionalCapability.getCapability() + " Value : " + additionalCapability.getValue());
-                if ((caps.getCapability(additionalCapability.getCapability()) == null)) { // caps does not already exist so we can set it.
+                if ((caps.getCapability(additionalCapability.getCapability()) == null)
+                        || ((caps.getCapability(additionalCapability.getCapability()) != null) && (caps.getCapability(additionalCapability.getCapability()).toString().equals("")))) { // caps does not already exist so we can set it.
                     if (StringUtil.isBoolean(additionalCapability.getValue())) {
                         caps.setCapability(additionalCapability.getCapability(), StringUtil.parseBoolean(additionalCapability.getValue()));
                     } else if (StringUtil.isInteger(additionalCapability.getValue())) {
@@ -447,37 +448,40 @@ public class SeleniumServerService implements ISeleniumServerService {
         /**
          * Feed DesiredCapabilities with values get from Robot
          */
-        if ((!StringUtil.isNullOrEmpty(tCExecution.getPlatform()))
-                && (caps.getCapability("platform") == null)) {
-            caps.setCapability("platform", tCExecution.getPlatform());
+        if (!StringUtil.isNullOrEmpty(tCExecution.getPlatform())) {
+            if ((caps.getCapability("platform") == null)
+                    || ((caps.getCapability("platform") != null) && (caps.getCapability("platform").toString().equals("ANY") || caps.getCapability("platform").toString().equals("")))) {
+                caps.setCapability("platform", tCExecution.getPlatform());
+            }
         }
-        if ((!StringUtil.isNullOrEmpty(tCExecution.getVersion()))
-                && (caps.getCapability("version") == null)) {
-            caps.setCapability("version", tCExecution.getVersion());
+        if (!StringUtil.isNullOrEmpty(tCExecution.getVersion())) {
+            if ((caps.getCapability("version") == null)
+                    || ((caps.getCapability("version") != null) && (caps.getCapability("version").toString().equals("")))) {
+                caps.setCapability("version", tCExecution.getVersion());
+            }
         }
-
-
 
         if (tCExecution.getRobotExecutorObj() != null) {
             // Setting deviceUdid and device name from executor.
             if (!StringUtil.isNullOrEmpty(tCExecution.getRobotExecutorObj().getDeviceUuid())) {
-                if ((caps.getCapability("udid") == null)) {
+                if ((caps.getCapability("udid") == null)
+                        || ((caps.getCapability("udid") != null) && (caps.getCapability("udid").toString().equals("")))) {
                     caps.setCapability("udid", tCExecution.getRobotExecutorObj().getDeviceUuid());
                 }
             }
             if (!StringUtil.isNullOrEmpty(tCExecution.getRobotExecutorObj().getDeviceName())) {
-                if ((caps.getCapability("deviceName") == null)) {
+                if ((caps.getCapability("deviceName") == null)
+                        || ((caps.getCapability("deviceName") != null) && (caps.getCapability("deviceName").toString().equals("")))) {
                     caps.setCapability("deviceName", tCExecution.getRobotExecutorObj().getDeviceName());
                 }
             }
             if (!StringUtil.isNullOrEmpty(tCExecution.getRobotExecutorObj().getDeviceName())) {
-                if ((caps.getCapability("systemPort") == null)) {
+                if ((caps.getCapability("systemPort") == null)
+                        || ((caps.getCapability("systemPort") != null) && (caps.getCapability("systemPort").toString().equals("")))) {
                     caps.setCapability("systemPort", tCExecution.getRobotExecutorObj().getDevicePort() + "");
                 }
             }
         }
-
-
 
         /**
          * if application is a mobile one, then set the "app" capability to the
@@ -487,22 +491,28 @@ public class SeleniumServerService implements ISeleniumServerService {
                 || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
             // Set the app capability with the application path
             if (!StringUtil.isNullOrEmpty(tCExecution.getMyHost())) {
-                if ((caps.getCapability("app") == null)) {
+                if ((caps.getCapability("app") == null)
+                        || ((caps.getCapability("app") != null) && (caps.getCapability("app").toString().equals("")))) {
                     caps.setCapability("app", tCExecution.getMyHost());
                 }
             } else {
-                if ((caps.getCapability("app") == null)) {
+                if ((caps.getCapability("app") == null)
+                        || ((caps.getCapability("app") != null) && (caps.getCapability("app").toString().equals("")))) {
                     caps.setCapability("app", tCExecution.getCountryEnvironmentParameters().getIp());
                 }
             }
             if (!StringUtil.isNullOrEmpty(tCExecution.getCountryEnvironmentParameters().getMobileActivity()) && tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
-                if ((caps.getCapability("appWaitActivity") == null)) {
+                if ((caps.getCapability("appWaitActivity") == null)
+                        || ((caps.getCapability("appWaitActivity") != null) && (caps.getCapability("appWaitActivity").toString().equals("")))) {
                     caps.setCapability("appWaitActivity", tCExecution.getCountryEnvironmentParameters().getMobileActivity());
                 }
             }
 
-            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK) && caps.getCapability("automationName") == null) {
-                caps.setCapability("automationName", "UIAutomator2"); // use UIAutomator2 by default
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
+                if ((caps.getCapability("automationName") == null)
+                        || ((caps.getCapability("automationName") != null) && (caps.getCapability("automationName").toString().equals("")))) {
+                    caps.setCapability("automationName", "UIAutomator2"); // use UIAutomator2 by default
+                }
             }
 
         }

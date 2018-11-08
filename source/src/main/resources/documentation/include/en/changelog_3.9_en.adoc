@@ -15,4 +15,4 @@
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
-* none
+* 'function' and 'HowTo' fields are no longuer accessible from GUI test caase modal. Database fields are still there but will soon disappear.

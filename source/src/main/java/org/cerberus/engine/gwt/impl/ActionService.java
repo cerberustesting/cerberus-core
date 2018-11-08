@@ -404,6 +404,7 @@ public class ActionService implements IActionService {
 
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
                 return androidAppiumService.scrollTo(tCExecution.getSession(), identifier, text);
+                
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
                 return iosAppiumService.scrollTo(tCExecution.getSession(), identifier, text);
             }
@@ -799,6 +800,7 @@ public class ActionService implements IActionService {
                     identifierService.checkWebElementIdentifier(identifier.getIdentifier());
                     return webdriverService.doSeleniumActionMouseOver(tCExecution.getSession(), identifier);
                 }
+                
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
                 identifierService.checkSikuliIdentifier(identifier.getIdentifier());
                 if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
@@ -807,6 +809,7 @@ public class ActionService implements IActionService {
                     return sikuliService.doSikuliActionMouseOver(tCExecution.getSession(), "", identifier.getLocator());
                 }
             }
+            
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             message.setDescription(message.getDescription().replace("%ACTION%", "mouseOver"));
             message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
@@ -939,12 +942,16 @@ public class ActionService implements IActionService {
                     identifierService.checkWebElementIdentifier(objectIdentifier.getIdentifier());
                     return webdriverService.doSeleniumActionKeyPress(tCExecution.getSession(), objectIdentifier, value2);
                 }
+                
             } else if (appType.equalsIgnoreCase(Application.TYPE_APK)) {
                 return androidAppiumService.keyPress(tCExecution.getSession(), value2);
+                
             } else if (appType.equalsIgnoreCase(Application.TYPE_IPA)) {
                 return iosAppiumService.keyPress(tCExecution.getSession(), value2);
+                
             } else if (appType.equalsIgnoreCase(Application.TYPE_FAT)) {
                 return sikuliService.doSikuliActionKeyPress(tCExecution.getSession(), objectIdentifier.getLocator(), value2);
+                
             } else {
                 return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION)
                         .resolveDescription("ACTION", "KeyPress")
@@ -1348,7 +1355,7 @@ public class ActionService implements IActionService {
                             for (int i = 1; i < (tcExeData.getDataLibRawData().size()); i++) {
                                 now = new Date().getTime();
                                 TestCaseExecutionData tcedS = factoryTestCaseExecutionData.create(tcExeData.getId(), tcExeData.getProperty(), (i + 1),
-                                        tcExeData.getDescription(), tcExeData.getDataLibRawData().get(i).get(""), tcExeData.getType(), tcExeData.getRank(),"", "",
+                                        tcExeData.getDescription(), tcExeData.getDataLibRawData().get(i).get(""), tcExeData.getType(), tcExeData.getRank(), "", "",
                                         tcExeData.getRC(), "", now, now, now, now, null, 0, 0, "", "", "", "", "", 0, "", "", "", "", "", "", "N");
                                 testCaseExecutionDataService.convert(testCaseExecutionDataService.save(tcedS));
                             }
