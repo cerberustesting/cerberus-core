@@ -236,35 +236,35 @@ public class CampaignDAO implements ICampaignDAO {
 
     @Override
     public AnswerItem readByKeyTech(int key) {
-        AnswerItem<Campaign> ans = new AnswerItem<>();
-        MessageEvent msg = null;
-        StringBuilder query = new StringBuilder();
-        query.append("SELECT * FROM campaign cpg WHERE campaignid = ?");
-        try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString())) {
-            // Prepare and execute query
-            preStat.setInt(1, key);
-            try (ResultSet resultSet = preStat.executeQuery()) {
-                while (resultSet.next()) {
-                    ans.setItem(loadFromResultSet(resultSet));
-                }
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
-                        .resolveDescription("OPERATION", "SELECT");
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+		AnswerItem<Campaign> ans = new AnswerItem<>();
+		MessageEvent msg = null;
+		StringBuilder query = new StringBuilder();
+		query.append("SELECT * FROM campaign cpg WHERE campaignid = ?");
+		try (Connection connection = databaseSpring.connect();
+				PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+			// Prepare and execute query
+			preStat.setInt(1, key);
+			try (ResultSet resultSet = preStat.executeQuery()) {
+				while (resultSet.next()) {
+					ans.setItem(loadFromResultSet(resultSet));
+				}
+				msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
+						.resolveDescription("OPERATION", "SELECT");
+			} catch (SQLException exception) {
+				LOG.error("Unable to execute query : " + exception.toString());
+				msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+				msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
 
-            }
-        } catch (Exception e) {
-            LOG.warn("Unable to execute query : " + e.toString());
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
-                    e.toString());
-        } finally {
-            // We always set the result message
-            ans.setResultMessage(msg);
-        }
-        return ans;
+			}
+		} catch (Exception e) {
+			LOG.warn("Unable to execute query : " + e.toString());
+			msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+					e.toString());
+		} finally {
+			// We always set the result message
+			ans.setResultMessage(msg);
+		}
+		return ans;
     }
 
     @Override

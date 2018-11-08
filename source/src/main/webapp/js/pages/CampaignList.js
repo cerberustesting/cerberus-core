@@ -44,7 +44,13 @@ function initPage() {
     displayInvariantList("notifyend", "CAMPAIGNENDNOTIF", false);
     displayInvariantList("notifySlackstart", "CAMPAIGNSTARTNOTIF", false);
     displayInvariantList("notifySlackend", "CAMPAIGNENDNOTIF", false);
-
+    displayInvariantList("screenshot", "SCREENSHOT", false);
+    displayInvariantList("verbose", "VERBOSE", false);
+    displayInvariantList("pageSource", "PAGESOURCE", false);
+    displayInvariantList("robotLog", "SELENIUMLOG", false);
+    displayInvariantList("retries", "RETRIES", false);
+    displayInvariantList("manualExecution", "MANUALEXECUTION", false);
+    
 
     $('#editTestcampaignModal a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
         var target = $(e.target).attr("href"); // activated tab

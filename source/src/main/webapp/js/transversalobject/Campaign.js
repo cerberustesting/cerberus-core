@@ -307,6 +307,17 @@ function editEntryClick(param) {
         formEdit.find("#longDescription").prop("value", obj["longDescription"]);
         formEdit.find("#id").prop("value", obj["campaignID"]);
         
+        formEdit.find("#tag").prop("value", obj["Tag"]);
+        formEdit.find("#verbose").prop("value", obj["Verbose"]);
+        formEdit.find("#screenshot").prop("value", obj["Screenshot"]);
+        formEdit.find("#pageSource").prop("value", obj["PageSource"]);
+        formEdit.find("#robotLog").prop("value", obj["RobotLog"]);
+        formEdit.find("#screenshot").prop("value", obj["Screenshot"]);
+        formEdit.find("#retries").prop("value", obj["Retries"]);
+        formEdit.find("#timeout").prop("value", obj["Timeout"]);
+        formEdit.find("#priority").prop("value", obj["Priority"]);
+        formEdit.find("#manualExecution").prop("value", obj["ManualExecution"]);
+        
         formEdit.find("#usrcreated").prop("value", obj["UsrCreated"]);
         formEdit.find("#datecreated").prop("value", getDate(obj["DateCreated"]));
         formEdit.find("#usrmodif").prop("value", obj["UsrModif"]);
@@ -441,7 +452,16 @@ function editEntryModalSaveHandler() {
             CIScoreThreshold: data.cIScoreThreshold,
             Description: data.description,
             Labels: JSON.stringify(labels),
-            Parameters: JSON.stringify(parameters)
+            Parameters: JSON.stringify(parameters),
+            Screenshot: data.screenshot,
+            Verbose: data.verbose,
+            Tag: data.tag,
+            PageSource: data.pageSource,
+            RobotLog: data.robotLog,
+            Timeout: data.timeout,
+            Retries: data.retries,
+            Priority: data.priority,
+            ManualExecution: data.manualExecution
         },
         success: function (data) {
 //            data = JSON.parse(data);
@@ -570,7 +590,16 @@ function addEntryModalSaveHandler() {
             CIScoreThreshold: data.cIScoreThreshold,
             Description: data.description,
             Labels: JSON.stringify(labels),
-            Parameters: JSON.stringify(parameters)
+            Parameters: JSON.stringify(parameters),
+            Screenshot: data.screenshot,
+            Verbose: data.verbose,
+            Tag: data.tag,
+            PageSource: data.pageSource,
+            RobotLog: data.robotLog,
+            Timeout: data.timeout,
+            Retries: data.retries,
+            Priority: data.priority,
+            ManualExecution: data.manualExecution
         },
         success: function (data) {
 //            data = JSON.parse(data);
