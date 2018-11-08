@@ -32,7 +32,6 @@
         <script type="text/javascript" src="js/transversalobject/TestCase.js"></script>
         <script type="text/javascript" src="js/transversalobject/File.js"></script>
         <link rel="stylesheet" type="text/css" href="css/pages/TestCaseExecution.css">
-        <link rel="stylesheet" type="text/css" href="dependencies/Bootstrap-inversebutton/inversebutton.css">
     </head>
     <body>
         <%@ include file="include/global/header.html"%>
