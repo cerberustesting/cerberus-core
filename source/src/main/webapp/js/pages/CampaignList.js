@@ -44,14 +44,22 @@ function initPage() {
     displayInvariantList("notifyend", "CAMPAIGNENDNOTIF", false);
     displayInvariantList("notifySlackstart", "CAMPAIGNSTARTNOTIF", false);
     displayInvariantList("notifySlackend", "CAMPAIGNENDNOTIF", false);
+
+    $("#screenshot").append($('<option></option>').text("").val(""));
+    $("#verbose").append($('<option></option>').text("").val(""));
+    $("#pageSource").append($('<option></option>').text("").val(""));
+    $("#robotLog").append($('<option></option>').text("").val(""));
+    $("#retries").append($('<option></option>').text("").val(""));
+    $("#manualExecution").append($('<option></option>').text("").val(""));
+
+
     displayInvariantList("screenshot", "SCREENSHOT", false);
     displayInvariantList("verbose", "VERBOSE", false);
     displayInvariantList("pageSource", "PAGESOURCE", false);
     displayInvariantList("robotLog", "SELENIUMLOG", false);
-    displayInvariantList("retries", "RETRIES", false);
+    displayInvariantList("retries", "RETRIES", false,"<option></option>");
     displayInvariantList("manualExecution", "MANUALEXECUTION", false);
     
-
     $('#editTestcampaignModal a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
         var target = $(e.target).attr("href"); // activated tab
         if (target == "#tabsCreate-1") {
