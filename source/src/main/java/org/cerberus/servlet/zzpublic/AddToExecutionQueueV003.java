@@ -190,15 +190,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
         // Parsing all parameters.
         // Execution scope parameters : Campaign, TestCases, Countries, Environment, Browser.
         String campaign = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter(PARAMETER_CAMPAIGN), null, charset);
-        Campaign mCampaign = null;
-        
-        
-        if(!StringUtil.isNullOrEmpty(campaign)) {
-	        @SuppressWarnings("unchecked")
-			AnswerItem<Campaign> vCampaign = (AnswerItem<Campaign>) campaignService.readByKey(campaign);
-	        mCampaign = (Campaign) vCampaign.getItem();
-        }
-               
+
         List<String> selectTest;
         selectTest = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues(PARAMETER_TEST), null, charset);
         List<String> selectTestCase;
@@ -225,43 +217,50 @@ public class AddToExecutionQueueV003 extends HttpServlet {
         String manualEnvData = ParameterParserUtil.parseStringParamAndDecode(request.getParameter(PARAMETER_MANUAL_ENV_DATA), null, charset);
         String outputFormat = ParameterParserUtil.parseStringParamAndDecode(request.getParameter(PARAMETER_OUTPUTFORMAT), DEFAULT_VALUE_OUTPUTFORMAT, charset);
         int screenshot = DEFAULT_VALUE_SCREENSHOT;
-        int verbose= DEFAULT_VALUE_VERBOSE;
+        int verbose = DEFAULT_VALUE_VERBOSE;
         String timeout = request.getParameter(PARAMETER_TIMEOUT);
         int pageSource = DEFAULT_VALUE_PAGE_SOURCE;
         int seleniumLog = DEFAULT_VALUE_SELENIUM_LOG;
         int retries = DEFAULT_VALUE_RETRIES;
         String manualExecution = DEFAULT_VALUE_MANUAL_EXECUTION;
-        int priority =DEFAULT_VALUE_PRIORITY;
-        
-if (mCampaign == null)       {
-	// Campaign not defined or does not exist so we parse parameter from servlet query string or defeult values
-    screenshot = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_SCREENSHOT), DEFAULT_VALUE_SCREENSHOT, charset);
-    verbose = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_VERBOSE), DEFAULT_VALUE_VERBOSE,charset);
-    pageSource = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_PAGE_SOURCE), DEFAULT_VALUE_PAGE_SOURCE, charset);
-    seleniumLog = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_SELENIUM_LOG), DEFAULT_VALUE_SELENIUM_LOG, charset);
-    retries = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_RETRIES), DEFAULT_VALUE_RETRIES, charset);
-    manualExecution = ParameterParserUtil.parseStringParamAndDecode(request.getParameter(PARAMETER_MANUAL_EXECUTION), DEFAULT_VALUE_MANUAL_EXECUTION, charset);
-    priority = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_EXEPRIORITY), DEFAULT_VALUE_PRIORITY, charset);
-	
-} else {
-	// Campaign defined and exist so we parse parameter from 1/ servlet 2/ campaign definition 3/ Servlet default values.
-	
-    screenshot = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_SCREENSHOT),
-    			 ParameterParserUtil.parseIntegerParamAndDecode(mCampaign.getScreenshot(), DEFAULT_VALUE_SCREENSHOT, charset), charset);
-    verbose = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_VERBOSE), 
-    		  ParameterParserUtil.parseIntegerParamAndDecode(mCampaign.getVerbose(), DEFAULT_VALUE_VERBOSE,charset),charset);
-    pageSource = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_PAGE_SOURCE),
-    			 ParameterParserUtil.parseIntegerParamAndDecode(mCampaign.getPageSource(), DEFAULT_VALUE_PAGE_SOURCE, charset), charset);
-    seleniumLog = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_SELENIUM_LOG), 
-    			  ParameterParserUtil.parseIntegerParamAndDecode(mCampaign.getRobotLog(), DEFAULT_VALUE_SELENIUM_LOG, charset), charset);
-    retries = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_RETRIES),
-    		  ParameterParserUtil.parseIntegerParamAndDecode(mCampaign.getRetries(), DEFAULT_VALUE_RETRIES, charset), charset);
-    manualExecution = ParameterParserUtil.parseStringParamAndDecode(request.getParameter(PARAMETER_MANUAL_EXECUTION),
-    				  ParameterParserUtil.parseStringParamAndDecode(mCampaign.getManualExecution(), DEFAULT_VALUE_MANUAL_EXECUTION, charset), charset);
-    priority = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_EXEPRIORITY), 
-    		   ParameterParserUtil.parseIntegerParamAndDecode(mCampaign.getPriority(), DEFAULT_VALUE_PRIORITY, charset), charset);
-	
-}
+        int priority = DEFAULT_VALUE_PRIORITY;
+
+        // The rest of the parameter depend on the campaign values.
+        Campaign mCampaign = null;
+        if (!StringUtil.isNullOrEmpty(campaign)) {
+            @SuppressWarnings("unchecked")
+            AnswerItem<Campaign> vCampaign = (AnswerItem<Campaign>) campaignService.readByKey(campaign);
+            mCampaign = (Campaign) vCampaign.getItem();
+        }
+        if (mCampaign == null) {
+            // Campaign not defined or does not exist so we parse parameter from servlet query string or defeult values
+            screenshot = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_SCREENSHOT), DEFAULT_VALUE_SCREENSHOT, charset);
+            verbose = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_VERBOSE), DEFAULT_VALUE_VERBOSE, charset);
+            pageSource = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_PAGE_SOURCE), DEFAULT_VALUE_PAGE_SOURCE, charset);
+            seleniumLog = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_SELENIUM_LOG), DEFAULT_VALUE_SELENIUM_LOG, charset);
+            retries = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_RETRIES), DEFAULT_VALUE_RETRIES, charset);
+            manualExecution = ParameterParserUtil.parseStringParamAndDecode(request.getParameter(PARAMETER_MANUAL_EXECUTION), DEFAULT_VALUE_MANUAL_EXECUTION, charset);
+            priority = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_EXEPRIORITY), DEFAULT_VALUE_PRIORITY, charset);
+
+        } else {
+            // Campaign defined and exist so we parse parameter from 1/ servlet 2/ campaign definition 3/ Servlet default values.
+
+            screenshot = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_SCREENSHOT),
+                    ParameterParserUtil.parseIntegerParamAndDecode(mCampaign.getScreenshot(), DEFAULT_VALUE_SCREENSHOT, charset), charset);
+            verbose = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_VERBOSE),
+                    ParameterParserUtil.parseIntegerParamAndDecode(mCampaign.getVerbose(), DEFAULT_VALUE_VERBOSE, charset), charset);
+            pageSource = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_PAGE_SOURCE),
+                    ParameterParserUtil.parseIntegerParamAndDecode(mCampaign.getPageSource(), DEFAULT_VALUE_PAGE_SOURCE, charset), charset);
+            seleniumLog = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_SELENIUM_LOG),
+                    ParameterParserUtil.parseIntegerParamAndDecode(mCampaign.getRobotLog(), DEFAULT_VALUE_SELENIUM_LOG, charset), charset);
+            retries = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_RETRIES),
+                    ParameterParserUtil.parseIntegerParamAndDecode(mCampaign.getRetries(), DEFAULT_VALUE_RETRIES, charset), charset);
+            manualExecution = ParameterParserUtil.parseStringParamAndDecode(request.getParameter(PARAMETER_MANUAL_EXECUTION),
+                    ParameterParserUtil.parseStringParamAndDecode(mCampaign.getManualExecution(), DEFAULT_VALUE_MANUAL_EXECUTION, charset), charset);
+            priority = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_EXEPRIORITY),
+                    ParameterParserUtil.parseIntegerParamAndDecode(mCampaign.getPriority(), DEFAULT_VALUE_PRIORITY, charset), charset);
+
+        }
 
         // Defining help message.
         String helpMessage = "This servlet is used to add to Cerberus execution queue a list of execution. Execution list will be calculated from cartesian product of "
@@ -300,13 +299,12 @@ if (mCampaign == null)       {
         // Checking the parameter validity.
         StringBuilder errorMessage = new StringBuilder();
         boolean error = false;
-       
-        if((tag == null || tag.isEmpty()) && mCampaign!=null  && !StringUtil.isNullOrEmpty(mCampaign.getTag())){		
+
+        if ((tag == null || tag.isEmpty()) && mCampaign != null && !StringUtil.isNullOrEmpty(mCampaign.getTag())) {
             Timestamp timestamp = new Timestamp(System.currentTimeMillis());
             String mytimestamp = sdf.format(timestamp);
-        	tag = mCampaign.getTag().replace("%TIMESTAMP%", mytimestamp).replace("%USER%", request.getRemoteUser());
-        }        
-        else if (tag == null || tag.isEmpty()) {
+            tag = mCampaign.getTag().replace("%TIMESTAMP%", mytimestamp).replace("%USER%", request.getRemoteUser());
+        } else if (tag == null || tag.isEmpty()) {
             if (request.getRemoteUser() != null) {
                 tag = request.getRemoteUser();
             }
@@ -368,10 +366,6 @@ if (mCampaign == null)       {
             errorMessage.append("Error - No Country defined. You can either feed it with parameter '" + PARAMETER_COUNTRY + "' or add it into the campaign definition.\n");
             error = true;
         }
-//        if (robots == null || robots.isEmpty()) {
-//            errorMessage.append("Error - No Robot defined. You can either feed it with parameter '" + PARAMETER_ROBOT + "' or add it into the campaign definition.\n");
-//            error = true;
-//        }
         if (selectTest == null || selectTest.isEmpty() || selectTestCase == null || selectTestCase.isEmpty()) {
             errorMessage.append("Error - No TestCases defined. You can either feed it with parameters '" + PARAMETER_TEST + "' and '" + PARAMETER_TESTCASE + "' or add it into the campaign definition.\n");
             error = true;
@@ -492,15 +486,15 @@ if (mCampaign == null)       {
                                                             // We don't insert the execution for robot application that have no robot and robotIP defined.
                                                             nbrobotmissing++;
                                                         } else {
-															toInserts.add(inQueueFactoryService.create(app.getSystem(),
-																	test, testCase, country.getCountry(), environment,
-																	robot, robotDecli, robotIP, robotPort, browser,
-																	browserVersion, platform, screenSize, manualURL,
-																	manualHost, manualContextRoot,
-																	manualLoginRelativeURL, manualEnvData, tag,
-																	screenshot, verbose, timeout, pageSource,
-																	seleniumLog, 0, retries, manualExecution, priority,
-																	user, null, null, null));
+                                                            toInserts.add(inQueueFactoryService.create(app.getSystem(),
+                                                                    test, testCase, country.getCountry(), environment,
+                                                                    robot, robotDecli, robotIP, robotPort, browser,
+                                                                    browserVersion, platform, screenSize, manualURL,
+                                                                    manualHost, manualContextRoot,
+                                                                    manualLoginRelativeURL, manualEnvData, tag,
+                                                                    screenshot, verbose, timeout, pageSource,
+                                                                    seleniumLog, 0, retries, manualExecution, priority,
+                                                                    user, null, null, null));
                                                         }
                                                     } catch (FactoryCreationException e) {
                                                         LOG.error("Unable to insert record due to: " + e, e);
@@ -512,12 +506,12 @@ if (mCampaign == null)       {
                                                 LOG.debug("Forcing Robot to empty value. Application type=" + app.getType());
                                                 try {
                                                     LOG.debug("Insert Queue Entry.");
-													toInserts.add(inQueueFactoryService.create(app.getSystem(), test,
-															testCase, country.getCountry(), environment, "", "", "", "",
-															"", "", "", "", manualURL, manualHost, manualContextRoot,
-															manualLoginRelativeURL, manualEnvData, tag, screenshot,
-															verbose, timeout, pageSource, seleniumLog, 0, retries,
-															manualExecution, priority, user, null, null, null));
+                                                    toInserts.add(inQueueFactoryService.create(app.getSystem(), test,
+                                                            testCase, country.getCountry(), environment, "", "", "", "",
+                                                            "", "", "", "", manualURL, manualHost, manualContextRoot,
+                                                            manualLoginRelativeURL, manualEnvData, tag, screenshot,
+                                                            verbose, timeout, pageSource, seleniumLog, 0, retries,
+                                                            manualExecution, priority, user, null, null, null));
                                                 } catch (FactoryCreationException e) {
                                                     LOG.error("Unable to insert record due to: " + e, e);
                                                     LOG.error("test: " + test + "-" + testCase + "-" + country.getCountry() + "-" + environment + "-" + robots);

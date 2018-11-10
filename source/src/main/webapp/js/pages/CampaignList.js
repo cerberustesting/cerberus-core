@@ -44,21 +44,12 @@ function initPage() {
     displayInvariantList("notifyend", "CAMPAIGNENDNOTIF", false);
     displayInvariantList("notifySlackstart", "CAMPAIGNSTARTNOTIF", false);
     displayInvariantList("notifySlackend", "CAMPAIGNENDNOTIF", false);
-
-    $("#screenshot").append($('<option></option>').text("").val(""));
-    $("#verbose").append($('<option></option>').text("").val(""));
-    $("#pageSource").append($('<option></option>').text("").val(""));
-    $("#robotLog").append($('<option></option>').text("").val(""));
-    $("#retries").append($('<option></option>').text("").val(""));
-    $("#manualExecution").append($('<option></option>').text("").val(""));
-
-
-    displayInvariantList("screenshot", "SCREENSHOT", false);
-    displayInvariantList("verbose", "VERBOSE", false);
-    displayInvariantList("pageSource", "PAGESOURCE", false);
-    displayInvariantList("robotLog", "SELENIUMLOG", false);
-    displayInvariantList("retries", "RETRIES", false,"<option></option>");
-    displayInvariantList("manualExecution", "MANUALEXECUTION", false);
+    displayInvariantList("screenshot", "SCREENSHOT", false, undefined, "");
+    displayInvariantList("verbose", "VERBOSE", false, undefined, "");
+    displayInvariantList("pageSource", "PAGESOURCE", false, undefined, "");
+    displayInvariantList("robotLog", "SELENIUMLOG", false, undefined, "");
+    displayInvariantList("retries", "RETRIES", false, undefined, "");
+    displayInvariantList("manualExecution", "MANUALEXECUTION", false, undefined, "");
     
     $('#editTestcampaignModal a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
         var target = $(e.target).attr("href"); // activated tab
@@ -100,6 +91,8 @@ function displayPageLabel() {
     $("[name='editTestcampaignField']").html(doc.getDocLabel("page_testcampaign", "edittestcampaign_field"));
     $("[name='addTestcampaignField']").html(doc.getDocLabel("page_testcampaign", "addtestcampaign_field"));
     $("[name='campaignField']").html(doc.getDocLabel("page_testcampaign", "campaign_field"));
+    $("[name='tagField']").html(doc.getDocOnline("campaign", "tag"));
+    
     $("[name='descriptionField']").html(doc.getDocOnline("page_testcampaign", "description_field"));
     $("[name='tabDescription']").html(doc.getDocLabel("page_testcampaign", "description_tab"));
     $("[name='tabLabels']").html(doc.getDocLabel("label", "label"));

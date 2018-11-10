@@ -35,7 +35,7 @@
                             <li class="active"><a data-toggle="tab" href="#tabsCreate-1" id="createTab1Text" name="tabDescription">Description</a></li>
                             <li><a data-toggle="tab" href="#tabsCreate-6" id="createTab6Text" name="tabTCList">TestCase List</a></li>
                             <li><a data-toggle="tab" href="#tabsCreate-3" id="createTab3Text" name="tabEnv">Environments, Countries & Robots List</a></li>
-                            <li><a data-toggle="tab" href="#tabsCreate-7" id="createTab7Text" name="tabParameters">Execution Parameters</a></li>
+                            <li><a data-toggle="tab" href="#tabsCreate-7" id="createTab7Text" name="tabParameters">Execution Settings</a></li>
                             <li><a data-toggle="tab" href="#tabsCreate-2" id="createTab2Text" name="tabNotifications">Notifications</a></li>
                             <li><a data-toggle="tab" href="#tabsEdit-5" id="tab5Text" name="tabsEdit5">Tracability</a></li>
 
@@ -98,49 +98,59 @@
                                 </div>
                             </div>
 
-							<div class="center tab-pane fade marginTop25" id="tabsCreate-7">
-								<div id="exeParamList">
-									<div class="form-group col-xs-6">
-										<label for="tag" name="tagField">Tag</label>
-                                        <input class="form-control" name="tag" id="tag" aria-describedby="basic-addon1"/>
+                            <div class="center tab-pane fade marginTop25" id="tabsCreate-7">
+                                <div id="exeParamList">
+                                    <div class="row">
+                                        <div class="form-group col-sm-12">
+                                            <label for="tag" name="tagField">Tag</label>
+                                            <input class="form-control" name="tag" id="tag" aria-describedby="basic-addon1"/>
+                                        </div>
                                     </div>
-                                    <div class="form-group col-xs-6">
-										<label for="verbose" name="verboseField">Verbose</label>
-										<select class="form-control" id="verbose" name="verbose"></select>
-									</div>
-                                    <div class="form-group col-xs-6">
-										<label for="screenshot" name="screenshotField">Screenshot</label>
-										<select class="form-control" id="screenshot" name="screenshot"></select>
-									</div>
-									<div class="form-group col-xs-6">
-										<label for="pageSource" name="pageSourceField">Page Source</label>
-										<select class="form-control" id="pageSource" name="pageSource"></select>
-									</div>
-									<div class="form-group col-xs-6">
-										<label for="robotLog" name="robotLogField">Robot Log</label>
-										<select class="form-control" id="robotLog" name="robotLog"></select>
-									</div>
-									<div class="form-group col-xs-6">
-										<label for="timeout" name="timeoutField">Timeout</label>
-                                        <input class="form-control" name="timeout" id="timeout" aria-describedby="basic-addon1"/>
+                                    <div class="row">
+                                        <div class="form-group col-sm-6">
+                                            <label for="verbose" name="verboseField">Verbose</label>
+                                            <select class="form-control" id="verbose" name="verbose"></select>
+                                        </div>
+                                        <div class="form-group col-sm-6">
+                                            <label for="screenshot" name="screenshotField">Screenshot</label>
+                                            <select class="form-control" id="screenshot" name="screenshot"></select>
+                                        </div>
                                     </div>
-									<div class="form-group col-xs-6">
-										<label for="retries" name="retriesField">Retries</label>
-										<select class="form-control" id="retries" name="retries"></select>
-									</div>
-									<div class="form-group col-xs-6">
-										<label for="priority" name="pritorityField">Priority</label>
-                                        <input class="form-control" name="priority" id="priority" aria-describedby="basic-addon1"/>
+                                    <div class="row">
+                                        <div class="form-group col-sm-6">
+                                            <label for="pageSource" name="pageSourceField">Page Source</label>
+                                            <select class="form-control" id="pageSource" name="pageSource"></select>
+                                        </div>
+                                        <div class="form-group col-sm-6">
+                                            <label for="robotLog" name="robotLogField">Robot Log</label>
+                                            <select class="form-control" id="robotLog" name="robotLog"></select>
+                                        </div>
                                     </div>
-                                    <div class="form-group col-xs-6">
-										<label for="manualExecution" name="manualExecutionField">Manual Execution</label>
-										<select class="form-control" id="manualExecution" name="manualExecution"></select>
-									</div>
-									<div class="marginBottom20"></div>
-								</div>
-							</div>
+                                    <div class="row">
+                                        <div class="form-group col-sm-6">
+                                            <label for="timeout" name="timeoutField">Timeout</label>
+                                            <input class="form-control" name="timeout" id="timeout" aria-describedby="basic-addon1"/>
+                                        </div>
+                                        <div class="form-group col-sm-6">
+                                            <label for="retries" name="retriesField">Retries</label>
+                                            <select class="form-control" id="retries" name="retries"></select>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group col-sm-6">
+                                            <label for="priority" name="pritorityField">Priority</label>
+                                            <input class="form-control" name="priority" id="priority" aria-describedby="basic-addon1"/>
+                                        </div>
+                                        <div class="form-group col-sm-6">
+                                            <label for="manualExecution" name="manualExecutionField">Manual Execution</label>
+                                            <select class="form-control" id="manualExecution" name="manualExecution"></select>
+                                        </div>
+                                    </div>
+                                    <div class="marginBottom20"></div>
+                                </div>
+                            </div>
 
-							<div class="center marginTop25 tab-pane fade" id="tabsCreate-2">
+                            <div class="center marginTop25 tab-pane fade" id="tabsCreate-2">
 
 
                                 <div class="panel panel-default" id="NotifEmailPanel">
@@ -151,19 +161,19 @@
                                     </div>
                                     <div class="panel-body collapse in" id="NotifEmail">
                                         <div class="row">
-                                            <div class="form-group col-xs-6">
+                                            <div class="form-group col-sm-6">
                                                 <label for="notifystart" name="notifystartField">Notify start of Execution</label>
                                                 <select class="form-control"  id="notifystart" name="notifystart">
                                                 </select>
                                             </div>
-                                            <div class="form-group col-xs-6">
+                                            <div class="form-group col-sm-6">
                                                 <label for="notifyend" name="notifyendField">Notify end of Execution</label>
                                                 <select class="form-control"  id="notifyend" name="notifyend">
                                                 </select>
                                             </div>
                                         </div>
                                         <div class="row">
-                                            <div class="form-group col-xs-12">
+                                            <div class="form-group col-sm-12">
                                                 <label for="distriblist" name="distriblistField">Distribution List</label>
                                                 <textarea class="form-control" name="distriblist" id="distriblist"
                                                           aria-describedby="basic-addon1"></textarea>
@@ -180,25 +190,25 @@
                                     </div>
                                     <div class="panel-body collapse in" id="NotifSlack">
                                         <div class="row">
-                                            <div class="form-group col-xs-6">
+                                            <div class="form-group col-sm-6">
                                                 <label for="notifySlackstart" name="notifySlackstartField">Notify start of Execution</label>
                                                 <select class="form-control"  id="notifySlackstart" name="notifySlackstart">
                                                 </select>
                                             </div>
-                                            <div class="form-group col-xs-6">
+                                            <div class="form-group col-sm-6">
                                                 <label for="notifySlackend" name="notifySlackendField">Notify end of Execution</label>
                                                 <select class="form-control"  id="notifySlackend" name="notifySlackend">
                                                 </select>
                                             </div>
                                         </div>
                                         <div class="row">
-                                            <div class="form-group col-xs-12">
+                                            <div class="form-group col-sm-12">
                                                 <label for="webhook" name="webhookField">WebHook</label>
                                                 <input class="form-control" name="webhook" id="webhook" aria-describedby="basic-addon1"/>
                                             </div>
                                         </div>
                                         <div class="row">
-                                            <div class="form-group col-xs-6">
+                                            <div class="form-group col-sm-6">
                                                 <label for="channel" name="channelField">Channel</label>
                                                 <input class="form-control" name="channel" id="channel" aria-describedby="basic-addon1"/>
                                             </div>
@@ -212,13 +222,13 @@
                                 <div class="row">
                                     <div class="col-xs-12">
                                         <div class="row">
-                                            <div class="form-group col-xs-6">
+                                            <div class="form-group col-sm-6">
                                                 <label name="lbl_created" for="created">Created</label>
                                                 <div>
                                                     <input id="datecreated" name="datecreated" class="form-control" readonly="readonly" />     
                                                 </div>
                                             </div> 
-                                            <div class="form-group col-xs-6">
+                                            <div class="form-group col-sm-6">
                                                 <label name="lbl_creator" for="creator">Creator</label>
                                                 <div>
                                                     <input id="usrcreated" name="usrcreated" class="form-control" readonly="readonly" />     
@@ -226,13 +236,13 @@
                                             </div> 
                                         </div> 
                                         <div class="row">
-                                            <div class="form-group col-xs-6">
+                                            <div class="form-group col-sm-6">
                                                 <label name="lbl_lastModified" for="lastModified">Last Modified</label>
                                                 <div>
                                                     <input id="datemodif" name="datemodif" class="form-control" readonly="readonly" />     
                                                 </div>
                                             </div> 
-                                            <div class="form-group col-xs-6">
+                                            <div class="form-group col-sm-6">
                                                 <label name="lbl_lastModifier" for="lastModifier">Last Modifier</label>
                                                 <div>
                                                     <input id="usrmodif" name="usrmodif" class="form-control" readonly="readonly" />     
@@ -242,7 +252,7 @@
                                     </div>
                                 </div>  
                             </div>  
-                            
+
                         </div>
                     </div>
                 </form>
