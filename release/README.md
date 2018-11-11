@@ -53,9 +53,9 @@ NB : If under Windows, you can submit the command from docker bash.
 * Click on 'Draft new release'.
 * Choose 'cerberus-testing-xnew.ynew' branch
 * Put in title : cerberus-testing-xnew.ynew
-* copy/paste adoc file under source/src/main/resources/ressource/documentation/include/en/changelog_xdev_ydev.adoc to content.
+* copy/paste adoc file under source/src/main/resources/documentation/include/en/changelog_xdev_ydev.adoc to content.
 * Upload Cerberus-xnew.ynew.zip and Cerberus-xnew.ynew.war from source/target/
-* Press 'Create Release'
+* Press 'Publish Release'
 
 ### Cerberus docker release
 
