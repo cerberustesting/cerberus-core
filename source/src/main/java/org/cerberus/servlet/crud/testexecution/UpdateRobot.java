@@ -104,6 +104,8 @@ public class UpdateRobot extends HttpServlet {
         String screenSize = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("screensize"), "", charset);
         String robotDecli = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("robotDecli"), null, charset);
         String lbexemethod = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("lbexemethod"), null, charset);
+        String type = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("type"), null, charset);
+
 //        String hostUser = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("hostUsername"), null, charset);
 //        String hostPassword = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("hostPassword"), null, charset);
 //        String host = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("host"), null, charset);
@@ -173,7 +175,13 @@ public class UpdateRobot extends HttpServlet {
                     .replace("%OPERATION%", "Create")
                     .replace("%REASON%", "There is at least one duplicated executor. Please edit or remove it to continue."));
             ans.setResultMessage(msg);
-        } else if (executorMap.size() <1) {
+        } else if (StringUtil.isNullOrEmpty(type)) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot")
+                    .replace("%OPERATION%", "Update")
+                    .replace("%REASON%", "Robot type is missing."));
+            ans.setResultMessage(msg);
+        }  else if (executorMap.size() <1) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot")
                     .replace("%OPERATION%", "Create")
@@ -214,7 +222,7 @@ public class UpdateRobot extends HttpServlet {
                 robotData.setLbexemethod(lbexemethod);
                 robotData.setCapabilities(capabilities);
                 robotData.setExecutors(executors);
-
+                robotData.setType(type);
                 ans = robotService.update(robotData, request.getUserPrincipal().getName());
 
                 if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {

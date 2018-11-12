@@ -49,7 +49,7 @@ public interface IFactoryRobot {
      * @return
      */
     Robot create(Integer robotID, String robot, String host, String port, String platform,
-            String browser, String version, String active, String lbexemethod, String description, String userAgent, String screenSize, String host_user, String host_password, String robotDecli);
+            String browser, String version, String active, String lbexemethod, String description, String userAgent, String screenSize, String host_user, String host_password, String robotDecli, String type);
 
     /**
      *
@@ -74,6 +74,6 @@ public interface IFactoryRobot {
      */
     Robot create(Integer robotID, String robot, String host, String port, String platform,
             String browser, String version, String active, String lbexemethod, String description, String userAgent, String screenSize, String host_user, String host_password, 
-            List<RobotCapability> capabilities, List<RobotExecutor> executors, String robotDecli);
+            List<RobotCapability> capabilities, List<RobotExecutor> executors, String robotDecli, String type);
 
 }

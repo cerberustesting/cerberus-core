@@ -7936,6 +7936,9 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append("ADD COLUMN `DateModif` timestamp NOT NULL DEFAULT '1970-01-01 01:01:01' AFTER `UsrModif`;");
         a.add(b.toString());
 
+        // 1389
+        a.add("ALTER TABLE `robot` ADD COLUMN `type` VARCHAR(3)");
+
         return a;
     }
 

@@ -51,6 +51,7 @@ public class Robot {
     private String userAgent;
     private String robotDecli;
     private String screenSize;
+    private String type; // Robot Type (GUI / APK / IPA / ...)
 
     public static final String LOADBALANCINGEXECUTORMETHOD_ROUNDROBIN = "ROUNDROBIN";
     public static final String LOADBALANCINGEXECUTORMETHOD_BYRANKING = "BYRANKING";
@@ -215,6 +216,14 @@ public class Robot {
         this.hostPassword = hostPassword;
     }
 
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
     /**
      * Convert the current TestCaseExecution into JSON format
      *
@@ -239,6 +248,7 @@ public class Robot {
             result.put("browser", this.getBrowser());
             result.put("host", this.getHost());
             result.put("lbexemethod", this.getLbexemethod());
+            result.put("type", this.getType());
 
             if (withChilds) {
                 // Looping on ** Capabilities **

@@ -79,10 +79,12 @@ function initModalRobot() {
     $("#editRobotModal [name='hostUserName']").html(doc.getDocOnline("robot", "hostUserName"));
     $("#editRobotModal [name='robotdecliField']").html(doc.getDocOnline("robot", "robotdecli"));
     $("#editRobotModal [name='lbexemethodField']").html(doc.getDocOnline("robot", "lbexemethod"));
+    $("#editRobotModal [name='typeField']").html(doc.getDocOnline("robot", "typeField"));
 
     displayInvariantList("robotActive", "ROBOTACTIVE", false);
     displayInvariantList("robotBrowser", "BROWSER", false, undefined, "");
     displayInvariantList("robotPlatform", "PLATFORM", false, undefined, "");
+    displayInvariantList("type", "APPLITYPE", false, undefined, "");
     displayInvariantList("lbexemethod", "ROBOTLBMETHOD", false);
 
     var availableUserAgent = getInvariantArray("USERAGENT", false);
@@ -282,6 +284,7 @@ function confirmRobotModalHandler(mode) {
             browser: data.robotBrowser,
             version: data.version,
             useragent: data.useragent,
+            type: data.type,
             screensize: data.screensize,
             robotDecli: data.robotdecli,
             description: data.description,
@@ -359,6 +362,7 @@ function feedRobotModal(robot, modalId, mode) {
         robotObj1.robotDecli = "";
         robotObj1.description = "";
         robotObj1.lbexemethod = "BYRANKING";
+        robotObj1.type = ""
         var hasPermissions = true;
         feedRobotModalData(robotObj1, modalId, mode, hasPermissions);
 
@@ -402,6 +406,7 @@ function feedRobotModalData(robot, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#screensize").prop("value", "");
         formEdit.find("#robotdecli").prop("value", "");
         formEdit.find("#Description").prop("value", "");
+        formEdit.find("#type").val("");
         formEdit.find("#lbexemethod").val("ROUNDROBIN");
     } else {
         if (mode === "EDIT") {
@@ -418,6 +423,7 @@ function feedRobotModalData(robot, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#screensize").prop("value", robot.screenSize);
         formEdit.find("#robotdecli").prop("value", robot.robotDecli);
         formEdit.find("#Description").prop("value", robot.description);
+        formEdit.find("#type").val(robot.type);
         formEdit.find("#lbexemethod").val(robot.lbexemethod);
         loadCapabilitiesTable("editCapabilitiesTableBody", robot.capabilities);
         loadExecutorsTable("editExecutorsTableBody", robot.executors);
@@ -445,6 +451,7 @@ function feedRobotModalData(robot, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#Description").prop("readonly", false);
         formEdit.find("#hostPassword").prop("readonly", false);
         formEdit.find("#hostUsername").prop("readonly", false);
+        formEdit.find("#type").prop("readonly", false);
     } else {
         formEdit.find("#robotName").prop("readonly", "readonly");
         formEdit.find("#active").prop("disabled", "disabled");
@@ -460,6 +467,7 @@ function feedRobotModalData(robot, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#Description").prop("readonly", "readonly");
         formEdit.find("#hostPassword").prop("readonly", "readonly");
         formEdit.find("#hostUsername").prop("readonly", "readonly");
+        formEdit.find("#type").prop("readonly", "readonly");
     }
 }
 
