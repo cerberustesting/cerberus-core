@@ -181,7 +181,7 @@ public class WebDriverService implements IWebDriverService {
         if (answer.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode())) {
             WebElement webElement = (WebElement) answer.getItem();
             if (webElement != null) {
-                if (webElement.getTagName().equalsIgnoreCase("select")) {
+                if (webElement.getTagName() != null && webElement.getTagName().equalsIgnoreCase("select")) {
                     if (webElement.getAttribute("disabled") == null || webElement.getAttribute("disabled").isEmpty()) {
                         Select select = new Select(webElement);
                         result = select.getFirstSelectedOption().getText();
@@ -189,7 +189,7 @@ public class WebDriverService implements IWebDriverService {
                         result = webElement.getText();
                         //result = "Unable to retrieve, element disabled ?";
                     }
-                } else if (webElement.getTagName().equalsIgnoreCase("option") || webElement.getTagName().equalsIgnoreCase("input")) {
+                } else if (webElement.getTagName() != null && (webElement.getTagName().equalsIgnoreCase("option") || webElement.getTagName().equalsIgnoreCase("input"))) {
                     result = webElement.getAttribute("value");
                 } else {
                     result = webElement.getText();
