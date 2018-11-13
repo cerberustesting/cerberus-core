@@ -33,8 +33,6 @@ public interface IFactoryRobot {
      *
      * @param robotID
      * @param robot
-     * @param host
-     * @param port
      * @param platform
      * @param browser
      * @param version
@@ -42,21 +40,18 @@ public interface IFactoryRobot {
      * @param lbexemethod
      * @param description
      * @param userAgent
+     * @param type
      * @param screenSize
-     * @param host_user
-     * @param host_password
      * @param robotDecli
      * @return
      */
-    Robot create(Integer robotID, String robot, String host, String port, String platform,
-            String browser, String version, String active, String lbexemethod, String description, String userAgent, String screenSize, String host_user, String host_password, String robotDecli, String type);
+    Robot create(Integer robotID, String robot, String platform,
+            String browser, String version, String active, String lbexemethod, String description, String userAgent, String screenSize, String robotDecli, String type);
 
     /**
      *
      * @param robotID Autoincrement Id
      * @param robot Name of the Robot
-     * @param host Host of the Robot
-     * @param port port of the Robot
      * @param platform platform of the Robot
      * @param browser browser of the Robot
      * @param version version of the Robot
@@ -65,15 +60,14 @@ public interface IFactoryRobot {
      * @param description description of the Robot
      * @param userAgent userAgent to Use
      * @param screenSize
-     * @param host_user
-     * @param host_password
      * @param capabilities
      * @param executors
      * @param robotDecli
+     * @param type
      * @return
      */
-    Robot create(Integer robotID, String robot, String host, String port, String platform,
-            String browser, String version, String active, String lbexemethod, String description, String userAgent, String screenSize, String host_user, String host_password, 
+    Robot create(Integer robotID, String robot, String platform,
+            String browser, String version, String active, String lbexemethod, String description, String userAgent, String screenSize,
             List<RobotCapability> capabilities, List<RobotExecutor> executors, String robotDecli, String type);
 
 }

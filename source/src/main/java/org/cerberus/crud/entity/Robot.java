@@ -19,7 +19,7 @@
  */
 package org.cerberus.crud.entity;
 
-import org.cerberus.util.StringUtil;
+import java.sql.Timestamp;
 
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
@@ -38,20 +38,20 @@ public class Robot {
 
     private Integer robotID;
     private String robot;
-    private String host;
-    private String port;
-    private String hostUser;
-    private String hostPassword;
+    private String type; // Robot Type (GUI / APK / IPA / ...)
     private String platform;
     private String browser;
     private String version;
     private String active;
+    private String userAgent;
+    private String screenSize;
+    private String robotDecli;
     private String lbexemethod; // Contain the method used in order to spread the load against all executors of the robot.
     private String description;
-    private String userAgent;
-    private String robotDecli;
-    private String screenSize;
-    private String type; // Robot Type (GUI / APK / IPA / ...)
+    private String UsrCreated;
+    private Timestamp DateCreated;
+    private String UsrModif;
+    private Timestamp DateModif;
 
     public static final String LOADBALANCINGEXECUTORMETHOD_ROUNDROBIN = "ROUNDROBIN";
     public static final String LOADBALANCINGEXECUTORMETHOD_BYRANKING = "BYRANKING";
@@ -62,6 +62,38 @@ public class Robot {
     private List<RobotCapability> capabilities;
     private List<RobotCapability> capabilitiesDecoded;
     private List<RobotExecutor> executors;
+
+    public String getUsrCreated() {
+        return UsrCreated;
+    }
+
+    public void setUsrCreated(String UsrCreated) {
+        this.UsrCreated = UsrCreated;
+    }
+
+    public Timestamp getDateCreated() {
+        return DateCreated;
+    }
+
+    public void setDateCreated(Timestamp DateCreated) {
+        this.DateCreated = DateCreated;
+    }
+
+    public String getUsrModif() {
+        return UsrModif;
+    }
+
+    public void setUsrModif(String UsrModif) {
+        this.UsrModif = UsrModif;
+    }
+
+    public Timestamp getDateModif() {
+        return DateModif;
+    }
+
+    public void setDateModif(Timestamp DateModif) {
+        this.DateModif = DateModif;
+    }
 
     public List<RobotExecutor> getExecutors() {
         return executors;
@@ -111,14 +143,6 @@ public class Robot {
         this.userAgent = userAgent;
     }
 
-    public String getPort() {
-        return port;
-    }
-
-    public void setPort(String port) {
-        this.port = port;
-    }
-
     public Integer getRobotID() {
         return robotID;
     }
@@ -133,23 +157,6 @@ public class Robot {
 
     public void setRobot(String robot) {
         this.robot = robot;
-    }
-
-    public String getHost() {
-        return host;
-    }
-
-    public String getHostWithCredential() {
-        String credential = "";
-        if (!StringUtil.isNullOrEmpty(this.getHostUser())) {
-            credential = this.getHostUser() + ":" + this.getHostPassword() + "@";
-        }
-
-        return credential + this.getHost();
-    }
-
-    public void setHost(String host) {
-        this.host = host;
     }
 
     public String getActive() {
@@ -200,22 +207,6 @@ public class Robot {
         this.capabilities = capabilities;
     }
 
-    public String getHostUser() {
-        return hostUser;
-    }
-
-    public void setHostUser(String hostUser) {
-        this.hostUser = hostUser;
-    }
-
-    public String getHostPassword() {
-        return hostPassword;
-    }
-
-    public void setHostPassword(String hostPassword) {
-        this.hostPassword = hostPassword;
-    }
-
     public String getType() {
         return type;
     }
@@ -234,7 +225,6 @@ public class Robot {
     public JSONObject toJson(boolean withChilds, boolean secured) {
         JSONObject result = new JSONObject();
         try {
-            result.put("hostUser", this.getHostUser());
             result.put("active", this.getActive());
             result.put("description", this.getDescription());
             result.put("userAgent", this.getUserAgent());
@@ -244,9 +234,7 @@ public class Robot {
             result.put("robot", this.getRobot());
             result.put("robotDecli", this.getRobotDecli());
             result.put("screenSize", this.getScreenSize());
-            result.put("port", this.getPort());
             result.put("browser", this.getBrowser());
-            result.put("host", this.getHost());
             result.put("lbexemethod", this.getLbexemethod());
             result.put("type", this.getType());
 
@@ -262,7 +250,7 @@ public class Robot {
 
                 // Looping on ** Executors **
                 JSONArray arrayExecutor = new JSONArray();
-                if (this.getExecutors()!= null) {
+                if (this.getExecutors() != null) {
                     for (Object executor : this.getExecutors()) {
                         arrayExecutor.put(((RobotExecutor) executor).toJson(secured));
                     }

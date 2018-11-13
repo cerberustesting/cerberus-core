@@ -7937,7 +7937,14 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add(b.toString());
 
         // 1389
-        a.add("ALTER TABLE `robot` ADD COLUMN `type` VARCHAR(3)");
+        b = new StringBuilder(); // replace color yellow by no color
+        b.append("ALTER TABLE `robot` ADD COLUMN `type` VARCHAR(10) NOT NULL DEFAULT '' AFTER `robot`, ");
+        b.append("DROP COLUMN `host`,DROP COLUMN `Port`,DROP COLUMN `host_user`,DROP COLUMN `host_password`,");
+        b.append("ADD COLUMN `UsrCreated` VARCHAR(45) NOT NULL DEFAULT '' AFTER `description`,");
+        b.append("ADD COLUMN `DateCreated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `UsrCreated`,");
+        b.append("ADD COLUMN `UsrModif` VARCHAR(45) DEFAULT '' AFTER `DateCreated`,");
+        b.append("ADD COLUMN `DateModif` timestamp NOT NULL DEFAULT '1970-01-01 01:01:01' AFTER `UsrModif`;");
+        a.add(b.toString());
 
         return a;
     }

@@ -357,8 +357,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('robot','host','','fr','Hostname','Address IP ou nom de server qui heberge le robot et qui sera utilisé lors l\\'excution du cas de test.',NULL)");
         b.append(",('robot','platform','','en','Platform','Operating system of the robot.',NULL)");
         b.append(",('robot','platform','','fr','Platforme','System d\\'exploitation du robot.',NULL)");
-        b.append(",('robot','typeField','','en','Type','Type of technology the robot use',NULL)");
-        b.append(",('robot','typeField','','fr','Type','Type de technologie utilisée par le robot',NULL)");
+        b.append(",('robot','type','','en','Type','Type of technology the robot use',NULL)");
+        b.append(",('robot','type','','fr','Type','Type de technologie utilisée par le robot',NULL)");
         b.append(",('robot','port','','en','Port number','Port number of the robot.',NULL)");
         b.append(",('robot','port','','fr','Numero de port','Numero du port à utiliser pour acceder au Root.',NULL)");
         b.append(",('robot','robot','','en','Robot','Name of the Robot. A robot define the server that will execute an automated test case. It can be used when starting an execution without having to feed information such as host, port platform or browser.',NULL)");

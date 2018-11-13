@@ -801,6 +801,8 @@ function aoColumnsFunc_followUp() {
                 var satcolor;
                 if (obj[7] > 0) {
                     saturation_level = (obj[6] / obj[7]) * 100;
+                    saturation_level = Math.round(saturation_level * 10) / 10
+
                 } else {
                     saturation_level = 0;
                 }
@@ -819,7 +821,7 @@ function aoColumnsFunc_followUp() {
                 if ((obj[7] > 0) && ((obj[6] >= obj[7]))) {
                     return obj[8];
                 } else {
-                    return 0;
+                    return "";
                 }
             }
         }

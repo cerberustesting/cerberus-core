@@ -62,8 +62,6 @@ function initModalRobot() {
     $("#editRobotModal [name='confirmationField']").html(doc.getDocLabel("page_robot", "button_delete"));
     $("#editRobotModal [name='editEntryField']").html(doc.getDocLabel("page_robot", "button_edit"));
     $("#editRobotModal [name='robotField']").html(doc.getDocOnline("robot", "robot"));
-    $("#editRobotModal [name='hostField']").html(doc.getDocOnline("robot", "host"));
-    $("#editRobotModal [name='portField']").html(doc.getDocOnline("robot", "port"));
     $("#editRobotModal [name='platformField']").html(doc.getDocOnline("robot", "platform"));
     $("#editRobotModal [name='browserField']").html(doc.getDocOnline("robot", "browser"));
     $("#editRobotModal [name='versionField']").html(doc.getDocOnline("robot", "version"));
@@ -75,11 +73,9 @@ function initModalRobot() {
     $("#editRobotModal [name='addValueHeader']").html(doc.getDocOnline("robot", "capabilityValue"));
     $("#editRobotModal [name='editCapabilityHeader']").html(doc.getDocOnline("robot", "capabilityCapability"));
     $("#editRobotModal [name='editValueHeader']").html(doc.getDocOnline("robot", "capabilityValue"));
-    $("#editRobotModal [name='hostPassword']").html(doc.getDocOnline("robot", "hostPassword"));
-    $("#editRobotModal [name='hostUserName']").html(doc.getDocOnline("robot", "hostUserName"));
     $("#editRobotModal [name='robotdecliField']").html(doc.getDocOnline("robot", "robotdecli"));
     $("#editRobotModal [name='lbexemethodField']").html(doc.getDocOnline("robot", "lbexemethod"));
-    $("#editRobotModal [name='typeField']").html(doc.getDocOnline("robot", "typeField"));
+    $("#editRobotModal [name='typeField']").html(doc.getDocOnline("robot", "type"));
 
     displayInvariantList("robotActive", "ROBOTACTIVE", false);
     displayInvariantList("robotBrowser", "BROWSER", false, undefined, "");

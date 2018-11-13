@@ -34,20 +34,18 @@ import org.springframework.stereotype.Service;
 public class FactoryRobot implements IFactoryRobot {
 
     @Override
-    public Robot create(Integer robotID, String robot, String host, String port, String platform,
-            String browser, String version, String active, String lbexemethod, String description, String userAgent, String screenSize, String hostUser, String hostPassword, String robotDecli, String type) {
-        Robot r = create(robotID, robot, host, port, platform, browser, version, active, lbexemethod, description, userAgent, screenSize, hostUser, hostPassword, new ArrayList<>(), new ArrayList<>(), robotDecli, type);
+    public Robot create(Integer robotID, String robot, String platform,
+            String browser, String version, String active, String lbexemethod, String description, String userAgent, String screenSize, String robotDecli, String type) {
+        Robot r = create(robotID, robot, platform, browser, version, active, lbexemethod, description, userAgent, screenSize, new ArrayList<>(), new ArrayList<>(), robotDecli, type);
         return r;
     }
 
     @Override
-    public Robot create(Integer robotID, String robot, String host, String port, String platform, String browser, String version, String active, String lbexemethod, String description, String userAgent,
-             String screenSize, String hostUser, String hostPassword, List<RobotCapability> capabilities, List<RobotExecutor> executors, String robotDecli, String type) {
+    public Robot create(Integer robotID, String robot, String platform, String browser, String version, String active, String lbexemethod, String description, String userAgent,
+             String screenSize, List<RobotCapability> capabilities, List<RobotExecutor> executors, String robotDecli, String type) {
         Robot newRobot = new Robot();
         newRobot.setRobotID(robotID);
         newRobot.setRobot(robot);
-        newRobot.setHost(host);
-        newRobot.setPort(port);
         newRobot.setPlatform(platform);
         newRobot.setBrowser(browser);
         newRobot.setVersion(version);
@@ -58,8 +56,6 @@ public class FactoryRobot implements IFactoryRobot {
         newRobot.setCapabilities(capabilities);
         newRobot.setExecutors(executors);
         newRobot.setScreenSize(screenSize);
-        newRobot.setHostUser(hostUser);
-        newRobot.setHostPassword(hostPassword);
         newRobot.setRobotDecli(robotDecli);
         newRobot.setType(type);
         return newRobot;

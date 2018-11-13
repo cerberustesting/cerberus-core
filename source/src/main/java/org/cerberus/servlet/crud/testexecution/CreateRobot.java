@@ -107,10 +107,6 @@ public class CreateRobot extends HttpServlet {
         String robotDecli = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("robotDecli"), "", charset);
         String lbexemethod = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("lbexemethod"), "", charset);
         String type = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("type"), "", charset);
-//        String host = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("host"), null, charset);
-//        String port = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("port"), null, charset);
-//        String hostUser = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("hostUsername"), null, charset);
-//        String hostPassword = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("hostPassword"), null, charset);
 
         List<RobotCapability> capabilities = (List<RobotCapability>) (request.getParameter("capabilities") == null ? Collections.emptyList() : gson.fromJson(request.getParameter("capabilities"), new TypeToken<List<RobotCapability>>() {
         }.getType()));
@@ -177,12 +173,6 @@ public class CreateRobot extends HttpServlet {
                     .replace("%OPERATION%", "Create")
                     .replace("%REASON%", "There is at least one duplicated executor. Please edit or remove it to continue."));
             ans.setResultMessage(msg);
-        } else if (StringUtil.isNullOrEmpty(type)) {
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-            msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot")
-                    .replace("%OPERATION%", "Create")
-                    .replace("%REASON%", "Robot type is missing."));
-            ans.setResultMessage(msg);
         } else if (executorMap.size() <1) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot")
@@ -196,7 +186,7 @@ public class CreateRobot extends HttpServlet {
             IRobotService robotService = appContext.getBean(IRobotService.class);
             IFactoryRobot robotFactory = appContext.getBean(IFactoryRobot.class);
 
-            Robot robotData = robotFactory.create(robotid, robot, "", "", platform, browser, version, active, lbexemethod, description, userAgent, screenSize, "", "", capabilities, executors, robotDecli, type);
+            Robot robotData = robotFactory.create(robotid, robot, platform, browser, version, active, lbexemethod, description, userAgent, screenSize, capabilities, executors, robotDecli, type);
             ans = robotService.create(robotData);
 
             if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {

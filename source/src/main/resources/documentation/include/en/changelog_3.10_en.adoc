@@ -1,11 +1,12 @@
 *Bug fixes*
 [square]
-* none
+* Fixed nullpointer when using verifyTextInElement in APK/IPA applications. #1894
+* Fixed issue when default robotconstrain poolsize was applyed even when execution does not require robot.
 
 *Improvements / New features*
 [square]
-* none
+* Added posibility to type the robot. Each robot can hold the application type information. That will allow later to avoid submiting execution to queue on impossible combination of application/robot.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
-* none
+* Cleaned robot table with deprecated fields (host, port, user and pass).

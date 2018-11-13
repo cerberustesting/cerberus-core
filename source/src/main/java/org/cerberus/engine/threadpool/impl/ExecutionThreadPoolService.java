@@ -142,10 +142,12 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
 
             // Getting Robot Host PoolSize from invariant hashmap.
             int robot_poolsize_final = 0;
-            if (robot_poolsize.containsKey(exe.getSelectedRobotHost())) {
-                robot_poolsize_final = ParameterParserUtil.parseIntegerParam(robot_poolsize.get(exe.getSelectedRobotHost()), poolSizeRobot);
-            } else {
-                robot_poolsize_final = poolSizeRobot;
+            if (!StringUtil.isNullOrEmpty(exe.getSelectedRobotHost())) {
+                if (robot_poolsize.containsKey(exe.getSelectedRobotHost())) {
+                    robot_poolsize_final = ParameterParserUtil.parseIntegerParam(robot_poolsize.get(exe.getSelectedRobotHost()), poolSizeRobot);
+                } else {
+                    robot_poolsize_final = poolSizeRobot;
+                }
             }
             constrains_current.put(const03_key, robot_poolsize_final);
         }
@@ -331,10 +333,12 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
 
                         // RobotHost PoolSize if retreived from invariant hashmap.
                         int robothost_poolsize_final = 0;
-                        if (robothost_poolsize.containsKey(robotHost)) {
-                            robothost_poolsize_final = ParameterParserUtil.parseIntegerParam(robothost_poolsize.get(robotHost), poolSizeRobot);
-                        } else {
-                            robothost_poolsize_final = poolSizeRobot;
+                        if (!StringUtil.isNullOrEmpty(robotHost)) {
+                            if (robothost_poolsize.containsKey(robotHost)) {
+                                robothost_poolsize_final = ParameterParserUtil.parseIntegerParam(robothost_poolsize.get(robotHost), poolSizeRobot);
+                            } else {
+                                robothost_poolsize_final = poolSizeRobot;
+                            }
                         }
 
                         LOG.debug("Pool Values : poolGen " + poolSizeGeneral + " poolApp " + exe.getPoolSizeApplication() + " poolRobotHost " + robothost_poolsize_final);

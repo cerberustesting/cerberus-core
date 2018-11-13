@@ -106,11 +106,6 @@ public class UpdateRobot extends HttpServlet {
         String lbexemethod = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("lbexemethod"), null, charset);
         String type = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("type"), null, charset);
 
-//        String hostUser = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("hostUsername"), null, charset);
-//        String hostPassword = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("hostPassword"), null, charset);
-//        String host = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("host"), null, charset);
-//        String port = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("port"), null, charset);
-
         List<RobotCapability> capabilities = (List<RobotCapability>) (request.getParameter("capabilities") == null ? Collections.emptyList() : gson.fromJson(request.getParameter("capabilities"), new TypeToken<List<RobotCapability>>() {
         }.getType()));
 
@@ -174,12 +169,6 @@ public class UpdateRobot extends HttpServlet {
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot")
                     .replace("%OPERATION%", "Create")
                     .replace("%REASON%", "There is at least one duplicated executor. Please edit or remove it to continue."));
-            ans.setResultMessage(msg);
-        } else if (StringUtil.isNullOrEmpty(type)) {
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-            msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot")
-                    .replace("%OPERATION%", "Update")
-                    .replace("%REASON%", "Robot type is missing."));
             ans.setResultMessage(msg);
         }  else if (executorMap.size() <1) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);

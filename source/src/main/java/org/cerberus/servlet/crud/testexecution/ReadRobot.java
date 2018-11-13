@@ -20,7 +20,6 @@
 package org.cerberus.servlet.crud.testexecution;
 
 import com.google.common.base.Strings;
-import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -210,7 +209,7 @@ public class ReadRobot extends HttpServlet {
 
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
         int columnToSortParameter = Integer.parseInt(ParameterParserUtil.parseStringParam(request.getParameter("iSortCol_0"), "1"));
-        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "robotID,robot,host,port,platform,browser,version,active,useragent,description");
+        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "robotID,robot,platform,browser,version,active,useragent,description");
         String columnToSort[] = sColumns.split(",");
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
@@ -233,10 +232,6 @@ public class ReadRobot extends HttpServlet {
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
             for (Robot robot : (List<Robot>) resp.getDataList()) {
-                if (robot != null) {
-                    robot.setHostPassword(null); // hide the password to the view
-                }
-
                 jsonArray.put(convertRobotToJSONObject(robot));
             }
         }
@@ -263,9 +258,6 @@ public class ReadRobot extends HttpServlet {
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item and convert it to JSONformat
             Robot lib = (Robot) answer.getItem();
-            if (lib != null) {
-                lib.setHostPassword(null); // hide the password to the view
-            }
             JSONObject response = convertRobotToJSONObject(lib);
             object.put("contentTable", response);
         }
@@ -286,10 +278,6 @@ public class ReadRobot extends HttpServlet {
         //finds the project
         try {
             Robot robotObj = robotService.readByKey(robot);
-
-            if (robotObj != null) {
-                robotObj.setHostPassword(null); // hide the password to the view
-            }
 
             if (robot == null) {
                 item.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND));

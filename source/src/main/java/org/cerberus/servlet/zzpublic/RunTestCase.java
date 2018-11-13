@@ -251,10 +251,6 @@ public class RunTestCase extends HttpServlet {
             try {
                 robObj = robotService.readByKey(robot);
                 // If Robot parameter is defined and we can find the robot, we overwrite the corresponding parameters.
-                robotHost = ParameterParserUtil.parseStringParam(robObj.getHost(), robotHost);
-                ss_ip_user = robObj.getHostUser();
-                ss_ip_pass = robObj.getHostPassword();
-                robotPort = ParameterParserUtil.parseStringParam(String.valueOf(robObj.getPort()), robotPort);
                 browser = ParameterParserUtil.parseStringParam(robObj.getBrowser(), browser);
                 robotDecli = ParameterParserUtil.parseStringParam(robObj.getRobotDecli(), "");
                 if (StringUtil.isNullOrEmpty(robotDecli)) {
