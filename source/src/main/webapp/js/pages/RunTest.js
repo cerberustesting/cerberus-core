@@ -418,7 +418,6 @@ function loadCampaignParameter(campaign) {
                 for (var index = 0; index < data.contentTable.length; index++) {
                     var type = data.contentTable[index].parameter;
                     var value = data.contentTable[index].value;
-
                     if (type === "ROBOT") {
                         robot.push(value);
                     } else if (type === "ENVIRONMENT") {
@@ -461,10 +460,56 @@ function loadCampaignParameter(campaign) {
 
                 });
                 loadRobotInfo(robot);
-
             }
         });
-
+        
+        $.ajax({
+            url: "ReadCampaign?campaign="+campaign,
+            method: "GET",
+            data: {campaign: campaign},
+            datatype: "json",
+            async: true,
+            success: function (data) {
+            	if (data.contentTable != null) {       
+            		if (data.contentTable.Screenshot != null && data.contentTable.Screenshot != "") {
+            			$('#screenshot option[value="'+data.contentTable.Screenshot+'"]').prop('selected', true);
+            		}
+            		
+            		if (data.contentTable.Verbose != null && data.contentTable.Verbose != "") {
+            			$('#verbose option[value="'+data.contentTable.Verbose+'"]').prop('selected', true);
+            		}
+            		
+            		if (data.contentTable.Tag != null && data.contentTable.Tag != "") {
+            			$("#tag").val(data.contentTable.Tag);
+            		}
+            		
+            		if (data.contentTable.Priority != null && data.contentTable.Priority != "") {
+            			$("#priority").val(data.contentTable.Priority);
+            		}
+	                  
+            		if (data.contentTable.PageSource != null && data.contentTable.PageSource != "") {
+            			$('#pageSource option[value="'+data.contentTable.PageSource+'"]').prop('selected', true);
+            		}
+	                
+            		if (data.contentTable.RobotLog != null && data.contentTable.RobotLog != "") {
+            			$('#seleniumLog option[value="'+data.contentTable.RobotLog+'"]').prop('selected', true);
+            		}
+            		
+            		if (data.contentTable.Timeout != null && data.contentTable.Timeout != "") {
+            			$("#timeout").val(data.contentTable.Timeout);
+            		}
+            		
+            		if (data.contentTable.Retries != null && data.contentTable.Retries != "") {
+            			$('#retries option[value="'+data.contentTable.Retries+'"]').prop('selected', true);
+            		}
+            		
+            		if (data.contentTable.ManualExecution != null && data.contentTable.ManualExecution != "") {
+            			$('#manualExecution option[value="'+data.contentTable.ManualExecution+'"]').prop('selected', true);
+            		}
+            	}
+            }
+        
+        });
     }
 }
 
