@@ -1,7 +1,7 @@
 <!--Edit invariant page-->
 <div data-backdrop="static" class="modal fade center" id="editInvariantModal" role="dialog"
      aria-labelledby="editInvariantModalLabel" aria-hidden="true">
-    <div class="modal-dialog nomargintop nomarginbottom modal-xl">
+    <div class="modal-dialog nomargintop nomarginbottom modal-md">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
@@ -9,7 +9,6 @@
                 <h4 class="modal-title" id="editInvariantModalLabel" name="editInvariantField">Edit Invariant</h4>
             </div>
             <div class="modal-body">
-
                 <!--edit form-->
                 <form id="editInvariantModalForm" name="editInvariantModalForm" title="Edit Invariant" role="form">
                     <div class="container-fluid center">
@@ -22,91 +21,120 @@
                                 </button>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="form-group col-xs-12">
-                                <label for="idname" name="idnameField">Id Name</label>
-                                <select class="form-control" name="idname" id="idname" aria-describedby="basic-addon1"></select>
-                                <input type="text" class="form-control input-sm" name="originalIdName" id="originalIdName" style="display:none;"/>
-                                <input type="text" class="form-control input-sm" name="originalValue" id="originalValue" style="display:none;"/>
+                        <ul id="tabsEdit" class="nav nav-tabs" data-tabs="tabs">
+                            <li class="active"><a data-toggle="tab" href="#tabInvDefinition" id="InvDefinition" name="tabDefinition">Definition</a></li>
+                            <li><a data-toggle="tab" href="#tabInvAdvanced" id="InvAdvanced" name="tabAdvanced">Advanced</a></li>
+                            <li><a data-toggle="tab" href="#tabInvDescription" id="InvDescription" name="tabDescription">Description</a></li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="center marginTop25 tab-pane fade in active" id="tabInvDefinition">
+                                <div class="row">
+                                    <div class="form-group col-xs-12">
+                                        <label for="idname" name="idnameField">Id Name</label>
+                                        <select class="form-control" name="idname" id="idname" aria-describedby="basic-addon1"></select>
+                                        <input type="text" class="form-control input-sm" name="originalIdName" id="originalIdName" style="display:none;"/>
+                                        <input type="text" class="form-control input-sm" name="originalValue" id="originalValue" style="display:none;"/>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-xs-12">
+                                        <label for="value" name="ValueField">Value</label>
+                                        <input type="text" class="form-control" name="value" id="value"
+                                               aria-describedby="basic-addon1" readonly onkeydown="return inv_keyispressed(event);" >
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="form-group col-xs-12">
-                                <label for="value" name="ValueField">Value</label>
-                                <input type="text" class="form-control" name="value" id="value"
-                                       aria-describedby="basic-addon1" readonly onkeydown="return inv_keyispressed(event);" >
+                            <div class="center tab-pane fade marginTop25" id="tabInvAdvanced">
+                                <div class='row'>
+                                    <div class='col-md-6 col-xs-12'>
+                                        <button id="AddInvButton" type="button" class="btn btn-default marginTop20">
+                                            <span class="glyphicon glyphicon-plus-sign"></span> Add Attributes</button>
+                                    </div>
+                                        <div class="form-group col-xs-12 col-md-4 pull-right">
+                                            <label for="sort" name="sortField">Sort</label>
+                                            <input type="text" class="form-control" name="sort" id="sort"
+                                                   aria-describedby="basic-addon1">
+                                        </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-xs-12" id="Grpgp1">
+                                        <label for="gp1" name="gp1Field">Attribute</label>
+                                        <input type="text" class="form-control" name="gp1" id="gp1"
+                                               aria-describedby="basic-addon1">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-xs-12" id="Grpgp2" style="display: none">
+                                        <label for="gp2" name="gp2Field">Attribute 2</label>
+                                        <input type="text" class="form-control" name="gp2" id="gp2"
+                                               aria-describedby="basic-addon1">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-xs-12" id="Grpgp3" style="display: none">
+                                        <label for="gp3" name="gp3Field">Attribute 3</label>
+                                        <input type="text" class="form-control" name="gp3" id="gp3"
+                                               aria-describedby="basic-addon1">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-xs-12" id="Grpgp4" style="display: none">
+                                        <label for="gp4" name="gp4Field">Attribute 4</label>
+                                        <input type="text" class="form-control" name="gp4" id="gp4"
+                                               aria-describedby="basic-addon1">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-xs-12" id="Grpgp5" style="display: none">
+                                        <label for="gp5" name="gp5Field">Attribute 5</label>
+                                        <input type="text" class="form-control" name="gp5" id="gp5"
+                                               aria-describedby="basic-addon1">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-xs-12" id="Grpgp6" style="display: none">
+                                        <label for="gp6" name="gp6Field">Attribute 6</label>
+                                        <input type="text" class="form-control" name="gp6" id="gp6"
+                                               aria-describedby="basic-addon1">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-xs-12" id="Grpgp7" style="display: none">
+                                        <label for="gp7" name="gp7Field">Attribute 7</label>
+                                        <input type="text" class="form-control" name="gp7" id="gp7"
+                                               aria-describedby="basic-addon1">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-xs-12" id="Grpgp8" style="display: none">
+                                        <label for="gp8" name="gp8Field">Attribute 8</label>
+                                        <input type="text" class="form-control" name="gp8" id="gp8"
+                                               aria-describedby="basic-addon1">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-xs-12" id="Grpgp9" style="display: none">
+                                        <label for="gp9" name="gp9Field">Attribute 9</label>
+                                        <input type="text" class="form-control" name="gp9" id="gp9"
+                                               aria-describedby="basic-addon1">
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="form-group col-xs-12">
-                                <label for="sort" name="sortField">Sort</label>
-                                <input type="text" class="form-control" name="sort" id="sort"
-                                       aria-describedby="basic-addon1">
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="form-group col-xs-12">
-                                <label for="description" name="descriptionField">Description</label>
-                                <textarea class="form-control" name="description" id="description"
-                                          aria-describedby="basic-addon1"></textarea>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="form-group col-xs-12">
-                                <label for="veryShortDesc" name="veryShortDescField">veryShortDesc</label>
-                                <textarea class="form-control" name="veryShortDesc" id="veryShortDesc"
-                                          aria-describedby="basic-addon1"></textarea>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="form-group col-xs-4">
-                                <label for="gp1" name="gp1Field">Group 1</label>
-                                <input type="text" class="form-control" name="gp1" id="gp1"
-                                       aria-describedby="basic-addon1">
-                            </div>
-                            <div class="form-group col-xs-4">
-                                <label for="gp2" name="gp2Field">Group 2</label>
-                                <input type="text" class="form-control" name="gp2" id="gp2"
-                                       aria-describedby="basic-addon1">
-                            </div>
-                            <div class="form-group col-xs-4">
-                                <label for="gp3" name="gp3Field">Group 3</label>
-                                <input type="text" class="form-control" name="gp3" id="gp3"
-                                       aria-describedby="basic-addon1">
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="form-group col-xs-4">
-                                <label for="gp4" name="gp4Field">Group 4</label>
-                                <input type="text" class="form-control" name="gp4" id="gp4"
-                                       aria-describedby="basic-addon1">
-                            </div>
-                            <div class="form-group col-xs-4">
-                                <label for="gp5" name="gp5Field">Group 5</label>
-                                <input type="text" class="form-control" name="gp5" id="gp5"
-                                       aria-describedby="basic-addon1">
-                            </div>
-                            <div class="form-group col-xs-4">
-                                <label for="gp6" name="gp6Field">Group 6</label>
-                                <input type="text" class="form-control" name="gp6" id="gp6"
-                                       aria-describedby="basic-addon1">
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="form-group col-xs-4">
-                                <label for="gp7" name="gp7Field">Group 7</label>
-                                <input type="text" class="form-control" name="gp7" id="gp7"
-                                       aria-describedby="basic-addon1">
-                            </div>
-                            <div class="form-group col-xs-4">
-                                <label for="gp8" name="gp8Field">Group 8</label>
-                                <input type="text" class="form-control" name="gp8" id="gp8"
-                                       aria-describedby="basic-addon1">
-                            </div>
-                            <div class="form-group col-xs-4">
-                                <label for="gp9" name="gp9Field">Group 9</label>
-                                <input type="text" class="form-control" name="gp9" id="gp9"
-                                       aria-describedby="basic-addon1">
+                            <div class="center tab-pane fade marginTop25" id="tabInvDescription">
+                                <div class="row">
+                                    <div class="form-group col-xs-12">
+                                        <label for="description" name="descriptionField">Description</label>
+                                        <textarea class="form-control" name="description" id="description"
+                                                  aria-describedby="basic-addon1"></textarea>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-xs-12">
+                                        <label for="veryShortDesc" name="veryShortDescField">veryShortDesc</label>
+                                        <textarea class="form-control" name="veryShortDesc" id="veryShortDesc"
+                                                  aria-describedby="basic-addon1"></textarea>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
