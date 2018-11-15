@@ -63,11 +63,15 @@ public interface IRobotService {
      */
     AnswerList<Robot> readByRobotList(List<String> robotList);
 
+    AnswerList<Robot> readByRobotList(List<String> robotList, String typeRobot);
+
     /**
      *
      * @return
      */
     HashMap<String, String> readToHashMapRobotDecli();
+
+
 
     /**
      *

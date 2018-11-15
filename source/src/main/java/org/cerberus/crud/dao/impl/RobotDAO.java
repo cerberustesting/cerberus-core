@@ -137,6 +137,11 @@ public class RobotDAO implements IRobotDAO {
 
     @Override
     public AnswerList<Robot> readByRobotList(List<String> robotList) {
+        return readByRobotList(robotList, null);
+    }
+
+    @Override
+    public AnswerList<Robot> readByRobotList(List<String> robotList, String typeRobot) {
         AnswerList<Robot> response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -155,6 +160,11 @@ public class RobotDAO implements IRobotDAO {
         }
         query.append(searchSQL);
 
+        if(! StringUtil.isNullOrEmpty(typeRobot)) {
+            query.append(" and type=? ");
+        }
+
+
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
@@ -168,6 +178,10 @@ public class RobotDAO implements IRobotDAO {
                     for (String myrobot : robotList) {
                         preStat.setString(i++, myrobot);
                     }
+                }
+
+                if(! StringUtil.isNullOrEmpty(typeRobot)) {
+                    preStat.setString(i++, typeRobot);
                 }
 
                 ResultSet resultSet = preStat.executeQuery();

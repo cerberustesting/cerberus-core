@@ -90,6 +90,11 @@ public class RobotService implements IRobotService {
     }
 
     @Override
+    public AnswerList<Robot> readByRobotList(List<String> robotList, String typeRobot) {
+        return robotDao.readByRobotList(robotList, typeRobot);
+    }
+
+    @Override
     public HashMap<String, String> readToHashMapRobotDecli() {
         HashMap<String, String> result = new HashMap<>();
 

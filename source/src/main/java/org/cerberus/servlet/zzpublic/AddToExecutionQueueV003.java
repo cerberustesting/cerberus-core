@@ -35,13 +35,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-import org.cerberus.crud.entity.Application;
-import org.cerberus.crud.entity.Campaign;
-import org.cerberus.crud.entity.CampaignParameter;
-import org.cerberus.crud.entity.CountryEnvParam;
-import org.cerberus.crud.entity.TestCase;
-import org.cerberus.crud.entity.TestCaseCountry;
-import org.cerberus.crud.entity.TestCaseExecutionQueue;
+import org.cerberus.crud.entity.*;
 import org.cerberus.crud.service.ICampaignParameterService;
 import org.cerberus.crud.service.ICampaignService;
 import org.cerberus.crud.service.ILogEventService;
@@ -51,7 +45,9 @@ import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.exception.FactoryCreationException;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
 import org.cerberus.util.servlet.ServletUtil;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -474,13 +470,16 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                                                     robots = new ArrayList<>();
                                                     robots.add("");
                                                 }
-                                                for (String robot : robots) {
+
+                                                List<Robot> robotsDetails= robotService.convert(robotService.readByRobotList(robots, app.getType()));
+
+                                                for (Robot robot : robotsDetails) {
                                                     try {
                                                         LOG.debug("Insert Queue Entry.");
                                                         // We get here the corresponding robotDecli value from robot.
-                                                        String robotDecli = robotMap.get(robot);
+                                                        String robotDecli = robotMap.get(robot.getRobotDecli());
                                                         if (StringUtil.isNullOrEmpty(robotDecli)) {
-                                                            robotDecli = robot;
+                                                            robotDecli = robot.getRobotDecli();
                                                         }
                                                         if ("".equals(robot) && StringUtil.isNullOrEmpty(robotIP)) {
                                                             // We don't insert the execution for robot application that have no robot and robotIP defined.
@@ -488,7 +487,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                                                         } else {
                                                             toInserts.add(inQueueFactoryService.create(app.getSystem(),
                                                                     test, testCase, country.getCountry(), environment,
-                                                                    robot, robotDecli, robotIP, robotPort, browser,
+                                                                    robot.getRobot(), robotDecli, robotIP, robotPort, browser,
                                                                     browserVersion, platform, screenSize, manualURL,
                                                                     manualHost, manualContextRoot,
                                                                     manualLoginRelativeURL, manualEnvData, tag,

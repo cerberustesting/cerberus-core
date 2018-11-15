@@ -30,6 +30,7 @@ import org.cerberus.crud.dao.IRobotExecutorDAO;
 import org.cerberus.crud.entity.RobotExecutor;
 import org.cerberus.crud.factory.IFactoryRobotExecutor;
 import org.cerberus.crud.factory.impl.FactoryRobotExecutor;
+import org.cerberus.crud.utils.RequestDbUtils;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
@@ -107,44 +108,21 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
     }
 
     @Override
-    public AnswerItem<RobotExecutor> readBestByKey(String robot) {
-        AnswerItem ans = new AnswerItem<>();
-        RobotExecutor result = null;
+    public List<RobotExecutor> readBestByKey(String robot) throws SQLException{
         final String query = "SELECT * FROM `robotexecutor` rbe WHERE `robot` = ? and active = 'Y' order by DateLastExeSubmitted asc, rank asc";
-        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
             LOG.debug("SQL.param.robot : " + robot);
         }
-        try (Connection connection = this.databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query);) {
-            preStat.setString(1, robot);
 
-            try (ResultSet resultSet = preStat.executeQuery();) {
-                if (resultSet.first()) {
-                    result = loadFromResultSet(resultSet);
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                    ans.setItem(result);
-                } else {
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                }
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-            }
-        } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-        }
-        //sets the message
-        ans.setResultMessage(msg);
-        return ans;
+        List<RobotExecutor> res = RequestDbUtils.executeQueryList(databaseSpring, query,
+                ps -> ps.setString(1, robot) ,
+                rs -> loadFromResultSet(rs));
+
+
+        return res;
     }
 
     @Override

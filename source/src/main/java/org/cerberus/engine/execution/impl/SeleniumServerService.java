@@ -239,91 +239,69 @@ public class SeleniumServerService implements ISeleniumServerService {
             LOG.debug(logPrefix + "Set Driver");
             WebDriver driver = null;
             AppiumDriver appiumDriver = null;
-            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
-                if (caps.getPlatform().is(Platform.ANDROID)) {
-                    // Appium does not support connection from HTTPCommandExecutor. When connecting from Executor, it stops to work after a couple of instructions.
-//                    if (executor == null) {
-                    appiumDriver = new AndroidDriver(url, caps);
-//                    } else {
-//                    appiumDriver = new AndroidDriver(executor, caps);
-//                    }
-                    driver = (WebDriver) appiumDriver;
-//                } else if (caps.getPlatform().is(Platform.MAC)) {
-                    // Appium does not support connection from HTTPCommandExecutor. When connecting from Executor, it stops to work after a couple of instructions.
-//                    if (executor == null) {
-//                    appiumDriver = new IOSDriver(url, caps);
-//                    } else {
-//                    appiumDriver = new IOSDriver(executor, caps);
-//                    }
-//                    driver = (WebDriver) appiumDriver;
-                } else {
-                    // Appium does not support connection from HTTPCommandExecutor. When connecting from Executor, it stops to work after a couple of instructions.
-//                    if (executor == null) {
-//                        driver = new RemoteWebDriver(url, caps);
-//                    } else {
-                    driver = new RemoteWebDriver(executor, caps);
-//                    }
-                }
-            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
-                // add a lock on app path this part of code, because we can't install 2 apk with the same name simultaneously
-                String appUrl = null;
-                if (caps.getCapability("app") != null) {
-                    appUrl = caps.getCapability("app").toString();
-                }
+            switch ( tCExecution.getApplicationObj().getType().toUpperCase() ) {
+                case Application.TYPE_GUI :
+                    if (caps.getPlatform().is(Platform.ANDROID)) {
+                        // Appium does not support connection from HTTPCommandExecutor. When connecting from Executor, it stops to work after a couple of instructions.
+                        appiumDriver = new AndroidDriver(url, caps);
+                        driver = (WebDriver) appiumDriver;
+                    } else {
+                        driver = new RemoteWebDriver(executor, caps);
+                    }
+                    break ;
+                case Application.TYPE_APK :
+                    // add a lock on app path this part of code, because we can't install 2 apk with the same name simultaneously
+                    String appUrl = null;
+                    if (caps.getCapability("app") != null) {
+                        appUrl = caps.getCapability("app").toString();
+                    }
 
-                String newApkName = null;
-                try {
-                    int toto = totocpt++;
-                    if (appUrl != null) { // FIX : appium can't install 2 apk simultaneously, so implement a litle latency between execution
-                        synchronized (this) {
-                            // with appium 1.7.2, we can't install 2 fresh apk simultaneously. Appium have to prepare the apk (transformation) on the first execution before (see this topic https://discuss.appium.io/t/execute-2-android-test-simultaneously-problem-during-install-apk/22030)
-                            // provoque a latency if first test is already running and apk don't finish to be prepared
-                            if (apkAlreadyPrepare.containsKey(appUrl) && !apkAlreadyPrepare.get(appUrl)) {
-                                Thread.sleep(10000);
-                            } else {
-                                apkAlreadyPrepare.put(appUrl, false);
+                    String newApkName = null;
+                    try {
+                        int toto = totocpt++;
+                        if (appUrl != null) { // FIX : appium can't install 2 apk simultaneously, so implement a litle latency between execution
+                            synchronized (this) {
+                                // with appium 1.7.2, we can't install 2 fresh apk simultaneously. Appium have to prepare the apk (transformation) on the first execution before (see this topic https://discuss.appium.io/t/execute-2-android-test-simultaneously-problem-during-install-apk/22030)
+                                // provoque a latency if first test is already running and apk don't finish to be prepared
+                                if (apkAlreadyPrepare.containsKey(appUrl) && !apkAlreadyPrepare.get(appUrl)) {
+                                    Thread.sleep(10000);
+                                } else {
+                                    apkAlreadyPrepare.put(appUrl, false);
+                                }
                             }
                         }
+                        appiumDriver = new AndroidDriver(url, caps);
+                        if (apkAlreadyPrepare.containsKey(appUrl)) {
+                            apkAlreadyPrepare.put(appUrl, true);
+                        }
+                    } finally {
+                        Runtime.getRuntime().exec("rm " + newApkName);
                     }
-//                    if (executor == null) {
-                    appiumDriver = new AndroidDriver(url, caps);
-//                    } else {
-                    //                       appiumDriver = new AndroidDriver(executor, caps);
-//                    }
-                    if (apkAlreadyPrepare.containsKey(appUrl)) {
-                        apkAlreadyPrepare.put(appUrl, true);
+
+                    driver = (WebDriver) appiumDriver;
+                    break;
+
+                case Application.TYPE_IPA :
+                    appiumDriver = new IOSDriver(url, caps);
+                    driver = (WebDriver) appiumDriver;
+                    break;
+                case Application.TYPE_FAT :
+                    /**
+                     * Check sikuli extension is reachable
+                     */
+                    if (!sikuliService.isSikuliServerReachable(session)) {
+                        MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SIKULI_COULDNOTCONNECT);
+                        mes.setDescription(mes.getDescription().replace("%SSIP%", tCExecution.getSeleniumIP()));
+                        mes.setDescription(mes.getDescription().replace("%SSPORT%", tCExecution.getSeleniumPort()));
+                        throw new CerberusException(mes);
                     }
-                } finally {
-                    Runtime.getRuntime().exec("rm " + newApkName);
-                }
-
-                driver = (WebDriver) appiumDriver;
-
-            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
-//                if (executor == null) {
-                appiumDriver = new IOSDriver(url, caps);
-                //               } else {
-                //                   appiumDriver = new IOSDriver(executor, caps);
-                //               }
-                driver = (WebDriver) appiumDriver;
-
-            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
-                /**
-                 * Check sikuli extension is reachable
-                 */
-                if (!sikuliService.isSikuliServerReachable(session)) {
-                    MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SIKULI_COULDNOTCONNECT);
-                    mes.setDescription(mes.getDescription().replace("%SSIP%", tCExecution.getSeleniumIP()));
-                    mes.setDescription(mes.getDescription().replace("%SSPORT%", tCExecution.getSeleniumPort()));
-                    throw new CerberusException(mes);
-                }
-                /**
-                 * If CountryEnvParameter IP is set, open the App
-                 */
-                if (!tCExecution.getCountryEnvironmentParameters().getIp().isEmpty()) {
-                    sikuliService.doSikuliActionOpenApp(session, tCExecution.getCountryEnvironmentParameters().getIp());
-                }
-
+                    /**
+                     * If CountryEnvParameter IP is set, open the App
+                     */
+                    if (!tCExecution.getCountryEnvironmentParameters().getIp().isEmpty()) {
+                        sikuliService.doSikuliActionOpenApp(session, tCExecution.getCountryEnvironmentParameters().getIp());
+                    }
+                    break;
             }
 
             /**
