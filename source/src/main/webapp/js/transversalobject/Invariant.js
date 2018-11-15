@@ -40,7 +40,7 @@ function openModalInvariant(invariant, value, mode) {
     } else {
         // DUPLICATE
         duplicateInvariantClick(invariant, value);
-    }    
+    }
 }
 
 function initModalInvariant() {
