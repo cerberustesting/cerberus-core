@@ -1348,8 +1348,8 @@ Step.prototype.show = function () {
     }
 
 
-    stepDesc.append($("<h2 id='stepHeaderDescription' >").text(object.description));
-    stepDesc.append($("<h2 id='stepHeaderMessage' style='font-size:1.2em;'>").text(object.returnMessage));
+    stepDesc.append($("<h2 id='stepHeaderDescription' class='text-center' >").text(object.description));
+    stepDesc.append($("<h2 id='stepHeaderMessage' class='text-center' style='font-size:1.2em;'>").text(object.returnMessage));
     $("#stepInfo").attr('test', object.test).attr('testcase', object.testcase).attr('step', object.step);
     $("#stepInfo").append(stepDesc);
     $("#stepInfo").append(stepButton);
