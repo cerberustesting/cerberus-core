@@ -1401,7 +1401,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_invariant','editinvariant_field','','en','Edit Invariant','',NULL)");
         b.append(",('page_invariant','editinvariant_field','','fr','Editer un Invariant','',NULL)");
         b.append(",('page_invariant','gp1','','en','Attribute','',NULL)");
-        b.append(",('page_invariant','gp1','','fr','Attribut 1','',NULL)");
+        b.append(",('page_invariant','gp1','','fr','Attribut','',NULL)");
         b.append(",('page_invariant','gp2','','en','Attribute 2','',NULL)");
         b.append(",('page_invariant','gp2','','fr','Attribut 2','',NULL)");
         b.append(",('page_invariant','gp3','','en','Attribute 3','',NULL)");
