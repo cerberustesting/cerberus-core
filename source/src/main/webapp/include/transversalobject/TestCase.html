@@ -93,18 +93,20 @@
                                         <select type="text" class="form-control input-sm" name="activeProd" id="actProd"></select>
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <div class="col-sm-12">
-                                        <label for="countryList" id="countryListLabel" name="countryListLabel">Country List</label>
-                                        <button id="buttonInvert" type="button">INVERT</button>
-                                        <table class="table table-bordered table-hover nomarginbottom" id="CountryTable" style="margin-top: 5px;margin-bottom: 25px;">
-                                            <thead>
-                                            </thead>
-                                            <tbody id="testCaseCountryTableBody">
-                                                <tr>
-                                                </tr>
-                                            </tbody>
-                                        </table>
+                                <label id="countryListLabel">Countries :</label>
+                                <div class="well well-sm">
+                                    <div class="row">
+                                        <div class="form-group col-xs-1">
+                                            <label class="checkbox-inline bold">
+                                                <input type="checkbox" id="select_all"/>
+                                                ALL
+                                            </label>
+                                        </div>
+                                        <div class="form-group col-xs-5">
+                                            <!--<label for="countryList" id="countryListLabel" class="bold">Countries :</label>-->
+                                            <div id="countryList" name="countryList" >
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <label name="versionActivation">Version activation</label>
