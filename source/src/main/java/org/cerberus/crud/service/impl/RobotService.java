@@ -19,10 +19,7 @@
  */
 package org.cerberus.crud.service.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -95,11 +92,11 @@ public class RobotService implements IRobotService {
     }
 
     @Override
-    public HashMap<String, String> readToHashMapRobotDecli() {
+    public HashMap<String, String> readToHashMapRobotDecli() throws CerberusException {
         HashMap<String, String> result = new HashMap<>();
 
-        AnswerList<Robot> answer = readAll(); //TODO: handle if the response does not turn ok
-        for (Robot rob : (List<Robot>) answer.getDataList()) {
+        List<Robot> robots = convert(readAll());
+        for (Robot rob : robots) {
             String robotDecli = ParameterParserUtil.parseStringParam(rob.getRobotDecli(), "");
             result.put(rob.getRobot(), robotDecli);
         }
@@ -107,11 +104,12 @@ public class RobotService implements IRobotService {
     }
 
     @Override
-    public HashMap<String, Robot> readToHashMapByRobotList(List<String> robotList) {
+    public HashMap<String, Robot> readToHashMapByRobotList(List<String> robotList) throws CerberusException {
         HashMap<String, Robot> result = new HashMap<>();
 
-        AnswerList<Robot> answer = readByRobotList(robotList); //TODO: handle if the response does not turn ok
-        for (Robot rob : (List<Robot>) answer.getDataList()) {
+        List<Robot> robots = convert(readByRobotList(robotList));
+        for (Robot rob : robots) {
+            rob.setRobotDecli(ParameterParserUtil.parseStringParam(rob.getRobotDecli(), ""));
             result.put(rob.getRobot(), rob);
         }
         return result;
@@ -273,6 +271,21 @@ public class RobotService implements IRobotService {
     @Override
     public AnswerList<List<String>> readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
         return robotDao.readDistinctValuesByCriteria(searchParameter, individualSearch, columnName);
+    }
+
+    @Override
+    public Collection<Robot> getRobotsUsableForType(Collection<Robot> robotsLst, String type) {
+        List<Robot> res = new LinkedList<>();
+
+        for(Robot robot : robotsLst) {
+            if(type.equals(robot.getType())) {
+                res.add(robot);
+            }
+        }
+
+        if(res.isEmpty()) return robotsLst;
+
+        return res;
     }
 
 }
