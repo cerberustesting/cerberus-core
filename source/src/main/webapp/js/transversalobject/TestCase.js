@@ -60,10 +60,6 @@ function initModalTestCase() {
     $("[name='testField']").html(doc.getDocOnline("test", "Test"));
     $("[name='testCaseField']").html(doc.getDocOnline("testcase", "TestCase"));
     $("[name='lastModifierField']").html(doc.getDocOnline("testcase", "LastModifier"));
-    $("[name='originField']").html(doc.getDocOnline("testcase", "Origine"));
-    $("[name='refOriginField']").html(doc.getDocOnline("testcase", "RefOrigine"));
-    $("[name='projectField']").html(doc.getDocOnline("project", "idproject"));
-    $("[name='ticketField']").html(doc.getDocOnline("testcase", "ticket"));
     $("[name='applicationField']").html(doc.getDocOnline("application", "Application"));
     $("[name='statusField']").html(doc.getDocOnline("testcase", "Status"));
     $("[name='bugIdField']").html(doc.getDocOnline("testcase", "BugID"));
@@ -77,9 +73,9 @@ function initModalTestCase() {
     $("[name='descriptionField']").html(doc.getDocOnline("test", "Description"));
     $("[name='creatorField']").html(doc.getDocOnline("testcase", "Creator"));
     $("[name='implementerField']").html(doc.getDocOnline("testcase", "Implementer"));
-    $("[name='groupField']").html(doc.getDocOnline("invariant", "GROUP"));
+    $("[name='typeField']").html(doc.getDocOnline("invariant", "Type"));
     $("[name='priorityField']").html(doc.getDocOnline("invariant", "PRIORITY"));
-    //$("[name='countryList']").html(doc.getDocOnline("testcase", "countryList"));
+    $("[name='countryListLabel']").html(doc.getDocOnline("testcase", "countryListLabel"));
     $("[name='bugIdField']").html(doc.getDocOnline("testcase", "BugID"));
     $("[name='tcDateCreaField']").html(doc.getDocOnline("testcase", "TCDateCrea"));
     $("[name='activeField']").html(doc.getDocOnline("testcase", "TcActive"));
@@ -93,9 +89,9 @@ function initModalTestCase() {
     $("[name='conditionVal1Field']").html(doc.getDocOnline("testcase", "ConditionVal1"));
     $("[name='conditionVal2Field']").html(doc.getDocOnline("testcase", "ConditionVal2"));
     $("[name='commentField']").html(doc.getDocOnline("testcase", "Comment"));
-    $("[name='versionActivation']").html(doc.getDocLabel("testcase", "versionActivation"));
-    $("[name='activationConditions']").html(doc.getDocLabel("testcase", "activationConditions"));
-    $("[name='robotConstraints']").html(doc.getDocLabel("testcase", "robotConstraints"));
+    $("[name='versionActivation']").html(doc.getDocOnline("testcase", "versionActivation"));
+    $("[name='activationConditions']").html(doc.getDocOnline("testcase", "activationConditions"));
+    $("[name='robotConstraints']").html(doc.getDocOnline("testcase", "robotConstraints"));
     $("#filters").html(doc.getDocOnline("page_testcaselist", "filters"));
     $("[name='btnLoad']").html(doc.getDocLabel("page_global", "buttonLoad"));
     $("[name='testField']").html(doc.getDocLabel("test", "Test"));
@@ -119,12 +115,10 @@ function initModalTestCase() {
     displayInvariantList("priority", "PRIORITY", false);
     displayInvariantList("conditionOper", "TESTCASECONDITIONOPER", false);
     $('[name="origin"]').append('<option value="All">All</option>');
-    displayInvariantList("origin", "ORIGIN", true);
     displayInvariantList("active", "TCACTIVE", false);
     displayInvariantList("activeQA", "TCACTIVE", false);
     displayInvariantList("activeUAT", "TCACTIVE", false);
     displayInvariantList("activeProd", "TCACTIVE", false);
-    appendProjectList();
 
     $('[data-toggle="popover"]').popover({
         'placement': 'auto',
@@ -605,10 +599,6 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#originalTest").prop("value", "");
         formEdit.find("#originalTestCase").prop("value", "");
         formEdit.find("#implementer").prop("value", "");
-        formEdit.find("#origin").prop("value", "");
-        formEdit.find("#refOrigin").prop("value", "");
-        formEdit.find("#project").prop("value", "");
-        formEdit.find("#ticket").prop("value", "");
         formEdit.find("#group").val("AUTOMATED");
         formEdit.find("#priority option:nth(0)").attr("selected", "selected");
         formEdit.find("#actQA").val("Y");
@@ -629,10 +619,6 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#newTest").prop("value", testCase.test);
         formEdit.find("#implementer").prop("value", testCase.implementer);
         formEdit.find("#tcDateCrea").prop("value", testCase.dateCreated);
-        formEdit.find("#origin").prop("value", testCase.origine);
-        formEdit.find("#refOrigin").prop("value", testCase.refOrigine);
-        formEdit.find("#project").prop("value", testCase.project);
-        formEdit.find("#ticket").prop("value", testCase.ticket);
         formEdit.find("#group").prop("value", testCase.group);
         formEdit.find("#priority").prop("value", testCase.priority);
         formEdit.find("#actQA").prop("value", testCase.activeQA);
@@ -664,9 +650,6 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#test").prop("disabled", "disabled");
         formEdit.find("#testCase").prop("readonly", "readonly");
         formEdit.find("#implementer").prop("readonly", "readonly");
-        formEdit.find("#origin").prop("disabled", "disabled");
-        formEdit.find("#project").prop("disabled", "disabled");
-        formEdit.find("#ticket").prop("readonly", "readonly");
         formEdit.find("#application").prop("disabled", "disabled");
         formEdit.find("#status").prop("disabled", "disabled");
         formEdit.find("#group").prop("disabled", "disabled");
@@ -690,7 +673,6 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#conditionVal1").prop("disabled", "disabled");
         formEdit.find("#conditionVal2").prop("disabled", "disabled");
         formEdit.find("#bugId").prop("readonly", "readonly");
-        formEdit.find("#comment").prop("readonly", "readonly");
         // feed the country list.
         appendTestCaseCountryList(testCase, true);
         // Save button is hidden.
@@ -703,9 +685,6 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#active").removeProp("disabled");
         formEdit.find("#bugId").removeProp("readonly");
         formEdit.find("#implementer").removeProp("readonly");
-        formEdit.find("#origin").removeProp("disabled");
-        formEdit.find("#project").removeProp("disabled");
-        formEdit.find("#ticket").removeProp("readonly");
         formEdit.find("#application").removeProp("disabled");
         formEdit.find("#status").removeProp("disabled");
         formEdit.find("#group").removeProp("disabled");
@@ -970,19 +949,4 @@ function appendTestList(defautValue) {
     var myoption = $('<option></option>').text(defautValue).val(defautValue);
     $("#editTestCaseModal [name=test]").append(myoption).trigger('change'); // append the option and update Select2
 
-}
-
-function appendProjectList() {
-    var jqxhr = $.getJSON("ReadProject");
-    $.when(jqxhr).then(function (data) {
-        var projectList = $("[name=project]");
-
-        projectList.append($('<option></option>').text("No project defined").val(""));
-        for (var index = 0; index < data.contentTable.length; index++) {
-            var idProject = data.contentTable[index].idProject;
-            var desc = data.contentTable[index].description;
-
-            projectList.append($('<option></option>').text(idProject + " " + desc).val(idProject));
-        }
-    });
 }

@@ -280,8 +280,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('invariant','ENVIRONMENT','','fr','Environnement','',NULL)");
         b.append(",('invariant','FILTERNBDAYS','','en','Nb Days','Number of days to Filter the history table in the integration status.',NULL)");
         b.append(",('invariant','FILTERNBDAYS','','fr','Nb Jours','',NULL)");
-        b.append(",('invariant','GROUP','','en','Group','The group is a property of a <code class=\\'doc-crbvvoca\\'>test case</code> that can take the following values : <br><br><b>AUTOMATED</b> : The <code class=\\'doc-crbvvoca\\'>test case</code> is fully automated and does not require any manual action.<br><b>MANUAL</b> : The <code class=\\'doc-crbvvoca\\'>test case</code> has to be manually executed.<br><b>PRIVATE</b> : The <code class=\\'doc-crbvvoca\\'>test case</code> exist for technical reason and will never appear on the reporting area. For example : <code class=\\'doc-fixed\\'>Pre Testing</code> test cases that are used for login purpose should all be PRIVATE.',NULL)");
-        b.append(",('invariant','GROUP','','fr','Groupe','',NULL)");
+        b.append(",('invariant','Type','','en','Type','The type is a property of a <code class=\\'doc-crbvvoca\\'>test case</code> that can take the following values : <br><br><b>AUTOMATED</b> : The <code class=\\'doc-crbvvoca\\'>test case</code> is fully automated and does not require any manual action.<br><b>MANUAL</b> : The <code class=\\'doc-crbvvoca\\'>test case</code> has to be manually executed.<br><b>PRIVATE</b> : The <code class=\\'doc-crbvvoca\\'>test case</code> exist for technical reason and will never appear on the reporting area. For example : <code class=\\'doc-fixed\\'>Pre Testing</code> test cases that are used for login purpose should all be PRIVATE.',NULL)");
+        b.append(",('invariant','Type','','fr','Type','',NULL)");
         b.append(",('invariant','PRIORITY','','en','Priority','It is the priority level of the functionnality which is tested.',NULL)");
         b.append(",('invariant','PRIORITY','','fr','Priorité','',NULL)");
         b.append(",('invariant','SYSTEM','','en','System','',NULL)");
@@ -453,8 +453,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('testcase','ConditionVal1','','fr','Condition Value1','',NULL)");
         b.append(",('testcase','ConditionVal2','','en','Condition Value2','',NULL)");
         b.append(",('testcase','ConditionVal2','','fr','Condition Value2','',NULL)");
-        b.append(",('testcase','countryList','','en','Country List','The list of countries where the test case is defined','_testcase')");
-        b.append(",('testcase','countryList','','fr','Liste des pays','La liste des pays sur lesquels le cas de test est défini','_cas_de_test')");
+        b.append(",('testcase','countryListLabel','','en','Countries','The list of countries where the test case is defined','_testcase')");
+        b.append(",('testcase','countryListLabel','','fr','Pays','La liste des pays sur lesquels le cas de test est défini','_cas_de_test')");
         b.append(",('testcase','Creator','','en','Creator','This is the name of the Cerberus user who created the <code class=\\'doc-crbvvoca\\'>test case</code>.','_testcase')");
         b.append(",('testcase','Creator','','fr','Créateur','','_cas_de_test')");
         b.append(",('testcase','Description','','en','Test case short description','It is a synthetic description of what the <code class=\\'doc-crbvvoca\\'>test case</code> do.','_testcase')");
@@ -481,8 +481,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('testcase','TargetBuild','','fr','Sprint Cible','','_cas_de_test')");
         b.append(",('testcase','TargetRev','','en','Target Rev','This is the Revision that should fix the bug. Until we reach that Revision, the <code class=\\'doc-crbvvoca\\'>test case</code> execution will be discarded.','_testcase')");
         b.append(",('testcase','TargetRev','','fr','Revision Cible','Correpond à la Revision à partir de laquelle le bug est corrigé.','_testcase')");
-        b.append(",('testcase','TcActive','','en','Act','This field define if the test is active or not. A <code class=\\'doc-crbvvoca\\'>test case</code> that is not active cannot be executed.','_testcase')");
-        b.append(",('testcase','TcActive','','fr','Actif','','_cas_de_test')");
+        b.append(",('testcase','TcActive','','en','Global Activation','This field define if the test is active or not. A <code class=\\'doc-crbvvoca\\'>test case</code> that is not active cannot be executed.','_testcase')");
+        b.append(",('testcase','TcActive','','fr','Activation globale','','_cas_de_test')");
         b.append(",('testcase','TCDateCrea','','en','Creation Date','This is the <code class=\\'doc-crbvvoca\\'>test case</code> creation date.','_testcase')");
         b.append(",('testcase','TCDateCrea','','fr','Date de création','','_cas_de_test')");
         b.append(",('testcase','TestCase','','en','Testcase ID','A <code class=\\'doc-crbvvoca\\'>test case</code> is a scenario that test a specific feature of an <code class=\\'doc-crbvvoca\\'>application</code>.','_testcase')");
