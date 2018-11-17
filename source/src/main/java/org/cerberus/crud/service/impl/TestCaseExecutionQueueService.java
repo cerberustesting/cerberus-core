@@ -22,7 +22,6 @@ package org.cerberus.crud.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.cerberus.crud.dao.ITagSystemDAO;
 import org.cerberus.crud.dao.ITestCaseExecutionQueueDAO;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.TestCase;
@@ -30,6 +29,7 @@ import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionQueue;
 import org.cerberus.crud.factory.IFactoryTagSystem;
 import org.cerberus.crud.factory.IFactoryTestCaseExecution;
+import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ITagSystemService;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.engine.entity.MessageGeneral;
@@ -58,6 +58,8 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
     private ITagSystemService tagSystemService;
     @Autowired
     private IFactoryTagSystem factoryTagSystem;
+    @Autowired
+    private IParameterService parameterService;
 
     @Autowired
     private IFactoryTestCaseExecution factoryTestCaseExecution;
@@ -233,6 +235,18 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
     }
 
     @Override
+    public void cancelRunningOldQueueEntries() {
+        /**
+         * Automatic Cancellation job. That Job force to CANCELLED queue entries
+         * that still in Executing state and too old to be still running.
+         */
+        if (parameterService.getParameterBooleanByKey("cerberus_automaticqueuecancellationjob_active", "", true)) {
+            Integer timeout = parameterService.getParameterIntegerByKey("cerberus_automaticqueuecancellationjob_timeout", "", 3600);
+            testCaseExecutionInQueueDAO.updateToCancelledOldRecord(timeout, "Cancelled by automatic job.");
+        }
+    }
+
+    @Override
     public TestCaseExecutionQueue convert(AnswerItem<TestCaseExecutionQueue> answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item
@@ -314,7 +328,7 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
         if ((testCaseExecutionInQueue.getTestCaseObj() != null) && (testCaseExecutionInQueue.getTestCaseObj().getDescription() != null)) {
             description = testCaseExecutionInQueue.getTestCaseObj().getDescription();
         }
-        TestCaseExecution result = factoryTestCaseExecution.create(0, test, testCase, description, null, null, environment, country, "", "", robotHost, robotPort, robotDecli, 
+        TestCaseExecution result = factoryTestCaseExecution.create(0, test, testCase, description, null, null, environment, country, "", "", robotHost, robotPort, robotDecli,
                 browser, version, platform,
                 browser, start, end, controlStatus, controlMessage, application, applicationObj, "", tag, verbose, screenshot, pageSource,
                 seleniumLog, synchroneous, timeout, outputFormat, "", "", tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL,

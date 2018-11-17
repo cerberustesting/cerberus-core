@@ -300,6 +300,11 @@ public interface ITestCaseExecutionQueueService {
 
     /**
      *
+     */
+    void cancelRunningOldQueueEntries();
+    
+    /**
+     *
      * @param answerItem
      * @return
      * @throws CerberusException

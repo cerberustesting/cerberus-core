@@ -1948,7 +1948,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                 = "UPDATE `" + TABLE + "` "
                 + "SET `" + COLUMN_STATE + "` = 'CANCELLED', `" + COLUMN_REQUEST_DATE + "` = now(), `" + COLUMN_DATEMODIF + "` = now(), `" + COLUMN_COMMENT + "` = ? "
                 + "WHERE `" + COLUMN_ID + "` = ? "
-                + "AND `" + COLUMN_STATE + "` IN ('WAITING','STARTING','EXECUTING')";
+                + "AND `" + COLUMN_STATE + "` IN ('WAITING','STARTING','EXECUTING','ERROR','QUEUED')";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -1995,6 +1995,61 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
             }
         }
         return new Answer(msg);
+    }
+
+    @Override
+    public AnswerItem<Integer> updateToCancelledOldRecord(Integer timeOutInS, String comment) {
+        MessageEvent msg = null;
+        String query
+                = "UPDATE `" + TABLE + "` exq "
+                + "SET `" + COLUMN_STATE + "` = 'CANCELLED', `" + COLUMN_REQUEST_DATE + "` = now(), `" + COLUMN_DATEMODIF + "` = now(), `" + COLUMN_COMMENT + "` = ? "
+                + "WHERE TO_SECONDS(NOW()) - TO_SECONDS(DateCreated) > ? "
+                + "AND `" + COLUMN_STATE + "` IN ('WAITING','STARTING','EXECUTING')";
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                int i = 1;
+                preStat.setString(i++, comment);
+                preStat.setLong(i++, timeOutInS);
+
+                int updateResult = preStat.executeUpdate();
+                if (updateResult <= 0) {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_NOUPDATE);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%DESCRIPTION%", "Unable to move state to CANCELLED (forced) for execution in queue (update result: " + updateResult + "). Maybe execution is no longuer in WAITING or STARTING or EXECUTING ?"));
+                    LOG.info("No 'old' queue entries to force CANCELLED. (timeout = " + timeOutInS + ").");
+                } else {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
+                    LOG.info(updateResult + " 'old' queue entries forced to CANCELLED. (timeout = " + timeOutInS + ").");
+                }
+
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
+            }
+        }
+        return new AnswerItem<>(msg);
     }
 
     @Override

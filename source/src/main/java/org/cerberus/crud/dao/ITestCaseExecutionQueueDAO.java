@@ -265,6 +265,14 @@ public interface ITestCaseExecutionQueueDAO {
 
     /**
      *
+     * @param timeOutInS
+     * @param comment
+     * @return
+     */
+    AnswerItem<Integer> updateToCancelledOldRecord(Integer timeOutInS, String comment);
+
+    /**
+     *
      * @param id
      * @param comment
      * @return
