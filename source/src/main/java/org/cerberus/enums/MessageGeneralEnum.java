@@ -107,6 +107,8 @@ public enum MessageGeneralEnum {
     GUI_TESTCASE_DUPLICATION_ALREADY_EXISTS(403, "", "Error : You're trying to duplicate a testcase which already exists."),
     GUI_TESTCASE_DELETE_USED_STEP(403, "", "Error : You're trying to delete a testcase which have some step used in other tests. Please remove the link before delete this testcase."),
     GUI_TESTCASE_NON_ADMIN_SAVE_WORKING_TESTCASE(403, "", "Error : You're trying to save a WORKING testcase without having the TestAdmin right to do so."),
+    GUI_NO_ROBOT_EXECUTOR_AVAILABLE(403, "", "No robot executor available for robot %ROBOT%"),
+    GUI_NO_ROBOT_AVAILABLE_FOR_TYPE(403, "", "No robot of type %TYPE% is available"),
     // Data operations
     DATA_OPERATION_SUCCESS(000, MessageCodeEnum.GENERIC_CODE_SUCCESS.getCodeString(), "The requested operation was concluded with success."),
     DATA_OPERATION_WARNING(000, MessageCodeEnum.GENERIC_CODE_WARNING.getCodeString(), "The requested operation was concluded but with warnings."),

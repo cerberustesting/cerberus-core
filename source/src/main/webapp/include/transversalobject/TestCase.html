@@ -35,7 +35,6 @@
                             <li class="active"><a data-toggle="tab" href="#tabTCDefinition" id="editTCDefinition" name="tabDefinition">Definition</a></li>
                             <li><a data-toggle="tab" href="#tabTCSettings" id="editTCSettings" name="tabSettings">Execution Settings</a></li>
                             <li><a data-toggle="tab" href="#tabTCLabel" id="editTCLabel" name="tabLabel">Label</a></li>
-                            <li><a data-toggle="tab" href="#tabTCOrigin" id="editTCOrigin" name="tabInformation">Origin</a></li>
                             <li><a data-toggle="tab" href="#tabTCBugReport" id="editTCBugReport" name="tabBugReport">Bug Report</a></li>
                             <li><a data-toggle="tab" href="#tabTCTracability" id="editTCtracability" name="tabTracability">Tracability</a></li>
                         </ul>
@@ -57,7 +56,7 @@
                                         <select type="text" class="form-control input-sm" name="status" id="status"></select>
                                     </div>
                                     <div class="form-group form-group-sm col-sm-3">
-                                        <label for="group" name="groupField">Group</label>
+                                        <label for="group" name="typeField">Type</label>
                                         <select type="text" class="form-control input-sm" name="group" id="group">
                                         </select>
                                     </div>
@@ -93,18 +92,19 @@
                                         <select type="text" class="form-control input-sm" name="activeProd" id="actProd"></select>
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <div class="col-sm-12">
-                                        <label for="countryList" id="countryListLabel" name="countryListLabel">Country List</label>
-                                        <button id="buttonInvert" type="button">INVERT</button>
-                                        <table class="table table-bordered table-hover nomarginbottom" id="CountryTable" style="margin-top: 5px;margin-bottom: 25px;">
-                                            <thead>
-                                            </thead>
-                                            <tbody id="testCaseCountryTableBody">
-                                                <tr>
-                                                </tr>
-                                            </tbody>
-                                        </table>
+                                <label name="countryListLabel">Countries :</label>
+                                <div class="well well-sm">
+                                    <div class="row">
+                                        <div class="form-group col-xs-1">
+                                            <label class="checkbox-inline bold">
+                                                <input type="checkbox" id="select_all"/>
+                                                ALL
+                                            </label>
+                                        </div>
+                                        <div class="form-group col-xs-5">
+                                            <div id="countryList" name="countryList" >
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <label name="versionActivation">Version activation</label>
@@ -200,28 +200,6 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="center tab-pane fade marginTop25" id="tabTCOrigin">
-                                <div class="row">
-                                    <div class="form-group form-group-sm col-sm-4">
-                                        <label for="origin" name="originField">Origin</label>
-                                        <select type="text" class="form-control input-sm" name="origin" id="origin"></select>
-                                    </div>
-                                    <div class="form-group form-group-sm col-sm-8">
-                                        <label for="refOrigin" name="refOriginField">Ref Origin</label>
-                                        <input type="text" class="form-control input-sm" name="refOrigin" id="refOrigin" readonly/>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group form-group-sm col-sm-6">
-                                        <label for="project" name="projectField">Project</label>
-                                        <select type="text" class="form-control input-sm" name="project" id="project"></select>
-                                    </div>
-                                    <div class="form-group form-group-sm col-sm-6">
-                                        <label for="ticket" name="ticketField">Ticket</label>
-                                        <input type="text" class="form-control input-sm" name="ticket" id="ticket"/>
                                     </div>
                                 </div>
                             </div>

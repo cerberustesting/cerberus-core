@@ -50,12 +50,21 @@ public interface IRobotDAO {
      */
     Robot readByKey(String robot) throws CerberusException;
 
+
     /**
      *
      * @param robotList
      * @return
      */
-    AnswerList<Robot> readByRobotList(List<String> robotList);
+    public AnswerList<Robot> readByRobotList(List<String> robotList);
+
+    /**
+     *
+     * @param robotList
+     * @param typeRobot filter on type of Robot (GUI/APK/IPA/...)
+     * @return
+     */
+    AnswerList<Robot> readByRobotList(List<String> robotList, String typeRobot);
 
     /**
      *

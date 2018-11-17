@@ -262,7 +262,7 @@ public class ExecutionRunService implements IExecutionRunService {
                     // If executor is not set, we get the best one from the list.
                     if (StringUtil.isNullOrEmpty(tCExecution.getRobotExecutor())) {
                         LOG.debug(logPrefix + "Getting the best Executor on Robot : " + tCExecution.getRobot());
-                        robExeObj = robotExecutorService.convert(robotExecutorService.readBestByKey(tCExecution.getRobot()));
+                        robExeObj = robotExecutorService.readBestByKey(tCExecution.getRobot());
                         if (robExeObj != null) {
                             tCExecution.setRobotExecutor(robExeObj.getExecutor());
                             tCExecution.setRobotExecutorObj(robExeObj);
@@ -1572,9 +1572,6 @@ public class ExecutionRunService implements IExecutionRunService {
 
         // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
         updateTCExecutionWebSocketOnly(tCExecution, false);
-//        if (tCExecution.isCerberus_featureflipping_activatewebsocketpush()) {
-//            TestCaseExecutionEndPoint.getInstance().send(tCExecution, false);
-//        }
 
         return tCExecution;
     }

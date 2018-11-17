@@ -47,6 +47,7 @@ function openModalTestCase(test, testcase, mode) {
 
     $('#editTestCaseModalForm #application').parents("div.form-group").removeClass("has-error");
     clearResponseMessage($('#editTestCaseModal'));
+
 }
 
 function initModalTestCase() {
@@ -59,10 +60,6 @@ function initModalTestCase() {
     $("[name='testField']").html(doc.getDocOnline("test", "Test"));
     $("[name='testCaseField']").html(doc.getDocOnline("testcase", "TestCase"));
     $("[name='lastModifierField']").html(doc.getDocOnline("testcase", "LastModifier"));
-    $("[name='originField']").html(doc.getDocOnline("testcase", "Origine"));
-    $("[name='refOriginField']").html(doc.getDocOnline("testcase", "RefOrigine"));
-    $("[name='projectField']").html(doc.getDocOnline("project", "idproject"));
-    $("[name='ticketField']").html(doc.getDocOnline("testcase", "ticket"));
     $("[name='applicationField']").html(doc.getDocOnline("application", "Application"));
     $("[name='statusField']").html(doc.getDocOnline("testcase", "Status"));
     $("[name='bugIdField']").html(doc.getDocOnline("testcase", "BugID"));
@@ -76,9 +73,9 @@ function initModalTestCase() {
     $("[name='descriptionField']").html(doc.getDocOnline("test", "Description"));
     $("[name='creatorField']").html(doc.getDocOnline("testcase", "Creator"));
     $("[name='implementerField']").html(doc.getDocOnline("testcase", "Implementer"));
-    $("[name='groupField']").html(doc.getDocOnline("invariant", "GROUP"));
+    $("[name='typeField']").html(doc.getDocOnline("invariant", "Type"));
     $("[name='priorityField']").html(doc.getDocOnline("invariant", "PRIORITY"));
-    $("[name='countryList']").html(doc.getDocOnline("testcase", "countryList"));
+    $("[name='countryListLabel']").html(doc.getDocOnline("testcase", "countryListLabel"));
     $("[name='bugIdField']").html(doc.getDocOnline("testcase", "BugID"));
     $("[name='tcDateCreaField']").html(doc.getDocOnline("testcase", "TCDateCrea"));
     $("[name='activeField']").html(doc.getDocOnline("testcase", "TcActive"));
@@ -92,9 +89,9 @@ function initModalTestCase() {
     $("[name='conditionVal1Field']").html(doc.getDocOnline("testcase", "ConditionVal1"));
     $("[name='conditionVal2Field']").html(doc.getDocOnline("testcase", "ConditionVal2"));
     $("[name='commentField']").html(doc.getDocOnline("testcase", "Comment"));
-    $("[name='versionActivation']").html(doc.getDocLabel("testcase", "versionActivation"));
-    $("[name='activationConditions']").html(doc.getDocLabel("testcase", "activationConditions"));
-    $("[name='robotConstraints']").html(doc.getDocLabel("testcase", "robotConstraints"));
+    $("[name='versionActivation']").html(doc.getDocOnline("testcase", "versionActivation"));
+    $("[name='activationConditions']").html(doc.getDocOnline("testcase", "activationConditions"));
+    $("[name='robotConstraints']").html(doc.getDocOnline("testcase", "robotConstraints"));
     $("#filters").html(doc.getDocOnline("page_testcaselist", "filters"));
     $("[name='btnLoad']").html(doc.getDocLabel("page_global", "buttonLoad"));
     $("[name='testField']").html(doc.getDocLabel("test", "Test"));
@@ -118,12 +115,10 @@ function initModalTestCase() {
     displayInvariantList("priority", "PRIORITY", false);
     displayInvariantList("conditionOper", "TESTCASECONDITIONOPER", false);
     $('[name="origin"]').append('<option value="All">All</option>');
-    displayInvariantList("origin", "ORIGIN", true);
     displayInvariantList("active", "TCACTIVE", false);
     displayInvariantList("activeQA", "TCACTIVE", false);
     displayInvariantList("activeUAT", "TCACTIVE", false);
     displayInvariantList("activeProd", "TCACTIVE", false);
-    appendProjectList();
 
     $('[data-toggle="popover"]').popover({
         'placement': 'auto',
@@ -142,7 +137,9 @@ function initModalTestCase() {
     $('#editTestCaseModal').find("#function").autocomplete({
         source: availableFunctions
     });
-
+    $("#select_all").change(function(){  //"select all" change
+        $("#countryList input").prop('checked', $(this).prop("checked")); //change all ".checkbox" checked status
+    });
 
 }
 
@@ -153,10 +150,7 @@ function initModalTestCase() {
  * @returns {null}
  */
 function editTestCaseClick(test, testCase) {
-    $("#buttonInvert").off("click");
-    $("#buttonInvert").click(function () {
-        invertCountrySelection();
-    });
+
     $("#editTestCaseButton").off("click");
     $("#editTestCaseButton").click(function () {
         confirmTestCaseModalHandler("EDIT");
@@ -213,10 +207,7 @@ function displayWarningOnChangeTestCaseKey(test, testCase) {
  * @returns {null}
  */
 function duplicateTestCaseClick(test, testCase) {
-    $("#buttonInvert").off("click");
-    $("#buttonInvert").click(function () {
-        invertCountrySelection();
-    });
+
     $("#duplicateTestCaseButton").off("click");
     $("#duplicateTestCaseButton").click(function () {
         confirmTestCaseModalHandler("DUPLICATE");
@@ -251,10 +242,7 @@ function duplicateTestCaseClick(test, testCase) {
  * @returns {null}
  */
 function addTestCaseClick(defaultTest) {
-    $("#buttonInvert").off("click");
-    $("#buttonInvert").click(function () {
-        invertCountrySelection();
-    });
+
     $("#addTestCaseButton").off("click");
     $("#addTestCaseButton").click(function () {
         confirmTestCaseModalHandler("ADD");
@@ -381,10 +369,22 @@ function confirmTestCaseModalHandler(mode) {
     }
 
     // Getting Data from Country List
-    var table1 = $("#testCaseCountryTableBody tr td");
+    var countryList = $("#countryList input");
     var table_country = [];
-    for (var i = 0; i < table1.length; i++) {
-        table_country.push($(table1[i]).data("country"));
+    for (var i = 0; i < countryList.length; i++) {
+            if (countryList[i].checked === true) {
+                var countryValue = {
+                    country: $(countryList[i]).attr("name"),
+                    toDelete: false
+                }
+            }
+            else {
+                countryValue = {
+                        country: $(countryList[i]).attr("name"),
+                        toDelete: true
+                }
+            }
+            table_country.push(countryValue)
     }
 
     // Getting Data from Label List
@@ -599,10 +599,6 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#originalTest").prop("value", "");
         formEdit.find("#originalTestCase").prop("value", "");
         formEdit.find("#implementer").prop("value", "");
-        formEdit.find("#origin").prop("value", "");
-        formEdit.find("#refOrigin").prop("value", "");
-        formEdit.find("#project").prop("value", "");
-        formEdit.find("#ticket").prop("value", "");
         formEdit.find("#group").val("AUTOMATED");
         formEdit.find("#priority option:nth(0)").attr("selected", "selected");
         formEdit.find("#actQA").val("Y");
@@ -623,10 +619,6 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#newTest").prop("value", testCase.test);
         formEdit.find("#implementer").prop("value", testCase.implementer);
         formEdit.find("#tcDateCrea").prop("value", testCase.dateCreated);
-        formEdit.find("#origin").prop("value", testCase.origine);
-        formEdit.find("#refOrigin").prop("value", testCase.refOrigine);
-        formEdit.find("#project").prop("value", testCase.project);
-        formEdit.find("#ticket").prop("value", testCase.ticket);
         formEdit.find("#group").prop("value", testCase.group);
         formEdit.find("#priority").prop("value", testCase.priority);
         formEdit.find("#actQA").prop("value", testCase.activeQA);
@@ -658,9 +650,6 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#test").prop("disabled", "disabled");
         formEdit.find("#testCase").prop("readonly", "readonly");
         formEdit.find("#implementer").prop("readonly", "readonly");
-        formEdit.find("#origin").prop("disabled", "disabled");
-        formEdit.find("#project").prop("disabled", "disabled");
-        formEdit.find("#ticket").prop("readonly", "readonly");
         formEdit.find("#application").prop("disabled", "disabled");
         formEdit.find("#status").prop("disabled", "disabled");
         formEdit.find("#group").prop("disabled", "disabled");
@@ -684,7 +673,6 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#conditionVal1").prop("disabled", "disabled");
         formEdit.find("#conditionVal2").prop("disabled", "disabled");
         formEdit.find("#bugId").prop("readonly", "readonly");
-        formEdit.find("#comment").prop("readonly", "readonly");
         // feed the country list.
         appendTestCaseCountryList(testCase, true);
         // Save button is hidden.
@@ -697,9 +685,6 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#active").removeProp("disabled");
         formEdit.find("#bugId").removeProp("readonly");
         formEdit.find("#implementer").removeProp("readonly");
-        formEdit.find("#origin").removeProp("disabled");
-        formEdit.find("#project").removeProp("disabled");
-        formEdit.find("#ticket").removeProp("readonly");
         formEdit.find("#application").removeProp("disabled");
         formEdit.find("#status").removeProp("disabled");
         formEdit.find("#group").removeProp("disabled");
@@ -799,81 +784,44 @@ function appendBuildRevListOnTestCase(system, editData) {
 }
 
 function appendTestCaseCountryList(testCase, isReadOnly) {
-    $("#testCaseCountryTableBody tr").empty();
-
-    var selectCountry = getParameter("cerberus_testcase_defaultselectedcountry", "", false);
-    var selectCountryVal = "," + selectCountry.value + ",";
+    $("#countryList label").remove();
+    var countryList = $("[name=countryList]");
 
     var jqxhr = $.getJSON("FindInvariantByID", "idName=COUNTRY");
     $.when(jqxhr).then(function (data) {
 
         for (var index = 0; index < data.length; index++) {
             var country = data[index].value;
-            var deleteOpt = true;
 
-            var newCountry1 = {
-                country: country,
-                toDelete: deleteOpt
-            };
-
-            if (testCase === undefined) {
-                if ((selectCountryVal === ',ALL,') || (selectCountryVal.indexOf("," + country + ",") !== -1)) {
-                    deleteOpt = false;
-                } else {
-                    deleteOpt = true;
-                }
-                newCountry1.toDelete = deleteOpt;
-            }
-            appendTestCaseCountryCell(newCountry1, isReadOnly);
+            countryList.append('<label class="checkbox-inline">\n\
+                                <input class="countrycb" type="checkbox" ' + ' name="' + country + '"/>' + country + '\
+                                </label>');
         }
+        $("[class='countrycb']").click(function(){
+            //uncheck "select all", if one of the listed checkbox item is unchecked
+            if(false == $(this).prop("checked")){ //if this item is unchecked
+                $("#select_all").prop('checked', false); //change "select all" checked status to false
+            }
+            //check "select all" if all checkbox items are checked
+            if ($("[class='countrycb']:checked").length == $("[class='countrycb']").length ){
+                $("#select_all").prop('checked', true);
+            }
+        });
 
         if (!(testCase === undefined)) {
             // Init the values from the object value.
             for (var myCountry in testCase.countryList) {
-                $("#testCaseCountryTableBody [value='" + testCase.countryList[myCountry].country + "']").trigger("click");
+                $("#countryList [name='"+ testCase.countryList[myCountry].country +"']").prop("checked","checked");
             }
         }
-
-    });
-}
-
-function appendTestCaseCountryCell(testCaseCountry, isReadOnly) {
-    var doc = new Doc();
-    var btnid = "btn_" + testCaseCountry.country;
-    if (isReadOnly) {
-        var checkBox = $("<button id=\"" + btnid + "\" type=\"button\" disabled=\"disabled\"></button>").append(testCaseCountry.country).val(testCaseCountry.country);
-    } else {
-        var checkBox = $("<button id=\"" + btnid + "\" type=\"button\"></button>").append(testCaseCountry.country).val(testCaseCountry.country);
-    }
-    var tableRow = $("#testCaseCountryTableBody tr");
-
-    var checkBoxCell = $("<td align=\"center\"></td>").append(checkBox);
-    if (testCaseCountry.toDelete) {
-        checkBoxCell.addClass("danger");
-    } else {
-        checkBoxCell.removeClass("danger");
-    }
-
-    checkBox.click(function () {
-        testCaseCountry.toDelete = (testCaseCountry.toDelete) ? false : true;
-        if (testCaseCountry.toDelete) {
-            checkBoxCell.addClass("danger");
-        } else {
-            checkBoxCell.removeClass("danger");
+        if (testCase === undefined) {
+            $("#countryList input").attr('checked',true);
+            $("#select_all").attr('checked',true);
         }
-    });
 
-    checkBoxCell.data("country", testCaseCountry);
-    tableRow.append(checkBoxCell);
-}
-
-function invertCountrySelection() {
-    var jqxhr = $.getJSON("FindInvariantByID", "idName=COUNTRY");
-    $.when(jqxhr).then(function (data) {
-
-        for (var index = 0; index < data.length; index++) {
-            var country = data[index].value;
-            document.getElementById('btn_' + country).click();
+        if (isReadOnly) {
+            $("#countryList input").attr('disabled',true);
+            $("#select_all").attr('disabled',true);
         }
     });
 }
@@ -1001,19 +949,4 @@ function appendTestList(defautValue) {
     var myoption = $('<option></option>').text(defautValue).val(defautValue);
     $("#editTestCaseModal [name=test]").append(myoption).trigger('change'); // append the option and update Select2
 
-}
-
-function appendProjectList() {
-    var jqxhr = $.getJSON("ReadProject");
-    $.when(jqxhr).then(function (data) {
-        var projectList = $("[name=project]");
-
-        projectList.append($('<option></option>').text("No project defined").val(""));
-        for (var index = 0; index < data.contentTable.length; index++) {
-            var idProject = data.contentTable[index].idProject;
-            var desc = data.contentTable[index].description;
-
-            projectList.append($('<option></option>').text(idProject + " " + desc).val(idProject));
-        }
-    });
 }

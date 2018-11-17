@@ -23,11 +23,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -35,13 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-import org.cerberus.crud.entity.Application;
-import org.cerberus.crud.entity.Campaign;
-import org.cerberus.crud.entity.CampaignParameter;
-import org.cerberus.crud.entity.CountryEnvParam;
-import org.cerberus.crud.entity.TestCase;
-import org.cerberus.crud.entity.TestCaseCountry;
-import org.cerberus.crud.entity.TestCaseExecutionQueue;
+import org.cerberus.crud.entity.*;
 import org.cerberus.crud.service.ICampaignParameterService;
 import org.cerberus.crud.service.ICampaignService;
 import org.cerberus.crud.service.ILogEventService;
@@ -51,7 +41,9 @@ import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.exception.FactoryCreationException;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
 import org.cerberus.util.servlet.ServletUtil;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -422,11 +414,13 @@ public class AddToExecutionQueueV003 extends HttpServlet {
             // Part 0: Load to memory Environments and robots.
             Map<String, String> invariantEnvMap = invariantService.readToHashMapGp1StringByIdname("ENVIRONMENT", "");
             invariantEnvMap.put("MANUAL", "");
-            Map<String, String> robotMap = robotService.readToHashMapRobotDecli();
+
 
             // Part 1: Getting all possible Execution from test cases + countries + environments + browsers which have been sent to this servlet.
             List<TestCaseExecutionQueue> toInserts = new ArrayList<TestCaseExecutionQueue>();
             try {
+                Map<String, Robot> robotsMap = robotService.readToHashMapByRobotList(robots); // load Robots available for the campaign
+
                 HashMap<String, CountryEnvParam> envMap = new HashMap<>();
                 LOG.debug("Loading all environments.");
                 for (CountryEnvParam envParam : countryEnvParamService.convert(countryEnvParamService.readActiveBySystem(null))) {
@@ -474,21 +468,24 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                                                     robots = new ArrayList<>();
                                                     robots.add("");
                                                 }
-                                                for (String robot : robots) {
+
+                                                Collection<Robot> robotsDetails= robotService.getRobotsUsableForType(robotsMap.values(), app.getType());
+
+                                                for (Robot robot : robotsDetails) {
                                                     try {
                                                         LOG.debug("Insert Queue Entry.");
                                                         // We get here the corresponding robotDecli value from robot.
-                                                        String robotDecli = robotMap.get(robot);
+                                                        String robotDecli = robot.getRobotDecli();
                                                         if (StringUtil.isNullOrEmpty(robotDecli)) {
-                                                            robotDecli = robot;
+                                                            robotDecli = robot.getRobot();
                                                         }
-                                                        if ("".equals(robot) && StringUtil.isNullOrEmpty(robotIP)) {
+                                                        if ("".equals(robot.getRobot()) && StringUtil.isNullOrEmpty(robotIP)) {
                                                             // We don't insert the execution for robot application that have no robot and robotIP defined.
                                                             nbrobotmissing++;
                                                         } else {
                                                             toInserts.add(inQueueFactoryService.create(app.getSystem(),
                                                                     test, testCase, country.getCountry(), environment,
-                                                                    robot, robotDecli, robotIP, robotPort, browser,
+                                                                    robot.getRobot(), robotDecli, robotIP, robotPort, browser,
                                                                     browserVersion, platform, screenSize, manualURL,
                                                                     manualHost, manualContextRoot,
                                                                     manualLoginRelativeURL, manualEnvData, tag,

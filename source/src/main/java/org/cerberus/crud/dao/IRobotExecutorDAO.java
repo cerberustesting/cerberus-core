@@ -52,7 +52,7 @@ public interface IRobotExecutorDAO {
      * @param robot
      * @return
      */
-    AnswerItem<RobotExecutor> readBestByKey(String robot);
+    List<RobotExecutor> readBestByKey(String robot) throws SQLException;
 
     /**
      *

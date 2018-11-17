@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.service;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,18 +64,22 @@ public interface IRobotService {
      */
     AnswerList<Robot> readByRobotList(List<String> robotList);
 
+    AnswerList<Robot> readByRobotList(List<String> robotList, String typeRobot);
+
     /**
      *
      * @return
      */
-    HashMap<String, String> readToHashMapRobotDecli();
+    HashMap<String, String> readToHashMapRobotDecli() throws CerberusException;
+
+
 
     /**
      *
      * @param robotList
      * @return
      */
-    HashMap<String, Robot> readToHashMapByRobotList(List<String> robotList);
+    HashMap<String, Robot> readToHashMapByRobotList(List<String> robotList) throws CerberusException;
 
     /**
      *
@@ -175,4 +180,12 @@ public interface IRobotService {
      * @return
      */
     public AnswerList<List<String>> readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+
+    /**
+     * Return the robots list who can be used by the type of application
+     * @param robotsMap
+     * @param type
+     * @return
+     */
+    Collection<Robot> getRobotsUsableForType(Collection<Robot> robotsLst, String type);
 }
