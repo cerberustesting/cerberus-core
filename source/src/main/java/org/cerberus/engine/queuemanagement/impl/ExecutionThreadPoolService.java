@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.engine.threadpool.impl;
+package org.cerberus.engine.queuemanagement.impl;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -33,13 +33,13 @@ import org.cerberus.crud.entity.RobotExecutor;
 import org.cerberus.crud.factory.IFactoryRobotExecutor;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.engine.execution.IRetriesService;
-import org.cerberus.engine.threadpool.entity.TestCaseExecutionQueueToTreat;
+import org.cerberus.engine.queuemanagement.entity.TestCaseExecutionQueueToTreat;
 import org.cerberus.crud.service.IMyVersionService;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.IRobotExecutorService;
 import org.cerberus.crud.service.IRobotService;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
-import org.cerberus.engine.threadpool.IExecutionThreadPoolService;
+import org.cerberus.engine.queuemanagement.IExecutionThreadPoolService;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;

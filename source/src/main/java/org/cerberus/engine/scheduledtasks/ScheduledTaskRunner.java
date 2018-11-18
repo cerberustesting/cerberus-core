@@ -17,10 +17,14 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.engine.task;
+package org.cerberus.engine.scheduledtasks;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
+import org.cerberus.engine.queuemanagement.IExecutionThreadPoolService;
+import org.cerberus.exception.CerberusException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -37,29 +41,51 @@ public class ScheduledTaskRunner {
     private IParameterService parameterService;
     @Autowired
     private ITestCaseExecutionQueueService testCaseExecutionQueueService;
-    
-    private int refreshTickNumber = 5;
-    private int tickNumber = 0;
+    @Autowired
+    private IExecutionThreadPoolService executionThreadPoolService;
+
+    private int b1TickNumberTarget = 5;
+    private int b1TickNumber = 0;
+    private final int b2TickNumberTarget = 30;
+    private int b2TickNumber = 0;
 
     private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(ScheduledTaskRunner.class);
 
     @Scheduled(fixedDelay = 1000 /* 1000 */)
     public void nextStep() {
-        if (tickNumber < refreshTickNumber) {
-            tickNumber++;
-            return;
+        if (b1TickNumber < b1TickNumberTarget) {
+            b1TickNumber++;
         } else {
-            tickNumber = 0;
+            b1TickNumber = 0;
+            // We get the new period from paarameter and trigger the Queue automatic cancellation job.
+            b1TickNumberTarget = parameterService.getParameterIntegerByKey("cerberus_automaticqueuecancellationjob_period", "", 10);
+            performBatch1_CancelOldQueueEntries();
         }
-        // some code
-        refreshTickNumber = parameterService.getParameterIntegerByKey("cerberus_automaticqueuecancellationjob_period", "", 10);
-        performCancelOldQueueEntries();
+
+        if (b2TickNumber < b2TickNumberTarget) {
+            b2TickNumber++;
+        } else {
+            b2TickNumber = 0;
+            // We trigger the Queue Processing job.
+            performBatch2_ProcessQueue();
+        }
+
     }
 
-    private void performCancelOldQueueEntries() {
-        LOG.info("automaticqueuecancellationjob Task triggered.");
+    private void performBatch1_CancelOldQueueEntries() {
+        LOG.debug("automaticqueuecancellationjob Sheduled Task triggered.");
         testCaseExecutionQueueService.cancelRunningOldQueueEntries();
-        LOG.debug("automaticqueuecancellationjob Task ended.");
+//        LOG.debug("automaticqueuecancellationjob Task ended.");
+    }
+
+    private void performBatch2_ProcessQueue() {
+        LOG.debug("Queue_Processing_Job Sheduled Task triggered.");
+        try {
+            executionThreadPoolService.executeNextInQueue(false);
+        } catch (CerberusException ex) {
+            Logger.getLogger(ScheduledTaskRunner.class.getName()).log(Level.SEVERE, null, ex);
+        }
+//        LOG.debug("Queue_Processing_Job Task ended.");
     }
 
 }

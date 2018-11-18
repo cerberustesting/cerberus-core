@@ -38,7 +38,7 @@ import org.cerberus.crud.dao.ITestCaseDAO;
 import org.cerberus.crud.dao.ITestCaseExecutionQueueDAO;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.TestCaseExecutionQueue;
-import org.cerberus.engine.threadpool.entity.TestCaseExecutionQueueToTreat;
+import org.cerberus.engine.queuemanagement.entity.TestCaseExecutionQueueToTreat;
 import org.cerberus.crud.factory.IFactoryApplication;
 import org.cerberus.crud.factory.IFactoryTestCaseExecutionQueue;
 import org.cerberus.database.DatabaseSpring;

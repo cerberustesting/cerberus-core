@@ -57,7 +57,7 @@ import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.engine.entity.Session;
 import org.cerberus.engine.execution.IRecorderService;
 import org.cerberus.engine.execution.ISeleniumServerService;
-import org.cerberus.engine.threadpool.IExecutionThreadPoolService;
+import org.cerberus.engine.queuemanagement.IExecutionThreadPoolService;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.proxy.IProxyService;

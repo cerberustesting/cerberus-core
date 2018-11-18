@@ -36,7 +36,7 @@ import org.cerberus.crud.service.ICampaignParameterService;
 import org.cerberus.crud.service.ICampaignService;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.ITestCaseService;
-import org.cerberus.engine.threadpool.IExecutionThreadPoolService;
+import org.cerberus.engine.queuemanagement.IExecutionThreadPoolService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.exception.FactoryCreationException;

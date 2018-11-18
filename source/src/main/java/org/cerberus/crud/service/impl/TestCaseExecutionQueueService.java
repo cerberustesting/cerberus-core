@@ -33,7 +33,7 @@ import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ITagSystemService;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.engine.entity.MessageGeneral;
-import org.cerberus.engine.threadpool.entity.TestCaseExecutionQueueToTreat;
+import org.cerberus.engine.queuemanagement.entity.TestCaseExecutionQueueToTreat;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
