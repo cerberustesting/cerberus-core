@@ -51,7 +51,7 @@ public class ScheduledTaskRunner {
 
     private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(ScheduledTaskRunner.class);
 
-    @Scheduled(fixedDelay = 1000 /* 1000 */)
+    @Scheduled(fixedDelay = 100000 /* 1000 */)
     public void nextStep() {
         if (b1TickNumber < b1TickNumberTarget) {
             b1TickNumber++;
