@@ -114,7 +114,7 @@ function displayPageLabel() {
     $("[name='buttonConfirm']").html(doc.getDocLabel("page_global", "buttonConfirm"));
     $("[name='buttonDismiss']").html(doc.getDocLabel("page_global", "buttonDismiss"));
     $("[name='filtersField']").html(doc.getDocOnline("page_global", "filters"));
-    $("[name='btnLoad']").html(doc.getDocLabel("page_global", "buttonLoad"));
+    //$("[name='btnLoad']").html(doc.getDocLabel("page_global", "buttonLoad"));
 
     $("[name='systemField']").html(doc.getDocOnline("invariant", "SYSTEM"));
     $("[name='countryField']").html(doc.getDocOnline("invariant", "COUNTRY"));
@@ -200,40 +200,6 @@ function displayPageLabel() {
 
 function loadEnvTable(selectCountry, selectEnvironment, selectBuild, selectRevision, selectEnvGp, selectActive) {
 
-    if (isEmpty(selectCountry)) {
-        selectCountry = $("#selectCountry").val();
-    }
-    if (isEmpty(selectEnvironment)) {
-        selectEnvironment = $("#selectEnvironment").val();
-    }
-    if (isEmpty(selectBuild)) {
-        selectBuild = $("#selectBuild").val();
-    }
-    if (isEmpty(selectRevision)) {
-        selectRevision = $("#selectRevision").val();
-    }
-    if (isEmpty(selectEnvGp)) {
-        selectEnvGp = $("#selectEnvGp").val();
-    }
-    if (isEmpty(selectActive)) {
-        selectActive = $("#selectActive").val();
-    }
-
-    // We add the Browser history.
-    var CallParam = '?';
-    if (!isEmptyorALL(selectCountry))
-        CallParam += 'country=' + encodeURIComponent(selectCountry);
-    if (!isEmptyorALL(selectEnvironment))
-        CallParam += '&environment=' + encodeURIComponent(selectEnvironment);
-    if (!isEmptyorALL(selectBuild))
-        CallParam += '&build=' + encodeURIComponent(selectBuild);
-    if (!isEmptyorALL(selectRevision))
-        CallParam += '&revision=' + encodeURIComponent(selectRevision);
-    if (!isEmptyorALL(selectEnvGp))
-        CallParam += '&envgp=' + encodeURIComponent(selectEnvGp);
-    if (!isEmptyorALL(selectActive))
-        CallParam += '&active=' + encodeURIComponent(selectActive);
-    InsertURLInHistory('Environment.jsp' + CallParam);
 
     //clear the old report content before reloading it
     $("#environmentList").empty();

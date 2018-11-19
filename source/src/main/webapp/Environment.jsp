@@ -41,39 +41,6 @@
 
             <h1 class="page-title-line" id="title">Environment</h1>
 
-            <div class="row">
-                <div class="col-lg-12" id="FiltersPanel">
-                    <div class="panel panel-default">
-                        <div class="panel-heading card">
-                            <span class="fa fa-tag fa-fw"></span>
-                            <label id="filters" name="filtersField">Filters</label>
-                        </div>
-                        <div class="panel-body">
-                            <div class="form-inline">
-                                <div class="marginBottom10">
-                                    <label for="selectCountry" name="countryField">Country :</label>
-                                    <select class="form-control" id="selectCountry" name="country" ></select>
-                                    <label for="selectEnvironment" name="environmentField">Environment :</label>
-                                    <select class="form-control" id="selectEnvironment" name="environment" ></select>
-                                    <label for="selectBuild" name="buildField">Build :</label>
-                                    <select class="form-control" id="selectBuild" name="build" ></select>
-                                    <label for="selectRevision" name="revisionField">Revision :</label>
-                                    <select class="form-control" id="selectRevision" name="revision" ></select>
-                                    <label for="selectEnvGp" name="envGpField">Environment Group :</label>
-                                    <select class="form-control" id="selectEnvGp" name="envGp" ></select>
-                                    <label for="selectActive" name="activeField">Active :</label>
-                                    <select class="form-control" id="selectActive" name="active" ></select>
-                                </div>
-                                <div class="marginBottom10">
-                                    <button type="button" class="btn btn-default" id="btnLoad" onclick="loadEnvTable()" name="btnLoad">Load</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-
             <div class="panel panel-default">
                 <div class="panel-heading card">
                     <label id="shortcuts" name="listField">Environment List</label>
