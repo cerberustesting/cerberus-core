@@ -295,7 +295,11 @@ public class AddToExecutionQueueV003 extends HttpServlet {
         if ((tag == null || tag.isEmpty()) && mCampaign != null && !StringUtil.isNullOrEmpty(mCampaign.getTag())) {
             Timestamp timestamp = new Timestamp(System.currentTimeMillis());
             String mytimestamp = sdf.format(timestamp);
-            tag = mCampaign.getTag().replace("%TIMESTAMP%", mytimestamp).replace("%USER%", request.getRemoteUser());
+            String myuser=request.getRemoteUser();
+            if (myuser==null) {
+            	myuser="";
+            }
+            tag = mCampaign.getTag().replace("%TIMESTAMP%", mytimestamp).replace("%USER%", myuser);
         } else if (tag == null || tag.isEmpty()) {
             if (request.getRemoteUser() != null) {
                 tag = request.getRemoteUser();
