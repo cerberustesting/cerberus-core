@@ -41,9 +41,7 @@ import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.exception.FactoryCreationException;
 import org.cerberus.util.ParameterParserUtil;
-import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
-import org.cerberus.util.answer.AnswerList;
 import org.cerberus.util.servlet.ServletUtil;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -295,9 +293,9 @@ public class AddToExecutionQueueV003 extends HttpServlet {
         if ((tag == null || tag.isEmpty()) && mCampaign != null && !StringUtil.isNullOrEmpty(mCampaign.getTag())) {
             Timestamp timestamp = new Timestamp(System.currentTimeMillis());
             String mytimestamp = sdf.format(timestamp);
-            String myuser=request.getRemoteUser();
-            if (myuser==null) {
-            	myuser="";
+            String myuser = request.getRemoteUser();
+            if (myuser == null) {
+                myuser = "";
             }
             tag = mCampaign.getTag().replace("%TIMESTAMP%", mytimestamp).replace("%USER%", myuser);
         } else if (tag == null || tag.isEmpty()) {
@@ -419,7 +417,6 @@ public class AddToExecutionQueueV003 extends HttpServlet {
             Map<String, String> invariantEnvMap = invariantService.readToHashMapGp1StringByIdname("ENVIRONMENT", "");
             invariantEnvMap.put("MANUAL", "");
 
-
             // Part 1: Getting all possible Execution from test cases + countries + environments + browsers which have been sent to this servlet.
             List<TestCaseExecutionQueue> toInserts = new ArrayList<TestCaseExecutionQueue>();
             try {
@@ -473,7 +470,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                                                     robots.add("");
                                                 }
 
-                                                Collection<Robot> robotsDetails= robotService.getRobotsUsableForType(robotsMap.values(), app.getType());
+                                                Collection<Robot> robotsDetails = robotService.getRobotsUsableForType(robotsMap.values(), app.getType());
 
                                                 for (Robot robot : robotsDetails) {
                                                     try {

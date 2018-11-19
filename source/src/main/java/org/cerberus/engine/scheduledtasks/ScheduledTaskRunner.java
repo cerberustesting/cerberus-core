@@ -19,8 +19,6 @@
  */
 package org.cerberus.engine.scheduledtasks;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.engine.queuemanagement.IExecutionThreadPoolService;
@@ -51,7 +49,7 @@ public class ScheduledTaskRunner {
 
     private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(ScheduledTaskRunner.class);
 
-    @Scheduled(fixedDelay = 100000 /* 1000 */)
+    @Scheduled(fixedDelay = 60000 /* Every minute */)
     public void nextStep() {
         if (b1TickNumber < b1TickNumberTarget) {
             b1TickNumber++;
@@ -83,7 +81,7 @@ public class ScheduledTaskRunner {
         try {
             executionThreadPoolService.executeNextInQueue(false);
         } catch (CerberusException ex) {
-            Logger.getLogger(ScheduledTaskRunner.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.error(ex.toString(), ex);
         }
 //        LOG.debug("Queue_Processing_Job Task ended.");
     }
