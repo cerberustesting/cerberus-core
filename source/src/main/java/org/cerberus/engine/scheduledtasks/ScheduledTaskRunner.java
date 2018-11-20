@@ -43,18 +43,20 @@ public class ScheduledTaskRunner {
     private IExecutionThreadPoolService executionThreadPoolService;
 
     private int b1TickNumberTarget = 5;
-    private int b1TickNumber = 0;
+    private int b1TickNumber = 1;
     private final int b2TickNumberTarget = 30;
-    private int b2TickNumber = 0;
+    private int b2TickNumber = 1;
 
     private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(ScheduledTaskRunner.class);
 
-    @Scheduled(fixedDelay = 60000 /* Every minute */)
+    @Scheduled(fixedRate = 60000, initialDelay = 30000 /* Every minute */)
     public void nextStep() {
+        LOG.info("Schedule Start. " + b1TickNumber + "/" + b1TickNumberTarget + " - " + b2TickNumber + "/" + b2TickNumberTarget);
+
         if (b1TickNumber < b1TickNumberTarget) {
             b1TickNumber++;
         } else {
-            b1TickNumber = 0;
+            b1TickNumber = 1;
             // We get the new period from paarameter and trigger the Queue automatic cancellation job.
             b1TickNumberTarget = parameterService.getParameterIntegerByKey("cerberus_automaticqueuecancellationjob_period", "", 10);
             performBatch1_CancelOldQueueEntries();
@@ -63,27 +65,28 @@ public class ScheduledTaskRunner {
         if (b2TickNumber < b2TickNumberTarget) {
             b2TickNumber++;
         } else {
-            b2TickNumber = 0;
+            b2TickNumber = 1;
             // We trigger the Queue Processing job.
             performBatch2_ProcessQueue();
         }
 
+        LOG.info("Schedule Stop. " + b1TickNumber + "/" + b1TickNumberTarget + " - " + b2TickNumber + "/" + b2TickNumberTarget);
     }
 
     private void performBatch1_CancelOldQueueEntries() {
-        LOG.debug("automaticqueuecancellationjob Sheduled Task triggered.");
+        LOG.info("automaticqueuecancellationjob Task triggered.");
         testCaseExecutionQueueService.cancelRunningOldQueueEntries();
-//        LOG.debug("automaticqueuecancellationjob Task ended.");
+        LOG.info("automaticqueuecancellationjob Task ended.");
     }
 
     private void performBatch2_ProcessQueue() {
-        LOG.debug("Queue_Processing_Job Sheduled Task triggered.");
+        LOG.info("Queue_Processing_Job Task triggered.");
         try {
             executionThreadPoolService.executeNextInQueue(false);
         } catch (CerberusException ex) {
             LOG.error(ex.toString(), ex);
         }
-//        LOG.debug("Queue_Processing_Job Task ended.");
+        LOG.info("Queue_Processing_Job Task ended.");
     }
 
 }
