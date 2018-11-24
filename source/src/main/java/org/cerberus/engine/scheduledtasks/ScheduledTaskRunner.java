@@ -51,7 +51,7 @@ public class ScheduledTaskRunner {
 
     @Scheduled(fixedRate = 60000, initialDelay = 30000 /* Every minute */)
     public void nextStep() {
-        LOG.info("Schedule Start. " + b1TickNumber + "/" + b1TickNumberTarget + " - " + b2TickNumber + "/" + b2TickNumberTarget);
+        LOG.debug("Schedule Start. " + b1TickNumber + "/" + b1TickNumberTarget + " - " + b2TickNumber + "/" + b2TickNumberTarget);
 
         if (b1TickNumber < b1TickNumberTarget) {
             b1TickNumber++;
@@ -70,23 +70,23 @@ public class ScheduledTaskRunner {
             performBatch2_ProcessQueue();
         }
 
-        LOG.info("Schedule Stop. " + b1TickNumber + "/" + b1TickNumberTarget + " - " + b2TickNumber + "/" + b2TickNumberTarget);
+        LOG.debug("Schedule Stop. " + b1TickNumber + "/" + b1TickNumberTarget + " - " + b2TickNumber + "/" + b2TickNumberTarget);
     }
 
     private void performBatch1_CancelOldQueueEntries() {
-        LOG.info("automaticqueuecancellationjob Task triggered.");
+        LOG.debug("automaticqueuecancellationjob Task triggered.");
         testCaseExecutionQueueService.cancelRunningOldQueueEntries();
-        LOG.info("automaticqueuecancellationjob Task ended.");
+        LOG.debug("automaticqueuecancellationjob Task ended.");
     }
 
     private void performBatch2_ProcessQueue() {
-        LOG.info("Queue_Processing_Job Task triggered.");
+        LOG.debug("Queue_Processing_Job Task triggered.");
         try {
             executionThreadPoolService.executeNextInQueue(false);
         } catch (CerberusException ex) {
             LOG.error(ex.toString(), ex);
         }
-        LOG.info("Queue_Processing_Job Task ended.");
+        LOG.debug("Queue_Processing_Job Task ended.");
     }
 
 }
