@@ -7953,6 +7953,14 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
                 + ",('', 'cerberus_automaticqueuecancellationjob_active', 'Y', 'Y in order to activate the job that will cancel old queue entries that are still running.')"
                 + ",('', 'cerberus_automaticqueuecancellationjob_timeout', '3600', 'Nb of Second after which a queue entry will be moved to CANCELLED state automaticly (3600 default).');");
 
+        //Insert the invariant IfTextInElement and IfTextNotInElement for Condition-Control
+        // 1391
+        b = new StringBuilder();
+        b.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ");
+        b.append("('CONTROLCONDITIONOPER', 'ifTextInElement', 270, 'Only execute if text is present in element.')");
+        b.append(",('CONTROLCONDITIONOPER', 'ifTextNotInElement', 280, 'Only execute if text is not present in element.')");
+      
+        a.add(b.toString());
         return a;
     }
 
