@@ -7959,8 +7959,57 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ");
         b.append("('CONTROLCONDITIONOPER', 'ifTextInElement', 270, 'Only execute if text is present in element.')");
         b.append(",('CONTROLCONDITIONOPER', 'ifTextNotInElement', 280, 'Only execute if text is not present in element.')");
-      
         a.add(b.toString());
+
+        // Dependency tables.
+        // 1392-1393
+        b = new StringBuilder(); // replace color yellow by no color
+        b.append("CREATE TABLE `testcaseexecutionqueuedep` (");
+        b.append("  `ID` bigint(20) NOT NULL AUTO_INCREMENT,");
+        b.append("  `ExeQueueID` bigint(20) unsigned NOT NULL,");
+        b.append("  `Environment` varchar(45) DEFAULT NULL,");
+        b.append("  `Country` varchar(45) DEFAULT NULL,");
+        b.append("  `Tag` varchar(255) DEFAULT NULL,");
+        b.append("  `Type` varchar(15) NOT NULL DEFAULT '',");
+        b.append("  `DepTest` varchar(45) NULL,");
+        b.append("  `DepTestCase` varchar(45) NULL,");
+        b.append("  `DepEvent` varchar(100) NULL,");
+        b.append("  `Status` varchar(15) NOT NULL DEFAULT 'WAITING',");
+        b.append("  `ReleaseDate` timestamp NOT NULL DEFAULT '1970-01-01 01:01:01',");
+        b.append("  `Comment` varchar(255) NOT NULL DEFAULT '',");
+        b.append("  `UsrCreated` varchar(45) NOT NULL DEFAULT '',");
+        b.append("  `DateCreated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,");
+        b.append("  `UsrModif` varchar(45) NOT NULL DEFAULT '',");
+        b.append("  `DateModif` timestamp NOT NULL DEFAULT '1970-01-01 01:01:01',");
+        b.append("  PRIMARY KEY (`ID`),");
+        b.append("  UNIQUE KEY `IX_testcaseexecutiondep_01` (`ExeQueueID`,`Type`,`DepTest`,`DepTestCase`,`DepEvent`),");
+        b.append("  KEY `IX_testcaseexecutiondep_02` (`Status`,`Type`,`DepTest`,`DepTestCase`,`Tag`),");
+        b.append("  KEY `IX_testcaseexecutiondep_03` (`Status`,`Type`,`DepEvent`,`Tag`),");
+        b.append("  CONSTRAINT `FK_testcaseexecutiondep_01` FOREIGN KEY (`ExeQueueID`) REFERENCES `testcaseexecutionqueue` (`ID`) ON DELETE CASCADE ON UPDATE CASCADE");
+        b.append(") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
+        a.add(b.toString());
+        b = new StringBuilder(); // replace color yellow by no color
+        b.append("CREATE TABLE `testcasedep` (");
+        b.append("  `ID` bigint(20) NOT NULL AUTO_INCREMENT,");
+        b.append("  `Test` varchar(45) NULL,");
+        b.append("  `TestCase` varchar(45) NULL,");
+        b.append("  `Type` varchar(15) NOT NULL DEFAULT '',");
+        b.append("  `DepTest` varchar(45) NULL,");
+        b.append("  `DepTestCase` varchar(45) NULL,");
+        b.append("  `DepEvent` varchar(100) NULL,");
+        b.append("  `Active` varchar(1) NOT NULL DEFAULT 'Y',");
+        b.append("  `Description` varchar(255) NOT NULL DEFAULT '',");
+        b.append("  `UsrCreated` varchar(45) NOT NULL DEFAULT '',");
+        b.append("  `DateCreated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,");
+        b.append("  `UsrModif` varchar(45) NOT NULL DEFAULT '',");
+        b.append("  `DateModif` timestamp NOT NULL DEFAULT '1970-01-01 01:01:01',");
+        b.append("  PRIMARY KEY (`ID`),");
+        b.append("  UNIQUE KEY `IX_testcasedep_01` (`Test`,`TestCase`,`Type`,`DepTest`,`DepTestCase`,`DepEvent`),");
+        b.append("  CONSTRAINT `FK_testcasedep_01` FOREIGN KEY (`Test`,`TestCase`) REFERENCES `testcase` (`Test`,`TestCase`) ON DELETE CASCADE ON UPDATE CASCADE,");
+        b.append("  CONSTRAINT `FK_testcasedep_02` FOREIGN KEY (`DepTest`,`DepTestCase`) REFERENCES `testcase` (`Test`,`TestCase`) ON DELETE CASCADE ON UPDATE CASCADE");
+        b.append(") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
+        a.add(b.toString());
+
         return a;
     }
 
