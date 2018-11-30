@@ -2,6 +2,7 @@
 [square]
 * Fixed nullpointer when using verifyTextInElement in APK/IPA applications. #1894
 * Fixed issue when default robotconstrain poolsize was applyed even when execution does not require robot.
+* Fixed execution of iOS devices on the same time (added `wdaLocalPort` capability support)
 
 *Improvements / New features*
 [square]

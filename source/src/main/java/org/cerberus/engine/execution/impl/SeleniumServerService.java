@@ -454,9 +454,16 @@ public class SeleniumServerService implements ISeleniumServerService {
                 }
             }
             if (!StringUtil.isNullOrEmpty(tCExecution.getRobotExecutorObj().getDeviceName())) {
-                if ((caps.getCapability("systemPort") == null)
-                        || ((caps.getCapability("systemPort") != null) && (caps.getCapability("systemPort").toString().equals("")))) {
-                    caps.setCapability("systemPort", tCExecution.getRobotExecutorObj().getDevicePort() + "");
+                if(tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
+                    if ((caps.getCapability("systemPort") == null)
+                            || ((caps.getCapability("systemPort") != null) && (caps.getCapability("systemPort").toString().equals("")))) {
+                        caps.setCapability("systemPort", tCExecution.getRobotExecutorObj().getDevicePort() + "");
+                    }
+                } else if(tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
+                    if ((caps.getCapability("wdaLocalPort") == null)
+                            || ((caps.getCapability("wdaLocalPort") != null) && (caps.getCapability("wdaLocalPort").toString().equals("")))) {
+                        caps.setCapability("wdaLocalPort", tCExecution.getRobotExecutorObj().getDevicePort() + "");
+                    }
                 }
             }
         }
