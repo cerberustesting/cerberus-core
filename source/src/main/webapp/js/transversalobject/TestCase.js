@@ -23,9 +23,10 @@ var curMode = "";
  * @param {String} test - id of the test to open the modal
  * @param {String} testcase - id of the testcase to open the modal
  * @param {String} mode - mode to open the modal. Can take the values : ADD, DUPLICATE, EDIT
+ * @param {String} tab - name of the tab to activate
  * @returns {null}
  */
-function openModalTestCase(test, testcase, mode) {
+function openModalTestCase(test, testcase, mode, tab) {
     curMode = mode;
 
     // We only load the Labels and bind the events once for performance optimisations.
@@ -37,6 +38,10 @@ function openModalTestCase(test, testcase, mode) {
     $('#editTestCaseModal').data("Saved", false);
     $('#editTestCaseModal').data("testcase", undefined);
 
+    if (!isEmpty(tab)) {
+        $('.nav-tabs a[href="#' + tab + '"]').tab('show');
+    }
+    
     if (mode === "EDIT") {
         editTestCaseClick(test, testcase);
     } else if (mode === "DUPLICATE") {

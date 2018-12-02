@@ -1019,6 +1019,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_environment','title','','fr','ENVIRONNEMENT','Cette page permet de gérer et créer des environnements.','_environnement')");
         b.append(",('page_environment','to','','en','To','',NULL)");
         b.append(",('page_environment','to','','fr','Destinataire','',NULL)");
+        b.append(",('page_environment','envgp','','en','Environment Group','',NULL)");
+        b.append(",('page_environment','envgp','','fr','Groupe de l\\' environnement','',NULL)");
         b.append(",('page_executiondetail','action','','en','Action','',NULL)");
         b.append(",('page_executiondetail','action','','fr','Action','',NULL)");
         b.append(",('page_executiondetail','application','','en','Application','',NULL)");

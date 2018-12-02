@@ -36,7 +36,7 @@ public class FactoryCountryEnvParam implements IFactoryCountryEnvParam {
     public CountryEnvParam create(String system, String country, String environment, String description, String build, String revision, String chain,
     String distribList, String eMailBodyRevision, String type, String eMailBodyChain, 
     String eMailBodyDisableEnvironment, boolean active, boolean maintenanceAct, String maintenanceStr, 
-    String maintenanceEnd) {
+    String maintenanceEnd, String envGp) {
         countryEnvParam = new CountryEnvParam();
         countryEnvParam.setSystem(system);
         countryEnvParam.setCountry(country);
@@ -54,6 +54,7 @@ public class FactoryCountryEnvParam implements IFactoryCountryEnvParam {
         countryEnvParam.setMaintenanceAct(maintenanceAct);
         countryEnvParam.setMaintenanceStr(maintenanceStr);
         countryEnvParam.setMaintenanceEnd(maintenanceEnd);
+        countryEnvParam.setEnvGp(envGp);
         
         return countryEnvParam;
     }

@@ -27,11 +27,46 @@ import org.cerberus.crud.entity.CountryEnvParam;
  */
 public interface IFactoryCountryEnvParam {
 
+    /**
+     *
+     * @param system
+     * @param country
+     * @param environment
+     * @param description
+     * @param build
+     * @param revision
+     * @param chain
+     * @param distribList
+     * @param eMailBodyRevision
+     * @param type
+     * @param eMailBodyChain
+     * @param eMailBodyDisableEnvironment
+     * @param active
+     * @param maintenanceAct
+     * @param maintenanceStr
+     * @param maintenanceEnd
+     * @param envGp
+     * @return
+     */
     CountryEnvParam create(String system, String country, String environment, String description, String build, String revision, String chain,
             String distribList, String eMailBodyRevision, String type, String eMailBodyChain,
-            String eMailBodyDisableEnvironment, boolean active, boolean maintenanceAct, String maintenanceStr, String maintenanceEnd);
+            String eMailBodyDisableEnvironment, boolean active, boolean maintenanceAct, String maintenanceStr, String maintenanceEnd, String envGp);
     
+    /**
+     *
+     * @param system
+     * @param country
+     * @param active
+     * @return
+     */
     CountryEnvParam create(String system, String country, boolean active);
 
+    /**
+     *
+     * @param system
+     * @param country
+     * @param env
+     * @return
+     */
     CountryEnvParam create(String system, String country, String env);
 }

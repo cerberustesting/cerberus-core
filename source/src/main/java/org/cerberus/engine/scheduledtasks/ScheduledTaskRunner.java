@@ -42,7 +42,7 @@ public class ScheduledTaskRunner {
     @Autowired
     private IExecutionThreadPoolService executionThreadPoolService;
 
-    private int b1TickNumberTarget = 5;
+    private int b1TickNumberTarget = 60;
     private int b1TickNumber = 1;
     private final int b2TickNumberTarget = 30;
     private int b2TickNumber = 1;
@@ -53,12 +53,13 @@ public class ScheduledTaskRunner {
     public void nextStep() {
         LOG.debug("Schedule Start. " + b1TickNumber + "/" + b1TickNumberTarget + " - " + b2TickNumber + "/" + b2TickNumberTarget);
 
+        // We get the new period from paarameter and trigger the Queue automatic cancellation job.
+        b1TickNumberTarget = parameterService.getParameterIntegerByKey("cerberus_automaticqueuecancellationjob_period", "", 60);
+        
         if (b1TickNumber < b1TickNumberTarget) {
             b1TickNumber++;
         } else {
             b1TickNumber = 1;
-            // We get the new period from paarameter and trigger the Queue automatic cancellation job.
-            b1TickNumberTarget = parameterService.getParameterIntegerByKey("cerberus_automaticqueuecancellationjob_period", "", 10);
             performBatch1_CancelOldQueueEntries();
         }
 

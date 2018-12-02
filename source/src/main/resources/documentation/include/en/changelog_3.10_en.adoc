@@ -9,8 +9,8 @@
 * Added posibility to link application type with robot type. Each robot can hold the application type information. That allow to avoid submiting execution to queue on impossible combination of application/robot.
 * GUI Refactor on invariant modal
 * GUI Refactor on testcase header modal
-* New Added automatic job in order to automaticly cancel old queue entries that are still in 'Executing' state
-* New Added automatic job in order to process queue entries
+* New Automatic job in order to automaticly cancel old queue entries that are still in 'Executing' state. you can tune its behaviour thanks to parameters : cerberus_automaticqueuecancellationjob_* By default, job will execute every 60 minutes and will caancel queue entries longuer than 3600 seconds (1 hour).
+* New Added automatic job in order to process queue entries. Job will execute every 30 minutes.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

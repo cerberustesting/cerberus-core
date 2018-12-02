@@ -1105,7 +1105,7 @@ function generateTooltip(data) {
 }
 
 function openModalTestCase_FromRepTag(element, test, testcase, mode) {
-    openModalTestCase(test, testcase, mode);
+    openModalTestCase(test, testcase, mode, "tabTCBugReport");
     $('#editTestCaseModal').on("hidden.bs.modal", function (e) {
         $('#editTestCaseModal').unbind("hidden.bs.modal");
 

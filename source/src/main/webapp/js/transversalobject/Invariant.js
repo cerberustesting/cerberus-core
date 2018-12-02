@@ -23,14 +23,19 @@
  * @param {String} invariant - idname of the invariant (ex : "SYSTEM")
  * @param {String} value - value of invariant (ex : "DEVTOOLS")
  * @param {String} mode - mode to open the modal. Can take the values : ADD, DUPLICATE, EDIT
+ * @param {String} tab - name of the tab to activate
  * @returns {null}
  */
-function openModalInvariant(invariant, value, mode) {
+function openModalInvariant(invariant, value, mode, tab) {
 
     // We only load the Labels and bind the events once for performance optimisations.
     if ($('#editInvariantModal').data("initLabel") === undefined) {
         initModalInvariant();
         $('#editInvariantModal').data("initLabel", true);
+    }
+
+    if (!isEmpty(tab)) {
+        $('.nav-tabs a[href="#' + tab + '"]').tab('show');
     }
 
     if (mode === "EDIT") {
@@ -82,20 +87,21 @@ function initModalInvariant() {
     // We add an attribute button by clicking on add button
     var i = 1;
     // Click on close modal will reinitialize i  
-    $('[name="buttonClose"],[class="close"]').click(function(){
+    $('[name="buttonClose"],[class="close"]').click(function () {
         i = 1;
     });
-    $('#AddInvButton').click(function(){
+    $('#AddInvButton').click(function () {
         i++;
-    if ($('#Grpgp'+i).is(":visible")) {
-        i=i+1;
-    }
-    if (i < 10) {
-        $('#Grpgp'+i).show();
-    } else {
-        var localMessage = new Message("WARNING", "You cannot add more than 9 attributes");
+        if ($('#Grpgp' + i).is(":visible")) {
+            i = i + 1;
+        }
+        if (i < 10) {
+            $('#Grpgp' + i).show();
+        } else {
+            var localMessage = new Message("WARNING", "You cannot add more than 9 attributes");
             showMessage(localMessage, $('#editInvariantModal'));
-}});
+        }
+    });
 }
 
 /***
@@ -414,15 +420,17 @@ function feedInvariantModalData(inv, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#gp7").prop("value", inv.gp7);
         formEdit.find("#gp8").prop("value", inv.gp8);
         formEdit.find("#gp9").prop("value", inv.gp9);
-    } 
-    
+    }
+
 //we display an attribute field if a value already exists
-    for (j = 2; j < 10; j++){
-    if( $('#gp'+j).val().trim() !== '' ) {
-            $('#Grpgp'+j).show();
-}   else {
-            $('#Grpgp'+j).hide();
-}};
+    for (j = 2; j < 10; j++) {
+        if ($('#gp' + j).val().trim() !== '') {
+            $('#Grpgp' + j).show();
+        } else {
+            $('#Grpgp' + j).hide();
+        }
+    }
+    ;
 
     // Authorities
 //    if (mode === "EDIT") {
@@ -462,7 +470,7 @@ function feedInvariantModalData(inv, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#gp9").prop("readonly", "readonly");
     }
 }
-     
+
 function inv_keyispressed(e) {
     var idname = $('#editInvariantModal #idname').val();
     if (idname === "COUNTRY" || idname === "ENVIRONMENT" || idname === "SYSTEM") {

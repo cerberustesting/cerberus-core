@@ -37,6 +37,7 @@ public class TestCaseExecutionQueueDep {
     private String status;
     private Timestamp releaseDate;
     private String comment;
+    private long exeId;
     private String usrCreated;
     private Timestamp dateCreated;
     private String usrModif;
@@ -147,6 +148,14 @@ public class TestCaseExecutionQueueDep {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    public long getExeId() {
+        return exeId;
+    }
+
+    public void setExeId(long exeId) {
+        this.exeId = exeId;
     }
 
     public String getUsrCreated() {

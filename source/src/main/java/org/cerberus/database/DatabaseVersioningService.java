@@ -7949,7 +7949,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // New parameters.
         // 1390
         a.add("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES "
-                + "('', 'cerberus_automaticqueuecancellationjob_period', '1', 'Period of time in minutes between each job that will cancel old queue entries that are still running.')"
+                + "('', 'cerberus_automaticqueuecancellationjob_period', '60', 'Period of time in minutes between each job that will cancel old queue entries that are still running.')"
                 + ",('', 'cerberus_automaticqueuecancellationjob_active', 'Y', 'Y in order to activate the job that will cancel old queue entries that are still running.')"
                 + ",('', 'cerberus_automaticqueuecancellationjob_timeout', '3600', 'Nb of Second after which a queue entry will be moved to CANCELLED state automaticly (3600 default).');");
 
@@ -7977,6 +7977,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append("  `Status` varchar(15) NOT NULL DEFAULT 'WAITING',");
         b.append("  `ReleaseDate` timestamp NOT NULL DEFAULT '1970-01-01 01:01:01',");
         b.append("  `Comment` varchar(255) NOT NULL DEFAULT '',");
+        b.append("  `ExeID` bigint(20) unsigned NULL,");
         b.append("  `UsrCreated` varchar(45) NOT NULL DEFAULT '',");
         b.append("  `DateCreated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,");
         b.append("  `UsrModif` varchar(45) NOT NULL DEFAULT '',");
