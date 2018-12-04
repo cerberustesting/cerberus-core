@@ -756,11 +756,11 @@ function aoColumnsFunc_followUp() {
                                 class="btn btn-default btn-xs margin-right5" \n\
                             name="editExecutionQueue" title="' + doc.getDocLabel("page_parameter", "editparameter_field") + '" type="button">\n\
                             <span class="glyphicon glyphicon-pencil"></span></button>';
-                var editRobotInvariant = '<button id="editExeQ' + data + '"  onclick="openModalInvariant(\'ROBOTHOST\',\'' + data[5] + '\',\'EDIT\');" \n\
+                var editRobotInvariant = '<button id="editExeQ' + data + '"  onclick="openModalInvariant(\'ROBOTHOST\',\'' + data[5] + '\',\'EDIT\',\'tabInvAdvanced\');" \n\
                                 class="btn btn-default btn-xs margin-right5" \n\
                             name="editExecutionQueue" title="' + doc.getDocLabel("page_invariant", "button_edit") + '" type="button">\n\
                             <span class="glyphicon glyphicon-pencil"></span></button>';
-                var addRobotInvariant = '<button id="editExeQ' + data + '"  onclick="openModalInvariant(\'ROBOTHOST\',\'' + data[5] + '\',\'ADD\');" \n\
+                var addRobotInvariant = '<button id="editExeQ' + data + '"  onclick="openModalInvariant(\'ROBOTHOST\',\'' + data[5] + '\',\'ADD\',\'tabInvAdvanced\');" \n\
                                 class="btn btn-default btn-xs margin-right5" \n\
                             name="editExecutionQueue" title="' + doc.getDocLabel("page_invariant", "button_create") + '" type="button">\n\
                             <span class="glyphicon glyphicon-plus"></span></button>';

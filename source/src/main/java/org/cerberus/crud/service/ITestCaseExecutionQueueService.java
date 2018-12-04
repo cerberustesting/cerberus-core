@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionQueue;
-import org.cerberus.engine.threadpool.entity.TestCaseExecutionQueueToTreat;
+import org.cerberus.engine.queuemanagement.entity.TestCaseExecutionQueueToTreat;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -298,6 +298,11 @@ public interface ITestCaseExecutionQueueService {
      */
     Answer delete(Long id);
 
+    /**
+     *
+     */
+    void cancelRunningOldQueueEntries();
+    
     /**
      *
      * @param answerItem

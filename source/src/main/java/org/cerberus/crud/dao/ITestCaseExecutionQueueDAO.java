@@ -28,7 +28,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
-import org.cerberus.engine.threadpool.entity.TestCaseExecutionQueueToTreat;
+import org.cerberus.engine.queuemanagement.entity.TestCaseExecutionQueueToTreat;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 
@@ -262,6 +262,14 @@ public interface ITestCaseExecutionQueueDAO {
      * @return
      */
     Answer updateToCancelledForce(long id, String comment);
+
+    /**
+     *
+     * @param timeOutInS
+     * @param comment
+     * @return
+     */
+    AnswerItem<Integer> updateToCancelledOldRecord(Integer timeOutInS, String comment);
 
     /**
      *

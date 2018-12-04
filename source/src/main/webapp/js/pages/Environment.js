@@ -32,38 +32,47 @@ function initPage() {
 
     var urlBuild = GetURLParameter('build', 'ALL'); // Feed Build combo with Build list.
     var urlRevision = GetURLParameter('revision', 'ALL'); // Feed Revision combo with Revision list.
-    var urlCountry = GetURLParameter('country', 'ALL'); // Feed Country combo with Country list.
-    var urlEnvironment = GetURLParameter('environment', 'ALL'); // Feed Environment combo with Environment list.
     var urlEnvGp = GetURLParameter('envgp', 'ALL'); // Feed Environment Group combo with Environment list.
     var urlActive = GetURLParameter('active', 'ALL'); // Feed Active combo with Active list.
+    
+    var urlCountry = GetURLParameter('country', 'ALL'); // Feed Country combo with Country list.
+    var urlEnvironment = GetURLParameter('environment', 'ALL'); // Feed Environment combo with Environment list.
 
-    appendBuildList("build", "1", urlBuild);
-    appendBuildList("revision", "2", urlRevision);
-
-    var select = $('#selectCountry');
-    select.append($('<option></option>').text("-- ALL --").val("ALL"));
-    displayInvariantList("country", "COUNTRY", false, urlCountry);
-
-    var select = $('#selectEnvironment');
-    select.append($('<option></option>').text("-- ALL --").val("ALL"));
-    displayInvariantList("environment", "ENVIRONMENT", false, urlEnvironment);
-
-    var select = $('#selectEnvGp');
-    select.append($('<option></option>').text("-- ALL --").val("ALL"));
-    displayInvariantList("envGp", "ENVGP", false, urlEnvGp);
-
-    var select = $('#selectActive');
-    select.append($('<option></option>').text("-- ALL --").val("ALL"));
-    displayInvariantList("active", "ENVACTIVE", false, urlActive);
+//    appendBuildList("build", "1", urlBuild);
+//    appendBuildList("revision", "2", urlRevision);
+//
+//    var select = $('#selectCountry');
+//    select.append($('<option></option>').text("-- ALL --").val("ALL"));
+//    displayInvariantList("country", "COUNTRY", false, urlCountry);
+//
+//    var select = $('#selectEnvironment');
+//    select.append($('<option></option>').text("-- ALL --").val("ALL"));
+//    displayInvariantList("environment", "ENVIRONMENT", false, urlEnvironment);
+//
+//    var select = $('#selectEnvGp');
+//    select.append($('<option></option>').text("-- ALL --").val("ALL"));
+//    displayInvariantList("envGp", "ENVGP", false, urlEnvGp);
+//
+//    var select = $('#selectActive');
+//    select.append($('<option></option>').text("-- ALL --").val("ALL"));
+//    displayInvariantList("active", "ENVACTIVE", false, urlActive);
 
     displayInvariantList("system", "SYSTEM", false);
+    displayInvariantList("country", "COUNTRY", false);
+    displayInvariantList("environment", "ENVIRONMENT", false);
+    displayInvariantList("active", "ENVACTIVE", false);
     displayInvariantList("type", "ENVTYPE", false);
     displayInvariantList("maintenanceAct", "MNTACTIVE", false, "N");
     displayInvariantList("chain", "CHAIN", false, "Y");
     displayBatchInvariantList('batch', getUser().defaultSystem);
+    
+//    var toto = new Array;
+//    toto.push("active=[\"Y\"]");
+//    toto.push("system=cerberus");
+//    generateFiltersOnMultipleColumns("environmentsTable", toto);
 
-    displayBuildList('#newBuild', getUser().defaultSystem, "1", "", "", "");
-    displayBuildList('#newRevision', getUser().defaultSystem, "2", "", "", "");
+//    displayBuildList('#newBuild', getUser().defaultSystem, "1", "", "", "");
+//    displayBuildList('#newRevision', getUser().defaultSystem, "2", "", "", "");
 
     var table = loadEnvTable(urlCountry, urlEnvironment, urlBuild, urlRevision, urlEnvGp, urlActive);
 
@@ -114,7 +123,7 @@ function displayPageLabel() {
     $("[name='buttonConfirm']").html(doc.getDocLabel("page_global", "buttonConfirm"));
     $("[name='buttonDismiss']").html(doc.getDocLabel("page_global", "buttonDismiss"));
     $("[name='filtersField']").html(doc.getDocOnline("page_global", "filters"));
-    $("[name='btnLoad']").html(doc.getDocLabel("page_global", "buttonLoad"));
+    //$("[name='btnLoad']").html(doc.getDocLabel("page_global", "buttonLoad"));
 
     $("[name='systemField']").html(doc.getDocOnline("invariant", "SYSTEM"));
     $("[name='countryField']").html(doc.getDocOnline("invariant", "COUNTRY"));
@@ -200,40 +209,6 @@ function displayPageLabel() {
 
 function loadEnvTable(selectCountry, selectEnvironment, selectBuild, selectRevision, selectEnvGp, selectActive) {
 
-    if (isEmpty(selectCountry)) {
-        selectCountry = $("#selectCountry").val();
-    }
-    if (isEmpty(selectEnvironment)) {
-        selectEnvironment = $("#selectEnvironment").val();
-    }
-    if (isEmpty(selectBuild)) {
-        selectBuild = $("#selectBuild").val();
-    }
-    if (isEmpty(selectRevision)) {
-        selectRevision = $("#selectRevision").val();
-    }
-    if (isEmpty(selectEnvGp)) {
-        selectEnvGp = $("#selectEnvGp").val();
-    }
-    if (isEmpty(selectActive)) {
-        selectActive = $("#selectActive").val();
-    }
-
-    // We add the Browser history.
-    var CallParam = '?';
-    if (!isEmptyorALL(selectCountry))
-        CallParam += 'country=' + encodeURIComponent(selectCountry);
-    if (!isEmptyorALL(selectEnvironment))
-        CallParam += '&environment=' + encodeURIComponent(selectEnvironment);
-    if (!isEmptyorALL(selectBuild))
-        CallParam += '&build=' + encodeURIComponent(selectBuild);
-    if (!isEmptyorALL(selectRevision))
-        CallParam += '&revision=' + encodeURIComponent(selectRevision);
-    if (!isEmptyorALL(selectEnvGp))
-        CallParam += '&envgp=' + encodeURIComponent(selectEnvGp);
-    if (!isEmptyorALL(selectActive))
-        CallParam += '&active=' + encodeURIComponent(selectActive);
-    InsertURLInHistory('Environment.jsp' + CallParam);
 
     //clear the old report content before reloading it
     $("#environmentList").empty();
@@ -242,24 +217,24 @@ function loadEnvTable(selectCountry, selectEnvironment, selectBuild, selectRevis
 
     //configure and create the dataTable
     var contentUrl = "ReadCountryEnvParam?forceList=Y&system=" + getUser().defaultSystem;
-    if ((selectEnvironment!==null) && (selectEnvironment !== 'ALL')) {
-        contentUrl = contentUrl + "&environment=" + selectEnvironment;
-    }
-    if ((selectCountry!==null) && (selectCountry !== 'ALL')) {
-        contentUrl = contentUrl + "&country=" + selectCountry;
-    }
-    if ((selectBuild!==null) && (selectBuild !== 'ALL')) {
-        contentUrl = contentUrl + "&build=" + selectBuild;
-    }
-    if ((selectRevision!==null) && (selectRevision !== 'ALL')) {
-        contentUrl = contentUrl + "&revision=" + selectRevision;
-    }
-    if ((selectEnvGp!==null) && (selectEnvGp !== 'ALL')) {
-        contentUrl = contentUrl + "&envgp=" + selectEnvGp;
-    }
-    if ((selectActive!==null) && (selectActive !== 'ALL')) {
-        contentUrl = contentUrl + "&active=" + selectActive;
-    }
+//    if ((selectEnvironment!==null) && (selectEnvironment !== 'ALL')) {
+//        contentUrl = contentUrl + "&environment=" + selectEnvironment;
+//    }
+//    if ((selectCountry!==null) && (selectCountry !== 'ALL')) {
+//        contentUrl = contentUrl + "&country=" + selectCountry;
+//    }
+//    if ((selectBuild!==null) && (selectBuild !== 'ALL')) {
+//        contentUrl = contentUrl + "&build=" + selectBuild;
+//    }
+//    if ((selectRevision!==null) && (selectRevision !== 'ALL')) {
+//        contentUrl = contentUrl + "&revision=" + selectRevision;
+//    }
+//    if ((selectEnvGp!==null) && (selectEnvGp !== 'ALL')) {
+//        contentUrl = contentUrl + "&envgp=" + selectEnvGp;
+//    }
+//    if ((selectActive!==null) && (selectActive !== 'ALL')) {
+//        contentUrl = contentUrl + "&active=" + selectActive;
+//    }
 
     var configurations = new TableConfigurationsServerSide("environmentsTable", contentUrl, "contentTable", aoColumnsFunc("environmentsTable"), [3, 'asc']);
 
@@ -346,19 +321,19 @@ function addEntryModalSaveHandler() {
     clearResponseMessage($('#addEnvModal'));
     var formAdd = $("#addEnvModal #addEnvModalForm");
 
-    var nameElement = formAdd.find("#build");
-    var nameElementEmpty = nameElement.prop("value") === '';
-    if (nameElementEmpty) {
-        var localMessage = new Message("danger", "Please specify the name of the build!");
-        nameElement.parents("div.form-group").addClass("has-error");
-        showMessage(localMessage, $('#addEnvModal'));
-    } else {
-        nameElement.parents("div.form-group").removeClass("has-error");
-    }
-
-    // verif if all mendatory fields are not empty
-    if (nameElementEmpty)
-        return;
+//    var nameElement = formAdd.find("#build");
+//    var nameElementEmpty = nameElement.prop("value") === '';
+//    if (nameElementEmpty) {
+//        var localMessage = new Message("danger", "Please specify the name of the build!");
+//        nameElement.parents("div.form-group").addClass("has-error");
+//        showMessage(localMessage, $('#addEnvModal'));
+//    } else {
+//        nameElement.parents("div.form-group").removeClass("has-error");
+//    }
+//
+//    // verif if all mendatory fields are not empty
+//    if (nameElementEmpty)
+//        return;
 
     // Get the header data from the form.
     var dataForm = convertSerialToJSONObject(formAdd.serialize());
@@ -1258,6 +1233,10 @@ function aoColumnsFunc(tableId) {
             "sName": "description",
             "sWidth": "150px",
             "title": doc.getDocOnline("countryenvparam", "Description")},
+        {"data": "envGp",
+            "sName": "inv.gp1",
+            "sWidth": "150px",
+            "title": doc.getDocOnline("page_environment", "envgp")},
         {
             "data": "active",
             "sName": "active",

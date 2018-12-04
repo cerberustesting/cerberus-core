@@ -41,5 +41,17 @@
             Thread.sleep(timeToWait);
         %>
         Waited : <%=timeToWait%> ms (delay parameter=<%=request.getParameter("delay")%> | MAX_DELAY=<%=MAX_DELAY%> | DEFAULT_DELAY=<%=DEFAULT_DELAY%>)
+        <br><br><br><br><br><br><br><br><br>
+        <br><br><br><br><br><br><br><br><br>
+        <br><br><br><br><br><br><br><br><br>
+        <br><br><br><br><br><br><br><br><br>
+        <br><br><br><br><br><br><br><br><br>
+        <br><br><br><br><br><br><br><br><br>
+        <br><br><br><br><br><br><br><br><br>
+        <form name="selectFormulary2" action="index2.jsp">
+            <p>Below is part to test Input and validate form</p>
+            <input type="text" name="selectedValue2" id="selectedValue2">
+            <input id="selectedValue2Submit" type="submit" value="Submit">
+        </form>
     </body>
 </html>

@@ -42,6 +42,10 @@ public class CountryEnvParam {
     private String maintenanceStr;
     private String maintenanceEnd;
 
+    // Outside Database model
+    private String envGp;
+    
+    
     public String getDescription() {
         return description;
     }
@@ -169,4 +173,13 @@ public class CountryEnvParam {
     public void setSystem(String system) {
         this.system = system;
     }
+
+    public String getEnvGp() {
+        return envGp;
+    }
+
+    public void setEnvGp(String envGp) {
+        this.envGp = envGp;
+    }
+    
 }

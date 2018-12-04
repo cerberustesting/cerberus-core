@@ -36,11 +36,11 @@ function initPage() {
 
 //    showLoader('#logViewerTable');
     //configure and create the dataTable
-    var configurations = new TableConfigurationsServerSide("logViewerTable", "ReadLogEvent", "contentTable", aoColumnsFunc(), [1,'desc']);
+    var configurations = new TableConfigurationsServerSide("logViewerTable", "ReadLogEvent", "contentTable", aoColumnsFunc(), [1, 'desc']);
 
     var table = createDataTableWithPermissions(configurations, renderOptionsForLogViewer, "#logViewer");
 //    hideLoader('#logViewerTable');
-    
+
     //var api = table.api();
     // if test and testcase parameter are sent, we filter the logs on it.
     if (test !== null && testCase !== null) {
@@ -50,7 +50,7 @@ function initPage() {
 }
 
 function renderOptionsForLogViewer() {
-$("#logViewerTable_paginate").parent().addClass("col-md-12").addClass("paddingRight0");
+    $("#logViewerTable_paginate").parent().addClass("col-md-12").addClass("paddingRight0");
 }
 
 function displayPageLabel() {
@@ -114,40 +114,40 @@ function aoColumnsFunc() {
         },
         {
             "data": "LogEventID",
-            "like":true,
-            "sName": "LogEventID", 
+            "like": true,
+            "sName": "LogEventID",
             "sWidth": "50px",
             "title": doc.getDocOnline("logevent", "logeventid")
         },
         {
             "data": "time",
-            "like":true,
-            "sName": "Time", 
+            "like": true,
+            "sName": "Time",
             "sWidth": "90px",
             "title": doc.getDocOnline("logevent", "time")
         },
         {
-            "data": "login", 
-            "sName": "Login", 
+            "data": "login",
+            "sName": "Login",
             "sWidth": "50px",
             "title": doc.getDocOnline("logevent", "login")
         },
         {
-            "data": "page", 
-            "sName": "Page", 
+            "data": "page",
+            "sName": "Page",
             "sWidth": "100px",
             "title": doc.getDocOnline("logevent", "page")
         },
         {
-            "data": "action", 
-            "sName": "Action", 
+            "data": "action",
+            "sName": "Action",
             "sWidth": "50px",
             "title": doc.getDocOnline("logevent", "action")
         },
         {
             "data": "log",
-            "like":true,
-            "sName": "Log", 
+            "like": true,
+            "sName": "Log",
             "sWidth": "250px",
             "title": doc.getDocOnline("logevent", "log")
         }

@@ -21,44 +21,58 @@
                                 </button>
                             </div>
                         </div>
+                        <div class="row">
+                            <div class="form-group col-xs-12">
+                                <label for="idname" name="idnameField">Id Name</label>
+                                <select class="form-control" name="idname" id="idname" aria-describedby="basic-addon1"></select>
+                                <input type="text" class="form-control input-sm" name="originalIdName" id="originalIdName" style="display:none;"/>
+                                <input type="text" class="form-control input-sm" name="originalValue" id="originalValue" style="display:none;"/>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-12">
+                                <label for="value" name="ValueField">Value</label>
+                                <input type="text" class="form-control" name="value" id="value"
+                                       aria-describedby="basic-addon1" readonly onkeydown="return inv_keyispressed(event);" >
+                            </div>
+                        </div>
                         <ul id="tabsEdit" class="nav nav-tabs" data-tabs="tabs">
                             <li class="active"><a data-toggle="tab" href="#tabInvDefinition" id="InvDefinition" name="tabDefinition">Definition</a></li>
                             <li><a data-toggle="tab" href="#tabInvAdvanced" id="InvAdvanced" name="tabAdvanced">Advanced</a></li>
-                            <li><a data-toggle="tab" href="#tabInvDescription" id="InvDescription" name="tabDescription">Description</a></li>
+                            <!--                            <li><a data-toggle="tab" href="#tabInvDescription" id="InvDescription" name="tabDescription">Description</a></li>-->
                         </ul>
                         <div class="tab-content">
                             <div class="center marginTop25 tab-pane fade in active" id="tabInvDefinition">
                                 <div class="row">
                                     <div class="form-group col-xs-12">
-                                        <label for="idname" name="idnameField">Id Name</label>
-                                        <select class="form-control" name="idname" id="idname" aria-describedby="basic-addon1"></select>
-                                        <input type="text" class="form-control input-sm" name="originalIdName" id="originalIdName" style="display:none;"/>
-                                        <input type="text" class="form-control input-sm" name="originalValue" id="originalValue" style="display:none;"/>
+                                        <label for="description" name="descriptionField">Description</label>
+                                        <textarea class="form-control" name="description" id="description"
+                                                  aria-describedby="basic-addon1"></textarea>
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="form-group col-xs-12">
-                                        <label for="value" name="ValueField">Value</label>
-                                        <input type="text" class="form-control" name="value" id="value"
-                                               aria-describedby="basic-addon1" readonly onkeydown="return inv_keyispressed(event);" >
+                                    <div class="form-group col-xs-10">
+                                        <label for="veryShortDesc" name="veryShortDescField">veryShortDesc</label>
+                                        <textarea class="form-control" name="veryShortDesc" id="veryShortDesc"
+                                                  aria-describedby="basic-addon1"></textarea>
+                                    </div>
+                                    <div class="form-group col-xs-2 col-md-2 pull-right">
+                                        <label for="sort" name="sortField">Sort</label>
+                                        <input type="text" class="form-control" ame="sort" id="sort"
+                                               aria-describedby="basic-addon1">
                                     </div>
                                 </div>
                             </div>
                             <div class="center tab-pane fade marginTop25" id="tabInvAdvanced">
                                 <div class='row'>
                                     <div class='col-md-6 col-xs-12'>
-                                        <button id="AddInvButton" type="button" class="btn btn-default marginTop20">
+                                        <button id="AddInvButton" type="button" class="btn btn-default marginBottom20">
                                             <span class="glyphicon glyphicon-plus-sign"></span> Add Attributes</button>
                                     </div>
-                                        <div class="form-group col-xs-12 col-md-4 pull-right">
-                                            <label for="sort" name="sortField">Sort</label>
-                                            <input type="text" class="form-control" name="sort" id="sort"
-                                                   aria-describedby="basic-addon1">
-                                        </div>
                                 </div>
                                 <div class="row">
                                     <div class="form-group col-xs-12" id="Grpgp1">
-                                        <label for="gp1" name="gp1Field">Attribute</label>
+                                        <label for="gp1" name="gp1Field">Attribute 1</label>
                                         <input type="text" class="form-control" name="gp1" id="gp1"
                                                aria-describedby="basic-addon1">
                                     </div>
@@ -121,20 +135,6 @@
                                 </div>
                             </div>
                             <div class="center tab-pane fade marginTop25" id="tabInvDescription">
-                                <div class="row">
-                                    <div class="form-group col-xs-12">
-                                        <label for="description" name="descriptionField">Description</label>
-                                        <textarea class="form-control" name="description" id="description"
-                                                  aria-describedby="basic-addon1"></textarea>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group col-xs-12">
-                                        <label for="veryShortDesc" name="veryShortDescField">veryShortDesc</label>
-                                        <textarea class="form-control" name="veryShortDesc" id="veryShortDesc"
-                                                  aria-describedby="basic-addon1"></textarea>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </div>

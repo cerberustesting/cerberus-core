@@ -22,4 +22,4 @@
  * 
  * @author bcivel
  */
-package org.cerberus.engine.threadpool;
+package org.cerberus.engine.queuemanagement;

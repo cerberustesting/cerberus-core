@@ -99,9 +99,13 @@ public class CreateCountryEnvParam extends HttpServlet {
         maintenanceStr = maintenanceStr.isEmpty() ? "00:00:00" : maintenanceStr;
         maintenanceEnd = maintenanceEnd.isEmpty() ? "00:00:00" : maintenanceEnd;
         String build = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("build"), "", charset);
-        if ("ALL".equalsIgnoreCase(build)) build="";
+        if ("ALL".equalsIgnoreCase(build)) {
+            build = "";
+        }
         String revision = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("revision"), "", charset);
-        if ("ALL".equalsIgnoreCase(revision)) revision="";
+        if ("ALL".equalsIgnoreCase(revision)) {
+            revision = "";
+        }
         String chain = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("chain"), "", charset);
         // Parameter that we cannot secure as we need the html --> We DECODE them
         String distribList = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("distribList"), "", charset);
@@ -138,7 +142,8 @@ public class CreateCountryEnvParam extends HttpServlet {
             ICountryEnvParamService countryEnvParamService = appContext.getBean(ICountryEnvParamService.class);
             IFactoryCountryEnvParam factoryCountryEnvParam = appContext.getBean(IFactoryCountryEnvParam.class);
 
-            CountryEnvParam countryEnvParamData = factoryCountryEnvParam.create(system, country, environment, description, build, revision, chain, distribList, emailBodyRevision, type, emailBodyChain, emailBodyDisableEnvironment, active, maintenanceAct, maintenanceStr, maintenanceEnd);
+            CountryEnvParam countryEnvParamData = factoryCountryEnvParam.create(system, country, environment, description, build, revision, chain, distribList,
+                     emailBodyRevision, type, emailBodyChain, emailBodyDisableEnvironment, active, maintenanceAct, maintenanceStr, maintenanceEnd, "");
             ans = countryEnvParamService.create(countryEnvParamData);
 
             if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {

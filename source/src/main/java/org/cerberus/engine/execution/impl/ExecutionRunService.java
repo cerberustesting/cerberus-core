@@ -73,7 +73,7 @@ import org.cerberus.engine.execution.video.VideoRecorder;
 import org.cerberus.engine.gwt.IActionService;
 import org.cerberus.engine.gwt.IControlService;
 import org.cerberus.engine.gwt.IVariableService;
-import org.cerberus.engine.threadpool.IExecutionThreadPoolService;
+import org.cerberus.engine.queuemanagement.IExecutionThreadPoolService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.enums.Screenshot;
