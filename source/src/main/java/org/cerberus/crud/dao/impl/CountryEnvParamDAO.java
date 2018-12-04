@@ -606,8 +606,8 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
         query.append(" max(cev.system) system, max(cev.country) country, Environment, '' Description,  ");
         query.append(" max(cev.build) build, max(cev.revision) revision, max(cev.chain) chain, '' DistribList, ");
         query.append(" '' EMailBodyRevision, max(cev.Type) type, '' EMailBodyChain, '' EMailBodyDisableEnvironment,  ");
-        query.append(" max(cev.Active) active, max(cev.maintenanceact) maintenanceact, max(cev.maintenancestr) maintenancestr, max(cev.maintenanceend) maintenanceend ");
-
+        query.append(" max(cev.Active) active, max(cev.maintenanceact) maintenanceact, max(cev.maintenancestr) maintenancestr, max(cev.maintenanceend) maintenanceend, ");
+        query.append("inv.gp1");
         query.append(" FROM countryenvparam cev ");
 
         query.append(" LEFT OUTER JOIN invariant inv on inv.idname='ENVIRONMENT' and inv.value=cev.environment ");
@@ -683,23 +683,23 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
                     //gets the data
                     while (resultSet.next()) {
 
-                        String system1 = resultSet.getString("cev.System");
-                        String count = resultSet.getString("cev.Country");
-                        String env = resultSet.getString("cev.Environment");
-                        String description = resultSet.getString("cev.Description");
-                        String build1 = resultSet.getString("cev.Build");
-                        String revision1 = resultSet.getString("cev.Revision");
-                        String chain = resultSet.getString("cev.chain");
-                        String distribList = resultSet.getString("cev.distribList");
-                        String eMailBodyRevision = resultSet.getString("cev.eMailBodyRevision");
-                        String type = resultSet.getString("cev.type");
-                        String eMailBodyChain = resultSet.getString("cev.eMailBodyChain");
-                        String eMailBodyDisableEnvironment = resultSet.getString("cev.eMailBodyDisableEnvironment");
-                        boolean active1 = StringUtil.parseBoolean(resultSet.getString("cev.active"));
-                        boolean maintenanceAct = StringUtil.parseBoolean(resultSet.getString("cev.maintenanceact"));
-                        String maintenanceStr = resultSet.getString("cev.maintenancestr");
-                        String maintenanceEnd = resultSet.getString("cev.maintenanceend");
-                        String envGp1 = resultSet.getString("inv.gp1");
+                        String system1 = resultSet.getString("System");
+                        String count = resultSet.getString("Country");
+                        String env = resultSet.getString("Environment");
+                        String description = resultSet.getString("Description");
+                        String build1 = resultSet.getString("Build");
+                        String revision1 = resultSet.getString("Revision");
+                        String chain = resultSet.getString("chain");
+                        String distribList = resultSet.getString("distribList");
+                        String eMailBodyRevision = resultSet.getString("eMailBodyRevision");
+                        String type = resultSet.getString("type");
+                        String eMailBodyChain = resultSet.getString("eMailBodyChain");
+                        String eMailBodyDisableEnvironment = resultSet.getString("eMailBodyDisableEnvironment");
+                        boolean active1 = StringUtil.parseBoolean(resultSet.getString("active"));
+                        boolean maintenanceAct = StringUtil.parseBoolean(resultSet.getString("maintenanceact"));
+                        String maintenanceStr = resultSet.getString("maintenancestr");
+                        String maintenanceEnd = resultSet.getString("maintenanceend");
+                        String envGp1 = resultSet.getString("gp1");
                         cepList.add(factoryCountryEnvParam.create(system1, count, env, description, build1, revision1, chain, distribList, eMailBodyRevision,
                                 type, eMailBodyChain, eMailBodyDisableEnvironment, active1, maintenanceAct, maintenanceStr, maintenanceEnd, envGp1));
 
