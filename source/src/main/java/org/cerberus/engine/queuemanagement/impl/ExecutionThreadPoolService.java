@@ -205,6 +205,10 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
         if (!(myVersionService.getMyVersionStringByKey("queueprocessingjobrunning", "N").equals("Y"))
                 || forceExecution) {
 
+            // Flag in database that job is already running.
+            myVersionService.UpdateMyVersionString("queueprocessingjobrunning", "Y");
+            myVersionService.UpdateMyVersionString("queueprocessingjobstart", String.valueOf(new Date()));
+
             if (forceExecution) {
                 LOG.debug("Forcing Start of Queue_Processing_Job.");
             }
@@ -224,10 +228,6 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                 // Job is not already running, we can trigger it.
 
                 LOG.debug("Starting Queue_Processing_Job.");
-
-                // Flag in database that job is already running.
-                myVersionService.UpdateMyVersionString("queueprocessingjobrunning", "Y");
-                myVersionService.UpdateMyVersionString("queueprocessingjobstart", String.valueOf(new Date()));
 
                 // Getting all executions to be treated.
                 AnswerList answer = new AnswerList<>();
@@ -482,12 +482,12 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                     }
                 }
 
-                // Flag in database that job is finished.
-                myVersionService.UpdateMyVersionString("queueprocessingjobrunning", "N");
-
                 LOG.debug("Stopping Queue_Processing_Job - TOTAL Released execution(s) : " + nbqueuedexe);
 
             } while (nbqueuedexe > 0);
+
+            // Flag in database that job is finished.
+            myVersionService.UpdateMyVersionString("queueprocessingjobrunning", "N");
 
         } else {
             LOG.debug("Queue_Processing_Job not triggered (already running.)");

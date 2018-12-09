@@ -68,7 +68,6 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.util.JavaScriptUtils;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.crud.service.impl.LabelService;
-import org.cerberus.crud.service.impl.TestCaseLabelService;
 import org.cerberus.dto.TreeNode;
 import org.cerberus.util.StringUtil;
 

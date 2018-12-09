@@ -7962,8 +7962,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add(b.toString());
 
         // Dependency tables.
-        // 1392-1393
-        b = new StringBuilder(); // replace color yellow by no color
+        // 1392-1394
+        b = new StringBuilder();
         b.append("CREATE TABLE `testcaseexecutionqueuedep` (");
         b.append("  `ID` bigint(20) NOT NULL AUTO_INCREMENT,");
         b.append("  `ExeQueueID` bigint(20) unsigned NOT NULL,");
@@ -7989,7 +7989,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append("  CONSTRAINT `FK_testcaseexecutiondep_01` FOREIGN KEY (`ExeQueueID`) REFERENCES `testcaseexecutionqueue` (`ID`) ON DELETE CASCADE ON UPDATE CASCADE");
         b.append(") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
         a.add(b.toString());
-        b = new StringBuilder(); // replace color yellow by no color
+        b = new StringBuilder();
         b.append("CREATE TABLE `testcasedep` (");
         b.append("  `ID` bigint(20) NOT NULL AUTO_INCREMENT,");
         b.append("  `Test` varchar(45) NULL,");
@@ -8009,6 +8009,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append("  CONSTRAINT `FK_testcasedep_01` FOREIGN KEY (`Test`,`TestCase`) REFERENCES `testcase` (`Test`,`TestCase`) ON DELETE CASCADE ON UPDATE CASCADE,");
         b.append("  CONSTRAINT `FK_testcasedep_02` FOREIGN KEY (`DepTest`,`DepTestCase`) REFERENCES `testcase` (`Test`,`TestCase`) ON DELETE CASCADE ON UPDATE CASCADE");
         b.append(") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
+        a.add(b.toString());
+        b = new StringBuilder();
+        b.append("ALTER TABLE `testcaseexecutionqueuedep` ");
+        b.append("DROP INDEX `IX_testcaseexecutiondep_02` , ADD INDEX `IX_testcaseexecutiondep_02` (`Status` ASC, `Type` ASC, `DepTest` ASC, `DepTestCase` ASC, `Tag` ASC, `Environment` ASC, `Country` ASC),");
+        b.append("DROP INDEX `IX_testcaseexecutiondep_03` , ADD INDEX `IX_testcaseexecutiondep_03` (`Status` ASC, `Type` ASC, `DepEvent` ASC, `Tag` ASC, `Environment` ASC, `Country` ASC),");
+        b.append("ADD INDEX `IX_testcaseexecutiondep_04` (`ExeID` ASC);");
         a.add(b.toString());
 
         return a;

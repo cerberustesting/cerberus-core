@@ -209,6 +209,14 @@ public interface ITestCaseExecutionQueueDAO {
     /**
      *
      * @param id
+     * @param comment
+     * @return
+     */
+    Answer updateToQueuedFromQuWithDep(long id, String comment);
+
+    /**
+     *
+     * @param id
      * @return
      * @throws CerberusException
      */

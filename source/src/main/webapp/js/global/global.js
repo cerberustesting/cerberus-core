@@ -2458,7 +2458,8 @@ function comboConfigTag_format(tag) {
         markup += "<div class='select2-result-tag__detail'><i class='fa fa-calendar'></i> " + tag.DateCreated + "</div>";
     }
     if (tag.nbExeUsefull>0) {
-        markup += "<div class='select2-result-tag__detail " + tag.ciResult + "'> " + tag.nbExeUsefull + " Exe(s)</div>";
+        markup += "<div class='select2-result-tag__detail'> " + tag.nbExeUsefull + " Exe(s)</div>";
+        markup += "<div class='select2-result-tag__detail " + tag.ciResult + "'> " + tag.ciResult + "</div>";
     }
     markup += "</div>";
     markup += "</div>";

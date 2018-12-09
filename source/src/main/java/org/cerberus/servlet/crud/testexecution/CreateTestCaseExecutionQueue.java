@@ -214,7 +214,7 @@ public class CreateTestCaseExecutionQueue extends HttpServlet {
                             executionQueueData.setPriority(TestCaseExecutionQueue.PRIORITY_DEFAULT);
                             executionQueueData.setUsrCreated(request.getRemoteUser());
                         }
-                        ansItem = executionQueueService.create(executionQueueData);
+                        ansItem = executionQueueService.create(executionQueueData, false);
 
                         finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ansItem);
                         if (ansItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {

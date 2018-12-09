@@ -163,22 +163,28 @@ function renderOptionsForExeQueue(data) {
     if ($("#blankSpace").length === 0) {
         var doc = new Doc();
         var contentToAdd = "<div class='marginBottom10' style='height:34px;' id='blankSpace'>";
-        contentToAdd += "<button id='createBrpMassButton' type='button' class='btn btn-default'><span class='glyphicon glyphicon-th-list'></span> " + doc.getDocLabel("page_global", "button_massAction") + "</button>";
-        contentToAdd += "<button id='refreshExecutionButton' type='button' class='btn btn-default'><span class='glyphicon glyphicon-refresh'></span> " + doc.getDocLabel("page_global", "refresh") + "</button>";
-        contentToAdd += "<button id='selectPendingButton' type='button' class='btn btn-default'>" + doc.getDocLabel("page_testcaseexecutionqueue", "button_filterPending") + "</button>";
-        contentToAdd += "<button id='selectRunningButton' type='button' class='btn btn-default'>" + doc.getDocLabel("page_testcaseexecutionqueue", "button_filterExecuting") + "</button>";
+        contentToAdd += "<button id='createBrpMassButton' type='button' class='btn btn-default margin-right5'><span class='glyphicon glyphicon-th-list'></span> " + doc.getDocLabel("page_global", "button_massAction") + "</button>";
+        contentToAdd += "<button id='refreshExecutionButton' type='button' class='btn btn-default margin-right5'><span class='glyphicon glyphicon-refresh'></span> " + doc.getDocLabel("page_global", "refresh") + "</button>";
+        contentToAdd += "<button id='selectDepButton' type='button' class='btn btn-default margin-right5'>" + doc.getDocLabel("page_testcaseexecutionqueue", "button_filterPendingWithDep") + "</button>";
+        contentToAdd += "<button id='selectPendingButton' type='button' class='btn btn-default margin-right5'>" + doc.getDocLabel("page_testcaseexecutionqueue", "button_filterPending") + "</button>";
+        contentToAdd += "<button id='selectRunningButton' type='button' class='btn btn-default margin-right5'>" + doc.getDocLabel("page_testcaseexecutionqueue", "button_filterExecuting") + "</button>";
         contentToAdd += "</div>";
 
         $("#executionsTable_wrapper div#executionsTable_length").before(contentToAdd);
         $('#executionList #createBrpMassButton').click(massActionClick);
         $('#executionList #refreshExecutionButton').click(refreshTable);
-        $('#executionList #selectPendingButton').click(filterPending);
+        $('#executionList #selectDepButton').click(filterQueuedWithDep);
+        $('#executionList #selectPendingButton').click(filterQueued);
         $('#executionList #selectRunningButton').click(filterERunning);
     }
 }
 
-function filterPending() {
+function filterQueued() {
     filterOnColumn("executionsTable", "state", "QUEUED");
+}
+
+function filterQueuedWithDep() {
+    filterOnColumn("executionsTable", "state", "QUWITHDEP,QUEUED");
 }
 
 function filterERunning() {

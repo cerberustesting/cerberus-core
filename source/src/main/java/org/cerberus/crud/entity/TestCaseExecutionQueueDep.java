@@ -49,8 +49,8 @@ public class TestCaseExecutionQueueDep {
     public static final String TYPE_TCEXEEND = "TCEXEEND"; // End of a testCase Execution.
     public static final String TYPE_EVENT = "EVENT"; // Creation of an Event.
 
-    public static final String STATUS_WAITING = "WAITING"; // End of a testCase Execution.
-    public static final String STATUS_RELEASED = "RELEASED"; // Creation of an Event.
+    public static final String STATUS_WAITING = "WAITING"; // Dependency is still open and waiting.
+    public static final String STATUS_RELEASED = "RELEASED"; // Dependency has been released and no longuer block any executions.
 
     private static final Logger LOG = LogManager.getLogger(TestCaseExecutionQueueDep.class);
 

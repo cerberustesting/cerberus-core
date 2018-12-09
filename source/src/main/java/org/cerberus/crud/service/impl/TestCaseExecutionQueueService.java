@@ -22,6 +22,8 @@ package org.cerberus.crud.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.dao.ITestCaseExecutionQueueDAO;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.TestCase;
@@ -31,6 +33,7 @@ import org.cerberus.crud.factory.IFactoryTagSystem;
 import org.cerberus.crud.factory.IFactoryTestCaseExecution;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ITagSystemService;
+import org.cerberus.crud.service.ITestCaseExecutionQueueDepService;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.engine.queuemanagement.entity.TestCaseExecutionQueueToTreat;
@@ -60,9 +63,12 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
     private IFactoryTagSystem factoryTagSystem;
     @Autowired
     private IParameterService parameterService;
-
     @Autowired
     private IFactoryTestCaseExecution factoryTestCaseExecution;
+    @Autowired
+    private ITestCaseExecutionQueueDepService testCaseExecutionQueueDepService;
+
+    private static final Logger LOG = LogManager.getLogger(TestCaseExecutionQueueService.class);
 
     @Override
     public AnswerItem<TestCaseExecutionQueue> readByKey(long queueId) {
@@ -113,6 +119,7 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
     @Override
     public AnswerList<TestCaseExecutionQueue> readQueueOpen(String tag) throws CerberusException {
         List<String> stateList = new ArrayList<>();
+        stateList.add(TestCaseExecutionQueue.State.QUWITHDEP.name());
         stateList.add(TestCaseExecutionQueue.State.QUEUED.name());
         stateList.add(TestCaseExecutionQueue.State.WAITING.name());
         stateList.add(TestCaseExecutionQueue.State.STARTING.name());
@@ -159,14 +166,46 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
     }
 
     @Override
-    public AnswerItem<TestCaseExecutionQueue> create(TestCaseExecutionQueue object) {
+    public AnswerItem<TestCaseExecutionQueue> create(TestCaseExecutionQueue object, boolean withDependency) {
         // We create the link between the tag and the system if it does not exist yet.
         if (!StringUtil.isNullOrEmpty(object.getTag()) && !StringUtil.isNullOrEmpty(object.getSystem())) {
             if (!tagSystemService.exist(object.getTag(), object.getSystem())) {
                 tagSystemService.create(factoryTagSystem.create(object.getTag(), object.getSystem(), object.getUsrCreated(), null, "", null));
             }
         }
-        return testCaseExecutionInQueueDAO.create(object);
+        AnswerItem<TestCaseExecutionQueue> ret;
+        if (withDependency) {
+            // Inserting the record into the Queue forcing its state to QUWITHDEP (in order to secure it doesnt get triggered).
+            object.setState(TestCaseExecutionQueue.State.QUWITHDEP);
+            ret = testCaseExecutionInQueueDAO.create(object);
+            // If insert was done correctly, we will try to add the dependencies.
+            if (ret.getItem() != null) {
+                // Get the QueueId Result from inserted record.
+                long insertedQueueId = ret.getItem().getId();
+                // Adding dependencies
+                AnswerItem<Integer> retDep = testCaseExecutionQueueDepService.insertFromTCDep(insertedQueueId, object.getEnvironment(), object.getCountry(), object.getTag(), object.getTest(), object.getTestCase());
+                LOG.debug("Dep inserted : " + retDep.getItem());
+                if (retDep.getItem() < 1) {
+                    // In case there are no dependencies, we release the execution moving to QUEUED State
+                    updateToQueued(insertedQueueId, "");
+                }
+            }
+        } else {
+            ret = testCaseExecutionInQueueDAO.create(object);
+        }
+
+        return ret;
+    }
+
+    @Override
+    public void checkAndReleaseQueuedEntry(long id) {
+        LOG.debug("Checking if we can move QUWITHDEP Queue entry to QUEUED : " + id);
+        AnswerItem ansNbWaiting = testCaseExecutionQueueDepService.readNbWaitingByExeQueue(id);
+        int nbwaiting = (int) ansNbWaiting.getItem();
+        if (nbwaiting < 1) {
+            // Update ExeQueue status from QUWITHDEP to QUEUED
+            updateToQueuedFromQuWithDep(id, "All Dependencies RELEASED.");
+        }
     }
 
     @Override
@@ -182,6 +221,11 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
     @Override
     public Answer updateToQueued(long id, String comment) {
         return testCaseExecutionInQueueDAO.updateToQueued(id, comment);
+    }
+
+    @Override
+    public Answer updateToQueuedFromQuWithDep(long id, String comment) {
+        return testCaseExecutionInQueueDAO.updateToQueuedFromQuWithDep(id, comment);
     }
 
     @Override
@@ -296,6 +340,7 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
         String controlMessage = "Queued with State : " + testCaseExecutionInQueue.getState().name() + " - " + testCaseExecutionInQueue.getComment();
         if (testCaseExecutionInQueue.getState().name().equals(TestCaseExecutionQueue.State.QUEUED.name())
                 || testCaseExecutionInQueue.getState().name().equals(TestCaseExecutionQueue.State.WAITING.name())
+                || testCaseExecutionInQueue.getState().name().equals(TestCaseExecutionQueue.State.QUWITHDEP.name())
                 || testCaseExecutionInQueue.getState().name().equals(TestCaseExecutionQueue.State.STARTING.name())) {
             controlStatus = TestCaseExecution.CONTROLSTATUS_QU;
         } else {

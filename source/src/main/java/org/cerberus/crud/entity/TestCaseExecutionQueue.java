@@ -71,6 +71,7 @@ public class TestCaseExecutionQueue {
     public static final int PRIORITY_DEFAULT = 1000;
 
     public enum State {
+        QUWITHDEP,
         QUEUED,
         WAITING,
         STARTING,

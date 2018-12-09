@@ -58,6 +58,7 @@ import org.cerberus.crud.service.IRobotExecutorService;
 import org.cerberus.crud.service.IRobotService;
 import org.cerberus.crud.service.ITagService;
 import org.cerberus.crud.service.ITestCaseCountryPropertiesService;
+import org.cerberus.crud.service.ITestCaseExecutionQueueDepService;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.crud.service.ITestCaseExecutionService;
 import org.cerberus.crud.service.ITestCaseExecutionSysVerService;
@@ -167,6 +168,8 @@ public class ExecutionRunService implements IExecutionRunService {
     private IRobotService robotService;
     @Autowired
     private IRobotExecutorService robotExecutorService;
+    @Autowired
+    private ITestCaseExecutionQueueDepService testCaseExecutionQueueDepService;
 
     @Override
     public TestCaseExecution executeTestCase(TestCaseExecution tCExecution) throws CerberusException {
@@ -970,7 +973,15 @@ public class ExecutionRunService implements IExecutionRunService {
                 LOG.error(e, e);
             }
 
-            //
+            
+            /**
+             * Dependency management, At the end of the execution, we
+             * RELEASE the corresponding dependencies and put corresponding
+             * Queue entries to QUEUED status.
+             */
+            testCaseExecutionQueueDepService.manageDependenciesEndOfExecution(tCExecution);
+            
+
             // After every execution finished we try to trigger more from the queue;-).
             executionThreadPoolService.executeNextInQueueAsynchroneously(false);
 

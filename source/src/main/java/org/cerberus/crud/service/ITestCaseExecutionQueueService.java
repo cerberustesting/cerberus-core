@@ -194,10 +194,17 @@ public interface ITestCaseExecutionQueueService {
 
     /**
      * @param object the {@link AppService} to Create
+     * @param withDependency
      * @return {@link AnswerItem}
      */
-    AnswerItem<TestCaseExecutionQueue> create(TestCaseExecutionQueue object);
+    AnswerItem<TestCaseExecutionQueue> create(TestCaseExecutionQueue object, boolean withDependency);
 
+    /**
+     *
+     * @param id
+     */
+    void checkAndReleaseQueuedEntry(long id);    
+    
     /**
      * @param object the {@link AppService} to Update
      * @return {@link AnswerItem}
@@ -220,6 +227,14 @@ public interface ITestCaseExecutionQueueService {
      */
     Answer updateToQueued(long id, String comment);
 
+    /**
+     *
+     * @param id
+     * @param comment
+     * @return
+     */
+    Answer updateToQueuedFromQuWithDep(long id, String comment);    
+    
     /**
      *
      * @param id

@@ -19,6 +19,7 @@
  */
 package org.cerberus.engine.execution.impl;
 
+import java.util.logging.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.TestCaseExecution;
@@ -27,6 +28,7 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.engine.execution.IExecutionRunService;
 import org.cerberus.engine.execution.IExecutionStartService;
 import org.cerberus.engine.execution.IRunTestCaseService;
+import org.cerberus.engine.queuemanagement.IExecutionThreadPoolService;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,14 +42,16 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class RunTestCaseService implements IRunTestCaseService {
-    
+
     @Autowired
     private IExecutionStartService executionStartService;
     @Autowired
     private IExecutionRunService executionRunService;
-    
+    @Autowired
+    private IExecutionThreadPoolService executionThreadPoolService;
+
     private static final Logger LOG = LogManager.getLogger(RunTestCaseService.class);
-    
+
     @Override
     public TestCaseExecution runTestCase(TestCaseExecution tCExecution) {
 
@@ -59,10 +63,16 @@ public class RunTestCaseService implements IRunTestCaseService {
             LOG.debug("Start Execution " + "__ID=" + tCExecution.getId());
             tCExecution = executionStartService.startExecution(tCExecution);
             LOG.info("Execution Started : UUID=" + tCExecution.getExecutionUUID() + "__ID=" + tCExecution.getId());
-            
+
         } catch (CerberusException ex) {
             tCExecution.setResultMessage(ex.getMessageError());
             LOG.info("Execution not Launched : UUID=" + tCExecution.getExecutionUUID() + "__causedBy=" + ex.getMessageError().getDescription());
+            try {
+                // After every execution finished we try to trigger more from the queue;-).
+                executionThreadPoolService.executeNextInQueueAsynchroneously(false);
+            } catch (CerberusException ex1) {
+                LOG.error(ex1.toString(), ex1);
+            }
             return tCExecution;
         }
 
@@ -79,9 +89,21 @@ public class RunTestCaseService implements IRunTestCaseService {
             } catch (CerberusException ex) {
                 tCExecution.setResultMessage(ex.getMessageError());
                 LOG.warn("Execution stopped due to exception. " + ex.getMessageError().getDescription(), ex);
+                try {
+                    // After every execution finished we try to trigger more from the queue;-).
+                    executionThreadPoolService.executeNextInQueueAsynchroneously(false);
+                } catch (CerberusException ex1) {
+                    LOG.error(ex1.toString(), ex1);
+                }
             } catch (Exception ex) {
-                LOG.warn("Execution stopped due to exception : UUID=" + tCExecution.getExecutionUUID() + "__causedBy=" + ex.toString(), ex);
                 tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.GENERIC_ERROR));
+                LOG.warn("Execution stopped due to exception : UUID=" + tCExecution.getExecutionUUID() + "__causedBy=" + ex.toString(), ex);
+                try {
+                    // After every execution finished we try to trigger more from the queue;-).
+                    executionThreadPoolService.executeNextInQueueAsynchroneously(false);
+                } catch (CerberusException ex1) {
+                    LOG.error(ex1.toString(), ex1);
+                }
             }
         }
         /**

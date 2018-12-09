@@ -1893,6 +1893,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_testcaseexecutionqueue','browser_col','','fr','Navigateur','',NULL)");
         b.append(",('page_testcaseexecutionqueue','button_filterExecuting','','en','Filter Executing',NULL,NULL)");
         b.append(",('page_testcaseexecutionqueue','button_filterExecuting','','fr','Filtrer En Execution',NULL,NULL)");
+        b.append(",('page_testcaseexecutionqueue','button_filterPendingWithDep','','en','Filter Pending (With Dep)',NULL,NULL)");
+        b.append(",('page_testcaseexecutionqueue','button_filterPendingWithDep','','fr','Filtrer En Attente (Avec Dep)',NULL,NULL)");
         b.append(",('page_testcaseexecutionqueue','button_filterPending','','en','Filter Pending',NULL,NULL)");
         b.append(",('page_testcaseexecutionqueue','button_filterPending','','fr','Filtrer En Attente',NULL,NULL)");
         b.append(",('page_testcaseexecutionqueue','comment_col','','en','Comment','',NULL)");

@@ -339,6 +339,7 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
          */
         List<String> stateList = new ArrayList<>();
         // We select here the list of state where no execution exist yet (or will never exist).
+        stateList.add(TestCaseExecutionQueue.State.QUWITHDEP.name());
         stateList.add(TestCaseExecutionQueue.State.QUEUED.name());
         stateList.add(TestCaseExecutionQueue.State.WAITING.name());
         stateList.add(TestCaseExecutionQueue.State.STARTING.name());
