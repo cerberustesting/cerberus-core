@@ -1,11 +1,11 @@
 1. Queue Dependency improvements. 
+1. Move to Tomcat
+1. Manage better Authentification
+1. Improve system management
 1. Add har support
 1. Improve email notification layout
 1. Improve requirements
-1. Improve system management
-1. Move to Tomcat
 1. Move to latest MariaDb
-1. Manage better Authentification
 1. pdf connector
 
 DONE
@@ -26,49 +26,14 @@ Dependency on :
 * Allow single campaign for batch executions.
 * Allow multi application tests scenarii.
  
-# 2. Add har support
+# 2. Move to Tomcat
 
 ## Description
 
 ## Benefit
 * 
 
-# 3. Improve email notification layout
-
-## Description
-
-## Benefit
-* 
-
-# 4. Improve requirements
-
-## Description
-
-## Benefit
-* 
-
-# 5. Improve system management
-
-## Description
-
-## Benefit
-* 
-
-# 6. Move to Tomcat
-
-## Description
-
-## Benefit
-* 
-
-# 7. Move to latest MariaDb
-
-## Description
-
-## Benefit
-* 
-
-# 8. Manage better Authentification
+# 3. Manage better Authentification
 
 ## Description
 
@@ -77,6 +42,41 @@ Issue : #1180
  
 ## Benefit
 * allow centralised authenticitation and better integration (google auth or Office 365 authen)
+
+# 4. Improve system management
+
+## Description
+
+## Benefit
+* 
+
+# 5. Add har support
+
+## Description
+
+## Benefit
+* 
+
+# 6. Improve email notification layout
+
+## Description
+
+## Benefit
+* 
+
+# 7. Improve requirements
+
+## Description
+
+## Benefit
+* 
+
+# 8. Move to latest MariaDb
+
+## Description
+
+## Benefit
+* 
 
 # 9. pdf connector
 
