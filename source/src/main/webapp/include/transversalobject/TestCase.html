@@ -37,6 +37,7 @@
                             <li><a data-toggle="tab" href="#tabTCLabel" id="editTCLabel" name="tabLabel">Label</a></li>
                             <li><a data-toggle="tab" href="#tabTCBugReport" id="editTCBugReport" name="tabBugReport">Bug Report</a></li>
                             <li><a data-toggle="tab" href="#tabTCTracability" id="editTCtracability" name="tabTracability">Tracability</a></li>
+                            <li><a data-toggle="tab" href="#tabTCDependency" id="editTCDependency" name="tabDependency">Dependency</a></li>
                         </ul>
                         <div class="tab-content">
                             <div class="center marginTop25 tab-pane fade in active" id="tabTCDefinition">
@@ -266,6 +267,58 @@
                                         </div>
                                     </div>  
                                 </div>   
+                            </div>
+                            <div class="center tab-pane fade marginTop25" id="tabTCDependency">
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <div class="row">
+                                            <div class="form-group form-group-sm col-sm-3">
+                                                <label for="selectTest" name="selectTestField">Select a Test</label>
+
+                                                <select id="selectTest" tabindex="-1" class="form-control input-sm" aria-hidden="true">
+                                                </select>
+                                            </div>
+
+
+                                            <div class="form-group form-group-sm col-sm-6">
+                                                <label for="selectTestCase" name="selectTestCaseField">Test Cases</label>
+                                                <select class="form-control input-sm" id="selectTestCase" name="selectTestCase">
+                                                </select>
+                                            </div>
+
+                                            <div class="form-group form-group-sm col-sm-3">
+                                                <button type="button" id="addTestCaseDependencyButton" class="btn btn-primary" name="buttonAddDependency" style="margin-top: 19px;">Add test case</button>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="form-group col-sm-12">
+                                                <label name="lbl_testcasesDependencyList">This test case must be execute after</label>
+                                                <div>
+                                                    <div class="dataTables_scroll">
+                                                        <div class="dataTables_scrollHead ui-state-default" style="overflow: hidden; border: 0px; width: 100%;">
+                                                            <div class="dataTables_scrollHeadInner" style="box-sizing: content-box; width: 1138px; padding-right: 0px;">
+                                                                <table class="table table-bordered table-hover display dataTable no-footer" name="parameterTestcampaignsTable" role="grid" style="margin-left: 0px; width: 1138px;">
+                                                                    <thead>
+                                                                    <tr role="row">
+                                                                        <th data-column-index="1" class="ui-state-default sorting" tabindex="0" aria-controls="parameterTestcampaignsTable" rowspan="1" colspan="1" style="width: 100px;" aria-label="Parameter: activate to sort column ascending">Actions</th>
+                                                                        <th data-column-index="0" class="ui-state-default sorting_asc" rowspan="1" colspan="1" style="width: 340px; cursor: pointer;" aria-label="Actions">Test Cases</th>
+                                                                    </tr>
+                                                                    </thead>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                        <div class="dataTables_scrollBody" style="position: relative; overflow: auto; width: 100%;">
+                                                            <table id="depenencyTable" class="table table-bordered table-hover display dataTable no-footer" name="parameterTestcampaignsTable" role="grid" aria-describedby="parameterTestcampaignsTable_info">
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

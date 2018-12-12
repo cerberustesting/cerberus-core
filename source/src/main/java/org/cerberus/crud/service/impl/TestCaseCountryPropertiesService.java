@@ -365,7 +365,7 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
 
     @Override
     public Answer duplicateList(List<TestCaseCountryProperties> objectList, String targetTest, String targetTestCase) {
-        Answer ans = new Answer(null);
+        Answer ans;
         List<TestCaseCountryProperties> listToCreate = new ArrayList<>();
         for (TestCaseCountryProperties objectToDuplicate : objectList) {
             objectToDuplicate.setTest(targetTest);

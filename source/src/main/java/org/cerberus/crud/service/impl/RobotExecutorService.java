@@ -68,14 +68,9 @@ public class RobotExecutorService implements IRobotExecutorService {
 
     @Override
     public RobotExecutor readBestByKey(String robot) throws CerberusException {
-        try {
-            List<RobotExecutor> lst = robotExecutorDAO.readBestByKey(robot);
+        List<RobotExecutor> lst = robotExecutorDAO.readBestByKey(robot);
 
-            if(lst.size() > 0) return lst.get(0);
-
-        } catch (SQLException exception) {
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
-        }
+        if(lst.size() > 0) return lst.get(0);
 
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.GUI_NO_ROBOT_EXECUTOR_AVAILABLE)
                 .resolveDescription("ROBOT", robot));

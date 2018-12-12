@@ -38,7 +38,7 @@ public class TestCaseDep {
     private String active;
     private String description;
     private String usrCreated;
-    private String dateCreated;
+    private Timestamp dateCreated;
     private String usrModif;
     private Timestamp dateModif;
 
@@ -130,11 +130,11 @@ public class TestCaseDep {
         this.usrCreated = usrCreated;
     }
 
-    public String getDateCreated() {
+    public Timestamp getDateCreated() {
         return dateCreated;
     }
 
-    public void setDateCreated(String dateCreated) {
+    public void setDateCreated(Timestamp dateCreated) {
         this.dateCreated = dateCreated;
     }
 
@@ -154,4 +154,11 @@ public class TestCaseDep {
         this.dateModif = dateModif;
     }
 
+
+    public boolean hasSameKey(TestCaseDep tcd) {
+        return this.getTest().equals(tcd.getTest()) &&
+                this.getTestCase().equals(tcd.getTestCase()) &&
+                this.getDepTest().equals(tcd.getDepTest()) &&
+                this.getDepTestCase().equals(tcd.getDepTestCase());
+    }
 }

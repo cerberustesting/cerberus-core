@@ -78,11 +78,7 @@ public class TestCaseExecutionFileService implements ITestCaseExecutionFileServi
 
     @Override
     public List<TestCaseExecutionFile> getListByFileDesc(long exeId, String fileDesc) throws CerberusException{
-        try {
-            return testCaseExecutionFileDAO.getListByFileDesc(exeId, fileDesc);
-        } catch (SQLException sqlException) {
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.GENERIC_ERROR), sqlException);
-        }
+        return testCaseExecutionFileDAO.getListByFileDesc(exeId, fileDesc);
     }
 
     @Override

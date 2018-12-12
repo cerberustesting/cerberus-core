@@ -79,65 +79,16 @@ $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.j
         displayPageLabel(doc);
         $("#addStepModal [name='buttonAdd']").html(doc.getDocLabel("page_global", "btn_add"));
 
-        $.ajax({
-            url: "ReadTest",
-            async: true,
-            success: function (data) {
-                data.contentTable.sort(function (a, b) {
-                    var aa = a.test.toLowerCase();
-                    var bb = b.test.toLowerCase();
-                    if (aa > bb) {
-                        return 1;
-                    } else if (aa < bb) {
-                        return -1;
-                    }
-                    return 0;
-                });
-                $(".testTestCase #test").prepend("<option value=''>" + doc.getDocLabel("page_testcasescript", "select_test") + "</option>");
-                for (var i = 0; i < data.contentTable.length; i++) {
-                    $(".testTestCase #test").append("<option value='" + data.contentTable[i].test + "'>" + data.contentTable[i].test + " - " + data.contentTable[i].description + "</option>");
-                }
 
-                if (test !== null) {
-                    $(".testTestCase #test option[value='" + test + "']").prop('selected', true);
-                }
-                $(".testTestCase #test").bind("change", function (event) {
-                    window.location.href = "./TestCaseScript.jsp?test=" + $(this).val();
-                });
-                $(".testTestCase #test").select2({width: "100%"}).next().css("margin-bottom", "7px");
-            }
+        fillTestAndTestCaseSelect(".testTestCase #test", "#testCaseSelect", test, testcase)
+
+        $("#testCaseSelect").bind("change", function (event) {
+            window.location.href = "./TestCaseScript.jsp?test=" + test + "&testcase=" + $(this).val();
+        });
+        $(".testTestCase #test").bind("change", function (event) {
+            window.location.href = "./TestCaseScript.jsp?test=" + $(this).val();
         });
 
-        if (test !== null) {
-            $.ajax({
-                url: "ReadTestCase?test=" + test,
-                async: true,
-                success: function (data) {
-                    data.contentTable.sort(function (a, b) {
-                        var aa = a.testCase.toLowerCase();
-                        var bb = b.testCase.toLowerCase();
-                        if (aa > bb) {
-                            return 1;
-                        } else if (aa < bb) {
-                            return -1;
-                        }
-                        return 0;
-                    });
-                    $("#testCaseSelect").prepend("<option value=''>" + doc.getDocLabel("page_testcasescript", "select_testcase") + "</option>");
-                    for (var i = 0; i < data.contentTable.length; i++) {
-                        $("#testCaseSelect").append("<option value='" + data.contentTable[i].testCase + "'>" + data.contentTable[i].testCase + " - " + data.contentTable[i].description + "</option>")
-                    }
-                    if (testcase != null) {
-                        $("#testCaseSelect option[value='" + testcase + "']").prop('selected', true);
-                        window.document.title = "TestCase - " + testcase;
-                    }
-                    $("#testCaseSelect").bind("change", function (event) {
-                        window.location.href = "./TestCaseScript.jsp?test=" + test + "&testcase=" + $(this).val();
-                    });
-                    $("#testCaseSelect").select2({width: '100%'});
-                }
-            });
-        }
         if (test !== null && testcase !== null) {
             // Edit TestCase open the TestCase Modal
             $("#editTcInfo").click(function () {
@@ -401,6 +352,8 @@ $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.j
         openNavbarMenu("navMenuTest");
     });
 });
+
+
 
 function displayPageLabel(doc) {
     $("h1.page-title-line").html(doc.getDocLabel("page_testcasescript", "testcasescript_title"));

@@ -38,6 +38,7 @@ import org.cerberus.crud.entity.TestCaseExecutionFile;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.crud.factory.IFactoryTestCaseExecutionFile;
 import org.cerberus.crud.factory.impl.FactoryTestCaseExecutionFile;
+import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.SqlUtil;
 import org.cerberus.util.StringUtil;
@@ -165,7 +166,7 @@ public class TestCaseExecutionFileDAO implements ITestCaseExecutionFileDAO {
     }
 
     @Override
-    public List<TestCaseExecutionFile> getListByFileDesc(long exeId, String fileDesc) throws SQLException {
+    public List<TestCaseExecutionFile> getListByFileDesc(long exeId, String fileDesc) throws CerberusException {
         String query = "SELECT * FROM `testcaseexecutionfile` exf WHERE `exeid` = ? and `filedesc` = ? ";
 
 
