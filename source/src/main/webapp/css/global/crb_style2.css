@@ -997,3 +997,9 @@ table.dataTable thead th {
 .statusQE {
     background-color: #5C025C; 
 }
+
+/* HIDDEN FEATURES */
+
+.hiddenFeature-secondary-property{
+	display:none !important;
+}
