@@ -348,6 +348,12 @@ function feedAppServiceModal(serviceName, modalId, mode) {
 
                     // Force a change event on method field.
                     refreshDisplayOnTypeChange(service.type);
+                    
+                    //initialize the select2
+                    $('#editSoapLibraryModal #application').select2(getComboConfigApplicationList());
+                    // set it with the service value
+                    $("#editSoapLibraryModal #application").val(service.application).trigger('change');
+                    
 
                     formEdit.modal('show');
                 } else {
@@ -779,4 +785,38 @@ function updateDropzone(messageToDisplay, idModal) {
         imagePasteFromClipboard = undefined;
     }
 }
+
+function getComboConfigApplicationList() {
+	var appList =
+    {
+        ajax: {
+            url: "ReadApplication",
+        	dataType: 'json',
+            delay: 0,
+            data: function (params) {
+                params.page = params.page || 1;
+                return {
+                    sSearch: params.term, // search term
+                    iDisplayStart: (params.page * 30) - 30
+                };
+            },
+            processResults: function (data, params) {
+                params.page = params.page || 1;
+                return {
+                    results: $.map(data.contentTable, function (obj) {
+                    	return {id: obj.service, text: obj.service};
+                    }),
+                    pagination: {
+                        more: (params.page * 30) < data.iTotalRecords
+                    }
+                };
+            },
+            cache: true,
+            allowClear: true
+        },
+        width: "100%",
+        minimumInputLength: 0
+    };
+}
+
 
