@@ -69,6 +69,7 @@ public class FindInvariantByID extends HttpServlet {
 
         // Calling Servlet Transversal Util.
         ServletUtil.servletStart(request);
+        ServletUtil.fixHeaders(response);
 
         IInvariantService invariantService = appContext.getBean(InvariantService.class);
 
