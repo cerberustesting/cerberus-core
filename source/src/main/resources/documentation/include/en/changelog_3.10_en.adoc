@@ -12,6 +12,7 @@
 * GUI Refactor on testcase header modal
 * New Automatic job in order to automaticly cancel old queue entries that are still in 'Executing' state. you can tune its behaviour thanks to parameters : cerberus_automaticqueuecancellationjob_* By default, job will execute every 60 minutes and will caancel queue entries longuer than 3600 seconds (1 hour).
 * New Added automatic job in order to process queue entries. Job will execute every 30 minutes.
+* Properties can now be sorted with rank. rank 1 properties are primary properties that will be aloways displayed. rank 2 are secondary properties that will be hidden on execution report. That allow to hide complex properties from users in order to make execution report even easier to understand.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
