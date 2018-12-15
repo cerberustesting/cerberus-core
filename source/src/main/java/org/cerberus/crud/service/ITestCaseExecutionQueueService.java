@@ -77,24 +77,30 @@ public interface ITestCaseExecutionQueueService {
     AnswerList readByVarious1(String tag, List<String> stateList, boolean withDependencies) throws CerberusException;
 
     /**
+     * All entries that are taken by the queue engine for processing.
      *
      * @return @throws CerberusException
      */
     AnswerList<TestCaseExecutionQueueToTreat> readQueueToTreat() throws CerberusException;
 
     /**
+     * All entries that are considered as running and consuming ressource for
+     * constrain management.
      *
      * @return @throws CerberusException
      */
     AnswerList<TestCaseExecutionQueueToTreat> readQueueRunning() throws CerberusException;
 
     /**
+     * Entries that are either executing or still to execute from the queue.
      *
      * @return @throws CerberusException
      */
     AnswerList<TestCaseExecutionQueueToTreat> readQueueToTreatOrRunning() throws CerberusException;
 
     /**
+     * Tag is considered as still running until there still entries on those
+     * status.
      *
      * @param tag
      * @return
@@ -193,18 +199,19 @@ public interface ITestCaseExecutionQueueService {
             String comment, String bugid, String ticket);
 
     /**
-     * @param object the {@link AppService} to Create
-     * @param withDependency
+     * @param object the {@link queue entry} to Create
+     * @param exeQueue original queue entry id from which the duplication is done.
      * @return {@link AnswerItem}
      */
-    AnswerItem<TestCaseExecutionQueue> create(TestCaseExecutionQueue object, boolean withDependency);
+    AnswerItem<TestCaseExecutionQueue> create(TestCaseExecutionQueue object, long exeQueue);
 
     /**
      *
      * @param id
+     * @param tag
      */
-    void checkAndReleaseQueuedEntry(long id);    
-    
+    void checkAndReleaseQueuedEntry(long id, String tag);
+
     /**
      * @param object the {@link AppService} to Update
      * @return {@link AnswerItem}
@@ -233,8 +240,8 @@ public interface ITestCaseExecutionQueueService {
      * @param comment
      * @return
      */
-    Answer updateToQueuedFromQuWithDep(long id, String comment);    
-    
+    Answer updateToQueuedFromQuWithDep(long id, String comment);
+
     /**
      *
      * @param id
@@ -267,6 +274,15 @@ public interface ITestCaseExecutionQueueService {
      * @throws CerberusException
      */
     void updateToError(long id, String comment) throws CerberusException;
+
+    /**
+     *
+     * @param id
+     * @param comment
+     * @param exeId
+     * @throws CerberusException
+     */
+    void updateToErrorFromQuWithDep(long id, String comment) throws CerberusException;
 
     /**
      *
@@ -317,7 +333,7 @@ public interface ITestCaseExecutionQueueService {
      *
      */
     void cancelRunningOldQueueEntries();
-    
+
     /**
      *
      * @param answerItem

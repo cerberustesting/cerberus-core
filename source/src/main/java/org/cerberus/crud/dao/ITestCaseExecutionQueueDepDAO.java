@@ -59,6 +59,13 @@ public interface ITestCaseExecutionQueueDepDAO {
 
     /**
      *
+     * @param exeQueueId
+     * @return
+     */
+    AnswerItem<Integer> readNbReleasedWithNOKByExeQueue(long exeQueueId);
+
+    /**
+     *
      * @param exeId
      * @return
      */
@@ -87,6 +94,14 @@ public interface ITestCaseExecutionQueueDepDAO {
      * @return
      */
     AnswerItem<Integer> insertFromTCDep(long queueId, String env, String country, String tag, String test, String testcase);
+
+    /**
+     *
+     * @param queueId
+     * @param fromQueueId
+     * @return
+     */
+    AnswerItem<Integer> insertFromQueueExeDep(long queueId, long fromQueueId);
 
     /**
      *

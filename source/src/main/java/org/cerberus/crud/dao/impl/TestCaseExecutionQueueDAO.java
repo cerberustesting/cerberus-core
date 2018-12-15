@@ -1911,6 +1911,37 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
     }
 
     @Override
+    public void updateToErrorFromQuWithDep(long id, String comment) throws CerberusException {
+        String query
+                = "UPDATE `" + TABLE + "` "
+                + "SET `" + COLUMN_STATE + "` = 'ERROR', `" + COLUMN_COMMENT + "` = ?, `" + COLUMN_REQUEST_DATE + "` = now(), `" + COLUMN_DATEMODIF + "` = now() "
+                + "WHERE `" + COLUMN_ID + "` = ? "
+                + "AND `" + COLUMN_STATE + "` = 'QUWITHDEP'";
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.id : " + id);
+        }
+
+        try (Connection connection = databaseSpring.connect();
+                PreparedStatement updateStateAndCommentStatement = connection.prepareStatement(query)) {
+
+            updateStateAndCommentStatement.setString(1, comment);
+            updateStateAndCommentStatement.setLong(2, id);
+
+            int updateResult = updateStateAndCommentStatement.executeUpdate();
+            if (updateResult <= 0) {
+                LOG.warn("Unable to move state to DONE for execution in queue " + id + " (update result: " + updateResult + ")");
+                throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+            }
+        } catch (SQLException e) {
+            LOG.warn("Unable to set move to DONE for execution in queue id " + id, e);
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+        }
+    }
+
+    @Override
     public void updateToDone(long id, String comment, long exeId) throws CerberusException {
         String query
                 = "UPDATE `" + TABLE + "` "

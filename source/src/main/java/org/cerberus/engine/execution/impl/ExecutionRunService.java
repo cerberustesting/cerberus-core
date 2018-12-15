@@ -929,7 +929,7 @@ public class ExecutionRunService implements IExecutionRunService {
              * Retry management, in case the result is not (OK or NE), we
              * execute the job again reducing the retry to 1.
              */
-            retriesService.manageRetries(tCExecution);
+            boolean isRetried = retriesService.manageRetries(tCExecution);
 
             /**
              * Updating queue to done status only for execution from queue
@@ -946,41 +946,16 @@ public class ExecutionRunService implements IExecutionRunService {
              * 1/ The update of the EndExeQueue of the tag <br>
              * 2/ We notify the Distribution List with execution report status
              */
-            try {
-                if (!StringUtil.isNullOrEmpty(tCExecution.getTag())) {
-                    Tag currentTag = tagService.convert(tagService.readByKey(tCExecution.getTag()));
-                    if ((currentTag != null)) {
-                        if (currentTag.getDateEndQueue().before(Timestamp.valueOf("1980-01-01 01:01:01.000000001"))) {
-                            AnswerList answerListQueue = new AnswerList<>();
-                            answerListQueue = executionQueueService.readQueueOpen(tCExecution.getTag());
-                            if (answerListQueue.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && (answerListQueue.getDataList().isEmpty())) {
-                                LOG.debug(logPrefix + "No More executions (in queue or running) on tag : " + tCExecution.getTag() + " - " + answerListQueue.getDataList().size() + " " + answerListQueue.getMessageCodeString() + " - ");
-                                tagService.updateEndOfQueueData(tCExecution.getTag());
-                                if (!StringUtil.isNullOrEmpty(currentTag.getCampaign())) {
-                                    // We get the campaig here and potencially send the notification.
-                                    notificationService.generateAndSendNotifyEndTagExecution(tCExecution.getTag(), currentTag.getCampaign());
-                                }
-                            } else {
-                                LOG.debug(logPrefix + "Still executions in queue on tag : " + tCExecution.getTag() + " - " + answerListQueue.getDataList().size() + " " + answerListQueue.getMessageCodeString());
-                            }
-                        } else {
-                            LOG.debug(logPrefix + "Tag is already flaged with recent timestamp. " + currentTag.getDateEndQueue());
-                        }
+            tagService.manageCampaignEndOfExecution(tCExecution.getTag());
 
-                    }
-                }
-            } catch (Exception e) {
-                LOG.error(e, e);
-            }
-
-            
             /**
-             * Dependency management, At the end of the execution, we
-             * RELEASE the corresponding dependencies and put corresponding
-             * Queue entries to QUEUED status.
+             * Dependency management, At the end of the execution, we RELEASE
+             * the corresponding dependencies and put corresponding Queue
+             * entries to QUEUED status.
              */
-            testCaseExecutionQueueDepService.manageDependenciesEndOfExecution(tCExecution);
-            
+            if (!isRetried) {
+                testCaseExecutionQueueDepService.manageDependenciesEndOfExecution(tCExecution);
+            }
 
             // After every execution finished we try to trigger more from the queue;-).
             executionThreadPoolService.executeNextInQueueAsynchroneously(false);

@@ -30,6 +30,7 @@ import org.cerberus.crud.dao.ITagDAO;
 import org.cerberus.crud.entity.Tag;
 import org.cerberus.crud.factory.IFactoryTag;
 import org.cerberus.crud.service.ITagService;
+import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.crud.service.ITestCaseExecutionService;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.enums.MessageEventEnum;
@@ -62,6 +63,8 @@ public class TagService implements ITagService {
     private ITestCaseExecutionService testCaseExecutionService;
     @Autowired
     private ICIService ciService;
+    @Autowired
+    private ITestCaseExecutionQueueService executionQueueService;
 
     private static final Logger LOG = LogManager.getLogger("TagService");
 
@@ -219,6 +222,38 @@ public class TagService implements ITagService {
     @Override
     public AnswerList<String> readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
         return tagDAO.readDistinctValuesByCriteria(system, searchParameter, individualSearch, columnName);
+    }
+
+    @Override
+    public void manageCampaignEndOfExecution(String tag) throws CerberusException {
+
+        try {
+            if (!StringUtil.isNullOrEmpty(tag)) {
+                Tag currentTag = this.convert(this.readByKey(tag));
+                if ((currentTag != null)) {
+                    if (currentTag.getDateEndQueue().before(Timestamp.valueOf("1980-01-01 01:01:01.000000001"))) {
+                        AnswerList answerListQueue = new AnswerList<>();
+                        answerListQueue = executionQueueService.readQueueOpen(tag);
+                        if (answerListQueue.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && (answerListQueue.getDataList().isEmpty())) {
+                            LOG.debug("No More executions (in queue or running) on tag : " + tag + " - " + answerListQueue.getDataList().size() + " " + answerListQueue.getMessageCodeString() + " - ");
+                            this.updateEndOfQueueData(tag);
+                            if (!StringUtil.isNullOrEmpty(currentTag.getCampaign())) {
+                                // We get the campaig here and potencially send the notification.
+                                notificationService.generateAndSendNotifyEndTagExecution(tag, currentTag.getCampaign());
+                            }
+                        } else {
+                            LOG.debug("Still executions in queue on tag : " + tag + " - " + answerListQueue.getDataList().size() + " " + answerListQueue.getMessageCodeString());
+                        }
+                    } else {
+                        LOG.debug("Tag is already flaged with recent timestamp. " + currentTag.getDateEndQueue());
+                    }
+
+                }
+            }
+        } catch (Exception e) {
+            LOG.error(e, e);
+        }
+
     }
 
 }

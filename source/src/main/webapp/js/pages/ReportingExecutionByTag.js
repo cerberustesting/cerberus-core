@@ -1128,6 +1128,7 @@ function selectAllQueue(checkboxid, manualExecution, status) {
             $("[data-line='selectA-" + status + "']").prop("checked", true);
             $("[data-line='selectN-" + status + "']").prop("checked", true);
             $("[data-line='selectY-" + status + "']").prop("checked", true);
+            $("[data-line='select-" + status + "']").prop("checked", true);
         }
     } else {
         if (!isEmpty(manualExecution)) {
@@ -1136,6 +1137,7 @@ function selectAllQueue(checkboxid, manualExecution, status) {
             $("[data-line='selectA-" + status + "']").prop("checked", false);
             $("[data-line='selectN-" + status + "']").prop("checked", false);
             $("[data-line='selectY-" + status + "']").prop("checked", false);
+            $("[data-line='select-" + status + "']").prop("checked", false);
         }
     }
     refreshNbChecked();

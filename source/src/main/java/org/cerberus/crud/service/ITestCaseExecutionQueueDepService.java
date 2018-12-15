@@ -42,6 +42,16 @@ public interface ITestCaseExecutionQueueDepService {
      * @return
      */
     AnswerItem<Integer> insertFromTCDep(long queueId, String env, String country, String tag, String test, String testcase);
+    
+    /**
+     * Insert execution dependencies attached to queueid, env, country and tag
+     * from test/testcase
+     *
+     * @param queueId
+     * @param fromQueueId
+     * @return
+     */
+    AnswerItem<Integer> insertFromQueueExeDep(long queueId, long fromQueueId);
 
     /**
      *
@@ -65,18 +75,25 @@ public interface ITestCaseExecutionQueueDepService {
      * @return
      */
     AnswerList<Long> readExeQueueIdByExeId(long exeId);
-    
+
     /**
      *
      * @param exeQueueId
      * @return
      */
     AnswerItem<Integer> readNbWaitingByExeQueue(long exeQueueId);
-    
+
     /**
-     * 
+     *
+     * @param exeQueueId
+     * @return
+     */
+    AnswerItem<Integer> readNbReleasedWithNOKByExeQueue(long exeQueueId);
+
+    /**
+     *
      * That method manage the dependency after the end of an execution.
-     * 
+     *
      * @param tCExecution
      */
     void manageDependenciesEndOfExecution(TestCaseExecution tCExecution);

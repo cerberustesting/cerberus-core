@@ -115,5 +115,5 @@ public class CampaignService implements ICampaignService {
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
-
+    
 }

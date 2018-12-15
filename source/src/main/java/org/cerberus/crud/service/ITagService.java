@@ -164,4 +164,18 @@ public interface ITagService {
      * @return
      */
     AnswerList<String> readDistinctValuesByCriteria(String campaign, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+
+    /**
+     * After every execution finished, <br>
+     * if the execution has a tag that has a campaign associated  <br>
+     * and no more executions are in the queue, <br>
+     * we trigger : <br>
+     * 1/ The update of the EndExeQueue of the tag <br>
+     * 2/ We notify the Distribution List with execution report status
+     *
+     * @param tag
+     * @throws org.cerberus.exception.CerberusException
+     */
+    void manageCampaignEndOfExecution(String tag) throws CerberusException;
+
 }

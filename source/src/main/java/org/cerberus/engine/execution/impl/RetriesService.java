@@ -45,7 +45,7 @@ public class RetriesService implements IRetriesService {
      *
      */
     @Override
-    public void manageRetries(TestCaseExecution tCExecution) {
+    public boolean manageRetries(TestCaseExecution tCExecution) {
         if (tCExecution.getNumberOfRetries() > 0
                 && !tCExecution.getResultMessage().getCodeString().equals("OK")
                 && !tCExecution.getResultMessage().getCodeString().equals("NE")) {
@@ -62,11 +62,12 @@ public class RetriesService implements IRetriesService {
                 // Initial Execution does not come from the queue so we pick the value created at the beginning of the execution.
                 newExeQueue = tCExecution.getTestCaseExecutionQueue();
             }
-            manageRetries(newExeQueue);
+            return manageRetries(newExeQueue);
         }
+        return false;
     }
 
-    private void manageRetries(final TestCaseExecutionQueue tCExecutionQueue) {
+    private boolean manageRetries(final TestCaseExecutionQueue tCExecutionQueue) {
         // copy ExecutionQueue
         TestCaseExecutionQueue newExeQueue = tCExecutionQueue;
 
@@ -74,18 +75,20 @@ public class RetriesService implements IRetriesService {
         int newRetry = newExeQueue.getRetries() - 1;
         if (newRetry < 0) {
             LOG.debug("Execution not retried because no more retry.");
-            return; // no automatic retry if newRetry <=0
+            return false; // no automatic retry if newRetry <=0
         }
         if (TestCaseExecutionQueue.State.CANCELLED.toString().equals(newExeQueue.getState().toString())) {
             LOG.debug("Execution not retried because Current Queue Entry is CANCELLED.");
-            return; // no automatic retry if source queue has been cancelled. #1752
+            return false; // no automatic retry if source queue has been cancelled. #1752
         }
+        long exeQueue = tCExecutionQueue.getId();
         newExeQueue.setId(0);
         newExeQueue.setDebugFlag("N");
         newExeQueue.setComment("Added from Retry. Still " + newRetry + " attempt(s) to go.");
         newExeQueue.setState(TestCaseExecutionQueue.State.QUEUED);
         newExeQueue.setRetries(newRetry);
         // Insert execution to the Queue.
-        executionQueueService.create(newExeQueue, false);
+        executionQueueService.create(newExeQueue, exeQueue);
+        return true;
     }
 }

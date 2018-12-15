@@ -225,6 +225,7 @@ public interface ITestCaseExecutionQueueDAO {
     /**
      *
      * @param id
+     * @param selectedRobot
      * @throws CerberusException
      */
     void updateToStarting(long id, String selectedRobot) throws CerberusException;
@@ -245,6 +246,14 @@ public interface ITestCaseExecutionQueueDAO {
      * @throws CerberusException
      */
     void updateToError(long id, String comment) throws CerberusException;
+
+    /**
+     *
+     * @param id
+     * @param comment
+     * @throws CerberusException
+     */
+    void updateToErrorFromQuWithDep(long id, String comment) throws CerberusException;
 
     /**
      *

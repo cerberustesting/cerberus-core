@@ -189,6 +189,50 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
     }
 
     @Override
+    public AnswerItem<Integer> readNbReleasedWithNOKByExeQueue(long exeQueueId) {
+        AnswerItem<Integer> ans = new AnswerItem<>();
+        MessageEvent msg = null;
+
+        final String query = "SELECT tce.controlstatus FROM testcaseexecutionqueuedep tcd JOIN testcaseexecution tce ON tcd.exeid=tce.id WHERE tcd.`ExeQueueID` = ? and tcd.Status = 'RELEASED' and tce.controlstatus != 'OK';";
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.exeQueueId : " + exeQueueId);
+        }
+
+        try (Connection connection = databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query)) {
+            // Prepare and execute query
+            preStat.setLong(1, exeQueueId);
+            ResultSet rs = preStat.executeQuery();
+            try {
+                List<Long> al = new ArrayList<>();
+                int nbRow = 0;
+                while (rs.next()) {
+                    nbRow++;
+                }
+                ans.setItem(nbRow);
+                // Set the final message
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME).resolveDescription("OPERATION", "SELECT");
+            } catch (Exception e) {
+                LOG.error("Unable to execute query : " + e.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION", e.toString());
+            } finally {
+                if (rs != null) {
+                    rs.close();
+                }
+            }
+        } catch (Exception e) {
+            LOG.error("Unable to read by exeId : " + e.getMessage());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION", e.toString());
+        } finally {
+            ans.setResultMessage(msg);
+        }
+        return ans;
+    }
+
+    @Override
     public AnswerList<Long> readExeQueueIdByExeId(long exeId) {
         AnswerList ans = new AnswerList<>();
         MessageEvent msg = null;
@@ -373,6 +417,45 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
             preStat.setString(i++, tag);
             preStat.setString(i++, test);
             preStat.setString(i++, testcase);
+            try {
+                int rs = preStat.executeUpdate();
+                ans.setItem(rs);
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME).resolveDescription("OPERATION", "READ_BY_KEY");
+                // Set the final message
+            } catch (Exception e) {
+                LOG.error("Unable to execute query : " + e.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION", e.toString());
+            }
+        } catch (Exception e) {
+            LOG.error("Unable to insert from table: " + e.getMessage());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION", e.toString());
+        } finally {
+            ans.setResultMessage(msg);
+        }
+        return ans;
+    }
+
+    @Override
+    public AnswerItem<Integer> insertFromQueueExeDep(long queueId, long fromQueueId) {
+        AnswerItem ans = new AnswerItem<>();
+        MessageEvent msg = null;
+        final String query = "INSERT INTO testcaseexecutionqueuedep(ExeQueueID, Environment, Country, Tag, Type, DepTest, DepTestCase, DepEvent, Status, ReleaseDate, Comment, ExeId) "
+                + "SELECT ?, Environment, Country, Tag, Type, DepTest, DepTestCase, DepEvent, Status, ReleaseDate, Comment, ExeId FROM testcaseexecutionqueuedep "
+                + "WHERE ExeQueueID=?;";
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.test : " + fromQueueId);
+        }
+
+        try (Connection connection = databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query)) {
+            TestCaseExecutionQueueDep ao = null;
+            // Prepare and execute query
+            int i = 1;
+            preStat.setLong(i++, queueId);
+            preStat.setLong(i++, fromQueueId);
             try {
                 int rs = preStat.executeUpdate();
                 ans.setItem(rs);
