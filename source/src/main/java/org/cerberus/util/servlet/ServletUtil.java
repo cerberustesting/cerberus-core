@@ -20,6 +20,8 @@
 package org.cerberus.util.servlet;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -74,4 +76,19 @@ public final class ServletUtil {
 
     }
 
+	/**
+	 * This method should be called in every servlet that you want to make public in
+	 * order to allow connectivity (CORS) with others application Warning: should be
+	 * used locally for security sake.
+	 *
+	 * @param response
+	 */
+	public static void fixHeaders(HttpServletResponse response) {
+		if (LOG.isDebugEnabled()) {
+			response.addHeader("Access-Control-Allow-Origin", "*");
+			response.addHeader("Access-Control-Allow-Methods", "GET, PUT, POST, OPTIONS, DELETE");
+			response.addHeader("Access-Control-Allow-Headers", "Content-Type");
+			response.addHeader("Access-Control-Max-Age", "86400");
+		}
+	}
 }
