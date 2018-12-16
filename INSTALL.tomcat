@@ -44,11 +44,31 @@ KeyCloak setup
 
 Install and start KeyCloak on port 8080.
 
-In bin folder, modify 'setenv.sh' file  with content :
+Configure a Realm 'Cerberus' with Client 'cerberus'
+
+On Cerberus source, uncomment following line from META-INF/context.xml
+
+<Valve className="org.keycloak.adapters.tomcat.KeycloakAuthenticatorValve"/>
+
+On Cerberus source, uncomment following line from WEB-INF/web.xml
+    <login-config>
+        <auth-method>BASIC</auth-method>
+        <realm-name>Enable this in order to activate KeyCloak</realm-name>
+    </login-config>
+and comment
+    <login-config>
+        <auth-method>FORM</auth-method>
+        <form-login-config>
+            <form-login-page>/Login.jsp</form-login-page>
+            <form-error-page>/Login.jsp?error=1</form-error-page>
+        </form-login-config>
+    </login-config>
+
+On Tomcat, in bin folder, modify 'setenv.sh' file  with content :
 
 CATALINA_OPTS="-Dorg.cerberus.environment=prd -Dorg.cerberus.authentification=keycloak -Xmx1024m"
 
-Change port in server.xml to 8180 :
+On Tomcat, in server.xml Change port to 8180 :
 
     <Connector port="8180" protocol="HTTP/1.1"
                connectionTimeout="20000"
