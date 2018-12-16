@@ -1,0 +1,56 @@
+In lib folder, Copy 'mariadb-java-client-2.1.2.jar' file.
+
+In bin folder, create 'setenv.sh' file  with content :
+
+CATALINA_OPTS="-Dorg.cerberus.environment=prd -Dorg.cerberus.authentification=none -Xmx1024m"
+
+In conf folder, in 'server.xml' add the following sections :
+
+    <Resource   name="jdbc/cerberusprd"
+                global="jdbc/cerberusprd"
+                auth="Container"
+                type="javax.sql.DataSource"
+                factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"
+                maxTotal="100"
+                maxIdle="30"
+                maxWaitMillis="10000"
+                username="cerberus"
+                password="toto"
+                driverClassName="org.mariadb.jdbc.Driver"
+                url="jdbc:mariadb://localhost:3306/cerberus"/>
+
+        <Realm className="org.apache.catalina.realm.JDBCRealm"
+            driverName="org.mariadb.jdbc.Driver"
+            connectionURL="jdbc:mariadb://localhost:3306/cerberus?user=cerberus&amp;password=toto"
+            userTable="user"
+            userNameCol="Login"
+            userCredCol="Password" 
+            userRoleTable="usergroup" 
+            roleNameCol="GroupName">
+            <CredentialHandler className="org.apache.catalina.realm.MessageDigestCredentialHandler" algorithm="SHA-1" />
+        </Realm>
+
+
+In conf folder, in 'context.xml' add the following sections :
+
+    <ResourceLink name="jdbc/cerberusprd"
+                global="jdbc/cerberusprd"
+                type="javax.sql.DataSource"/>
+
+
+----------------
+
+KeyCloak setup
+
+Install and start KeyCloak on port 8080.
+
+In bin folder, modify 'setenv.sh' file  with content :
+
+CATALINA_OPTS="-Dorg.cerberus.environment=prd -Dorg.cerberus.authentification=keycloak -Xmx1024m"
+
+Change port in server.xml to 8180 :
+
+    <Connector port="8180" protocol="HTTP/1.1"
+               connectionTimeout="20000"
+               redirectPort="8443" />
+
