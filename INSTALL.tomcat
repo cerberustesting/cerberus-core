@@ -44,7 +44,7 @@ KeyCloak setup
 
 Install and start KeyCloak on port 8080.
 
-Configure a Realm 'Cerberus' with Client 'cerberus'
+Configure a Realm 'Cerberus' with Client 'cerberus' with 'http://localhost:8180/cerberus/*' as Valid redirect URL.
 
 On Cerberus source, uncomment following line from META-INF/context.xml
 
@@ -68,9 +68,10 @@ On Tomcat, in bin folder, modify 'setenv.sh' file  with content :
 
 CATALINA_OPTS="-Dorg.cerberus.environment=prd -Dorg.cerberus.authentification=keycloak -Xmx1024m"
 
-On Tomcat, in server.xml Change port to 8180 :
+On Tomcat, in conf folder, modify 'server.xml' in order to Change port to 8180 :
 
     <Connector port="8180" protocol="HTTP/1.1"
                connectionTimeout="20000"
                redirectPort="8443" />
 
+On Tomcat, in lib folder, unzip all jar from 'keycloak-tomcat8-adapter-dist-4.7.0.Final.tar.gz'
