@@ -199,6 +199,58 @@ public class UserDAO implements IUserDAO {
     }
 
     @Override
+    public boolean insertUserNoAuth(User user) {
+        boolean bool = false;
+        final String query = "INSERT INTO user (Login, Password, Name, Request, ReportingFavorite, RobotHost, DefaultSystem, Team, Language, Email, UserPreferences) VALUES (?, 'NOAUTH', ?, ?, ?, ?, ?, ?, ?, ?, '')";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+            try {
+                int i=1;
+                preStat.setString(i++, user.getLogin());
+                preStat.setString(i++, user.getName());
+                preStat.setString(i++, user.getRequest());
+                preStat.setString(i++, user.getReportingFavorite());
+                preStat.setString(i++, user.getRobotHost());
+                preStat.setString(i++, user.getDefaultSystem());
+                preStat.setString(i++, user.getTeam());
+                preStat.setString(i++, user.getLanguage());
+                preStat.setString(i++, user.getEmail());
+
+                preStat.executeUpdate();
+                ResultSet resultSet = preStat.getGeneratedKeys();
+                try {
+                    if (resultSet.first()) {
+                        user.setUserID(resultSet.getInt(1));
+                        bool = true;
+                    }
+                } catch (SQLException exception) {
+                    LOG.warn("Unable to execute query : " + exception.toString());
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to execute query : " + exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.warn("Unable to execute query : " + exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                LOG.warn(e.toString());
+            }
+        }
+        return bool;
+    }
+    
+    
+    @Override
     public boolean deleteUser(User user) {
         boolean bool = false;
         final String query = "DELETE FROM user WHERE userid = ?";

@@ -48,14 +48,18 @@ public interface IUserService {
 
     /**
      * @param user
-     * @return
      * @throws CerberusException
      */
     void insertUser(User user) throws CerberusException;
 
     /**
      * @param user
-     * @return
+     * @throws CerberusException
+     */
+    void insertUserNoAuth(User user) throws CerberusException;
+
+    /**
+     * @param user
      * @throws CerberusException
      */
     void deleteUser(User user) throws CerberusException;

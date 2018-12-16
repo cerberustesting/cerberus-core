@@ -81,6 +81,14 @@ public class UserService implements IUserService {
     }
 
     @Override
+    public void insertUserNoAuth(User user) throws CerberusException {
+        if (!userDAO.insertUserNoAuth(user)) {
+            //TODO define message => error occur trying to find users
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
+        }
+    }
+
+    @Override
     public void deleteUser(User user) throws CerberusException {
         if (!userDAO.deleteUser(user)) {
             //TODO define message => error occur trying to delete user

@@ -31,6 +31,7 @@ import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.UserGroup;
 import org.cerberus.crud.entity.User;
 import org.cerberus.crud.entity.UserSystem;
+import org.cerberus.crud.factory.IFactoryUser;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.IUserGroupService;
 import org.cerberus.crud.service.IUserService;
@@ -51,6 +52,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class ReadMyUser extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(ReadMyUser.class);
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -64,6 +66,7 @@ public class ReadMyUser extends HttpServlet {
             throws ServletException, IOException {
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         IUserService userService = appContext.getBean(UserService.class);
+        IFactoryUser userFactory = appContext.getBean(IFactoryUser.class);
         IUserSystemService userSystemService = appContext.getBean(IUserSystemService.class);
         IUserGroupService userGroupService = appContext.getBean(UserGroupService.class);
 
@@ -75,7 +78,21 @@ public class ReadMyUser extends HttpServlet {
         try {
 
             String user = request.getUserPrincipal().getName();
+            LOG.debug("Getting user data for (request.getUserPrincipal().getName()) : " + user);
 
+            // In case we activated KeyCloak, we create the user on the fly in order to allow to administer the system list. 
+            String authMode = "";
+            if (System.getProperty("org.cerberus.authentification") != null) {
+                authMode = System.getProperty("org.cerberus.authentification");
+                LOG.debug("Authentification JAVA parameter org.cerberus.authentification for keycloak value : '" + authMode + "'");
+                if (authMode.equals("keycloak")) {
+                    if (!userService.isUserExist(user)) {
+                        User myUser = userFactory.create(0, user, "NOAUTH", "N", "", "", "", "en", "", "", "", "", "", "", "", "", "", "");
+                        LOG.debug("Create User.");
+                        userService.insertUserNoAuth(myUser);
+                    }
+                }
+            }
             User myUser = userService.findUserByKey(user);
             data.put("login", myUser.getLogin());
             data.put("name", myUser.getName());
@@ -109,10 +126,12 @@ public class ReadMyUser extends HttpServlet {
             session.setAttribute("MyLang", myUser.getLanguage());
 
         } catch (CerberusException ex) {
+            LOG.error(ex.toString(), ex);
             response.getWriter().print(ex.getMessageError().getDescription());
         } catch (JSONException ex) {
-            LOG.warn(ex);
+            LOG.error(ex.toString(), ex);
         } catch (NullPointerException ex) {
+            LOG.error(ex.toString(), ex);
             response.sendRedirect("./Login.jsp");
         }
         response.getWriter().print(data.toString());

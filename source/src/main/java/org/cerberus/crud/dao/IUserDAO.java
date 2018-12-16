@@ -59,6 +59,14 @@ public interface IUserDAO {
     public boolean insertUser(User user);
 
     /**
+     * Insert user into the database.
+     *
+     * @param user
+     * @return the inserted user
+     */
+    public boolean insertUserNoAuth(User user);
+
+    /**
      * delete user from the database.
      *
      * @param user
