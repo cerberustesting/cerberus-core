@@ -146,7 +146,48 @@ function initModalTestCase() {
         $("#countryList input").prop('checked', $(this).prop("checked")); //change all ".checkbox" checked status
     });
 
+    $("#addTestCaseDependencyButton").click(function() {
+
+        var test = $("#selectTest").val();
+        var testCase = $("#selectTestCase").val();
+        var testCaseTxt = $( "#selectTestCase option:selected" ).text();
+
+        var indexTest = $("#selectTest").prop('selectedIndex')
+        var indexTestCase = $("#selectTestCase").prop('selectedIndex')
+
+        if($('#' + getHtmlIdForTestCase(test, testCase)).length > 0) {
+            alert("Ce cas de tes a déjà été ajouté") // FIXME by a js popup or modal error
+        } else if(indexTest === 0 || indexTestCase === 0) {
+            alert("Selectionner un cas de test")  // FIXME by a js popup or modal error
+        } else {
+            addHtmlForDependencyLine(test, testCase, testCaseTxt)
+        }
+    })
 }
+
+function addHtmlForDependencyLine(test, testCase, testCaseTxt) {
+    $("#depenencyTable").append(
+        '<tr role="row" class="odd" id="' + getHtmlIdForTestCase(test, testCase) + '"  test="' + test + '" testcase="' + testCase + '">' +
+            '<td class="sorting_1">' +
+                '<div class="center btn-group">' +
+                    '<button id="removeTestparameter" onclick="removeTestCaseDependency(\'' + test + '\',\'' + testCase + '\');" class="removeTestparameter btn btn-default btn-xs margin-right5" name="removeTestparameter" title="Remove Test Case Dependency" type="button">' +
+                        '<span class="glyphicon glyphicon-trash"></span>' +
+                    '</button>' +
+                '</div>' +
+            '</td>' +
+            '<td>' + test + ' - ' + testCaseTxt + '</td>' +
+        '</tr>'
+    );
+}
+
+function getHtmlIdForTestCase(test, testCase) {
+    return (test +'-' + testCase).replace(" ","_").replace(".","_")
+}
+
+function removeTestCaseDependency(test,testCase) {
+    $('#' + getHtmlIdForTestCase(test, testCase)).remove();
+}
+
 
 /***
  * Open the modal with testcase information.
@@ -403,6 +444,16 @@ function confirmTestCaseModalHandler(mode) {
         table_label.push(newLabel1);
     }
 
+    // Getting Dependency data
+    let testcaseDependency = []
+    $("#depenencyTable").find("tr")
+        .each( (t,  v) =>
+            testcaseDependency.push(
+                { test: $(v).attr("test"), testcase: $(v).attr("testcase") }
+            )
+        )
+
+
     // Get the header data from the form.
     var data = convertSerialToJSONObject(formEdit.serialize());
 
@@ -445,7 +496,8 @@ function confirmTestCaseModalHandler(mode) {
             userAgent: data.userAgent,
             screenSize: data.screenSize,
             labelList: JSON.stringify(table_label),
-            countryList: JSON.stringify(table_country)},
+            countryList: JSON.stringify(table_country),
+            testcaseDependency: JSON.stringify(testcaseDependency)},
         success: function (dataMessage) {
             hideLoaderInModal('#editTestCaseModal');
             if (getAlertType(dataMessage.messageType) === "success") {
@@ -544,7 +596,88 @@ function feedTestCaseModal(test, testCase, modalId, mode) {
         formEdit.modal('show');
     });
 
+    fillTestAndTestCaseSelect("#selectTest", "#selectTestCase")
+    $("#selectTest").change(function () {
+        fillTestCaseSelect("#selectTestCase", $("#selectTest").val());
+    } )
+
+
 }
+
+
+
+function fillTestCaseSelect(selectorTestCaseSelect, test, testcase) {
+    var doc = new Doc()
+    if (test !== null) {
+        $.ajax({
+            url: "ReadTestCase?test=" + test,
+            async: true,
+            success: function (data) {
+                data.contentTable.sort(function (a, b) {
+                    var aa = a.testCase.toLowerCase();
+                    var bb = b.testCase.toLowerCase();
+                    if (aa > bb) {
+                        return 1;
+                    } else if (aa < bb) {
+                        return -1;
+                    }
+                    return 0;
+                });
+                $(selectorTestCaseSelect).find('option').remove()
+
+                $(selectorTestCaseSelect).prepend("<option value=''>" + doc.getDocLabel("page_testcasescript", "select_testcase") + "</option>");
+                for (var i = 0; i < data.contentTable.length; i++) {
+                    $(selectorTestCaseSelect).append("<option value='" + data.contentTable[i].testCase + "'>" + data.contentTable[i].testCase + " - " + data.contentTable[i].description + "</option>")
+                }
+                if (testcase != null) {
+                    $(selectorTestCaseSelect + " option[value='" + testcase + "']").prop('selected', true);
+                    window.document.title = "TestCase - " + testcase;
+                }
+
+                $(selectorTestCaseSelect).select2({width: '100%'});
+            }
+        });
+    }
+
+}
+
+/**
+ * Fill Test and Testcase select,
+ * @param test   auto select this test
+ * @param testcase  auto select this testcase
+ */
+function fillTestAndTestCaseSelect(selectorTestSelect, selectorTestCaseSelect, test, testcase) {
+    var doc = new Doc()
+    $.ajax({
+        url: "ReadTest",
+        async: true,
+        success: function (data) {
+            data.contentTable.sort(function (a, b) {
+                var aa = a.test.toLowerCase();
+                var bb = b.test.toLowerCase();
+                if (aa > bb) {
+                    return 1;
+                } else if (aa < bb) {
+                    return -1;
+                }
+                return 0;
+            });
+            $(selectorTestSelect).prepend("<option value=''>" + doc.getDocLabel("page_testcasescript", "select_test") + "</option>");
+            for (var i = 0; i < data.contentTable.length; i++) {
+                $(selectorTestSelect).append("<option value='" + data.contentTable[i].test + "'>" + data.contentTable[i].test + " - " + data.contentTable[i].description + "</option>");
+            }
+
+            if (test !== null) {
+                $(selectorTestSelect + " option[value='" + test + "']").prop('selected', true);
+            }
+
+            $(selectorTestSelect).select2({width: "100%"}).next().css("margin-bottom", "7px");
+        }
+    });
+
+    fillTestCaseSelect(selectorTestCaseSelect, test, testcase)
+}
+
 
 function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, defaultTest) {
     var formEdit = $('#' + modalId);
@@ -638,6 +771,7 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#conditionVal2").prop("value", testCase.conditionVal2);
         formEdit.find("#comment").prop("value", testCase.comment);
         formEdit.find("#testcaseversion").prop("value", testCase.testCaseVersion);
+        appendTestCaseDepList(testCase);
     }
 
     // Authorities
@@ -787,6 +921,15 @@ function appendBuildRevListOnTestCase(system, editData) {
         }
     });
 }
+
+function appendTestCaseDepList(testCase) {
+    $("#depenencyTable").find("tr").remove() // clean the table
+
+    testCase.dependencyList.forEach( (dep) =>
+        addHtmlForDependencyLine(dep.depTest, dep.depTestCase, dep.depTestCase + " TODO get the description")
+    )
+}
+
 
 function appendTestCaseCountryList(testCase, isReadOnly) {
     $("#countryList label").remove();

@@ -116,20 +116,10 @@ public class RobotDAO implements IRobotDAO {
             LOG.debug("SQL : " + query);
         }
 
-        try {
-            result = RequestDbUtils.executeQuery(databaseSpring, query,
-                    ps -> {
-                        ps.setString(1, robot);
-                    },
-                    rs -> {
-                        return loadFromResultSet(rs);
-                    }
-            );
-
-        } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR), exception);
-        }
+        result = RequestDbUtils.executeQuery(databaseSpring, query,
+                ps -> ps.setString(1, robot),
+                rs -> loadFromResultSet(rs)
+        );
 
         //sets the message
         return result;

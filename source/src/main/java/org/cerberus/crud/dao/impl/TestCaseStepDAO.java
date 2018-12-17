@@ -904,7 +904,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
                     .resolveDescription("OPERATION", "CREATE");
         } catch (Exception e) {
-            LOG.warn("Unable to create TestCaseStep: " + e.getMessage());
+            LOG.warn("Unable to create TestCaseStep: " + e.getMessage(), e);
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
                     e.toString());
         } finally {

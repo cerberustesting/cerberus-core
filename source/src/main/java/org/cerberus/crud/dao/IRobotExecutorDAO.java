@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import org.cerberus.crud.entity.AppServiceContent;
 import org.cerberus.crud.entity.RobotExecutor;
+import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
@@ -52,7 +53,7 @@ public interface IRobotExecutorDAO {
      * @param robot
      * @return
      */
-    List<RobotExecutor> readBestByKey(String robot) throws SQLException;
+    List<RobotExecutor> readBestByKey(String robot) throws CerberusException;
 
     /**
      *
