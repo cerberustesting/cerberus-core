@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.cerberus.crud.entity.TestCaseExecutionFile;
+import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
@@ -75,7 +76,7 @@ public interface ITestCaseExecutionFileDAO {
      * @param fileDesc
      * @return
      */
-    List<TestCaseExecutionFile> getListByFileDesc(long exeId, String fileDesc) throws SQLException;
+    List<TestCaseExecutionFile> getListByFileDesc(long exeId, String fileDesc) throws CerberusException;
 
 
     /**

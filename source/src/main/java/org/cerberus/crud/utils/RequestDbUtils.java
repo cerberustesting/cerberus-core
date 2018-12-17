@@ -20,6 +20,9 @@
 package org.cerberus.crud.utils;
 
 import org.cerberus.database.DatabaseSpring;
+import org.cerberus.engine.entity.MessageGeneral;
+import org.cerberus.enums.MessageGeneralEnum;
+import org.cerberus.exception.CerberusException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -41,7 +44,7 @@ public class RequestDbUtils {
     }
 
     public static <T> T executeQuery(DatabaseSpring databaseSpring, String query, VoidSqlFunction<PreparedStatement> functionPrepareStatement,
-                                     SqlFunction<ResultSet, T> functionResultSet) throws SQLException {
+                                     SqlFunction<ResultSet, T> functionResultSet) throws CerberusException {
         try (Connection connection = databaseSpring.connect();
              PreparedStatement preStat = connection.prepareStatement(query);
         ) {
@@ -52,14 +55,29 @@ public class RequestDbUtils {
                     return functionResultSet.apply(resultSet);
                 }
             }
+        } catch (SQLException exception) {
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR), exception);
         }
 
         return null;
     }
 
 
+    public static <T> T executeUpdate(DatabaseSpring databaseSpring, String query, VoidSqlFunction<PreparedStatement> functionPrepareStatement) throws CerberusException {
+        try (Connection connection = databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(query);
+        ) {
+            functionPrepareStatement.apply(preStat);
+            preStat.executeUpdate();
+        } catch (SQLException exception) {
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR), exception);
+        }
+
+        return null;
+    }
+
     public static <T> List<T> executeQueryList(DatabaseSpring databaseSpring, String query, VoidSqlFunction<PreparedStatement> functionPrepareStatement,
-                                               SqlFunction<ResultSet, T> functionResultSet) throws SQLException {
+                                               SqlFunction<ResultSet, T> functionResultSet) throws CerberusException {
         List<T> res = new LinkedList<>();
 
         try (Connection connection = databaseSpring.connect();
@@ -72,6 +90,8 @@ public class RequestDbUtils {
                     res.add(functionResultSet.apply(resultSet));
                 }
             }
+        } catch (SQLException exception) {
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR), exception);
         }
 
         return res;

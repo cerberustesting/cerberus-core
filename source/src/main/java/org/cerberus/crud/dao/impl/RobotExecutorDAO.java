@@ -34,6 +34,7 @@ import org.cerberus.crud.utils.RequestDbUtils;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.SqlUtil;
 import org.cerberus.util.StringUtil;
@@ -108,7 +109,7 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
     }
 
     @Override
-    public List<RobotExecutor> readBestByKey(String robot) throws SQLException{
+    public List<RobotExecutor> readBestByKey(String robot) throws CerberusException {
         final String query = "SELECT * FROM `robotexecutor` rbe WHERE `robot` = ? and active = 'Y' order by DateLastExeSubmitted asc, rank asc";
 
         // Debug message on SQL.

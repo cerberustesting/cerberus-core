@@ -1,0 +1,106 @@
+/**
+ * Cerberus Copyright (C) 2013 - 2017 cerberustesting
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ * This file is part of Cerberus.
+ *
+ * Cerberus is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Cerberus is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package org.cerberus.servlet.crud.test.testcase;
+
+import com.google.common.base.Strings;
+import org.cerberus.crud.entity.TestCase;
+import org.cerberus.engine.entity.MessageGeneral;
+import org.cerberus.enums.MessageGeneralEnum;
+import org.cerberus.exception.CerberusException;
+import org.cerberus.util.ParameterParserUtil;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+
+public abstract class AbstractCrudTestCase extends HttpServlet {
+
+    private WebApplicationContext springContext;
+    @Override
+    public void init(final ServletConfig config) throws ServletException {
+        super.init(config);
+        springContext = WebApplicationContextUtils.getRequiredWebApplicationContext(config.getServletContext());
+        final AutowireCapableBeanFactory beanFactory = springContext.getAutowireCapableBeanFactory();
+        beanFactory.autowireBean(this);
+    }
+
+
+    protected TestCase getTestCaseFromRequest(HttpServletRequest request, TestCase tc) throws CerberusException {
+        try {
+
+            String charset = request.getCharacterEncoding() == null ? "UTF-8" : request.getCharacterEncoding();
+
+
+            // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
+            tc.setImplementer(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("implementer"), tc.getImplementer(), charset));
+            tc.setUsrCreated(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getUserPrincipal().getName(), "", charset));
+
+            if (!Strings.isNullOrEmpty(request.getParameter("project"))) { // TODO voir pk ce cas particulier complexe :/
+                tc.setProject(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("project"), tc.getProject(), charset));
+            } else if (request.getParameter("project") != null && request.getParameter("project").isEmpty()) {
+                tc.setProject(null);
+            } else {
+                tc.setProject(tc.getProject());
+            }
+
+
+            tc.setApplication(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("application"), tc.getApplication(), charset));
+            tc.setActiveQA(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("activeQA"), tc.getActiveQA(), charset));
+            tc.setActiveUAT(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("activeUAT"), tc.getActiveUAT(), charset));
+            tc.setActivePROD(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("activeProd"), tc.getActivePROD(), charset));
+            tc.setFromBuild(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("fromSprint"), tc.getFromBuild(), charset));
+            tc.setFromRev(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("fromRev"), tc.getFromRev(), charset));
+            tc.setToBuild(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("toSprint"), tc.getToBuild(), charset));
+            tc.setToRev(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("toRev"), tc.getToRev(), charset));
+            tc.setTcActive(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("active"), tc.getTcActive(), charset));
+            tc.setTargetBuild(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("targetSprint"), tc.getTargetBuild(), charset));
+            tc.setTargetRev(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("targetRev"), tc.getTargetRev(), charset));
+            tc.setPriority(ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("priority"), tc.getPriority(), charset));
+            tc.setTest(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("test"), tc.getTest(), charset));
+            tc.setTestCase(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("testCase"), tc.getTestCase(), charset));
+            tc.setTicket(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("ticket"), tc.getTicket(), charset));
+            tc.setOrigine(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("origin"), tc.getOrigine(), charset));
+            tc.setGroup(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("group"), tc.getGroup(), charset));
+            tc.setStatus(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("status"), tc.getStatus(), charset));
+            tc.setDescription(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("shortDesc"), tc.getDescription(), charset));
+            tc.setBugID(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("bugId"), tc.getBugID(), charset));
+            tc.setComment(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("comment"), tc.getComment(), charset));
+            tc.setFunction(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("function"), tc.getFunction(), charset));
+            tc.setScreenSize(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("screenSize"), tc.getScreenSize(), charset));
+            tc.setHowTo(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("howTo"), tc.getHowTo(), charset));
+            tc.setBehaviorOrValueExpected(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("behaviorOrValueExpected"), tc.getBehaviorOrValueExpected(), charset));
+
+
+            // TODO verify, this setteer was not call on "create test case"
+            tc.setConditionOper(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("conditionOper"), tc.getConditionOper(), charset));
+            // Parameter that we cannot secure as we need the html --> We DECODE them
+            tc.setConditionVal1(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("conditionVal1"), tc.getConditionVal1(), charset));
+            tc.setConditionVal2(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("conditionVal2"), tc.getConditionVal2(), charset));
+
+            return tc;
+        } catch (UnsupportedOperationException e) {
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.GENERIC_ERROR), e);
+        }
+    }
+}
