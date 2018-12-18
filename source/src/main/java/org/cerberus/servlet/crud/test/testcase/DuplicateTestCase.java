@@ -64,68 +64,38 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  * Servlet implementation class DuplicateTest
+ * @WebServlet(name = "DuplicateTestCase", urlPatterns = {"/DuplicateTestCase"})
+ * @Deprecated use CreateTestCase instead of this class
  */
 @WebServlet(name = "DuplicateTestCase", urlPatterns = {"/DuplicateTestCase"})
-public class DuplicateTestCase extends HttpServlet {
+@Deprecated  // Can we delete it ??
+public class DuplicateTestCase extends AbstractCrudTestCase {
 
     private static final Logger LOG = LogManager.getLogger(DuplicateTestCase.class);
     private static final long serialVersionUID = 1L;
-    private ApplicationContext appContext;
 
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        try {
-            processRequest(request, response);
-        } catch (JSONException ex) {
-            LOG.warn(ex);
-        } catch (CerberusException ex) {
-            LOG.warn(ex);
-        }
-    }
-
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        try {
-            processRequest(request, response);
-        } catch (JSONException ex) {
-            LOG.warn(ex);
-        } catch (CerberusException ex) {
-            LOG.warn(ex);
-        }
-    }
-
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
+    @Autowired
+    private ITestCaseService testCaseService;
+    @Autowired
+    private ITestCaseCountryService testCaseCountryService ;
+    @Autowired
+    private ITestCaseCountryPropertiesService testCaseCountryPropertiesService;
+    @Autowired
+    private ITestCaseStepService testCaseStepService;
+    @Autowired
+    private ITestCaseStepActionService testCaseStepActionService;
+    @Autowired
+    private ITestCaseStepActionControlService testCaseStepActionControlService;
+    @Autowired
+    private ITestCaseLabelService testCaseLabelService;
+    @Autowired
+    private ILogEventService logEventService;
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, JSONException, CerberusException {
@@ -134,7 +104,6 @@ public class DuplicateTestCase extends HttpServlet {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         ans.setResultMessage(msg);
-        PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
         response.setContentType("application/json");
 
@@ -160,15 +129,6 @@ public class DuplicateTestCase extends HttpServlet {
                     .replace("%REASON%", "mandatory fields are missing."));
             ans.setResultMessage(msg);
         } else {
-            ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-            ITestCaseService testCaseService = appContext.getBean(ITestCaseService.class);
-            ITestCaseCountryService testCaseCountryService = appContext.getBean(ITestCaseCountryService.class);
-            ITestCaseCountryPropertiesService testCaseCountryPropertiesService = appContext.getBean(ITestCaseCountryPropertiesService.class);
-            ITestCaseStepService testCaseStepService = appContext.getBean(ITestCaseStepService.class);
-            ITestCaseStepActionService testCaseStepActionService = appContext.getBean(ITestCaseStepActionService.class);
-            ITestCaseStepActionControlService testCaseStepActionControlService = appContext.getBean(ITestCaseStepActionControlService.class);
-            ITestCaseLabelService testCaseLabelService = appContext.getBean(ITestCaseLabelService.class);
-
             AnswerItem originalTestAI = testCaseService.readByKey(originalTest, originalTestCase);
             AnswerItem targetTestAI = testCaseService.readByKey(test, testCase);
 
@@ -203,7 +163,7 @@ public class DuplicateTestCase extends HttpServlet {
                 ans.setResultMessage(msg);
 
             } else {
-                getInfo(request, originalTC);
+                this.getTestCaseFromRequest(request, originalTC);
 
                 //Update object with new testcase id and insert it in db
                 originalTC.setTest(test);
@@ -216,14 +176,6 @@ public class DuplicateTestCase extends HttpServlet {
                 if (!countryList.isEmpty()) {
                         ans = testCaseCountryService.duplicateList(countryList, test, testCase);
                     }
-                
-//                List<TestCaseCountry> countryList = getCountryList(test, testCase, request);
-//                boolean success = false;
-//                if (countryList.isEmpty()) {
-//                    success = true;
-//                } else {
-//                    success = testCaseCountryService.insertListTestCaseCountry(countryList);
-//                }
 
                 List<TestCaseCountryProperties> tccpList = new ArrayList<>();
                 if (!countryList.isEmpty() && ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && success) {
@@ -271,7 +223,6 @@ public class DuplicateTestCase extends HttpServlet {
                     /**
                      * Update was successful. Adding Log entry.
                      */
-                    ILogEventService logEventService = appContext.getBean(LogEventService.class);
                     logEventService.createForPrivateCalls("/DuplicateTestCase", "CREATE", "Create testcase : ['" + test + "'|'" + testCase + "']", request);
                 }
 
@@ -288,66 +239,4 @@ public class DuplicateTestCase extends HttpServlet {
         response.getWriter().flush();
     }
 
-    private TestCase getInfo(HttpServletRequest request, TestCase tc) throws CerberusException, JSONException, UnsupportedEncodingException {
-
-        String charset = request.getCharacterEncoding() == null ? "UTF-8" : request.getCharacterEncoding();
-
-        // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
-        tc.setImplementer(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("imlementer"), tc.getImplementer()));
-        tc.setUsrCreated(request.getUserPrincipal().getName());
-        tc.setUsrModif(request.getUserPrincipal().getName());
-        if (!Strings.isNullOrEmpty(request.getParameter("project"))) {
-            tc.setProject(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("project"), tc.getProject()));
-        } else if (request.getParameter("project") != null && request.getParameter("project").isEmpty()) {
-            tc.setProject(null);
-        } else {
-            tc.setProject(tc.getProject());
-        }
-        tc.setTest(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("test"), tc.getTest()));
-        tc.setApplication(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("application"), tc.getApplication()));
-        tc.setActiveQA(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("activeQA"), tc.getActiveQA()));
-        tc.setActiveUAT(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("activeUAT"), tc.getActiveUAT()));
-        tc.setActivePROD(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("activeProd"), tc.getActivePROD()));
-        tc.setTcActive(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("active"), tc.getTcActive()));
-        tc.setFromBuild(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("fromSprint"), tc.getFromBuild()));
-        tc.setFromRev(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("fromRev"), tc.getFromRev()));
-        tc.setToBuild(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("toSprint"), tc.getToBuild()));
-        tc.setToRev(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("toRev"), tc.getToRev()));
-        tc.setTargetBuild(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("targetSprint"), tc.getTargetBuild()));
-        tc.setTargetRev(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("targetRev"), tc.getTargetRev()));
-        tc.setPriority(ParameterParserUtil.parseIntegerParam(request.getParameter("priority"), tc.getPriority()));
-
-        // Parameter that needs to be secured --> We SECURE+DECODE them
-        tc.setTestCase(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("testCase"), tc.getTestCase(), charset));
-        tc.setTicket(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("ticket"), tc.getTicket(), charset));
-        tc.setOrigine(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("origin"), tc.getOrigine(), charset));
-        tc.setGroup(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("group"), tc.getGroup(), charset));
-        tc.setStatus(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("status"), tc.getStatus(), charset));
-        tc.setDescription(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("shortDesc"), tc.getDescription(), charset));
-        tc.setBugID(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("bugId"), tc.getBugID(), charset));
-        tc.setComment(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("comment"), tc.getComment(), charset));
-        tc.setFunction(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("function"), tc.getFunction(), charset));
-
-        // Parameter that we cannot secure as we need the html --> We DECODE them
-        tc.setBehaviorOrValueExpected(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("behaviorOrValueExpected"), tc.getBehaviorOrValueExpected(), charset));
-        tc.setHowTo(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("howTo"), tc.getHowTo(), charset));
-
-        return tc;
-    }
-
-    private List<TestCaseCountry> getCountryList(String targetTest, String targetTestCase, HttpServletRequest request) throws CerberusException, JSONException, UnsupportedEncodingException {
-        List<TestCaseCountry> countryList = new ArrayList<>();
-        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        IInvariantService invariantService = appContext.getBean(InvariantService.class);
-        IFactoryTestCaseCountry testCaseCountryFactory = appContext.getBean(IFactoryTestCaseCountry.class);
-
-        AnswerList answer = invariantService.readByIdname("COUNTRY"); //TODO: handle if the response does not turn ok
-        for (Invariant country : (List<Invariant>) answer.getDataList()) {
-            String countrySelected = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter(country.getValue()), "");
-            if ("".equals(countrySelected)) {
-                countryList.add(testCaseCountryFactory.create(targetTest, targetTestCase, country.getValue()));
-            }
-        }
-        return countryList;
-    }
 }

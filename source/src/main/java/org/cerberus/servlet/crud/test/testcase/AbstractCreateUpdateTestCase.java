@@ -100,7 +100,7 @@ public abstract class AbstractCreateUpdateTestCase extends AbstractCrudTestCase 
         String originalTest = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("originalTest"), "");
         String originalTestCase = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("originalTestCase"), "");
 
-        boolean primaryKeyChanged = ! ( originalTest!=null && originalTestCase!=null && originalTest.equals(test) && originalTestCase.equals(originalTestCase) );
+        boolean primaryKeyChanged = ! ( originalTest!=null && originalTestCase!=null && originalTest.equals(test) && originalTestCase.equals(testcase) );
 
 
         // Prepare the final answer.
@@ -225,52 +225,6 @@ public abstract class AbstractCreateUpdateTestCase extends AbstractCrudTestCase 
         response.getWriter().print(jsonResponse);
         response.getWriter().flush();
 
-    }
-
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        try {
-            processRequest(request, response);
-        } catch (CerberusException | JSONException ex) {
-            LOG.warn(ex, ex);
-        } // FIXME where Exception is managed ?
-    }
-
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        try {
-            processRequest(request, response);
-        } catch (CerberusException | JSONException ex) {
-            LOG.warn(ex, ex);
-        }
-    }
-
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo() {
-        return "Short description";
     }
 
 
