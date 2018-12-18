@@ -47,6 +47,8 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.test.context.ContextConfiguration;
 
+import java.util.Date;
+
 
 /**
  * {Insert class description here}
@@ -75,6 +77,7 @@ public class ActionServiceTest {
     private FluentWait fluentWait;
     @InjectMocks
     private ActionService actionService;
+
 
     /**
      * Action Click

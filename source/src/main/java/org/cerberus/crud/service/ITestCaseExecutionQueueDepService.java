@@ -20,8 +20,11 @@
 package org.cerberus.crud.service;
 
 import org.cerberus.crud.entity.TestCaseExecution;
+import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
+
+import java.util.List;
 
 /**
  *
@@ -42,7 +45,7 @@ public interface ITestCaseExecutionQueueDepService {
      * @return
      */
     AnswerItem<Integer> insertFromTCDep(long queueId, String env, String country, String tag, String test, String testcase);
-    
+
     /**
      * Insert execution dependencies attached to queueid, env, country and tag
      * from test/testcase
@@ -82,6 +85,14 @@ public interface ITestCaseExecutionQueueDepService {
      * @return
      */
     AnswerItem<Integer> readNbWaitingByExeQueue(long exeQueueId);
+
+
+    /**
+     * load test case dependency Queue on object each TestCaseExecution
+     * @param testCaseExecutions
+     */
+    void loadDependenciesOnTestCaseExecution(List<TestCaseExecution> testCaseExecutions) throws CerberusException;
+
 
     /**
      *

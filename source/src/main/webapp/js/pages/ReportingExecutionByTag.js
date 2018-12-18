@@ -100,6 +100,8 @@ $.when($.getScript("js/global/global.js")).then(function () {
             'placement': 'auto',
             'container': 'body'}
         );
+
+
     });
 });
 
@@ -325,6 +327,17 @@ function loadReportingData(selectTag) {
             showMessageMainPage("danger", "Tag '" + selectTag + "' does not exist.", false);
 
         }
+
+        $('[data-toggle="popover"]').popover({
+            'placement': 'auto',
+            'container': 'body'}
+        ).on('shown.bs.popover', function() {
+            // Manually offer possibility to popover elemt to know when it's loading
+            let idPopup = $(this).attr("aria-describedby")
+            let elmt = $("#"+idPopup).find("[onload]")
+            if(elmt.length > 0)
+                eval(elmt.attr("onload")) // TODO eval la method
+        });
     });
 
 }
@@ -1224,7 +1237,7 @@ function massAction_copyQueue() {
 
 }
 
-
+var cptDep=0;
 function aoColumnsFunc(Columns) {
     var doc = new Doc();
     var colNb = Columns.length;
@@ -1304,10 +1317,11 @@ function aoColumnsFunc(Columns) {
                         cell += '<input id="selectLine" name="id" value=' + data.QueueID + ' onclick="refreshNbChecked()" data-select="id" data-line="select' + data.ManualExecution + '-' + state + '" data-id="' + data.QueueID + '" title="Select for Action" type="checkbox"></input>';
                     }
                     cell += '</span>';
+                    let idProgressBar = (data.Test + "_" + data.TestCase + "_" + data.RobotDecli).replace("\.", "_").replace(" ", "_");
                     if ((data.ControlStatus === "QU") || (data.ControlStatus === "QE")) {
-                        cell += '<div class="progress-bar progress-bar-queue status' + data.ControlStatus + '" ';
+                        cell += '<div class="progress-bar progress-bar-queue status' + data.ControlStatus + '" id="' + idProgressBar +'" ';
                     } else {
-                        cell += '<div class="progress-bar status' + data.ControlStatus + '" ';
+                        cell += '<div class="progress-bar status' + data.ControlStatus + '" id="' + idProgressBar +'" ';
                     }
                     cell += 'role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;cursor: pointer; height: 40px;"';
                     cell += 'data-toggle="tooltip" data-html="true" title="' + tooltip + '"';
@@ -1317,9 +1331,24 @@ function aoColumnsFunc(Columns) {
                         cell += ' onclick="window.open(\'' + executionLink + '\')">';
                     }
                     cell += '<span class="' + glyphClass.glyph + ' marginRight5"></span>';
-                    cell += '<span>' + data.ControlStatus + '<span>';
+                    cell += '<span name="tcResult">' + data.ControlStatus + '<span>';
                     if (data.QueueState !== undefined) {
-                        cell += '<br><span style="font-size: xx-small">' + data.QueueState + '<span>';
+                        let button = ""
+                        let txt = ""
+                        for ( let dep of data.TestCaseDep) {
+
+                            txt += "<div  id='dep" + cptDep + "' onload='renderDependency(&quot;dep" + cptDep++ + "&quot;,&quot;" + dep.test + "&quot;,&quot;" + dep.testcase + "&quot;,&quot;" + data.RobotDecli + "&quot;)'></div>"
+                        }
+
+                        if(data.QueueState === "QUWITHDEP") {
+                            button = '<button type="button" class="btn  btn-info" onclick="stopPropagation(event)" data-html="true"' +
+                                'data-toggle="popover" ' +
+                                'title="Dependency" ' +
+                                "data-content=\"" + txt + "\" >" +
+                                '<span class="glyphicon glyphicon-tasks" aria-hidden="true"></span> '
+                                "</button>"
+                        }
+                        cell += '<br><span style="font-size: xx-small">' + data.QueueState + " " + button + '<span>';
                     }
                     cell += '</div>';
                     cell += '</div>';
@@ -1378,6 +1407,14 @@ function aoColumnsFunc(Columns) {
     aoColumns.push(col);
 
     return aoColumns;
+}
+
+
+function renderDependency(id, test, testcase, decli) {
+    let idProgressBar = (test + "_" + testcase + "_" + decli).replace("\.", "_").replace(" ", "_");
+    let tcDepResult = $("#" + idProgressBar ).find("[name='tcResult']").text();
+
+    $("#" + id).html("<a href='#" + idProgressBar +"'>" + test + " - " + testcase + " - " + tcDepResult + "</a>")
 }
 
 function customConfig(config) {

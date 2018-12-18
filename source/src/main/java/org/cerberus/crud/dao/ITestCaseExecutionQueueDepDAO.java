@@ -19,10 +19,12 @@
  */
 package org.cerberus.crud.dao;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionQueueDep;
-import org.cerberus.util.answer.Answer;
+import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 
@@ -126,4 +128,5 @@ public interface ITestCaseExecutionQueueDepDAO {
      */
     AnswerList<String> readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 
+    HashMap<TestCaseExecution,List<TestCaseExecutionQueueDep>> readDependenciesByTestCaseExecution(List<TestCaseExecution> testCaseExecutions) throws CerberusException;
 }

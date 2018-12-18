@@ -19,31 +19,30 @@
  */
 package org.cerberus.crud.dao.impl;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.sql.*;
+import java.util.*;
+import java.util.stream.Collectors;
+
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.ITestCaseExecutionQueueDepDAO;
+import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionQueueDep;
-import org.cerberus.crud.factory.IFactoryApplicationObject;
+import org.cerberus.crud.factory.IFactoryTestCaseExecutionQueueDep;
 import org.cerberus.crud.service.IParameterService;
+import org.cerberus.crud.utils.RequestDbUtils;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.SqlUtil;
 import org.cerberus.util.StringUtil;
-import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.CollectionUtils;
 
 /**
  * Implements methods defined on IApplicationDAO
@@ -58,9 +57,7 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
     @Autowired
     private DatabaseSpring databaseSpring;
     @Autowired
-    private IFactoryApplicationObject factoryApplicationObject;
-    @Autowired
-    private IParameterService parameterService;
+    private IFactoryTestCaseExecutionQueueDep factoryTestCaseExecutionQueueDep;
 
     private static final Logger LOG = LogManager.getLogger(TestCaseExecutionQueueDepDAO.class);
 
@@ -624,18 +621,66 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
         return answer;
     }
 
-    private TestCaseExecutionQueueDep loadFromResultSet(ResultSet rs) throws SQLException {
-        Integer ID = ParameterParserUtil.parseIntegerParam(rs.getString("ID"), -1);
-        String application = ParameterParserUtil.parseStringParam(rs.getString("Application"), "");
-        String object = ParameterParserUtil.parseStringParam(rs.getString("Object"), "");
-        String value = ParameterParserUtil.parseStringParam(rs.getString("Value"), "");
-        String screenshotfilename = ParameterParserUtil.parseStringParam(rs.getString("ScreenshotFileName"), "");
-        String usrcreated = ParameterParserUtil.parseStringParam(rs.getString("UsrCreated"), "");
-        String datecreated = ParameterParserUtil.parseStringParam(rs.getString("DateCreated"), "");
-        String usrmodif = ParameterParserUtil.parseStringParam(rs.getString("UsrModif"), "");
-        String datemodif = ParameterParserUtil.parseStringParam(rs.getString("DateModif"), "");
 
-//        return factoryApplicationObject.create(ID, application, object, value, screenshotfilename, usrcreated, datecreated, usrmodif, datemodif);
-        return null;
+
+
+    public HashMap<TestCaseExecution,List<TestCaseExecutionQueueDep>> readDependenciesByTestCaseExecution(List<TestCaseExecution> testCaseExecutions) throws CerberusException {
+        HashMap<TestCaseExecution,List<TestCaseExecutionQueueDep>> hashMap = new HashMap<>();
+        if(CollectionUtils.isEmpty(testCaseExecutions)) return hashMap;
+
+
+        StringBuilder query = new StringBuilder(
+                "SELECT * FROM testcaseexecutionqueuedep " +
+                        "where exeQueueID in (");
+        testCaseExecutions.forEach( tc -> query.append("?,"));
+        query.setLength(query.length() - 1);
+        query.append(")");
+
+
+        List<TestCaseExecutionQueueDep> lst = RequestDbUtils.executeQueryList(databaseSpring, query.toString(),
+                ps ->  {
+                    int idx=1;
+                    for (TestCaseExecution tc : testCaseExecutions) ps.setLong(idx++, tc.getQueueID());
+                },
+                rs -> loadFromResultSet(rs));
+
+
+        Map<Long, TestCaseExecution> hashMapTC = testCaseExecutions.stream().collect( Collectors.toMap( tce -> tce.getQueueID(), tce -> tce)) ;
+
+        for (TestCaseExecutionQueueDep tce : lst) {
+            hashMap
+                    .computeIfAbsent(
+                            hashMapTC.get(tce.getExeQueueId()),
+                            k -> new ArrayList<>())
+                    .add(tce);
+        }
+
+        return hashMap;
+    }
+
+
+
+
+    private TestCaseExecutionQueueDep loadFromResultSet(ResultSet rs) throws SQLException {
+        Long id = ParameterParserUtil.parseLongParam(rs.getString("id"), -1);
+        Long exeQueueID = ParameterParserUtil.parseLongParam(rs.getString("ExeQueueID"), -1);
+        String environment = ParameterParserUtil.parseStringParam(rs.getString("Environment"), "");
+        String country = ParameterParserUtil.parseStringParam(rs.getString("Country"), "");
+        String tag = ParameterParserUtil.parseStringParam(rs.getString("Tag"), "");
+        String type = ParameterParserUtil.parseStringParam(rs.getString("Type"), "");
+        String depTest = ParameterParserUtil.parseStringParam(rs.getString("DepTest"), "");
+        String depEvent = ParameterParserUtil.parseStringParam(rs.getString("DepEvent"), "");
+        String depTestCase = ParameterParserUtil.parseStringParam(rs.getString("DepTestCase"), "");
+        String status = ParameterParserUtil.parseStringParam(rs.getString("Status"), "");
+        Timestamp releaseDate = rs.getTimestamp("ReleaseDate");
+        String comment = ParameterParserUtil.parseStringParam(rs.getString("Comment"), "");
+        Long exeID = ParameterParserUtil.parseLongParam(rs.getString("ExeID"), -1);
+        String usrCreated = ParameterParserUtil.parseStringParam(rs.getString("UsrCreated"), "");
+        Timestamp dateCreated = rs.getTimestamp("DateCreated");
+        String usrModif = ParameterParserUtil.parseStringParam(rs.getString("UsrModif"), "");
+        Timestamp dateModif = rs.getTimestamp("DateModif");
+
+        return factoryTestCaseExecutionQueueDep.create(id, exeQueueID, environment, country, tag, type, depTest, depTestCase, depEvent, status, releaseDate,
+                comment, exeID, usrCreated, dateCreated, usrModif, dateModif);
     }
 }

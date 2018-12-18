@@ -31,6 +31,9 @@
         <title id="pageTitle">Label</title>
     </head>
     <body>
+
+    <span class="glyphicon glyphicon-tasks" aria-hidden="true"></span>
+
         <%@ include file="include/global/header.html" %>
         <div class="container-fluid center" id="page-layout">
             <%@ include file="include/global/messagesArea.html"%>

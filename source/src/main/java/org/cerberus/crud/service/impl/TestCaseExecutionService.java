@@ -32,16 +32,7 @@ import org.cerberus.crud.entity.TestCaseExecutionData;
 import org.cerberus.crud.entity.TestCaseExecutionFile;
 import org.cerberus.crud.entity.TestCaseExecutionQueue;
 import org.cerberus.crud.factory.IFactoryTagSystem;
-import org.cerberus.crud.service.IParameterService;
-import org.cerberus.crud.service.ITagSystemService;
-import org.cerberus.crud.service.ITestCaseExecutionDataService;
-import org.cerberus.crud.service.ITestCaseExecutionFileService;
-import org.cerberus.crud.service.ITestCaseExecutionQueueService;
-import org.cerberus.crud.service.ITestCaseExecutionService;
-import org.cerberus.crud.service.ITestCaseService;
-import org.cerberus.crud.service.ITestCaseStepActionControlExecutionService;
-import org.cerberus.crud.service.ITestCaseStepActionExecutionService;
-import org.cerberus.crud.service.ITestCaseStepExecutionService;
+import org.cerberus.crud.service.*;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
@@ -79,6 +70,8 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     ITestCaseService testCaseService;
     @Autowired
     ITestCaseExecutionQueueService testCaseExecutionInQueueService;
+    @Autowired
+    ITestCaseExecutionQueueDepService testCaseExecutionQueueDepService;
     @Autowired
     private ITagSystemService tagSystemService;
     @Autowired
@@ -351,6 +344,12 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
          * test,testcase,country,env,browser)
          */
         testCaseExecutions = hashExecution(testCaseExecutions, testCaseExecutionsInQueue);
+
+
+        // load all test case dependency
+        testCaseExecutionQueueDepService.loadDependenciesOnTestCaseExecution(testCaseExecutions);
+
+
         return testCaseExecutions;
     }
 
