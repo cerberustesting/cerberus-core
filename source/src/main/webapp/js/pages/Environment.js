@@ -71,8 +71,8 @@ function initPage() {
 //    toto.push("system=cerberus");
 //    generateFiltersOnMultipleColumns("environmentsTable", toto);
 
-//    displayBuildList('#newBuild', getUser().defaultSystem, "1", "", "", "");
-//    displayBuildList('#newRevision', getUser().defaultSystem, "2", "", "", "");
+    displayBuildList('#newBuild', getUser().defaultSystem, "1", "", "", "");
+    displayBuildList('#newRevision', getUser().defaultSystem, "2", "", "", "");
 
     var table = loadEnvTable(urlCountry, urlEnvironment, urlBuild, urlRevision, urlEnvGp, urlActive);
 
