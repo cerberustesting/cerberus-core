@@ -83,6 +83,7 @@ public class ReadTest extends HttpServlet {
 
         // Calling Servlet Transversal Util.
         ServletUtil.servletStart(request);
+        ServletUtil.fixHeaders(response);
         
         // Default message to unexpected error.
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);

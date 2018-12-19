@@ -1691,7 +1691,6 @@
             <url-pattern>/GetPropertiesForTestCase</url-pattern>
             <url-pattern>/GetReport</url-pattern>
             <url-pattern>/GetStepInLibrary</url-pattern>
-            <url-pattern>/ReadTest</url-pattern>
             <url-pattern>/ReadTestCaseStep</url-pattern>
             <url-pattern>/GetReportTest</url-pattern>
             <url-pattern>/ReadTestCaseExecutionByTag</url-pattern>
