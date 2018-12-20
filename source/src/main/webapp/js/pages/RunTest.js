@@ -834,8 +834,8 @@ function loadRobotInfo(robot) {
     if (!(robot instanceof Array)) {
         robot = [robot]
     }
-
-    if (robot[0] !== "") {
+    
+    if (robot[0] !== "" && robot[0] !== "CustomConfiguration") {
         // We can edit Robot.
         $("#robotEdit").removeClass("disabled");
         $('#robotEdit').unbind("click");
