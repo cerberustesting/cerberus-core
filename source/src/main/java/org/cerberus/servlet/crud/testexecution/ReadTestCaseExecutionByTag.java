@@ -31,19 +31,19 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+
+import com.google.gson.JsonObject;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+
+import javax.json.Json;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.cerberus.crud.entity.Invariant;
-import org.cerberus.crud.entity.Label;
-import org.cerberus.crud.entity.Tag;
-import org.cerberus.crud.entity.TestCase;
-import org.cerberus.crud.entity.TestCaseExecution;
-import org.cerberus.crud.entity.TestCaseLabel;
+
+import org.cerberus.crud.entity.*;
 import org.cerberus.crud.factory.IFactoryTestCase;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.ILabelService;
@@ -256,6 +256,18 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         result.put("ShortDescription", shortDesc);
 
         result.put("Application", JavaScriptUtils.javaScriptEscape(testCaseExecution.getApplication()));
+
+        List<JSONObject> testCaseDep = new ArrayList<>();
+
+        if(testCaseExecution.getTestCaseDep() != null) {
+            for (TestCaseExecutionQueueDep tce : testCaseExecution.getTestCaseDep()) {
+                JSONObject obj = new JSONObject();
+                obj.put("test", tce.getDepTest());
+                obj.put("testcase", tce.getDepTestCase());
+                testCaseDep.add(obj);
+            }
+        }
+        result.put("TestCaseDep", testCaseDep);
 
         return result;
     }

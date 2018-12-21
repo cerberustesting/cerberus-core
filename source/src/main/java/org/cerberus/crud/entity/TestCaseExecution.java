@@ -122,6 +122,8 @@ public class TestCaseExecution {
     private List<String> recursiveAlreadyCalculatedPropertiesList;
     private List<TestCaseCountryProperties> testCaseCountryPropertyList;
 
+    private List<TestCaseExecutionQueueDep> testCaseDep;
+
     private List<String> videos;
 
     // Others
@@ -889,6 +891,14 @@ public class TestCaseExecution {
 
     public void setVideos(List<String> videos) {
         this.videos = videos;
+    }
+
+    public List<TestCaseExecutionQueueDep> getTestCaseDep() {
+        return testCaseDep;
+    }
+
+    public void setTestCaseDep(List<TestCaseExecutionQueueDep> testCaseDep) {
+        this.testCaseDep = testCaseDep;
     }
 
     /**

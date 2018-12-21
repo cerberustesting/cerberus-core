@@ -156,9 +156,9 @@ function initModalTestCase() {
         var indexTestCase = $("#selectTestCase").prop('selectedIndex')
 
         if($('#' + getHtmlIdForTestCase(test, testCase)).length > 0) {
-            alert("Ce cas de tes a déjà été ajouté") // FIXME by a js popup or modal error
+            showMessage(new Message("KO", 'Test case is already added'), $('#editTestCaseModal'));
         } else if(indexTest === 0 || indexTestCase === 0) {
-            alert("Selectionner un cas de test")  // FIXME by a js popup or modal error
+            showMessage(new Message("KO", 'Select a test case'), $('#editTestCaseModal'));
         } else {
             addHtmlForDependencyLine(test, testCase, testCaseTxt)
         }
@@ -662,6 +662,8 @@ function fillTestAndTestCaseSelect(selectorTestSelect, selectorTestCaseSelect, t
                 }
                 return 0;
             });
+
+            $(selectorTestSelect).find("option").remove();
             $(selectorTestSelect).prepend("<option value=''>" + doc.getDocLabel("page_testcasescript", "select_test") + "</option>");
             for (var i = 0; i < data.contentTable.length; i++) {
                 $(selectorTestSelect).append("<option value='" + data.contentTable[i].test + "'>" + data.contentTable[i].test + " - " + data.contentTable[i].description + "</option>");

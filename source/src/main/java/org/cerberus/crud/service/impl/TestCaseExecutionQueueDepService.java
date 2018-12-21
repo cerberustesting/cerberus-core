@@ -20,7 +20,10 @@
 package org.cerberus.crud.service.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -29,6 +32,7 @@ import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionQueueDep;
 import org.cerberus.crud.service.ITestCaseExecutionQueueDepService;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
+import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,6 +77,16 @@ public class TestCaseExecutionQueueDepService implements ITestCaseExecutionQueue
     @Override
     public AnswerItem<Integer> readNbWaitingByExeQueue(long exeQueueId) {
         return testCaseExecutionQueueDepDAO.readNbWaitingByExeQueue(exeQueueId);
+    }
+
+    @Override
+    public void loadDependenciesOnTestCaseExecution(List<TestCaseExecution> testCaseExecutions) throws CerberusException {
+        HashMap<TestCaseExecution, List<TestCaseExecutionQueueDep>> dependenciesByTestCaseExecution = testCaseExecutionQueueDepDAO.readDependenciesByTestCaseExecution(testCaseExecutions);
+
+        // modify directly the parameter variable
+        for(Map.Entry<TestCaseExecution, List<TestCaseExecutionQueueDep>> entry : dependenciesByTestCaseExecution.entrySet() ) {
+            entry.getKey().setTestCaseDep(entry.getValue());
+        }
     }
 
     @Override

@@ -1885,7 +1885,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
                 = "UPDATE `" + TABLE + "` "
                 + "SET `" + COLUMN_STATE + "` = 'ERROR', `" + COLUMN_COMMENT + "` = ?, `" + COLUMN_REQUEST_DATE + "` = now(), `" + COLUMN_DATEMODIF + "` = now() "
                 + "WHERE `" + COLUMN_ID + "` = ? "
-                + "AND `" + COLUMN_STATE + "` = 'STARTING'";
+                + "AND `" + COLUMN_STATE + "` in ('STARTING', 'EXECUTING')";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {

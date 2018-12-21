@@ -820,7 +820,7 @@ function appendRobotList() {
     $.when(jqXHR).then(function (data) {
         var robotList = $("#robotSettings #robot");
 
-        robotList.append($('<option></option>').text(doc.getDocLabel("page_runtest", "custom_config")).val(""));
+        robotList.append($('<option></option>').text(doc.getDocLabel("page_runtest", "custom_config")).val("CustomConfiguration"));
         for (var index = 0; index < data.contentTable.length; index++) {
             robotList.append($('<option></option>').text(data.contentTable[index].robot).val(data.contentTable[index].robot));
         }
@@ -834,8 +834,8 @@ function loadRobotInfo(robot) {
     if (!(robot instanceof Array)) {
         robot = [robot]
     }
-
-    if (robot[0] !== "") {
+    
+    if (robot[0] !== "" && robot[0] !== "CustomConfiguration") {
         // We can edit Robot.
         $("#robotEdit").removeClass("disabled");
         $('#robotEdit').unbind("click");
