@@ -4,7 +4,7 @@
 
 *Improvements / New features*
 [square]
-* none
+* New Action now default to doNothing (in stead of Unknown).
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

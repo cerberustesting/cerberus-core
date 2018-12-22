@@ -2053,7 +2053,7 @@ function Action(json, parentStep, canUpdate) {
         this.testcase = "";
         this.step = parentStep.step;
         this.description = "";
-        this.action = "Unknown";
+        this.action = "doNothing";
         this.object = "";
         this.property = "";
         this.forceExeStatus = "";
