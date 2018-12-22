@@ -882,7 +882,7 @@ function loadRobotInfo(robot) {
         $('#robotEdit').unbind("click");
         $("#saveRobotPreferences").removeClass("disabled");
 
-        if (pref !== undefined && pref.robot === "") {
+        if (pref !== undefined && (pref.robot === "" || pref.robot === "CustomConfiguration")) {
             $("#robotSettings #robot").val(pref.robot);
             $("#robotSettings #seleniumIP").val(pref.ss_ip);
             $("#robotSettings #seleniumPort").val(pref.ss_p);
