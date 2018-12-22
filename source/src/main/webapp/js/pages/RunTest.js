@@ -577,7 +577,7 @@ function runTestCase(doRedirect) {
 
     var robotsstring = "";
     var robotSettings = $("#robotSettingsForm #robot").serialize();
-    if (robotSettings !== "robot=") {
+    if (robotSettings !== "robot=CustomConfiguration") {
         robotsstring += "&" + robotSettings;
     } else {
         paramSerialized += "&ss_ip=" + $("#robotSettingsForm #seleniumIP").val();

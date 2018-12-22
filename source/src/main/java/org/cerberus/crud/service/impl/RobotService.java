@@ -273,19 +273,4 @@ public class RobotService implements IRobotService {
         return robotDao.readDistinctValuesByCriteria(searchParameter, individualSearch, columnName);
     }
 
-    @Override
-    public Collection<Robot> getRobotsUsableForType(Collection<Robot> robotsLst, String type) {
-        List<Robot> res = new LinkedList<>();
-
-        for(Robot robot : robotsLst) {
-            if(type.equals(robot.getType())) {
-                res.add(robot);
-            }
-        }
-
-        if(res.isEmpty()) return robotsLst;
-
-        return res;
-    }
-
 }

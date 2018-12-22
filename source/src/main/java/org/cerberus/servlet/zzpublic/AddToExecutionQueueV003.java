@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.entity.*;
+import org.cerberus.crud.factory.IFactoryRobot;
 import org.cerberus.crud.service.ICampaignParameterService;
 import org.cerberus.crud.service.ICampaignService;
 import org.cerberus.crud.service.ILogEventService;
@@ -126,6 +127,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
     private ICampaignService campaignService;
     private ICountryEnvParamService countryEnvParamService;
     private IRobotService robotService;
+    private IFactoryRobot robotFactory;
 
     /**
      * Process request for both GET and POST method.
@@ -161,6 +163,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
         campaignService = appContext.getBean(ICampaignService.class);
         countryEnvParamService = appContext.getBean(ICountryEnvParamService.class);
         robotService = appContext.getBean(IRobotService.class);
+        robotFactory = appContext.getBean(IFactoryRobot.class);
 
         // Calling Servlet Transversal Util.
         ServletUtil.servletStart(request);
@@ -389,17 +392,29 @@ public class AddToExecutionQueueV003 extends HttpServlet {
         boolean tagAlreadyAdded = false;
 
         int nbrobot = 0;
+        Map<String, Robot> robotsMap = new HashMap<>();
         if (StringUtil.isNullOrEmpty(robotIP)) {
             if (robots == null || robots.isEmpty()) {
+                // RobotIP is not defined and no robot are provided so the content is probably testcases that does not require robot definition.
                 nbrobot = 1;
             } else {
+                // Not RobotIP defined but at least 1 robot has been found from servlet call or campaign definition.
                 nbrobot = robots.size();
+                try {
+                    // Load the map of robot from input.
+                    robotsMap = robotService.readToHashMapByRobotList(robots); // load Robots available for the campaign
+                    nbrobot = robotsMap.size();
+                } catch (CerberusException ex) {
+                    LOG.warn(ex.toString(), ex);
+                }
             }
         } else {
-            // Whene RobotIP is feeded, we do not consider the robot definition.
+            // When RobotIP is feeded, we do not consider the robot definition.
+            LOG.debug("Adding fake Robot.");
             nbrobot = 1;
             robots = new ArrayList<>();
             robots.add("");
+            robotsMap.put("", robotFactory.create(0, "", platform, browser, "", "Y", "", "", "", screenSize, browser, ""));
         }
 
         // Starting the request only if previous parameters exist.
@@ -420,7 +435,6 @@ public class AddToExecutionQueueV003 extends HttpServlet {
             // Part 1: Getting all possible Execution from test cases + countries + environments + browsers which have been sent to this servlet.
             List<TestCaseExecutionQueue> toInserts = new ArrayList<TestCaseExecutionQueue>();
             try {
-                Map<String, Robot> robotsMap = robotService.readToHashMapByRobotList(robots); // load Robots available for the campaign
 
                 HashMap<String, CountryEnvParam> envMap = new HashMap<>();
                 LOG.debug("Loading all environments.");
@@ -465,40 +479,43 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                                                     && (app.getType() != null)
                                                     && (app.getType().equalsIgnoreCase(Application.TYPE_GUI) || app.getType().equalsIgnoreCase(Application.TYPE_APK)
                                                     || app.getType().equalsIgnoreCase(Application.TYPE_IPA) || app.getType().equalsIgnoreCase(Application.TYPE_FAT))) {
-                                                if (robots == null || robots.isEmpty()) {
-                                                    robots = new ArrayList<>();
-                                                    robots.add("");
-                                                }
 
-                                                Collection<Robot> robotsDetails = robotService.getRobotsUsableForType(robotsMap.values(), app.getType());
+                                                for (Map.Entry<String, Robot> entry : robotsMap.entrySet()) {
+                                                    String key = entry.getKey();
+                                                    Robot robot = entry.getValue();
 
-                                                for (Robot robot : robotsDetails) {
                                                     try {
-                                                        LOG.debug("Insert Queue Entry.");
-                                                        // We get here the corresponding robotDecli value from robot.
-                                                        String robotDecli = robot.getRobotDecli();
-                                                        if (StringUtil.isNullOrEmpty(robotDecli)) {
-                                                            robotDecli = robot.getRobot();
-                                                        }
-                                                        if ("".equals(robot.getRobot()) && StringUtil.isNullOrEmpty(robotIP)) {
-                                                            // We don't insert the execution for robot application that have no robot and robotIP defined.
-                                                            nbrobotmissing++;
+                                                        if ("".equals(robot.getType()) || app.getType().equals(robot.getType())) {
+                                                            // Robot type is not feeded (not attached to any techno) or robot type match the one of the application.
+                                                            LOG.debug("Insert Queue Entry.");
+                                                            // We get here the corresponding robotDecli value from robot.
+                                                            String robotDecli = robot.getRobotDecli();
+                                                            if (StringUtil.isNullOrEmpty(robotDecli)) {
+                                                                robotDecli = robot.getRobot();
+                                                            }
+                                                            if ("".equals(robot.getRobot()) && StringUtil.isNullOrEmpty(robotIP)) {
+                                                                // We don't insert the execution for robot application that have no robot and robotIP defined.
+                                                                nbrobotmissing++;
+                                                            } else {
+                                                                toInserts.add(inQueueFactoryService.create(app.getSystem(),
+                                                                        test, testCase, country.getCountry(), environment,
+                                                                        robot.getRobot(), robotDecli, robotIP, robotPort, browser,
+                                                                        browserVersion, platform, screenSize, manualURL,
+                                                                        manualHost, manualContextRoot,
+                                                                        manualLoginRelativeURL, manualEnvData, tag,
+                                                                        screenshot, verbose, timeout, pageSource,
+                                                                        seleniumLog, 0, retries, manualExecution, priority,
+                                                                        user, null, null, null));
+                                                            }
                                                         } else {
-                                                            toInserts.add(inQueueFactoryService.create(app.getSystem(),
-                                                                    test, testCase, country.getCountry(), environment,
-                                                                    robot.getRobot(), robotDecli, robotIP, robotPort, browser,
-                                                                    browserVersion, platform, screenSize, manualURL,
-                                                                    manualHost, manualContextRoot,
-                                                                    manualLoginRelativeURL, manualEnvData, tag,
-                                                                    screenshot, verbose, timeout, pageSource,
-                                                                    seleniumLog, 0, retries, manualExecution, priority,
-                                                                    user, null, null, null));
+                                                            LOG.debug("Not inserted because app type '" + app.getType() + "' does not match robot type '" + robot.getType() + "'.");
                                                         }
                                                     } catch (FactoryCreationException e) {
                                                         LOG.error("Unable to insert record due to: " + e, e);
                                                         LOG.error("test: " + test + "-" + testCase + "-" + country.getCountry() + "-" + environment + "-" + robots);
                                                     }
                                                 }
+
                                             } else {
                                                 // Application does not support robot so we force an empty value.
                                                 LOG.debug("Forcing Robot to empty value. Application type=" + app.getType());
