@@ -1,10 +1,10 @@
 *Bug fixes*
 [square]
-* none
+* Fixed ifElementPresent condition that was not working correctly on XML Response #1900
 
 *Improvements / New features*
 [square]
-* New Action now default to doNothing (in stead of Unknown).
+* New Action now default to doNothing (in stead of Unknown). #1904
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

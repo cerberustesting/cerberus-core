@@ -280,11 +280,11 @@ public class ConditionService implements IConditionService {
         } else {
             boolean condition_result = false;
 
-            Identifier identifier = identifierService.convertStringToIdentifier(conditionValue1);
-
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
                     || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
                     || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
+
+                Identifier identifier = identifierService.convertStringToIdentifier(conditionValue1);
 
                 try {
                     if (this.webdriverService.isElementPresent(tCExecution.getSession(), identifier)) {
@@ -308,6 +308,10 @@ public class ConditionService implements IConditionService {
 
                     switch (tCExecution.getLastServiceCalled().getResponseHTTPBodyContentType()) {
                         case AppService.RESPONSEHTTPBODYCONTENTTYPE_XML:
+                            if (LOG.isDebugEnabled()) {
+                                LOG.debug("Checking if Element Present - XML");
+                            }
+
                             if (xmlUnitService.isElementPresent(responseBody, conditionValue1)) {
                                 condition_result = true;
                                 mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_IFELEMENTPRESENT);
@@ -317,7 +321,12 @@ public class ConditionService implements IConditionService {
                                 mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_IFELEMENTPRESENT);
                                 mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
                             }
-                        case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON: {
+                            break;
+
+                        case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON:
+                            if (LOG.isDebugEnabled()) {
+                                LOG.debug("Checking if Element Present - JSON");
+                            }
                             try {
                                 if (jsonService.getFromJson(responseBody, null, conditionValue1) != null) {
                                     condition_result = true;
@@ -332,7 +341,8 @@ public class ConditionService implements IConditionService {
                                 mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_GENERIC);
                                 mes.setDescription(mes.getDescription().replace("%ERROR%", ex.toString()));
                             }
-                        }
+                            break;
+
                         default:
                             condition_result = false;
                             mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_NOTSUPPORTED_FOR_MESSAGETYPE);
@@ -406,6 +416,7 @@ public class ConditionService implements IConditionService {
                     String responseBody = tCExecution.getLastServiceCalled().getResponseHTTPBody();
 
                     switch (tCExecution.getLastServiceCalled().getResponseHTTPBodyContentType()) {
+                        
                         case AppService.RESPONSEHTTPBODYCONTENTTYPE_XML:
                             if (!xmlUnitService.isElementPresent(responseBody, conditionValue1)) {
                                 condition_result = true;
@@ -416,7 +427,9 @@ public class ConditionService implements IConditionService {
                                 mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_IFELEMENTNOTPRESENT);
                                 mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
                             }
-                        case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON: {
+                            break;
+
+                        case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON:
                             try {
                                 if (jsonService.getFromJson(responseBody, null, conditionValue1) == null) {
                                     condition_result = true;
@@ -431,7 +444,8 @@ public class ConditionService implements IConditionService {
                                 mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_GENERIC);
                                 mes.setDescription(mes.getDescription().replace("%ERROR%", ex.toString()));
                             }
-                        }
+                            break;
+
                         default:
                             condition_result = false;
                             mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_NOTSUPPORTED_FOR_MESSAGETYPE);

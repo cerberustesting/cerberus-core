@@ -180,31 +180,38 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
             }
         }
         AnswerItem<TestCaseExecutionQueue> ret;
-        if (exeQueueId == 0) {
-            // Inserting the record into the Queue forcing its state to QUWITHDEP (in order to secure it doesnt get triggered).
-            object.setState(TestCaseExecutionQueue.State.QUWITHDEP);
+        if (StringUtil.isNullOrEmpty(object.getTag())) {
+            // If tag is not defined, we do not insert any dependencies.
             ret = testCaseExecutionInQueueDAO.create(object);
-            // If insert was done correctly, we will try to add the dependencies.
-            if (ret.getItem() != null) {
-                // Get the QueueId Result from inserted record.
-                long insertedQueueId = ret.getItem().getId();
-                // Adding dependencies
-                AnswerItem<Integer> retDep = testCaseExecutionQueueDepService.insertFromTCDep(insertedQueueId, object.getEnvironment(), object.getCountry(), object.getTag(), object.getTest(), object.getTestCase());
-                LOG.debug("Dep inserted : " + retDep.getItem());
-                if (retDep.getItem() < 1) {
-                    // In case there are no dependencies, we release the execution moving to QUEUED State
-                    updateToQueued(insertedQueueId, "");
-                }
-            }
         } else {
-            ret = testCaseExecutionInQueueDAO.create(object);
-            // We duplicagte here the dependencies.
-            if (ret.getItem() != null) {
-                // Get the QueueId Result from inserted record.
-                long insertedQueueId = ret.getItem().getId();
-                // Adding dependencies
-                AnswerItem<Integer> retDep = testCaseExecutionQueueDepService.insertFromQueueExeDep(insertedQueueId, exeQueueId);
-                LOG.debug("Dep inserted from old entries : " + retDep.getItem());
+            if (exeQueueId == 0) {
+                // Brand New execution Queue.
+                // Inserting the record into the Queue forcing its state to QUWITHDEP (in order to secure it doesnt get triggered).
+                object.setState(TestCaseExecutionQueue.State.QUWITHDEP);
+                ret = testCaseExecutionInQueueDAO.create(object);
+                // If insert was done correctly, we will try to add the dependencies.
+                if (ret.getItem() != null) {
+                    // Get the QueueId Result from inserted record.
+                    long insertedQueueId = ret.getItem().getId();
+                    // Adding dependencies
+                    AnswerItem<Integer> retDep = testCaseExecutionQueueDepService.insertFromTCDep(insertedQueueId, object.getEnvironment(), object.getCountry(), object.getTag(), object.getTest(), object.getTestCase());
+                    LOG.debug("Dep inserted : " + retDep.getItem());
+                    if (retDep.getItem() < 1) {
+                        // In case there are no dependencies, we release the execution moving to QUEUED State
+                        updateToQueued(insertedQueueId, "");
+                    }
+                }
+            } else {
+                // New execution Queue from an existing one (deplicated from an existing queue entry).
+                ret = testCaseExecutionInQueueDAO.create(object);
+                // We duplicagte here the dependencies.
+                if (ret.getItem() != null) {
+                    // Get the QueueId Result from inserted record.
+                    long insertedQueueId = ret.getItem().getId();
+                    // Adding dependencies
+                    AnswerItem<Integer> retDep = testCaseExecutionQueueDepService.insertFromQueueExeDep(insertedQueueId, exeQueueId);
+                    LOG.debug("Dep inserted from old entries : " + retDep.getItem());
+                }
             }
         }
 
