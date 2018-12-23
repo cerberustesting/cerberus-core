@@ -50,13 +50,23 @@ public interface IMyVersionService {
      * @param value
      * @return true if the update was done. False in case there were an issue.
      */
-    boolean UpdateMyVersionString(String key, String value);
-    
+    boolean updateMyVersionString(String key, String value);
+
+    /**
+     * Flag the key. Means that the method will return true if the previous
+     * value was N and update manage to move it to Y. It returns false if the
+     * previous value was already Y.
+     *
+     * @param key
+     * @return true if the update was done. False in case there were an issue.
+     */
+    boolean flagMyVersionString(String key);
+
     /**
      *
      * @param myversion
      * @return true if the update was done. False in case there were an issue.
      */
-    boolean UpdateMyVersionTable(MyVersion myversion);
+    boolean update(MyVersion myversion);
 
 }

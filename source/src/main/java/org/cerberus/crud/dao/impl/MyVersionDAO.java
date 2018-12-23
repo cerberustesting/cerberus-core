@@ -99,7 +99,7 @@ public class MyVersionDAO implements IMyVersionDAO {
     }
 
     @Override
-    public boolean updateMyVersion(MyVersion myVersion) {
+    public boolean update(MyVersion myVersion) {
         boolean result = false;
         final String query = "UPDATE myversion SET value = ? WHERE `key` = ? ";
 
@@ -150,6 +150,47 @@ public class MyVersionDAO implements IMyVersionDAO {
                 preStat.setString(2, myVersion.getKey());
 
                 result = preStat.execute();
+            } catch (SQLException exception) {
+                LOG.warn("Unable to execute query : " + exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.warn("Unable to execute query : " + exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                LOG.warn(e.toString());
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public boolean flagMyVersionString(String key) {
+        boolean result = false;
+        final String query = "UPDATE myversion SET valueString = 'Y' WHERE `key` = ? and valueString = 'N'";
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.key : " + key);
+        }
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, key);
+
+                if (preStat.executeUpdate() >= 1) {
+                    result = true;
+                } else {
+                    result = false;
+                }
             } catch (SQLException exception) {
                 LOG.warn("Unable to execute query : " + exception.toString());
             } finally {
