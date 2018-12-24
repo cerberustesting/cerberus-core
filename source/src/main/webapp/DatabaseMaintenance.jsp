@@ -142,7 +142,7 @@
                                         if ((i >= 3) && (MySQLRC.equalsIgnoreCase("OK"))) { // The myversion table is only available after the Version 3
                                             // Update the myversion table to comit the execution of the SQL Instruction.
                                             DtbVersion.setValue(i);
-                                            myVersionService.UpdateMyVersionTable(DtbVersion);
+                                            myVersionService.update(DtbVersion);
                                         }
                                         if (i >= 4) { // The log table is only available after the Version 4
                                             // Log the SQL execution here
