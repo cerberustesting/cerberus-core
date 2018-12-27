@@ -50,7 +50,7 @@ public class UserGroupService implements IUserGroupService {
     private IUserGroupDAO userGroupDAO;
 
     private final String OBJECT_NAME = "UserGroup";
-    
+
     @Override
     public void updateUserGroups(User user, List<UserGroup> newGroups) throws CerberusException {
 

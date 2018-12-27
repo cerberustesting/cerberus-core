@@ -20,6 +20,8 @@
 package org.cerberus.servlet.crud.usermanagement;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -90,6 +92,7 @@ public class ReadMyUser extends HttpServlet {
                         User myUser = userFactory.create(0, user, "NOAUTH", "N", "", "", "", "en", "", "", "", "", "", "", "", "", "", "");
                         LOG.debug("Create User.");
                         userService.insertUserNoAuth(myUser);
+                        userSystemService.createSystemAutomatic(user);
                     }
                 }
             }
@@ -110,9 +113,45 @@ public class ReadMyUser extends HttpServlet {
             data.put("reportingFavorite", myUser.getReportingFavorite());
             data.put("userPreferences", myUser.getUserPreferences());
 
+            // Define submenu entries
+            JSONObject menu = new JSONObject();
+            if (authMode.equals("keycloak")) {
+                // Name displayed in menu
+                menu.put("nameDisplay", user.substring(0, 8) + "...");
+                menu.put("accountLink", System.getProperty("org.cerberus.keycloak.url") + "/realms/" + System.getProperty("org.cerberus.keycloak.realm") + "/account/");
+                menu.put("logoutLink", System.getProperty("org.cerberus.keycloak.url") + "/realms/" + System.getProperty("org.cerberus.keycloak.realm") + "/protocol/openid-connect/logout?redirect_uri=%LOGOUTURL%");
+            } else {
+                // Name displayed in menu
+                menu.put("nameDisplay", myUser.getLogin());
+                menu.put("accountLink", "");
+                menu.put("logoutLink", "./Logout.jsp");
+            }
+            data.put("menu", menu);
+
             JSONArray groups = new JSONArray();
-            for (UserGroup group : userGroupService.findGroupByKey(myUser.getLogin())) {
-                groups.put(group.getGroup());
+            if (authMode.equals("keycloak")) {
+                List<String> groupList = new ArrayList<>();
+                groupList.add("Label");
+                groupList.add("RunTest");
+                groupList.add("Test");
+                groupList.add("TestAdmin");
+                groupList.add("TestDataManager");
+                groupList.add("TestRO");
+                groupList.add("TestStepLibrary");
+                groupList.add("IntegratorNewChain");
+                groupList.add("Integrator");
+                groupList.add("IntegratorDeploy");
+                groupList.add("IntegratorRO");
+                groupList.add("Administrator");
+                for (String myGroup : groupList) {
+                    if (request.isUserInRole(myGroup)) {
+                        groups.put(myGroup);
+                    }
+                }
+            } else {
+                for (UserGroup group : userGroupService.findGroupByKey(myUser.getLogin())) {
+                    groups.put(group.getGroup());
+                }
             }
             data.put("group", groups);
 

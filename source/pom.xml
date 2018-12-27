@@ -73,7 +73,7 @@
         <commons-text.version>1.3</commons-text.version>
         <poi.version>3.13</poi.version>
         <asciidoctor.version>1.5.6</asciidoctor.version>
-        <apache.tika>1.19.1</apache.tika>
+        <apache.tika>1.20</apache.tika>
         <fluent-hc.version>4.5.3</fluent-hc.version>
         
         <!-- Test scope -->
@@ -402,17 +402,17 @@
             <!-- Fix jenkins build issue  -->
             
             <plugin>
-  				<groupId>org.apache.maven.plugins</groupId>
-  				<artifactId>maven-site-plugin</artifactId>
-  				<version>3.3</version>
-				</plugin>
-			<plugin>
-  				<groupId>org.apache.maven.plugins</groupId>
-  				<artifactId>maven-project-info-reports-plugin</artifactId>
-  				<version>2.7</version>
-			</plugin>
-			
-			<!-- end -->
+  		<groupId>org.apache.maven.plugins</groupId>
+  		<artifactId>maven-site-plugin</artifactId>
+  		<version>3.3</version>
+            </plugin>
+            <plugin>
+  		<groupId>org.apache.maven.plugins</groupId>
+  		<artifactId>maven-project-info-reports-plugin</artifactId>
+  		<version>2.7</version>
+            </plugin>
+
+            <!-- end -->
           
             <plugin>
                 <artifactId>maven-war-plugin</artifactId>
@@ -553,7 +553,7 @@
         
         
         <!--
-            Additional configuration for deployment process on the qualification demonstration server
+            Additional configuration for deployment process on the qualification server
 
             /!\ Prerequisites: Beware to correctly declared the following properties into your Maven settings:
                 - cerberus.demo.qa.username, which is the Cerberus demonstration server's user
@@ -569,10 +569,6 @@
                 <cerberus.demo.tomcat.shutdown>/opt/bin/stopQA.sh</cerberus.demo.tomcat.shutdown>
                 <cerberus.demo.tomcat.deploy>/opt/bin/deployQA.sh</cerberus.demo.tomcat.deploy>
                 <cerberus.demo.tomcat.undeploy>/opt/bin/undeployQA.sh</cerberus.demo.tomcat.undeploy>
-<!--                <cerberus.demo.glassfish.asadmin-path>/opt/glassfish4/glassfish/bin/asadmin</cerberus.demo.glassfish.asadmin-path>
-                <cerberus.demo.glassfish.application>CerberusQA</cerberus.demo.glassfish.application>
-                <cerberus.demo.glassfish.cluster>cerberusinstanceqa</cerberus.demo.glassfish.cluster>
-                <cerberus.demo.glassfish.context-root>CerberusQA</cerberus.demo.glassfish.context-root>-->
             </properties>
             <build>
                 <plugins>

@@ -324,10 +324,8 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
          * Automatic Cancellation job. That Job force to CANCELLED queue entries
          * that still in Executing state and too old to be still running.
          */
-        if (parameterService.getParameterBooleanByKey("cerberus_automaticqueuecancellationjob_active", "", true)) {
-            Integer timeout = parameterService.getParameterIntegerByKey("cerberus_automaticqueuecancellationjob_timeout", "", 3600);
-            testCaseExecutionInQueueDAO.updateToCancelledOldRecord(timeout, "Cancelled by automatic job.");
-        }
+        Integer timeout = parameterService.getParameterIntegerByKey("cerberus_automaticqueuecancellationjob_timeout", "", 3600);
+        testCaseExecutionInQueueDAO.updateToCancelledOldRecord(timeout, "Cancelled by automatic job.");
     }
 
     @Override

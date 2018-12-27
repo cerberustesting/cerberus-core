@@ -1260,8 +1260,10 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_global','tab_definition','','fr','Définition','',NULL)");
         b.append(",('page_global','tab_advanced','','en','Advanced','',NULL)");
         b.append(",('page_global','tab_advanced','','fr','Avancé','',NULL)");
-        b.append(",('page_header','logout','','en','Logout','',NULL)");
-        b.append(",('page_header','logout','','fr','Déconnexion','',NULL)");
+        b.append(",('page_header','menuLogout','','en','Logout','',NULL)");
+        b.append(",('page_header','menuLogout','','fr','Déconnexion','',NULL)");
+        b.append(",('page_header','menuAccount','','en','Account','',NULL)");
+        b.append(",('page_header','menuAccount','','fr','Compte','',NULL)");
         b.append(",('page_header','menuAdmin','','en','Administration','',NULL)");
         b.append(",('page_header','menuAdmin','','fr','Administration','',NULL)");
         b.append(",('page_header','menuApplicationObjects','','en','Application Object','',NULL)");

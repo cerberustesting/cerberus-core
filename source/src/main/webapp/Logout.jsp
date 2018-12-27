@@ -35,12 +35,13 @@
 
         <script type='text/javascript' src='js/global/global.js'></script>
         <script type='text/javascript' src='js/pages/Logout.js'></script>
-        <META HTTP-EQUIV="refresh" CONTENT="1;URL=Login.jsp">
+        <META HTTP-EQUIV="refresh" CONTENT="1;URL=./">
         <title>Logout</title>
     </head>
     <body style="background-color: #fff">
         <script type="text/javascript">
             envTuning("<%=System.getProperty("org.cerberus.environment")%>");
+            sessionStorage.removeItem("user");
         </script>
         <div align="center" style="padding-top: 12%;">
             <h1>Logout Successfully</h1>

@@ -74,6 +74,12 @@
         <br><br>
         <h4>Error Code : <%=request.getParameter("error")%></h4>
         <h4><%=request.getAttribute("javax.servlet.error.message")%></h4>
+        <br>
+        <br>
+        <h4>You can try to :</h4>
+        <a href="./Logout.jsp">Logout</a><br>
+        <a href="./">Back to homepage</a>
+        <br>
         <br><%
             out.print(display_footer(DatePageStart));
         %>

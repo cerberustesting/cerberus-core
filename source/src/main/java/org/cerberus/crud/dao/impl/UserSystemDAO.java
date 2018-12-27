@@ -24,6 +24,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -38,6 +39,7 @@ import org.cerberus.crud.entity.UserSystem;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.factory.IFactoryUserSystem;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.SqlUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -259,9 +261,8 @@ public class UserSystemDAO implements IUserSystemDAO {
     public void insertUserSystem(UserSystem userSystem) throws CerberusException {
         final String query = "INSERT INTO usersystem (`login`, `system`) VALUES (?, ?)";
 
-        
-        try(Connection connection = this.databaseSpring.connect();
-        		PreparedStatement preStat = connection.prepareStatement(query);) {
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query);) {
             try {
                 preStat.setString(1, userSystem.getLogin());
                 preStat.setString(2, userSystem.getSystem());
@@ -273,16 +274,15 @@ public class UserSystemDAO implements IUserSystemDAO {
         } catch (SQLException exception) {
             LOG.warn("Unable to execute query : " + exception.toString());
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
-        } 
+        }
     }
 
     @Override
     public void deleteUserSystem(UserSystem userSystem) throws CerberusException {
         final String query = "DELETE FROM usersystem WHERE `login` = ? and `system` = ?";
 
-        
-        try(Connection connection = this.databaseSpring.connect();
-        		PreparedStatement preStat = connection.prepareStatement(query);) {
+        try (Connection connection = this.databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query);) {
             try {
                 preStat.setString(1, userSystem.getLogin());
                 preStat.setString(2, userSystem.getSystem());
@@ -311,8 +311,8 @@ public class UserSystemDAO implements IUserSystemDAO {
                 PreparedStatement preStat = connection.prepareStatement(Query.READ_BY_USER)) {
             // Prepare and execute query
             preStat.setString(1, login);
-            try(ResultSet resultSet = preStat.executeQuery();){
-            	// Parse query
+            try (ResultSet resultSet = preStat.executeQuery();) {
+                // Parse query
                 List<UserSystem> result = new ArrayList<>();
                 while (resultSet.next()) {
                     result.add(loadUserSystemFromResultSet(resultSet));
@@ -322,11 +322,11 @@ public class UserSystemDAO implements IUserSystemDAO {
                 // Set the final message
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
                         .resolveDescription("OPERATION", "GET");
-            }catch (SQLException exception) {
+            } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-            } 
+            }
         } catch (Exception e) {
             LOG.warn("Unable to read userSystem: " + e.getMessage());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
@@ -343,8 +343,15 @@ public class UserSystemDAO implements IUserSystemDAO {
         Answer ans = new Answer();
         MessageEvent msg = null;
 
+        String query = Query.CREATE;
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+
         try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(Query.CREATE)) {
+                PreparedStatement preStat = connection.prepareStatement(query)) {
             // Prepare and execute query
             preStat.setString(1, sys.getLogin());
             preStat.setString(2, sys.getSystem());
@@ -355,6 +362,75 @@ public class UserSystemDAO implements IUserSystemDAO {
                     .resolveDescription("OPERATION", "CREATE");
         } catch (Exception e) {
             LOG.warn("Unable to create UserSystem: " + e.getMessage());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                    e.toString());
+        } finally {
+            ans.setResultMessage(msg);
+        }
+
+        return ans;
+    }
+
+    @Override
+    public Answer createSystemList(String user, String[] systemList) {
+        Answer ans = new Answer(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+        MessageEvent msg = null;
+
+        String query = "INSERT INTO usersystem(Login, System) SELECT ? , value FROM invariant where idname='SYSTEM' and " + SqlUtil.generateInClause("value", Arrays.asList(systemList)) + ";";
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+
+        try (Connection connection = databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query)) {
+            // Prepare and execute query
+            int i = 1;
+            preStat.setString(i++, user);
+            for (String system : systemList) {
+                preStat.setString(i++, system);
+
+            }
+            preStat.executeUpdate();
+
+            // Set the final message
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
+                    .resolveDescription("OPERATION", "CREATE");
+        } catch (Exception e) {
+            LOG.warn("Unable to create userSystem: " + e.getMessage());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                    e.toString());
+        } finally {
+            ans.setResultMessage(msg);
+        }
+
+        return ans;
+    }
+
+    @Override
+    public Answer createAllSystemList(String user) {
+        Answer ans = new Answer(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+        MessageEvent msg = null;
+
+        String query = "INSERT INTO usersystem(Login, System) SELECT ? , value FROM invariant where idname='SYSTEM' and value not like 'US-%';";
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+
+        try (Connection connection = databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query)) {
+            // Prepare and execute query
+            preStat.setString(1, user);
+            preStat.executeUpdate();
+
+            // Set the final message
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
+                    .resolveDescription("OPERATION", "CREATE");
+        } catch (Exception e) {
+            LOG.warn("Unable to create userSystem: " + e.getMessage());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
                     e.toString());
         } finally {

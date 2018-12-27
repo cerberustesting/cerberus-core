@@ -30,7 +30,7 @@ import org.cerberus.util.answer.AnswerList;
  * @author bcivel
  */
 public interface IUserSystemDAO {
-    
+
     UserSystem findUserSystemByKey(String login, String system) throws CerberusException;
 
     /**
@@ -38,14 +38,14 @@ public interface IUserSystemDAO {
      * @throws CerberusException
      */
     List<UserSystem> findallUser() throws CerberusException;
-    
+
     /**
      * @param login
      * @return a list of all the userSystem of a user
      * @throws CerberusException
      */
     List<UserSystem> findUserSystemByUser(String login) throws CerberusException;
-    
+
     /**
      * @return a list of all the userSystem of a system
      * @throws CerberusException
@@ -85,11 +85,26 @@ public interface IUserSystemDAO {
     Answer create(UserSystem sys);
 
     /**
+     *
+     * @param user
+     * @param systemList
+     * @return
+     */
+    Answer createSystemList(String user, String[] systemList);
+
+    /**
+     *
+     * @param user
+     * @return
+     */
+    Answer createAllSystemList(String user);
+
+    /**
      * Remove the usersystem
      *
      * @param sys
      * @return
      */
     Answer remove(UserSystem sys);
-    
+
 }

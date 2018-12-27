@@ -8017,6 +8017,14 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append("ADD INDEX `IX_testcaseexecutiondep_04` (`ExeID` ASC);");
         a.add(b.toString());
 
+        // New parameters.
+        // 1395
+        a.add("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES "
+                + "('', 'cerberus_accountcreation_systemlist', 'ALL', 'Either ALL, NONE or a coma separated list of system to create by default when a new user is created.')"
+                + ",('', 'cerberus_accountcreation_ownsystemcreation', 'Y', 'Y in order to automatically create a personal system for the user. That system will be named US-login')"
+                + ",('', 'cerberus_automaticqueueprocessingjob_period', '30', 'Period of time in minutes between each job that will process queue entries that are still in the queue (that job should automatically be submitted after the end of each execution).')"
+                + ",('', 'cerberus_automaticqueueprocessingjob_active', 'Y', 'Y in order to activate the job that will process the queue entries that are still in the sueue.');");
+
         return a;
     }
 
