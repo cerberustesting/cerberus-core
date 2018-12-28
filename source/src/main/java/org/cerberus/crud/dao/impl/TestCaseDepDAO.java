@@ -63,7 +63,9 @@ public class TestCaseDepDAO implements ITestCaseDepDAO {
 
     @Override
     public List<TestCaseDep> readByTestAndTestCase(String test, String testcase) throws CerberusException {
-        String query = "SELECT * FROM `testcasedep` tcd where tcd.Test = ? and tcd.TestCase = ?";
+        String query = "SELECT tcd.*, tc.description as depDescription FROM `testcasedep` tcd " +
+                "inner join testcase tc on tcd.DepTest = tc.Test and tcd.DepTestCase = tc.TestCase " +
+                "where tcd.Test = ? and tcd.TestCase = ?";
 
             return RequestDbUtils.executeQueryList(databaseSpring, query,
                     ps -> {
@@ -71,13 +73,19 @@ public class TestCaseDepDAO implements ITestCaseDepDAO {
                         ps.setString(idx++, test);
                         ps.setString(idx++, testcase);
                     },
-                    rs -> this.loadResult(rs)
+                    rs -> {
+                        TestCaseDep dep = this.loadResult(rs);
+                        dep.setDepDescription(rs.getString("depDescription"));
+                        return dep;
+                    }
             );
     }
 
     @Override
     public List<TestCaseDep> readByTestAndTestCase(List<TestCase> testCaseList) throws CerberusException {
-        String query = "SELECT * FROM `testcasedep` tcd where 1=1" +
+        String query = "SELECT tcd.*, tc.description as depDescription FROM `testcasedep` tcd " +
+                "inner join testcase tc on tcd.DepTest = tc.Test and tcd.DepTestCase = tc.TestCase " +
+                "where 1=1" +
                 testCaseList.stream().map(s -> " and tcd.Test = ? and tcd.TestCase = ?").collect(Collectors.joining());
 
         return RequestDbUtils.executeQueryList(databaseSpring, query,
@@ -88,8 +96,12 @@ public class TestCaseDepDAO implements ITestCaseDepDAO {
                         ps.setString(idx++, tc.getTestCase());
                     }
                 },
-                rs -> this.loadResult(rs)
-        );
+                rs -> {
+                    TestCaseDep dep = this.loadResult(rs);
+                    dep.setDepDescription(rs.getString("depDescription"));
+                    return dep;
+                }
+         );
     }
 
 

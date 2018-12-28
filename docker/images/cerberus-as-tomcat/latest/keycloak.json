@@ -1,0 +1,5 @@
+{
+  "realm" : "cerberus",
+  "resource" : "cerberus-testing",
+  "auth-server-url" : "http://localhost:8080/auth"
+}

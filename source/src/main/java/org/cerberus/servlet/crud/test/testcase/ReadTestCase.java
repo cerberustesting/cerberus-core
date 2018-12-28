@@ -634,6 +634,7 @@ public class ReadTestCase extends AbstractCrudTestCase {
                 .put("type", testCaseDep.getType())
                 .put("active", testCaseDep.getActive())
                 .put("description", testCaseDep.getDescription())
+                .put("depDescription", testCaseDep.getDepDescription())
                 .put("depEvent", testCaseDep.getDepEvent());
     }
 

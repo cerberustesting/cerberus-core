@@ -41,6 +41,7 @@ public class TestCaseDep {
     private Timestamp dateCreated;
     private String usrModif;
     private Timestamp dateModif;
+    private String depDescription;
 
     /**
      * Not included in table.
@@ -154,6 +155,13 @@ public class TestCaseDep {
         this.dateModif = dateModif;
     }
 
+    public String getDepDescription() {
+        return depDescription;
+    }
+
+    public void setDepDescription(String depDescription) {
+        this.depDescription = depDescription;
+    }
 
     public boolean hasSameKey(TestCaseDep tcd) {
         return this.getTest().equals(tcd.getTest()) &&
