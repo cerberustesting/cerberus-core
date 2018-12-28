@@ -29,7 +29,7 @@ import java.sql.Timestamp;
 public class FactoryTestCaseDep implements IFactoryTestCaseDep {
 
     @Override
-    public TestCaseDep create(Integer id, String test, String testCase, String depTest, String depTestCase, String depEvent, String type, String active, String description
+    public TestCaseDep create(Long id, String test, String testCase, String depTest, String depTestCase, String depEvent, String type, String active, String description
             , String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif) {
         TestCaseDep dep = new TestCaseDep();
 

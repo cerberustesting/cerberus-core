@@ -160,15 +160,17 @@ function initModalTestCase() {
         } else if(indexTest === 0 || indexTestCase === 0) {
             showMessage(new Message("KO", 'Select a test case'), $('#editTestCaseModal'));
         } else {
-            addHtmlForDependencyLine(test, testCase, testCaseTxt)
+            addHtmlForDependencyLine(0, test, testCase, testCaseTxt, true, "")
         }
     })
 }
 
-function addHtmlForDependencyLine(test, testCase, testCaseTxt) {
+function addHtmlForDependencyLine(id, test, testCase, testCaseTxt, activate, description) {
+    let checked = "";
+    if(activate)  checked = "checked";
     $("#depenencyTable").append(
-        '<tr role="row" class="odd" id="' + getHtmlIdForTestCase(test, testCase) + '"  test="' + test + '" testcase="' + testCase + '">' +
-            '<td class="sorting_1">' +
+        '<tr role="row" class="odd" id="' + getHtmlIdForTestCase(test, testCase) + '"  test="' + test + '" testcase="' + testCase + '" testcaseid="' + id + '">' +
+            '<td class="sorting_1" style="width: 100px;">' +
                 '<div class="center btn-group">' +
                     '<button id="removeTestparameter" onclick="removeTestCaseDependency(\'' + test + '\',\'' + testCase + '\');" class="removeTestparameter btn btn-default btn-xs margin-right5" name="removeTestparameter" title="Remove Test Case Dependency" type="button">' +
                         '<span class="glyphicon glyphicon-trash"></span>' +
@@ -176,6 +178,8 @@ function addHtmlForDependencyLine(test, testCase, testCaseTxt) {
                 '</div>' +
             '</td>' +
             '<td>' + test + ' - ' + testCaseTxt + '</td>' +
+            '<td style="width: 100px;">  <input type="checkbox"  name="activate" '+checked+'/></td>' +
+            '<td>  <input class="form-control input-sm" name="description" value="'+description+'"/></td>' +
         '</tr>'
     );
 }
@@ -449,7 +453,7 @@ function confirmTestCaseModalHandler(mode) {
     $("#depenencyTable").find("tr")
         .each( (t,  v) =>
             testcaseDependency.push(
-                { test: $(v).attr("test"), testcase: $(v).attr("testcase") }
+                { id: $(v).attr("testcaseid"), test: $(v).attr("test"), testcase: $(v).attr("testcase"), description: $(v).find("[name='description']").val(), active: $(v).find("[name='activate']").is(":checked") }
             )
         )
 
@@ -928,7 +932,7 @@ function appendTestCaseDepList(testCase) {
     $("#depenencyTable").find("tr").remove() // clean the table
 
     testCase.dependencyList.forEach( (dep) =>
-        addHtmlForDependencyLine(dep.depTest, dep.depTestCase, dep.depTestCase + " - " + dep.depDescription)
+        addHtmlForDependencyLine(dep.id, dep.depTest, dep.depTestCase, dep.depTestCase + " - " + dep.depDescription, dep.active, dep.description)
     )
 }
 

@@ -276,11 +276,17 @@ public abstract class AbstractCreateUpdateTestCase extends AbstractCrudTestCase 
         List<TestCaseDep> res = new LinkedList<>();
         jsonArrayFoEach(request, "testcaseDependency", (jsonObj) -> {
                     String testcase = jsonObj.getString("testcase");
+                    Long testcaseid = jsonObj.getLong("id");
                     String test = jsonObj.getString("test");
+                    String description = jsonObj.getString("description");
+
+                    String active = jsonObj.getString("active");
+                    if(Boolean.valueOf(active)) active = "Y";
+                    else active = "N";
 
                     Timestamp creationDate = new Timestamp(new Date().getTime());
 
-                    res.add(testCaseDepFactory.create(0, tc.getTest(), tc.getTestCase(), test, testcase, "", TestCaseExecutionQueueDep.TYPE_TCEXEEND,"Y", "TODO", request.getRemoteUser(), creationDate, request.getRemoteUser(), creationDate));
+                    res.add(testCaseDepFactory.create(testcaseid, tc.getTest(), tc.getTestCase(), test, testcase, "", TestCaseExecutionQueueDep.TYPE_TCEXEEND,active, description, request.getRemoteUser(), creationDate, request.getRemoteUser(), creationDate));
                 }
         );
 

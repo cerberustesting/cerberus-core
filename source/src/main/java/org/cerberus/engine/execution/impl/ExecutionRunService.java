@@ -1263,7 +1263,7 @@ public class ExecutionRunService implements IExecutionRunService {
             try {
                 testCaseStepActionExecution.addFileList(recorderService.recordExecutionInformationAfterStepActionandControl(testCaseStepActionExecution, null));
             } catch (Exception ex) {
-                LOG.warn("Unable to record Screenshot/PageSource : " + ex.toString());
+                LOG.warn("Unable to record Screenshot/PageSource : " + ex.toString(), ex);
             }
 
         } else {

@@ -627,12 +627,13 @@ public class ReadTestCase extends AbstractCrudTestCase {
 
     private JSONObject convertToJSONObject(TestCaseDep testCaseDep) throws JSONException {
         return new JSONObject()
+                .put("id", testCaseDep.getId())
                 .put("test", testCaseDep.getTest())
                 .put("testCase", testCaseDep.getTestCase())
                 .put("depTest", testCaseDep.getDepTest())
                 .put("depTestCase", testCaseDep.getDepTestCase())
                 .put("type", testCaseDep.getType())
-                .put("active", testCaseDep.getActive())
+                .put("active", "Y".equals(testCaseDep.getActive()))
                 .put("description", testCaseDep.getDescription())
                 .put("depDescription", testCaseDep.getDepDescription())
                 .put("depEvent", testCaseDep.getDepEvent());
