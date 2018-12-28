@@ -84,7 +84,7 @@ public class TestCaseExecutionQueueDepService implements ITestCaseExecutionQueue
         HashMap<TestCaseExecution, List<TestCaseExecutionQueueDep>> dependenciesByTestCaseExecution = testCaseExecutionQueueDepDAO.readDependenciesByTestCaseExecution(testCaseExecutions);
 
         // modify directly the parameter variable
-        for(Map.Entry<TestCaseExecution, List<TestCaseExecutionQueueDep>> entry : dependenciesByTestCaseExecution.entrySet() ) {
+        for (Map.Entry<TestCaseExecution, List<TestCaseExecutionQueueDep>> entry : dependenciesByTestCaseExecution.entrySet()) {
             entry.getKey().setTestCaseDep(entry.getValue());
         }
     }

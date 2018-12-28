@@ -90,6 +90,7 @@ public interface ITestCaseExecutionQueueDepService {
     /**
      * load test case dependency Queue on object each TestCaseExecution
      * @param testCaseExecutions
+     * @throws org.cerberus.exception.CerberusException
      */
     void loadDependenciesOnTestCaseExecution(List<TestCaseExecution> testCaseExecutions) throws CerberusException;
 

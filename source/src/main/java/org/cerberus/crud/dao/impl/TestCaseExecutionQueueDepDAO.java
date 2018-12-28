@@ -29,7 +29,6 @@ import org.cerberus.crud.dao.ITestCaseExecutionQueueDepDAO;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionQueueDep;
 import org.cerberus.crud.factory.IFactoryTestCaseExecutionQueueDep;
-import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.utils.RequestDbUtils;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.engine.entity.MessageEvent;
@@ -621,31 +620,30 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
         return answer;
     }
 
-
-
-
-    public HashMap<TestCaseExecution,List<TestCaseExecutionQueueDep>> readDependenciesByTestCaseExecution(List<TestCaseExecution> testCaseExecutions) throws CerberusException {
-        HashMap<TestCaseExecution,List<TestCaseExecutionQueueDep>> hashMap = new HashMap<>();
-        if(CollectionUtils.isEmpty(testCaseExecutions)) return hashMap;
-
+    @Override
+    public HashMap<TestCaseExecution, List<TestCaseExecutionQueueDep>> readDependenciesByTestCaseExecution(List<TestCaseExecution> testCaseExecutions) throws CerberusException {
+        HashMap<TestCaseExecution, List<TestCaseExecutionQueueDep>> hashMap = new HashMap<>();
+        if (CollectionUtils.isEmpty(testCaseExecutions)) {
+            return hashMap;
+        }
 
         StringBuilder query = new StringBuilder(
-                "SELECT * FROM testcaseexecutionqueuedep " +
-                        "where exeQueueID in (");
-        testCaseExecutions.forEach( tc -> query.append("?,"));
+                "SELECT * FROM testcaseexecutionqueuedep "
+                + "where exeQueueID in (");
+        testCaseExecutions.forEach(tc -> query.append("?,"));
         query.setLength(query.length() - 1);
         query.append(")");
 
-
         List<TestCaseExecutionQueueDep> lst = RequestDbUtils.executeQueryList(databaseSpring, query.toString(),
-                ps ->  {
-                    int idx=1;
-                    for (TestCaseExecution tc : testCaseExecutions) ps.setLong(idx++, tc.getQueueID());
+                ps -> {
+                    int idx = 1;
+                    for (TestCaseExecution tc : testCaseExecutions) {
+                        ps.setLong(idx++, tc.getQueueID());
+                    }
                 },
                 rs -> loadFromResultSet(rs));
 
-
-        Map<Long, TestCaseExecution> hashMapTC = testCaseExecutions.stream().collect( Collectors.toMap( tce -> tce.getQueueID(), tce -> tce)) ;
+        Map<Long, TestCaseExecution> hashMapTC = testCaseExecutions.stream().collect(Collectors.toMap(tce -> tce.getQueueID(), tce -> tce));
 
         for (TestCaseExecutionQueueDep tce : lst) {
             hashMap
@@ -657,9 +655,6 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
 
         return hashMap;
     }
-
-
-
 
     private TestCaseExecutionQueueDep loadFromResultSet(ResultSet rs) throws SQLException {
         Long id = ParameterParserUtil.parseLongParam(rs.getString("id"), -1);

@@ -30,24 +30,35 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class RequestDbUtils {
 
+    private static final Logger LOG = LogManager.getLogger(RequestDbUtils.class);
+
     @FunctionalInterface
     public interface SqlFunction<T, R> {
+
         R apply(T t) throws SQLException;
     }
 
     @FunctionalInterface
     public interface VoidSqlFunction<T> {
+
         void apply(T t) throws SQLException;
     }
 
     public static <T> T executeQuery(DatabaseSpring databaseSpring, String query, VoidSqlFunction<PreparedStatement> functionPrepareStatement,
-                                     SqlFunction<ResultSet, T> functionResultSet) throws CerberusException {
+            SqlFunction<ResultSet, T> functionResultSet) throws CerberusException {
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+
         try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query);
-        ) {
+                PreparedStatement preStat = connection.prepareStatement(query);) {
             functionPrepareStatement.apply(preStat);
 
             try (ResultSet resultSet = preStat.executeQuery()) {
@@ -62,11 +73,15 @@ public class RequestDbUtils {
         return null;
     }
 
-
     public static <T> T executeUpdate(DatabaseSpring databaseSpring, String query, VoidSqlFunction<PreparedStatement> functionPrepareStatement) throws CerberusException {
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+
         try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query);
-        ) {
+                PreparedStatement preStat = connection.prepareStatement(query);) {
             functionPrepareStatement.apply(preStat);
             preStat.executeUpdate();
         } catch (SQLException exception) {
@@ -77,12 +92,17 @@ public class RequestDbUtils {
     }
 
     public static <T> List<T> executeQueryList(DatabaseSpring databaseSpring, String query, VoidSqlFunction<PreparedStatement> functionPrepareStatement,
-                                               SqlFunction<ResultSet, T> functionResultSet) throws CerberusException {
+            SqlFunction<ResultSet, T> functionResultSet) throws CerberusException {
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+
         List<T> res = new LinkedList<>();
 
         try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query);
-        ) {
+                PreparedStatement preStat = connection.prepareStatement(query);) {
             functionPrepareStatement.apply(preStat);
 
             try (ResultSet resultSet = preStat.executeQuery()) {

@@ -128,5 +128,11 @@ public interface ITestCaseExecutionQueueDepDAO {
      */
     AnswerList<String> readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 
+    /**
+     *
+     * @param testCaseExecutions
+     * @return
+     * @throws CerberusException
+     */
     HashMap<TestCaseExecution,List<TestCaseExecutionQueueDep>> readDependenciesByTestCaseExecution(List<TestCaseExecution> testCaseExecutions) throws CerberusException;
 }
