@@ -37,6 +37,7 @@ In conf folder, in 'context.xml' add the following sections :
                 global="jdbc/cerberusprd"
                 type="javax.sql.DataSource"/>
 
+Sample config files can be found in docs/Tomcat Folder : (https://github.com/cerberustesting/cerberus-source/tree/master/docs/Tomcat).
 
 ----------------
 
@@ -80,3 +81,7 @@ On Tomcat, in conf folder, modify 'server.xml' in order to Change port to 8180 :
                redirectPort="8443" />
 
 On Tomcat, in lib folder, unzip all jar from 'keycloak-tomcat8-adapter-dist-4.7.0.Final.tar.gz'
+
+Please also consult user migration documentation : (https://github.com/cerberustesting/cerberus-source/blob/master/docs/KeycloakMigration/README.md).
+
+
