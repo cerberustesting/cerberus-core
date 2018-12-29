@@ -4,7 +4,7 @@ In bin folder, create 'setenv.sh' file  with content :
 
 CATALINA_OPTS="-Dorg.cerberus.environment=prd -Dorg.cerberus.authentification=none -Xmx1024m"
 
-In conf folder, in 'server.xml' add the following sections :
+In conf folder, in 'server.xml' add the following sections (remove mariadb/mysql depending on database engine choosen) :
 
     <Resource   name="jdbc/cerberusprd"
                 global="jdbc/cerberusprd"
@@ -16,20 +16,20 @@ In conf folder, in 'server.xml' add the following sections :
                 maxWaitMillis="10000"
                 username="cerberus"
                 password="toto"
-                driverClassName="org.mariadb.jdbc.Driver"
-                url="jdbc:mariadb://localhost:3306/cerberus"/>
+                driverClassName="<org.mariadb.jdbc.Driver|com.mysql.jdbc.Driver>"
+                url="jdbc:<mariadb|mysql>://localhost:3306/cerberus"/>
+
 
         <Realm className="org.apache.catalina.realm.JDBCRealm"
-            driverName="org.mariadb.jdbc.Driver"
-            connectionURL="jdbc:mariadb://localhost:3306/cerberus?user=cerberus&amp;password=toto"
+            driverName="<org.mariadb.jdbc.Driver|com.mysql.jdbc.Driver>"
+            connectionURL="jdbc:<mariadb|mysql>://localhost:3306/cerberus?user=cerberus&amp;password=toto"
             userTable="user"
             userNameCol="Login"
-            userCredCol="Password" 
-            userRoleTable="usergroup" 
+            userCredCol="Password"
+            userRoleTable="usergroup"
             roleNameCol="GroupName">
             <CredentialHandler className="org.apache.catalina.realm.MessageDigestCredentialHandler" algorithm="SHA-1" />
         </Realm>
-
 
 In conf folder, in 'context.xml' add the following sections :
 
@@ -46,7 +46,7 @@ https://www.keycloak.org/downloads.html
 
 Install and start KeyCloak server on port 8080 by running standalone.sh command.
 
-Create and Configure a Realm 'Cerberus' with Client 'cerberus' with 'http://localhost:8180/Cerberus/*' as Valid redirect URL.
+Create and Configure a Realm 'Cerberus' with Client 'cerberus' with 'http://localhost:8180/Cerberus/*' (correspond to Cerberus URL) as Valid redirect URL.
 
 On Cerberus source, uncomment following line from META-INF/context.xml
 Also secure the path variable match your contextroot.
