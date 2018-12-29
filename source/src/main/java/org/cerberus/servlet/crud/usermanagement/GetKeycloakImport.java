@@ -135,6 +135,11 @@ public class GetKeycloakImport extends HttpServlet {
                 JSONArray disaCred = new JSONArray();
                 disaCred.put("password");
 
+                JSONArray reqActions = new JSONArray();
+                reqActions.put("VERIFY_EMAIL");
+                reqActions.put("UPDATE_PASSWORD");
+                reqActions.put("UPDATE_PROFILE");
+
                 JSONArray account = new JSONArray();
                 account.put("manage-account");
                 account.put("view-profile");
@@ -172,7 +177,7 @@ public class GetKeycloakImport extends HttpServlet {
 
                     u.put("disableableCredentialTypes", disaCred);
 
-                    u.put("requiredActions", emptyJSONArray);
+                    u.put("requiredActions", reqActions);
                     u.put("realmRoles", roles);
                     u.put("clientRoles", acc);
 
