@@ -33,6 +33,7 @@ If you decide to keep users inside Keycloak (Keycloak can also integrate the 3rd
 
 Once connecting the Cerberus, the Keycloak login page should be displayed.
 
+
 Specify your login and 'Cerberus2018' as a password
 
 Keycloak will ask you to change your password.
