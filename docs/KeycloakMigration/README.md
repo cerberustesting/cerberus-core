@@ -36,11 +36,28 @@ Once connecting the Cerberus, the Keycloak login page should be displayed.
 
 Specify your login and 'Cerberus2018' as a password
 
+[![01](https://github.com/cerberustesting/cerberus-source/raw/master/docs/KeycloakMigration/01%20Login.png)]()
+
+
 Keycloak will ask you to change your password.
+
+[![02](https://github.com/cerberustesting/cerberus-source/raw/master/docs/KeycloakMigration/02%20Update%20Password.png)]()
 
 Then, it will ask you to update your personal informations
 
+[![03](https://github.com/cerberustesting/cerberus-source/raw/master/docs/KeycloakMigration/03%20Update%20Account.png)]()
+
 Then, it will send you an email that will contain a link that you need to click.
 
+[![04](https://github.com/cerberustesting/cerberus-source/raw/master/docs/KeycloakMigration/04%20Email%20Verification.png)]()
+
+[![05](https://github.com/cerberustesting/cerberus-source/raw/master/docs/KeycloakMigration/05%20Email%20Received.png)]()
+
 Then you will be granted to access Cerberus.
+
+[![07](https://github.com/cerberustesting/cerberus-source/raw/master/docs/KeycloakMigration/07%20Cerberus%20Homepage.png)]()
+
+In case you get an error page from Cerberus, just click on 'Back to Homepage'
+
+[![06](https://github.com/cerberustesting/cerberus-source/raw/master/docs/KeycloakMigration/06%20Login%20to%20Cerberus.png)]()
 
