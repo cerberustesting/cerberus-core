@@ -29,13 +29,17 @@ Go to import menu and select the json file extracted previously.
 Import tool will allow you to import roles and/or users. As a minimum you need to import the roles.
 If you decide to keep users inside Keycloak (Keycloak can also integrate the 3rd party LDAP such as Google or Facebook), also import the users.
 
-* First connection for migrated users
+## First connection for migrated users
 
 Once connecting the Cerberus, the Keycloak login page should be displayed.
 
 Specify your login and 'Cerberus2018' as a password
+
 Keycloak will ask you to change your password.
+
 Then, it will ask you to update your personal informations
+
 Then, it will send you an email that will contain a link that you need to click.
+
 Then you will be granted to access Cerberus.
 
