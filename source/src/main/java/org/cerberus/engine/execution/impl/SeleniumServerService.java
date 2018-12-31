@@ -257,26 +257,21 @@ public class SeleniumServerService implements ISeleniumServerService {
                         appUrl = caps.getCapability("app").toString();
                     }
 
-                    String newApkName = null;
-                    try {
-                        int toto = totocpt++;
-                        if (appUrl != null) { // FIX : appium can't install 2 apk simultaneously, so implement a litle latency between execution
-                            synchronized (this) {
-                                // with appium 1.7.2, we can't install 2 fresh apk simultaneously. Appium have to prepare the apk (transformation) on the first execution before (see this topic https://discuss.appium.io/t/execute-2-android-test-simultaneously-problem-during-install-apk/22030)
-                                // provoque a latency if first test is already running and apk don't finish to be prepared
-                                if (apkAlreadyPrepare.containsKey(appUrl) && !apkAlreadyPrepare.get(appUrl)) {
-                                    Thread.sleep(10000);
-                                } else {
-                                    apkAlreadyPrepare.put(appUrl, false);
-                                }
+                    int toto = totocpt++;
+                    if (appUrl != null) { // FIX : appium can't install 2 apk simultaneously, so implement a litle latency between execution
+                        synchronized (this) {
+                            // with appium 1.7.2, we can't install 2 fresh apk simultaneously. Appium have to prepare the apk (transformation) on the first execution before (see this topic https://discuss.appium.io/t/execute-2-android-test-simultaneously-problem-during-install-apk/22030)
+                            // provoque a latency if first test is already running and apk don't finish to be prepared
+                            if (apkAlreadyPrepare.containsKey(appUrl) && !apkAlreadyPrepare.get(appUrl)) {
+                                Thread.sleep(10000);
+                            } else {
+                                apkAlreadyPrepare.put(appUrl, false);
                             }
                         }
-                        appiumDriver = new AndroidDriver(url, caps);
-                        if (apkAlreadyPrepare.containsKey(appUrl)) {
-                            apkAlreadyPrepare.put(appUrl, true);
-                        }
-                    } finally {
-                        Runtime.getRuntime().exec("rm " + newApkName);
+                    }
+                    appiumDriver = new AndroidDriver(url, caps);
+                    if (apkAlreadyPrepare.containsKey(appUrl)) {
+                        apkAlreadyPrepare.put(appUrl, true);
                     }
 
                     driver = (WebDriver) appiumDriver;
