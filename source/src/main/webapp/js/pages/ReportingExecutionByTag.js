@@ -1341,7 +1341,7 @@ function aoColumnsFunc(Columns) {
                         }
 
                         if(data.QueueState === "QUWITHDEP") {
-                            button = '<button type="button" class="btn  btn-info" onclick="stopPropagation(event)" data-html="true"' +
+                            button = '<button type="button" class="btn  btn-info hideFeatureTCDependencies" onclick="stopPropagation(event)" data-html="true"' +
                                 'data-toggle="popover" ' +
                                 'title="Dependency" ' +
                                 "data-content=\"" + txt + "\" >" +
