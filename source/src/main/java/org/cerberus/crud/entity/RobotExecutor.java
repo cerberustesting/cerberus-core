@@ -46,6 +46,7 @@ public class RobotExecutor {
     private String deviceUdid;
     private String deviceName;
     private Integer devicePort;
+    private String deviceLockUnlock;
     private String description;
     private long dateLastExeSubmitted;
     private String UsrCreated;
@@ -200,6 +201,14 @@ public class RobotExecutor {
         this.DateModif = DateModif;
     }
 
+    public String getDeviceLockUnlock() {
+        return deviceLockUnlock;
+    }
+
+    public void setDeviceLockUnlock(String deviceLockUnlock) {
+        this.deviceLockUnlock = deviceLockUnlock;
+    }
+
     public String getHostWithCredential() {
         String credential = "";
         if (!StringUtil.isNullOrEmpty(this.getHostUser())) {
@@ -291,6 +300,9 @@ public class RobotExecutor {
         if ((this.description == null) ? (other.description != null) : !this.description.equals(other.description)) {
             return false;
         }
+        if ((this.deviceLockUnlock == null) ? (other.deviceLockUnlock != null) : !this.deviceLockUnlock.equals(other.deviceLockUnlock)) {
+            return false;
+        }
         return true;
     }
 
@@ -312,6 +324,7 @@ public class RobotExecutor {
             result.put("deviceName", this.getDeviceName());
             result.put("deviceUdid", this.getDeviceUuid());
             result.put("devicePort", this.getDevicePort());
+            result.put("deviceLockUnlock", "Y".equals(this.getDeviceLockUnlock()) ? true : false);
             result.put("executor", this.getExecutor());
             result.put("host", this.getHost());
             if (secured) {

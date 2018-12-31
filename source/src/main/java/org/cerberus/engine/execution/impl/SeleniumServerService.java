@@ -20,6 +20,7 @@
 package org.cerberus.engine.execution.impl;
 
 import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.LocksDevice;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.ios.IOSDriver;
 import java.io.IOException;
@@ -347,6 +348,14 @@ public class SeleniumServerService implements ISeleniumServerService {
                 tCExecution.setUserAgent(userAgent);
 
             }
+
+            // unlock device if deviceLockUnlock is active
+            if (tCExecution.getRobotExecutorObj() != null && appiumDriver != null && appiumDriver instanceof LocksDevice &&
+                    "Y".equals(tCExecution.getRobotExecutorObj().getDeviceLockUnlock())) {
+                ((LocksDevice) appiumDriver).unlockDevice();
+            }
+
+
             tCExecution.getSession().setStarted(true);
 
         } catch (CerberusException exception) {
@@ -457,12 +466,12 @@ public class SeleniumServerService implements ISeleniumServerService {
                 if(tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
                     if ((caps.getCapability("systemPort") == null)
                             || ((caps.getCapability("systemPort") != null) && (caps.getCapability("systemPort").toString().equals("")))) {
-                        caps.setCapability("systemPort", tCExecution.getRobotExecutorObj().getDevicePort() + "");
+                        caps.setCapability("systemPort", tCExecution.getRobotExecutorObj().getDevicePort());
                     }
                 } else if(tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
                     if ((caps.getCapability("wdaLocalPort") == null)
                             || ((caps.getCapability("wdaLocalPort") != null) && (caps.getCapability("wdaLocalPort").toString().equals("")))) {
-                        caps.setCapability("wdaLocalPort", tCExecution.getRobotExecutorObj().getDevicePort() + "");
+                        caps.setCapability("wdaLocalPort", tCExecution.getRobotExecutorObj().getDevicePort());
                     }
                 }
             }
@@ -657,6 +666,12 @@ public class SeleniumServerService implements ISeleniumServerService {
             if (session.getAppiumDriver() != null && tce.getCountryEnvironmentParameters() != null
                     && !StringUtil.isNullOrEmpty(tce.getCountryEnvironmentParameters().getMobilePackage())) {
                 session.getAppiumDriver().removeApp(tce.getCountryEnvironmentParameters().getMobilePackage()); // remove manually if package is defined
+            }
+
+            // lock device if deviceLockUnlock is active
+            if (tce.getRobotExecutorObj() != null && session.getAppiumDriver() != null && session.getAppiumDriver() instanceof LocksDevice &&
+                    "Y".equals(tce.getRobotExecutorObj().getDeviceLockUnlock())) {
+                ((LocksDevice) session.getAppiumDriver()).lockDevice();
             }
 
             LOG.info("Stop execution session");

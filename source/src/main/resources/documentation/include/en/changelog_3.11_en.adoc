@@ -5,6 +5,8 @@
 *Improvements / New features*
 [square]
 * New Action now default to doNothing (in stead of Unknown). #1904
+* On Android and iOS, possibility to `unlock` device before testcase, and `lock` device after testcase
+* Updgrade appium client version from `5.0.4` to `7.0.0`
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

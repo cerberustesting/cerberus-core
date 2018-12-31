@@ -40,4 +40,9 @@ public class MyHttpClientFactory implements org.openqa.selenium.remote.http.Http
     public org.openqa.selenium.remote.http.HttpClient createClient(URL url) {
         return new ApacheHttpClient(builder.build(), url);
     }
+
+    @Override
+    public void cleanupIdleClients() {
+        // FIXME do something ??
+    }
 }

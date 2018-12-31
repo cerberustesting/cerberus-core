@@ -311,18 +311,18 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                             // Application require a robot so we can get the list of executors.
                             if (StringUtil.isNullOrEmpty(robot)) {
                                 exelist = new ArrayList<>();
-                                exelist.add(factoryRobotExecutor.create(0, "", "", "Y", 1, exe.getQueueRobotHost(), exe.getQueueRobotPort(), "", "", "", "", null, "", "", null, "", null));
+                                exelist.add(factoryRobotExecutor.create(0, "", "", "Y", 1, exe.getQueueRobotHost(), exe.getQueueRobotPort(), "", "", "", "", null, "", "", "", null, "", null));
                             } else {
                                 exelist = robot_executor.get(robot);
                                 if (exelist == null || exelist.size() < 1) {
                                     exelist = new ArrayList<>();
-                                    exelist.add(factoryRobotExecutor.create(0, "", "", "Y", 1, "", "", "", "", "", "", null, "", "", null, "", null));
+                                    exelist.add(factoryRobotExecutor.create(0, "", "", "Y", 1, "", "", "", "", "", "", null, "", "", "", null, "", null));
                                 }
                             }
                         } else {
                             // Application does not require a robot so we create a fake one with empty data.
                             exelist = new ArrayList<>();
-                            exelist.add(factoryRobotExecutor.create(0, "", "", "Y", 1, "", "", "", "", "", "", null, "", "", null, "", null));
+                            exelist.add(factoryRobotExecutor.create(0, "", "", "Y", 1, "", "", "", "", "", "", null, "", "", "", null, "", null));
                         }
 
                         // Looping other every potential executor on the corresponding robot.

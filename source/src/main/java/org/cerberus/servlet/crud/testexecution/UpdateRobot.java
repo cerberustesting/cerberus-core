@@ -255,6 +255,8 @@ public class UpdateRobot extends HttpServlet {
             String host_user = reJson.getString("hostUser");
             String deviceName = reJson.getString("deviceName");
             String deviceUdid = reJson.getString("deviceUdid");
+            String deviceLockUnlock = reJson.getBoolean("deviceLockUnlock") ? "Y" : "N";
+
 
             Integer devicePort = null;
             if(reJson.has("devicePort") && !StringUtil.isNullOrEmpty(reJson.getString("devicePort"))) {
@@ -275,7 +277,7 @@ public class UpdateRobot extends HttpServlet {
             }
 
             if (!delete) {
-                RobotExecutor reo = reFactory.create(i, robot, executor, active, rank, host, port, host_user, host_password, deviceUdid, deviceName, devicePort, description, "", null, "", null);
+                RobotExecutor reo = reFactory.create(i, robot, executor, active, rank, host, port, host_user, host_password, deviceUdid, deviceName, devicePort, deviceLockUnlock, description, "", null, "", null);
                 reList.add(reo);
             }
         }

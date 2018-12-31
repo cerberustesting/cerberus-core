@@ -8025,6 +8025,10 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
                 + ",('', 'cerberus_automaticqueueprocessingjob_period', '30', 'Period of time in minutes between each job that will process queue entries that are still in the queue (that job should automatically be submitted after the end of each execution).')"
                 + ",('', 'cerberus_automaticqueueprocessingjob_active', 'Y', 'Y in order to activate the job that will process the queue entries that are still in the sueue.');");
 
+        a.add(" ALTER TABLE `robotexecutor` " +
+                " MODIFY COLUMN `devicePort` int(8) AFTER `deviceName`, " +
+                " ADD COLUMN `deviceLockUnlock` VARCHAR(1) NOT NULL DEFAULT 'N' AFTER `devicePort` ;");
+
         return a;
     }
 

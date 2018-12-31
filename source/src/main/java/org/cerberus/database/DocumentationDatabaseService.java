@@ -40,7 +40,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
     public void init() {
         LOG.info("Starting to Refresh documentation table");
         for (String currentRequest : this.getSqlDocumentation()) {
-            this.exeSQL(currentRequest);
+           this.exeSQL(currentRequest);
         }
     }
 
@@ -395,6 +395,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('robotexecutor','deviceName','','fr','Nom du Device','Lorsque défini, renseigne automatiquement la capability \\'deviceName\\.',NULL)");
         b.append(",('robotexecutor','devicePort','','en','Device Port','Specify an unuque port > 8200 for each device to run parallel tests',NULL)");
         b.append(",('robotexecutor','devicePort','','fr','Port du device','Preciser un port > 8200 différent pour chaque device pour exécuter des tests en parallèle',NULL)");
+        b.append(",('robotexecutor','deviceLockUnlock','','en','Unlock / Lock Device','Unlock the device before and lock devices after a testcase',NULL)");
+        b.append(",('robotexecutor','deviceLockUnlock','','fr','Déverrouiller / Verrouiller le device','Déverrouiller le device avant et verrouiller après un test case',NULL)");
         b.append(",('robotexecutor','description','','en','Description','',NULL)");
         b.append(",('robotexecutor','description','','fr','Description','',NULL)");
         b.append(",('robotexecutor','dateLastExeSubmitted','','en','Timestamp of last Exe Submitted','',NULL)");

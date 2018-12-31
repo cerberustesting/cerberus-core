@@ -24,6 +24,9 @@ import io.appium.java_client.TouchAction;
 import io.appium.java_client.android.AndroidKeyCode;
 import io.appium.java_client.android.AndroidDriver;
 import java.time.Duration;
+
+import io.appium.java_client.touch.WaitOptions;
+import io.appium.java_client.touch.offset.PointOption;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.cerberus.engine.entity.MessageEvent;
@@ -145,8 +148,8 @@ public class AndroidAppiumService extends AppiumService {
 
             // Do the swipe thanks to the Appium driver
             TouchAction dragNDrop
-                    = new TouchAction(session.getAppiumDriver()).press(direction.getX1(), direction.getY1()).waitAction(Duration.ofMillis(duration == null ? DEFAULT_CERBERUS_APPIUM_SWIPE_DURATION : Integer.parseInt(duration.getValue())))
-                            .moveTo(direction.getX2(), direction.getY2()).release();
+                    = new TouchAction(session.getAppiumDriver()).press(PointOption.point(direction.getX1(), direction.getY1())).waitAction(WaitOptions.waitOptions(Duration.ofMillis(duration == null ? DEFAULT_CERBERUS_APPIUM_SWIPE_DURATION : Integer.parseInt(duration.getValue()))))
+                            .moveTo(PointOption.point(direction.getX2(), direction.getY2())).release();
             dragNDrop.perform();
                        
             return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SWIPE).resolveDescription("DIRECTION", action.getActionType().name());

@@ -24,6 +24,8 @@ import io.appium.java_client.MobileBy;
 import io.appium.java_client.MobileElement;
 import io.appium.java_client.TouchAction;
 import io.appium.java_client.android.AndroidElement;
+import io.appium.java_client.touch.offset.ElementOption;
+import io.appium.java_client.touch.offset.PointOption;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.cerberus.engine.entity.Identifier;
@@ -104,7 +106,7 @@ public abstract class AppiumService implements IAppiumService {
                     ((MobileElement) this.getElement(session, identifier, false, false)).setValue(property);
                 } else { // FIXME See if we can delete it ??
                     TouchAction action = new TouchAction(session.getAppiumDriver());
-                    action.press(this.getElement(session, identifier, false, false)).release().perform();
+                    action.press(ElementOption.element(this.getElement(session, identifier, false, false))).release().perform();
                     try {
                         Thread.sleep(3000);
                     } catch (InterruptedException e) {
@@ -138,9 +140,9 @@ public abstract class AppiumService implements IAppiumService {
             final TouchAction action = new TouchAction(session.getAppiumDriver());
             if (identifier.isSameIdentifier(Identifier.Identifiers.COORDINATE)) {
                 final Coordinates coordinates = getCoordinates(identifier);
-                action.tap(coordinates.getX(), coordinates.getY()).perform();
+                action.tap(PointOption.point(coordinates.getX(), coordinates.getY())).perform();
             } else {
-                action.tap(getElement(session, identifier, false, false)).perform();
+                action.tap(ElementOption.element(getElement(session, identifier, false, false))).perform();
             }
             return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLICK).resolveDescription("ELEMENT", identifier.toString());
         } catch (NoSuchElementException e) {
@@ -380,7 +382,7 @@ public abstract class AppiumService implements IAppiumService {
     private void scroll(AppiumDriver driver, int fromX, int fromY, int toX, int toY) {
         TouchAction touchAction = new TouchAction(driver);
 
-        touchAction.longPress(fromX, fromY).moveTo(toX, toY).release().perform();
+        touchAction.longPress(PointOption.point(fromX, fromY)).moveTo(PointOption.point(toX, toY)).release().perform();
 
     }
 

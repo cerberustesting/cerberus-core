@@ -50,8 +50,9 @@
         <groovy.version>2.4.7</groovy.version>
         <groovy-sandbox.version>1.10</groovy-sandbox.version>
         <!-- Appium/Selenium scope Version -->
-        <appium.version>5.0.4</appium.version>
-        <selenium.version>3.6.0</selenium.version>
+        <appium.version>7.0.0</appium.version>
+        <selenium.version>3.14.0</selenium.version>
+        <jna.version>4.1.0</jna.version>
         <!-- Log4J Version -->
         <log4j.version>2.9.1</log4j.version>
         <!-- jsonpath -->
@@ -194,6 +195,22 @@
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
             <version>${selenium.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-remote-driver</artifactId>
+            <version>${selenium.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.java.dev.jna</groupId>
+            <artifactId>jna</artifactId>
+            <version>${jna.version}</version>
+            <classifier></classifier>
+        </dependency>
+        <dependency>
+            <groupId>net.java.dev.jna</groupId>
+            <artifactId>jna-platform</artifactId>
+            <version>${jna.version}</version>
         </dependency>
         <!-- Log4J -->
         <dependency>

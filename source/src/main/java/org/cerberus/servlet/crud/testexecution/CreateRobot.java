@@ -248,7 +248,7 @@ public class CreateRobot extends HttpServlet {
             }
 
             if (!delete) {
-                RobotExecutor reo = reFactory.create(i, robot, executor, active, rank, host, port, host_user, host_password, deviceUdid, deviceName, devicePort, description, "", null, "", null);
+                RobotExecutor reo = reFactory.create(i, robot, executor, active, rank, host, port, host_user, host_password, deviceUdid, deviceName, devicePort, description, "", "", null, "", null);
                 reList.add(reo);
             }
         }
