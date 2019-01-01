@@ -273,7 +273,7 @@ public class RobotExecutorDAO implements IRobotExecutorDAO {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
         query.append("INSERT INTO robotexecutor (`robot`, `executor`, `active`, `rank`, `host`, `port`, `host_user`, `host_password`, `deviceudid`, `devicename`, `deviceport`, `devicelockunlock`, `description`, `usrcreated`) ");
-        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)");
+        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
