@@ -485,7 +485,7 @@ public class ActionService implements IActionService {
                         .resolveDescription("APPLICATIONTYPE", tCExecution.getApplicationObj().getType());
             }
         } catch (CerberusEventException ex) {
-            LOG.fatal("Error doing Action Click :" + ex);
+            LOG.fatal("Error doing Action Click :" + ex, ex);
             return ex.getMessageError();
         }
     }
