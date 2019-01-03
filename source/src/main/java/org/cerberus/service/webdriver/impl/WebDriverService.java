@@ -121,7 +121,54 @@ public class WebDriverService implements IWebDriverService {
             throw new NoSuchElementException(identifier.getIdentifier());
         }
     }
+    
+    @Override
+    public MessageEvent scrollTo(Session session, Identifier identifier, String text) {
+    	 WebDriver mWebdriver = session.getDriver();
+    	 MessageEvent message;
+    	 
+    	 try {
+    		message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SCROLLTO);
+    		if (StringUtil.isNullOrEmpty(text)) {
+    			scrollElement(mWebdriver, identifier);
+    		}else {
+    		scrollText(mWebdriver,text);
+    		}
+    		return message;
+    		
+     	}catch(Exception e){    		
+    		LOG.error("An error occured during scroll to (element:" + identifier, e);
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_GENERIC);
+            message.setDescription(message.getDescription().replace("%DETAIL%", e.getMessage()));
+            return message;
+            
+    	}    	
+    	 
+    }
+    
+    private void scrollText(WebDriver driver, String text) {
+    	// Create instance of Javascript executor
+    	JavascriptExecutor je = (JavascriptExecutor) driver;
 
+    	//Identify the WebElement which will appear after scrolling down
+    	WebElement element = driver.findElement(By.xpath("//*[contains(text()," + text + ")]"));
+    	
+    	// now execute query which actually will scroll until that element is not appeared on page.
+    	je.executeScript("arguments[0].scrollIntoView(true);",element);
+    }
+    
+    private void scrollElement(WebDriver driver, Identifier identifier) {   	
+    	/**WebElement element = driver.findElement(By.id(identifier.getLocator()));
+    	Actions actions = new Actions(driver);
+    	actions.moveToElement(element);
+    	actions.perform();
+    	*/
+    	String locator = identifier.getLocator().replaceAll("\"", "");
+    	WebElement element = driver.findElement(By.xpath("//*[@"+identifier.getIdentifier()+"='"+locator+"']"));
+    	((JavascriptExecutor)driver).executeScript("arguments[0].scrollIntoView();", element);
+    	
+    }
+    
     private AnswerItem<WebElement> getSeleniumElement(Session session, Identifier identifier, boolean visible, boolean clickable) {
         AnswerItem<WebElement> answer = new AnswerItem<WebElement>();
         MessageEvent msg;

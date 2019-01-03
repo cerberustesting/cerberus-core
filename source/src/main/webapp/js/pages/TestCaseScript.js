@@ -2134,7 +2134,7 @@ Action.prototype.draw = function (afterAction) {
     htmlElement.prepend(row);
     
     setPlaceholderAction(htmlElement);
-    //setPlaceholderCondition(htmlElement);
+    setPlaceholderCondition(htmlElement);
 
     listenEnterKeypressWhenFocusingOnDescription(htmlElement);
 
@@ -2446,7 +2446,7 @@ Control.prototype.draw = function (afterControl) {
     htmlElement.data("item", this);
 
     setPlaceholderControl(htmlElement);
-    //setPlaceholderCondition(htmlElement);
+    setPlaceholderCondition(htmlElement);
     listenEnterKeypressWhenFocusingOnDescription(htmlElement);
 
     if (afterControl == undefined) {

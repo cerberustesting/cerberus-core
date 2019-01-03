@@ -87,6 +87,8 @@ public interface IWebDriverService {
     BufferedImage takeScreenShot(Session session);
 
     List<String> getSeleniumLog(Session session);
+    
+    MessageEvent scrollTo(Session session, Identifier identifier, String text);
 
     MessageEvent doSeleniumActionClick(Session session, Identifier identifier, boolean waitForVisibility, boolean waitForClickability);
 
