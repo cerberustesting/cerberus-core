@@ -106,7 +106,7 @@
     </servlet>
     <servlet>
         <servlet-name>DuplicateTestCase</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.test.DuplicateTestCase</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.test.testcase.DuplicateTestCase</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateTestCaseMass</servlet-name>
@@ -560,7 +560,7 @@
     </servlet>
     <servlet>
         <servlet-name>ExportTestCase</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.test.ExportTestCase</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.test.testcase.ExportTestCase</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ImportTestCaseFromJson</servlet-name>
@@ -584,15 +584,15 @@
     </servlet>
     <servlet>
         <servlet-name>DeleteTestCase</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.test.DeleteTestCase</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.test.testcase.DeleteTestCase</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>CreateTestCase</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.test.CreateTestCase</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.test.testcase.CreateTestCase</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateTestCase</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.test.UpdateTestCase</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.test.testcase.UpdateTestCase</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ReadTest</servlet-name>
@@ -714,7 +714,7 @@
     </servlet>
     <servlet>
         <servlet-name>ReadTestCase</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.test.ReadTestCase</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.test.testcase.ReadTestCase</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GeneratePerformanceString</servlet-name>
@@ -2104,13 +2104,15 @@
     </security-constraint>
     <login-config>
         <auth-method>FORM</auth-method>
-        <!--        Default Realm defined on Cluster->Security
-        <realm-name>securityCerberusQA</realm-name>-->
         <form-login-config>
             <form-login-page>/Login.jsp</form-login-page>
             <form-error-page>/Login.jsp?error=1</form-error-page>
         </form-login-config>
     </login-config>
+<!--    <login-config>
+        <auth-method>BASIC</auth-method>
+        <realm-name>Enable this in order to activate KeyCloak</realm-name>
+    </login-config>-->
     <context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>/WEB-INF/applicationContext.xml</param-value>
