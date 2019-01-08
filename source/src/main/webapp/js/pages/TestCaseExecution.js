@@ -93,7 +93,7 @@ function loadExecutionQueue(executionQueueId, bTriggerAgain) {
                 configPanel.find("#idlabel").text("0");
                 $("[name='Separator']").text(" - ");
                 configPanel.find("#country").text(tceq.country);
-                configPanel.find("#environment").text(tceq.environment);
+                configPanel.find("#environ-ment").text(tceq.environment);
                 configPanel.find("#test").text(tceq.test);
                 configPanel.find("#testcase").text(tceq.testCase);
                 configPanel.find("#exReturnMessage").text(tceq.comment);

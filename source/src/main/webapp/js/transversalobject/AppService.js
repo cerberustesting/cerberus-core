@@ -38,7 +38,7 @@ function openModalAppService(service, mode, page = undefined) {
 function initModalAppService() {
     console.info("init");
     var doc = new Doc();
-
+    
     displayInvariantList("type", "SRVTYPE", false, "REST");
     displayInvariantList("method", "SRVMETHOD", false, "GET");
     displayApplicationList("application", "", "");
@@ -76,6 +76,7 @@ function initModalAppService() {
     );
 
     setUpDragAndDrop('#editSoapLibraryModal');
+    
 
 }
 
@@ -85,7 +86,7 @@ function initModalAppService() {
  * @returns {null}
  */
 function editAppServiceClick(service, page) {
-
+	console.log("editappserviceclick");
     var doc = new Doc();
     $("[name='editSoapLibraryField']").html(doc.getDocLabel("page_appservice", "editSoapLibrary_field"));
 
@@ -140,6 +141,7 @@ function duplicateAppServiceClick(service) {
  * @returns {null}
  */
 function addAppServiceClick(service, page) {
+	console.log("addappserviceclick")
     $("#addSoapLibraryButton").off("click");
     $("#addSoapLibraryButton").click(function () {
         confirmAppServiceModalHandler("ADD", page);
@@ -158,6 +160,8 @@ function addAppServiceClick(service, page) {
     feedAppServiceModal(service, "editSoapLibraryModal", "ADD");
     listennerForInputTypeFile('#editSoapLibraryModal')
     pasteListennerForClipboardPicture('#editSoapLibraryModal');
+    $('#service').val("");
+
 }
 
 /***
@@ -192,6 +196,8 @@ function prepareAppServiceModal() {
     $("#addContent").click(addNewContentRow);
     $('#addHeader').off("click");
     $("#addHeader").click(addNewHeaderRow);
+    console.log($('#service').val());
+
 
 }
 
@@ -292,6 +298,7 @@ function confirmAppServiceModalHandler(mode, page) {
     if (mode === 'EDIT') { // Disable back the test combo before submit the form.
         formEdit.find("#service").prop("disabled", "disabled");
     }
+    console.log($('#service').val());
 
 }
 
@@ -299,27 +306,41 @@ function refreshDisplayOnTypeChange(newValue) {
 
     if (newValue === "SOAP") {
         // If SOAP service, no need to feed the method.
+    	$('.upload-drop-zone').hide();
+    	$( "label[name='screenshotfilenameField']" ).hide();
+    	$( "label[name='operationField']" ).show();
+    	$( "input[name='operation']" ).show();
+    	$( "label[name='attachementurlField']" ).show();
+    	$( "input[name='attachementurl']" ).show();
         $('#editSoapLibraryModal #method').prop("disabled", true);
-        $('#editSoapLibraryModal #operation').prop("readonly", false);
-        $('#editSoapLibraryModal #attachementurl').prop("readonly", false);
     } else if (newValue === "FTP") {
         $('#editSoapLibraryModal #method').prop("disabled", false);
-        $('#editSoapLibraryModal #operation').prop("readonly", true);
-        $('#editSoapLibraryModal #attachementurl').prop("readonly", true);
         $('#editSoapLibraryModal #addContent').prop("disabled", true);
         $('#editSoapLibraryModal #addHeader').prop("disabled", true);
         $('#editSoapLibraryModal #method option[value="DELETE"]').css("display", "none");
         $('#editSoapLibraryModal #method option[value="PUT"]').css("display", "none");
         $('#editSoapLibraryModal #method option[value="PATCH"]').css("display", "none");
         $('#editSoapLibraryModal #method').prop("disabled", false);
+    	$('.upload-drop-zone').show();
+    	$( "label[name='screenshotfilenameField']" ).show();
+    	$( "label[name='operationField']" ).hide();
+    	$( "input[name='operation']" ).hide();
+    	$( "label[name='attachementurlField']" ).hide();
+    	$( "input[name='attachementurl']" ).hide();
     } else {
         $('#editSoapLibraryModal #method').prop("disabled", false);
-        $('#editSoapLibraryModal #operation').prop("readonly", true);
-        $('#editSoapLibraryModal #attachementurl').prop("readonly", true);
+    	$('.upload-drop-zone').hide();
+    	$( "label[name='screenshotfilenameField']" ).hide();
         $('#editSoapLibraryModal #method option[value="DELETE"]').css("display", "block");
         $('#editSoapLibraryModal #method option[value="PUT"]').css("display", "block");
         $('#editSoapLibraryModal #method option[value="PATCH"]').css("display", "block");
+    	$( "label[name='operationField']" ).hide();
+    	$( "input[name='operation']" ).hide();
+    	$( "label[name='attachementurlField']" ).hide();
+    	$( "input[name='attachementurl']" ).hide();
     }
+    console.log($('#service').val());
+    
 }
 
 
@@ -383,8 +404,10 @@ function feedAppServiceModal(serviceName, modalId, mode) {
         feedAppServiceModalData(serviceObj1, modalId, mode, hasPermissions);
         refreshDisplayOnTypeChange(serviceObj1.type);
         formEdit.modal('show');
+        console.log($('#service').val());
 
     }
+
 }
 
 
@@ -549,9 +572,9 @@ function appendContentRow(content) {
     activeSelect.change(function () {
         content.active = $(this).val();
     });
-    sortInput.change(function () {
+    /*sortInput.change(function () {
         content.sort = $(this).val();
-    });
+    });*/
     keyInput.change(function () {
         content.key = $(this).val();
     });
@@ -622,9 +645,9 @@ function appendHeaderRow(content) {
     activeSelect.change(function () {
         content.active = $(this).val();
     });
-    sortInput.change(function () {
+    /**sortInput.change(function () {
         content.sort = $(this).val();
-    });
+    });*/
     keyInput.change(function () {
         content.key = $(this).val();
     });

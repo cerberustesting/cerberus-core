@@ -26,14 +26,18 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="form-group col-xs-12">
-                                <label for="service" name="serviceField">Service</label>
-                                <input type="text" class="form-control" name="service" id="service"
-                                       aria-describedby="basic-editon1">
-
-                                </input>
-                            </div>
-                        </div>
+							<div class="form-group col-md-12">
+								<div class="form-group col-md-6">
+									<label for="service" name="serviceField" class="col">Service</label>
+									<input type="text" class="form-control" name="service"
+									id="service" aria-describedby="basic-editon1"> </input>
+								</div>
+								<div class="form-group col-md-6">
+									<label for="type" name="typeField">Type</label>
+									<select class="form-control" id="type" name="type"> </select>
+								</div>
+							</div>
+						</div>
                         <!-- tabs definition-->
                         <ul id="tabsEdit" class="nav nav-tabs" data-tabs="tabs">
                             <li class="active"><a data-toggle="tab" href="#tabsEdit-1" id="tab1Text" name="tabsEdit1">Definition</a></li>
@@ -53,19 +57,12 @@
                             </div>
                                 </div>
                                 <div class="row">
-                                    <div class="form-group col-xs-6">
-                                        <label for="type" name="typeField">Type</label>
-                                        <select class="form-control"  id="type" name="type">
-                                        </select>
-                                    </div>
-                                    <div class="form-group col-xs-6">
+                                    <div class="form-group col-md-3">
                                         <label for="method" name="methodField">Method</label>
                                         <select class="form-control"  id="method" name="method">
                                         </select>
                                     </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group col-xs-12">
+                                    <div class="form-group col-md-9">
                                         <label for="servicepath" name="servicePathField">ServicePath</label>
                                         <input type="text" class="form-control" name="servicePath" id="servicePath"
                                                aria-describedby="basic-editon1">
