@@ -163,8 +163,14 @@ public class WebDriverService implements IWebDriverService {
     	actions.moveToElement(element);
     	actions.perform();
     	*/
+    	WebElement element;
     	String locator = identifier.getLocator().replaceAll("\"", "");
-    	WebElement element = driver.findElement(By.xpath("//*[@"+identifier.getIdentifier()+"='"+locator+"']"));
+    	if(identifier.getIdentifier().contains("xpath")) {
+        	element = driver.findElement(By.xpath(locator));
+    	}else {
+        	element = driver.findElement(By.xpath("//*[@"+identifier.getIdentifier()+"='"+locator+"']"));
+    	}
+    	
     	((JavascriptExecutor)driver).executeScript("arguments[0].scrollIntoView();", element);
     	
     }
@@ -178,6 +184,9 @@ public class WebDriverService implements IWebDriverService {
             WebDriverWait wait = new WebDriverWait(session.getDriver(), TimeUnit.MILLISECONDS.toSeconds(session.getCerberus_selenium_wait_element()));
             WebElement element;
             if (visible) {
+            	if(session.isCerberus_selenium_autoscroll()) {
+            		scrollElement(session.getDriver(),identifier);
+            	}
                 if (clickable) {
                     element = wait.until(ExpectedConditions.elementToBeClickable(locator));
                 } else {

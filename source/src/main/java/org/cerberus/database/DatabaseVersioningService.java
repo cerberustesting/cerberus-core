@@ -8028,6 +8028,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add(" ALTER TABLE `robotexecutor` " +
                 " MODIFY COLUMN `devicePort` int(8) AFTER `deviceName`, " +
                 " ADD COLUMN `deviceLockUnlock` VARCHAR(1) NOT NULL DEFAULT 'N' AFTER `devicePort` ;");
+        
+        // New parameter autoscroll for testcase
+        // 1396
+        b = new StringBuilder();
+        b.append("INSERT INTO `parameter` (`param`, `value`, `description`) VALUES ('cerberus_selenium_autoscroll', 'false', 'Boolean who define if the action of testcase on selenium will always autoscroll on element where it work');");
+        a.add(b.toString());
 
         return a;
     }

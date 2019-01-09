@@ -140,7 +140,8 @@ public class SeleniumServerService implements ISeleniumServerService {
              * else, take the one from parameter
              */
             Integer cerberus_selenium_pageLoadTimeout, cerberus_selenium_implicitlyWait, cerberus_selenium_setScriptTimeout, cerberus_selenium_wait_element, cerberus_appium_wait_element, cerberus_selenium_action_click_timeout;
-
+            boolean cerberus_selenium_autoscroll;
+            
             if (!tCExecution.getTimeout().isEmpty()) {
                 cerberus_selenium_wait_element = Integer.valueOf(tCExecution.getTimeout());
                 cerberus_appium_wait_element = Integer.valueOf(tCExecution.getTimeout());
@@ -153,7 +154,7 @@ public class SeleniumServerService implements ISeleniumServerService {
             cerberus_selenium_implicitlyWait = parameterService.getParameterIntegerByKey("cerberus_selenium_implicitlyWait", system, 0);
             cerberus_selenium_setScriptTimeout = parameterService.getParameterIntegerByKey("cerberus_selenium_setScriptTimeout", system, 90000);
             cerberus_selenium_action_click_timeout = parameterService.getParameterIntegerByKey("cerberus_selenium_action_click_timeout", system, 90000);
-
+            cerberus_selenium_autoscroll = parameterService.getParameterBooleanByKey("cerberus_selenium_autoscroll", system, false);
             LOG.debug(logPrefix + "TimeOut defined on session : " + cerberus_selenium_wait_element);
 
             Session session = new Session();
@@ -167,6 +168,7 @@ public class SeleniumServerService implements ISeleniumServerService {
             session.setHostUser(tCExecution.getSeleniumIPUser());
             session.setHostPassword(tCExecution.getSeleniumIPPassword());
             session.setPort(tCExecution.getRobotPort());
+            session.setCerberus_selenium_autoscroll(cerberus_selenium_autoscroll);
             tCExecution.setSession(session);
             LOG.debug(logPrefix + "Session is set.");
 

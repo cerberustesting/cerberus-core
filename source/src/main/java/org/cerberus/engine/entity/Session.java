@@ -42,6 +42,7 @@ public class Session {
     private Integer cerberus_appium_wait_element;
     private Integer cerberus_selenium_action_click_timeout;
     private boolean started;
+    private boolean cerberus_selenium_autoscroll;
     private DesiredCapabilities desiredCapabilities;
 
     public Integer getCerberus_selenium_pageLoadTimeout() {
@@ -147,6 +148,14 @@ public class Session {
     public void setStarted(boolean started) {
         this.started = started;
     }
+    
+    public boolean isCerberus_selenium_autoscroll() {
+		return cerberus_selenium_autoscroll;
+	}
+
+	public void setCerberus_selenium_autoscroll(boolean cerberus_selenium_autoscroll) {
+		this.cerberus_selenium_autoscroll = cerberus_selenium_autoscroll;
+	}
 
     public void quit() {
         if (driver != null) {
