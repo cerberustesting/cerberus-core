@@ -1792,7 +1792,6 @@ Step.prototype.draw = function () {
 Step.prototype.show = function () {
     var doc = new Doc();
     var object = $(this).data("item");
-
     $("#stepHeader").show();
     $("#addActionBottomBtn").show();
 
@@ -1911,6 +1910,7 @@ Step.prototype.show = function () {
     $("#stepInfo").show();
     $("#addActionContainer").show();
     $("#stepHeader").show()
+    setPlaceholderCondition($("#stepConditionOper").parent().parent(".row"));
 
     // Disable fields if Permission not allowing.
     // Description and unlink the step with UseStep of the Step can be modified
