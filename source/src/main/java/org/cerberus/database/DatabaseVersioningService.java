@@ -8032,7 +8032,9 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // New parameter autoscroll for testcase
         // 1396
         b = new StringBuilder();
-        b.append("INSERT INTO `parameter` (`param`, `value`, `description`) VALUES ('cerberus_selenium_autoscroll', 'false', 'Boolean who define if the action of testcase on selenium will always autoscroll on element where it work');");
+        b.append("INSERT INTO `parameter` (`system`,`param`, `value`, `description`) "); 
+        b.append("VALUES '','cerberus_selenium_autoscroll', 'false', 'Boolean who define if the action of testcase on selenium will always autoscroll on element where it work');");
+        
         a.add(b.toString());
 
         return a;
