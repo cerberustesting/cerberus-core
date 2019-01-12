@@ -40,6 +40,7 @@ import org.cerberus.crud.service.IUserService;
 import org.cerberus.crud.service.IUserSystemService;
 import org.cerberus.crud.service.impl.UserGroupService;
 import org.cerberus.crud.service.impl.UserService;
+import org.cerberus.util.StringUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -117,9 +118,12 @@ public class ReadMyUser extends HttpServlet {
             JSONObject menu = new JSONObject();
             if (authMode.equals("keycloak")) {
                 // Name displayed in menu
-                menu.put("nameDisplay", user.substring(0, 8) + "...");
-                menu.put("accountLink", System.getProperty("org.cerberus.keycloak.url") + "/realms/" + System.getProperty("org.cerberus.keycloak.realm") + "/account/");
-                menu.put("logoutLink", System.getProperty("org.cerberus.keycloak.url") + "/realms/" + System.getProperty("org.cerberus.keycloak.realm") + "/protocol/openid-connect/logout?redirect_uri=%LOGOUTURL%");
+                menu.put("nameDisplay", StringUtil.getLeftString(user, 8) + "...");
+
+                String keyCloakUrl = StringUtil.addSuffixIfNotAlready(System.getProperty("org.cerberus.keycloak.url"), "/");
+
+                menu.put("accountLink", keyCloakUrl + "realms/" + System.getProperty("org.cerberus.keycloak.realm") + "/account/");
+                menu.put("logoutLink", keyCloakUrl + "realms/" + System.getProperty("org.cerberus.keycloak.realm") + "/protocol/openid-connect/logout?redirect_uri=%LOGOUTURL%");
             } else {
                 // Name displayed in menu
                 menu.put("nameDisplay", myUser.getLogin());
