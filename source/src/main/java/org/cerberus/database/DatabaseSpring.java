@@ -132,12 +132,26 @@ public class DatabaseSpring {
     public Connection connect(final String connection) {
         try {
             InitialContext ic = new InitialContext();
-            LOG.info("connecting to jdbc/" + connection);
-            return ((DataSource) ic.lookup("jdbc/" + connection)).getConnection();
+            String conName = "jdbc/" + connection;
+            LOG.info("connecting to '" + conName + "'");
+            DataSource ds = (DataSource) ic.lookup(conName);
+            return ds.getConnection();
         } catch (SQLException ex) {
             LOG.warn(ex.toString());
         } catch (NamingException ex) {
             LOG.warn(ex.toString());
+            InitialContext ic;
+            try {
+                ic = new InitialContext();
+                String conName = "java:/comp/env/jdbc/" + connection;
+                LOG.info("connecting to '" + conName + "'");
+                DataSource ds = (DataSource) ic.lookup(conName);
+                return ds.getConnection();
+            } catch (NamingException ex1) {
+                LOG.warn(ex.toString());
+            } catch (SQLException ex1) {
+                LOG.warn(ex.toString());
+            }
         }
         return null;
     }
