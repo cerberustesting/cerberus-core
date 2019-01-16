@@ -155,16 +155,27 @@ Doc.prototype.getDocOnline = function (docTable, docField) {
         } else {
             var linkToDoc = "";
             if (this.table[docTable][docField].haveDocAnchor) {
-                linkToDoc = "</br><br><a href='./Documentation.jsp#" + this.table[docTable][docField].docAnchor + "'><span class=\"glyphicon glyphicon-search\"> Documentation</span></a>";
+            	res = this.table[docTable][docField].docLabel +
+                " <a tabindex='1' data-html='true' href='./Documentation.jsp#" + this.table[docTable][docField].docAnchor + "' class=\"docOnline\" onclick=\"window.open=('this.href'); target='_blank';stopPropagation(event)\" \n\
+                data-toggle='popover' \n\
+                data-placement='auto' \n\
+                data-trigger='hover' \n\
+                title='" + this.table[docTable][docField].docLabel + "' \n\
+                data-content='" + $("<div>" + this.table[docTable][docField].docDesc.split("'").join("&#8217;") + "</div>").prop('outerHTML') + "'>\n\
+                <span class=\"glyphicon glyphicon-question-sign\"></span></a>";
+            	//linkToDoc = "</br><br><a href='./Documentation.jsp#" + this.table[docTable][docField].docAnchor + "'><span class=\"glyphicon glyphicon-search\"> Documentation</span></a>";
+            }else{
+            	res = this.table[docTable][docField].docLabel +
+                " <a tabindex='1' data-html='true'  class=\"docOnline\" onclick=\"stopPropagation(event)\" \n\
+                data-toggle='popover' \n\
+                data-placement='auto' \n\
+                data-trigger='hover' \n\
+                title='" + this.table[docTable][docField].docLabel + "' \n\
+                data-content='" + $("<div>" + this.table[docTable][docField].docDesc.split("'").join("&#8217;") + "</div>").prop('outerHTML') + "'>\n\
+                <span class=\"glyphicon glyphicon-question-sign\"></span></a>";
             }
-            res = this.table[docTable][docField].docLabel +
-            " <a tabindex='1' data-html='true'  class=\"docOnline\" onclick=\"stopPropagation(event)\" \n\
-            data-toggle='popover' \n\
-            data-placement='auto' \n\
-            data-trigger='hover' \n\
-            title='" + this.table[docTable][docField].docLabel + "' \n\
-            data-content='" + $("<div>" + this.table[docTable][docField].docDesc.split("'").join("&#8217;") + linkToDoc + "</div>").prop('outerHTML') + "'>\n\
-            <span class=\"glyphicon glyphicon-question-sign\"></span></a>";
+            
+            
         }
     } catch (err) {
         res = docField + " <a class=\"nodoc\" onclick=\"stopPropagation(event)\"><span class=\"glyphicon glyphicon-exclamation-sign\"></span></a>";
@@ -172,6 +183,10 @@ Doc.prototype.getDocOnline = function (docTable, docField) {
         return res;
     }
 };
+
+function test_yolo(){
+	console.log("gotcha!");
+}
 
 /**
  * generate the string with a link to online documentation
