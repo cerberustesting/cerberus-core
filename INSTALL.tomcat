@@ -14,6 +14,8 @@ In conf folder, in 'server.xml' add the following sections (remove mariadb/mysql
                 maxTotal="100"
                 maxIdle="30"
                 maxWaitMillis="10000"
+                validationQuery="select 1"
+                testOnBorrow="true"
                 username="cerberus"
                 password="toto"
                 driverClassName="<org.mariadb.jdbc.Driver|com.mysql.jdbc.Driver>"
