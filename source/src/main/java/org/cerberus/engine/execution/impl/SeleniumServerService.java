@@ -141,7 +141,7 @@ public class SeleniumServerService implements ISeleniumServerService {
              */
             Integer cerberus_selenium_pageLoadTimeout, cerberus_selenium_implicitlyWait, cerberus_selenium_setScriptTimeout, cerberus_selenium_wait_element, cerberus_appium_wait_element, cerberus_selenium_action_click_timeout;
             boolean cerberus_selenium_autoscroll;
-            
+
             if (!tCExecution.getTimeout().isEmpty()) {
                 cerberus_selenium_wait_element = Integer.valueOf(tCExecution.getTimeout());
                 cerberus_appium_wait_element = Integer.valueOf(tCExecution.getTimeout());
@@ -242,8 +242,8 @@ public class SeleniumServerService implements ISeleniumServerService {
             LOG.debug(logPrefix + "Set Driver");
             WebDriver driver = null;
             AppiumDriver appiumDriver = null;
-            switch ( tCExecution.getApplicationObj().getType().toUpperCase() ) {
-                case Application.TYPE_GUI :
+            switch (tCExecution.getApplicationObj().getType().toUpperCase()) {
+                case Application.TYPE_GUI:
                     if (caps.getPlatform().is(Platform.ANDROID)) {
                         // Appium does not support connection from HTTPCommandExecutor. When connecting from Executor, it stops to work after a couple of instructions.
                         appiumDriver = new AndroidDriver(url, caps);
@@ -251,8 +251,8 @@ public class SeleniumServerService implements ISeleniumServerService {
                     } else {
                         driver = new RemoteWebDriver(executor, caps);
                     }
-                    break ;
-                case Application.TYPE_APK :
+                    break;
+                case Application.TYPE_APK:
                     // add a lock on app path this part of code, because we can't install 2 apk with the same name simultaneously
                     String appUrl = null;
                     if (caps.getCapability("app") != null) {
@@ -279,11 +279,11 @@ public class SeleniumServerService implements ISeleniumServerService {
                     driver = (WebDriver) appiumDriver;
                     break;
 
-                case Application.TYPE_IPA :
+                case Application.TYPE_IPA:
                     appiumDriver = new IOSDriver(url, caps);
                     driver = (WebDriver) appiumDriver;
                     break;
-                case Application.TYPE_FAT :
+                case Application.TYPE_FAT:
                     /**
                      * Check sikuli extension is reachable
                      */
@@ -347,11 +347,10 @@ public class SeleniumServerService implements ISeleniumServerService {
             }
 
             // unlock device if deviceLockUnlock is active
-            if (tCExecution.getRobotExecutorObj() != null && appiumDriver != null && appiumDriver instanceof LocksDevice &&
-                    "Y".equals(tCExecution.getRobotExecutorObj().getDeviceLockUnlock())) {
+            if (tCExecution.getRobotExecutorObj() != null && appiumDriver != null && appiumDriver instanceof LocksDevice
+                    && "Y".equals(tCExecution.getRobotExecutorObj().getDeviceLockUnlock())) {
                 ((LocksDevice) appiumDriver).unlockDevice();
             }
-
 
             tCExecution.getSession().setStarted(true);
 
@@ -460,12 +459,12 @@ public class SeleniumServerService implements ISeleniumServerService {
                 }
             }
             if (!StringUtil.isNullOrEmpty(tCExecution.getRobotExecutorObj().getDeviceName())) {
-                if(tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
+                if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
                     if ((caps.getCapability("systemPort") == null)
                             || ((caps.getCapability("systemPort") != null) && (caps.getCapability("systemPort").toString().equals("")))) {
                         caps.setCapability("systemPort", tCExecution.getRobotExecutorObj().getDevicePort());
                     }
-                } else if(tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
+                } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
                     if ((caps.getCapability("wdaLocalPort") == null)
                             || ((caps.getCapability("wdaLocalPort") != null) && (caps.getCapability("wdaLocalPort").toString().equals("")))) {
                         caps.setCapability("wdaLocalPort", tCExecution.getRobotExecutorObj().getDevicePort());
@@ -578,6 +577,7 @@ public class SeleniumServerService implements ISeleniumServerService {
 
             } else if (browser.equalsIgnoreCase("chrome")) {
                 capabilities = DesiredCapabilities.chrome();
+                
                 /**
                  * Add custom capabilities
                  */
@@ -666,8 +666,8 @@ public class SeleniumServerService implements ISeleniumServerService {
             }
 
             // lock device if deviceLockUnlock is active
-            if (tce.getRobotExecutorObj() != null && session.getAppiumDriver() != null && session.getAppiumDriver() instanceof LocksDevice &&
-                    "Y".equals(tce.getRobotExecutorObj().getDeviceLockUnlock())) {
+            if (tce.getRobotExecutorObj() != null && session.getAppiumDriver() != null && session.getAppiumDriver() instanceof LocksDevice
+                    && "Y".equals(tce.getRobotExecutorObj().getDeviceLockUnlock())) {
                 ((LocksDevice) session.getAppiumDriver()).lockDevice();
             }
 
@@ -699,16 +699,18 @@ public class SeleniumServerService implements ISeleniumServerService {
                 StringWriter writer = new StringWriter();
                 IOUtils.copy(contents, writer, "UTF8");
                 JSONObject object = new JSONObject(writer.toString());
-                URL myURL = new URL(object.getString("proxyId"));
-                if ((myURL.getHost() != null) && (myURL.getPort() != -1)) {
-                    tCExecution.setRobotHost(myURL.getHost());
-                    tCExecution.setRobotPort(String.valueOf(myURL.getPort()));
+                if (object.has("proxyId")) {
+                    URL myURL = new URL(object.getString("proxyId"));
+                    if ((myURL.getHost() != null) && (myURL.getPort() != -1)) {
+                        tCExecution.setRobotHost(myURL.getHost());
+                        tCExecution.setRobotPort(String.valueOf(myURL.getPort()));
+                    }
+                } else {
+                    LOG.debug("'proxyId' json data not available from remote Selenium Server request : " + writer.toString());
                 }
             }
 
-        } catch (IOException ex) {
-            LOG.error(ex.toString(), ex);
-        } catch (JSONException ex) {
+        } catch (IOException | JSONException ex) {
             LOG.error(ex.toString(), ex);
         }
     }
