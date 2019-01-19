@@ -313,6 +313,8 @@ function refreshDisplayOnTypeChange(newValue) {
     	$( "label[name='attachementurlField']" ).show();
     	$( "input[name='attachementurl']" ).show();
         $('#editSoapLibraryModal #method').prop("disabled", true);
+        $('#editSoapLibraryModal #addContent').prop("disabled", false);
+        $('#editSoapLibraryModal #addHeader').prop("disabled", false);
     } else if (newValue === "FTP") {
         $('#editSoapLibraryModal #method').prop("disabled", false);
         $('#editSoapLibraryModal #addContent').prop("disabled", true);
@@ -329,6 +331,8 @@ function refreshDisplayOnTypeChange(newValue) {
     	$( "input[name='attachementurl']" ).hide();
     } else {
         $('#editSoapLibraryModal #method').prop("disabled", false);
+        $('#editSoapLibraryModal #addContent').prop("disabled", false);
+        $('#editSoapLibraryModal #addHeader').prop("disabled", false);
     	$('.upload-drop-zone').hide();
     	$( "label[name='screenshotfilenameField']" ).hide();
         $('#editSoapLibraryModal #method option[value="DELETE"]').css("display", "block");
@@ -338,9 +342,7 @@ function refreshDisplayOnTypeChange(newValue) {
     	$( "input[name='operation']" ).hide();
     	$( "label[name='attachementurlField']" ).hide();
     	$( "input[name='attachementurl']" ).hide();
-    }
-    console.log($('#service').val());
-    
+    }    
 }
 
 
