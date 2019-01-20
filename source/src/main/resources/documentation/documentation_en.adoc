@@ -369,3 +369,7 @@ include::include/en/{file-to-include}[]
 === 3.11
 :file-to-include: changelog_3.11_en.adoc
 include::include/en/{file-to-include}[]
+ 
+=== 3.12
+:file-to-include: changelog_3.12_en.adoc
+include::include/en/{file-to-include}[]
