@@ -19,12 +19,22 @@
  */
 package org.cerberus.engine.execution.impl;
 
-import java.io.*;
+import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -184,8 +194,7 @@ public class RecorderService implements IRecorderService {
 
     @Override
     public AnswerItem recordManuallyFile(TestCaseStepActionExecution testCaseStepActionExecution, TestCaseStepActionControlExecution testCaseStepActionControlExecution, String extension, String desc, FileItem file, Integer id, String fileName, Integer fileID) {
-        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
-                "Can't upload file");
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION", "Can't upload file");
         AnswerItem a = new AnswerItem<>();
         TestCaseExecutionFile object = null;
         String returnCode;
@@ -197,6 +206,7 @@ public class RecorderService implements IRecorderService {
         String sequence = "";
         String controlString = "";
         Integer myExecution = id;
+
         if (testCaseStepActionControlExecution == null) {
             test = testCaseStepActionExecution.getTest();
             testCase = testCaseStepActionExecution.getTestCase();
@@ -350,6 +360,8 @@ public class RecorderService implements IRecorderService {
                 FileUtils.copyFile(newImage, new File(recorder.getFullFilename()));
                 LOG.debug(logPrefix + "Copy file finished with success - source: " + newImage.getName() + " destination: " + recorder.getRelativeFilenameURL());
 
+                LOG.info("File saved : " + recorder.getFullFilename());
+
                 // Index file created to database.
                 object = testCaseExecutionFileFactory.create(0, testCaseExecution.getId(), recorder.getLevel(), "Screenshot", recorder.getRelativeFilenameURL(), "PNG", "", null, "", null);
                 testCaseExecutionFileService.save(object);
@@ -372,10 +384,7 @@ public class RecorderService implements IRecorderService {
 
     @Override
     public TestCaseExecutionFile recordPageSource(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control) {
-        // Used for logging purposes
-        String logPrefix = Infos.getInstance().getProjectNameAndVersion() + " - ";
-
-        LOG.debug(logPrefix + "Starting to save Page Source File.");
+        LOG.debug("Starting to save Page Source File.");
 
         TestCaseExecutionFile object = null;
         String test = testCaseExecution.getTest();
@@ -396,20 +405,21 @@ public class RecorderService implements IRecorderService {
                 fileOutputStream.write(this.webdriverService.getPageSource(testCaseExecution.getSession()).getBytes());
                 fileOutputStream.close();
 
+                LOG.info("File saved : " + recorder.getFullFilename());
+
                 // Index file created to database.
                 object = testCaseExecutionFileFactory.create(0, testCaseExecution.getId(), recorder.getLevel(), "Page Source", recorder.getRelativeFilenameURL(), "HTML", "", null, "", null);
                 testCaseExecutionFileService.save(object);
 
             } catch (FileNotFoundException ex) {
-                LOG.error(logPrefix + ex.toString(), ex);
+                LOG.error(ex.toString(), ex);
 
             } catch (IOException ex) {
-                LOG.error(logPrefix + ex.toString(), ex);
+                LOG.error(ex.toString(), ex);
             }
 
-            LOG.debug(logPrefix + "Page Source file saved in : " + recorder.getRelativeFilenameURL());
         } catch (CerberusException ex) {
-            LOG.error(logPrefix + ex.toString(), ex);
+            LOG.error(ex.toString(), ex);
         }
         return object;
     }
@@ -492,10 +502,12 @@ public class RecorderService implements IRecorderService {
                 }
                 Recorder recorderResponse = this.initFilenames(runId, test, testCase, step, index, sequence, controlString, property, propertyIndex, "response", messageFormatExt, false);
                 recordFile(recorderResponse.getFullPath(), recorderResponse.getFileName(), se.getResponseHTTPBody());
+
                 // Index file created to database.
                 object = testCaseExecutionFileFactory.create(0, runId, recorderResponse.getLevel(), "Response", recorderResponse.getRelativeFilenameURL(), messageFormat, "", null, "", null);
                 testCaseExecutionFileService.save(object);
                 objectFileList.add(object);
+
             } else if (se.getFile() != null) {
                 Recorder recorderResponse = this.initFilenames(runId, test, testCase, step, index, sequence, controlString, property, propertyIndex, "response", se.getResponseHTTPBodyContentType().toLowerCase(), false);
                 File file = new File(recorderResponse.getFullPath());
@@ -583,7 +595,7 @@ public class RecorderService implements IRecorderService {
                 }
             }
             outputMessage.put("RequestedCapabilities", capsInput);
-            
+
             JSONObject capsFinal = new JSONObject();
             if (capFinalList != null) {
                 for (RobotCapability robotCapability : capFinalList) {
@@ -603,7 +615,7 @@ public class RecorderService implements IRecorderService {
         } catch (CerberusException ex) {
             LOG.error(ex.toString(), ex);
         } catch (JSONException ex) {
-            Logger.getLogger(RecorderService.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.error(ex.toString(), ex);
         } catch (Exception ex) {
             LOG.error(ex.toString(), ex);
         }
@@ -642,6 +654,8 @@ public class RecorderService implements IRecorderService {
                         baos.close();
                         fileOutputStream.close();
 
+                        LOG.info("File saved : " + recorder.getFullFilename());
+
                         // Index file created to database.
                         object = testCaseExecutionFileFactory.create(0, testCaseExecution.getId(), recorder.getLevel(), "Selenium log", recorder.getRelativeFilenameURL(), "TXT", "", null, "", null);
                         testCaseExecutionFileService.save(object);
@@ -674,6 +688,7 @@ public class RecorderService implements IRecorderService {
             File storeFile = new File(recorder.getFullFilename());
             // saves the file on disk
             uploadedFile.write(storeFile);
+            LOG.info("File saved : " + recorder.getFullFilename());
 
             // Index file created to database.
             testCaseExecutionFileService.save(executionId, recorder.getLevel(), "Image", recorder.getRelativeFilenameURL(), "JPG", "");
@@ -684,6 +699,7 @@ public class RecorderService implements IRecorderService {
 
     }
 
+    @Override
     public void addFileToTestCaseExecution(TestCaseExecution tce, Recorder recorder, String fileDesc, String fileType) {
         TestCaseExecutionFile object = testCaseExecutionFileFactory.create(0, tce.getId(), recorder.getLevel(), fileDesc, recorder.getRelativeFilenameURL(), fileType, "", null, "", null);
         testCaseExecutionFileService.save(object);
@@ -697,7 +713,7 @@ public class RecorderService implements IRecorderService {
      * @param content -content of the file
      */
     private void recordFile(String path, String fileName, String content) {
-        LOG.info("Starting to save File - recordFile.");
+        LOG.debug("Starting to save File (recordFile) : " + path + " " + fileName);
 
         File dir = new File(path);
         if (!dir.exists()) {
@@ -707,14 +723,15 @@ public class RecorderService implements IRecorderService {
         try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(dir.getAbsolutePath() + File.separator + fileName), StandardCharsets.UTF_8));) {
             writer.write(content);
             writer.close();
-            LOG.debug("File saved : " + path + File.separator + fileName);
+            LOG.info("File saved : " + path + File.separator + fileName);
         } catch (FileNotFoundException ex) {
-            LOG.debug("Unable to save : " + path + File.separator + fileName + " ex: " + ex);
+            LOG.error("Unable to save : " + path + File.separator + fileName + " ex: " + ex, ex);
         } catch (IOException ex) {
-            LOG.debug("Unable to save : " + path + File.separator + fileName + " ex: " + ex);
+            LOG.error("Unable to save : " + path + File.separator + fileName + " ex: " + ex, ex);
         }
     }
 
+    @Override
     public Recorder initFilenames(long exeID, String test, String testCase, String step, String index, String sequence, String controlString, String property, int propertyIndex, String filename, String extention, boolean manual) throws CerberusException {
         Recorder newRecorder = new Recorder();
 

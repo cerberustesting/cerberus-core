@@ -20,7 +20,6 @@
 package org.cerberus.engine.execution.impl;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -32,7 +31,6 @@ import org.cerberus.crud.entity.CountryEnvParam;
 import org.cerberus.crud.entity.Robot;
 import org.cerberus.crud.entity.RobotCapability;
 import org.cerberus.crud.entity.RobotExecutor;
-import org.cerberus.crud.entity.Tag;
 import org.cerberus.crud.entity.Test;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
@@ -85,7 +83,6 @@ import org.cerberus.service.sikuli.ISikuliService;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
-import org.cerberus.util.answer.AnswerList;
 import org.cerberus.websocket.TestCaseExecutionEndPoint;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.WebDriverException;
@@ -876,7 +873,7 @@ public class ExecutionRunService implements IExecutionRunService {
             messageFin.setDescription(messageFin.getDescription() + " " + ex.getMessageError().getDescription());
             tCExecution.setResultMessage(messageFin);
             tCExecution.setControlMessage(tCExecution.getControlMessage() + " Exception: " + ex);
-            LOG.error(logPrefix + "Exception found Executing Test " + tCExecution.getId() + " Exception :" + ex.toString(), ex);
+            LOG.error(logPrefix + "Exception found Executing Test " + tCExecution.getId() + " Exception : " + ex.toString(), ex);
         } catch (Exception ex) {
             /**
              * If an exception is found, set the execution to FA and print the
@@ -886,7 +883,7 @@ public class ExecutionRunService implements IExecutionRunService {
             messageFin.setDescription(messageFin.getDescription() + " " + ex.getMessage());
             tCExecution.setResultMessage(messageFin);
             tCExecution.setControlMessage(tCExecution.getControlMessage() + " Exception: " + ex);
-            LOG.error(logPrefix + "Exception found Executing Test " + tCExecution.getId() + " Exception :" + ex.toString(), ex);
+            LOG.error(logPrefix + "Exception found Executing Test " + tCExecution.getId() + " Exception : " + ex.toString(), ex);
         } finally {
 
             /**
@@ -898,7 +895,7 @@ public class ExecutionRunService implements IExecutionRunService {
                 }
                 tCExecution = this.stopTestCase(tCExecution);
             } catch (Exception ex) {
-                LOG.error(logPrefix + "Exception Stopping Test " + tCExecution.getId() + " Exception :" + ex.toString(), ex);
+                LOG.error(logPrefix + "Exception Stopping Test " + tCExecution.getId() + " Exception : " + ex.toString(), ex);
             }
 
             /**

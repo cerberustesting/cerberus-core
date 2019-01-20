@@ -421,7 +421,7 @@ public class WebDriverService implements IWebDriverService {
 
                 if (image != null) {
                     //logs for debug purposes
-                    LOG.info("WebDriverService: screen-shot taken with succes: " + image.getName() + "(size" + image.length() + ")");
+                    LOG.info("WebDriverService: screenshot taken with succes: " + image.getName() + " (size : " + image.length() + ")");
                 } else {
                     LOG.warn("WebDriverService: screen-shot returned null: ");
                 }

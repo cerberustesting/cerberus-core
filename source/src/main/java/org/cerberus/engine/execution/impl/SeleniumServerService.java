@@ -363,7 +363,8 @@ public class SeleniumServerService implements ISeleniumServerService {
             mes.setDescription(mes.getDescription().replace("%URL%", tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort()));
             throw new CerberusException(mes, exception);
         } catch (UnreachableBrowserException exception) {
-            LOG.error(logPrefix + exception.toString(), exception);
+            LOG.error(logPrefix + "Could not connect to : " + tCExecution.getSeleniumIP() + ":" + tCExecution.getSeleniumPort());
+            LOG.error(logPrefix + "UnreachableBrowserException catched.", exception);
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_COULDNOTCONNECT);
             mes.setDescription(mes.getDescription().replace("%SSIP%", tCExecution.getSeleniumIP()));
             mes.setDescription(mes.getDescription().replace("%SSPORT%", tCExecution.getSeleniumPort()));
@@ -577,7 +578,7 @@ public class SeleniumServerService implements ISeleniumServerService {
 
             } else if (browser.equalsIgnoreCase("chrome")) {
                 capabilities = DesiredCapabilities.chrome();
-                
+
                 /**
                  * Add custom capabilities
                  */
