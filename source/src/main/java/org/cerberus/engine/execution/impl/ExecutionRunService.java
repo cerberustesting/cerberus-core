@@ -873,7 +873,7 @@ public class ExecutionRunService implements IExecutionRunService {
             messageFin.setDescription(messageFin.getDescription() + " " + ex.getMessageError().getDescription());
             tCExecution.setResultMessage(messageFin);
             tCExecution.setControlMessage(tCExecution.getControlMessage() + " Exception: " + ex);
-            LOG.error(logPrefix + "Exception found Executing Test " + tCExecution.getId() + " Exception : " + ex.toString(), ex);
+            LOG.error(logPrefix + "Exception found Executing Test " + tCExecution.getId() + " Exception : " + ex.toString());
         } catch (Exception ex) {
             /**
              * If an exception is found, set the execution to FA and print the
@@ -883,7 +883,7 @@ public class ExecutionRunService implements IExecutionRunService {
             messageFin.setDescription(messageFin.getDescription() + " " + ex.getMessage());
             tCExecution.setResultMessage(messageFin);
             tCExecution.setControlMessage(tCExecution.getControlMessage() + " Exception: " + ex);
-            LOG.error(logPrefix + "Exception found Executing Test " + tCExecution.getId() + " Exception : " + ex.toString(), ex);
+            LOG.error(logPrefix + "Exception found Executing Test " + tCExecution.getId(), ex);
         } finally {
 
             /**
