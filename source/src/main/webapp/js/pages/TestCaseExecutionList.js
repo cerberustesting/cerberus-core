@@ -232,6 +232,13 @@ function aoColumnsFunc() {
             "sDefaultContent": ""
         },
         {
+            "data": "url",
+            "sName": "exe.url",
+            "title": doc.getDocOnline("page_executiondetail", "url"),
+            "sWidth": "70px",
+            "sDefaultContent": ""
+        },
+        {
             "data": "browser",
             "sName": "exe.browser",
             "title": doc.getDocOnline("page_executiondetail", "browser"),
@@ -294,21 +301,14 @@ function aoColumnsFunc() {
         {
             "data": "ip",
             "sName": "exe.ip",
-            "title": doc.getDocOnline("page_executiondetail", "ip"),
-            "sWidth": "70px",
-            "sDefaultContent": ""
-        },
-        {
-            "data": "url",
-            "sName": "exe.url",
-            "title": doc.getDocOnline("page_executiondetail", "url"),
+            "title": doc.getDocOnline("page_executiondetail", "robothost"),
             "sWidth": "70px",
             "sDefaultContent": ""
         },
         {
             "data": "port",
             "sName": "exe.port",
-            "title": doc.getDocOnline("page_executiondetail", "port"),
+            "title": doc.getDocOnline("page_executiondetail", "robotport"),
             "sWidth": "70px",
             "sDefaultContent": ""
         },

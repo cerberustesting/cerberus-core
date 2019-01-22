@@ -117,6 +117,7 @@ function loadTable(selectTest, sortColumn) {
 
         var table = createDataTableWithPermissions(config, renderOptionsForTestCaseList, "#testCaseList", undefined, true);
 
+        
         var app = GetURLParameter('application');
         if (app !== "" && app !== null) {
             filterOnColumn("testCaseTable", "application", app);
@@ -706,7 +707,7 @@ function aoColumnsFunc(countries, tableId) {
         {
             "data": "group",
             "sName": "tec.group",
-            "title": doc.getDocOnline("invariant", "GROUP"),
+            "title": doc.getDocOnline("invariant", "Type"),
             "sWidth": "100px",
             "sDefaultContent": ""
         },
