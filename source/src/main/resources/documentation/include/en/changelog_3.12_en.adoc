@@ -5,6 +5,7 @@
 *Improvements / New features*
 [square]
 * Add a new system variable : system.ROBOTHOST
+* Add loop icon and library icon on step list in test case script
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
