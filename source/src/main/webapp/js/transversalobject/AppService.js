@@ -298,7 +298,6 @@ function confirmAppServiceModalHandler(mode, page) {
     if (mode === 'EDIT') { // Disable back the test combo before submit the form.
         formEdit.find("#service").prop("disabled", "disabled");
     }
-    console.log($('#service').val());
 
 }
 
