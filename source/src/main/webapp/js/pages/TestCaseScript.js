@@ -1069,7 +1069,7 @@ function drawInheritedProperty(propList) {
         var htmlElement = $("<li></li>").addClass("list-group-item list-group-item-calm row").css("margin-left", "0px");
         $(htmlElement).append($("<a></a>").attr("href", "#inheritPropertyLine" + property.property).text(property.property));
 
-        $("#inheritPropList").append(htmlElement);
+        $("#inheritPropList").ap<pend(htmlElement);
     }
 
     sortProperties("#inheritedPropPanel");
@@ -1747,20 +1747,26 @@ function Step(json, stepList, canUpdate, hasPermissionsStepLibrary) {
     this.hasPermissionsUpdate = canUpdate;
     this.hasPermissionsStepLibrary = hasPermissionsStepLibrary;
 
-    this.html = $("<li></li>").addClass("list-group-item list-group-item-calm row").css("margin-left", "0px");
-    this.textArea = $("<div></div>").addClass("col-sm-10").addClass("step-description").text(this.description);
-
+    this.html = $("<li style='padding-right:5px'></li>").addClass("list-group-item list-group-item-calm row").css("margin-left", "0px");
+    this.textArea = $("<div></div>").addClass("col-sm-8 textArea").addClass("step-description").text(this.description);
+    console.log("this inLibrary = " + this.inLibrary);
 }
 
 Step.prototype.draw = function () {
     var htmlElement = this.html;
-    var drag = $("<div></div>").addClass("col-sm-1 drag-step").css("padding-left", "5px").css("padding-right", "5px").prop("draggable", true)
+    var drag = $("<div></div>").addClass("col-sm-1 drag-step").css("padding-left", "5px").css("padding-right", "2px").prop("draggable", true)
             .append($("<span></span>").addClass("fa fa-ellipsis-v"));
 
+    var loopIcon = $("<div></div>").addClass("col-sm-1 loop-Icon")
+    var libraryIcon = $("<div></div>").addClass("col-sm-1 library-Icon")
 
-    var schema = $("<div style='margin-left:10px' class='col-lg-2 alert alert-info'><div>" + this.sort + " - " + this.description + "</div></div>")
-    $("#schemaDiv").append(schema);
-
+    if (this.loop != "onceIfConditionTrue" && this.loop != "onceIfConditionFalse"){
+    	loopIcon = $("<span class='loopIcon'></span>").addClass("glyphicon glyphicon-refresh loop-Icon");
+    }
+    
+    if (this.inLibrary ==  "Y"){
+    	libraryIcon = $("<span class='libraryIcon'></span>").addClass("glyphicon glyphicon-book library-Icon");
+    }
     drag.on("dragstart", handleDragStart);
     drag.on("dragenter", handleDragEnter);
     drag.on("dragover", handleDragOver);
@@ -1771,10 +1777,11 @@ Step.prototype.draw = function () {
     // htmlElement.append(badge);
     htmlElement.append(drag);
     htmlElement.append(this.textArea);
+    htmlElement.append(loopIcon);
+    htmlElement.append(libraryIcon);
     htmlElement.data("item", this);
-
     htmlElement.click(this.show);
-
+    
     $("#stepPlus").unbind("click").click(function () {
         $("#stepHiddenRow").toggle();
         if ($(this).find("span").hasClass("glyphicon-chevron-down")) {
@@ -1855,7 +1862,7 @@ Step.prototype.show = function () {
     $("#stepLoop").replaceWith(getSelectInvariant("STEPLOOP", false, true).css("width", "100%").addClass("form-control input-sm").attr("id", "stepLoop"));
     $("#stepLoop").unbind("change").change(function () {
         setModif(true);
-        object.loop = $(this).val();
+        object.loop = $(this).val();        
     });
 
     $("#stepForceExe").replaceWith(getSelectInvariant("STEPFORCEEXE", true, true).css("width", "100%").addClass("form-control input-sm").attr("id", "stepForceExe"));
