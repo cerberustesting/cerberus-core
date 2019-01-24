@@ -19,15 +19,12 @@
  */
 package org.cerberus.crud.dao;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
+import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionData;
-import org.cerberus.util.answer.Answer;
-import org.cerberus.util.answer.AnswerItem;
-import org.cerberus.util.answer.AnswerList;
+import org.cerberus.exception.CerberusException;
 
 /**
  * {Insert class description here}
@@ -45,7 +42,7 @@ public interface ITestCaseExecutionDataDAO {
      * @param index
      * @return
      */
-    public AnswerItem<TestCaseExecutionData> readByKey(long id, String property, int index);
+    TestCaseExecutionData readByKey(long id, String property, int index) throws CerberusException;
 
     /**
      *
@@ -58,7 +55,7 @@ public interface ITestCaseExecutionDataDAO {
      * @param individualSearch
      * @return
      */
-    public AnswerList<TestCaseExecutionData> readByIdByCriteria(long id, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
+    List<TestCaseExecutionData> readByIdByCriteria(long id, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException;
 
     /**
      *
@@ -69,7 +66,7 @@ public interface ITestCaseExecutionDataDAO {
      * @param cacheExpire
      * @return
      */
-    public AnswerItem<TestCaseExecutionData> readLastCacheEntry(String system, String environment, String country, String property, int cacheExpire);
+    TestCaseExecutionData readLastCacheEntry(String system, String environment, String country, String property, int cacheExpire) throws CerberusException;
 
     /**
      * Get the list of values of past execution data on the property @propName
@@ -85,7 +82,7 @@ public interface ITestCaseExecutionDataDAO {
      * @param country
      * @return
      */
-    public List<String> getPastValuesOfProperty(long id, String propName, String test, String testCase, String build, String environment, String country);
+    List<String> getPastValuesOfProperty(long id, String propName, String test, String testCase, String build, String environment, String country) throws CerberusException;
 
     /**
      * Get the list of values currently in used in the given COUNTRY,
@@ -100,35 +97,28 @@ public interface ITestCaseExecutionDataDAO {
      * @param country
      * @return
      */
-    public List<String> getInUseValuesOfProperty(long id, String propName, String environment, String country, Integer timeoutInSecond);
+    List<String> getInUseValuesOfProperty(long id, String propName, String environment, String country, Integer timeoutInSecond) throws CerberusException;
 
     /**
      *
      * @param object
      * @return
      */
-    public Answer create(TestCaseExecutionData object);
+    void create(TestCaseExecutionData object) throws CerberusException;
 
     /**
      *
      * @param object
      * @return
      */
-    public Answer delete(TestCaseExecutionData object);
+    void delete(TestCaseExecutionData object) throws CerberusException;
 
     /**
      *
      * @param object
      * @return
      */
-    public Answer update(TestCaseExecutionData object);
+    void update(TestCaseExecutionData object) throws CerberusException;
 
-    /**
-     *
-     * @param resultSet
-     * @return
-     * @throws SQLException
-     */
-    public TestCaseExecutionData loadFromResultSet(ResultSet resultSet) throws SQLException;
-
+    List<TestCaseExecutionData> readTestCasePropertiesHeritedByDependencies(TestCaseExecution tce)  throws CerberusException ;
 }

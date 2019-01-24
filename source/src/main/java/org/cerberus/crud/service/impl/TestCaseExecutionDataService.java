@@ -19,13 +19,13 @@
  */
 package org.cerberus.crud.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 import org.cerberus.crud.dao.ITestCaseExecutionDataDAO;
+import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.crud.entity.TestCaseExecutionData;
 import org.cerberus.crud.entity.TestCaseExecutionFile;
@@ -55,73 +55,66 @@ public class TestCaseExecutionDataService implements ITestCaseExecutionDataServi
     private static final Logger LOG = LogManager.getLogger(TestCaseStepActionControlExecutionService.class);
 
     @Override
-    public AnswerItem readByKey(long id, String property, int index) {
+    public TestCaseExecutionData readByKey(long id, String property, int index) throws CerberusException {
         return testCaseExecutionDataDao.readByKey(id, property, index);
     }
 
     @Override
-    public AnswerList<TestCaseExecutionData> readByIdByCriteria(long id, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
+    public List<TestCaseExecutionData> readByIdByCriteria(long id, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException {
         return testCaseExecutionDataDao.readByIdByCriteria(id, start, amount, column, dir, searchTerm, individualSearch);
     }
 
     @Override
-    public AnswerItem<TestCaseExecutionData> readLastCacheEntry(String system, String environment, String country, String property, int cacheExpire) {
+    public TestCaseExecutionData readLastCacheEntry(String system, String environment, String country, String property, int cacheExpire) throws CerberusException {
         return testCaseExecutionDataDao.readLastCacheEntry(system, environment, country, property, cacheExpire);
     }
 
     @Override
-    public AnswerList<TestCaseExecutionData> readById(long id) {
+    public List<TestCaseExecutionData> readById(long id) throws CerberusException {
         return testCaseExecutionDataDao.readByIdByCriteria(id, 0, 0, "exd.id", "asc", null, null);
     }
 
     @Override
-    public AnswerList<TestCaseExecutionData> readByIdWithDependency(long id) {
-        AnswerList<TestCaseExecutionData> data = this.readByIdByCriteria(id, 0, 0, "exd.property", "asc", null, null);
-        AnswerList<TestCaseExecutionData> response = null;
-        List<TestCaseExecutionData> tcsaceList = new ArrayList<>();
-        for (Object mydata : data.getDataList()) {
+    public List<TestCaseExecutionData> readByIdWithDependency(long id) throws CerberusException {
+        List<TestCaseExecutionData> data = this.readByIdByCriteria(id, 0, 0, "exd.property", "asc", null, null);
 
-            TestCaseExecutionData tcsace = (TestCaseExecutionData) mydata;
-
+        for (TestCaseExecutionData tcsace : data) {
             AnswerList<TestCaseExecutionFile> files = testCaseExecutionFileService.readByVarious(id, tcsace.getProperty() + "-" + tcsace.getIndex());
-            tcsace.setFileList((List<TestCaseExecutionFile>) files.getDataList());
-
-            tcsaceList.add(tcsace);
+            tcsace.setFileList(files.getDataList());
         }
-        response = new AnswerList<>(tcsaceList, data.getTotalRows());
-        return response;
+
+        return data;
 
     }
 
     @Override
-    public boolean exist(long id, String property, int index) {
-        AnswerItem objectAnswer = readByKey(id, property, index);
-        return (objectAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) && (objectAnswer.getItem() != null); // Call was successfull and object was found.
+    public boolean exist(long id, String property, int index) throws CerberusException {
+        return readByKey(id, property, index) != null;
     }
 
     @Override
-    public List<String> getPastValuesOfProperty(long id, String propName, String test, String testCase, String build, String environment, String country) {
+    public List<String> getPastValuesOfProperty(long id, String propName, String test, String testCase, String build, String environment, String country) throws CerberusException {
         return testCaseExecutionDataDao.getPastValuesOfProperty(id, propName, test, testCase, build, environment, country);
     }
 
     @Override
-    public List<String> getInUseValuesOfProperty(long id, String propName, String environment, String country, Integer timeoutInSecond) {
+    public List<String> getInUseValuesOfProperty(long id, String propName, String environment, String country, Integer timeoutInSecond) throws CerberusException {
         return testCaseExecutionDataDao.getInUseValuesOfProperty(id, propName, environment, country, timeoutInSecond);
     }
 
     @Override
-    public Answer create(TestCaseExecutionData object) {
-        return testCaseExecutionDataDao.create(object);
+    public void create(TestCaseExecutionData object) throws CerberusException {
+        testCaseExecutionDataDao.create(object);
     }
 
     @Override
-    public Answer delete(TestCaseExecutionData object) {
-        return testCaseExecutionDataDao.delete(object);
+    public void delete(TestCaseExecutionData object) throws CerberusException {
+        testCaseExecutionDataDao.delete(object);
     }
 
     @Override
-    public Answer update(TestCaseExecutionData object) {
-        return testCaseExecutionDataDao.update(object);
+    public void update(TestCaseExecutionData object) throws CerberusException {
+        testCaseExecutionDataDao.update(object);
     }
 
     @Override
@@ -152,12 +145,20 @@ public class TestCaseExecutionDataService implements ITestCaseExecutionDataServi
     }
 
     @Override
-    public Answer save(TestCaseExecutionData object) {
+    public void save(TestCaseExecutionData object) throws CerberusException {
         if (this.exist(object.getId(), object.getProperty(), object.getIndex())) {
-            return update(object);
+            update(object);
         } else {
-            return create(object);
+            create(object);
         }
+    }
+
+    @Override
+    public void loadTestCasePropertiesHeritedByDependencies(final TestCaseExecution testCaseExecution) throws CerberusException {
+        List<TestCaseExecutionData> testCaseExecutionData = testCaseExecutionDataDao.readTestCasePropertiesHeritedByDependencies(testCaseExecution);
+
+        testCaseExecutionData.forEach(data -> testCaseExecution.getTestCaseExecutionDataMap().put(data.getProperty(), data));
+
     }
 
 }

@@ -4,7 +4,7 @@
 
 *Improvements / New features*
 [square]
-* none
+* Add a new system variable : system.ROBOTHOST
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

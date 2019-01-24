@@ -37,6 +37,8 @@ public class RequestDbUtils {
 
     private static final Logger LOG = LogManager.getLogger(RequestDbUtils.class);
 
+    private final static String SQL_DUPLICATED_CODE = "23000";
+
     @FunctionalInterface
     public interface SqlFunction<T, R> {
 
@@ -85,7 +87,13 @@ public class RequestDbUtils {
             functionPrepareStatement.apply(preStat);
             preStat.executeUpdate();
         } catch (SQLException exception) {
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR), exception);
+            if (exception.getSQLState().equals(SQL_DUPLICATED_CODE)) { //23000 is the sql state for duplicate entries
+                MessageGeneral message = new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR);
+                message.setDescription(message.getDescription().replace("%ITEM%", query).replace("%OPERATION%", "INSERT").replace("%REASON%", exception.toString()));
+                throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR),  exception); // TODO pass SQL DUPLICATE CODE
+            } else {
+                throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR), exception);
+            }
         }
 
         return null;
