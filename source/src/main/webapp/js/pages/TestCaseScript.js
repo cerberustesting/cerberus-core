@@ -1069,7 +1069,7 @@ function drawInheritedProperty(propList) {
         var htmlElement = $("<li></li>").addClass("list-group-item list-group-item-calm row").css("margin-left", "0px");
         $(htmlElement).append($("<a></a>").attr("href", "#inheritPropertyLine" + property.property).text(property.property));
 
-        $("#inheritPropList").ap<pend(htmlElement);
+        $("#inheritPropList").append(htmlElement);
     }
 
     sortProperties("#inheritedPropPanel");
