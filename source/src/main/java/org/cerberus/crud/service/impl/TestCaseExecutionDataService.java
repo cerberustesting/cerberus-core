@@ -157,7 +157,11 @@ public class TestCaseExecutionDataService implements ITestCaseExecutionDataServi
     public void loadTestCasePropertiesHeritedByDependencies(final TestCaseExecution testCaseExecution) throws CerberusException {
         List<TestCaseExecutionData> testCaseExecutionData = testCaseExecutionDataDao.readTestCasePropertiesHeritedByDependencies(testCaseExecution);
 
-        testCaseExecutionData.forEach(data -> testCaseExecution.getTestCaseExecutionDataMap().put(data.getProperty(), data));
+        for (TestCaseExecutionData data : testCaseExecutionData ) {
+            data.setId(testCaseExecution.getId());
+            testCaseExecutionDataDao.create(data);
+            testCaseExecution.getTestCaseExecutionDataMap().put(data.getProperty(), data);
+        }
 
     }
 

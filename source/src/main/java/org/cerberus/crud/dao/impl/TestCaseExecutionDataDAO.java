@@ -34,6 +34,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.ITestCaseExecutionDataDAO;
 import org.cerberus.crud.entity.TestCaseExecution;
+import org.cerberus.crud.entity.TestCaseExecutionQueueDep;
 import org.cerberus.crud.utils.RequestDbUtils;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.database.DatabaseSpring;
@@ -383,22 +384,18 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
     }
 
     public List<TestCaseExecutionData> readTestCasePropertiesHeritedByDependencies(TestCaseExecution tce) throws CerberusException {
-        String query = "" +
-        " select tcd.value "+
-        " from testcaseexecutiondata tcd "+
-        " inner join testcaseexecution tc on tcd.id = tc.id "+
-        " where tc.Tag=? and tc.Test=? and tc.TestCase=? "+
-        " and tc.id >= all (select id from testcaseexecution tc2 where tc.Tag=? and tc2.Test=? and tc2.TestCase=?) ";
+        List<TestCaseExecutionQueueDep> testCaseDep = tce.getTestCaseDep();
+
+        String query = "select exd.*" +
+                " from testcaseexecutionqueue tceq" +
+                " inner join testcaseexecutionqueuedep tceqd on tceqd.ExeQueueID = tceq.ID" +
+                " inner join testcaseexecutiondata exd on tceqd.ExeID = exd.ID" +
+                "  where tceq.ExeID=?";
 
         return RequestDbUtils.executeQueryList(databaseSpring, query,
                 ps -> {
                     int i = 1;
-                    ps.setString(i++, tce.getTag());
-                    ps.setString(i++, tce.getTest());
-                    ps.setString(i++, tce.getTestCase());
-                    ps.setString(i++, tce.getTag());
-                    ps.setString(i++, tce.getTest());
-                    ps.setString(i++, tce.getTestCase());
+                    ps.setLong(i++, tce.getId());
                 },
                 rs -> loadFromResultSet(rs)
         );
