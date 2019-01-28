@@ -162,13 +162,14 @@ public interface ITestCaseExecutionDataService {
     /**
      *
      * @param object
-     * @return
+     * @throws org.cerberus.exception.CerberusException
      */
     void save(TestCaseExecutionData object) throws CerberusException ;
 
     /**
-     * Load All properties of testcases that this testcase depends
+     * Load All ExecutionData of testcases that this execution depends
      * @param testCaseExecution
+     * @throws org.cerberus.exception.CerberusException
      */
-    void loadTestCasePropertiesHeritedByDependencies(TestCaseExecution testCaseExecution) throws CerberusException;
+    void loadTestCaseExecutionDataFromDependencies(TestCaseExecution testCaseExecution) throws CerberusException;
 }

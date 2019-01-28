@@ -116,9 +116,15 @@ public interface ITestCaseExecutionDataDAO {
     /**
      *
      * @param object
-     * @return
+     * @throws org.cerberus.exception.CerberusException
      */
     void update(TestCaseExecutionData object) throws CerberusException;
 
-    List<TestCaseExecutionData> readTestCasePropertiesHeritedByDependencies(TestCaseExecution tce)  throws CerberusException ;
+    /**
+     *
+     * @param tce
+     * @return
+     * @throws CerberusException
+     */
+    List<TestCaseExecutionData> readTestCaseExecutionDataFromDependencies(TestCaseExecution tce)  throws CerberusException ;
 }

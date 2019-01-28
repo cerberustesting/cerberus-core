@@ -21,6 +21,7 @@ package org.cerberus.crud.service.impl;
 
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -154,13 +155,24 @@ public class TestCaseExecutionDataService implements ITestCaseExecutionDataServi
     }
 
     @Override
-    public void loadTestCasePropertiesHeritedByDependencies(final TestCaseExecution testCaseExecution) throws CerberusException {
-        List<TestCaseExecutionData> testCaseExecutionData = testCaseExecutionDataDao.readTestCasePropertiesHeritedByDependencies(testCaseExecution);
+    public void loadTestCaseExecutionDataFromDependencies(final TestCaseExecution testCaseExecution) throws CerberusException {
 
-        for (TestCaseExecutionData data : testCaseExecutionData ) {
+        // We get the full list of ExecutionData from dependencies.
+        List<TestCaseExecutionData> testCaseExecutionData = testCaseExecutionDataDao.readTestCaseExecutionDataFromDependencies(testCaseExecution);
+
+        // We then dedup it per property name.
+        TreeMap<String, TestCaseExecutionData> newExeDataMap = new TreeMap<>();
+        for (TestCaseExecutionData data : testCaseExecutionData) {
             data.setId(testCaseExecution.getId());
-            testCaseExecutionDataDao.create(data);
-            testCaseExecution.getTestCaseExecutionDataMap().put(data.getProperty(), data);
+            newExeDataMap.put(data.getProperty(), data);
+        }
+
+        // And finally set the dedup result to execution object and also record all results to database.
+        testCaseExecution.setTestCaseExecutionDataMap(newExeDataMap);
+        for (Map.Entry<String, TestCaseExecutionData> entry : newExeDataMap.entrySet()) {
+            String key = entry.getKey();
+            TestCaseExecutionData value = entry.getValue();
+            testCaseExecutionDataDao.create(value);
         }
 
     }

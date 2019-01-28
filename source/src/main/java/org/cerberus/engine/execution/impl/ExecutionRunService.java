@@ -491,10 +491,10 @@ public class ExecutionRunService implements IExecutionRunService {
 
 
             /**
-             * Load All properties of testcases that this testcase depends
+             * Load All Execution Data of testcases that this execution depends
              */
-            LOG.debug(logPrefix + "Loading all Steps information of Main testcase.");
-            this.testCaseExecutionDataService.loadTestCasePropertiesHeritedByDependencies(tCExecution);
+            LOG.debug(logPrefix + "Loading all Execution Data of the execution from queue dependencies.");
+            this.testCaseExecutionDataService.loadTestCaseExecutionDataFromDependencies(tCExecution);
 
 
             /**

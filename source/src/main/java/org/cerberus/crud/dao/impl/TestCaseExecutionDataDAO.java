@@ -135,7 +135,6 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
             query.append(" limit ").append(start).append(" , ").append(amount);
         }
 
-
         return RequestDbUtils.executeQueryList(databaseSpring, query.toString(),
                 ps -> {
                     int i = 1;
@@ -213,7 +212,7 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
     }
 
     @Override
-    public List<String> getInUseValuesOfProperty(long id, String propName, String environment, String country, Integer timeoutInSecond) throws CerberusException{
+    public List<String> getInUseValuesOfProperty(long id, String propName, String environment, String country, Integer timeoutInSecond) throws CerberusException {
         final String query = "SELECT distinct exd.`VALUE` FROM testcaseexecution exe "
                 + "JOIN testcaseexecutiondata exd ON exd.Property = ? and exd.ID = exe.ID "
                 + "WHERE exe.environment = ? AND exe.country = ? AND exe.ControlSTATUS = 'PE' "
@@ -260,7 +259,6 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
             LOG.debug("SQL.param.value1 : " + ParameterParserUtil.securePassword(StringUtil.getLeftString(object.getValue1(), 65000), object.getProperty()));
             LOG.debug("SQL.param.value2 : " + ParameterParserUtil.securePassword(StringUtil.getLeftString(object.getValue2(), 65000), object.getProperty()));
         }
-
 
         RequestDbUtils.executeUpdate(databaseSpring, query.toString(),
                 ps -> {
@@ -323,7 +321,6 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
         );
     }
 
-
     @Override
     public void update(TestCaseExecutionData object) throws CerberusException {
         StringBuilder query = new StringBuilder();
@@ -383,14 +380,15 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
 
     }
 
-    public List<TestCaseExecutionData> readTestCasePropertiesHeritedByDependencies(TestCaseExecution tce) throws CerberusException {
+    @Override
+    public List<TestCaseExecutionData> readTestCaseExecutionDataFromDependencies(TestCaseExecution tce) throws CerberusException {
         List<TestCaseExecutionQueueDep> testCaseDep = tce.getTestCaseDep();
 
-        String query = "select exd.*" +
-                " from testcaseexecutionqueue tceq" +
-                " inner join testcaseexecutionqueuedep tceqd on tceqd.ExeQueueID = tceq.ID" +
-                " inner join testcaseexecutiondata exd on tceqd.ExeID = exd.ID" +
-                "  where tceq.ExeID=?";
+        String query = "SELECT exd.*"
+                + " FROM testcaseexecutionqueue exq"
+                + " inner join testcaseexecutionqueuedep eqd on eqd.ExeQueueID = exq.ID"
+                + " inner join testcaseexecutiondata exd on eqd.ExeID = exd.ID"
+                + " WHERE exq.ExeID=?";
 
         return RequestDbUtils.executeQueryList(databaseSpring, query,
                 ps -> {
@@ -400,7 +398,6 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
                 rs -> loadFromResultSet(rs)
         );
     }
-
 
     private TestCaseExecutionData loadFromResultSet(ResultSet resultSet) throws SQLException {
         long id = resultSet.getLong("exd.id");
@@ -439,6 +436,5 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
                 start, end, startLong, endLong, null, retryNb, retryPeriod, database, value1Init, value2Init, lengthInit, length, rowLimit, nature,
                 system, environment, country, dataLib, jsonResult, fromCache);
     }
-
 
 }
