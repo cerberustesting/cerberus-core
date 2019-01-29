@@ -373,6 +373,7 @@ Below you will find useful properties :
 | %system.BROWSER% |	Browser name of the current execution.
 | %system.ROBOT% |	Robot name of the current execution.
 | %system.ROBOTDECLI% |	Robot declination name of the current execution.
+| %system.ROBOTHOST% |	current robot host.
 | %system.SCREENSIZE% |	Robot screensize of the current execution.
 | %system.APP_DOMAIN% |	Domain of the Application (defined at application level)
 | %system.APP_HOST% |	Host of the tested Application

@@ -1332,7 +1332,7 @@ function aoColumnsFunc(Columns) {
                     }
                     cell += '<span class="' + glyphClass.glyph + ' marginRight5"></span>';
                     cell += '<span name="tcResult">' + data.ControlStatus + '<span>';
-                    if (data.QueueState !== undefined) {
+                    if(data.TestCaseDep.length > 0) {
                         let button = ""
                         let txt = ""
                         for ( let dep of data.TestCaseDep) {
@@ -1340,14 +1340,12 @@ function aoColumnsFunc(Columns) {
                             txt += "<div  id='dep" + cptDep + "' onload='renderDependency(&quot;dep" + cptDep++ + "&quot;,&quot;" + dep.test + "&quot;,&quot;" + dep.testcase + "&quot;,&quot;" + data.RobotDecli + "&quot;)'></div>"
                         }
 
-                        if(data.QueueState === "QUWITHDEP") {
-                            button = '<button type="button" class="btn  btn-info hideFeatureTCDependencies" onclick="stopPropagation(event)" data-html="true"' +
+                        button = '<button type="button" class="btn  btn-info hideFeatureTCDependencies" onclick="stopPropagation(event)" data-html="true"' +
                                 'data-toggle="popover" ' +
                                 'title="Dependency" ' +
                                 "data-content=\"" + txt + "\" >" +
                                 '<span class="glyphicon glyphicon-tasks" aria-hidden="true"></span> '
                                 "</button>"
-                        }
                         cell += '<br><span style="font-size: xx-small">' + data.QueueState + " " + button + '<span>';
                     }
                     cell += '</div>';

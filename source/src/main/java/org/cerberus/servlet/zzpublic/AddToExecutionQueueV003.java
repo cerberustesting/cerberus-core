@@ -273,7 +273,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                 + "- " + PARAMETER_PLATFORM + " : Platform that will be used for every execution triggered. [" + platform + "]\n"
                 + "- " + PARAMETER_SCREENSIZE + " : Size of the screen that will be used for every execution triggered. [" + screenSize + "]\n"
                 + "- " + PARAMETER_MANUAL_URL + " : Activate (1) or not (0) or Override (2) the Manual URL of the application to execute. If Activated (1) the 4 parameters after are necessary. If Override (2) at least 1 parameters after are necessary (other parameters will use cerberus values) [" + manualURL + "]\n"
-                + "- " + PARAMETER_MANUAL_HOST + " : Host of the application to test (only used when " + PARAMETER_MANUAL_URL + " is activated or override). [" + manualHost + "]\n"
+                + "- " + PARAMETER_MANUAL_HOST + " : Host of the application to test (only used when " + PARAMETER_MANUAL_URL + " is activated or override). [" + manualHost + "].   Manual host can be  `applicationname1:manualhost1;applicationname2:manualhost2;...` or just 'manualHost1'\n"
                 + "- " + PARAMETER_MANUAL_CONTEXT_ROOT + " : Context root of the application to test (only used when " + PARAMETER_MANUAL_URL + " is activated or override). [" + manualContextRoot + "]\n"
                 + "- " + PARAMETER_MANUAL_LOGIN_RELATIVE_URL + " : Relative login URL of the application (only used when " + PARAMETER_MANUAL_URL + " is activated or override). [" + manualLoginRelativeURL + "]\n"
                 + "- " + PARAMETER_MANUAL_ENV_DATA + " : Environment where to get the test data when a " + PARAMETER_MANUAL_URL + " is defined. (only used when manualURL is active or override). [" + manualEnvData + "]\n"
@@ -475,6 +475,10 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                                                 tagAlreadyAdded = true;
                                             }
 
+
+                                            // manage manual host for this execution
+                                            String manualHostforThisApplicatin = getManualHostForThisApplication(manualHost, app.getApplication());
+
                                             if ((app != null)
                                                     && (app.getType() != null)
                                                     && (app.getType().equalsIgnoreCase(Application.TYPE_GUI) || app.getType().equalsIgnoreCase(Application.TYPE_APK)
@@ -501,7 +505,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                                                                         test, testCase, country.getCountry(), environment,
                                                                         robot.getRobot(), robotDecli, robotIP, robotPort, browser,
                                                                         browserVersion, platform, screenSize, manualURL,
-                                                                        manualHost, manualContextRoot,
+                                                                        manualHostforThisApplicatin, manualContextRoot,
                                                                         manualLoginRelativeURL, manualEnvData, tag,
                                                                         screenshot, verbose, timeout, pageSource,
                                                                         seleniumLog, 0, retries, manualExecution, priority,
@@ -523,7 +527,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                                                     LOG.debug("Insert Queue Entry.");
                                                     toInserts.add(inQueueFactoryService.create(app.getSystem(), test,
                                                             testCase, country.getCountry(), environment, "", "", "", "",
-                                                            "", "", "", "", manualURL, manualHost, manualContextRoot,
+                                                            "", "", "", "", manualURL, manualHostforThisApplicatin, manualContextRoot,
                                                             manualLoginRelativeURL, manualEnvData, tag, screenshot,
                                                             verbose, timeout, pageSource, seleniumLog, 0, retries,
                                                             manualExecution, priority, user, null, null, null));
@@ -656,6 +660,28 @@ public class AddToExecutionQueueV003 extends HttpServlet {
 //            out.println(helpMessage);
 //            out.println(e.toString());
 //        }
+    }
+
+    /**
+     * manual host can be  just 'manualHost1' (case 1) or `applicationname1:manualhost1;applicationname2:manualhost2;...` (cases 2)
+     * @param manualHost
+     * @param application
+     * @return
+     */
+    private String getManualHostForThisApplication(String manualHost, String application) {
+        if(! StringUtil.isNullOrEmpty(manualHost) && !manualHost.contains(":")) return manualHost; // if no :, just return manual host (case 1)
+
+        // (case 2)
+        if(! StringUtil.isNullOrEmpty(manualHost)) {
+            String[] manualHostByApp  = manualHost.split(";");
+            for(String appManualHost : manualHostByApp) {
+                String[] appAndHost = appManualHost.split(":");
+                if(appAndHost.length >= 2 && appAndHost[0].equals(application)) {
+                    return appAndHost[1];
+                }
+            }
+        }
+        return "";
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

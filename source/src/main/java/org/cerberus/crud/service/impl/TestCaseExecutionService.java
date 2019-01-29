@@ -250,12 +250,15 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
         AnswerItem<TestCase> ai = testCaseService.readByKeyWithDependency(testCaseExecution.getTest(), testCaseExecution.getTestCase());
         testCaseExecution.setTestCaseObj(ai.getItem());
 
-        AnswerList a = testCaseExecutionDataService.readByIdWithDependency(executionId);
-        for (Object object : a.getDataList()) {
-            TestCaseExecutionData tced = (TestCaseExecutionData) object;
-            if (tced.getIndex() == 1) {
-                testCaseExecution.getTestCaseExecutionDataMap().put(tced.getProperty(), tced);
+        try {
+            List<TestCaseExecutionData> a = testCaseExecutionDataService.readByIdWithDependency(executionId);
+            for (TestCaseExecutionData tced : a) {
+                if (tced.getIndex() == 1) {
+                    testCaseExecution.getTestCaseExecutionDataMap().put(tced.getProperty(), tced);
+                }
             }
+        } catch(CerberusException e) {
+            LOG.error("An erreur occured while get dependency", e);
         }
 
         // set video if it exists

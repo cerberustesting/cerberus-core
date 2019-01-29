@@ -20,11 +20,7 @@
 package org.cerberus.service.datalib.impl;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.logging.log4j.LogManager;
@@ -45,6 +41,7 @@ import org.cerberus.crud.service.ITestCaseExecutionDataService;
 import org.cerberus.crud.service.ITestDataLibDataService;
 import org.cerberus.crud.service.ITestDataLibService;
 import org.cerberus.engine.entity.MessageEvent;
+import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.engine.execution.IRecorderService;
 import org.cerberus.engine.gwt.IVariableService;
 import org.cerberus.enums.MessageEventEnum;
@@ -342,9 +339,16 @@ public class DataLibService implements IDataLibService {
 
         int initNB = dataObjectList.getDataList().size();
         // We get the list of values that were already used.
-        List<String> pastValues = this.testCaseExecutionDataService.getPastValuesOfProperty(tCExecution.getId(),
-                testCaseProperties.getProperty(), tCExecution.getTest(), tCExecution.getTestCase(),
-                tCExecution.getCountryEnvParam().getBuild(), tCExecution.getEnvironmentData(), tCExecution.getCountry());
+        List<String> pastValues = new LinkedList<>();
+        try {
+            pastValues = this.testCaseExecutionDataService.getPastValuesOfProperty(tCExecution.getId(),
+                    testCaseProperties.getProperty(), tCExecution.getTest(), tCExecution.getTestCase(),
+                    tCExecution.getCountryEnvParam().getBuild(), tCExecution.getEnvironmentData(), tCExecution.getCountry());
+        } catch (CerberusException e) {
+            LOG.error(e.getMessage(), e);
+            result.setResultMessage(new MessageEvent(MessageEventEnum.GENERIC_ERROR)
+                    .resolveDescription("REASON", e.getMessage()));
+        }
 
         int removedNB = 0;
         // We save all rows that needs to be removed to listToremove.
@@ -360,6 +364,7 @@ public class DataLibService implements IDataLibService {
                 }
             }
         }
+
         // We remove all listToremove entries from list.
         list.removeAll(listToremove);
 

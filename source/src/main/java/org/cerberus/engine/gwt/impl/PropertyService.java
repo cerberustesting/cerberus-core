@@ -216,7 +216,7 @@ public class PropertyService implements IPropertyService {
                 msg = tcExeData.getPropertyResultMessage();
                 //saves the result 
                 try {
-                    testCaseExecutionDataService.convert(testCaseExecutionDataService.save(tcExeData));
+                    testCaseExecutionDataService.save(tcExeData);
                     /**
                      * Add TestCaseExecutionData in TestCaseExecutionData List
                      * of the TestCaseExecution
@@ -229,7 +229,7 @@ public class PropertyService implements IPropertyService {
                             TestCaseExecutionData tcedS = factoryTestCaseExecutionData.create(tcExeData.getId(), tcExeData.getProperty(), (i + 1),
                                     tcExeData.getDescription(), tcExeData.getDataLibRawData().get(i).get(""), tcExeData.getType(), tcExeData.getRank(), "", "",
                                     tcExeData.getRC(), "", now, now, now, now, null, 0, 0, "", "", "", "", "", 0, "", tcExeData.getSystem(), tcExeData.getEnvironment(), tcExeData.getCountry(), tcExeData.getDataLib(), null, "N");
-                            testCaseExecutionDataService.convert(testCaseExecutionDataService.save(tcedS));
+                            testCaseExecutionDataService.save(tcedS);
                         }
                     }
                 } catch (CerberusException cex) {
@@ -444,7 +444,6 @@ public class PropertyService implements IPropertyService {
      * </p>
      *
      * @param str the {@link String} to get all properties
-     * @param variableType
      * @return a list of properties contained into the given {@link String}
      */
     private List<String> getPropertiesListFromString(String str) {
@@ -572,12 +571,16 @@ public class PropertyService implements IPropertyService {
             // Check if cache activated and cache entry exist.
             int cacheValue = testCaseCountryProperty.getCacheExpire();
             boolean useCache = false;
-            AnswerItem<TestCaseExecutionData> answerData = null;
+            TestCaseExecutionData data = null;
 
             if (cacheValue > 0) {
-                answerData = testCaseExecutionDataService.readLastCacheEntry(tCExecution.getApplicationObj().getSystem(), tCExecution.getEnvironment(), tCExecution.getCountry(), testCaseCountryProperty.getProperty(), cacheValue);
-                if (answerData.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && answerData.getItem() != null) {
-                    useCache = true;
+                try {
+                    data = testCaseExecutionDataService.readLastCacheEntry(tCExecution.getApplicationObj().getSystem(), tCExecution.getEnvironment(), tCExecution.getCountry(), testCaseCountryProperty.getProperty(), cacheValue);
+                    if (data != null) {
+                        useCache = true;
+                    }
+                } catch(CerberusException e) {
+                    // do nothing, useCache will be false
                 }
             }
 
@@ -767,7 +770,7 @@ public class PropertyService implements IPropertyService {
 
             } else {
                 // cache activated and entry exist. We set the current value with cache entry data and notify the result from the messsage.
-                TestCaseExecutionData testCaseExecutionDataFromCache = (TestCaseExecutionData) answerData.getItem();
+                TestCaseExecutionData testCaseExecutionDataFromCache = data;
                 testCaseExecutionData.setFromCache("Y");
                 testCaseExecutionData.setDataLib(testCaseExecutionDataFromCache.getDataLib());
                 testCaseExecutionData.setValue(testCaseExecutionDataFromCache.getValue());

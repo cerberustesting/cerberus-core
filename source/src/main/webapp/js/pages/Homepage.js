@@ -305,11 +305,13 @@ function getCountryFilter() {
 
 
 function aoColumnsFunc() {
-    var doc = getDoc();
+	var doc = new Doc();
+    var mDoc = getDoc();
     var status = readStatus();
     var statusLen = status.length;
+    console.log(doc.getDocOnline("application", "Application"));
     var aoColumns = [
-        {"data": "Application", "bSortable": true, "sName": "Application", "title": displayDocLink(doc.application.Application), "sWidth": "50px",
+        {"data": "Application", "bSortable": true, "sName": "Application", "title": doc.getDocOnline("application", "Application"), "sWidth": "50px",
             "mRender": function (data, type, oObj) {
                 var href = "TestCaseList.jsp?application=" + data;
 

@@ -48,22 +48,7 @@ import org.cerberus.crud.factory.IFactoryTestCaseExecutionSysVer;
 import org.cerberus.crud.factory.IFactoryTestCaseStepActionControlExecution;
 import org.cerberus.crud.factory.IFactoryTestCaseStepActionExecution;
 import org.cerberus.crud.factory.IFactoryTestCaseStepExecution;
-import org.cerberus.crud.service.ICountryEnvLinkService;
-import org.cerberus.crud.service.ICountryEnvParamService;
-import org.cerberus.crud.service.ILoadTestCaseService;
-import org.cerberus.crud.service.IParameterService;
-import org.cerberus.crud.service.IRobotExecutorService;
-import org.cerberus.crud.service.IRobotService;
-import org.cerberus.crud.service.ITagService;
-import org.cerberus.crud.service.ITestCaseCountryPropertiesService;
-import org.cerberus.crud.service.ITestCaseExecutionQueueDepService;
-import org.cerberus.crud.service.ITestCaseExecutionQueueService;
-import org.cerberus.crud.service.ITestCaseExecutionService;
-import org.cerberus.crud.service.ITestCaseExecutionSysVerService;
-import org.cerberus.crud.service.ITestCaseService;
-import org.cerberus.crud.service.ITestCaseStepActionControlExecutionService;
-import org.cerberus.crud.service.ITestCaseStepActionExecutionService;
-import org.cerberus.crud.service.ITestCaseStepExecutionService;
+import org.cerberus.crud.service.*;
 import org.cerberus.engine.entity.ExecutionUUID;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.MessageGeneral;
@@ -167,6 +152,8 @@ public class ExecutionRunService implements IExecutionRunService {
     private IRobotExecutorService robotExecutorService;
     @Autowired
     private ITestCaseExecutionQueueDepService testCaseExecutionQueueDepService;
+    @Autowired
+    private ITestCaseExecutionDataService testCaseExecutionDataService;
 
     @Override
     public TestCaseExecution executeTestCase(TestCaseExecution tCExecution) throws CerberusException {
@@ -501,6 +488,14 @@ public class ExecutionRunService implements IExecutionRunService {
             if (LOG.isDebugEnabled()) {
                 LOG.debug(logPrefix + "All Properties Loaded. " + tcProperties.size() + " property(ies) found : " + tcProperties);
             }
+
+
+            /**
+             * Load All Execution Data of testcases that this execution depends
+             */
+            LOG.debug(logPrefix + "Loading all Execution Data of the execution from queue dependencies.");
+            this.testCaseExecutionDataService.loadTestCaseExecutionDataFromDependencies(tCExecution);
+
 
             /**
              * Start Execution of the steps/Actions/controls Iterate Steps.

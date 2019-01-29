@@ -184,9 +184,6 @@ Doc.prototype.getDocOnline = function (docTable, docField) {
     }
 };
 
-function test_yolo(){
-	console.log("gotcha!");
-}
 
 /**
  * generate the string with a link to online documentation

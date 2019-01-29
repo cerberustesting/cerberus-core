@@ -322,6 +322,8 @@ function displayDataLibList(selectName, defaultValue, data) {
  */
 function displayApplicationList(selectName, system, defaultValue) {
     var myData = "";
+    $("[name='" + selectName + "']").append($('<option></option>').text(""));
+
     if ((system !== "") && (system !== undefined) && (system !== null)) {
         myData = "system=" + system;
     }

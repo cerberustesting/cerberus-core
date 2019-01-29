@@ -158,7 +158,7 @@ public class SQLService implements ISQLService {
         return null;
     }
 
-    private String calculateNatureRandomNew(List<String> list, String propName, TestCaseExecution tCExecution) {
+    private String calculateNatureRandomNew(List<String> list, String propName, TestCaseExecution tCExecution) throws CerberusException{
         //TODO clean code
         List<String> pastValues = this.testCaseExecutionDataService.getPastValuesOfProperty(tCExecution.getId(), propName, tCExecution.getTest(),
                 tCExecution.getTestCase(), tCExecution.getCountryEnvParam().getBuild(), tCExecution.getEnvironmentData(),

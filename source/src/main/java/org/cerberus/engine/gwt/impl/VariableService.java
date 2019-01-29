@@ -248,6 +248,9 @@ public class VariableService implements IVariableService {
             stringToDecode = stringToDecode.replace("%system.BROWSER%", tCExecution.getBrowser());
             stringToDecode = stringToDecode.replace("%system.ROBOT%", tCExecution.getRobot());
             stringToDecode = stringToDecode.replace("%system.ROBOTDECLI%", tCExecution.getRobotDecli());
+            if(tCExecution.getRobotExecutorObj() != null)
+                stringToDecode = stringToDecode.replace("%system.ROBOTHOST%", tCExecution.getRobotExecutorObj().getHost());
+
             stringToDecode = stringToDecode.replace("%system.SCREENSIZE%", tCExecution.getScreenSize());
             stringToDecode = stringToDecode.replace("%system.APP_DOMAIN%", tCExecution.getCountryEnvironmentParameters().getDomain());
             stringToDecode = stringToDecode.replace("%system.APP_HOST%", tCExecution.getCountryEnvironmentParameters().getIp());
