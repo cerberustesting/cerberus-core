@@ -68,14 +68,14 @@ public class NotificationService implements INotificationService {
         try {
             email = emailGenerationService.generateAccountCreationEmail(user);
         } catch (Exception ex) {
-            LOG.warn("Exception generating email for account creation :" + ex);
+            LOG.warn("Exception generating email for account creation.", ex);
             return new MessageEvent(MessageEventEnum.GENERIC_ERROR).resolveDescription("REASON", ex.toString());
         }
 
         try {
             emailService.sendHtmlMail(email);
         } catch (Exception ex) {
-            LOG.warn("Exception sending email for account creation :" + ex);
+            LOG.warn("Exception sending email for account creation.", ex);
             return new MessageEvent(MessageEventEnum.GENERIC_ERROR).resolveDescription("REASON", ex.toString());
         }
 
@@ -89,14 +89,14 @@ public class NotificationService implements INotificationService {
         try {
             email = emailGenerationService.generateForgotPasswordEmail(user);
         } catch (Exception ex) {
-            LOG.warn("Exception generating email for forgot password :" + ex);
+            LOG.warn("Exception generating email for forgot password.", ex);
             return new MessageEvent(MessageEventEnum.GENERIC_ERROR).resolveDescription("REASON", ex.toString());
         }
 
         try {
             emailService.sendHtmlMail(email);
         } catch (Exception ex) {
-            LOG.warn("Exception sending email for forgot password :" + ex);
+            LOG.warn("Exception sending email for forgot password.", ex);
             return new MessageEvent(MessageEventEnum.GENERIC_ERROR).resolveDescription("REASON", ex.toString());
         }
 
@@ -110,14 +110,14 @@ public class NotificationService implements INotificationService {
         try {
             email = emailGenerationService.generateRevisionChangeEmail(system, country, env, build, revision);
         } catch (Exception ex) {
-            LOG.warn("Exception generating email for revision change :" + ex);
+            LOG.warn("Exception generating email for revision change.", ex);
             return new MessageEvent(MessageEventEnum.GENERIC_ERROR).resolveDescription("REASON", ex.toString());
         }
 
         try {
             emailService.sendHtmlMail(email);
         } catch (Exception ex) {
-            LOG.warn("Exception sending email for revision change :" + ex);
+            LOG.warn("Exception sending email for revision change.", ex);
             return new MessageEvent(MessageEventEnum.GENERIC_ERROR).resolveDescription("REASON", ex.toString());
         }
 
@@ -131,14 +131,14 @@ public class NotificationService implements INotificationService {
         try {
             email = emailGenerationService.generateDisableEnvEmail(system, country, env);
         } catch (Exception ex) {
-            LOG.warn("Exception generating email for disabling environment :" + ex);
+            LOG.warn("Exception generating email for disabling environment.", ex);
             return new MessageEvent(MessageEventEnum.GENERIC_ERROR).resolveDescription("REASON", ex.toString());
         }
 
         try {
             emailService.sendHtmlMail(email);
         } catch (Exception ex) {
-            LOG.warn("Exception sending email for disabling environment :" + ex);
+            LOG.warn("Exception sending email for disabling environment.", ex);
             return new MessageEvent(MessageEventEnum.GENERIC_ERROR).resolveDescription("REASON", ex.toString());
         }
 
@@ -152,14 +152,14 @@ public class NotificationService implements INotificationService {
         try {
             email = emailGenerationService.generateNewChainEmail(system, country, env, chain);
         } catch (Exception ex) {
-            LOG.warn("Exception generating email for new chain :" + ex);
+            LOG.warn("Exception generating email for new chain.", ex);
             return new MessageEvent(MessageEventEnum.GENERIC_ERROR).resolveDescription("REASON", ex.toString());
         }
 
         try {
             emailService.sendHtmlMail(email);
         } catch (Exception ex) {
-            LOG.warn("Exception sending email for new chain :" + ex);
+            LOG.warn("Exception sending email for new chain.", ex);
             return new MessageEvent(MessageEventEnum.GENERIC_ERROR).resolveDescription("REASON", ex.toString());
         }
 
@@ -182,13 +182,13 @@ public class NotificationService implements INotificationService {
                 try {
                     email = emailGenerationService.generateNotifyStartTagExecution(tag, campaign, distribList);
                 } catch (Exception ex) {
-                    LOG.warn("Exception generating email for Start Tag Execution :" + ex);
+                    LOG.warn("Exception generating email for Start Tag Execution.", ex);
                     return new MessageEvent(MessageEventEnum.GENERIC_ERROR).resolveDescription("REASON", ex.toString());
                 }
                 try {
                     emailService.sendHtmlMail(email);
                 } catch (Exception ex) {
-                    LOG.warn("Exception sending email for Start Tag Execution :" + ex);
+                    LOG.warn("Exception sending email for Start Tag Execution.", ex);
                     return new MessageEvent(MessageEventEnum.GENERIC_ERROR).resolveDescription("REASON", ex.toString());
                 }
 
@@ -198,21 +198,21 @@ public class NotificationService implements INotificationService {
 
                 try {
 
-                    LOG.debug("Generating and Sending a Slack Notification to : " + webHook);
+                    LOG.debug("Generating and Sending a Slack Notification to : '" + webHook + "'");
 
                     JSONObject slackMessage = slackGenerationService.generateNotifyStartTagExecution(tag, myCampaign.getSlackChannel());
 
                     slackService.sendSlackMessage(slackMessage, webHook);
 
                 } catch (Exception ex) {
-                    LOG.warn("Exception sending slack notification for Start Tag Execution : " + ex);
+                    LOG.warn("Exception sending slack notification for Start Tag Execution.", ex);
                     return new MessageEvent(MessageEventEnum.GENERIC_ERROR).resolveDescription("REASON", ex.toString());
                 }
 
             }
 
         } catch (Exception ex) {
-            LOG.warn("Exception generating notification for Start Tag Execution :" + ex);
+            LOG.warn("Exception generating notification for Start Tag Execution.", ex);
             return new MessageEvent(MessageEventEnum.GENERIC_ERROR).resolveDescription("REASON", ex.toString());
         }
 
@@ -235,6 +235,7 @@ public class NotificationService implements INotificationService {
                 JSONObject jsonCIStatus = new JSONObject();
                 jsonCIStatus = ciService.getCIResult(tag);
 
+                // EMail Notification.
                 if ((!StringUtil.isNullOrEmpty(distribList))
                         && (myCampaign.getNotifyEndTagExecution().equalsIgnoreCase(Campaign.NOTIFYSTARTTAGEXECUTION_Y)
                         || (myCampaign.getNotifyEndTagExecution().equalsIgnoreCase(Campaign.NOTIFYSTARTTAGEXECUTION_CIKO) && jsonCIStatus.getString("result").equalsIgnoreCase("KO")))) {
@@ -245,18 +246,19 @@ public class NotificationService implements INotificationService {
                     try {
                         email = emailGenerationService.generateNotifyEndTagExecution(tag, campaign, distribList);
                     } catch (Exception ex) {
-                        LOG.warn("Exception generating email for End Tag Execution :" + ex);
+                        LOG.error("Exception generating email for End Tag Execution.", ex);
                         return new MessageEvent(MessageEventEnum.GENERIC_ERROR).resolveDescription("REASON", ex.toString());
                     }
 
                     try {
                         emailService.sendHtmlMail(email);
                     } catch (Exception ex) {
-                        LOG.warn("Exception sending email for End Tag Execution :" + ex);
+                        LOG.error("Exception sending email for End Tag Execution.", ex);
                         return new MessageEvent(MessageEventEnum.GENERIC_ERROR).resolveDescription("REASON", ex.toString());
                     }
                 }
 
+                // Slack Notification.
                 if ((!StringUtil.isNullOrEmpty(webHook))
                         && (myCampaign.getSlackNotifyEndTagExecution().equalsIgnoreCase(Campaign.NOTIFYSTARTTAGEXECUTION_Y)
                         || (myCampaign.getSlackNotifyEndTagExecution().equalsIgnoreCase(Campaign.NOTIFYSTARTTAGEXECUTION_CIKO) && jsonCIStatus.getString("result").equalsIgnoreCase("KO")))) {
@@ -270,7 +272,7 @@ public class NotificationService implements INotificationService {
                         slackService.sendSlackMessage(slackMessage, webHook);
 
                     } catch (Exception ex) {
-                        LOG.warn("Exception sending slack notification for Start Tag Execution : " + ex);
+                        LOG.error("Exception sending slack notification for Start Tag Execution to URL : '" + webHook + "'", ex);
                         return new MessageEvent(MessageEventEnum.GENERIC_ERROR).resolveDescription("REASON", ex.toString());
                     }
 
@@ -278,7 +280,7 @@ public class NotificationService implements INotificationService {
 
             }
         } catch (Exception ex) {
-            LOG.warn("Exception generating email for End Tag Execution :" + ex);
+            LOG.warn("Exception generating email for End Tag Execution.", ex);
             return new MessageEvent(MessageEventEnum.GENERIC_ERROR).resolveDescription("REASON", ex.toString());
         }
         return new MessageEvent(MessageEventEnum.GENERIC_OK);

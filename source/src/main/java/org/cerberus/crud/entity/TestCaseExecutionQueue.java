@@ -69,6 +69,7 @@ public class TestCaseExecutionQueue {
     private TestCase testCaseObj;
 
     public static final int PRIORITY_DEFAULT = 1000;
+    public static final int PRIORITY_WHENDEPENDENCY = 100;
 
     public enum State {
         QUWITHDEP,
