@@ -1605,6 +1605,62 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
     }
 
     @Override
+    public Answer updatePriority(long id, int priority) {
+        MessageEvent msg = null;
+        String query
+                = "UPDATE `" + TABLE + "` "
+                + "SET `" + COLUMN_DATEMODIF + "` = now(), `" + COLUMN_PRIORITY + "` = ? "
+                + "WHERE `" + COLUMN_ID + "` = ? ;";
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.id : " + id);
+        }
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                int i = 1;
+                preStat.setInt(i++, priority);
+                preStat.setLong(i++, id);
+
+                int updateResult = preStat.executeUpdate();
+                if (updateResult <= 0) {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_NOUPDATE);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%DESCRIPTION%", "Unable to update priority for execution in queue " + id + " (update result: " + updateResult + ")."));
+                    LOG.warn("Unable to update priority for execution in queue " + id + " (update result: " + updateResult + ").");
+                } else {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
+
+                }
+
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
+            }
+        }
+        return new Answer(msg);
+    }
+
+    @Override
     public Answer updateComment(long id, String comment) {
         MessageEvent msg = null;
         String query
@@ -1773,9 +1829,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
         }
         return new Answer(msg);
     }
-    
-    
-    
+
     @Override
     public boolean updateToWaiting(final Long id) throws CerberusException {
 
@@ -2106,7 +2160,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
             try {
                 int i = 1;
                 preStat.setString(i++, comment);
-                preStat.setLong(i++, new Date().getTime()/1000);
+                preStat.setLong(i++, new Date().getTime() / 1000);
                 preStat.setLong(i++, timeOutInS);
 
                 int updateResult = preStat.executeUpdate();

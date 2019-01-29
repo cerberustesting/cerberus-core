@@ -200,7 +200,8 @@ public interface ITestCaseExecutionQueueService {
 
     /**
      * @param object the {@link queue entry} to Create
-     * @param exeQueue original queue entry id from which the duplication is done.
+     * @param exeQueue original queue entry id from which the duplication is
+     * done.
      * @return {@link AnswerItem}
      */
     AnswerItem<TestCaseExecutionQueue> create(TestCaseExecutionQueue object, long exeQueue);
@@ -217,6 +218,14 @@ public interface ITestCaseExecutionQueueService {
      * @return {@link AnswerItem}
      */
     Answer update(TestCaseExecutionQueue object);
+
+    /**
+     *
+     * @param id
+     * @param priority
+     * @return
+     */
+    Answer updatePriority(long id, int priority);
 
     /**
      *

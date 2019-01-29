@@ -188,7 +188,6 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
                 // Brand New execution Queue.
                 // Inserting the record into the Queue forcing its state to QUWITHDEP (in order to secure it doesnt get triggered).
                 object.setState(TestCaseExecutionQueue.State.QUWITHDEP);
-                object.setPriority(100); // pass prio to 100 if it's a QUWITHDEP
                 ret = testCaseExecutionInQueueDAO.create(object);
                 // If insert was done correctly, we will try to add the dependencies.
                 if (ret.getItem() != null) {
@@ -200,12 +199,16 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
                     if (retDep.getItem() < 1) {
                         // In case there are no dependencies, we release the execution moving to QUEUED State
                         updateToQueued(insertedQueueId, "");
+                    } else {
+                        // In case there is at least 1 dependency, we leave the state to QUWITHDEP but move the prio to high so that when dependencies are released execution is triggered ASAP.
+                        object.setPriority(TestCaseExecutionQueue.PRIORITY_WHENDEPENDENCY); // pass prio to 100 if it's a QUWITHDEP
+                        updatePriority(insertedQueueId, TestCaseExecutionQueue.PRIORITY_WHENDEPENDENCY);
                     }
                 }
             } else {
                 // New execution Queue from an existing one (deplicated from an existing queue entry).
                 ret = testCaseExecutionInQueueDAO.create(object);
-                // We duplicagte here the dependencies.
+                // We duplicate here the dependencies from the original exeQueue entry.
                 if (ret.getItem() != null) {
                     // Get the QueueId Result from inserted record.
                     long insertedQueueId = ret.getItem().getId();
@@ -247,6 +250,11 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
     @Override
     public Answer update(TestCaseExecutionQueue object) {
         return testCaseExecutionInQueueDAO.update(object);
+    }
+
+    @Override
+    public Answer updatePriority(long id, int priority) {
+        return testCaseExecutionInQueueDAO.updatePriority(id, priority);
     }
 
     @Override

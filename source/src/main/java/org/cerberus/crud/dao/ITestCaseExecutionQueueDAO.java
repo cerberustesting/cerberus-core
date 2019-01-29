@@ -193,6 +193,14 @@ public interface ITestCaseExecutionQueueDAO {
     /**
      *
      * @param id
+     * @param priority
+     * @return
+     */
+    Answer updatePriority(long id, int priority);
+
+    /**
+     *
+     * @param id
      * @param comment
      * @return
      */
