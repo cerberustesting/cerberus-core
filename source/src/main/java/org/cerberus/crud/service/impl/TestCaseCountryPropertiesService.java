@@ -156,20 +156,20 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
          * property coming from the useStep and then, top priority is the
          * property on the test + testcase.
          */
-        // add this TC
-        tcList.add(mainTC);
+
         //find all properties of preTests
         tcList.addAll(testCaseService.getTestCaseForPrePostTesting(Test.TEST_PRETESTING, mainTC.getApplication(), country, system, build, Revision));
         //find all properties of preTests
         tcList.addAll(testCaseService.getTestCaseForPrePostTesting(Test.TEST_POSTTESTING, mainTC.getApplication(), country, system, build, Revision));
+        // find all properties for potentiel dependencies used step
+        List<TestCaseDep> dependencies = testCaseDepService.readByTestAndTestCase(mainTC.getTest(), mainTC.getTestCase());
         // find all properties of the used step
         tcList.addAll(testCaseService.findUseTestCaseList(test, testcase));
-        // and for potentiel dependencies used step
-        List<TestCaseDep> dependencies = testCaseDepService.readByTestAndTestCase(mainTC.getTest(), mainTC.getTestCase());
         for (TestCaseDep tcd : dependencies) {
             tcList.addAll(testCaseService.findUseTestCaseList(tcd.getDepTest(),tcd.getDepTestCase()));
         }
-
+        // add this TC
+        tcList.add(mainTC);
 
 
         if (parameterService.getParameterBooleanByKey("cerberus_property_countrylevelheritage", "", false)) {
