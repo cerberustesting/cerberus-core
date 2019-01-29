@@ -32,7 +32,7 @@ public interface ITestCaseCountryPropertiesService {
 
     List<TestCaseCountryProperties> findListOfPropertyPerTestTestCaseCountry(String test, String testCase, String country);
 
-    List<TestCaseCountryProperties> findListOfPropertyPerTestTestCase(String test, String testcase);
+    List<TestCaseCountryProperties> findListOfPropertyPerTestTestCase(String test, String testcase) throws CerberusException ;
 
     List<TestCaseCountryProperties> findOnePropertyPerTestTestCase(String test, String testcase, String oneproperty);
 
@@ -95,7 +95,7 @@ public interface ITestCaseCountryPropertiesService {
 
     Answer deleteList(List<TestCaseCountryProperties> objectList);
 
-    Answer compareListAndUpdateInsertDeleteElements(String test, String testCase, List<TestCaseCountryProperties> newList);
+    Answer compareListAndUpdateInsertDeleteElements(String test, String testCase, List<TestCaseCountryProperties> newList) throws CerberusException ;
 
     Answer duplicateList(List<TestCaseCountryProperties> objectList, String targetTest, String targetTestCase);
 }

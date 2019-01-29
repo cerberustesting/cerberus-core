@@ -27,6 +27,8 @@ import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.dao.ITestCaseCountryPropertiesDAO;
 import org.cerberus.crud.dao.ITestCaseStepActionDAO;
 import org.cerberus.crud.entity.Test;
+import org.cerberus.crud.entity.TestCaseDep;
+import org.cerberus.crud.service.ITestCaseDepService;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.enums.MessageEventEnum;
@@ -57,6 +59,8 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
     @Autowired
     ITestCaseService testCaseService;
     @Autowired
+    ITestCaseDepService testCaseDepService;
+    @Autowired
     IParameterService parameterService;
     @Autowired
     private DatabaseSpring dbmanager;
@@ -76,7 +80,7 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
     }
 
     @Override
-    public List<TestCaseCountryProperties> findListOfPropertyPerTestTestCase(String test, String testcase) {
+    public List<TestCaseCountryProperties> findListOfPropertyPerTestTestCase(String test, String testcase) throws CerberusException {
         return testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCase(test, testcase);
     }
 
@@ -138,35 +142,43 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
     @Override
     public List<TestCaseCountryProperties> findAllWithDependencies(String test, String testcase, String country, String system, String build, String Revision) throws CerberusException {
 
+
+        // Heritage is done at property level.
+        List<TestCaseCountryProperties> tccpList = new ArrayList<>();
+        List<TestCase> tcList = new ArrayList<>();
+        TestCase mainTC = testCaseService.findTestCaseByKey(test, testcase);
+
+        /**
+         * We load here all the properties countries from all related
+         * testcases linked with test/testcase The order the load is done is
+         * important as it will define the priority of each property.
+         * properties coming from Pre Testing is the lower prio then, the
+         * property coming from the useStep and then, top priority is the
+         * property on the test + testcase.
+         */
+
+        //find all properties of preTests
+        tcList.addAll(testCaseService.getTestCaseForPrePostTesting(Test.TEST_PRETESTING, mainTC.getApplication(), country, system, build, Revision));
+        //find all properties of preTests
+        tcList.addAll(testCaseService.getTestCaseForPrePostTesting(Test.TEST_POSTTESTING, mainTC.getApplication(), country, system, build, Revision));
+        // find all properties for potentiel dependencies used step
+        List<TestCaseDep> dependencies = testCaseDepService.readByTestAndTestCase(mainTC.getTest(), mainTC.getTestCase());
+        // find all properties of the used step
+        tcList.addAll(testCaseService.findUseTestCaseList(test, testcase));
+        for (TestCaseDep tcd : dependencies) {
+            tcList.addAll(testCaseService.findUseTestCaseList(tcd.getDepTest(),tcd.getDepTestCase()));
+        }
+        // add this TC
+        tcList.add(mainTC);
+
+
         if (parameterService.getParameterBooleanByKey("cerberus_property_countrylevelheritage", "", false)) {
-
-            // Heritage is done at property + country level.
-            List<TestCaseCountryProperties> tccpList = new ArrayList<>();
             List<TestCaseCountryProperties> tccpListPerCountry = new ArrayList<>();
-            TestCase mainTC = testCaseService.findTestCaseByKey(test, testcase);
 
-            //find all properties of preTests
-            List<TestCase> tcprList = testCaseService.getTestCaseForPrePostTesting(Test.TEST_PRETESTING, mainTC.getApplication(), country, system, build, Revision);
-            for (TestCase tcase : tcprList) {
-                tccpList.addAll(testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCase(tcase.getTest(), tcase.getTestCase()));
-                tccpListPerCountry.addAll(testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCaseCountry(tcase.getTest(), tcase.getTestCase(), country));
-            }
-            List<TestCase> tcpoList = testCaseService.getTestCaseForPrePostTesting(Test.TEST_POSTTESTING, mainTC.getApplication(), country, system, build, Revision);
-            for (TestCase tcase : tcpoList) {
-                tccpList.addAll(testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCase(tcase.getTest(), tcase.getTestCase()));
-                tccpListPerCountry.addAll(testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCaseCountry(tcase.getTest(), tcase.getTestCase(), country));
-            }
-
-            //find all properties of the used step
-            List<TestCase> tcList = testCaseService.findUseTestCaseList(test, testcase);
             for (TestCase tcase : tcList) {
                 tccpList.addAll(testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCase(tcase.getTest(), tcase.getTestCase()));
                 tccpListPerCountry.addAll(testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCaseCountry(tcase.getTest(), tcase.getTestCase(), country));
             }
-
-            //find all properties of the testcase
-            tccpList.addAll(testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCase(test, testcase));
-            tccpListPerCountry.addAll(testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCaseCountry(test, testcase, country));
 
             //Keep only one property by name
             //all properties that are defined for the country are included
@@ -190,36 +202,10 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
 
         } else {
 
-            // Heritage is done at property level.
-            List<TestCaseCountryProperties> tccpList = new ArrayList<>();
-            TestCase mainTC = testCaseService.findTestCaseByKey(test, testcase);
-
-            /**
-             * We load here all the properties countries from all related
-             * testcases linked with test/testcase The order the load is done is
-             * important as it will define the priority of each property.
-             * properties coming from Pre Testing is the lower prio then, the
-             * property coming from the useStep and then, top priority is the
-             * property on the test + testcase.
-             */
-            //find all properties of preTests
-            List<TestCase> tcprList = testCaseService.getTestCaseForPrePostTesting(Test.TEST_PRETESTING, mainTC.getApplication(), country, system, build, Revision);
-            for (TestCase tcase : tcprList) {
-                tccpList.addAll(testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCase(tcase.getTest(), tcase.getTestCase()));
-            }
-            //find all properties of preTests
-            List<TestCase> tcpoList = testCaseService.getTestCaseForPrePostTesting(Test.TEST_POSTTESTING, mainTC.getApplication(), country, system, build, Revision);
-            for (TestCase tcase : tcpoList) {
-                tccpList.addAll(testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCase(tcase.getTest(), tcase.getTestCase()));
-            }
-
-            //find all properties of the used step
-            List<TestCase> tcList = testCaseService.findUseTestCaseList(test, testcase);
+            // find all properties of those TC
             for (TestCase tcase : tcList) {
                 tccpList.addAll(testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCase(tcase.getTest(), tcase.getTestCase()));
             }
-            //find all properties of the testcase
-            tccpList.addAll(testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCase(test, testcase));
 
             /**
              * We loop here the previous list, keeping by property, the last
@@ -306,7 +292,7 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
     }
 
     @Override
-    public Answer compareListAndUpdateInsertDeleteElements(String test, String testCase, List<TestCaseCountryProperties> newList) {
+    public Answer compareListAndUpdateInsertDeleteElements(String test, String testCase, List<TestCaseCountryProperties> newList) throws CerberusException {
         Answer ans = new Answer(null);
 
         MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);

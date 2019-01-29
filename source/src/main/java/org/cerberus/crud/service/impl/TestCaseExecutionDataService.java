@@ -27,6 +27,7 @@ import org.apache.logging.log4j.LogManager;
 
 import org.cerberus.crud.dao.ITestCaseExecutionDataDAO;
 import org.cerberus.crud.entity.TestCaseExecution;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.crud.entity.TestCaseExecutionData;
 import org.cerberus.crud.entity.TestCaseExecutionFile;
@@ -164,6 +165,7 @@ public class TestCaseExecutionDataService implements ITestCaseExecutionDataServi
         TreeMap<String, TestCaseExecutionData> newExeDataMap = new TreeMap<>();
         for (TestCaseExecutionData data : testCaseExecutionData) {
             data.setId(testCaseExecution.getId());
+            data.setPropertyResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_RETRIEVE_BY_DEPENDENCY));
             newExeDataMap.put(data.getProperty(), data);
         }
 
