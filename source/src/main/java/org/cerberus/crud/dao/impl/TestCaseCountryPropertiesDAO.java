@@ -32,6 +32,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.ITestCaseCountryPropertiesDAO;
+import org.cerberus.crud.utils.RequestDbUtils;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.dto.PropertyListDTO;
 import org.cerberus.dto.TestCaseListDTO;
@@ -74,61 +75,37 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
     private final int MAX_ROW_SELECTED = 100000;
 
     @Override
-    public List<TestCaseCountryProperties> findListOfPropertyPerTestTestCase(String test, String testcase) {
-        List<TestCaseCountryProperties> list = null;
-        final String query = "SELECT * FROM testcasecountryproperties WHERE test = ? AND testcase = ?";
+    public List<TestCaseCountryProperties> findListOfPropertyPerTestTestCase(String test, String testcase) throws CerberusException {
+        final String query = "SELECT * FROM testcasecountryproperties tcp WHERE test = ? AND testcase = ? " +
+                "OR exists (select 1 from  testcasedep  where DepTest = tcp.Test AND DepTestCase = tcp.TestCase AND Test = ? AND TestCase = ?)"; // Manage tc dependencies
 
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                preStat.setString(1, test);
-                preStat.setString(2, testcase);
 
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    list = new ArrayList<TestCaseCountryProperties>();
-
-                    while (resultSet.next()) {
-                        String country = resultSet.getString("country");
-                        String property = resultSet.getString("property");
-                        String description = resultSet.getString("description");
-                        String type = resultSet.getString("type");
-                        String database = resultSet.getString("database");
-                        String value1 = resultSet.getString("value1");
-                        String value2 = resultSet.getString("value2");
-                        String length = resultSet.getString("length");
-                        int rowLimit = resultSet.getInt("rowLimit");
-                        String nature = resultSet.getString("nature");
-                        int retryNb = resultSet.getInt("RetryNb");
-                        int retryPeriod = resultSet.getInt("RetryPeriod");
-                        int cacheExpire = resultSet.getInt("CacheExpire");
-                        int rank = resultSet.getInt("Rank");
-                        list.add(factoryTestCaseCountryProperties.create(test, testcase, country, property, description, type, database, value1, value2, length, rowLimit, nature, retryNb, retryPeriod, cacheExpire, rank));
-
-                    }
-                } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
-                } finally {
-                    resultSet.close();
+        return RequestDbUtils.executeQueryList(databaseSpring, query,
+                ps -> {
+                    ps.setString(1, test);
+                    ps.setString(2, testcase);
+                    ps.setString(3, test);
+                    ps.setString(4, testcase);
+                },
+                resultSet -> {
+                    String country = resultSet.getString("country");
+                    String property = resultSet.getString("property");
+                    String description = resultSet.getString("description");
+                    String type = resultSet.getString("type");
+                    String database = resultSet.getString("database");
+                    String value1 = resultSet.getString("value1");
+                    String value2 = resultSet.getString("value2");
+                    String length = resultSet.getString("length");
+                    int rowLimit = resultSet.getInt("rowLimit");
+                    String nature = resultSet.getString("nature");
+                    int retryNb = resultSet.getInt("RetryNb");
+                    int retryPeriod = resultSet.getInt("RetryPeriod");
+                    int cacheExpire = resultSet.getInt("CacheExpire");
+                    int rank = resultSet.getInt("Rank");
+                    return factoryTestCaseCountryProperties.create(test, testcase, country, property, description, type, database, value1, value2, length, rowLimit, nature, retryNb, retryPeriod, cacheExpire, rank);
                 }
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException exception) {
-                LOG.warn(exception.toString());
-            }
-        }
-        return list;
+        );
+
     }
 
     @Override

@@ -188,7 +188,7 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
                 // Brand New execution Queue.
                 // Inserting the record into the Queue forcing its state to QUWITHDEP (in order to secure it doesnt get triggered).
                 object.setState(TestCaseExecutionQueue.State.QUWITHDEP);
-                object.setPriority(-1); // pass prio to -1 if it's a QUWITHDEP
+                object.setPriority(100); // pass prio to 100 if it's a QUWITHDEP
                 ret = testCaseExecutionInQueueDAO.create(object);
                 // If insert was done correctly, we will try to add the dependencies.
                 if (ret.getItem() != null) {

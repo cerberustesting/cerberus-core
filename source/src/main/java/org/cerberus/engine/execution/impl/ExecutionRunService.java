@@ -483,7 +483,7 @@ public class ExecutionRunService implements IExecutionRunService {
                         tCExecution.getSystem(), tCExecution.getCountryEnvParam().getBuild(), tCExecution.getCountryEnvParam().getRevision());
                 tCExecution.setTestCaseCountryPropertyList(tcProperties);
             } catch (CerberusException ex) {
-                LOG.warn("Exception getting all the properties : " + ex);
+                LOG.warn("Exception getting all the properties : ", ex);
             }
             if (LOG.isDebugEnabled()) {
                 LOG.debug(logPrefix + "All Properties Loaded. " + tcProperties.size() + " property(ies) found : " + tcProperties);
