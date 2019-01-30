@@ -1750,6 +1750,8 @@ function Step(json, stepList, canUpdate, hasPermissionsStepLibrary) {
     this.html = $("<li style='padding-right:5px'></li>").addClass("list-group-item list-group-item-calm row").css("margin-left", "0px");
     this.textArea = $("<div></div>").addClass("col-sm-8 textArea").addClass("step-description").text(this.description);
     console.log("this inLibrary = " + this.inLibrary);
+    console.log("this isusestep = " + this.useStep);
+
 }
 
 Step.prototype.draw = function () {
@@ -1764,7 +1766,7 @@ Step.prototype.draw = function () {
     	loopIcon = $("<span class='loopIcon'></span>").addClass("glyphicon glyphicon-refresh loop-Icon");
     }
     
-    if (this.inLibrary ==  "Y"){
+    if (this.inLibrary ==  "Y" || this.useStep == "Y"){
     	libraryIcon = $("<span class='libraryIcon'></span>").addClass("glyphicon glyphicon-book library-Icon");
     }
     drag.on("dragstart", handleDragStart);
