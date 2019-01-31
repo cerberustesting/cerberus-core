@@ -1335,18 +1335,19 @@ function aoColumnsFunc(Columns) {
                     if(data.TestCaseDep.length > 0) {
                         let button = ""
                         let txt = ""
+                        let dependencyArray = ""
                         for ( let dep of data.TestCaseDep) {
+                            dependencyArray += "{test:'" + dep.test + "',testcase:'" + dep.testcase + "',robotdecli:'" + data.RobotDecli + "'},"
 
-                            txt += "<div  id='dep" + cptDep + "' onload='renderDependency(&quot;dep" + cptDep++ + "&quot;,&quot;" + dep.test + "&quot;,&quot;" + dep.testcase + "&quot;,&quot;" + data.RobotDecli + "&quot;)'></div>"
                         }
 
-                        button = '<button type="button" class="btn  btn-info hideFeatureTCDependencies" onclick="stopPropagation(event)" data-html="true"' +
-                                'data-toggle="popover" ' +
-                                'title="Dependency" ' +
-                                "data-content=\"" + txt + "\" >" +
-                                '<span class="glyphicon glyphicon-tasks" aria-hidden="true"></span> '
-                                "</button>"
+                        let dependency = "renderDependency('dep" + cptDep + "',["+dependencyArray+"]);"
+
+                        button = '<button id="dep' + cptDep + '" type="button" class="btn  btn-info hideFeatureTCDependencies" onclick="stopPropagation(event);' + dependency + '" data-html="true" data-toggle="popover">' +
+                            '<span class="glyphicon glyphicon-tasks" aria-hidden="true"></span> </button>'
+                        ;
                         cell += '<br><span style="font-size: xx-small">' + data.QueueState + " " + button + '<span>';
+                        cptDep++
                     }
                     cell += '</div>';
                     cell += '</div>';
@@ -1408,11 +1409,21 @@ function aoColumnsFunc(Columns) {
 }
 
 
-function renderDependency(id, test, testcase, decli) {
-    let idProgressBar = (test + "_" + testcase + "_" + decli).replace("\.", "_").replace(" ", "_");
-    let tcDepResult = $("#" + idProgressBar ).find("[name='tcResult']").text();
+function renderDependency(id, dependencyArray) {
+    let text=""
 
-    $("#" + id).html("<a href='#" + idProgressBar +"'>" + test + " - " + testcase + " - " + tcDepResult + "</a>")
+    dependencyArray.forEach( dep => {
+        let idProgressBar = (dep.test + "_" + dep.testcase + "_" + dep.robotdecli).replace("\.", "_").replace(" ", "_");
+        let tcDepResult = $("#" + idProgressBar ).find("[name='tcResult']").text();
+
+        text+= "<a href='#" + idProgressBar +"'>" + dep.test + " - " + dep.testcase + " - " + tcDepResult + "</a><a onclick='$(\"#" + idProgressBar + "\").click()'> (open on new tab)</a><br />"
+    })
+
+    $("#" + id).attr('title', "Dependency")
+        .popover('fixTitle')
+        .attr( "data-content", text)
+        .popover('show');
+
 }
 
 function customConfig(config) {
