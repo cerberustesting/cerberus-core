@@ -322,7 +322,7 @@ function displayDataLibList(selectName, defaultValue, data) {
  */
 function displayApplicationList(selectName, system, defaultValue) {
     var myData = "";
-    $("[name='" + selectName + "']").append($('<option></option>').text(""));
+    $("[name='" + selectName + "']").append($("<option value=''></option>").text(""));
 
     if ((system !== "") && (system !== undefined) && (system !== null)) {
         myData = "system=" + system;
@@ -330,7 +330,7 @@ function displayApplicationList(selectName, system, defaultValue) {
 
     $.when($.getJSON("ReadApplication", myData)).then(function (data) {
         for (var option in data.contentTable) {
-            $("[name='" + selectName + "']").append($('<option></option>').text(data.contentTable[option].application + " - " + data.contentTable[option].description).val(data.contentTable[option].application));
+            $("[name='" + selectName + "']").append($("<option></option>").text(data.contentTable[option].application + " - " + data.contentTable[option].description).val(data.contentTable[option].application));
         }
 
         if (defaultValue !== undefined && defaultValue !== null) {
