@@ -98,6 +98,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
     private static final String PARAMETER_MANUAL_EXECUTION = "manualexecution";
     private static final String PARAMETER_EXEPRIORITY = "priority";
     private static final String PARAMETER_OUTPUTFORMAT = "outputformat";
+    private static final String PARAMETER_EXECUTOR = "executor";
 
     private static final String DEFAULT_VALUE_TAG = "";
     private static final int DEFAULT_VALUE_SCREENSHOT = 0;
@@ -209,6 +210,8 @@ public class AddToExecutionQueueV003 extends HttpServlet {
         String manualLoginRelativeURL = ParameterParserUtil.parseStringParamAndDecode(request.getParameter(PARAMETER_MANUAL_LOGIN_RELATIVE_URL), null, charset);
         String manualEnvData = ParameterParserUtil.parseStringParamAndDecode(request.getParameter(PARAMETER_MANUAL_ENV_DATA), null, charset);
         String outputFormat = ParameterParserUtil.parseStringParamAndDecode(request.getParameter(PARAMETER_OUTPUTFORMAT), DEFAULT_VALUE_OUTPUTFORMAT, charset);
+        String executor = ParameterParserUtil.parseStringParamAndDecode(request.getParameter(PARAMETER_EXECUTOR), null, charset);
+        
         int screenshot = DEFAULT_VALUE_SCREENSHOT;
         int verbose = DEFAULT_VALUE_VERBOSE;
         String timeout = request.getParameter(PARAMETER_TIMEOUT);
@@ -286,7 +289,8 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                 + "- " + PARAMETER_MANUAL_EXECUTION + " : Execute testcase in manual mode for every execution triggered. [" + manualExecution + "]\n"
                 + "- " + PARAMETER_RETRIES + " : Number of tries if the result is not OK for every execution triggered. [" + retries + "]\n"
                 + "- " + PARAMETER_EXEPRIORITY + " : Priority that will be used in the queue for every execution triggered. [" + priority + "]\n"
-                + "- " + PARAMETER_OUTPUTFORMAT + " : Format of the servlet output. can be compact, json [" + outputFormat + "]\n";
+                + "- " + PARAMETER_OUTPUTFORMAT + " : Format of the servlet output. can be compact, json [" + outputFormat + "]\n"
+                + "- " + PARAMETER_EXECUTOR + " : Name of the user who trigger the execution. Value only used if servlet call is not authenticated [" + executor + "]\n";
 
 //        try {
         // Checking the parameter validity.
@@ -384,6 +388,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
         int nbExe = 0;
         JSONArray jsonArray = new JSONArray();
         String user = request.getRemoteUser() == null ? "" : request.getRemoteUser();
+        user = StringUtil.isNullOrEmpty(user) && !StringUtil.isNullOrEmpty(executor) ? executor : user;
 
         int nbtestcasenotactive = 0;
         int nbtestcaseenvgroupnotallowed = 0;

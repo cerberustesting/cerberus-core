@@ -29,10 +29,6 @@
         <param-value>Thumbnailer?p=</param-value>
     </context-param>
     <context-param>
-        <param-name>REALOBJECTURL</param-name>
-        <param-value>VirtualProxy?p=</param-value>
-    </context-param>
-    <context-param>
         <param-name>SHARED_DOCS</param-name>
         <param-value>Shared docs</param-value>
     </context-param>
@@ -57,16 +53,8 @@
         <servlet-class>org.cerberus.servlet.crud.test.GetTestCase</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>DocumentationField</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.transversaltables.DocumentationField</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>ReadDocumentation</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.transversaltables.ReadDocumentation</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>importFile</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.test.importFile</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>AddTest</servlet-name>
@@ -121,10 +109,6 @@
         <servlet-class>org.cerberus.servlet.crud.test.TestcaseList</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>TestcaseListGrid</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.test.TestcaseListGrid</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>CreateTestCaseLabel</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.test.CreateTestCaseLabel</servlet-class>
     </servlet>
@@ -173,10 +157,6 @@
         <servlet-class>org.cerberus.servlet.reporting.TestCaseActionExecutionDetail</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>GetConnectionPoolName</servlet-name>
-        <servlet-class>org.cerberus.servlet.GetConnectionPoolName</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>ReadTestCaseExecutionMedia</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.testexecution.ReadTestCaseExecutionMedia</servlet-class>
     </servlet>
@@ -217,10 +197,6 @@
     <servlet>
         <servlet-name>ReadTestCaseExecution</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.testexecution.ReadTestCaseExecution</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>ReadTestCaseExecutionImage</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.testexecution.ReadTestCaseExecutionImage</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ReadTag</servlet-name>
@@ -385,14 +361,6 @@
     <servlet>
         <servlet-name>ImportTestCaseStep</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.test.ImportTestCaseStep</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>SaveManualExecutionPicture</servlet-name>
-        <servlet-class>org.cerberus.servlet.manualtestcase.SaveManualExecutionPicture</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>SaveManualExecutionPictureTest</servlet-name>
-        <servlet-class>org.cerberus.servlet.manualtestcase.SaveManualExecutionPictureTest</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>CreateSqlLibrary</servlet-name>
@@ -603,10 +571,6 @@
         <servlet-class>org.cerberus.servlet.crud.testdata.ReadTestDataLib</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>RunManualTest</servlet-name>
-        <servlet-class>org.cerberus.servlet.manualtestcase.RunManualTest</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>CreateUpdateTestCaseExecutionFile</servlet-name>
         <servlet-class>org.cerberus.servlet.manualtestcase.CreateUpdateTestCaseExecutionFile</servlet-class>
     </servlet>
@@ -737,10 +701,6 @@
         <servlet-class>org.cerberus.servlet.crud.transversaltables.ReadInvariant</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>DummySoap</servlet-name>
-        <servlet-class>org.cerberus.service.soap.impl.DummySoap</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>ForgotPassword</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.usermanagement.ForgotPassword</servlet-class>
     </servlet>
@@ -830,16 +790,8 @@
         <url-pattern>/RunTestCaseV001</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>DocumentationField</servlet-name>
-        <url-pattern>/DocumentationField</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>ReadDocumentation</servlet-name>
         <url-pattern>/ReadDocumentation</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>importFile</servlet-name>
-        <url-pattern>/importFile</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>AddTest</servlet-name>
@@ -868,10 +820,6 @@
     <servlet-mapping>
         <servlet-name>TestcaseList</servlet-name>
         <url-pattern>/TestcaseList</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>TestcaseListGrid</servlet-name>
-        <url-pattern>/TestcaseListGrid</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>CreateTestCaseLabel</servlet-name>
@@ -950,10 +898,6 @@
         <url-pattern>/TestCaseActionExecutionDetail</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>GetConnectionPoolName</servlet-name>
-        <url-pattern>/GetConnectionPoolName</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>ReadTestCaseExecutionMedia</servlet-name>
         <url-pattern>/ReadTestCaseExecutionMedia</url-pattern>
     </servlet-mapping>
@@ -1016,10 +960,6 @@
     <servlet-mapping>
         <servlet-name>ReadTestCaseExecution</servlet-name>
         <url-pattern>/ReadTestCaseExecution</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>ReadTestCaseExecutionImage</servlet-name>
-        <url-pattern>/ReadTestCaseExecutionImage</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ReadTag</servlet-name>
@@ -1184,14 +1124,6 @@
     <servlet-mapping>
         <servlet-name>ImportTestCaseStep</servlet-name>
         <url-pattern>/ImportTestCaseStep</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>SaveManualExecutionPicture</servlet-name>
-        <url-pattern>/SaveManualExecutionPicture</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>SaveManualExecutionPictureTest</servlet-name>
-        <url-pattern>/SaveManualExecutionPictureTest</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>CreateSqlLibrary</servlet-name>
@@ -1386,10 +1318,6 @@
         <url-pattern>/ReadTestDataLib</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>RunManualTest</servlet-name>
-        <url-pattern>/RunManualTest</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>GetStepInLibrary</servlet-name>
         <url-pattern>/GetStepInLibrary</url-pattern>
     </servlet-mapping>
@@ -1500,10 +1428,6 @@
     <servlet-mapping>
         <servlet-name>GetEnvironmentsLastChangePerCountry</servlet-name>
         <url-pattern>/GetEnvironmentsLastChangePerCountry</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>DummySoap</servlet-name>
-        <url-pattern>/DummySoap</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ForgotPassword</servlet-name>
@@ -1808,7 +1732,6 @@
             <url-pattern>/findEnvironmentByCriteria</url-pattern>
             <url-pattern>/UpdateTestCaseExecution</url-pattern>
             <url-pattern>/RunExecutionInQueue</url-pattern>
-            <url-pattern>/RunManualTest</url-pattern>
             <url-pattern>/SetTagToExecution</url-pattern>
             <url-pattern>/GetExecutionQueue</url-pattern>
             <url-pattern>/UpdateTestCaseExecutionQueue</url-pattern>
@@ -1816,6 +1739,12 @@
             <url-pattern>/CreateTestCaseExecutionQueue</url-pattern>
             <url-pattern>/CreateUpdateTestCaseExecutionFile</url-pattern>
             <url-pattern>/DeleteTestCaseExecutionFile</url-pattern>
+            <url-pattern>/ReadCampaign</url-pattern>
+            <url-pattern>/ReadCampaignParameter</url-pattern>
+            <url-pattern>/GetCampaign</url-pattern>
+            <url-pattern>/UpdateCampaign</url-pattern>
+            <url-pattern>/CreateCampaign</url-pattern>
+            <url-pattern>/DeleteCampaign</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>RunTest</description>
@@ -2009,6 +1938,7 @@
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>
             <description>servlet</description>
+<!--            Public Servlets -->
             <url-pattern>/RunTestCase</url-pattern>
             <url-pattern>/RunTestCaseV001</url-pattern>
             <url-pattern>/GetNumberOfExecutions</url-pattern>
@@ -2017,46 +1947,21 @@
             <url-pattern>/ResultCIV002</url-pattern>
             <url-pattern>/ResultCIV003</url-pattern>
             <url-pattern>/ResultCIV004</url-pattern>
-            <url-pattern>/GetConnectionPoolName</url-pattern>
-            <url-pattern>/SaveManualExecution</url-pattern>
-            <url-pattern>/SaveManualExecutionPicture</url-pattern>
-            <url-pattern>/DocumentationField</url-pattern>
-            <url-pattern>/GetInvariantList</url-pattern>
-            <url-pattern>/GetCampaign</url-pattern>
-            <url-pattern>/GetTagExecutions</url-pattern>
-            <url-pattern>/ListCampaignParameter</url-pattern>
-            <url-pattern>/UpdateCampaign</url-pattern>
-            <url-pattern>/CreateCampaign</url-pattern>
-            <url-pattern>/DeleteCampaign</url-pattern>
-            <url-pattern>/importXML</url-pattern>
-            <url-pattern>/importFile</url-pattern>
             <url-pattern>/NewRelease</url-pattern>
-            <url-pattern>/TestcaseListGrid</url-pattern>
-            <url-pattern>/ExecuteNextInQueue</url-pattern>
-            <url-pattern>/VirtualProxy</url-pattern>
-            <url-pattern>/ReadDocumentation</url-pattern>
-            <url-pattern>/ReadCerberusInformation</url-pattern>
-            <url-pattern>/ReadTestCaseExecution</url-pattern>
-            <url-pattern>/ReadTestCaseExecutionImage</url-pattern>
-            <url-pattern>/ReadTag</url-pattern>
-            <url-pattern>/ReadParameter</url-pattern>
-            <url-pattern>/SaveManualExecutionPictureTest</url-pattern>
-            <url-pattern>/ReadCampaign</url-pattern>
-            <url-pattern>/ReadCampaignParameter</url-pattern>
-            <url-pattern>/ReadInvariant</url-pattern>
-            <url-pattern>/NewBuildRevisionV000</url-pattern>
-            <url-pattern>/DisableEnvironmentV000</url-pattern>
-            <url-pattern>/NewEnvironmentEventV000</url-pattern>
-            <url-pattern>/ForgotPassword</url-pattern>
-            <url-pattern>/ForgotPasswordEmailConfirmation</url-pattern>
-            <url-pattern>/ChangeUserPassword</url-pattern>
             <url-pattern>/AddToExecutionQueue</url-pattern>
             <url-pattern>/AddToExecutionQueueV001</url-pattern>
             <url-pattern>/AddToExecutionQueueV002</url-pattern>
             <url-pattern>/AddToExecutionQueueV003</url-pattern>
-            <url-pattern>/ReadApplicationObjectImage</url-pattern>
+            <url-pattern>/NewBuildRevisionV000</url-pattern>
+            <url-pattern>/DisableEnvironmentV000</url-pattern>
+            <url-pattern>/NewEnvironmentEventV000</url-pattern>
+            <url-pattern>/GetTagExecutions</url-pattern>
             <url-pattern>/GetTestCasesV000</url-pattern>
-            <url-pattern>/DummySoap</url-pattern>
+<!--            Password Management Servlets -->
+            <url-pattern>/ForgotPassword</url-pattern>
+            <url-pattern>/ForgotPasswordEmailConfirmation</url-pattern>
+            <url-pattern>/ChangeUserPassword</url-pattern>
+<!--            Dummy Servlets -->
             <url-pattern>/DummyRESTCall</url-pattern>
             <url-pattern>/DummyRESTCallEmpty</url-pattern>
         </web-resource-collection>
@@ -2074,6 +1979,8 @@
             <description>servlet</description>
             <url-pattern>/Homepage</url-pattern>
             <url-pattern>/ReadMyUser</url-pattern>
+            <url-pattern>/GetInvariantList</url-pattern>
+            <url-pattern>/ReadCerberusInformation</url-pattern>
             <url-pattern>/GeneratePerformanceString</url-pattern>
             <url-pattern>/UpdateMyUser</url-pattern>
             <url-pattern>/UpdateMyUserSystem</url-pattern>
@@ -2095,6 +2002,13 @@
             <url-pattern>/GetEnvironmentsPerBuildRevision</url-pattern>
             <url-pattern>/GetEnvironmentsLastChangePerCountry</url-pattern>
             <url-pattern>/ReadAppService</url-pattern>
+            <url-pattern>/ReadInvariant</url-pattern>
+            <url-pattern>/ReadTestCaseExecution</url-pattern>
+            <url-pattern>/ReadTag</url-pattern>
+            <url-pattern>/ReadParameter</url-pattern>
+            <url-pattern>/ExecuteNextInQueue</url-pattern>
+            <url-pattern>/ReadDocumentation</url-pattern>
+            <url-pattern>/ReadApplicationObjectImage</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description/>
