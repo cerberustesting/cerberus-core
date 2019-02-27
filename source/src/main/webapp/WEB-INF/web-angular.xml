@@ -1996,7 +1996,6 @@
             <url-pattern>/ReadAppService</url-pattern>
             <url-pattern>/ReadInvariant</url-pattern>
             <url-pattern>/ReadTestCaseExecution</url-pattern>
-            <url-pattern>/ReadTag</url-pattern>
             <url-pattern>/ReadParameter</url-pattern>
             <url-pattern>/ExecuteNextInQueue</url-pattern>
             <url-pattern>/ReadDocumentation</url-pattern>
