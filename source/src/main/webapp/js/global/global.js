@@ -2589,3 +2589,39 @@ function getComboConfigTest() {
     return config;
 }
 
+function getComboConfigApplication() {
+    var config =
+            {
+                ajax: {
+                    url: "ReadApplication",
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        params.page = params.page || 1;
+                        return {
+                            sSearch: params.term, // search term
+                            iDisplayStart: (params.page * 30) - 30
+                        };
+                    },
+                    processResults: function (data, params) {
+                        params.page = params.page || 1;
+                        return {
+                            results: $.map(data.contentTable, function (obj) {
+                                return {id: obj.application, text: obj.application};
+                            }),
+                            pagination: {
+                                more: (params.page * 30) < data.iTotalRecords
+                            }
+                        };
+                    },
+                    cache: true,
+                    allowClear: true
+                },
+                tags: true,
+                width: "100%",
+                minimumInputLength: 0
+            };
+    console.log(config);
+
+    return config;
+}
