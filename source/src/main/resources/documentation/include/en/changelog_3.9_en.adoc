@@ -15,6 +15,8 @@
 * Implement scrollTo action for Selenium.
 * Implement auto-scroll in parameter list for automatate the scroll on all action executed.
 * Rework modal for create and update the service
+* Rework Application selector for application object, it become a select2
+
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
