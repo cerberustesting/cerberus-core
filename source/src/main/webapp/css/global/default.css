@@ -795,6 +795,7 @@ a.list-group-item.selected, button.list-group-item.selected {
 }
 
 
-.hideFeatureTCDependencies {
+/*.hideFeatureTCDependencies {
     display: none !important;
-}
+}*/
+
