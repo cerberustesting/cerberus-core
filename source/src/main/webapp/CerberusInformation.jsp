@@ -52,33 +52,6 @@
                             </div>
                         </div>
 
-<!--                        <div class="row">
-                            <div class="form-group col-xs-12">
-                                <table class="table table-bordered table-hover nomarginbottom dataTable" id="sessionNbTable">
-                                    <thead>
-                                        <tr>
-                                            <th class="text-center" id="systemHeader" name="systemHeader">Number of HTTP Session opened</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="sessionNbTableBody">
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="form-group col-xs-12">
-                                <table class="table table-bordered table-hover nomarginbottom dataTable" id="sessionTable">
-                                    <thead>
-                                        <tr>
-                                            <th class="text-center" id="systemHeader" name="systemHeader">Active User List</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="sessionTableBody">
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>-->
-                        
                         <div class="row">
                             <div class="form-group col-xs-12">
                                 <table class="table table-bordered table-hover nomarginbottom dataTable" id="exeNbTable">
@@ -142,6 +115,39 @@
                                                 </tr>
                                             </thead>
                                             <tbody id="cerberusTableBody">
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-xs-12">
+                                        <table class="table table-bordered table-hover nomarginbottom dataTable" id="cerberusAuthTable">
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-center" id="authHeader" name="authHeader">Authentification</th>
+                                                    <th class="text-center" id="isKCHeader" name="isKCHeader">is Keycloak</th>
+                                                    <th class="text-center" id="kcRealmHeader" name="kcRealmHeader">Keycloak Realm</th>
+                                                    <th class="text-center" id="kcClientHeader" name="kcClientHeader">Keycloak Client</th>
+                                                    <th class="text-center" id="kcUrlHeader" name="kcUrlHeader">Keycloak URL</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="cerberusAuthTableBody">
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-xs-12">
+                                        <table class="table table-bordered table-hover nomarginbottom dataTable" id="cerberusSaaSTable">
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-center" id="saaS" name="saaS">SaaS</th>
+                                                    <th class="text-center" id="isSaaS" name="isSaaS">is SaaS</th>
+                                                    <th class="text-center" id="saasInstance" name="saasInstance">Instance</th>
+                                                    <th class="text-center" id="saasParallelrun" name="saasParallelrun">Parallel Run</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="cerberusSaaSTableBody">
                                             </tbody>
                                         </table>
                                     </div>

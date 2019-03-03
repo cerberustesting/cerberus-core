@@ -29,12 +29,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.config.Property;
 import org.cerberus.database.dao.ICerberusInformationDAO;
 import org.cerberus.engine.entity.ExecutionUUID;
 import org.cerberus.session.SessionCounter;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.service.IMyVersionService;
 import org.cerberus.database.IDatabaseVersioningService;
+import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.version.Infos;
 import org.json.JSONArray;
@@ -51,7 +53,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class ReadCerberusDetailInformation extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(ReadCerberusDetailInformation.class);
-    
+
     private ICerberusInformationDAO cerberusDatabaseInformation;
     private IDatabaseVersioningService databaseVersionService;
     private IMyVersionService myVersionService;
@@ -117,7 +119,7 @@ public class ReadCerberusDetailInformation extends HttpServlet {
             // Cerberus Informations.
             jsonResponse.put("projectName", infos.getProjectName());
             jsonResponse.put("projectVersion", infos.getProjectVersion());
-            jsonResponse.put("environment", System.getProperty("org.cerberus.environment"));
+            jsonResponse.put("environment", System.getProperty(Property.ENVIRONMENT));
 
             databaseVersionService = appContext.getBean(IDatabaseVersioningService.class);
             jsonResponse.put("databaseCerberusTargetVersion", databaseVersionService.getSQLScript().size());
@@ -129,7 +131,18 @@ public class ReadCerberusDetailInformation extends HttpServlet {
                 jsonResponse.put("databaseCerberusCurrentVersion", "0");
             }
 
-            // JAVA Informations.
+            // Cerberus Parameters
+            jsonResponse.put("authentification", System.getProperty(Property.AUTHENTIFICATION));
+            jsonResponse.put("isKeycloak", Property.isKeycloak());
+            jsonResponse.put("keycloakRealm", System.getProperty(Property.KEYCLOAKREALM));
+            jsonResponse.put("keycloakClient", System.getProperty(Property.KEYCLOAKCLIENT));
+            jsonResponse.put("keycloakUrl", System.getProperty(Property.KEYCLOAKURL));
+
+            jsonResponse.put("saaS", System.getProperty(Property.SAAS));
+            jsonResponse.put("isSaaS", Property.isSaaS());
+            jsonResponse.put("saasInstance", System.getProperty(Property.SAASINSTANCE));
+            jsonResponse.put("saasParallelrun", System.getProperty(Property.SAASPARALLELRUN));
+
             jsonResponse.put("javaVersion", System.getProperty("java.version"));
             Runtime instance = Runtime.getRuntime();
             int mb = 1024 * 1024;

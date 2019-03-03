@@ -4,6 +4,7 @@
 
 *Improvements / New features*
 [square]
+* Tomcat 8 and Keycloack Support is now active. You can start your migration.
 * Add a new system variable : system.ROBOTHOST
 * Add loop icon and library icon on step list in test case script
 * New parameter 'executor' on AddToExecutionQueueV003 in order to allow to keep track of user who triggered the campaign #1934

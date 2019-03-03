@@ -17,6 +17,9 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
+var kcUrl;
+var kcRealm;
+
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
         initPage();
@@ -86,13 +89,31 @@ function displayPageLabel() {
 
 function renderOptionsForUser(data) {
     var doc = new Doc();
-    if ($("#createUserButton").length === 0) {
-        var contentToAdd = "<div class='marginBottom10'><button id='createUserButton' type='button' class='btn btn-default'>\n\
+    if (data.isKeycloakManaged) {
+        if ($("#manageUserButton").length === 0) {
+            var contentToAdd = "<div class='marginBottom10'><button id='manageUserButton' type='button' class='btn btn-default'>\n\
+            <span class='glyphicon glyphicon-plus-sign'></span> " + doc.getDocLabel("page_user", "manage_user") + "</button></div>";
+            $("#usersTable_wrapper div#usersTable_length").before(contentToAdd);
+            console.info(data);
+            kcRealm = data.keycloakRealm;
+            kcUrl = data.keycloakUrl;
+            $('#userList #manageUserButton').click(manageUserClick);
+        }
+    } else {
+        if ($("#createUserButton").length === 0) {
+            var contentToAdd = "<div class='marginBottom10'><button id='createUserButton' type='button' class='btn btn-default'>\n\
             <span class='glyphicon glyphicon-plus-sign'></span> " + doc.getDocLabel("page_user", "button_create") + "</button></div>";
-        $("#usersTable_wrapper div#usersTable_length").before(contentToAdd);
-        $('#userList #createUserButton').click(addEntryClick);
+            $("#usersTable_wrapper div#usersTable_length").before(contentToAdd);
+            $('#userList #createUserButton').click(addEntryClick);
+        }
     }
+
 }
+
+function manageUserClick(data) {
+    window.open(kcUrl + 'admin/' + kcRealm + '/console/#/realms/' + kcRealm + '/users', '_blank');
+}
+
 
 function editEntryClick(param) {
     clearResponseMessageMainPage();
@@ -177,6 +198,15 @@ function editEntryClick(param) {
         formEdit.find("#groups option").click(function () {
             clickGroup($(this).val(), $(this).prop('selected'), formEdit);
         });
+
+        if (obj["isKeycloakManaged"]) {
+            formEdit.find("#login").prop("readonly", "readonly");
+            formEdit.find("#request").hide();
+            $("[name='requestField']").hide();
+            formEdit.find("#email").hide();
+            $("[name='emailField']").hide();
+            $("#createTab3Text").hide();
+        }
 
     });
 
@@ -540,10 +570,13 @@ function aoColumnsFunc(tableId) {
                                         class="removeUser btn btn-default btn-xs margin-right5" \n\
                                         name="removeUser" title="' + doc.getDocLabel("page_user", "button_remove") + '" type="button">\n\
                                         <span class="glyphicon glyphicon-trash"></span></button>';
-                var passwordUser = '<button id="editPassUser" onclick="editEntryPassClick(\'' + obj["login"] + '\');"\n\
+                var passwordUser = '';
+                if (!(obj.isKeycloakManaged)) {
+                    passwordUser = '<button id="editPassUser" onclick="editEntryPassClick(\'' + obj["login"] + '\');"\n\
                                         class="editUserPass btn btn-default btn-xs margin-right5" \n\
                                         name="editUserPass" title="' + doc.getDocLabel("page_user", "button_password_edit") + '" type="button">\n\
                                         <span class="glyphicon glyphicon-lock"></span></button>';
+                }
 
                 return '<div class="center btn-group width150">' + editUser + removeUser + passwordUser + '</div>';
 
@@ -551,15 +584,15 @@ function aoColumnsFunc(tableId) {
             "width": "100px"
         },
         {
-            "data": "login", 
-            "sName": "login", 
+            "data": "login",
+            "sName": "login",
             "sWidth": "50px",
             "title": doc.getDocLabel("page_user", "login_col")
         },
         {
             "data": "name",
-            "like":true,
-            "sName": "name", 
+            "like": true,
+            "sName": "name",
             "sWidth": "80px",
             "title": doc.getDocLabel("page_user", "name_col")
         },
@@ -602,27 +635,27 @@ function aoColumnsFunc(tableId) {
             }
         },
         {
-            "data": "team", 
-            "sName": "team", 
+            "data": "team",
+            "sName": "team",
             "sWidth": "50px",
             "title": doc.getDocLabel("page_user", "team_col")
         },
         {
-            "data": "defaultSystem", 
-            "sName": "defaultSystem", 
+            "data": "defaultSystem",
+            "sName": "defaultSystem",
             "sWidth": "50px",
             "title": doc.getDocLabel("page_user", "defaultsystem_col")
         },
         {
-            "data": "request", 
-            "sName": "reqest", 
+            "data": "request",
+            "sName": "reqest",
             "sWidth": "50px",
             "title": doc.getDocLabel("page_user", "request_col")
         },
         {
             "data": "email",
-            "like":true,
-            "sName": "email", 
+            "like": true,
+            "sName": "email",
             "sWidth": "80px",
             "title": doc.getDocLabel("page_user", "email_col")
         }

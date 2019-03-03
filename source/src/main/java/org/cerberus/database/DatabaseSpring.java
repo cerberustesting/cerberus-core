@@ -27,6 +27,7 @@ import javax.naming.NamingException;
 import javax.sql.DataSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.config.Property;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -67,7 +68,7 @@ public class DatabaseSpring {
             }
             return this.dataSource.getConnection();
         } catch (SQLException exception) {
-            LOG.warn("Cannot connect to datasource jdbc/cerberus" + System.getProperty("org.cerberus.environment") + " : " + exception.toString());
+            LOG.warn("Cannot connect to datasource jdbc/cerberus" + System.getProperty(Property.ENVIRONMENT) + " : " + exception.toString());
         }
 
         return null;
@@ -88,7 +89,7 @@ public class DatabaseSpring {
             try {
                 this.conn.close();
             } catch (SQLException ex) {
-                LOG.warn("Can't end/close the connection to datasource jdbc/cerberus" + System.getProperty("org.cerberus.environment") + " : " + ex.toString());
+                LOG.warn("Can't end/close the connection to datasource jdbc/cerberus" + System.getProperty(Property.ENVIRONMENT) + " : " + ex.toString());
             }
         }
 
@@ -100,7 +101,7 @@ public class DatabaseSpring {
             this.conn = this.dataSource.getConnection();
             this.conn.setAutoCommit(false);
         } catch (SQLException exception) {
-            LOG.warn("Cannot connect to datasource jdbc/cerberus" + System.getProperty("org.cerberus.environment") + " : " + exception.toString());
+            LOG.warn("Cannot connect to datasource jdbc/cerberus" + System.getProperty(Property.ENVIRONMENT) + " : " + exception.toString());
         }
     }
 
@@ -116,7 +117,7 @@ public class DatabaseSpring {
                 this.conn.close();
             }
         } catch (SQLException ex) {
-            LOG.warn("Can't end/close the connection to datasource jdbc/cerberus" + System.getProperty("org.cerberus.environment") + " : " + ex.toString());
+            LOG.warn("Can't end/close the connection to datasource jdbc/cerberus" + System.getProperty(Property.ENVIRONMENT) + " : " + ex.toString());
         }
     }
 

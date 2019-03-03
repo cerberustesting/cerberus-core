@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Random;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.config.Property;
 import org.cerberus.crud.entity.CountryEnvironmentDatabase;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
@@ -269,7 +270,7 @@ public class SQLService implements ISQLService {
                 msg.setDescription(msg.getDescription().replace("%JDBC%", "jdbc/" + connectionName));
 
                 if (!(StringUtil.isNullOrEmpty(connectionName))) {
-                    if (connectionName.equals("cerberus" + System.getProperty("org.cerberus.environment"))) {
+                    if (connectionName.equals("cerberus" + System.getProperty(Property.ENVIRONMENT))) {
                         return new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_AGAINST_CERBERUS);
                     } else {
                         try(Connection connection = this.databaseSpring.connect(connectionName);

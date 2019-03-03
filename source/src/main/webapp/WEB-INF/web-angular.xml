@@ -2023,10 +2023,6 @@
             <form-error-page>/Login.jsp?error=1</form-error-page>
         </form-login-config>
     </login-config>
-<!--    <login-config>
-        <auth-method>BASIC</auth-method>
-        <realm-name>Enable this in order to activate KeyCloak</realm-name>
-    </login-config>-->
     <context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>/WEB-INF/applicationContext.xml</param-value>

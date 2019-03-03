@@ -2228,6 +2228,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_user','allUsers','','fr','Utilisateurs','',NULL)");
         b.append(",('page_user','button_col','','en','Actions','',NULL)");
         b.append(",('page_user','button_col','','fr','Actions','',NULL)");
+        b.append(",('page_user','manage_user','','en','Manage User','',NULL)");
+        b.append(",('page_user','manage_user','','fr','Gerer les Utilisateurs','',NULL)");
         b.append(",('page_user','button_create','','en','Create User','',NULL)");
         b.append(",('page_user','button_create','','fr','Créer un Utilisateur','',NULL)");
         b.append(",('page_user','button_edit','','en','Edit User','',NULL)");

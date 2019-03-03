@@ -60,6 +60,35 @@ function feedContent() {
         row.append(cel5);
         table.append(row);
 
+        var table = $("#cerberusAuthTableBody");
+        table.empty();
+        var row = $("<tr></tr>");
+        var cel1 = $("<td></td>").append(data.authentification);
+        var cel2 = $("<td></td>").append(data.isKeycloak);
+        var cel3 = $("<td></td>").append(data.keycloakRealm);
+        var cel4 = $("<td></td>").append(data.keycloakClient);
+        var cel5 = $("<td></td>").append(data.keycloakUrl);
+        row.append(cel1);
+        row.append(cel2);
+        row.append(cel3);
+        row.append(cel4);
+        row.append(cel5);
+        table.append(row);
+
+        var table = $("#cerberusSaaSTableBody");
+        table.empty();
+        var row = $("<tr></tr>");
+        var cel1 = $("<td></td>").append(data.saaS);
+        console.info(data.saaS + " - " + data.isSaaS);
+        var cel2 = $("<td></td>").append(data.isSaaS.toString());
+        var cel3 = $("<td></td>").append(data.saasInstance);
+        var cel4 = $("<td></td>").append(data.saasParallelrun);
+        row.append(cel1);
+        row.append(cel2);
+        row.append(cel3);
+        row.append(cel4);
+        table.append(row);
+
         var table = $("#jvmTableBody");
         table.empty();
         var row = $("<tr></tr>");
@@ -86,23 +115,6 @@ function feedContent() {
         row.append(cel3);
         row.append(cel4);
         table.append(row);
-
-
-//        var table = $("#sessionNbTableBody");
-//        table.empty();
-//        var row = $("<tr></tr>");
-//        var cel1 = $("<td></td>").append(data.simultaneous_session);
-//        row.append(cel1);
-//        table.append(row);
-//
-//        var table = $("#sessionTableBody");
-//        table.empty();
-//        $.each(data["active_users"], function (idx, obj) {
-//            var row = $("<tr></tr>");
-//            var cel1 = $("<td></td>").append(obj);
-//            row.append(cel1);
-//            table.append(row);
-//        });
 
         var table = $("#exeNbTableBody");
         table.empty();

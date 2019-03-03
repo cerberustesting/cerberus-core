@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cerberus.config.Property;
 import org.cerberus.crud.entity.UserGroup;
 import org.cerberus.crud.entity.User;
 import org.cerberus.crud.entity.UserSystem;
@@ -85,10 +86,10 @@ public class ReadMyUser extends HttpServlet {
 
             // In case we activated KeyCloak, we create the user on the fly in order to allow to administer the system list. 
             String authMode = "";
-            if (System.getProperty("org.cerberus.authentification") != null) {
-                authMode = System.getProperty("org.cerberus.authentification");
-                LOG.debug("Authentification JAVA parameter org.cerberus.authentification for keycloak value : '" + authMode + "'");
-                if (authMode.equals("keycloak")) {
+            if (System.getProperty(Property.AUTHENTIFICATION) != null) {
+                authMode = System.getProperty(Property.AUTHENTIFICATION);
+                LOG.debug("Authentification JAVA parameter "+Property.AUTHENTIFICATION+" for keycloak value : '" + authMode + "'");
+                if (authMode.equals(Property.AUTHENTIFICATION_VALUE_KEYCLOAK)) {
                     if (!userService.isUserExist(user)) {
                         User myUser = userFactory.create(0, user, "NOAUTH", "N", "", "", "", "en", "", "", "", "", "", "", "", "", "", "");
                         LOG.debug("Create User.");
@@ -116,14 +117,14 @@ public class ReadMyUser extends HttpServlet {
 
             // Define submenu entries
             JSONObject menu = new JSONObject();
-            if (authMode.equals("keycloak")) {
+            if (Property.isKeycloak()) {
                 // Name displayed in menu
                 menu.put("nameDisplay", StringUtil.getLeftString(user, 8) + "...");
 
-                String keyCloakUrl = StringUtil.addSuffixIfNotAlready(System.getProperty("org.cerberus.keycloak.url"), "/");
+                String keyCloakUrl = StringUtil.addSuffixIfNotAlready(System.getProperty(Property.KEYCLOAKURL), "/");
 
-                menu.put("accountLink", keyCloakUrl + "realms/" + System.getProperty("org.cerberus.keycloak.realm") + "/account/");
-                menu.put("logoutLink", keyCloakUrl + "realms/" + System.getProperty("org.cerberus.keycloak.realm") + "/protocol/openid-connect/logout?redirect_uri=%LOGOUTURL%");
+                menu.put("accountLink", keyCloakUrl + "realms/" + System.getProperty(Property.KEYCLOAKREALM) + "/account/");
+                menu.put("logoutLink", keyCloakUrl + "realms/" + System.getProperty(Property.KEYCLOAKREALM) + "/protocol/openid-connect/logout?redirect_uri=%LOGOUTURL%");
             } else {
                 // Name displayed in menu
                 menu.put("nameDisplay", myUser.getLogin());
@@ -133,7 +134,7 @@ public class ReadMyUser extends HttpServlet {
             data.put("menu", menu);
 
             JSONArray groups = new JSONArray();
-            if (authMode.equals("keycloak")) {
+            if (Property.isKeycloak()) {
                 List<String> groupList = new ArrayList<>();
                 groupList.add("Label");
                 groupList.add("RunTest");
