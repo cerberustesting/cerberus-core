@@ -2143,11 +2143,12 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
 
     @Override
     public AnswerItem<Integer> updateToCancelledOldRecord(Integer timeOutInS, String comment) {
+    	
         MessageEvent msg = null;
         String query
-                = "UPDATE `" + TABLE + "` exq "
+                = "UPDATE testcaseexecutionqueue "
                 + "SET `" + COLUMN_STATE + "` = 'CANCELLED', `" + COLUMN_REQUEST_DATE + "` = now(), `" + COLUMN_DATEMODIF + "` = now(), `" + COLUMN_COMMENT + "` = ? "
-                + "WHERE ? - TO_SECONDS(DateCreated) > ? "
+                + "WHERE TO_SECONDS(now()) - TO_SECONDS(DateCreated) > ? "
                 + "AND `" + COLUMN_STATE + "` IN ('WAITING','STARTING','EXECUTING')";
 
         // Debug message on SQL.
@@ -2160,7 +2161,6 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
             try {
                 int i = 1;
                 preStat.setString(i++, comment);
-                preStat.setLong(i++, new Date().getTime() / 1000);
                 preStat.setLong(i++, timeOutInS);
 
                 int updateResult = preStat.executeUpdate();
