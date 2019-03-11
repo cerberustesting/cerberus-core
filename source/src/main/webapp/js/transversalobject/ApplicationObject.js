@@ -248,7 +248,9 @@ function feedApplicationObjectModalData(applicationObject, modalId, mode, hasPer
 		if(applicationObject.application === undefined){
 			formEdit.find("#application")[0].selectedIndex = 0;
 		}else{
-			formEdit.find("#application").val(applicationObject.application);
+			//formEdit.find("#application").val(applicationObject.application);
+			var newOption = new Option(applicationObject.application, applicationObject.application, true, true);
+		    $('#application').append(newOption).trigger('change');
 		}
 			
 		if(applicationObject.screenshotfilename == ""){

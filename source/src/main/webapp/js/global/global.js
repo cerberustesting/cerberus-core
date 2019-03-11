@@ -2621,7 +2621,5 @@ function getComboConfigApplication() {
                 width: "100%",
                 minimumInputLength: 0
             };
-    console.log(config);
-
     return config;
 }
