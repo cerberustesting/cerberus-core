@@ -114,16 +114,26 @@ function addEntryModalSaveHandler() {
 
     var nameElement = formAdd.find("#test");
     var nameElementEmpty = nameElement.prop("value") === '';
+    
+    // if the Test field contains '&'
+    var nameElementInvalid = nameElement.prop("value").search("&");
+    console.log("nameElementInvalid: " + nameElementInvalid)
+    
     if (nameElementEmpty) {
         var localMessage = new Message("danger", "Please specify the name of the test!");
         nameElement.parents("div.form-group").addClass("has-error");
         showMessage(localMessage, $('#addEntryModal'));
-    } else {
+    } else if (nameElementInvalid != -1) {
+    	var localMessage = new Message("danger", "The test name cannot contains the symbol : &");
+        nameElement.parents("div.form-group").addClass("has-error");
+        showMessage(localMessage, $('#addEntryModal'));  	
+    }
+    else {
         nameElement.parents("div.form-group").removeClass("has-error");
     }
 
     // verif if all mendatory fields are not empty
-    if (nameElementEmpty)
+    if (nameElementEmpty || nameElementInvalid != -1)
         return;
 
     showLoaderInModal('#addEntryModal');

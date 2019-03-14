@@ -392,16 +392,26 @@ function confirmTestCaseModalHandler(mode) {
 
     var nameElement = formEdit.find("#application");
     var nameElementEmpty = nameElement.prop("value") === '';
+    
+    var testElement = formEdit.find("#test");
+    var testElementInvalid = testElement.prop("value").search("&");
+    
     if (nameElementEmpty) {
         var localMessage = new Message("danger", "Please specify the name of the application!");
         nameElement.parents("div.form-group").addClass("has-error");
         showMessage(localMessage, $('#editTestCaseModal'));
-    } else {
+    } else if(testElementInvalid != -1) { 
+    	var localMessage = new Message("danger", "The test name cannot contains the symbol : &");
+    	// only the Test label will be put in red
+    	testElement.parents("div.form-group").addClass("has-error");
+        showMessage(localMessage, $('#editTestCaseModal'));
+    }
+    else {
         nameElement.parents("div.form-group").removeClass("has-error");
     }
 
-    // verif if all mendatory fields are not empty
-    if (nameElementEmpty)
+    // verify if all mandatory fields are not empty and valid
+    if (nameElementEmpty || testElementInvalid != -1)
         return;
 
     tinyMCE.triggerSave();
