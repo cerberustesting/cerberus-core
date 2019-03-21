@@ -1612,7 +1612,6 @@
             <url-pattern>/ExportTestCase</url-pattern>
             <url-pattern>/FindTestImplementationStatusPerApplication</url-pattern>
             <url-pattern>/GetCountryForTestCase</url-pattern>
-            <url-pattern>/GetPropertiesForTestCase</url-pattern>
             <url-pattern>/GetReport</url-pattern>
             <url-pattern>/GetStepInLibrary</url-pattern>
             <url-pattern>/ReadTestCaseStep</url-pattern>
