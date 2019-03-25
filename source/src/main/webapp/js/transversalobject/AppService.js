@@ -86,7 +86,6 @@ function initModalAppService() {
  * @returns {null}
  */
 function editAppServiceClick(service, page) {
-	console.log("editappserviceclick");
     var doc = new Doc();
     $("[name='editSoapLibraryField']").html(doc.getDocLabel("page_appservice", "editSoapLibrary_field"));
 
@@ -141,7 +140,6 @@ function duplicateAppServiceClick(service) {
  * @returns {null}
  */
 function addAppServiceClick(service, page) {
-	console.log("addappserviceclick")
     $("#addSoapLibraryButton").off("click");
     $("#addSoapLibraryButton").click(function () {
         confirmAppServiceModalHandler("ADD", page);
@@ -196,7 +194,6 @@ function prepareAppServiceModal() {
     $("#addContent").click(addNewContentRow);
     $('#addHeader').off("click");
     $("#addHeader").click(addNewHeaderRow);
-    console.log($('#service').val());
 
 
 }
@@ -405,7 +402,6 @@ function feedAppServiceModal(serviceName, modalId, mode) {
         feedAppServiceModalData(serviceObj1, modalId, mode, hasPermissions);
         refreshDisplayOnTypeChange(serviceObj1.type);
         formEdit.modal('show');
-        console.log($('#service').val());
 
     }
 
@@ -430,6 +426,7 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
     // Data Feed.
     if (mode === "EDIT") {
         $("[name='editSoapLibraryField']").html(doc.getDocOnline("page_appservice", "button_edit"));
+        appendApplicationList(service.application);
         formEdit.find("#service").prop("value", service.service);
         formEdit.find("#usrcreated").prop("value", service.UsrCreated);
         formEdit.find("#datecreated").prop("value", getDate(service.DateCreated));
@@ -531,6 +528,12 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
     }
 
 
+}
+
+function appendApplicationList(defaultValue){
+    $('#editServiceModal [name="application"]').select2(getComboConfigApplicationList());
+    var myoption = $('<option></option>').text(defaultValue).val(defaultValue);
+    $("#editServiceModal [name='application']").append(myoption).trigger('change'); // append the option and update Select2	
 }
 
 function feedAppServiceModalDataContent(ContentList) {
