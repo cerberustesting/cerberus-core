@@ -426,7 +426,7 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
     // Data Feed.
     if (mode === "EDIT") {
         $("[name='editSoapLibraryField']").html(doc.getDocOnline("page_appservice", "button_edit"));
-        appendApplicationList(service.application);
+        appendApplicationListServiceModal(service.application);
         formEdit.find("#service").prop("value", service.service);
         formEdit.find("#usrcreated").prop("value", service.UsrCreated);
         formEdit.find("#datecreated").prop("value", getDate(service.DateCreated));
@@ -530,7 +530,7 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
 
 }
 
-function appendApplicationList(defaultValue){
+function appendApplicationListServiceModal(defaultValue){
     $('#editServiceModal [name="application"]').select2(getComboConfigApplicationList());
     var myoption = $('<option></option>').text(defaultValue).val(defaultValue);
     $("#editServiceModal [name='application']").append(myoption).trigger('change'); // append the option and update Select2	
