@@ -114,6 +114,7 @@ public class ReadMyUser extends HttpServlet {
             data.put("robot", myUser.getRobot());
             data.put("reportingFavorite", myUser.getReportingFavorite());
             data.put("userPreferences", myUser.getUserPreferences());
+            data.put("isKeycloak", Property.isKeycloak());
 
             // Define submenu entries
             JSONObject menu = new JSONObject();

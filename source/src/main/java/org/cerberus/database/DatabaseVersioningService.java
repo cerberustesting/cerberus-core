@@ -8018,23 +8018,23 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add(b.toString());
 
         // New parameters.
-        // 1395
+        // 1395-1396
         a.add("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES "
                 + "('', 'cerberus_accountcreation_systemlist', 'ALL', 'Either ALL, NONE or a coma separated list of system to create by default when a new user is created.')"
                 + ",('', 'cerberus_accountcreation_ownsystemcreation', 'Y', 'Y in order to automatically create a personal system for the user. That system will be named US-login')"
                 + ",('', 'cerberus_automaticqueueprocessingjob_period', '30', 'Period of time in minutes between each job that will process queue entries that are still in the queue (that job should automatically be submitted after the end of each execution).')"
                 + ",('', 'cerberus_automaticqueueprocessingjob_active', 'Y', 'Y in order to activate the job that will process the queue entries that are still in the sueue.');");
-
-        a.add(" ALTER TABLE `robotexecutor` "
+        a.add("ALTER TABLE `robotexecutor` "
                 + " MODIFY COLUMN `devicePort` int(8) AFTER `deviceName`, "
                 + " ADD COLUMN `deviceLockUnlock` VARCHAR(1) NOT NULL DEFAULT 'N' AFTER `devicePort` ;");
 
         // New parameter autoscroll for testcase
-        // 1396
-        b = new StringBuilder();
-        b.append("INSERT INTO `parameter` (`system`,`param`, `value`, `description`) VALUES ('','cerberus_selenium_autoscroll', 'N', 'Boolean (Y/N) that define if Cerberus automatically scroll the current page on any element it interact with.'); ");
+        // 1397
+        a.add("INSERT INTO `parameter` (`system`,`param`, `value`, `description`) VALUES ('','cerberus_selenium_autoscroll', 'N', 'Boolean (Y/N) that define if Cerberus automatically scroll the current page on any element it interact with.'); ");
 
-        a.add(b.toString());
+        // New parameter autoscroll for testcase
+        // 1398
+        a.add("ALTER TABLE `logevent` CHANGE COLUMN `Login` `Login` VARCHAR(255) NOT NULL DEFAULT '' ;");
 
         return a;
     }

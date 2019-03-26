@@ -569,6 +569,7 @@ function aoColumnsFunc(countries, tableId) {
             "data": "labels",
             "sName": "lab.label",
             "title": doc.getDocOnline("label", "label"),
+            "bSortable": false,
             "sWidth": "170px",
             "sDefaultContent": "",
             "render": function (data, type, full, meta) {
@@ -583,6 +584,7 @@ function aoColumnsFunc(countries, tableId) {
             "data": "labelsSTICKER",
             "sName": "lab.labelsSTICKER",
             "title": doc.getDocOnline("label", "labelsSTICKER"),
+            "bSortable": false,
             "sWidth": "170px",
             "sDefaultContent": "",
             "render": function (data, type, full, meta) {
@@ -597,6 +599,7 @@ function aoColumnsFunc(countries, tableId) {
             "data": "labelsREQUIREMENT",
             "sName": "lab.labelsREQUIREMENT",
             "title": doc.getDocOnline("label", "labelsREQUIREMENT"),
+            "bSortable": false,
             "sWidth": "170px",
             "sDefaultContent": "",
             "render": function (data, type, full, meta) {
@@ -611,6 +614,7 @@ function aoColumnsFunc(countries, tableId) {
             "data": "labelsBATTERY",
             "sName": "lab.labelsBATTERY",
             "title": doc.getDocOnline("label", "labelsBATTERY"),
+            "bSortable": false,
             "sWidth": "170px",
             "sDefaultContent": "",
             "render": function (data, type, full, meta) {

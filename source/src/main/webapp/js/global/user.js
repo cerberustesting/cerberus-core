@@ -51,9 +51,11 @@ function getUser() {
     user = sessionStorage.getItem("user");
     user = JSON.parse(user);
     if (user !== null) {
-        if (user.request === 'Y') {
-            //user needs to change password
-            $(location).attr("href", "ChangePassword.jsp");
+        if (!user.isKeycloak) {
+            if (user.request === 'Y') {
+                //user needs to change password
+                $(location).attr("href", "ChangePassword.jsp");
+            }
         }
     }
     return user;

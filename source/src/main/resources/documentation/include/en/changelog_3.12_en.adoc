@@ -1,6 +1,7 @@
 *Bug fixes*
 [square]
-* none
+* Adding some missing columns descriptions. #1954 
+* Enlarge login column on logevent table in order to avoid missing log entries when username is too big.
 
 *Improvements / New features*
 [square]
