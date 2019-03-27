@@ -154,8 +154,10 @@ function renderOptionsForTestCaseList(data) {
             $("#testCaseTable_wrapper #testCaseTable_length").before(contentToAdd);
 
             $('#testCaseList #createTestCaseButton').click(data, function () {
+                var entryValue = $("th[data-column-index='2'][tabindex='0']").text();
+                entryValue = entryValue.replace(/\s/g, '');
                 // Getting the Test from the 1st row of the testcase table.
-                if ($("#testCaseTable td.sorting_1")[0] !== undefined) {
+                if ($("#testCaseTable td.sorting_1")[0] !== undefined && (entryValue == "Test")) {
                     var firstRowTest = $("#testCaseTable td.sorting_1")[0].textContent;
 //                    addTestCaseClick(firstRowTest);
                     openModalTestCase(firstRowTest, undefined, "ADD");
