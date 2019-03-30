@@ -39,6 +39,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.tika.mime.MimeType;
 import org.apache.tika.mime.MimeTypeException;
 import org.apache.tika.mime.MimeTypes;
+import org.cerberus.crud.service.IParameterService;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.Session;
 import org.cerberus.enums.MessageEventEnum;
@@ -46,6 +47,7 @@ import org.cerberus.service.sikuli.ISikuliService;
 import org.cerberus.util.answer.AnswerItem;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -55,6 +57,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class SikuliService implements ISikuliService {
 
+    @Autowired
+    private IParameterService parameterService;
+    
     private static final Logger LOG = LogManager.getLogger(SikuliService.class);
 
     /**
@@ -118,6 +123,7 @@ public class SikuliService implements ISikuliService {
         result.put("text", text);
         result.put("defaultWait", defaultWait);
         result.put("pictureExtension", extension);
+//        result.put("minSimilarity", parameterService.getParameterStringByKey("cerberus_sikuli_minSimilarity", "", null));
         return result;
     }
 
