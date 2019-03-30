@@ -239,9 +239,7 @@ function displayWarningOnChangeTestCaseKey(test, testCase) {
     let old2 = $("#originalTestCase").val();
     let new1 = $('#editTestCaseModalForm select[name="test"]').val();
     let new2 = $('#editTestCaseModalForm input[name="testCase"]').val();
-    console.info("Diff : " + test + " | " + testCase);
-    console.info("Diff : " + old1 + " | " + new1);
-    console.info("Diff : " + old2 + " | " + new2);
+
     if ((old1 !== new1) || (old2 !== new2)) {
         var localMessage = new Message("WARNING", "If you rename that test case, it will loose the corresponding execution historic.");
         showMessage(localMessage, $('#editTestCaseModal'));
@@ -340,7 +338,6 @@ function feedTestCaseField(test, modalForm) {
         trigNewTestCase = false;
         let old1 = $("#originalTest").val();
         let new1 = $('#editTestCaseModalForm select[name="test"]').val();
-//        console.info(" Value : " + old1 + " --> " + new1);
         if (test !== new1) {
             test = new1;
             trigNewTestCase = true;
@@ -395,23 +392,29 @@ function confirmTestCaseModalHandler(mode) {
     
     var testElement = formEdit.find("#test");
     var testElementInvalid = testElement.prop("value").search("&");
-    
+    var testIdElement = formEdit.find("#testCase");
+    var testIdElementInvalid = testIdElement.prop("value").search("&");
+    console.log(testIdElementInvalid);
     if (nameElementEmpty) {
         var localMessage = new Message("danger", "Please specify the name of the application!");
         nameElement.parents("div.form-group").addClass("has-error");
         showMessage(localMessage, $('#editTestCaseModal'));
     } else if(testElementInvalid != -1) { 
     	var localMessage = new Message("danger", "The test name cannot contains the symbol : &");
-    	// only the Test label will be put in red
+               // only the Test label will be put in red
     	testElement.parents("div.form-group").addClass("has-error");
         showMessage(localMessage, $('#editTestCaseModal'));
-    }
-    else {
+    }else if(testIdElementInvalid != -1){
+        var localMessage = new Message("danger", "The testcase id name cannot contains the symbol : &");
+    	// only the TestId label will be put in red
+    	testIdElement.parents("div.form-group").addClass("has-error");
+              showMessage(localMessage, $('#editTestCaseModal'));
+    }else {
         nameElement.parents("div.form-group").removeClass("has-error");
     }
 
     // verify if all mandatory fields are not empty and valid
-    if (nameElementEmpty || testElementInvalid != -1)
+    if (nameElementEmpty || testElementInvalid != -1 || testIdElementInvalid != -1)
         return;
 
     tinyMCE.triggerSave();
