@@ -1766,9 +1766,14 @@ Step.prototype.draw = function () {
     	loopIcon = $("<span class='loopIcon'></span>").addClass("glyphicon glyphicon-refresh loop-Icon");
     }
     
-    if (this.inLibrary ==  "Y" || this.useStep == "Y"){
+    if (this.inLibrary ==  "Y"){
     	libraryIcon = $("<span class='libraryIcon'></span>").addClass("glyphicon glyphicon-book library-Icon");
     }
+    
+    if(this.useStep == "Y"){
+    	libraryIcon = $("<span class='libraryIcon'></span>").addClass("glyphicon glyphicon-lock library-Icon");
+    }
+    
     drag.on("dragstart", handleDragStart);
     drag.on("dragenter", handleDragEnter);
     drag.on("dragover", handleDragOver);
