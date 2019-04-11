@@ -392,29 +392,40 @@ function confirmTestCaseModalHandler(mode) {
     
     var testElement = formEdit.find("#test");
     var testElementInvalid = testElement.prop("value").search("&");
+    var testElementEmpty = testElement.prop("value") === '';
+    
     var testIdElement = formEdit.find("#testCase");
     var testIdElementInvalid = testIdElement.prop("value").search("&");
-    console.log(testIdElementInvalid);
+    var testIdElementEmpty = testIdElement.prop("value") === '';
+    	
     if (nameElementEmpty) {
         var localMessage = new Message("danger", "Please specify the name of the application!");
         nameElement.parents("div.form-group").addClass("has-error");
         showMessage(localMessage, $('#editTestCaseModal'));
     } else if(testElementInvalid != -1) { 
     	var localMessage = new Message("danger", "The test name cannot contains the symbol : &");
-               // only the Test label will be put in red
+        // only the Test label will be put in red
     	testElement.parents("div.form-group").addClass("has-error");
         showMessage(localMessage, $('#editTestCaseModal'));
     }else if(testIdElementInvalid != -1){
         var localMessage = new Message("danger", "The testcase id name cannot contains the symbol : &");
     	// only the TestId label will be put in red
     	testIdElement.parents("div.form-group").addClass("has-error");
-              showMessage(localMessage, $('#editTestCaseModal'));
-    }else {
+        showMessage(localMessage, $('#editTestCaseModal'));
+    }else if(testElementEmpty){
+    	var localMessage = new Message("danger", "Please specify the name of the test!");
+        testElement.parents("div.form-group").addClass("has-error");
+        showMessage(localMessage, $('#editTestCaseModal'));
+    }else if(testIdElementEmpty){
+    	var localMessage = new Message("danger", "Please specify the name of the Testcase Id!");
+        testIdElement.parents("div.form-group").addClass("has-error");
+        showMessage(localMessage, $('#editTestCaseModal'));
+    }else{
         nameElement.parents("div.form-group").removeClass("has-error");
     }
 
     // verify if all mandatory fields are not empty and valid
-    if (nameElementEmpty || testElementInvalid != -1 || testIdElementInvalid != -1)
+    if (nameElementEmpty || testElementInvalid != -1 || testIdElementInvalid != -1 || testElementEmpty || testIdElementEmpty)
         return;
 
     tinyMCE.triggerSave();
