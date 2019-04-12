@@ -332,11 +332,14 @@ public class SeleniumServerService implements ISeleniumServerService {
                  */
                 String targetScreensize = getScreenSizeToUse(tCExecution.getTestCaseObj().getScreenSize(), tCExecution.getScreenSize());
                 LOG.debug("Selenium resolution : " + targetScreensize);
-                if ((!StringUtil.isNullOrEmpty(targetScreensize)) && targetScreensize.contains("*")) {
-                    Integer screenWidth = Integer.valueOf(targetScreensize.split("\\*")[0]);
-                    Integer screenLength = Integer.valueOf(targetScreensize.split("\\*")[1]);
-                    setScreenSize(driver, screenWidth, screenLength);
-                    LOG.debug("Selenium resolution Activated : " + screenWidth + "*" + screenLength);
+                
+                if(!tCExecution.getBrowser().equalsIgnoreCase("chrome")) {
+	                if ((!StringUtil.isNullOrEmpty(targetScreensize)) && targetScreensize.contains("*")) {
+	                    Integer screenWidth = Integer.valueOf(targetScreensize.split("\\*")[0]);
+	                    Integer screenLength = Integer.valueOf(targetScreensize.split("\\*")[1]);
+	                    setScreenSize(driver, screenWidth, screenLength);
+	                    LOG.debug("Selenium resolution Activated : " + screenWidth + "*" + screenLength);
+	                }
                 }
                 tCExecution.setScreenSize(getScreenSize(driver));
                 tCExecution.setRobotDecli(tCExecution.getRobotDecli().replace("%SCREENSIZE%", tCExecution.getScreenSize()));
@@ -584,7 +587,19 @@ public class SeleniumServerService implements ISeleniumServerService {
                  */
                 ChromeOptions options = new ChromeOptions();
                 // Maximize windows for chrome browser
+               
+                String targetScreensize = getScreenSizeToUse(tCExecution.getTestCaseObj().getScreenSize(), tCExecution.getScreenSize());
+              
+                if ((!StringUtil.isNullOrEmpty(targetScreensize)) && targetScreensize.contains("*")) {
+                  Integer screenWidth = Integer.valueOf(targetScreensize.split("\\*")[0]);
+                  Integer screenLength = Integer.valueOf(targetScreensize.split("\\*")[1]);
+                  String sizeOpts = "--window-size=" + screenWidth + "," + screenLength;
+                  options.addArguments(sizeOpts);
+                  LOG.debug("Selenium resolution Activated : " + screenWidth + "*" + screenLength);
+              
+                }
                 options.addArguments("start-maximized");
+                options.addArguments("--headless");               
                 // Set UserAgent if necessary
                 String usedUserAgent = getUserAgentToUse(tCExecution.getTestCaseObj().getUserAgent(), tCExecution.getUserAgent());
                 if (!StringUtil.isNullOrEmpty(usedUserAgent)) {
