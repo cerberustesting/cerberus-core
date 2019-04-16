@@ -17,6 +17,8 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
+var nbRow = 0;
+
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
         initPage();
@@ -138,9 +140,9 @@ function renderOptionsForApplicationObject(id, data) {
 
 function deleteEntryHandlerClick() {
     var idApplication = $('#confirmationModal').find('#hiddenField1').prop("value");
-    
-    
-   
+
+
+
     var jqxhr = $.post("DeleteApplication", {application: idApplication}, "json");
     $.when(jqxhr).then(function (data) {
         var messageType = getAlertType(data.messageType);
@@ -359,6 +361,7 @@ function loadEnvironmentTable(selectSystem, selectApplication) {
 }
 
 function appendEnvironmentRow(env) {
+    nbRow++;
     var doc = new Doc();
     var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
     var selectEnvironment = getSelectInvariant("ENVIRONMENT", false);
@@ -378,16 +381,38 @@ function appendEnvironmentRow(env) {
     var table = $("#environmentTableBody");
 
     var row = $("<tr></tr>");
-    var deleteBtnRow = $("<td></td>").append(deleteBtn);
-    var environment = $("<td></td>").append(selectEnvironment.val(env.environment));
-    var country = $("<td></td>").append(selectCountry.val(env.country));
 
-    var ipName = $("<td></td>").append(ipInput).append(urlLoginInput);
-    var urlName = $("<td></td>").append(urlInput).append(domainInput);
-    var var1Name = $("<td></td>").append(var1Input).append(var2Input);
-    var var3Name = $("<td></td>").append(var3Input).append(var4Input);
-    var poolSize = $("<td></td>").append(poolSizeInput);
-    var mobileData = $("<td></td>").append(mobileActivity).append(mobilePackage);
+    var td1 = $("<td></td>").append(deleteBtn);
+
+    var environment = $("<div class='form-group col-sm-12'></div>").append("<label for='name'>" + doc.getDocOnline("invariant", "ENVIRONMENT") + "</label>").append(selectEnvironment.val(env.environment));
+    var drow01 = $("<div class='row'></div>").append(environment);
+    var country = $("<div class='form-group col-sm-12'></div>").append("<label for='name'>" + doc.getDocOnline("invariant", "COUNTRY") + "</label>").append(selectCountry.val(env.country));
+    var drow02 = $("<div class='row'></div>").append(country);
+    var td2 = $("<td></td>").append(drow01).append(drow02);
+
+    var ipName = $("<div class='form-group col-sm-6'></div>").append("<label for='ip'>" + doc.getDocOnline("countryenvironmentparameters", "IP") + "</label>").append(ipInput);
+    var urlName = $("<div class='form-group col-sm-4'></div>").append("<label for='url'>" + doc.getDocOnline("countryenvironmentparameters", "URL") + "</label>").append(urlInput);
+    var poolSizeName = $("<div class='form-group col-sm-1'></div>").append("<label for='poolSize'>" + doc.getDocOnline("countryenvironmentparameters", "poolSize") + "</label>").append(poolSizeInput);
+    var expandName = $("<div class='form-group col-sm-1'></div>").append("<button class='btn btn-primary' type='button' data-toggle='collapse' data-target='#col" + nbRow + "' aria-expanded='false' aria-controls='col" + nbRow + "'><span class='glyphicon glyphicon-chevron-down'></span></button>");
+    var drow1 = $("<div class='row'></div>").append(ipName).append(urlName).append(poolSizeName).append(expandName);
+
+    var loginName = $("<div class='form-group col-sm-6'></div>").append("<label for='login'>" + doc.getDocOnline("countryenvironmentparameters", "URLLOGIN") + "</label>").append(urlLoginInput);
+    var domainName = $("<div class='form-group col-sm-6'></div>").append("<label for='domain'>" + doc.getDocOnline("countryenvironmentparameters", "domain") + "</label>").append(domainInput);
+    var drow2 = $("<div class='row'></div>").append(loginName).append(domainName);
+
+    var var1Name = $("<div class='form-group col-sm-3'></div>").append("<label for='var1'>" + doc.getDocOnline("countryenvironmentparameters", "Var1") + "</label>").append(var1Input);
+    var var2Name = $("<div class='form-group col-sm-3'></div>").append("<label for='var2'>" + doc.getDocOnline("countryenvironmentparameters", "Var2") + "</label>").append(var2Input);
+    var var3Name = $("<div class='form-group col-sm-3'></div>").append("<label for='var3'>" + doc.getDocOnline("countryenvironmentparameters", "Var3") + "</label>").append(var3Input);
+    var var4Name = $("<div class='form-group col-sm-3'></div>").append("<label for='var4'>" + doc.getDocOnline("countryenvironmentparameters", "Var4") + "</label>").append(var4Input);
+    var drow3 = $("<div class='row'></div>").append(var1Name).append(var2Name).append(var3Name).append(var4Name);
+
+    var mobileActivityName = $("<div class='form-group col-sm-3'></div>").append("<label for='var4'>" + doc.getDocOnline("countryenvironmentparameters", "mobileActivity") + "</label>").append(mobileActivity);
+    var mobilePackageName = $("<div class='form-group col-sm-3'></div>").append("<label for='var4'>" + doc.getDocOnline("countryenvironmentparameters", "mobilePackage") + "</label>").append(mobilePackage);
+    var drow4 = $("<div class='row'></div>").append(mobileActivityName).append(mobilePackageName);
+
+    var panelExtra = $("<div class='collapse' id='col" + nbRow + "'></div>").append(drow2).append(drow3).append(drow4);
+
+    var td3 = $("<td></td>").append(drow1).append(panelExtra);
 
     deleteBtn.click(function () {
         env.toDelete = (env.toDelete) ? false : true;
@@ -436,15 +461,10 @@ function appendEnvironmentRow(env) {
     mobilePackage.change(function () {
         env.mobilePackage = $(this).val();
     });
-    row.append(deleteBtnRow);
-    row.append(environment);
-    row.append(country);
-    row.append(ipName);
-    row.append(urlName);
-    row.append(var1Name);
-    row.append(var3Name);
-    row.append(poolSize);
-    row.append(mobileData);
+    row.append(td1);
+    row.append(td2);
+    row.append(td3);
+    
     env.environment = selectEnvironment.prop("value"); // Value that has been requested by dtb parameter may not exist in combo vlaues so we take the real selected value.
     env.country = selectCountry.prop("value"); // Value that has been requested by dtb parameter may not exist in combo vlaues so we take the real selected value.
     row.data("environment", env);
@@ -464,8 +484,8 @@ function addNewEnvironmentRow() {
         var3: "",
         var4: "",
         poolSize: "",
-        mobileActivity : "",
-        mobilePackage : "",
+        mobileActivity: "",
+        mobilePackage: "",
         toDelete: false
     };
     appendEnvironmentRow(newEnvironment);
@@ -517,7 +537,7 @@ function aoColumnsFunc(tableId) {
             "sWidth": "60px",
             "title": doc.getDocOnline("application", "Application")},
         {"data": "description",
-            "like":true,
+            "like": true,
             "sName": "description",
             "sWidth": "80px",
             "title": doc.getDocOnline("application", "Description")},
@@ -546,7 +566,7 @@ function aoColumnsFunc(tableId) {
             }
         },
         {"data": "bugTrackerUrl",
-        	"like":true,
+            "like": true,
             "sName": "bugTrackerUrl",
             "sWidth": "80px",
             "title": doc.getDocOnline("application", "bugtrackerurl"),
@@ -555,7 +575,7 @@ function aoColumnsFunc(tableId) {
             }
         },
         {"data": "bugTrackerNewUrl",
-        	"like":true,
+            "like": true,
             "sName": "bugTrackerNewUrl",
             "sWidth": "80px",
             "title": doc.getDocOnline("application", "bugtrackernewurl"),
@@ -594,7 +614,7 @@ function aoColumnsFunc_object(tableId) {
             "sName": "usrcreated",
             "title": doc.getDocOnline("transversal", "UsrCreated")},
         {"data": "datecreated",
-            "like":true,
+            "like": true,
             "sName": "datecreated",
             "title": doc.getDocOnline("transversal", "DateCreated")},
         {"data": "usrmodif",
@@ -602,7 +622,7 @@ function aoColumnsFunc_object(tableId) {
             "title": doc.getDocOnline("transversal", "UsrModif")
         },
         {"data": "datemodif",
-        	"like":true,
+            "like": true,
             "sName": "datemodif",
             "title": doc.getDocOnline("transversal", "DateModif")
         }

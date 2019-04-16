@@ -535,6 +535,7 @@ function appendExecutorRow(tableBody, executor) {
 
 
     var row = $("<tr></tr>");
+    
     var td1 = $("<td></td>").append(deleteBtn);
 
     var name = $("<div class='form-group col-sm-12'></div>").append("<label for='name'>" + doc.getDocOnline("robotexecutor", "executor") + "</label>").append(nameInput);
@@ -556,6 +557,7 @@ function appendExecutorRow(tableBody, executor) {
     var drow3 = $("<div class='row'></div>").append(hostuser).append(hostpass);
     var drow4 = $("<div class='row'></div>").append(dudid).append(dname).append(dport).append(dLockUnlock);
     var td3 = $("<td></td>").append(drow1).append(drow2).append(drow3).append(drow4);
+    
     deleteBtn.click(function () {
         executor.toDelete = (executor.toDelete) ? false : true;
         if (executor.toDelete) {
