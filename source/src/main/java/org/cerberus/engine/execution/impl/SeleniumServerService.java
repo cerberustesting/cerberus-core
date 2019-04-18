@@ -333,7 +333,7 @@ public class SeleniumServerService implements ISeleniumServerService {
                 String targetScreensize = getScreenSizeToUse(tCExecution.getTestCaseObj().getScreenSize(), tCExecution.getScreenSize());
                 LOG.debug("Selenium resolution : " + targetScreensize);
                 
-                if(!tCExecution.getBrowser().equalsIgnoreCase("chrome")) {
+                if(!tCExecution.getBrowser().equalsIgnoreCase(BrowserType.CHROME)) {
 	                if ((!StringUtil.isNullOrEmpty(targetScreensize)) && targetScreensize.contains("*")) {
 	                    Integer screenWidth = Integer.valueOf(targetScreensize.split("\\*")[0]);
 	                    Integer screenLength = Integer.valueOf(targetScreensize.split("\\*")[1]);
