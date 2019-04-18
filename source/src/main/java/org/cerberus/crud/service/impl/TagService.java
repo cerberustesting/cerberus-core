@@ -134,14 +134,13 @@ public class TagService implements ITagService {
             mytag.setDateEndQueue(new Timestamp(new Date().getTime()));
 
             // All the rest of the data are coming from ResultCI Servlet.
-            JSONObject jsonResponse = ciService.getCIResult(tag);
+            JSONObject jsonResponse = ciService.getCIResult(tag, mytag.getCampaign());
             mytag.setCiScore(jsonResponse.getInt("CI_finalResult"));
             mytag.setCiScoreThreshold(jsonResponse.getInt("CI_finalResultThreshold"));
 
             if (jsonResponse.getString("result").equalsIgnoreCase("PE")) {
                 // If result is PE that probably means that another execution was manually inserted in the queue or started after the end of last execution. It should not be considered.
-                mytag.setCiResult(ciService.getFinalResult(jsonResponse.getInt("CI_finalResult"), jsonResponse.getInt("CI_finalResultThreshold"),
-                        jsonResponse.getInt("TOTAL_nbOfExecution"), jsonResponse.getInt("status_OK_nbOfExecution")));
+                mytag.setCiResult(ciService.getFinalResult(jsonResponse.getInt("CI_finalResult"), jsonResponse.getInt("CI_finalResultThreshold"), jsonResponse.getInt("TOTAL_nbOfExecution"), jsonResponse.getInt("status_OK_nbOfExecution")));
             } else {
                 mytag.setCiResult(jsonResponse.getString("result"));
             }

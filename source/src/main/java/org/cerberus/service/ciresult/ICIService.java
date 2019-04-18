@@ -30,11 +30,18 @@ public interface ICIService {
     /**
      *
      * @param tag
+     * @param campaign
      * @return
      */
-    JSONObject getCIResult(String tag);
+    JSONObject getCIResult(String tag, String campaign);
 
-    JSONObject getCIResultV004(String tag);
-
+    /**
+     *
+     * @param resultCal
+     * @param resultCalThreshold
+     * @param nbtotal
+     * @param nbok
+     * @return
+     */
     String getFinalResult(int resultCal, int resultCalThreshold, int nbtotal, int nbok);
 }

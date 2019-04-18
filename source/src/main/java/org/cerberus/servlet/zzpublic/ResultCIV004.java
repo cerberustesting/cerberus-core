@@ -121,7 +121,7 @@ public class ResultCIV004 extends HttpServlet {
             if (!error) {
 
                 ICIService ciService = appContext.getBean(ICIService.class);
-                jsonResponse = ciService.getCIResultV004(tag);
+                jsonResponse = ciService.getCIResult(tag, null);
 
                 // Log the result with calculation detail.
                 logEventService.createForPublicCalls("/ResultCIV004", "CALLRESULT", "ResultCIV004 calculated for tag " + tag + " result [" + jsonResponse.getString("result") + "]", request);

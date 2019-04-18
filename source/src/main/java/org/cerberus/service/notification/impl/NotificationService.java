@@ -233,7 +233,7 @@ public class NotificationService implements INotificationService {
                     && (myCampaign.getSlackNotifyEndTagExecution().equalsIgnoreCase(Campaign.NOTIFYSTARTTAGEXECUTION_Y) || myCampaign.getSlackNotifyEndTagExecution().equalsIgnoreCase(Campaign.NOTIFYSTARTTAGEXECUTION_CIKO)))) {
 
                 JSONObject jsonCIStatus = new JSONObject();
-                jsonCIStatus = ciService.getCIResult(tag);
+                jsonCIStatus = ciService.getCIResult(tag, campaign);
 
                 // EMail Notification.
                 if ((!StringUtil.isNullOrEmpty(distribList))
