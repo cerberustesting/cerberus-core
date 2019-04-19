@@ -3712,6 +3712,20 @@ function setPlaceholderProperty(propertyElement, property) {
                 "period": null
             },
             {
+                "type": "getElementPosition",
+                "value1": "Récupérer la position en Pixel d'un élement (use id=/xpath=/etc syntax - return \"px;py\")",
+                "value1Class": "col-sm-8",
+                "value1EditorMode": "ace/mode/cerberus",
+                "value2": null,
+                "database": null,
+                "length": null,
+                "cacheExpire": "[opt] cache Expire (s)",
+                "rowLimit": null,
+                "nature": null,
+                "retry": null,
+                "period": null
+            },
+            {
                 "type": "executeSoapFromLib",
                 "value1": "Service lib name",
                 "value1Class": "col-sm-8",
@@ -3934,6 +3948,20 @@ function setPlaceholderProperty(propertyElement, property) {
                 "retry": null,
                 "period": null,
                 "rank": "Rank"
+            },
+            {
+                "type": "getElementPosition",
+                "value1": "Get an element pixel position (use id=/xpath=/etc syntax - return \"px;py\")",
+                "value1Class": "col-sm-8",
+                "value1EditorMode": "ace/mode/cerberus",
+                "value2": null,
+                "database": null,
+                "length": null,
+                "cacheExpire": "[opt] cache Expire (s)",
+                "rowLimit": null,
+                "nature": null,
+                "retry": null,
+                "period": null
             },
             {
                 "type": "executeSoapFromLib",

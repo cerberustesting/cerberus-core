@@ -728,7 +728,9 @@ public class PropertyService implements IPropertyService {
                         case TestCaseCountryProperties.TYPE_GETFROMCOMMAND:
                             testCaseExecutionData = this.property_getFromCommand(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
                             break;
-
+                        case TestCaseCountryProperties.TYPE_GETELEMENTPOSITION:
+                            testCaseExecutionData = this.property_getElementPosition(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
+                            break;
                         // DEPRECATED Property types.
                         case TestCaseCountryProperties.TYPE_EXECUTESOAPFROMLIB: // DEPRECATED
                             testCaseExecutionData = this.property_executeSoapFromLib(testCaseExecutionData, tCExecution, testCaseStepActionExecution, testCaseCountryProperty, forceRecalculation);
@@ -858,6 +860,44 @@ public class PropertyService implements IPropertyService {
         } catch (Exception e) {
             LOG.debug("Exception Running Command Script :" + e.getMessage());
             testCaseExecutionData.setPropertyResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMCOMMAND_EXCEPTION).resolveDescription("REASON", e.getMessage()));
+        }
+
+        return testCaseExecutionData;
+    }
+
+
+    private TestCaseExecutionData property_getElementPosition(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty, boolean forceRecalculation) {
+        // Check if script has been correctly defined
+        String script = testCaseExecutionData.getValue1();
+        if (script == null || script.isEmpty()) {
+            testCaseExecutionData.setPropertyResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETELEMENTPOSITION_NULL));
+            return testCaseExecutionData;
+        }
+
+        try {
+            Identifier identifier = new Identifier();
+            if (script != null) {
+                identifier = identifierService.convertStringToIdentifier(script);
+            }
+
+            if (tCExecution.getApplicationObj().getType().equals(Application.TYPE_APK)) {
+                String message = androidAppiumService.getElementPosition(tCExecution.getSession(), identifier);
+
+                String value = "";
+                if (!StringUtil.isNullOrEmpty(message)) {
+                    value = message;
+                }
+                testCaseExecutionData.setValue(value);
+                testCaseExecutionData.setPropertyResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETELEMENTPOSITION)
+                        .resolveDescription("VALUE", value));
+            } else {
+                MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_FEATURENOTSUPPORTED);
+                res.setDescription(res.getDescription().replace("%APPTYPE%", tCExecution.getApplicationObj().getType()));
+                res.setDescription(res.getDescription().replace("%PROPTYPE%", testCaseExecutionData.getType()));
+            }
+        } catch (Exception e) {
+            LOG.debug("Exception Running Command Script :" + e.getMessage());
+            testCaseExecutionData.setPropertyResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETELEMENTPOSITION_EXCEPTION).resolveDescription("REASON", e.getMessage()));
         }
 
         return testCaseExecutionData;

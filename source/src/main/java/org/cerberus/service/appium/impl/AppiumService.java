@@ -37,18 +37,14 @@ import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.service.appium.IAppiumService;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Dimension;
+import org.openqa.selenium.*;
 import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.TimeoutException;
-import org.openqa.selenium.WebDriverException;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.geom.Line2D;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import org.cerberus.engine.entity.SwipeAction.Direction;
@@ -387,4 +383,13 @@ public abstract class AppiumService implements IAppiumService {
     }
 
     public abstract String executeCommandString(Session session, String cmd, String args) throws IllegalArgumentException;
+
+    public String getElementPosition(Session session, Identifier identifier) {
+        AppiumDriver driver = session.getAppiumDriver();
+
+        MobileElement element = (MobileElement) driver.findElement(this.getBy(identifier));
+        Point location = element.getLocation();
+
+        return location.getX() + ";" + location.getY();
+    }
 }
