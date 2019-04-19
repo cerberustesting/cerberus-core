@@ -1,4 +1,3 @@
-#!/bin/bash
 # Cerberus Copyright (C) 2016 Cerberus Testing
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 #
@@ -16,17 +15,27 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Cerberus. If not, see <http://www.gnu.org/licenses/>.
+# Cerberus Glassfish MySQL composition.
 
-# Cerberus Glassfish configuration
+version: '3'
+services:
+  database:
+    image: cerberustesting/cerberus-db-mysql:latest
+    expose:
+      - "3306"
+    volumes:
+      - ./localdata/mysql-db:/var/lib/mysql
+    restart: always
+  cerberus:
+    image: cerberustesting/cerberus-as-tomcat:latest
+    environment:
+      - DATABASE_HOST=database
+      - DATABASE_PORT=3306
+    ports:
+      - 8080:8080
+    restart: always
+    depends_on:
+      - database
+    links:
+      - database
 
-
-# test add realm
-
-
-# export CATALINA_OPTS="$CATALINA_OPTS -DDATABASE_HOST=$DATABASE_HOST -DDATABASE_PORT=$DATABASE_PORT -DDATABASE_NAME=$DATABASE_NAME -DDATABASE_USER=$DATABASE_USER -DDATABASE_PASSWORD=$DATABASE_PASSWORD"
-
-export CATALINA_OPTS="$CATALINA_OPTS -DDATABASE_HOST=$DATABASE_HOST -DDATABASE_PORT=$DATABASE_PORT -DDATABASE_NAME=$DATABASE_NAME -DDATABASE_USER=$DATABASE_USER -DDATABASE_PASSWORD=$DATABASE_PASSWORD"
-
-/usr/local/tomcat/bin/catalina.sh start
-
-tail -F /usr/local/tomcat/logs/catalina.out

@@ -1,0 +1,2 @@
+    <login-config>         <auth-method>BASIC</auth-method>         <realm-name>Enable this in order to activate KeyCloak</realm-name>     </login-config> </web-app>
+    <login-config>         <auth-method>BASIC</auth-method>         <realm-name>Enable this in order to activate KeyCloak</realm-name>     </login-config> </web-app>

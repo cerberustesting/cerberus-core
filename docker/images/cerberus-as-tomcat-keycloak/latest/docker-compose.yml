@@ -43,10 +43,10 @@ services:
     image: cerberustesting/cerberus-db-mysql:latest
     expose:
       - "3306"
-#    ports:
-#      - "13306:3306"
+    ports:
+      - "13315:3306"
     volumes:
-      - ./localdata/mysql-db:/var/lib/mysql
+      - ./localdata/mysql-db2:/var/lib/mysql
 #      - /etc/localtime:/etc/localtime:ro
     restart: always
   cerberus-as-tomcat:
