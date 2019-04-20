@@ -40,7 +40,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
     public void init() {
         LOG.info("Starting to Refresh documentation table");
         for (String currentRequest : this.getSqlDocumentation()) {
-           //this.exeSQL(currentRequest);
+            this.exeSQL(currentRequest);
         }
     }
 
@@ -193,6 +193,10 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('buildrevisionparameters','TicketIDFixed','','fr','ID du Ticket associé','ID du ticket dont la release est associée.','_contenu_des_builds')");
         b.append(",('campaign','campaign','','en','Campaign Name','','')");
         b.append(",('campaign','campaign','','fr','Nom de la Campagne','','')");
+        b.append(",('campaign','CIScoreThreshold','','en','CI Score Threshold','Maximum score above which the result of the tag is KO. You can leave this value empty so that global parameter will be used.','')");
+        b.append(",('campaign','CIScoreThreshold','','fr','Seuil du Score CI','Score maximum au dela duquel le resultat est KO. Si vide, le parametre global sera utilisé.','')");
+        b.append(",('campaign','longDescription','','en','Long Description','','')");
+        b.append(",('campaign','longDescription','','fr','Description longue','','')");
         b.append(",('campaign','tag','','en','Tag','Tag that will be used when running the campaign. The variables %TIMESTAMP% and %USER% can be used.','')");
         b.append(",('campaign','tag','','fr','Tag','Tag qui sera utilisé au moment de l\\'execution de la campagne. Les variables %TIMESTAMP% et %USER% peuvent être utilisées.','')");
         b.append(",('countryenvdeploytype','JenkinsAgent','','en','Jenkins Agent','','_deploy_type')");

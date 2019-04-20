@@ -381,6 +381,6 @@ include::include/en/{file-to-include}[]
 :file-to-include: changelog_3.11_en.adoc
 include::include/en/{file-to-include}[]
  
-=== 3.12
-:file-to-include: changelog_3.12_en.adoc
+=== 4.0
+:file-to-include: changelog_4.0_en.adoc
 include::include/en/{file-to-include}[]

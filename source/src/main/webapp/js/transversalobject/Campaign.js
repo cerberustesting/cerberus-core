@@ -17,6 +17,10 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
+tinymce.init({
+    selector: ".wysiwyg"
+});
+
 
 function renderOptionsForCampaign_Label(tableId) {
     var doc = new Doc();
@@ -304,9 +308,12 @@ function editEntryClick(param) {
         formEdit.find("#channel").val(obj["SlackChannel"]);
         formEdit.find("#cIScoreThreshold").val(obj["CIScoreThreshold"]);
         formEdit.find("#description").prop("value", obj["description"]);
-        formEdit.find("#longDescription").prop("value", obj["longDescription"]);
-        formEdit.find("#id").prop("value", obj["campaignID"]);
+        if (tinyMCE.get('longDescription') != null)
+            tinyMCE.get('longDescription').setContent(obj["longDescription"]);
         
+//        formEdit.find("#longDescription").prop("value", obj["longDescription"]);
+        formEdit.find("#id").prop("value", obj["campaignID"]);
+
         formEdit.find("#tag").prop("value", obj["Tag"]);
         formEdit.find("#verbose").prop("value", obj["Verbose"]);
         formEdit.find("#screenshot").prop("value", obj["Screenshot"]);
@@ -317,7 +324,7 @@ function editEntryClick(param) {
         formEdit.find("#timeout").prop("value", obj["Timeout"]);
         formEdit.find("#priority").prop("value", obj["Priority"]);
         formEdit.find("#manualExecution").prop("value", obj["ManualExecution"]);
-        
+
         formEdit.find("#usrcreated").prop("value", obj["UsrCreated"]);
         formEdit.find("#datecreated").prop("value", getDate(obj["DateCreated"]));
         formEdit.find("#usrmodif").prop("value", obj["UsrModif"]);
@@ -406,6 +413,7 @@ function editEntryClick(param) {
 function editEntryModalSaveHandler() {
     clearResponseMessage($('#editTestcampaignModal'));
     var formEdit = $('#editTestcampaignModal #editTestcampaignModalForm');
+        tinyMCE.triggerSave();
 
     var sa = formEdit.serializeArray();
     var data = {}
@@ -431,7 +439,7 @@ function editEntryModalSaveHandler() {
         }
     }
 
-    // Get the header data from the form.
+// Get the header data from the form.
     //var data = convertSerialToJSONObject(formEdit.serialize());
 
     showLoaderInModal('#editTestcampaignModal');
@@ -492,14 +500,14 @@ function editEntryModalCloseHandler() {
 
 function addEntryClick() {
     clearResponseMessageMainPage();
-    
+
     $('#editTestcampaignButton').attr('class', '');
     $('#editTestcampaignButton').attr('hidden', 'hidden');
     $('#addTestcampaignButton').attr('class', 'btn btn-primary');
     $('#addTestcampaignButton').removeAttr('hidden');
-    
+
     $("#editTestcampaignModal #campaign").empty();
-    
+
     $("#editTestcampaignModal #campaign").removeAttr("readonly");
 
     // LABEL

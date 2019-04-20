@@ -93,6 +93,9 @@ function displayPageLabel() {
     $("[name='campaignField']").html(doc.getDocLabel("page_testcampaign", "campaign_field"));
     $("[name='tagField']").html(doc.getDocOnline("campaign", "tag"));
     
+    $("[name='cIScoreThresholdField']").html(doc.getDocOnline("campaign", "CIScoreThreshold"));
+    $("[name='longDescriptionField']").html(doc.getDocOnline("campaign", "longDescription"));
+    
     $("[name='descriptionField']").html(doc.getDocOnline("page_testcampaign", "description_field"));
     $("[name='tabDescription']").html(doc.getDocLabel("page_testcampaign", "description_tab"));
     $("[name='tabLabels']").html(doc.getDocLabel("label", "label"));
