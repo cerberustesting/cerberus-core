@@ -79,7 +79,7 @@
          APR (HTTP/AJP) Connector: /docs/apr.html
          Define a non-SSL/TLS HTTP/1.1 Connector on port 8080
     -->
-    <Connector port="8180" protocol="HTTP/1.1"
+    <Connector port="8080" protocol="HTTP/1.1"
                connectionTimeout="20000"
                redirectPort="8443" />
     <!-- A "Connector" using the shared thread pool-->
@@ -150,14 +150,17 @@
       <!-- Use the LockOutRealm to prevent attempts to guess user passwords
            via a brute-force attack -->
 
-      <Realm className="org.apache.catalina.realm.LockOutRealm">
-        <!-- This Realm uses the UserDatabase configured in the global JNDI
-             resources under the key "UserDatabase".  Any edits
-             that are performed against this UserDatabase are immediately
-             available for use by the Realm.  -->
-        <Realm className="org.apache.catalina.realm.UserDatabaseRealm"
-               resourceName="UserDatabase"/>
+      <Realm className="org.apache.catalina.realm.JDBCRealm"
+             driverName="com.mysql.jdbc.Driver"
+             connectionURL="jdbc:mysql://${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}?user=${DATABASE_USER}&amp;password=${DATABASE_PASSWORD}"
+             userTable="user"
+             userNameCol="Login"
+             userCredCol="Password"
+             userRoleTable="usergroup"
+             roleNameCol="GroupName">
+        <CredentialHandler className="org.apache.catalina.realm.MessageDigestCredentialHandler" algorithm="SHA-1" />
       </Realm>
+
 
       <Host name="localhost"  appBase="webapps"
             unpackWARs="true" autoDeploy="true">
