@@ -1828,21 +1828,22 @@ function displayGlobalLabel(doc) {
  */
 function displayFooter(doc) {
     var cerberusInformation = getCerberusInformation();
+    if (cerberusInformation != null) {
+        var footerString = doc.getDocLabel("page_global", "footer_text");
+        var footerBugString = doc.getDocLabel("page_global", "footer_bug");
+        var date = new Date();
+        var loadTime = window.performance.timing.domContentLoadedEventEnd - window.performance.timing.navigationStart;
 
-    var footerString = doc.getDocLabel("page_global", "footer_text");
-    var footerBugString = doc.getDocLabel("page_global", "footer_bug");
-    var date = new Date();
-    var loadTime = window.performance.timing.domContentLoadedEventEnd - window.performance.timing.navigationStart;
+        footerString = footerString.replace("%VERSION%", cerberusInformation.projectName + cerberusInformation.projectVersion + "-" + cerberusInformation.databaseCerberusTargetVersion);
+        footerString = footerString.replace("%ENV%", cerberusInformation.environment);
+        footerString = footerString.replace("%DATE%", date.toISOString());
+        footerString = footerString.replace("%TIMING%", loadTime);
+        footerBugString = footerBugString.replace("%LINK%", "https://github.com/vertigo17/Cerberus/issues/new?body=Cerberus%20Version%20:%20" + cerberusInformation.projectVersion + "-" + cerberusInformation.databaseCerberusTargetVersion);
+        $("#footer").html(footerString + " - " + footerBugString);
 
-    footerString = footerString.replace("%VERSION%", cerberusInformation.projectName + cerberusInformation.projectVersion + "-" + cerberusInformation.databaseCerberusTargetVersion);
-    footerString = footerString.replace("%ENV%", cerberusInformation.environment);
-    footerString = footerString.replace("%DATE%", date.toISOString());
-    footerString = footerString.replace("%TIMING%", loadTime);
-    footerBugString = footerBugString.replace("%LINK%", "https://github.com/vertigo17/Cerberus/issues/new?body=Cerberus%20Version%20:%20" + cerberusInformation.projectVersion + "-" + cerberusInformation.databaseCerberusTargetVersion);
-    $("#footer").html(footerString + " - " + footerBugString);
-
-    // Tune the page layout to the environment where Cerberus is running.
-    envTuning(cerberusInformation.environment);
+        // Tune the page layout to the environment where Cerberus is running.
+        envTuning(cerberusInformation.environment);
+    }
 
 }
 
@@ -2459,7 +2460,7 @@ function comboConfigTag_format(tag) {
     if (tag.DateCreated) {
         markup += "<div class='select2-result-tag__detail'><i class='fa fa-calendar'></i> " + tag.DateCreated + "</div>";
     }
-    if (tag.nbExeUsefull>0) {
+    if (tag.nbExeUsefull > 0) {
         markup += "<div class='select2-result-tag__detail'> " + tag.nbExeUsefull + " Exe(s)</div>";
         markup += "<div class='select2-result-tag__detail " + tag.ciResult + "'> " + tag.ciResult + "</div>";
     }

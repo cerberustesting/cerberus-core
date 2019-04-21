@@ -65,11 +65,13 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // Get version from the database
         MyVersion MVersion;
         MVersion = MyversionService.findMyVersionByKey("database");
-        // compare both to see if version is uptodate.
-        if (SQLList.size() == MVersion.getValue()) {
-            return true;
+        if (MVersion != null) {
+            // compare both to see if version is uptodate.
+            if (SQLList.size() == MVersion.getValue()) {
+                return true;
+            }
+            LOG.info("Database needs an upgrade - Script : " + SQLList.size() + " Database : " + MVersion.getValue());
         }
-        LOG.info("Database needs an upgrade - Script : " + SQLList.size() + " Database : " + MVersion.getValue());
         return false;
     }
 
