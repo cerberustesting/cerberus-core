@@ -18,18 +18,23 @@ ENV MYSQL_JAVA_CONNECTOR_VERSION 5.1.20
 ENV MYSQL_JAVA_CONNECTOR_NAME mysql-connector-java-${MYSQL_JAVA_CONNECTOR_VERSION}
 
 # Download and install MySQL JDBC Drivers
-RUN wget -P /tmp/ https://downloads.mysql.com/archives/get/file/${MYSQL_JAVA_CONNECTOR_NAME}.zip && \
-    unzip -q -d /usr/local/tomcat/lib/ /tmp/${MYSQL_JAVA_CONNECTOR_NAME}.zip
+RUN wget -P /tmp/ https://downloads.mysql.com/archives/get/file/${MYSQL_JAVA_CONNECTOR_NAME}.zip
+RUN unzip -q -d /tmp/ /tmp/${MYSQL_JAVA_CONNECTOR_NAME}.zip
+RUN mv /tmp/${MYSQL_JAVA_CONNECTOR_NAME}/${MYSQL_JAVA_CONNECTOR_NAME}-bin.jar  /usr/local/tomcat/lib/
+#COPY mysql-connector-java-5.1.20-bin.jar /usr/local/tomcat/lib/
+
+# Only for debug purpose
+#RUN ls -al /usr/local/tomcat/lib/
 
 # Download & install Cerberus Application
 RUN wget -P /tmp/ https://github.com/cerberustesting/cerberus-source/releases/download/cerberus-testing-${CERBERUS_VERSION}/Cerberus-${CERBERUS_VERSION}.zip
-#COPY Cerberus.zip /tmp/${CERBERUS_PACKAGE_NAME}.zip
 RUN unzip -q -d /tmp /tmp/${CERBERUS_PACKAGE_NAME}.zip
-RUN cp /tmp/${CERBERUS_PACKAGE_NAME}/${CERBERUS_PACKAGE_NAME}.war /usr/local/tomcat/webapps/Cerberus.war
-#RUN cd /usr/local/tomcat/webapps/ && mkdir Cerberus && unzip -q -d Cerberus Cerberus.war && ls -al Cerberus
+RUN cp /tmp/${CERBERUS_PACKAGE_NAME}/${CERBERUS_PACKAGE_NAME}.war /usr/local/tomcat/webapps/ROOT.war
+RUN rm -rf /usr/local/tomcat/webapps/*
+#COPY Cerberus-3.12-SNAPSHOT.war /usr/local/tomcat/webapps/ROOT.war
 
-
-#RUN mv /usr/local/tomcat/lib/${MYSQL_JAVA_CONNECTOR_NAME}/${MYSQL_JAVA_CONNECTOR_NAME}-bin.jar  /usr/local/tomcat/lib/
+# Only for debug purpose
+#RUN ls -al /usr/local/tomcat/webapps/
 
 # Configure Tomcat for Cerberus need.
 COPY context.xml /usr/local/tomcat/conf/context.xml
