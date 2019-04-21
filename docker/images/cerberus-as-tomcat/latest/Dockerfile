@@ -29,8 +29,8 @@ RUN mv /tmp/${MYSQL_JAVA_CONNECTOR_NAME}/${MYSQL_JAVA_CONNECTOR_NAME}-bin.jar  /
 # Download & install Cerberus Application
 RUN wget -P /tmp/ https://github.com/cerberustesting/cerberus-source/releases/download/cerberus-testing-${CERBERUS_VERSION}/Cerberus-${CERBERUS_VERSION}.zip
 RUN unzip -q -d /tmp /tmp/${CERBERUS_PACKAGE_NAME}.zip
-RUN cp /tmp/${CERBERUS_PACKAGE_NAME}/${CERBERUS_PACKAGE_NAME}.war /usr/local/tomcat/webapps/ROOT.war
 RUN rm -rf /usr/local/tomcat/webapps/*
+RUN cp /tmp/${CERBERUS_PACKAGE_NAME}/${CERBERUS_PACKAGE_NAME}.war /usr/local/tomcat/webapps/ROOT.war
 #COPY Cerberus-3.12-SNAPSHOT.war /usr/local/tomcat/webapps/ROOT.war
 
 # Only for debug purpose
@@ -40,6 +40,8 @@ RUN rm -rf /usr/local/tomcat/webapps/*
 COPY context.xml /usr/local/tomcat/conf/context.xml
 COPY server.xml /usr/local/tomcat/conf/server.xml
 
+# Only for debug purpose
+#RUN echo ${CATALINA_OPTS}
 
 COPY entrypoint.sh /entrypoint.sh
 RUN dos2unix /entrypoint.sh && chmod u+x /entrypoint.sh

@@ -1,10 +1,10 @@
-# cerberus-glassfish-mysql Cerberus Docker compositions
+# cerberus-tomcat-mysql Cerberus Docker compositions
 
 [Cerberus](http://www.cerberus-testing.org/) is an user-friendly automated testing framework.
 
-Here you will find information about the `cerberus-glassfish-mysql` Docker composition
+Here you will find information about the `cerberus-tomcat-mysql` Docker composition
 
-## cerberus-glassfish-mysql
+## cerberus-tomcat-mysql
 
 The `cerberus-tomcat-mysql` Docker composition runs Cerberus under the Tomcat application server and a [MySQL](https://www.mysql.com/) database.
 
@@ -20,16 +20,16 @@ _Note: Optionaly adapt it according to your local config._
 
  3. Wait for the images to startup
 
- 4. Open your favorite browser and go to `<docker_host>:8080/Cerberus`, where `<docker_host>` is your Docker host
+ 4. Open your favorite browser and go to `<docker_host>:8080`, where `<docker_host>` is your Docker host
 
  5. If this is your first time with Cerberus, the GUI will ask for database initialization. Please read the message on the page and click on the button `Initialize Database`, wait for all queries to execute, then scroll down and click on `Apply Next SQL`.
 
- 6. Go to `<docker_host>:8080/Cerberus` again, it should ask for user credentials. Two default users are created:
+ 6. Go to `<docker_host>:8080` again, it should ask for user credentials. Two default users are created:
 
    * User `admin`, password `admin`
    * User `cerberus`, password `cerberus`
    
- 7. Set runtime configuration, as explained from the version-related [`cerberus-as-glassfish` README](https://github.com/cerberustesting/cerberus-source/tree/master/docker/images/cerberus-as-glassfish/README.md) under section 'Configure the running Cerberus instance'.
+ 7. Set runtime configuration, as explained from the version-related [`cerberus-as-tomcat` README](https://github.com/cerberustesting/cerberus-source/tree/master/docker/images/cerberus-as-tomcat/README.md) under section 'Configure the running Cerberus instance'.
 
 ### How to run Web Application tests
 
@@ -37,7 +37,7 @@ _Note: Optionaly adapt it according to your local config._
 
 By default, the `docker-compose.yml` composition is just executing a Cerberus instance, without any external tool.
  
-To start Cerberus with a ready-to-use Selenium Grid, you can run the `default-with-selenium.yml` (see cerberus-glassfish-mysql folder)
+To start Cerberus with a ready-to-use Selenium Grid, you can run the `docker-compose-with-selenium.yml`
 ### Associated images
 
 Image                                                                                                           | Description

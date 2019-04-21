@@ -17,7 +17,7 @@
 # along with Cerberus. If not, see <http://www.gnu.org/licenses/>.
 # Cerberus Glassfish MySQL composition.
 
-version: '3'
+version: '2'
 services:
   database:
     image: cerberustesting/cerberus-db-mysql:latest
@@ -44,4 +44,35 @@ services:
       - database
     links:
       - database
-
+  # Selenium-related services
+  selenium-hub:
+    image: selenium/hub:latest
+    expose:
+      - "4444"
+    ports:
+      - "14444:4444"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    restart: always
+  selenium-node-firefox:
+    image: selenium/node-firefox-debug:latest
+    environment:
+      HUB_HOST: selenium-hub
+    expose:
+      - "5900"
+    ports:
+      - "15900:5900"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    restart: always
+  selenium-node-chrome:
+    image: selenium/node-chrome-debug:latest
+    environment:
+      HUB_HOST: selenium-hub
+    expose:
+      - "5900"
+    ports:
+      - "15901:5900"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    restart: always
