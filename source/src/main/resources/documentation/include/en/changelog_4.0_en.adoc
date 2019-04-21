@@ -13,6 +13,7 @@
 * Add loop icon and library icon on step list in test case script
 * New parameter 'executor' on AddToExecutionQueueV003 in order to allow to keep track of user who triggered the campaign #1934
 * Allow to swipe into apk/ipa notification thanks to new property 'getLocation' #1905 and #1965
+* Improved email notification for end of tag optimising the layout but also displaying the testcase priority (in order to better isolate the ones that are prio 0 that do not impact CI pipe).
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

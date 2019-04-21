@@ -93,6 +93,7 @@ public interface IFactoryTestCaseExecution {
      * @param manualExecution
      * @param userAgent
      * @param testCaseVersion
+     * @param testCasePriority
      * @param system
      * @param robotDecli
      * @return
@@ -105,5 +106,5 @@ public interface IFactoryTestCaseExecution {
             CountryEnvironmentParameters countryEnvironmentParameters, boolean manualURL, String myHost, String myContextRoot, String myLoginRelativeURL, String myEnvData,
             String seleniumIP, String seleniumPort, List<TestCaseStepExecution> testCaseStepExecution, MessageGeneral resultMessage,
             String executor, int numberOfRetries, String screenSize, Robot robotObj,
-            String conditionOper, String conditionVal1Init, String conditionVal2Init, String conditionVal1, String conditionVal2, String manualExecution, String userAgent, int testCaseVersion, String system);
+            String conditionOper, String conditionVal1Init, String conditionVal2Init, String conditionVal1, String conditionVal2, String manualExecution, String userAgent, int testCaseVersion, int testCasePriority, String system);
 }

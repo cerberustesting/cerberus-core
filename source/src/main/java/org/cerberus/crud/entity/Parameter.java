@@ -36,6 +36,14 @@ public class Parameter {
     private String system1;
     private String system1value;
 
+    
+    /**
+     * Invariant PROPERTY TYPE String.
+     */
+    public static final String VALUE_queueexecution_global_threadpoolsize = "cerberus_queueexecution_global_threadpoolsize";
+    public static final String VALUE_queueexecution_global_threadpoolsize_master = "cerberus_queueexecution_global_threadpoolsize_master";
+    
+    
     public static final String SECUREDPARAMINSQLCLAUSE = "(\"cerberus_accountcreation_defaultpassword\",\"cerberus_proxyauthentification_password\",\"cerberus_jenkinsadmin_password\",\"cerberus_smtp_password\")";
     
     public String getSystem() {

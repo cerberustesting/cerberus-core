@@ -20,7 +20,7 @@
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
         initPage();
-        
+
         $('[data-toggle="popover"]').popover({
             'placement': 'auto',
             'container': 'body'}
@@ -63,39 +63,43 @@ function aoColumnsFunc(tableId) {
             "sWidth": "50px",
             "title": doc.getDocLabel("page_parameter", "button_col"),
             "mRender": function (data, type, obj) {
-                var hasPermissions = $("#" + tableId).attr("hasPermissions");
-
+                var myClass = "glyphicon";
+                if (data.hasPermissionsUpdate) {
+                    myClass += " glyphicon-pencil";
+                } else {
+                    myClass += " glyphicon-eye-open";
+                }
                 var editParameter = '<button id="editParameter" onclick="openModalParameter(\'' + obj["param"] + '\', \'' + getSys() + '\');"\n\
                                         class="btn btn-default btn-xs margin-right5" \n\
                                         name="editParameter" title="' + doc.getDocLabel("page_parameter", "button_edit") + '" type="button">\n\
-                                        <span class="glyphicon glyphicon-pencil"></span></button>';
+                                        <span class="' + myClass + '"></span></button>';
 
                 return '<div class="center btn-group width150">' + editParameter + '</div>';
 
             }
         },
         {
-            "data": "param", 
-            "sName": "par.param", 
+            "data": "param",
+            "sName": "par.param",
             "sWidth": "100px",
             "title": doc.getDocLabel("page_parameter", "parameter_col")
         },
         {
-            "data": "value", 
-            "sName": "par.value", 
+            "data": "value",
+            "sName": "par.value",
             "sWidth": "80px",
             "title": doc.getDocLabel("page_parameter", "cerberus_col")
         },
         {
-            "data": "system1value", 
-            "sName": "par1.value", 
+            "data": "system1value",
+            "sName": "par1.value",
             "sWidth": "80px",
             "title": doc.getDocLabel("page_parameter", "system_col") + " (" + getSys() + ")"
         },
         {
             "data": "description",
-            "like":true,
-            "sName": "par.description", 
+            "like": true,
+            "sName": "par.description",
             "sWidth": "200px",
             "title": doc.getDocLabel("page_parameter", "description_col")
         }

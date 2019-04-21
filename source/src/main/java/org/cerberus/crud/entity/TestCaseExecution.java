@@ -81,6 +81,7 @@ public class TestCaseExecution {
     private String UsrModif;
     private Timestamp DateModif;
     private int testCaseVersion;
+    private int testCasePriority;
 
     /**
      * From here are data outside database model.
@@ -883,6 +884,14 @@ public class TestCaseExecution {
 
     public void setTestCaseVersion(int testCaseVersion) {
         this.testCaseVersion = testCaseVersion;
+    }
+
+    public int getTestCasePriority() {
+        return testCasePriority;
+    }
+
+    public void setTestCasePriority(int testCasePriority) {
+        this.testCasePriority = testCasePriority;
     }
 
     public List<String> getVideos() {

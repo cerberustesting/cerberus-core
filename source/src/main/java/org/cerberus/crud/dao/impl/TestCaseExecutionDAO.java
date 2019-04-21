@@ -79,8 +79,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         boolean throwEx = false;
         final String query = "INSERT INTO testcaseexecution(test, testcase, description, build, revision, environment, environmentData, country, browser, application, robothost, "
                 + "url, robotport, tag, status, start, controlstatus, controlMessage, crbversion, browserFullVersion, executor, screensize,"
-                + "conditionOper, conditionVal1Init, conditionVal2Init, conditionVal1, conditionVal2, manualExecution, UserAgent, queueId, testCaseVersion, system, robotdecli, robot, robotexecutor) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                + "conditionOper, conditionVal1Init, conditionVal2Init, conditionVal1, conditionVal2, manualExecution, UserAgent, queueId, testCaseVersion, TestCasePriority, system, robotdecli, robot, robotexecutor) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -125,6 +125,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 preStat.setString(i++, tCExecution.getUserAgent());
                 preStat.setLong(i++, tCExecution.getQueueID());
                 preStat.setInt(i++, tCExecution.getTestCaseVersion());
+                preStat.setInt(i++, tCExecution.getTestCasePriority());
                 preStat.setString(i++, tCExecution.getSystem());
                 preStat.setString(i++, tCExecution.getRobotDecli());
                 preStat.setString(i++, tCExecution.getRobot());
@@ -174,7 +175,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 + ", browser = ?, application = ?, robothost = ?, url = ?, robotport = ?, tag = ?, status = ?"
                 + ", start = ?, end = ? , controlstatus = ?, controlMessage = ?, crbversion = ? "
                 + ", browserFullVersion = ?, version = ?, platform = ?, executor = ?, screensize = ? "
-                + ", ConditionOper = ?, ConditionVal1Init = ?, ConditionVal2Init = ?, ConditionVal1 = ?, ConditionVal2 = ?, ManualExecution = ?, UserAgent = ?, queueId = ?, testCaseVersion = ?, system = ? "
+                + ", ConditionOper = ?, ConditionVal1Init = ?, ConditionVal2Init = ?, ConditionVal1 = ?, ConditionVal2 = ?, ManualExecution = ?, UserAgent = ?, queueId = ?, testCaseVersion = ?, testCasePriority = ?, system = ? "
                 + ", robotdecli = ?, robot = ?, robotexecutor = ? WHERE id = ?";
 
         // Debug message on SQL.
@@ -226,6 +227,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 preStat.setString(i++, tCExecution.getUserAgent());
                 preStat.setLong(i++, tCExecution.getQueueID());
                 preStat.setInt(i++, tCExecution.getTestCaseVersion());
+                preStat.setInt(i++, tCExecution.getTestCasePriority());
                 preStat.setString(i++, tCExecution.getSystem());
                 preStat.setString(i++, tCExecution.getRobotDecli());
                 preStat.setString(i++, tCExecution.getRobot());
@@ -1763,11 +1765,12 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         String system = ParameterParserUtil.parseStringParam(resultSet.getString("exe.system"), "");
         long queueId = ParameterParserUtil.parseLongParam(resultSet.getString("exe.queueId"), 0);
         int testCaseVersion = ParameterParserUtil.parseIntegerParam(resultSet.getInt("exe.testCaseVersion"), 0);
+        int testCasePriority = ParameterParserUtil.parseIntegerParam(resultSet.getInt("exe.testCasePriority"), 0);
         TestCaseExecution result = factoryTCExecution.create(id, test, testcase, description, build, revision, environment,
                 country, robot, robotExecutor, robotHost, robotPort, robotDecli, browser, version, platform, browserFullVersion, start, end, controlStatus, controlMessage, application, null, url,
                 tag, 0, 0, 0, 0, true, "", "", status, crbVersion, null, null, null,
                 false, null, null, null, environmentData, null, null, null, null, executor, 0, screenSize, null,
-                conditionOper, conditionVal1Init, conditionVal2Init, conditionVal1, conditionVal2, manualExecution, userAgent, testCaseVersion, system);
+                conditionOper, conditionVal1Init, conditionVal2Init, conditionVal1, conditionVal2, manualExecution, userAgent, testCaseVersion, testCasePriority, system);
         result.setQueueID(queueId);
         return result;
     }

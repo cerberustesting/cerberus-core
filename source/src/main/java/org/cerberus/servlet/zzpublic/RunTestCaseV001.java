@@ -282,7 +282,7 @@ public class RunTestCaseV001 extends HttpServlet {
                     0, 0, "", "", "", null, null, tag, verbose, screenshot, getPageSource, getSeleniumLog, synchroneous, timeout, outputFormat, null,
                     Infos.getInstance().getProjectNameAndVersion(), tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL, myEnvData, robotHost, robotPort,
                     null, new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED), executor, numberOfRetries, screenSize, null,
-                    "", "", "", "", "", manualExecution, "", 0, "");
+                    "", "", "", "", "", manualExecution, "", 0, 0, "");
 
             /**
              * Set IdFromQueue

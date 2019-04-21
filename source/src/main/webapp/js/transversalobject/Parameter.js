@@ -159,13 +159,13 @@ function feedParameterModal(param, system, modalId) {
         }
 
         $("#cerberusValue").off("change");
-        if (!(data["hasPermissions"])) { // If readonly, we only readonly all fields
-            formEdit.find("#description").prop("readonly", "readonly");
-            formEdit.find("#sort").prop("readonly", "readonly");
+        if (!(data["hasPermissions"] && obj["hasPermissionsUpdate"])) { // If readonly, we only readonly all fields
+            formEdit.find("#cerberusValue").prop("readonly", "readonly");
 
-            $('#editParameterButton').attr('class', '');
-            $('#editParameterButton').attr('hidden', 'hidden');
+            $('#editParameterButton').hide();
         } else {
+            formEdit.find("#cerberusValue").removeAttr("readonly");
+            formEdit.find("#editParameterButton").show();
             if (data.isSecured) {
                 $('#editParameterButton').attr('disabled', true);
                 $("#cerberusValue").change(function () {

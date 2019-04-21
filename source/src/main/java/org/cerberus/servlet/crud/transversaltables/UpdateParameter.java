@@ -115,7 +115,8 @@ public class UpdateParameter extends HttpServlet {
 
             Parameter para = factoryparameter.create(system, id, value, "");
             ans = parameterService.save(para);
-            if (!ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && !ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED.getCode())) {
+            if (!ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) 
+                    && !ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED.getCode())) {
                 /**
                  * Object could not be found. We stop here and report the error.
                  */

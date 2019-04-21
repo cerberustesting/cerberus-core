@@ -42,7 +42,7 @@ import org.springframework.stereotype.Service;
 public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
 
     @Override
-    public TestCaseExecution create(long id, String test, String testCase, String description, String build, String revision, String environment, String country, 
+    public TestCaseExecution create(long id, String test, String testCase, String description, String build, String revision, String environment, String country,
             String robot, String robotExecutor, String robotHost, String robotPort, String robotDecli,
             String browser, String version, String platform, String browserFullVersion, long start, long end, String controlStatus, String controlMessage,
             String application, Application applicationObj, String url, String tag, int verbose, int screenshot, int pageSource, int seleniumLog,
@@ -50,7 +50,7 @@ public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
             CountryEnvironmentParameters countryEnvironmentParameters, boolean manualURL, String myHost, String myContextRoot, String myLoginRelativeURL, String myEnvData,
             String seleniumIP, String seleniumPort, List<TestCaseStepExecution> testCaseStepExecution, MessageGeneral resultMessage, String executor,
             int numberOfRetries, String screenSize, Robot robotObj,
-            String conditionOper, String conditionVal1Init, String conditionVal2Init, String conditionVal1, String conditionVal2, String manualExecution, String userAgent, int testCaseVersion, String system) {
+            String conditionOper, String conditionVal1Init, String conditionVal2Init, String conditionVal1, String conditionVal2, String manualExecution, String userAgent, int testCaseVersion, int testCasePriority, String system) {
         TestCaseExecution newTce = new TestCaseExecution();
         newTce.setApplicationObj(applicationObj);
         newTce.setApplication(application);
@@ -121,6 +121,7 @@ public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
         newTce.setTestCaseExecutionDataMap(hashTemp1);
         newTce.setNbExecutions(1);
         newTce.setTestCaseVersion(testCaseVersion);
+        newTce.setTestCasePriority(testCasePriority);
         return newTce;
     }
 

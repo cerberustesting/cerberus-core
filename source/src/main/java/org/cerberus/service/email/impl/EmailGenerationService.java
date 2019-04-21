@@ -402,16 +402,16 @@ public class EmailGenerationService implements IEmailGenerationService {
             for (String string : statList) {
                 if (statNbMap.get(string) > 0) {
                     globalStatus.append("<tr>");
-                    globalStatus.append("<td style=\"background-color:").append(statColorMap.get(string)).append(";\">").append(string).append("</td>");
-                    globalStatus.append("<td>").append(statNbMap.get(string)).append("</td>");
+                    globalStatus.append("<td style=\"background-color:").append(statColorMap.get(string)).append(";text-align: center;\">").append(string).append("</td>");
+                    globalStatus.append("<td style=\"text-align: right;\">").append(statNbMap.get(string)).append("</td>");
                     per = (float) statNbMap.get(string) / (float) mytag.getNbExeUsefull();
                     per = per * 100;
-                    globalStatus.append("<td>").append(String.format("%.2f", per)).append("</td>");
+                    globalStatus.append("<td style=\"text-align: right;\">").append(String.format("%.2f", per)).append("</td>");
                     globalStatus.append("</tr>");
                 }
             }
-            globalStatus.append("<tr style=\"background-color:#cad3f1; font-style:bold\"><td>TOTAL</td>");
-            globalStatus.append("<td>").append(mytag.getNbExeUsefull()).append("</td>");
+            globalStatus.append("<tr style=\"background-color:#cad3f1; font-style:bold; text-align: center;\"><td>TOTAL</td>");
+            globalStatus.append("<td style=\"text-align: right;\">").append(mytag.getNbExeUsefull()).append("</td>");
             globalStatus.append("<td></td></tr>");
             globalStatus.append("</tbody></table>");
             body = body.replace("%TAGGLOBALSTATUS%", globalStatus.toString());
@@ -422,23 +422,28 @@ public class EmailGenerationService implements IEmailGenerationService {
             Integer totalTC = 0;
             Integer maxLines = parameterService.getParameterIntegerByKey("cerberus_notification_tagexecutionend_tclistmax", system, 100);
             boolean odd = true;
-            detailStatus.append("<table><thead><tr style=\"background-color:#cad3f1; font-style:bold\"><td>Test</td><td>Test Case</td><td>Description</td><td>Environment</td><td>Country</td><td>Robot Decli</td><td>Status</td></tr></thead><tbody>");
+            detailStatus.append("<table><thead><tr style=\"background-color:#cad3f1; font-style:bold\"><td>Test Folder</td><td>Test Case</td><td>Prio</td><td>Environment</td><td>Country</td><td>Robot Decli</td><td>Status</td></tr></thead><tbody>");
             for (TestCaseExecution execution : testCaseExecutions) {
                 if (!TestCaseExecution.CONTROLSTATUS_OK.equals(execution.getControlStatus())) {
                     if (totalTC < maxLines) {
+                        String tr = "";
                         if (odd) {
-                            detailStatus.append("<tr style=\"background-color:#E3E3E3\">");
+                            tr = "<tr style=\"background-color:#E3E3E3\">";
                         } else {
-                            detailStatus.append("<tr>");
+                            tr = "<tr>";
                         }
                         odd = !odd;
-                        detailStatus.append("<td>").append(execution.getTest()).append("</td>");
-                        detailStatus.append("<td>").append(execution.getTestCase()).append("</td>");
-                        detailStatus.append("<td>").append(execution.getDescription()).append("</td>");
+                        detailStatus.append(tr);
+                        detailStatus.append("<td><b>").append(execution.getTest()).append("</b></td>");
+                        detailStatus.append("<td><b>").append(execution.getTestCase()).append("</b></td>");
+                        detailStatus.append("<td>").append(execution.getTestCasePriority()).append("</td>");
                         detailStatus.append("<td>").append(execution.getEnvironment()).append("</td>");
                         detailStatus.append("<td>").append(execution.getCountry()).append("</td>");
                         detailStatus.append("<td>").append(execution.getRobotDecli()).append("</td>");
-                        detailStatus.append("<td style=\"background-color:").append(statColorMap.get(execution.getControlStatus())).append(";\">").append(execution.getControlStatus()).append("</td>");
+                        detailStatus.append("<td rowspan=\"2\" style=\"text-align: center; background-color:").append(statColorMap.get(execution.getControlStatus())).append(";\">").append(execution.getControlStatus()).append("</td>");
+                        detailStatus.append("</tr>");
+                        detailStatus.append(tr);
+                        detailStatus.append("<td colspan=\"6\" style=\"font-size: xx-small;margin-left: 30px;\">").append(execution.getDescription()).append("</td>");
                         detailStatus.append("</tr>");
                     } else if (totalTC == maxLines) {
                         detailStatus.append("<tr style=\"background-color:#ffcaba; font-style:bold\">");

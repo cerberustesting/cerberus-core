@@ -35,6 +35,7 @@ import org.cerberus.engine.entity.ExecutionUUID;
 import org.cerberus.session.SessionCounter;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.service.IMyVersionService;
+import org.cerberus.crud.service.IParameterService;
 import org.cerberus.database.IDatabaseVersioningService;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
@@ -57,6 +58,7 @@ public class ReadCerberusDetailInformation extends HttpServlet {
     private ICerberusInformationDAO cerberusDatabaseInformation;
     private IDatabaseVersioningService databaseVersionService;
     private IMyVersionService myVersionService;
+    private IParameterService parameterService;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -138,10 +140,12 @@ public class ReadCerberusDetailInformation extends HttpServlet {
             jsonResponse.put("keycloakClient", System.getProperty(Property.KEYCLOAKCLIENT));
             jsonResponse.put("keycloakUrl", System.getProperty(Property.KEYCLOAKURL));
 
+            parameterService = appContext.getBean(IParameterService.class);
             jsonResponse.put("saaS", System.getProperty(Property.SAAS));
             jsonResponse.put("isSaaS", Property.isSaaS());
             jsonResponse.put("saasInstance", System.getProperty(Property.SAASINSTANCE));
-            jsonResponse.put("saasParallelrun", System.getProperty(Property.SAASPARALLELRUN));
+//            jsonResponse.put("saasParallelrun", System.getProperty(Property.SAASPARALLELRUN));
+            jsonResponse.put("saasParallelrun", parameterService.getParameterIntegerByKey("cerberus_queueexecution_global_threadpoolsize", "", 12));
 
             jsonResponse.put("javaVersion", System.getProperty("java.version"));
             Runtime instance = Runtime.getRuntime();

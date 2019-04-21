@@ -8040,6 +8040,9 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // 1399
         a.add("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('PROPERTYTYPE', 'getElementPosition', '36', 'Get an element position (format posx;posy)', '');");
 
+        // 1400
+        a.add("ALTER TABLE `testcaseexecution` ADD COLUMN `TestCasePriority` INT(1) UNSIGNED NOT NULL DEFAULT '0' AFTER `TestCaseVersion`;");
+
         return a;
     }
 

@@ -1424,7 +1424,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_invariant','value','','en','Value','',NULL)");
         b.append(",('page_invariant','value','','fr','Valeur','',NULL)");
         b.append(",('page_invariant','veryShortDesc','','en','Very Short Description','',NULL)");
-        b.append(",('page_invariant','veryShortDesc','','fr','Petite Description','',NULL)");
+        b.append(",('page_invariant','veryShortDesc','','fr','Description Courte','',NULL)");
         b.append(",('page_label','btn_create','','en','Create Label','',NULL)");
         b.append(",('page_label','btn_create','','fr','Créer un Label','',NULL)");
         b.append(",('page_label','btn_delete','','en','Delete Label','',NULL)");

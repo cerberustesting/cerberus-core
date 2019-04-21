@@ -24,8 +24,10 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.cerberus.config.Property;
 import org.cerberus.crud.dao.IParameterDAO;
 import org.cerberus.crud.entity.Parameter;
+import org.cerberus.crud.factory.IFactoryParameter;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
@@ -48,7 +50,8 @@ public class ParameterService implements IParameterService {
 
     @Autowired
     private IParameterDAO parameterDao;
-
+    @Autowired
+    private IFactoryParameter factoryParameter;
     @Autowired
     private ObservableEngine<String, Parameter> observableEngine;
 
@@ -94,13 +97,25 @@ public class ParameterService implements IParameterService {
     public Integer getParameterIntegerByKey(String key, String system, Integer defaultValue) {
         Parameter myParameter;
         Integer outPutResult = defaultValue;
+        if (Property.isSaaS() && Parameter.VALUE_queueexecution_global_threadpoolsize.equalsIgnoreCase(key)) {
+            LOG.debug("Saas Mode is activated so parameter retrieved will be the master one.");
+            key = Parameter.VALUE_queueexecution_global_threadpoolsize_master;
+            try {
+                myParameter = this.findParameterByKey(key, system);
+                outPutResult = Integer.valueOf(myParameter.getValue());
+                LOG.debug("Success loading parameter : '" + key + "' for system : '" + system + "'. Value returned : '" + outPutResult + "'");
+            } catch (CerberusException | NumberFormatException ex) {
+                LOG.error("Error when trying to retreive parameter : '" + key + "' for system : '" + system + "'. Default value returned : '" + defaultValue + "'. Trace : " + ex, ex);
+            }
+            return outPutResult;
+        }
         try {
             myParameter = this.findParameterByKey(key, system);
             outPutResult = Integer.valueOf(myParameter.getValue());
+            LOG.debug("Success loading parameter : '" + key + "' for system : '" + system + "'. Value returned : '" + outPutResult + "'");
         } catch (CerberusException | NumberFormatException ex) {
             LOG.error("Error when trying to retreive parameter : '" + key + "' for system : '" + system + "'. Default value returned : '" + defaultValue + "'. Trace : " + ex, ex);
         }
-        LOG.debug("Success loading parameter : '" + key + "' for system : '" + system + "'. Value returned : '" + outPutResult + "'");
         return outPutResult;
     }
 
@@ -238,6 +253,16 @@ public class ParameterService implements IParameterService {
     @Override
     public Answer save(Parameter object) {
         Answer finalAnswer = new Answer();
+        if (Parameter.VALUE_queueexecution_global_threadpoolsize_master.equalsIgnoreCase(object.getParam())) {
+            MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNAUTHORISED);
+            msg.setDescription(msg.getDescription()
+                    .replace("%ITEM%", "Parameter")
+                    .replace("%OPERATION%", "update")
+                    .replace("%REASON%", "This parameter (saas) cannot be updated."));
+            finalAnswer = new Answer(msg);
+            LOG.warn("Attempt to modify Parameter '" + object.getParam() + "' to value '" + object.getValue() + "' refused !");
+            return finalAnswer;
+        }
         AnswerItem resp = readByKey(object.getSystem(), object.getParam());
         if (!MessageEventEnum.DATA_OPERATION_OK.equals(resp.getResultMessage().getSource())) {
             /**
@@ -264,24 +289,34 @@ public class ParameterService implements IParameterService {
     }
 
     @Override
-    public boolean hasPermissionsUpdate(Parameter testCase, HttpServletRequest request) {
+    public boolean hasPermissionsUpdate(Parameter parameter, HttpServletRequest request) {
         // Access right calculation.
+        // master parameters cannot be changed.
+        if (Parameter.VALUE_queueexecution_global_threadpoolsize_master.equalsIgnoreCase(parameter.getParam())) {
+            return false;
+        }
+        // parameters that have a master value cannot be changed in saas mode.
+        if (Parameter.VALUE_queueexecution_global_threadpoolsize.equalsIgnoreCase(parameter.getParam())
+                && Property.isSaaS()) {
+            return false;
+        }
         return request.isUserInRole("Administrator");
     }
 
     @Override
-    public boolean hasPermissionsUpdate(String testCase, HttpServletRequest request) {
-        return this.hasPermissionsUpdate((Parameter) null, request);
+    public boolean hasPermissionsUpdate(String parameter, HttpServletRequest request) {
+        Parameter paramObj = factoryParameter.create("", parameter, "", "");
+        return this.hasPermissionsUpdate(paramObj, request);
     }
 
     @Override
-    public boolean hasPermissionsCreate(Parameter testCase, HttpServletRequest request) {
+    public boolean hasPermissionsCreate(Parameter parameter, HttpServletRequest request) {
         // Access right calculation.
         return false;
     }
 
     @Override
-    public boolean hasPermissionsDelete(Parameter testCase, HttpServletRequest request) {
+    public boolean hasPermissionsDelete(Parameter parameter, HttpServletRequest request) {
         // Access right calculation.
         return false;
     }
@@ -304,7 +339,7 @@ public class ParameterService implements IParameterService {
         }
         return false;
     }
-    
+
     @Override
     public boolean isSystemManaged(Parameter parameter) {
         switch (parameter.getParam()) {

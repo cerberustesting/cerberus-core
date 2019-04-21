@@ -35,7 +35,6 @@ public class Property {
     public static final String KEYCLOAKURL = "org.cerberus.keycloak.url";
     public static final String SAAS = "org.cerberus.saas";
     public static final String SAASINSTANCE = "org.cerberus.saas.instance";
-    public static final String SAASPARALLELRUN = "org.cerberus.saas.parallelrun";
     public static final String ENVIRONMENT = "org.cerberus.environment";
 
     public static final String AUTHENTIFICATION_VALUE_KEYCLOAK = "keycloak";
