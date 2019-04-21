@@ -102,6 +102,9 @@ public class ParameterService implements IParameterService {
             key = Parameter.VALUE_queueexecution_global_threadpoolsize_master;
             try {
                 myParameter = this.findParameterByKey(key, system);
+                if (myParameter == null) {
+                    return outPutResult;
+                }
                 outPutResult = Integer.valueOf(myParameter.getValue());
                 LOG.debug("Success loading parameter : '" + key + "' for system : '" + system + "'. Value returned : '" + outPutResult + "'");
             } catch (CerberusException | NumberFormatException ex) {
@@ -111,6 +114,9 @@ public class ParameterService implements IParameterService {
         }
         try {
             myParameter = this.findParameterByKey(key, system);
+            if (myParameter == null) {
+                return outPutResult;
+            }
             outPutResult = Integer.valueOf(myParameter.getValue());
             LOG.debug("Success loading parameter : '" + key + "' for system : '" + system + "'. Value returned : '" + outPutResult + "'");
         } catch (CerberusException | NumberFormatException ex) {

@@ -65,7 +65,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
             preStat.execute(SQLString);
             LOG.info("'" + SQLStringLog + "' Executed successfully.");
         } catch (Exception exception1) {
-            LOG.error(exception1.toString(), exception1);
+            LOG.warn("Could not refresh Documentation tables. Maybe database is not yet initialized ?");
+//            LOG.error(exception1.toString(), exception1);
             return exception1.toString();
         }
         return "Documentation table successfully refreshed";
