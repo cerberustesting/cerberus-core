@@ -5,7 +5,7 @@ ENV LOG_ROOT_PATH /usr/local/tomcat/logs/
 ENV KEYCLOACK_REALM Cerberus
 ENV KEYCLOACK_CLIENT cerberus
 ENV KEYCLOACK_URL http://192.168.1.1:8080/auth
-ENV CATALINA_OPTS="-Dorg.cerberus.environment=prd -Dorg.cerberus.authentification=keycloak -Dorg.cerberus.keycloak.realm=${KEYCLOACK_REALM} -Dorg.cerberus.keycloak.client=${KEYCLOACK_CLIENT} -Dorg.cerberus.keycloak.url=${KEYCLOACK_URL} -Xmx1024m"
+ENV CATALINA_OPTS="-Dorg.cerberus.environment=prd -Dorg.cerberus.authentification=keycloak -Xmx1024m"
 ENV KEYCLOACK_VERSION 4.8.0.Final
 ENV KEYCLOACK_TOMCAT8_ADAPTER_NAME keycloak-tomcat8-adapter-dist-${KEYCLOACK_VERSION}
 
@@ -40,11 +40,11 @@ RUN unzip -q -d /usr/local/tomcat/lib/ /tmp/${KEYCLOACK_TOMCAT8_ADAPTER_NAME}.zi
 #RUN ls -al /usr/local/tomcat/lib/
 
 # Download & install Cerberus Application
-RUN wget -P /tmp/ https://github.com/cerberustesting/cerberus-source/releases/download/cerberus-testing-${CERBERUS_VERSION}/Cerberus-${CERBERUS_VERSION}.zip
-RUN unzip -q -d /tmp /tmp/${CERBERUS_PACKAGE_NAME}.zip
+#RUN wget -P /tmp/ https://github.com/cerberustesting/cerberus-source/releases/download/cerberus-testing-${CERBERUS_VERSION}/Cerberus-${CERBERUS_VERSION}.zip
+#RUN unzip -q -d /tmp /tmp/${CERBERUS_PACKAGE_NAME}.zip
 RUN rm -rf /usr/local/tomcat/webapps/*
-RUN cp /tmp/${CERBERUS_PACKAGE_NAME}/${CERBERUS_PACKAGE_NAME}.war /usr/local/tomcat/webapps/ROOT.war
-#COPY Cerberus-3.12-SNAPSHOT.war /usr/local/tomcat/webapps/ROOT.war
+#RUN cp /tmp/${CERBERUS_PACKAGE_NAME}/${CERBERUS_PACKAGE_NAME}.war /usr/local/tomcat/webapps/ROOT.war
+COPY Cerberus-3.12-SNAPSHOT.war /usr/local/tomcat/webapps/ROOT.war
 
 # Only for debug purpose
 #RUN ls -al /usr/local/tomcat/webapps/

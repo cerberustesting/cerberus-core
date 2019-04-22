@@ -17,9 +17,15 @@
 # You should have received a copy of the GNU General Public License
 # along with Cerberus. If not, see <http://www.gnu.org/licenses/>.
 
-# Cerberus Tomcat configuration (with Keycloack acticated)
+# Cerberus Glassfish configuration
 
-export CATALINA_OPTS="$CATALINA_OPTS -DDATABASE_HOST=$DATABASE_HOST -DDATABASE_PORT=$DATABASE_PORT -DDATABASE_NAME=$DATABASE_NAME -DDATABASE_USER=$DATABASE_USER -DDATABASE_PASSWORD=$DATABASE_PASSWORD -Dorg.cerberus.keycloak.realm=${KEYCLOACK_REALM} -Dorg.cerberus.keycloak.client=${KEYCLOACK_CLIENT} -Dorg.cerberus.keycloak.url=${KEYCLOACK_URL}"
+
+# test add realm
+
+
+# export CATALINA_OPTS="$CATALINA_OPTS -DDATABASE_HOST=$DATABASE_HOST -DDATABASE_PORT=$DATABASE_PORT -DDATABASE_NAME=$DATABASE_NAME -DDATABASE_USER=$DATABASE_USER -DDATABASE_PASSWORD=$DATABASE_PASSWORD"
+
+export CATALINA_OPTS="$CATALINA_OPTS -DDATABASE_HOST=$DATABASE_HOST -DDATABASE_PORT=$DATABASE_PORT -DDATABASE_NAME=$DATABASE_NAME -DDATABASE_USER=$DATABASE_USER -DDATABASE_PASSWORD=$DATABASE_PASSWORD"
 
 /usr/local/tomcat/bin/catalina.sh start
 
