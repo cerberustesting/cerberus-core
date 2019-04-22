@@ -10,6 +10,8 @@ Hereafter the set of available Cerberus Docker compositions:
 
 Name                                                                                                                                | Description
 ------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------
+[`cerberus-tomcat-mysql`](https://github.com/cerberustesting/cerberus-source/tree/master/docker/compositions/cerberus-tomcat-mysql)  | Run Cerberus under the [Tomcat](http://tomcat.apache.org/) application server and a [MySQL](https://www.mysql.com/) database
+[`cerberus-tomcat-keycloak-mysql`](https://github.com/cerberustesting/cerberus-source/tree/master/docker/compositions/cerberus-tomcat-keycloak-mysql)  | Run Cerberus under the [Tomcat](http://tomcat.apache.org/) application server with [Keycloak](https://www.keycloak.org/) authentification plugin and a [MySQL](https://www.mysql.com/) database
 [`cerberus-glassfish-mysql`](https://github.com/cerberustesting/cerberus-source/tree/master/docker/compositions/cerberus-glassfish-mysql)  | Run Cerberus under the [Glassfish](https://glassfish.java.net/) application server and a [MySQL](https://www.mysql.com/) database
 
 ## License

@@ -16,7 +16,7 @@ _Note: Optionaly adapt it according to your local config._
 
  2. Execute at the root path
 	
-        docker-compose up
+        docker-compose -f docker-compose.yml up
 
  3. Wait for the images to startup
 
@@ -43,7 +43,7 @@ To start Cerberus with a ready-to-use Selenium Grid, you can run the `docker-com
 Image                                                                                                           | Description
 ----------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------
 [`cerberustesting/cerberus-db-mysql`](https://hub.docker.com/r/cerberustesting/cerberus-db-mysql/)              | Run a Cerberus dedicated MySQL database instance
-[`cerberustesting/cerberus-as-tomcat`](https://hub.docker.com/r/cerberustesting/cerberus-as-tomcat/)      | Run a Cerberus instance into a Glassfish application server
+[`cerberustesting/cerberus-as-tomcat`](https://hub.docker.com/r/cerberustesting/cerberus-as-tomcat/)      | Run a Cerberus instance into a Tomcat application server
 [`selenium/hub`](https://hub.docker.com/r/selenium/hub/)                                                        | Run a Selenium Grid instance
 [`selenium/node-firefox-debug`](https://hub.docker.com/r/selenium/node-firefox-debug/)                          | Run a Selenium node with Mozilla Firefox and a VNC server installed
 [`selenium/node-chrome-debug`](https://hub.docker.com/r/selenium/node-chrome-debug/)                            | Run a Selenium node with Google Chrome and a VNC server installed
