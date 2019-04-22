@@ -1671,7 +1671,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 //-- New parameter used by netexport.
 //
         b = new StringBuilder();
-        b.append("INSERT INTO `parameter` (`param`, `value`, `description`) VALUES ('cerberus_url', 'http://localhost:8080/Cerberus', 'URL to Cerberus used in order to call back cerberus from NetExport plugin. This parameter is mandatory for saving the firebug detail information back to cerberus. ex : http://host:port/contextroot');");
+        b.append("INSERT INTO `parameter` (`param`, `value`, `description`) VALUES ('cerberus_url', 'http://localhost:8080/', 'URL to Cerberus used in order to call back cerberus from NetExport plugin. This parameter is mandatory for saving the firebug detail information back to cerberus. ex : http://host:port/contextroot');");
         a.add(b.toString());
 
 //-- Making controls standard.
