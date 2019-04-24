@@ -332,14 +332,15 @@ public class SeleniumServerService implements ISeleniumServerService {
                  */
                 String targetScreensize = getScreenSizeToUse(tCExecution.getTestCaseObj().getScreenSize(), tCExecution.getScreenSize());
                 LOG.debug("Selenium resolution : " + targetScreensize);
-                
-                if(!tCExecution.getBrowser().equalsIgnoreCase(BrowserType.CHROME)) {
-	                if ((!StringUtil.isNullOrEmpty(targetScreensize)) && targetScreensize.contains("*")) {
-	                    Integer screenWidth = Integer.valueOf(targetScreensize.split("\\*")[0]);
-	                    Integer screenLength = Integer.valueOf(targetScreensize.split("\\*")[1]);
-	                    setScreenSize(driver, screenWidth, screenLength);
-	                    LOG.debug("Selenium resolution Activated : " + screenWidth + "*" + screenLength);
-	                }
+
+                if (!tCExecution.getBrowser().equalsIgnoreCase(BrowserType.CHROME)) {
+                    // For chrome the resolution has already been defined at capabilities level.
+                    if ((!StringUtil.isNullOrEmpty(targetScreensize)) && targetScreensize.contains("*")) {
+                        Integer screenWidth = Integer.valueOf(targetScreensize.split("\\*")[0]);
+                        Integer screenLength = Integer.valueOf(targetScreensize.split("\\*")[1]);
+                        setScreenSize(driver, screenWidth, screenLength);
+                        LOG.debug("Selenium resolution Activated : " + screenWidth + "*" + screenLength);
+                    }
                 }
                 tCExecution.setScreenSize(getScreenSize(driver));
                 tCExecution.setRobotDecli(tCExecution.getRobotDecli().replace("%SCREENSIZE%", tCExecution.getScreenSize()));
@@ -587,19 +588,21 @@ public class SeleniumServerService implements ISeleniumServerService {
                  */
                 ChromeOptions options = new ChromeOptions();
                 // Maximize windows for chrome browser
-               
+
                 String targetScreensize = getScreenSizeToUse(tCExecution.getTestCaseObj().getScreenSize(), tCExecution.getScreenSize());
-              
+
                 if ((!StringUtil.isNullOrEmpty(targetScreensize)) && targetScreensize.contains("*")) {
-                  Integer screenWidth = Integer.valueOf(targetScreensize.split("\\*")[0]);
-                  Integer screenLength = Integer.valueOf(targetScreensize.split("\\*")[1]);
-                  String sizeOpts = "--window-size=" + screenWidth + "," + screenLength;
-                  options.addArguments(sizeOpts);
-                  LOG.debug("Selenium resolution Activated : " + screenWidth + "*" + screenLength);
-              
+                    Integer screenWidth = Integer.valueOf(targetScreensize.split("\\*")[0]);
+                    Integer screenLength = Integer.valueOf(targetScreensize.split("\\*")[1]);
+                    String sizeOpts = "--window-size=" + screenWidth + "," + screenLength;
+                    options.addArguments(sizeOpts);
+                    LOG.debug("Selenium resolution (for Chrome) Activated : " + screenWidth + "*" + screenLength);
+
                 }
                 options.addArguments("start-maximized");
-                options.addArguments("--headless");               
+                if (tCExecution.getVerbose() <= 3) {
+                    options.addArguments("--headless");
+                }
                 // Set UserAgent if necessary
                 String usedUserAgent = getUserAgentToUse(tCExecution.getTestCaseObj().getUserAgent(), tCExecution.getUserAgent());
                 if (!StringUtil.isNullOrEmpty(usedUserAgent)) {
@@ -655,7 +658,7 @@ public class SeleniumServerService implements ISeleniumServerService {
      *
      * @param screenSizeTestCase
      * @param screenSizeRobot
-     * @return String containing the userAgent to use
+     * @return String containing the screensize to use
      */
     private String getScreenSizeToUse(String screenSizeTestCase, String screenSizeRobot) {
         if (StringUtil.isNullOrEmpty(screenSizeRobot) && StringUtil.isNullOrEmpty(screenSizeTestCase)) {
