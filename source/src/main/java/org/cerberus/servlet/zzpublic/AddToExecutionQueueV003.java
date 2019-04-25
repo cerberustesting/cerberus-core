@@ -229,7 +229,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
             mCampaign = (Campaign) vCampaign.getItem();
         }
         if (mCampaign == null) {
-            // Campaign not defined or does not exist so we parse parameter from servlet query string or defeult values
+            // Campaign not defined or does not exist so we parse parameter from servlet query string or defaut values
             screenshot = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_SCREENSHOT), DEFAULT_VALUE_SCREENSHOT, charset);
             verbose = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_VERBOSE), DEFAULT_VALUE_VERBOSE, charset);
             pageSource = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter(PARAMETER_PAGE_SOURCE), DEFAULT_VALUE_PAGE_SOURCE, charset);

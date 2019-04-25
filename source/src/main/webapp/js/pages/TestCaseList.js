@@ -18,6 +18,8 @@
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
 /* global modalFormCleaner */
+    
+var testAutomaticModal = "";
 
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
@@ -26,10 +28,9 @@ $.when($.getScript("js/global/global.js")).then(function () {
 });
 
 function initPage() {
-
     displayPageLabel();
     var table = loadTable();
-
+    
     // MASS ACTION
     $("#massActionTestCaseButtonAddLabel").click(massActionModalSaveHandler_addLabel);
     $("#massActionTestCaseButtonRemoveLabel").click(massActionModalSaveHandler_removeLabel);
@@ -154,11 +155,9 @@ function renderOptionsForTestCaseList(data) {
             $("#testCaseTable_wrapper #testCaseTable_length").before(contentToAdd);
 
             $('#testCaseList #createTestCaseButton').click(data, function () {
-                var entryValue = $("th[data-column-index='2'][tabindex='0']").text();
-                entryValue = entryValue.replace(/\s/g, '');
                 // Getting the Test from the 1st row of the testcase table.
                 if ($("#testCaseTable td.sorting_1")[0] !== undefined) {
-                    var firstRowTest = $("#testCaseTable td.sorting_1")[0].textContent;
+                    var firstRowTest = testAutomaticModal ;
 //                    addTestCaseClick(firstRowTest);
                     openModalTestCase(firstRowTest, undefined, "ADD");
                 } else {
@@ -549,7 +548,14 @@ function aoColumnsFunc(countries, tableId) {
             "sName": "tec.test",
             "title": doc.getDocOnline("test", "Test"),
             "sWidth": "120px",
-            "sDefaultContent": ""
+            "sDefaultContent": "",
+            "mRender": function (data, type, oObj, full) {
+                    if(full.row == 0){
+                        testAutomaticModal = oObj.test;
+                    }
+                    return oObj.test;                           
+            }
+
         },
         {
             "data": "testCase",
@@ -791,7 +797,6 @@ function aoColumnsFunc(countries, tableId) {
 
         aoColumns.push(column);
     }
-
     return aoColumns;
 }
 
