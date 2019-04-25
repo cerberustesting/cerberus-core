@@ -74,6 +74,7 @@ import org.openqa.selenium.Point;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.remote.*;
 import org.openqa.selenium.remote.http.HttpClient.Factory;
@@ -571,11 +572,13 @@ public class SeleniumServerService implements ISeleniumServerService {
                     profile.setPreference("general.useragent.override", usedUserAgent);
                 }
                 capabilities.setCapability(FirefoxDriver.PROFILE, profile);
-//                try {
-//                    additionalCapabilities.add(factoryRobotCapability.create(0, "", FirefoxDriver.PROFILE, profile.toJson()));
-//                } catch (IOException ex) {
-//                    LOG.error("", ex);
-//                }
+
+                FirefoxOptions options = new FirefoxOptions();
+
+                if (tCExecution.getVerbose() <= 0) {
+                    options.setHeadless(true);
+                }
+                capabilities.setCapability(FirefoxOptions.FIREFOX_OPTIONS, options);
 
             } else if (browser.equalsIgnoreCase("IE")) {
                 capabilities = DesiredCapabilities.internetExplorer();
@@ -600,7 +603,7 @@ public class SeleniumServerService implements ISeleniumServerService {
 
                 }
                 options.addArguments("start-maximized");
-                if (tCExecution.getVerbose() <= 3) {
+                if (tCExecution.getVerbose() <= 0) {
                     options.addArguments("--headless");
                 }
                 // Set UserAgent if necessary

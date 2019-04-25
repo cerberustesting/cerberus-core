@@ -1650,7 +1650,7 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_runtest','testcaseList','','en','Test Case :',NULL,NULL)");
         b.append(",('page_runtest','testcaseList','','fr','Cas de Test : ',NULL,NULL)");
         b.append(",('page_runtest','timeout','','en','Timeout','',NULL)");
-        b.append(",('page_runtest','timeout','','fr','Temporisation','',NULL)");
+        b.append(",('page_runtest','timeout','','fr','Timeout','',NULL)");
         b.append(",('page_runtest','title','','en','Run Test','',NULL)");
         b.append(",('page_runtest','title','','fr','Executer un test','',NULL)");
         b.append(",('page_runtest','valid','','en','Executions in queue','',NULL)");

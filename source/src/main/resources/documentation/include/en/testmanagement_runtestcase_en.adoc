@@ -47,10 +47,22 @@ The selected robot can be edited using the left button. A new robot can be creat
 
 === Execution settings
 
-image:runexecutionsettings.png[RunExecutionSettings]
+image:runexecutionsettings_en.png[RunExecutionSettings, 500, 500]
 
-* Tag : regroup all the execution in the same tag. It help identify this execution for reporting sake. If no value, the tag will be a timestamp.
-* Screenshot : define if screenshots have to be taken and the frequency.
+* Tag : regroup all the execution in the same tag. It help identify this execution for reporting sake. If no value, the tag will be a timestamp. you can use %USER% and %TIMESTAMP% variable in this field.
+* Verbose : Verbose define how much trace information will be output on the execution. The higher the level is from 0 to 2 the more information will be and the slower the testcase will be executed.
+
+|=== 
+
+| *Trace \ Verbose Level* | *0* | *1*  | *2*   
+| Chrome & Firefox display | no (headless) | yes | yes
+| JSON INFO Application Server logs | no | yes | yes
+
+|=== 
+
+* Screenshot : define if screenshots and video have to be taken and the frequency.
+* Page Source : define if Page source have to be taken and the frequency.
+* Robot Log : define if robot (Selenium or Appium) log will be taken.
 * Timeout : define the maximum time (in ms) to spent in an action or control. Correspond to the time Cerberus will wait until it consider that a field or object is not available.
 * Retries : Defined the number of retries for each test cases. A retry is a re submission of a testcase (in the queue) if its status is different from OK.
 * Priority : define the priority for all the test cases (reminder: the lowest (=0) the most important). Default value is 1000. Tips: Use 0 priority only when relaunching manually a test case. 

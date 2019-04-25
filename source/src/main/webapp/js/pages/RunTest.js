@@ -198,14 +198,15 @@ function displayPageLabel() {
     $("#RobotPanel label[for='browser']").text(doc.getDocLabel("page_runtest", "browser"));
     $("#saveRobotPreferences").text(doc.getDocLabel("page_runtest", "saverobotpref"));
     $("#executionPanel .panel-heading").text(doc.getDocLabel("page_runtest", "execution_settings"));
-    $("#executionPanel label[for='tag']").text(doc.getDocLabel("page_runtest", "tag"));
-    $("#executionPanel label[for='verbose']").text(doc.getDocLabel("page_runtest", "verbose"));
-    $("#executionPanel label[for='screenshot']").text(doc.getDocLabel("page_runtest", "screenshot"));
-    $("#executionPanel label[for='pageSource']").text(doc.getDocLabel("page_runtest", "pagesource"));
-    $("#executionPanel label[for='seleniumLog']").text(doc.getDocLabel("page_runtest", "seleniumlog"));
-    $("#executionPanel label[for='timeout']").text(doc.getDocLabel("page_runtest", "timeout"));
-    $("#executionPanel label[for='retries']").text(doc.getDocLabel("page_runtest", "retries"));
-    $("#executionPanel label[for='manualExecution']").text(doc.getDocLabel("page_runtest", "manual_execution"));
+    $("#executionPanel label[for='tag']").text(doc.getDocOnline("page_runtest", "tag"));
+    $("#executionPanel label[for='verbose']").text(doc.getDocOnline("page_runtest", "verbose"));
+    $("#executionPanel label[for='screenshot']").text(doc.getDocOnline("page_runtest", "screenshot"));
+    $("#executionPanel label[for='pageSource']").text(doc.getDocOnline("page_runtest", "pagesource"));
+    $("#executionPanel label[for='seleniumLog']").text(doc.getDocOnline("page_runtest", "seleniumlog"));
+    $("#executionPanel label[for='timeout']").text(doc.getDocOnline("page_runtest", "timeout"));
+    $("#executionPanel label[for='retries']").text(doc.getDocOnline("page_runtest", "retries"));
+    $("#executionPanel label[for='manualExecution']").text(doc.getDocOnline("page_runtest", "manual_execution"));
+    $("#executionPanel label[for='priority']").text(doc.getDocOnline("page_runtest", "priority"));
     $("#saveExecutionParams").text(doc.getDocLabel("page_runtest", "save_execution_params"));
 }
 
