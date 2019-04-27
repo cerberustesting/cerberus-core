@@ -1,4 +1,4 @@
-# Cerberus tomcat image
+# Cerberus Tomcat image
 
 [Cerberus](http://www.cerberus-testing.org/) is an user-friendly automated testing framework.
 
@@ -77,12 +77,6 @@ Don't forget to map Cerberus Media Folder to an existing folder out of your Dock
     docker run [...] -v /your/local/cerberus/medias/directory:/usr/local/tomcat/tomcat/domains/domain1/docroot/CerberusMedias cerberus/cerberus-as-tomcat-keycloak:latest
 
 Where `/your/local/cerberus/medias/directory` is the directory to store the Cerberus media files out of your Docker host.
-
-#### tomcat data
-You can share this volume to persist tomcat settings : 
-*  <local_path>/medias:/usr/local/tomcat5/tomcat/domains/<domain_name>
-*  <local_path>/lib:/usr/local/tomcat5/tomcat/lib
-
 
 ## Full Example
 
