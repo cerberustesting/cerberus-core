@@ -15,15 +15,14 @@ Finally, the `release.cmds` file contains a documentation header part to describ
 Prerequisits are 
 
 * Have a installed version of maven :
-`
-sudo apt install maven
-`
+
+      sudo apt install maven
+
 
 * JDK installation.
-`
-export JAVA_HOME=/opt/ibm/java-x86_64-60/
-export PATH=$JAVA_HOME/bin:$PATH
-`
+
+      export JAVA_HOME=/opt/ibm/java-x86_64-60/
+      export PATH=$JAVA_HOME/bin:$PATH
 
 ### Cerberus github release
 
@@ -32,19 +31,16 @@ export PATH=$JAVA_HOME/bin:$PATH
 
 Go to your cerberus/release folder
 
-`
+
     cd <path_to_cerberusclone>/release/
-`
 
 And run the release cmd :
 
-`
- ./runcmds.sh
+    ./runcmds.sh
        -e RELEASE_VERSION <release version> 
        -e NEXT_DEVELOPMENT_VERSION <next development version> 
        -e DATABASE_VERSION <current database version>
        -s ./release.cmds
-`
 
 NB : If under Windows, you can submit the command from docker bash.
 
@@ -62,9 +58,9 @@ NB : If under Windows, you can submit the command from docker bash.
 ### Step 1 : Docker Login
 
 You need to be logged in to docker registry to perform the docker's release
-`
+
     docker login -p <password> -u <username>
-`
+
 Where:
  - <password> is your docker hub password
  - <username> is your docker hub username
@@ -74,17 +70,14 @@ Where:
 ### Step 2 : Run the script that perform the release
 
 Go to your cerberus/docker folder
-`
+
     cd <path_to_cerberusclone>/release/cerberus-source/docker/images/cerberus-as-glassfish
-`
+
 And run the release cmd :
-`
- ../../../../runcmds.sh
+
+    ../../../../runcmds.sh
        -e RELEASE_VERSION <release version> 
        -s ./release.cmds
-`
-
-`release.cmds` will make a `docker build`.
 
 NB : If under Windows, you can submit the command from docker bash.
 
