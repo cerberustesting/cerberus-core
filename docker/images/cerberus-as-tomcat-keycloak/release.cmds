@@ -25,17 +25,17 @@
 # Prepare the release version
 awk '/ENV CERBERUS_VERSION/ {$0="ENV CERBERUS_VERSION ${RELEASE_VERSION}"} {print}' latest/Dockerfile > latest/Dockerfile.back && mv latest/Dockerfile.back latest/Dockerfile
 cp -R latest ${RELEASE_VERSION}
-awk '/Use the latest Cerberus version/{print; print "${RELEASE_VERSION}   | Use the ${RELEASE_VERSION} Cerberus version     | [${RELEASE_VERSION}/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-tomcat-keycloak-keycloak/${RELEASE_VERSION}/Dockerfile)"; next}1' README.md > README.md.back && mv README.md.back README.md
+awk '/Use the latest Cerberus version/{print; print "${RELEASE_VERSION}   | Use the ${RELEASE_VERSION} Cerberus version     | [${RELEASE_VERSION}/Dockerfile](https://github.com/cerberustesting/cerberus-source/blob/master/docker/images/cerberus-as-tomcat-keycloak/${RELEASE_VERSION}/Dockerfile)"; next}1' README.md > README.md.back && mv README.md.back README.md
 
 # Create Docker image
-docker build -t cerberustesting/cerberus-as-tomcat-keycloak-keycloak:${RELEASE_VERSION} ${RELEASE_VERSION}
-docker tag `docker images --format {{.ID}} cerberustesting/cerberus-as-tomcat-keycloak-keycloak:${RELEASE_VERSION}` cerberustesting/cerberus-as-tomcat-keycloak-keycloak:latest
+docker build -t cerberustesting/cerberus-as-tomcat-keycloak:${RELEASE_VERSION} ${RELEASE_VERSION}
+docker tag `docker images --format {{.ID}} cerberustesting/cerberus-as-tomcat-keycloak:${RELEASE_VERSION}` cerberustesting/cerberus-as-tomcat-keycloak:latest
 
 # Push Docker image to the public Docker hub
-docker push cerberustesting/cerberus-as-tomcat-keycloak-keycloak:${RELEASE_VERSION}
-docker push cerberustesting/cerberus-as-tomcat-keycloak-keycloak:latest
+docker push cerberustesting/cerberus-as-tomcat-keycloak:${RELEASE_VERSION}
+docker push cerberustesting/cerberus-as-tomcat-keycloak:latest
 
 # Apply changes to SCM
 git add README.md ${RELEASE_VERSION} latest
-git commit -m 'chore:docker new cerberus-as-tomcat-keycloak-keycloak-${RELEASE_VERSION} version'
+git commit -m 'chore:docker new cerberus-as-tomcat-keycloak-${RELEASE_VERSION} version'
 git push origin master
