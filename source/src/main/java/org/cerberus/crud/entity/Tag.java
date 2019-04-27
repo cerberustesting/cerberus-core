@@ -46,6 +46,13 @@ public class Tag {
     private int ciScore;
     private int ciScoreThreshold;
     private String ciResult;
+    private String environmentList;
+    private String countryList;
+    private String robotDecliList;
+    private String systemList;
+    private String applicationList;
+    private String reqEnvironmentList;
+    private String reqCountryList;
     private String UsrCreated;
     private Timestamp DateCreated;
     private String UsrModif;
@@ -201,6 +208,62 @@ public class Tag {
 
     public void setCiResult(String ciResult) {
         this.ciResult = ciResult;
+    }
+
+    public String getEnvironmentList() {
+        return environmentList;
+    }
+
+    public void setEnvironmentList(String environmentList) {
+        this.environmentList = environmentList;
+    }
+
+    public String getCountryList() {
+        return countryList;
+    }
+
+    public void setCountryList(String countryList) {
+        this.countryList = countryList;
+    }
+
+    public String getRobotDecliList() {
+        return robotDecliList;
+    }
+
+    public void setRobotDecliList(String robotDecliList) {
+        this.robotDecliList = robotDecliList;
+    }
+
+    public String getSystemList() {
+        return systemList;
+    }
+
+    public void setSystemList(String systemList) {
+        this.systemList = systemList;
+    }
+
+    public String getApplicationList() {
+        return applicationList;
+    }
+
+    public void setApplicationList(String applicationList) {
+        this.applicationList = applicationList;
+    }
+
+    public String getReqEnvironmentList() {
+        return reqEnvironmentList;
+    }
+
+    public void setReqEnvironmentList(String reqEnvironmentList) {
+        this.reqEnvironmentList = reqEnvironmentList;
+    }
+
+    public String getReqCountryList() {
+        return reqCountryList;
+    }
+
+    public void setReqCountryList(String reqCountryList) {
+        this.reqCountryList = reqCountryList;
     }
 
     public String getUsrCreated() {

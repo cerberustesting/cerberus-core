@@ -189,8 +189,10 @@ public class AddToExecutionQueueV002 extends HttpServlet {
         selectTestCase = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues(PARAMETER_TESTCASE), null, charset);
         List<String> countries;
         countries = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues(PARAMETER_COUNTRY), null, charset);
+        String reqCountries = StringUtil.convertToString(countries);
         List<String> environments;
         environments = ParameterParserUtil.parseListParamAndDecodeAndDeleteEmptyValue(request.getParameterValues(PARAMETER_ENVIRONMENT), null, charset);
+        String reqEnvironments = StringUtil.convertToString(environments);
         List<String> browsers = new ArrayList<>();;
         browsers = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues(PARAMETER_BROWSER), browsers, charset);
 
@@ -393,7 +395,7 @@ public class AddToExecutionQueueV002 extends HttpServlet {
                                             if (!StringUtil.isNullOrEmpty(tag) && !tagAlreadyAdded) {
                                                 // We create or update it.
                                                 ITagService tagService = appContext.getBean(ITagService.class);
-                                                tagService.createAuto(tag, campaign, user);
+                                                tagService.createAuto(tag, campaign, user, reqEnvironments, reqCountries);
                                                 tagAlreadyAdded = true;
                                             }
 

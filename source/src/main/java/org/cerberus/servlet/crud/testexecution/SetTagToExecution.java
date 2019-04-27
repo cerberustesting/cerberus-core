@@ -70,7 +70,7 @@ public class SetTagToExecution extends HttpServlet {
             if (!StringUtil.isNullOrEmpty(tag)) {
                 // We create or update it.
                 ITagService tagService = appContext.getBean(ITagService.class);
-                tagService.createAuto(tag, "", request.getRemoteUser());
+                tagService.createAuto(tag, "", request.getRemoteUser(),"","");
             }
 
             /* TODO output your page here. You may use following sample code. */

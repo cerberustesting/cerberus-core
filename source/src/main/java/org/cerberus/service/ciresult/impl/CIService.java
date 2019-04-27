@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.TreeMap;
 
 import com.google.gson.Gson;
+import java.util.Map;
 import org.cerberus.crud.entity.Campaign;
 import org.cerberus.crud.entity.Tag;
 import org.cerberus.crud.entity.TestCaseExecution;
@@ -49,9 +50,9 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class CIService implements ICIService {
-    
+
     private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(CIService.class);
-    
+
     @Autowired
     private ITestCaseExecutionService testExecutionService;
     @Autowired
@@ -60,7 +61,7 @@ public class CIService implements ICIService {
     private ICampaignService campaignService;
     @Autowired
     private ITagService tagService;
-    
+
     @Override
     public JSONObject getCIResult(String tag, String campaign) {
         try {
@@ -70,25 +71,31 @@ public class CIService implements ICIService {
                 Tag myTag = tagService.convert(tagService.readByKey(tag));
                 campaign = myTag.getCampaign();
             }
-            
+
             List<TestCaseExecution> myList = testExecutionService.readLastExecutionAndExecutionInQueueByTag(tag);
             JSONObject jsonResponse = CIService.this.getCIResult(tag, campaign, myList);
-            
+
             jsonResponse.put("detail_by_declinaison", generateStats(myList));
-            
+
+            jsonResponse.put("environment_List", generateEnvList(myList));
+            jsonResponse.put("country_list", generateCountryList(myList));
+            jsonResponse.put("robotdecli_list", generateRobotDecliList(myList));
+            jsonResponse.put("system_list", generateSystemList(myList));
+            jsonResponse.put("application_list", generateApplicationList(myList));
+
             jsonResponse.put("nb_of_retry", myList.stream().mapToInt(it -> it.getNbExecutions() - 1).sum());
-            
+
             return jsonResponse;
         } catch (CerberusException | ParseException | JSONException ex) {
             LOG.error(ex, ex);
         }
         return null;
     }
-    
+
     private JSONObject getCIResult(String tag, String campaign, List<TestCaseExecution> myList) {
         try {
             JSONObject jsonResponse = new JSONObject();
-            
+
             int nbok = 0;
             int nbko = 0;
             int nbfa = 0;
@@ -100,34 +107,34 @@ public class CIService implements ICIService {
             int nbqu = 0;
             int nbqe = 0;
             int nbtotal = 0;
-            
+
             int nbkop1 = 0;
             int nbkop2 = 0;
             int nbkop3 = 0;
             int nbkop4 = 0;
             int nbkop5 = 0;
-            
+
             long longStart = 0;
             long longEnd = 0;
-            
+
             for (TestCaseExecution curExe : myList) {
-                
+
                 if (longStart == 0) {
                     longStart = curExe.getStart();
                 }
                 if (curExe.getStart() < longStart) {
                     longStart = curExe.getStart();
                 }
-                
+
                 if (longEnd == 0) {
                     longEnd = curExe.getEnd();
                 }
                 if (curExe.getEnd() > longEnd) {
                     longEnd = curExe.getEnd();
                 }
-                
+
                 nbtotal++;
-                
+
                 switch (curExe.getControlStatus()) {
                     case TestCaseExecution.CONTROLSTATUS_KO:
                         nbko++;
@@ -160,7 +167,7 @@ public class CIService implements ICIService {
                         nbqe++;
                         break;
                 }
-                
+
                 if (!curExe.getControlStatus().equals("OK") && !curExe.getControlStatus().equals("NE")
                         && !curExe.getControlStatus().equals("PE") && !curExe.getControlStatus().equals("QU")) {
                     switch (curExe.getTestCaseObj().getPriority()) {
@@ -182,7 +189,7 @@ public class CIService implements ICIService {
                     }
                 }
             }
-            
+
             int pond1 = parameterService.getParameterIntegerByKey("cerberus_ci_okcoefprio1", "", 0);
             int pond2 = parameterService.getParameterIntegerByKey("cerberus_ci_okcoefprio2", "", 0);
             int pond3 = parameterService.getParameterIntegerByKey("cerberus_ci_okcoefprio3", "", 0);
@@ -210,14 +217,14 @@ public class CIService implements ICIService {
                     LOG.error("Could not find campaign when calculating CIScore.", ex);
                 }
             }
-            
+
             int resultCal = (nbkop1 * pond1) + (nbkop2 * pond2) + (nbkop3 * pond3) + (nbkop4 * pond4) + (nbkop5 * pond5);
             if ((nbtotal > 0) && nbqu + nbpe > 0) {
                 result = "PE";
             } else {
                 result = getFinalResult(resultCal, resultCalThreshold, nbtotal, nbok);
             }
-            
+
             jsonResponse.put("messageType", "OK");
             jsonResponse.put("message", "CI result calculated with success.");
             jsonResponse.put("tag", tag);
@@ -247,15 +254,15 @@ public class CIService implements ICIService {
             jsonResponse.put("result", result);
             jsonResponse.put("ExecutionStart", String.valueOf(new Timestamp(longStart)));
             jsonResponse.put("ExecutionEnd", String.valueOf(new Timestamp(longEnd)));
-            
+
             return jsonResponse;
-            
+
         } catch (JSONException ex) {
             LOG.error(ex, ex);
         }
         return null;
     }
-    
+
     @Override
     public String getFinalResult(int resultCal, int resultCalThreshold, int nbtotal, int nbok) {
         if ((resultCal < resultCalThreshold) && (nbtotal > 0) && nbok > 0) {
@@ -264,11 +271,101 @@ public class CIService implements ICIService {
             return "KO";
         }
     }
-    
+
+    private JSONArray generateEnvList(List<TestCaseExecution> testCaseExecutions) throws JSONException {
+
+        JSONArray jsonResult = new JSONArray();
+
+        HashMap<String, String> statMap = new HashMap<String, String>();
+        for (TestCaseExecution testCaseExecution : testCaseExecutions) {
+            if (!StringUtil.isNullOrEmpty(testCaseExecution.getEnvironment())) {
+                statMap.put(testCaseExecution.getEnvironment(), null);
+            }
+        }
+        for (Map.Entry<String, String> entry : statMap.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            jsonResult.put(key);
+        }
+        return jsonResult;
+    }
+
+    private JSONArray generateCountryList(List<TestCaseExecution> testCaseExecutions) throws JSONException {
+
+        JSONArray jsonResult = new JSONArray();
+
+        HashMap<String, String> statMap = new HashMap<String, String>();
+        for (TestCaseExecution testCaseExecution : testCaseExecutions) {
+            if (!StringUtil.isNullOrEmpty(testCaseExecution.getCountry())) {
+                statMap.put(testCaseExecution.getCountry(), null);
+            }
+        }
+        for (Map.Entry<String, String> entry : statMap.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            jsonResult.put(key);
+        }
+        return jsonResult;
+    }
+
+    private JSONArray generateRobotDecliList(List<TestCaseExecution> testCaseExecutions) throws JSONException {
+
+        JSONArray jsonResult = new JSONArray();
+
+        HashMap<String, String> statMap = new HashMap<String, String>();
+        for (TestCaseExecution testCaseExecution : testCaseExecutions) {
+            if (!StringUtil.isNullOrEmpty(testCaseExecution.getRobotDecli())) {
+                statMap.put(testCaseExecution.getRobotDecli(), null);
+            }
+        }
+        for (Map.Entry<String, String> entry : statMap.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            jsonResult.put(key);
+        }
+        return jsonResult;
+    }
+
+    private JSONArray generateSystemList(List<TestCaseExecution> testCaseExecutions) throws JSONException {
+
+        JSONArray jsonResult = new JSONArray();
+
+        HashMap<String, String> statMap = new HashMap<String, String>();
+        for (TestCaseExecution testCaseExecution : testCaseExecutions) {
+            if (!StringUtil.isNullOrEmpty(testCaseExecution.getSystem())) {
+                statMap.put(testCaseExecution.getSystem(), null);
+            }
+        }
+        for (Map.Entry<String, String> entry : statMap.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            jsonResult.put(key);
+        }
+        return jsonResult;
+    }
+
+    private JSONArray generateApplicationList(List<TestCaseExecution> testCaseExecutions) throws JSONException {
+
+        JSONArray jsonResult = new JSONArray();
+
+        HashMap<String, String> statMap = new HashMap<String, String>();
+        for (TestCaseExecution testCaseExecution : testCaseExecutions) {
+            if (!StringUtil.isNullOrEmpty(testCaseExecution.getApplication())) {
+                statMap.put(testCaseExecution.getApplication(), null);
+            }
+        }
+        for (Map.Entry<String, String> entry : statMap.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            jsonResult.put(key);
+        }
+        return jsonResult;
+    }
+
     private JSONArray generateStats(List<TestCaseExecution> testCaseExecutions) throws JSONException {
-        
+
         JSONObject jsonResult = new JSONObject();
-        
+
         HashMap<String, SummaryStatisticsDTO> statMap = new HashMap<String, SummaryStatisticsDTO>();
         for (TestCaseExecution testCaseExecution : testCaseExecutions) {
             StringBuilder key = new StringBuilder();
@@ -279,7 +376,7 @@ public class CIService implements ICIService {
             key.append(testCaseExecution.getRobotDecli());
             key.append("_");
             key.append(testCaseExecution.getApplication());
-            
+
             SummaryStatisticsDTO stat = new SummaryStatisticsDTO();
             stat.setEnvironment(testCaseExecution.getEnvironment());
             stat.setCountry(testCaseExecution.getCountry());
@@ -287,15 +384,15 @@ public class CIService implements ICIService {
             stat.setApplication(testCaseExecution.getApplication());
             statMap.put(key.toString(), stat);
         }
-        
+
         return getStatByEnvCountryRobotDecli(testCaseExecutions, statMap);
     }
-    
+
     private JSONArray getStatByEnvCountryRobotDecli(List<TestCaseExecution> testCaseExecutions, HashMap<String, SummaryStatisticsDTO> statMap) throws JSONException {
         for (TestCaseExecution testCaseExecution : testCaseExecutions) {
-            
+
             StringBuilder key = new StringBuilder();
-            
+
             key.append(testCaseExecution.getEnvironment());
             key.append("_");
             key.append((testCaseExecution.getCountry()));
@@ -303,14 +400,14 @@ public class CIService implements ICIService {
             key.append((testCaseExecution.getRobotDecli()));
             key.append("_");
             key.append(testCaseExecution.getApplication());
-            
+
             if (statMap.containsKey(key.toString())) {
                 statMap.get(key.toString()).updateStatisticByStatus(testCaseExecution.getControlStatus());
             }
         }
         return extractSummaryData(statMap);
     }
-    
+
     private JSONArray extractSummaryData(HashMap<String, SummaryStatisticsDTO> summaryMap) throws JSONException {
         JSONObject extract = new JSONObject();
         Gson gson = new Gson();
@@ -323,7 +420,7 @@ public class CIService implements ICIService {
             sumStats.updatePercentageStatistics();
             dataArray.put(new JSONObject(gson.toJson(sumStats)));
         }
-        
+
         return dataArray;
     }
 }

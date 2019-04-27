@@ -128,9 +128,11 @@ public interface ITagService {
      * @param tag
      * @param campaign
      * @param user
+     * @param reqEnvironmentList
+     * @param reqCountryList
      * @return
      */
-    Answer createAuto(String tag, String campaign, String user);
+    Answer createAuto(String tag, String campaign, String user, String reqEnvironmentList, String reqCountryList);
 
     /**
      *

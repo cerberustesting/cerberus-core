@@ -134,7 +134,7 @@ public class UpdateTestCaseExecutionQueue extends HttpServlet {
         if (!StringUtil.isNullOrEmpty(tag)) {
             // We create or update it.
             ITagService tagService = appContext.getBean(ITagService.class);
-            tagService.createAuto(tag, "", request.getRemoteUser());
+            tagService.createAuto(tag, "", request.getRemoteUser(), environment, country);
         }
 
         // Prepare the final answer.

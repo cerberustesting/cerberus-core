@@ -145,6 +145,12 @@ public class TagService implements ITagService {
                 mytag.setCiResult(jsonResponse.getString("result"));
             }
 
+            mytag.setEnvironmentList(StringUtil.convertToString(jsonResponse.getJSONArray("environment_List")));
+            mytag.setCountryList(StringUtil.convertToString(jsonResponse.getJSONArray("country_list")));
+            mytag.setRobotDecliList(StringUtil.convertToString(jsonResponse.getJSONArray("robotdecli_list")));
+            mytag.setSystemList(StringUtil.convertToString(jsonResponse.getJSONArray("system_list")));
+            mytag.setApplicationList(StringUtil.convertToString(jsonResponse.getJSONArray("application_list")));
+
             mytag.setNbOK(jsonResponse.getInt("status_OK_nbOfExecution"));
             mytag.setNbKO(jsonResponse.getInt("status_KO_nbOfExecution"));
             mytag.setNbFA(jsonResponse.getInt("status_FA_nbOfExecution"));
@@ -171,12 +177,12 @@ public class TagService implements ITagService {
     }
 
     @Override
-    public Answer createAuto(String tagS, String campaign, String user) {
+    public Answer createAuto(String tagS, String campaign, String user, String reqEnvironmentList, String reqCountryList) {
         AnswerItem answerTag;
         answerTag = readByKey(tagS);
         Tag tag = (Tag) answerTag.getItem();
         if (tag == null) {
-            Answer ans = tagDAO.create(factoryTag.create(0, tagS, "", campaign, null, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", user, null, user, null));
+            Answer ans = tagDAO.create(factoryTag.create(0, tagS, "", campaign, null, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "", "", "", "", "", reqEnvironmentList, reqCountryList, user, null, user, null));
             if (!StringUtil.isNullOrEmpty(campaign)) {
                 notificationService.generateAndSendNotifyStartTagExecution(tagS, campaign);
             }

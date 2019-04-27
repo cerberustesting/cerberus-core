@@ -184,8 +184,10 @@ public class AddToExecutionQueueV001 extends HttpServlet {
         selectedTests = ParameterParserUtil.parseListMapParamAndDecode(request.getParameterValues(PARAMETER_SELECTED_TEST), null, charset);
         List<String> countries;
         countries = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues(PARAMETER_COUNTRY), null, charset);
+        String reqCountries = StringUtil.convertToString(countries);
         List<String> environments;
         environments = ParameterParserUtil.parseListParamAndDecodeAndDeleteEmptyValue(request.getParameterValues(PARAMETER_ENVIRONMENT), null, charset);
+        String reqEnvironments = StringUtil.convertToString(environments);
         List<String> browsers;
         browsers = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues(PARAMETER_BROWSER), null, charset);
         // Execution parameters.
@@ -337,7 +339,7 @@ public class AddToExecutionQueueV001 extends HttpServlet {
             if (!StringUtil.isNullOrEmpty(tag)) {
                 // We create or update it.
                 ITagService tagService = appContext.getBean(ITagService.class);
-                tagService.createAuto(tag, campaign, user);
+                tagService.createAuto(tag, campaign, user, reqEnvironments, reqCountries);
             }
 
             // Part 1: Getting all possible xecution from test cases + countries + environments + browsers which have been sent to this servlet.

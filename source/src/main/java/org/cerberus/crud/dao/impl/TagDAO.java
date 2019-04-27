@@ -345,6 +345,14 @@ public class TagDAO implements ITagDAO {
             query.append(", `usrcreated`");
             queryV.append(",?");
         }
+        if (!StringUtil.isNullOrEmpty(object.getReqCountryList())) {
+            query.append(", `ReqCountryList`");
+            queryV.append(",?");
+        }
+        if (!StringUtil.isNullOrEmpty(object.getReqEnvironmentList())) {
+            query.append(", `ReqEnvironmentList`");
+            queryV.append(",?");
+        }
         query.append(") ");
         queryV.append(");");
         query.append(queryV);
@@ -365,6 +373,12 @@ public class TagDAO implements ITagDAO {
                 }
                 if (!StringUtil.isNullOrEmpty(object.getUsrCreated())) {
                     preStat.setString(i++, object.getUsrCreated());
+                }
+                if (!StringUtil.isNullOrEmpty(object.getReqCountryList())) {
+                    preStat.setString(i++, object.getReqCountryList());
+                }
+                if (!StringUtil.isNullOrEmpty(object.getReqEnvironmentList())) {
+                    preStat.setString(i++, object.getReqEnvironmentList());
                 }
 
                 preStat.executeUpdate();
@@ -497,7 +511,8 @@ public class TagDAO implements ITagDAO {
     @Override
     public Answer updateDateEndQueue(Tag tag) {
         MessageEvent msg = null;
-        String query = "UPDATE tag SET DateEndQueue = ?, nbExe = ?, nbExeUsefull = ?, nbOK = ?, nbKO = ?, nbFA = ?, nbNA = ?, nbNE = ?, nbWE = ?, nbPE = ?, nbQU = ?, nbQE = ?, nbCA = ?, CIScore = ?, CIScoreThreshold = ?, CIResult = ?  WHERE Tag = ?";
+        String query = "UPDATE tag SET DateEndQueue = ?, nbExe = ?, nbExeUsefull = ?, nbOK = ?, nbKO = ?, nbFA = ?, nbNA = ?, nbNE = ?, nbWE = ?, nbPE = ?, nbQU = ?, nbQE = ?, nbCA = ?"
+                + ", CIScore = ?, CIScoreThreshold = ?, CIResult = ?, EnvironmentList = ?, CountryList = ?, RobotDecliList = ?, SystemList = ?, ApplicationList = ?  WHERE Tag = ?";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -525,6 +540,11 @@ public class TagDAO implements ITagDAO {
                 preStat.setInt(i++, tag.getCiScore());
                 preStat.setInt(i++, tag.getCiScoreThreshold());
                 preStat.setString(i++, tag.getCiResult());
+                preStat.setString(i++, tag.getEnvironmentList());
+                preStat.setString(i++, tag.getCountryList());
+                preStat.setString(i++, tag.getRobotDecliList());
+                preStat.setString(i++, tag.getSystemList());
+                preStat.setString(i++, tag.getApplicationList());
                 preStat.setString(i++, tag.getTag());
 
                 preStat.executeUpdate();
@@ -580,10 +600,17 @@ public class TagDAO implements ITagDAO {
         int ciScore = rs.getInt("tag.ciScore");
         int ciScoreThreshold = rs.getInt("tag.ciScoreThreshold");
         String ciResult = rs.getString("tag.ciResult");
+        String envList = rs.getString("tag.EnvironmentList");
+        String countryList = rs.getString("tag.CountryList");
+        String robotDecliList = rs.getString("tag.RobotDecliList");
+        String systemList = rs.getString("tag.SystemList");
+        String applicationList = rs.getString("tag.ApplicationList");
+        String reqEnvList = rs.getString("tag.ReqEnvironmentList");
+        String reqCountryList = rs.getString("tag.ReqCountryList");
 
         //TODO remove when working in test with mockito and autowired
         factoryTag = new FactoryTag();
-        Tag newTag = factoryTag.create(id, tag, description, campaign, dateEndQueue, nbExe, nbExeUsefull, nbOK, nbKO, nbFA, nbNA, nbNE, nbWE, nbPE, nbQU, nbQE, nbCA, ciScore, ciScoreThreshold, ciResult, usrCreated, dateCreated, usrModif, dateModif);
+        Tag newTag = factoryTag.create(id, tag, description, campaign, dateEndQueue, nbExe, nbExeUsefull, nbOK, nbKO, nbFA, nbNA, nbNE, nbWE, nbPE, nbQU, nbQE, nbCA, ciScore, ciScoreThreshold, ciResult, envList, countryList, robotDecliList, systemList, applicationList, reqEnvList, reqCountryList, usrCreated, dateCreated, usrModif, dateModif);
 
         return newTag;
     }

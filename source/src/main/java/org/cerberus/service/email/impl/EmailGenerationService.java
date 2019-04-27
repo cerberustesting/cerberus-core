@@ -307,6 +307,8 @@ public class EmailGenerationService implements IEmailGenerationService {
             cerberusUrl = parameterService.getParameterStringByKey("cerberus_url", system, "");
         }
 
+        Tag mytag = tagService.convert(tagService.readByKey(tag));
+        
         StringBuilder urlreporttag = new StringBuilder();
         urlreporttag.append(cerberusUrl);
         urlreporttag.append("/ReportingExecutionByTag.jsp?Tag=");
@@ -314,9 +316,14 @@ public class EmailGenerationService implements IEmailGenerationService {
         body = body.replace("%TAG%", tag);
         body = body.replace("%URLTAGREPORT%", urlreporttag.toString());
         body = body.replace("%CAMPAIGN%", campaign);
+        body = body.replace("%REQENVIRONMENTLIST%", mytag.getReqEnvironmentList());
+        body = body.replace("%REQCOUNTRYLIST%", mytag.getReqCountryList());
+
 
         subject = subject.replace("%TAG%", tag);
         subject = subject.replace("%CAMPAIGN%", campaign);
+        subject = subject.replace("%REQENVIRONMENTLIST%", mytag.getReqEnvironmentList());
+        subject = subject.replace("%REQCOUNTRYLIST%", mytag.getReqCountryList());
 
         email = emailFactory.create(host, port, userName, password, true, subject, body, from, to, null);
 
@@ -363,6 +370,15 @@ public class EmailGenerationService implements IEmailGenerationService {
             body = body.replace("%CIRESULTCOLOR%", ciColor);
             body = body.replace("%CISCORE%", String.valueOf(mytag.getCiScore()));
             body = body.replace("%CISCORETHRESHOLD%", String.valueOf(mytag.getCiScoreThreshold()));
+
+            body = body.replace("%ENVIRONMENTLIST%", mytag.getEnvironmentList());
+            body = body.replace("%COUNTRYLIST%", mytag.getCountryList());
+            body = body.replace("%APPLICATIONLIST%", mytag.getApplicationList());
+            body = body.replace("%SYSTEMLIST%", mytag.getSystemList());
+            body = body.replace("%ROBOTDECLILIST%", mytag.getRobotDecliList());
+
+            body = body.replace("%REQENVIRONMENTLIST%", mytag.getReqEnvironmentList());
+            body = body.replace("%REQCOUNTRYLIST%", mytag.getReqCountryList());
 
             long tagDur = (mytag.getDateEndQueue().getTime() - mytag.getDateCreated().getTime()) / 60000;
             body = body.replace("%TAGDURATION%", String.valueOf(tagDur));

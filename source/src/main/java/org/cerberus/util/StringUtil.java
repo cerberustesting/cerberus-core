@@ -1,4 +1,4 @@
-/**
+ /**
  * Cerberus Copyright (C) 2013 - 2017 cerberustesting
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -19,7 +19,9 @@
  */
 package org.cerberus.util;
 
+import java.util.List;
 import java.util.Random;
+import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.script.ScriptEngine;
@@ -27,6 +29,8 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.web.util.HtmlUtils;
@@ -38,6 +42,8 @@ import org.springframework.web.util.HtmlUtils;
  * @version 1.0, 10/01/2013
  * @since 2.0.0
  */
+
+
 public final class StringUtil {
 
     /**
@@ -436,6 +442,49 @@ public final class StringUtil {
         } else {
             return prefix + text;
         }
+    }
+
+    /**
+     *
+     * @param jsonResult
+     * @return
+     */
+    public static String convertToString(JSONArray jsonResult) {
+        String result = "";
+        try {
+            if (jsonResult.length() >= 1) {
+                for (int i = 0; i < jsonResult.length(); i++) {
+                    if (i == 0) {
+                        result = jsonResult.getString(i);
+                    } else {
+                        result += "," + jsonResult.getString(i);
+                    }
+                }
+            }
+        } catch (JSONException ex) {
+            LOG.error("JSONException in convertToString.", ex);
+        }
+        return result;
+    }
+
+    /**
+     *
+     * @param jsonResult
+     * @return
+     */
+    public static String convertToString(List<String> jsonResult) {
+        String result = "";
+        boolean first = true;
+        for (String string : jsonResult) {
+            if (first == true) {
+                first = false;
+                result = string;
+            } else {
+                result += "," + string;
+            }
+
+        }
+        return result;
     }
 
 }

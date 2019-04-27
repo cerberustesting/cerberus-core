@@ -68,11 +68,11 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  */
 @WebServlet(name = "RunTestCaseV001", urlPatterns = {"/RunTestCaseV001"})
 public class RunTestCaseV001 extends HttpServlet {
-    
+
     private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(RunTestCaseV001.class);
-    
+
     public static final String SERVLET_URL = "/RunTestCaseV001";
-    
+
     public static final String PARAMETER_TEST = "Test";
     public static final String PARAMETER_TEST_CASE = "TestCase";
     public static final String PARAMETER_COUNTRY = "Country";
@@ -104,11 +104,11 @@ public class RunTestCaseV001 extends HttpServlet {
     public static final String AUTOMATIC_RUN = "autoRun";
     public static final String PARAMETER_SCREEN_SIZE = "screenSize";
     public static final String PARAMETER_EXECUTOR = "executor";
-    
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         PrintWriter out = response.getWriter();
-        
+
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
 
         // Calling Servlet Transversal Util.
@@ -163,7 +163,7 @@ public class RunTestCaseV001 extends HttpServlet {
         manualExecution = ParameterParserUtil.parseStringParam(request.getParameter("manualExecution"), "N");
         int numberOfRetries = ParameterParserUtil.parseIntegerParam(request.getParameter("retries"), 0);
         screenSize = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("screenSize"), "");
-        
+
         robot = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("robot"), "");
         robotHost = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("ss_ip"), "");
         robotPort = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("ss_p"), "");
@@ -175,7 +175,7 @@ public class RunTestCaseV001 extends HttpServlet {
         // hidden parameters.
         long idFromQueue = ParameterParserUtil.parseIntegerParam(request.getParameter("IdFromQueue"), 0);
         String executor = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("executor"), ParameterParserUtil.parseStringParamAndSanitize(request.getRemoteUser(), null));
-        
+
         String helpMessage = "\nThis servlet is used to start the execution of a test case.\n"
                 + "Parameter list :\n"
                 + "- Test [mandatory] : Test to execute. [" + test + "]\n"
@@ -204,7 +204,7 @@ public class RunTestCaseV001 extends HttpServlet {
                 + "- seleniumLog : Get the SeleniumLog at the end of the execution. [" + getSeleniumLog + "]\n"
                 + "- manualExecution : Execute testcase in manual mode. [" + manualExecution + "]\n"
                 + "- retries : Number of tries if the result is not OK. [" + numberOfRetries + "]\n";
-        
+
         boolean error = false;
         String errorMessage = "";
 
@@ -262,13 +262,13 @@ public class RunTestCaseV001 extends HttpServlet {
         if (!StringUtil.isNullOrEmpty(tag)) {
             // We create or update it.
             ITagService tagService = appContext.getBean(ITagService.class);
-            tagService.createAuto(tag, "", executor);
+            tagService.createAuto(tag, "", executor, environment, country);
         }
-        
+
         if (!error) {
             //TODO:FN debug messages to be removed
             LOG.debug("STARTED: Test " + test + "-" + testCase);
-            
+
             IRunTestCaseService runTestCaseService = appContext.getBean(IRunTestCaseService.class);
             IFactoryTestCase factoryTCase = appContext.getBean(IFactoryTestCase.class);
             IFactoryTestCaseExecution factoryTCExecution = appContext.getBean(IFactoryTestCaseExecution.class);
@@ -289,7 +289,7 @@ public class RunTestCaseV001 extends HttpServlet {
              */
             try {
                 tCExecution.setQueueID(idFromQueue);
-                
+
                 TestCaseExecutionQueue queueExecution = factoryTCExecutionQueue.create(idFromQueue, "", test, testCase, country, environment, robot, "", robotHost, robotPort, browser, version,
                         platform, screenSize, 0, myHost, myContextRoot, myLoginRelativeURL, myEnvData, tag, screenshot, verbose, timeout, getPageSource, getSeleniumLog, 0, numberOfRetries,
                         manualExecution, executor, null, null, null);
@@ -321,7 +321,7 @@ public class RunTestCaseV001 extends HttpServlet {
                 if (tCExecution.getId() == 0) {
                     executionUUIDObject.removeExecutionUUID(tCExecution.getExecutionUUID());
                     LOG.debug("Clean ExecutionUUID");
-                    
+
                 }
             } catch (Exception ex) {
                 LOG.error("Exception cleaning Memory: ", ex);
@@ -331,9 +331,9 @@ public class RunTestCaseV001 extends HttpServlet {
              * Execution is finished we report the result.
              */
             long runID = tCExecution.getId();
-            
+
             switch (outputFormat) {
-                
+
                 case "gui":
                     if (runID > 0) { // Execution has been created.
                         response.sendRedirect("TestCaseExecution.jsp?executionId=" + runID);
@@ -386,7 +386,7 @@ public class RunTestCaseV001 extends HttpServlet {
                         out.println("</html>");
                     }
                     break;
-                
+
                 case "verbose-txt":
                     response.setContentType("text/plain");
                     String separator = " = ";
@@ -422,12 +422,12 @@ public class RunTestCaseV001 extends HttpServlet {
                     out.println("controlMessage" + separator + tCExecution.getResultMessage().getDescription());
                     out.println("controlStatus" + separator + tCExecution.getResultMessage().getCodeString());
                     break;
-                
+
                 case "verbose-json":
                 case "json":
                     try {
                         JSONObject jsonResponse = new JSONObject();
-                        
+
                         if (runID > 0) { // Execution has been created.
                             TestCaseExecution t = (TestCaseExecution) tces.readByKeyWithDependency(tCExecution.getId()).getItem();
                             out.print(tCExecution.toJson(true).toString());
@@ -466,9 +466,9 @@ public class RunTestCaseV001 extends HttpServlet {
                             jsonResponse.put("environment", environment);
                             jsonResponse.put("controlStatus", tCExecution.getResultMessage().getCodeString());
                             jsonResponse.put("controlMessage", tCExecution.getResultMessage().getDescription());
-                            
+
                         }
-                        
+
                         response.setContentType("application/json");
                         response.setCharacterEncoding("utf8");
                         response.getWriter().print(jsonResponse.toString());
@@ -480,7 +480,7 @@ public class RunTestCaseV001 extends HttpServlet {
                         response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
                     }
                     break;
-                
+
                 default:
                     response.setContentType("text/plain");
                     DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_DISPLAY);
@@ -493,12 +493,12 @@ public class RunTestCaseV001 extends HttpServlet {
                             + tCExecution.getResultMessage().getCode()
                             + " " + tCExecution.getResultMessage().getDescription());
             }
-            
+
         } else {
             // An error occured when parsing the parameters.
 
             switch (outputFormat) {
-                
+
                 case "verbose-txt":
                     response.setContentType("text/plain");
                     String separator = " = ";
@@ -532,7 +532,7 @@ public class RunTestCaseV001 extends HttpServlet {
                     out.println("controlMessage" + separator + MessageGeneralEnum.EXECUTION_FA_SERVLETVALIDATONS.getDescription() + " " + errorMessage);
                     out.println("controlStatus" + separator + MessageGeneralEnum.EXECUTION_FA_SERVLETVALIDATONS.getCodeString());
                     break;
-                
+
                 case "json":
                 case "verbose-json":
                     try {
@@ -569,7 +569,7 @@ public class RunTestCaseV001 extends HttpServlet {
                         jsonResponse.put("environment", environment);
                         jsonResponse.put("controlStatus", MessageGeneralEnum.EXECUTION_FA_SERVLETVALIDATONS.getCodeString());
                         jsonResponse.put("controlMessage", MessageGeneralEnum.EXECUTION_FA_SERVLETVALIDATONS.getDescription() + " " + errorMessage);
-                        
+
                         response.setContentType("application/json");
                         response.setCharacterEncoding("utf8");
                         response.getWriter().print(jsonResponse.toString());
@@ -581,7 +581,7 @@ public class RunTestCaseV001 extends HttpServlet {
                         response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
                     }
                     break;
-                
+
                 default:
                     // In case of errors, we display the help message.
                     response.setContentType("text/plain");
@@ -596,8 +596,8 @@ public class RunTestCaseV001 extends HttpServlet {
                             + " " + MessageGeneralEnum.EXECUTION_FA_SERVLETVALIDATONS.getDescription() + " " + errorMessage;
                     out.println(errorMessageFinal);
             }
-            
+
         }
-        
+
     }
 }

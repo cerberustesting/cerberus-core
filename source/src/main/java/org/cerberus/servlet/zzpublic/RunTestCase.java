@@ -296,7 +296,7 @@ public class RunTestCase extends HttpServlet {
         if (!StringUtil.isNullOrEmpty(tag)) {
             // We create or update it.
             ITagService tagService = appContext.getBean(ITagService.class);
-            tagService.createAuto(tag, "", executor);
+            tagService.createAuto(tag, "", executor, environment, country);
         }
 
         if (!error) {

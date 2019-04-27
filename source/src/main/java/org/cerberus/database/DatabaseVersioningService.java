@@ -8045,6 +8045,18 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // 1400
         a.add("ALTER TABLE `testcaseexecution` ADD COLUMN `TestCasePriority` INT(1) UNSIGNED NOT NULL DEFAULT '0' AFTER `TestCaseVersion`;");
 
+        // 1401
+        a.add("ALTER TABLE `tag`  ADD COLUMN `CountryList` TEXT NULL AFTER `CIResult`, ADD COLUMN `EnvironmentList` TEXT NULL AFTER `CountryList`"
+                + ", ADD COLUMN `RobotDecliList` TEXT NULL AFTER `EnvironmentList`, ADD COLUMN `SystemList` TEXT NULL AFTER `RobotDecliList`"
+                + ", ADD COLUMN `ApplicationList` TEXT NULL AFTER `SystemList`, ADD COLUMN `ReqCountryList` TEXT NULL AFTER `ApplicationList`, ADD COLUMN `ReqEnvironmentList` TEXT NULL AFTER `ReqCountryList`;");
+
+        // New design Login page
+        // 1402-1403
+        a.add("UPDATE `parameter` SET description=\"Cerberus End of tag execution notification email body. %TAG%, %ENVIRONMENTLIST%, %COUNTRYLIST%, %APPLICATIONLIST%, %SYSTEMLIST%, %ROBOTDECLILIST%, %URLTAGREPORT%, %CAMPAIGN%, %TAGDURATION%, %TAGSTART%, %TAGEND%, %CIRESULT%, %CISCORE%, %CISCORETHRESHOLD%, %TAGGLOBALSTATUS% and %TAGTCDETAIL% can be used as variables.\" "
+                + ", value=replace(replace(value,'%CISCORETHRESHOLD%</td>','%CISCORETHRESHOLD%</td><td>%ENVIRONMENTLIST%</td><td>%COUNTRYLIST%</td>'),'Threshold</td>','Threshold</td><td>Environments</td><td>Countries</td>') where param='cerberus_notification_tagexecutionend_body';");
+        a.add("UPDATE `parameter` SET description=\"Cerberus start of tag execution notification email body. %TAG%, %REQENVIRONMENTLIST%, %REQCOUNTRYLIST%, %URLTAGREPORT% and %CAMPAIGN% can be used as variables.\" "
+                + ", value=replace(value,'The Cerberus Tag Execution %TAG% from campaign %CAMPAIGN% has just started.','Tag <b>%TAG%</b> from campaign <b>%CAMPAIGN%</b> has just started for %REQENVIRONMENTLIST% on %REQCOUNTRYLIST%.') where param='cerberus_notification_tagexecutionstart_body';");
+
         return a;
     }
 

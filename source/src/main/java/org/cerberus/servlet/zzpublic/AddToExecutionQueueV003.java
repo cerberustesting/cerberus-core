@@ -191,8 +191,10 @@ public class AddToExecutionQueueV003 extends HttpServlet {
         selectTestCase = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues(PARAMETER_TESTCASE), null, charset);
         List<String> countries;
         countries = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues(PARAMETER_COUNTRY), null, charset);
+        String reqCountries = StringUtil.convertToString(countries);
         List<String> environments;
         environments = ParameterParserUtil.parseListParamAndDecodeAndDeleteEmptyValue(request.getParameterValues(PARAMETER_ENVIRONMENT), null, charset);
+        String reqEnvironments = StringUtil.convertToString(environments);
         List<String> robots = new ArrayList<>();
         robots = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues(PARAMETER_ROBOT), robots, charset);
 
@@ -211,7 +213,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
         String manualEnvData = ParameterParserUtil.parseStringParamAndDecode(request.getParameter(PARAMETER_MANUAL_ENV_DATA), null, charset);
         String outputFormat = ParameterParserUtil.parseStringParamAndDecode(request.getParameter(PARAMETER_OUTPUTFORMAT), DEFAULT_VALUE_OUTPUTFORMAT, charset);
         String executor = ParameterParserUtil.parseStringParamAndDecode(request.getParameter(PARAMETER_EXECUTOR), null, charset);
-        
+
         int screenshot = DEFAULT_VALUE_SCREENSHOT;
         int verbose = DEFAULT_VALUE_VERBOSE;
         String timeout = request.getParameter(PARAMETER_TIMEOUT);
@@ -304,7 +306,11 @@ public class AddToExecutionQueueV003 extends HttpServlet {
             if (myuser == null) {
                 myuser = "";
             }
-            tag = mCampaign.getTag().replace("%TIMESTAMP%", mytimestamp).replace("%USER%", myuser);
+            tag = mCampaign.getTag()
+                    .replace("%TIMESTAMP%", mytimestamp)
+                    .replace("%USER%", myuser)
+                    .replace("%REQCOUNTRYLIST%", reqCountries)
+                    .replace("%REQENVIRONMENTLIST%", reqEnvironments);
         } else if (tag == null || tag.isEmpty()) {
             if (request.getRemoteUser() != null) {
                 tag = request.getRemoteUser();
@@ -476,10 +482,9 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                                             if (!StringUtil.isNullOrEmpty(tag) && !tagAlreadyAdded) {
                                                 // We create or update it.
                                                 ITagService tagService = appContext.getBean(ITagService.class);
-                                                tagService.createAuto(tag, campaign, user);
+                                                tagService.createAuto(tag, campaign, user, reqEnvironments, reqCountries);
                                                 tagAlreadyAdded = true;
                                             }
-
 
                                             // manage manual host for this execution
                                             String manualHostforThisApplicatin = getManualHostForThisApplication(manualHost, app.getApplication());
@@ -668,20 +673,23 @@ public class AddToExecutionQueueV003 extends HttpServlet {
     }
 
     /**
-     * manual host can be  just 'manualHost1' (case 1) or `applicationname1:manualhost1;applicationname2:manualhost2;...` (cases 2)
+     * manual host can be just 'manualHost1' (case 1) or
+     * `applicationname1:manualhost1;applicationname2:manualhost2;...` (cases 2)
+     *
      * @param manualHost
      * @param application
      * @return
      */
     private String getManualHostForThisApplication(String manualHost, String application) {
-        if(! StringUtil.isNullOrEmpty(manualHost) && !manualHost.contains(":")) return manualHost; // if no :, just return manual host (case 1)
-
+        if (!StringUtil.isNullOrEmpty(manualHost) && !manualHost.contains(":")) {
+            return manualHost; // if no :, just return manual host (case 1)
+        }
         // (case 2)
-        if(! StringUtil.isNullOrEmpty(manualHost)) {
-            String[] manualHostByApp  = manualHost.split(";");
-            for(String appManualHost : manualHostByApp) {
+        if (!StringUtil.isNullOrEmpty(manualHost)) {
+            String[] manualHostByApp = manualHost.split(";");
+            for (String appManualHost : manualHostByApp) {
                 String[] appAndHost = appManualHost.split(":");
-                if(appAndHost.length >= 2 && appAndHost[0].equals(application)) {
+                if (appAndHost.length >= 2 && appAndHost[0].equals(application)) {
                     return appAndHost[1];
                 }
             }
