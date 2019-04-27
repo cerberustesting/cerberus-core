@@ -79,6 +79,11 @@ And run the release cmd :
        -e RELEASE_VERSION <release version> 
        -s ./release.cmds
 
+Go to the 2 other docker images in order to perform the same release command.
+
+    cd <path_to_cerberusclone>/release/cerberus-source/docker/images/cerberus-as-tomcat
+    cd <path_to_cerberusclone>/release/cerberus-source/docker/images/cerberus-as-tomcat-keycloak
+
 NB : If under Windows, you can submit the command from docker bash.
 
 
