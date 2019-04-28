@@ -259,7 +259,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
 
         List<JSONObject> testCaseDep = new ArrayList<>();
 
-        if(testCaseExecution.getTestCaseDep() != null) {
+        if (testCaseExecution.getTestCaseDep() != null) {
             for (TestCaseExecutionQueueDep tce : testCaseExecution.getTestCaseDep()) {
                 JSONObject obj = new JSONObject();
                 obj.put("test", tce.getDepTest());
@@ -713,7 +713,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                 }
 
                 // Create Node.
-                node = new TreeNode(label.getId() + "-" + label.getSystem() + "-" + label.getLabel(), label.getId(), label.getParentLabelID(), text, null, null, false);
+                node = new TreeNode(label.getId() + "-" + label.getSystem() + "-" + label.getLabel(), label.getSystem(), label.getLabel(), label.getId(), label.getParentLabelID(), text, null, null, false);
                 node.setCounter1(0);
                 node.setCounter1WithChild(0);
                 node.setTags(attributList);

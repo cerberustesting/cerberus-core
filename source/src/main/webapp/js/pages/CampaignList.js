@@ -169,19 +169,23 @@ function aoColumnsFunc(tableId) {
                                         name="editTestcampaign" title="' + doc.getDocLabel("page_testcampaign", "button_edit") + '" type="button">\n\
                                         <span class="glyphicon glyphicon-pencil"></span></button>';
                 var removeTestcampaign = '<button id="removeTestcampaign" onclick="removeEntryClick(\'' + obj["campaign"] + '\');"\n\
-                                        class="removeTestcampaign btn btn-default btn-xs margin-right5" \n\
+                                        class="removeTestcampaign btn btn-default btn-xs margin-right25" \n\
                                         name="removeTestcampaign" title="' + doc.getDocLabel("page_testcampaign", "button_remove") + '" type="button">\n\
                                         <span class="glyphicon glyphicon-trash"></span></button>';
                 var viewTestcampaign = '<button id="viewTestcampaign" onclick="viewEntryClick(\'' + obj["campaign"] + '\');"\n\
                                         class="viewTestcampaign btn btn-default btn-xs margin-right5" \n\
                                         name="viewTestcampaign" title="' + doc.getDocLabel("page_testcampaign", "button_view") + '" type="button">\n\
-                                        <span class="glyphicon glyphicon-eye-open"></span></button>';
+                                        <span class="glyphicon glyphicon-list"></span></button>';
+                var viewStatcampaign = '<button id="viewStatcampaign" onclick="viewStatEntryClick(\'' + obj["campaign"] + '\');"\n\
+                                        class="viewStatcampaign btn btn-default btn-xs margin-right5" \n\
+                                        name="viewStatcampaign" title="' + doc.getDocLabel("page_testcampaign", "button_view") + '" type="button">\n\
+                                        <span class="glyphicon glyphicon-stats"></span></button>';
                 var Runcampaign = '<a id="runcampaign" class="btn btn-primary btn-xs margin-right5"\n\
                                     href="./RunTests.jsp?campaign=' + encodeURIComponent(obj["campaign"]) + '" title="' + doc.getDocLabel("page_testcampaign", "button_run") + '" >\n\
                                     <span class="glyphicon glyphicon-play"></span>\n\
                                     </a>';
 
-                return '<div class="center btn-group">' + editTestcampaign + removeTestcampaign + viewTestcampaign + Runcampaign + '</div>';
+                return '<div class="center btn-group">' + editTestcampaign + removeTestcampaign + viewTestcampaign + viewStatcampaign + Runcampaign + '</div>';
 
             }
         },

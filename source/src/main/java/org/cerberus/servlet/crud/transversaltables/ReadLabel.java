@@ -331,7 +331,7 @@ public class ReadLabel extends HttpServlet {
                 }
 
                 // Create Node.
-                node = new TreeNode(label.getId() + "-" + label.getSystem() + "-" + label.getLabel(), label.getId(), label.getParentLabelID(), text, null, null, false);
+                node = new TreeNode(label.getId() + "-" + label.getSystem() + "-" + label.getLabel(), label.getSystem(), label.getLabel(), label.getId(), label.getParentLabelID(), text, null, null, false);
                 node.setCounter1(label.getCounter1());
                 node.setCounter1WithChild(label.getCounter1());
                 node.setTags(attributList);

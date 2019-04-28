@@ -201,7 +201,7 @@ function viewEntryClick(param) {
     showLoader("#testcampaignList");
 
 
-    var jqxhr = $.getJSON("ReadCampaign?testcase=true&tag=true&", "campaign=" + param);
+    var jqxhr = $.getJSON("ReadCampaign?testcase=true&", "campaign=" + param);
     $.when(jqxhr).then(function (data) {
         var obj = data["contentTable"];
 
@@ -225,6 +225,31 @@ function viewEntryClick(param) {
             createDataTableWithPermissions(configurations, renderOptionsForCampaign_TestCase, "#viewTestcampaignList", undefined, true);
         }
 
+        hideLoader("#testcampaignList");
+
+        formEdit.modal('show');
+
+    });
+
+}
+
+function viewStatEntryClick(param) {
+    clearResponseMessageMainPage();
+
+    var doc = new Doc();
+    var formEdit = $('#viewStatcampaignModal');
+
+    $("[name='viewStatcampaignField']").html(doc.getDocLabel("page_testcampaign", "viewtestcampaign_field") + " " + param);
+
+    $("#campaignKey").val(param);
+
+    showLoader("#testcampaignList");
+
+
+    var jqxhr = $.getJSON("ReadCampaign?tag=true&", "campaign=" + param);
+    $.when(jqxhr).then(function (data) {
+        var obj = data["contentTable"];
+
         /* TAG */
 
         var array = [];
@@ -235,9 +260,9 @@ function viewEntryClick(param) {
                     );
         });
 
-        if ($("#viewTestcampaignModal #viewTagcampaignsTable_wrapper").length > 0) {
-            $("#viewTestcampaignModal #viewTagcampaignsTable").DataTable().clear();
-            $("#viewTestcampaignModal #viewTagcampaignsTable").DataTable().rows.add(array).draw();
+        if ($("#viewStatcampaignModal #viewTagcampaignsTable_wrapper").length > 0) {
+            $("#viewStatcampaignModal #viewTagcampaignsTable").DataTable().clear();
+            $("#viewStatcampaignModal #viewTagcampaignsTable").DataTable().rows.add(array).draw();
 
         } else {
             //configure and create the dataTable

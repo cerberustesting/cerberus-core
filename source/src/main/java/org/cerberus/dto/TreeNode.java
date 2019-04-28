@@ -35,6 +35,8 @@ public class TreeNode {
 
     private String key;
     private Integer id;
+    private String system;
+    private String label;
     private Integer parentId;
     private String text;
     private String icon;
@@ -62,8 +64,10 @@ public class TreeNode {
 
     private static final Logger LOG = LogManager.getLogger(TreeNode.class);
 
-    public TreeNode(String key, Integer id, Integer parentId, String text, String icon, String href, boolean selectable) {
+    public TreeNode(String key, String system, String label, Integer id, Integer parentId, String text, String icon, String href, boolean selectable) {
         this.key = key;
+        this.system = system;
+        this.label = label;
         this.id = id;
         this.parentId = parentId;
         this.text = text;
@@ -82,6 +86,22 @@ public class TreeNode {
         this.nbQE = 0;
         this.nbQU = 0;
         this.nbCA = 0;
+    }
+
+    public String getSystem() {
+        return system;
+    }
+
+    public void setSystem(String system) {
+        this.system = system;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
     }
 
     public Integer getNbOK() {

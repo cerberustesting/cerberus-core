@@ -4,7 +4,12 @@
 
 *Improvements / New features*
 [square]
-* none
+* Labels Tree are now sorted by label name. #1962
+* Separated Campaign label modal that display loist of testcase from the one that display the stats of past tag executions. #1962
+* Tag now store the list of requested countries and environments at the start of the campaign execution. It also store the real executed list of countries, environments, robot declinations, systems and applications. #1815.
+* On start email notification the variables %REQENVIRONMENTLIST% and %REQCOUNTRYLIST% can be used. #1815.
+* At the end of notification, the variables %ENVIRONMENTLIST% %COUNTRYLIST% %APPLICATIONLIST% %SYSTEMLIST% %ROBOTDECLILIST% %REQENVIRONMENTLIST% %REQCOUNTRYLIST% can be used. #1815.
+* On tag definition (at cmpaign level or on runtest page), the variables %REQENVIRONMENTLIST% and %REQCOUNTRYLIST% can be used. ('cerberus_tagvariable_separator' parameter can be used in order to define the separator to use) #1815.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

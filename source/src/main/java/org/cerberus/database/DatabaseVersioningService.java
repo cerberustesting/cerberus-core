@@ -8057,6 +8057,11 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add("UPDATE `parameter` SET description=\"Cerberus start of tag execution notification email body. %TAG%, %REQENVIRONMENTLIST%, %REQCOUNTRYLIST%, %URLTAGREPORT% and %CAMPAIGN% can be used as variables.\" "
                 + ", value=replace(value,'The Cerberus Tag Execution %TAG% from campaign %CAMPAIGN% has just started.','Tag <b>%TAG%</b> from campaign <b>%CAMPAIGN%</b> has just started for %REQENVIRONMENTLIST% on %REQCOUNTRYLIST%.') where param='cerberus_notification_tagexecutionstart_body';");
 
+        // New parameters.
+        // 1404
+        a.add("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES "
+                + "('', 'cerberus_tagvariable_separator', '-', 'Text or character that will be used as separator on the list of environment and countries on variable %REQENVIRONMENTLIST% and %REQCOUNTRYLIST% at tag level.');");
+
         return a;
     }
 
