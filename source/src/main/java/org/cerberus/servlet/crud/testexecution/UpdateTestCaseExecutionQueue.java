@@ -42,6 +42,7 @@ import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerUtil;
 import org.cerberus.util.servlet.ServletUtil;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.owasp.html.PolicyFactory;
@@ -134,7 +135,7 @@ public class UpdateTestCaseExecutionQueue extends HttpServlet {
         if (!StringUtil.isNullOrEmpty(tag)) {
             // We create or update it.
             ITagService tagService = appContext.getBean(ITagService.class);
-            tagService.createAuto(tag, "", request.getRemoteUser(), environment, country);
+            tagService.createAuto(tag, "", request.getRemoteUser(), new JSONArray(environment), new JSONArray(country));
         }
 
         // Prepare the final answer.

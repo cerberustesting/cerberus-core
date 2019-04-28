@@ -44,6 +44,7 @@ import org.cerberus.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.cerberus.service.email.IEmailGenerationService;
+import org.json.JSONArray;
 
 /**
  *
@@ -308,7 +309,9 @@ public class EmailGenerationService implements IEmailGenerationService {
         }
 
         Tag mytag = tagService.convert(tagService.readByKey(tag));
-        
+        String myEnvironmentList = StringUtil.convertToString(new JSONArray(mytag.getReqEnvironmentList()), ",");
+        String myCountryList = StringUtil.convertToString(new JSONArray(mytag.getReqCountryList()), ",");
+
         StringBuilder urlreporttag = new StringBuilder();
         urlreporttag.append(cerberusUrl);
         urlreporttag.append("/ReportingExecutionByTag.jsp?Tag=");
@@ -316,14 +319,13 @@ public class EmailGenerationService implements IEmailGenerationService {
         body = body.replace("%TAG%", tag);
         body = body.replace("%URLTAGREPORT%", urlreporttag.toString());
         body = body.replace("%CAMPAIGN%", campaign);
-        body = body.replace("%REQENVIRONMENTLIST%", mytag.getReqEnvironmentList());
-        body = body.replace("%REQCOUNTRYLIST%", mytag.getReqCountryList());
-
+        body = body.replace("%REQENVIRONMENTLIST%", myEnvironmentList);
+        body = body.replace("%REQCOUNTRYLIST%", myCountryList);
 
         subject = subject.replace("%TAG%", tag);
         subject = subject.replace("%CAMPAIGN%", campaign);
-        subject = subject.replace("%REQENVIRONMENTLIST%", mytag.getReqEnvironmentList());
-        subject = subject.replace("%REQCOUNTRYLIST%", mytag.getReqCountryList());
+        subject = subject.replace("%REQENVIRONMENTLIST%", myEnvironmentList);
+        subject = subject.replace("%REQCOUNTRYLIST%", myCountryList);
 
         email = emailFactory.create(host, port, userName, password, true, subject, body, from, to, null);
 
@@ -371,14 +373,23 @@ public class EmailGenerationService implements IEmailGenerationService {
             body = body.replace("%CISCORE%", String.valueOf(mytag.getCiScore()));
             body = body.replace("%CISCORETHRESHOLD%", String.valueOf(mytag.getCiScoreThreshold()));
 
-            body = body.replace("%ENVIRONMENTLIST%", mytag.getEnvironmentList());
-            body = body.replace("%COUNTRYLIST%", mytag.getCountryList());
-            body = body.replace("%APPLICATIONLIST%", mytag.getApplicationList());
-            body = body.replace("%SYSTEMLIST%", mytag.getSystemList());
-            body = body.replace("%ROBOTDECLILIST%", mytag.getRobotDecliList());
+            String myEnvironmentList = StringUtil.convertToString(new JSONArray(mytag.getEnvironmentList()), ",");
+            String myCountryList = StringUtil.convertToString(new JSONArray(mytag.getCountryList()), ",");
+            String myApplicationList = StringUtil.convertToString(new JSONArray(mytag.getApplicationList()), ",");
+            String mySystemList = StringUtil.convertToString(new JSONArray(mytag.getSystemList()), ",");
+            String myRobotList = StringUtil.convertToString(new JSONArray(mytag.getRobotDecliList()), ",");
 
-            body = body.replace("%REQENVIRONMENTLIST%", mytag.getReqEnvironmentList());
-            body = body.replace("%REQCOUNTRYLIST%", mytag.getReqCountryList());
+            body = body.replace("%ENVIRONMENTLIST%", myEnvironmentList);
+            body = body.replace("%COUNTRYLIST%", myCountryList);
+            body = body.replace("%APPLICATIONLIST%", myApplicationList);
+            body = body.replace("%SYSTEMLIST%", mySystemList);
+            body = body.replace("%ROBOTDECLILIST%", myRobotList);
+
+            String myReqEnvironmentList = StringUtil.convertToString(new JSONArray(mytag.getReqEnvironmentList()), ",");
+            String myReqCountryList = StringUtil.convertToString(new JSONArray(mytag.getReqCountryList()), ",");
+
+            body = body.replace("%REQENVIRONMENTLIST%", myReqEnvironmentList);
+            body = body.replace("%REQCOUNTRYLIST%", myReqCountryList);
 
             long tagDur = (mytag.getDateEndQueue().getTime() - mytag.getDateCreated().getTime()) / 60000;
             body = body.replace("%TAGDURATION%", String.valueOf(tagDur));
@@ -481,6 +492,13 @@ public class EmailGenerationService implements IEmailGenerationService {
             // Subject replace.
             subject = subject.replace("%TAG%", tag);
             subject = subject.replace("%CAMPAIGN%", campaign);
+            subject = subject.replace("%ENVIRONMENTLIST%", myEnvironmentList);
+            subject = subject.replace("%COUNTRYLIST%", myCountryList);
+            subject = subject.replace("%APPLICATIONLIST%", myApplicationList);
+            subject = subject.replace("%SYSTEMLIST%", mySystemList);
+            subject = subject.replace("%ROBOTDECLILIST%", myRobotList);
+            subject = subject.replace("%REQENVIRONMENTLIST%", myReqEnvironmentList);
+            subject = subject.replace("%REQCOUNTRYLIST%", myReqCountryList);
 
             email = emailFactory.create(host, port, userName, password, true, subject, body, from, to, null);
 

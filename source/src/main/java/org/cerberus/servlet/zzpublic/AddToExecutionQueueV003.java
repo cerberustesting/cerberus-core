@@ -50,6 +50,7 @@ import org.cerberus.crud.factory.IFactoryTestCaseExecutionQueue;
 import org.cerberus.crud.service.IApplicationService;
 import org.cerberus.crud.service.ICountryEnvParamService;
 import org.cerberus.crud.service.IInvariantService;
+import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.IRobotService;
 import org.cerberus.crud.service.ITagService;
 import org.cerberus.crud.service.ITestCaseCountryService;
@@ -129,6 +130,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
     private ICountryEnvParamService countryEnvParamService;
     private IRobotService robotService;
     private IFactoryRobot robotFactory;
+    private IParameterService parameterService;
 
     /**
      * Process request for both GET and POST method.
@@ -165,6 +167,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
         countryEnvParamService = appContext.getBean(ICountryEnvParamService.class);
         robotService = appContext.getBean(IRobotService.class);
         robotFactory = appContext.getBean(IFactoryRobot.class);
+        parameterService = appContext.getBean(IParameterService.class);
 
         // Calling Servlet Transversal Util.
         ServletUtil.servletStart(request);
@@ -191,10 +194,12 @@ public class AddToExecutionQueueV003 extends HttpServlet {
         selectTestCase = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues(PARAMETER_TESTCASE), null, charset);
         List<String> countries;
         countries = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues(PARAMETER_COUNTRY), null, charset);
-        String reqCountries = StringUtil.convertToString(countries);
         List<String> environments;
         environments = ParameterParserUtil.parseListParamAndDecodeAndDeleteEmptyValue(request.getParameterValues(PARAMETER_ENVIRONMENT), null, charset);
-        String reqEnvironments = StringUtil.convertToString(environments);
+
+        JSONArray countryJSONArray = new JSONArray(countries);
+        JSONArray envJSONArray = new JSONArray(environments);
+
         List<String> robots = new ArrayList<>();
         robots = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues(PARAMETER_ROBOT), robots, charset);
 
@@ -306,6 +311,8 @@ public class AddToExecutionQueueV003 extends HttpServlet {
             if (myuser == null) {
                 myuser = "";
             }
+            String reqEnvironments = StringUtil.convertToString(environments, parameterService.getParameterStringByKey("cerberus_tagvariable_separator", "", "-"));
+            String reqCountries = StringUtil.convertToString(countries, parameterService.getParameterStringByKey("cerberus_tagvariable_separator", "", "-"));
             tag = mCampaign.getTag()
                     .replace("%TIMESTAMP%", mytimestamp)
                     .replace("%USER%", myuser)
@@ -482,7 +489,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                                             if (!StringUtil.isNullOrEmpty(tag) && !tagAlreadyAdded) {
                                                 // We create or update it.
                                                 ITagService tagService = appContext.getBean(ITagService.class);
-                                                tagService.createAuto(tag, campaign, user, reqEnvironments, reqCountries);
+                                                tagService.createAuto(tag, campaign, user, envJSONArray, countryJSONArray);
                                                 tagAlreadyAdded = true;
                                             }
 

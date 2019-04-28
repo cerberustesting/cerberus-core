@@ -27,6 +27,7 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
+import org.json.JSONArray;
 
 /**
  *
@@ -132,7 +133,7 @@ public interface ITagService {
      * @param reqCountryList
      * @return
      */
-    Answer createAuto(String tag, String campaign, String user, String reqEnvironmentList, String reqCountryList);
+    Answer createAuto(String tag, String campaign, String user, JSONArray reqEnvironmentList, JSONArray reqCountryList);
 
     /**
      *

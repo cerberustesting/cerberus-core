@@ -24,7 +24,9 @@ import java.io.PrintWriter;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -54,6 +56,7 @@ import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerUtil;
 import org.cerberus.util.servlet.ServletUtil;
 import org.cerberus.version.Infos;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
@@ -262,7 +265,11 @@ public class RunTestCaseV001 extends HttpServlet {
         if (!StringUtil.isNullOrEmpty(tag)) {
             // We create or update it.
             ITagService tagService = appContext.getBean(ITagService.class);
-            tagService.createAuto(tag, "", executor, environment, country);
+            List<String> envList = new ArrayList<>();
+            envList.add(environment);
+            List<String> countryList = new ArrayList<>();
+            countryList.add(country);
+            tagService.createAuto(tag, "", executor, new JSONArray(envList), new JSONArray(countryList));
         }
 
         if (!error) {

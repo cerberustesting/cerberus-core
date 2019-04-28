@@ -43,7 +43,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class SetTagToExecution extends HttpServlet {
 
     private static final Logger LOG = LogManager.getLogger(SetTagToExecution.class);
-    
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -70,7 +70,7 @@ public class SetTagToExecution extends HttpServlet {
             if (!StringUtil.isNullOrEmpty(tag)) {
                 // We create or update it.
                 ITagService tagService = appContext.getBean(ITagService.class);
-                tagService.createAuto(tag, "", request.getRemoteUser(),"","");
+                tagService.createAuto(tag, "", request.getRemoteUser(), null, null);
             }
 
             /* TODO output your page here. You may use following sample code. */

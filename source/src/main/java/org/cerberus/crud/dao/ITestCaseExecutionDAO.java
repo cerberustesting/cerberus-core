@@ -134,6 +134,7 @@ public interface ITestCaseExecutionDAO {
      *
      * @param id : ID of the execution
      * @param tag : Tag to set to the execution
+     * @throws org.cerberus.exception.CerberusException
      */
     public void setTagToExecution(long id, String tag) throws CerberusException;
 

@@ -1,4 +1,4 @@
- /**
+/**
  * Cerberus Copyright (C) 2013 - 2017 cerberustesting
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -42,8 +42,6 @@ import org.springframework.web.util.HtmlUtils;
  * @version 1.0, 10/01/2013
  * @since 2.0.0
  */
-
-
 public final class StringUtil {
 
     /**
@@ -447,17 +445,21 @@ public final class StringUtil {
     /**
      *
      * @param jsonResult
+     * @param separator
      * @return
      */
-    public static String convertToString(JSONArray jsonResult) {
+    public static String convertToString(JSONArray jsonResult, String separator) {
         String result = "";
+        if (separator == null) {
+            separator = ",";
+        }
         try {
             if (jsonResult.length() >= 1) {
                 for (int i = 0; i < jsonResult.length(); i++) {
                     if (i == 0) {
                         result = jsonResult.getString(i);
                     } else {
-                        result += "," + jsonResult.getString(i);
+                        result += separator + jsonResult.getString(i);
                     }
                 }
             }
@@ -470,17 +472,21 @@ public final class StringUtil {
     /**
      *
      * @param jsonResult
+     * @param separator
      * @return
      */
-    public static String convertToString(List<String> jsonResult) {
+    public static String convertToString(List<String> jsonResult, String separator) {
         String result = "";
+        if (separator == null) {
+            separator = ",";
+        }
         boolean first = true;
         for (String string : jsonResult) {
             if (first == true) {
                 first = false;
                 result = string;
             } else {
-                result += "," + string;
+                result += separator + string;
             }
 
         }

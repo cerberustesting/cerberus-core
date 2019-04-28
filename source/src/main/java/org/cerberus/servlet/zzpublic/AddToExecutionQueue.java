@@ -205,7 +205,7 @@ public class AddToExecutionQueue extends HttpServlet {
             if (!StringUtil.isNullOrEmpty(tag)) {
                 // We create or update it.
                 ITagService tagService = appContext.getBean(ITagService.class);
-                tagService.createAuto(tag, "", "", "", "");
+                tagService.createAuto(tag, "", "", null, null);
             }
 
             // Part 1: Getting all test cases which have been sent to this servlet.
