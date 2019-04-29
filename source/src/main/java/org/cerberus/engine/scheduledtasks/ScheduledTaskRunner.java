@@ -22,6 +22,7 @@ package org.cerberus.engine.scheduledtasks;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
 import org.cerberus.engine.queuemanagement.IExecutionThreadPoolService;
+import org.cerberus.engine.scheduler.SchedulerInit;
 import org.cerberus.exception.CerberusException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -41,11 +42,15 @@ public class ScheduledTaskRunner {
     private ITestCaseExecutionQueueService testCaseExecutionQueueService;
     @Autowired
     private IExecutionThreadPoolService executionThreadPoolService;
+    @Autowired
+    private SchedulerInit schedulerInit;
 
     private int b1TickNumberTarget = 60;
     private int b1TickNumber = 1;
     private int b2TickNumberTarget = 30;
     private int b2TickNumber = 1;
+    private int b3TickNumberTarget = 1;
+    private int b3TickNumber = 1;
 
     private static final org.apache.logging.log4j.Logger LOG = org.apache.logging.log4j.LogManager.getLogger(ScheduledTaskRunner.class);
 
@@ -70,6 +75,14 @@ public class ScheduledTaskRunner {
             b2TickNumber = 1;
             // We trigger the Queue Processing job.
             performBatch2_ProcessQueue();
+        }
+
+        if (b3TickNumber < b3TickNumberTarget) {
+            b3TickNumber++;
+        } else {
+            b3TickNumber = 1;
+            // We trigger the Queue Processing job.
+            performBatch3_SchedulerInit();
         }
 
         LOG.debug("Schedule Stop. " + b1TickNumber + "/" + b1TickNumberTarget + " - " + b2TickNumber + "/" + b2TickNumberTarget);
@@ -97,6 +110,12 @@ public class ScheduledTaskRunner {
             LOG.debug("automaticqueueprocessingjob Task disabled by config (cerberus_automaticqueueprocessingjob_active).");
         }
         LOG.debug("automaticqueueprocessingjob Task ended.");
+    }
+
+    private void performBatch3_SchedulerInit() {
+        LOG.debug("SchedulerInit Task triggered.");
+        schedulerInit.init();
+        LOG.debug("SchedulerInit Task ended.");
     }
 
 }

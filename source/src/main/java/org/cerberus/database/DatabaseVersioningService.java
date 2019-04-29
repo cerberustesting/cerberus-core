@@ -8062,6 +8062,51 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES "
                 + "('', 'cerberus_tagvariable_separator', '-', 'Text or character that will be used as separator on the list of environment and countries on variable %REQENVIRONMENTLIST% and %REQCOUNTRYLIST% at tag level.');");
 
+        // New table for scheduler
+        // 1405
+        b = new StringBuilder();
+        b.append("CREATE TABLE `scheduleentry` (");
+        b.append("  `ID` int(10) NOT NULL AUTO_INCREMENT,");
+        b.append("  `type` varchar(15) NOT NULL DEFAULT 'CAMPAIGN',");
+        b.append("  `name` varchar(100) NOT NULL,");
+        b.append("  `cronDefinition` varchar(45) NOT NULL,");
+        b.append("  `lastExecution` timestamp NOT NULL DEFAULT '1970-01-01 01:01:01',");
+        b.append("  `active` varchar(1) NOT NULL DEFAULT 'Y',");
+        b.append("  `UsrCreated` varchar(45) NOT NULL DEFAULT '',");
+        b.append("  `DateCreated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,");
+        b.append("  `UsrModif` varchar(45) NOT NULL DEFAULT '',");
+        b.append("  `DateModif` timestamp NOT NULL DEFAULT '1970-01-01 01:01:01',");
+        b.append("  PRIMARY KEY (`ID`)");
+        b.append(") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
+        a.add(b.toString());
+
+        // New table for Execution scheduled
+        // 1406
+        b = new StringBuilder();
+        b.append("CREATE TABLE `scheduledexecution` (");
+        b.append("  `ID` bigint(20) NOT NULL AUTO_INCREMENT,");
+        b.append("  `schedulerID` int(10) NOT NULL,");
+        b.append("  `scheduleName` varchar(100) DEFAULT NULL,");
+        b.append("  `scheduledDate` timestamp NOT NULL,");
+        b.append("  `scheduleFireTime` timestamp NOT NULL DEFAULT '1970-01-01 01:01:01',");
+        b.append("  `status` varchar(15) DEFAULT NULL,"); // TOLAUNCH / IGNORED / TRIGGERED / ERROR
+        b.append("  `comment` varchar(250) DEFAULT NULL,");
+        b.append("  `UsrCreated` varchar(45) NOT NULL DEFAULT '',");
+        b.append("  `DateCreated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,");
+        b.append("  `UsrModif` varchar(45) NOT NULL DEFAULT '',");
+        b.append("  `DateModif` timestamp NOT NULL DEFAULT '1970-01-01 01:01:01',");
+        b.append("  PRIMARY KEY (`ID`),");
+        b.append("  UNIQUE KEY `IX_scheduledexecution_01` (`scheduledDate`,`schedulerId`),");
+        b.append("  CONSTRAINT `FK_scheduledexecution_01` FOREIGN KEY (`schedulerID`) REFERENCES `scheduleentry` (`ID`)");
+        b.append(") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
+        a.add(b.toString());
+
+        //Post campaign scheduler in myversion
+        //1407
+        b = new StringBuilder();
+        b.append("insert into myversion values('scheduler_version',0,'INIT');");
+        a.add(b.toString());
+
         return a;
     }
 
