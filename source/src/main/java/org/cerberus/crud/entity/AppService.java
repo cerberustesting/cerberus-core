@@ -19,8 +19,6 @@
  */
 package org.cerberus.crud.entity;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.sql.Timestamp;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;

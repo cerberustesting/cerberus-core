@@ -68,7 +68,7 @@ public class SchedulerInit {
         LOG.debug("Current version of scheduler in Cerberus: " + schedulerVersion);
         LOG.debug("Current version of scheduler in DB: " + MVersion.getValueString());
 
-        if (schedulerVersion.equalsIgnoreCase(MVersion.getValueString())) {
+        if (MVersion.getValueString() == null || schedulerVersion.equalsIgnoreCase(MVersion.getValueString())) {
             LOG.debug("the current version is up to date");
         } else {
             if (isRunning == false) {
