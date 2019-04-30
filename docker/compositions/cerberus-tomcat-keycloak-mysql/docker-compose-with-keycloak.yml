@@ -1,0 +1,67 @@
+version: '3'
+
+volumes:
+  postgres_data:
+      driver: local
+
+services:
+
+  postgres:
+    container_name: keycloak_db
+    image: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: password
+
+  keycloak:
+    container_name: keycloak
+    image: jboss/keycloak
+    environment:
+      DB_VENDOR: POSTGRES
+      DB_ADDR: postgres
+      DB_DATABASE: keycloak
+      DB_USER: keycloak
+      DB_SCHEMA: public
+      DB_PASSWORD: password
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: Pa55w0rd
+    ports:
+      - 38080:8080
+    depends_on:
+      - postgres
+  
+  database:
+    container_name: cerberus_db
+    image: cerberustesting/cerberus-db-mysql:latest
+    expose:
+      - "3306"
+    ports:
+      - "13306:3306"
+    volumes:
+      - ./localdata/mysql-db:/var/lib/mysql
+#      - /etc/localtime:/etc/localtime:ro
+    restart: always
+
+  cerberus-as-tomcat-keycloak:
+    container_name: cerberus
+    image: cerberustesting/cerberus-as-tomcat-keycloak:latest
+    environment:
+      - DATABASE_HOST=database
+      - DATABASE_PORT=3306
+      - KEYCLOACK_URL=http://localhost:38080/auth
+      - KEYCLOACK_REALM=Cerberus
+      - KEYCLOACK_CLIENT=cerberus
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./localdata/cerberusmedia:/opt/CerberusMedias/
+#      - /etc/localtime:/etc/localtime:ro
+    restart: always
+    depends_on:
+      - database
+      - keycloak
+    links:
+      - database
