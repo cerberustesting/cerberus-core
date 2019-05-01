@@ -527,11 +527,11 @@ function runTestCase(doRedirect) {
 
     clearResponseMessageMainPage();
 
-    var paramSerialized = "";
+    var paramSerialized = "e=1";
     if (fromCampaign) {
-        paramSerialized += "campaign=" + $("#campaignSelect").val() + "&";
+        paramSerialized += "&campaign=" + $("#campaignSelect").val();
     }
-    paramSerialized += "tag=" + $("#executionSettingsForm #tag").val();
+    paramSerialized += "&tag=" + encodeURIComponent($("#executionSettingsForm #tag").val());
     paramSerialized += "&screenshot=" + $("#executionSettingsForm #screenshot").val();
     paramSerialized += "&verbose=" + $("#executionSettingsForm #verbose").val();
     paramSerialized += "&timeout=" + $("#executionSettingsForm #timeout").val();

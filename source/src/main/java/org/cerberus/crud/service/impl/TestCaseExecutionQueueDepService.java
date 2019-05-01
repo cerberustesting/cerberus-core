@@ -23,12 +23,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.dao.ITestCaseExecutionQueueDepDAO;
 import org.cerberus.crud.entity.TestCaseExecution;
+import org.cerberus.crud.entity.TestCaseExecutionQueue;
 import org.cerberus.crud.entity.TestCaseExecutionQueueDep;
 import org.cerberus.crud.service.ITestCaseExecutionQueueDepService;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
@@ -99,7 +98,6 @@ public class TestCaseExecutionQueueDepService implements ITestCaseExecutionQueue
         if (tCExecution != null) {
             LOG.debug("Releaase dependencies of Execution : " + tCExecution.getId() + ".");
 
-//            if (tCExecution.getResultMessage().getCodeString().equals("OK")) {
             // We only do the dependency management if there are no longuer retry.
             AnswerItem ansNbDep = updateStatusToRelease(tCExecution.getEnvironment(), tCExecution.getCountry(), tCExecution.getTag(),
                     TestCaseExecutionQueueDep.TYPE_TCEXEEND, tCExecution.getTest(), tCExecution.getTestCase(), "", tCExecution.getId());
@@ -115,8 +113,34 @@ public class TestCaseExecutionQueueDepService implements ITestCaseExecutionQueue
                     executionQueueService.checkAndReleaseQueuedEntry(long1, tCExecution.getTag());
                 }
             }
+        }
+    }
 
-//            }
+    @Override
+    public void manageDependenciesEndOfQueueExecution(long idQueue) {
+        LOG.debug("Releaase dependencies of Queue : " + idQueue + ".");
+
+        try {
+            //, String environment, String country, String tag, String test, String testCase
+            TestCaseExecutionQueue queueEntry = executionQueueService.convert(executionQueueService.readByKey(idQueue));
+
+            // We only do the dependency management if there are no longuer retry.
+            AnswerItem ansNbDep = updateStatusToRelease(queueEntry.getEnvironment(), queueEntry.getCountry(), queueEntry.getTag(),
+                    TestCaseExecutionQueueDep.TYPE_TCEXEEND, queueEntry.getTest(), queueEntry.getTestCase(), "Queue Entry " + idQueue + "in ERROR.", idQueue);
+            int nbdep = (int) ansNbDep.getItem();
+            // Only check status of each Queue Entries if we RELEASED at least 1 entry.
+            if (nbdep > 0) {
+                // Getting the list of impacted Queue Entries where we released dependencies.
+                List<Long> al = new ArrayList<>();
+                AnswerList ansQueueId = readExeQueueIdByExeId(idQueue);
+                al = ansQueueId.getDataList();
+                // For each exequeue entry we just updated, we move status from QUWITHDEP to QUEUED in case there are no more WAITING dependency.
+                for (Long long1 : al) {
+                    executionQueueService.checkAndReleaseQueuedEntry(long1, queueEntry.getTag());
+                }
+            }
+        } catch (CerberusException ex) {
+            LOG.error("Exception when release dep from Queue Error.", ex);
         }
     }
 

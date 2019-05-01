@@ -19,15 +19,15 @@
  */
 package org.cerberus.service.email.impl;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cerberus.service.email.entity.Email;
 import org.cerberus.crud.entity.BatchInvariant;
 import org.cerberus.crud.entity.CountryEnvParam;
 import org.cerberus.crud.entity.Tag;
@@ -40,11 +40,12 @@ import org.cerberus.crud.service.ITagService;
 import org.cerberus.crud.service.ITestCaseExecutionService;
 import org.cerberus.service.email.IEmailBodyGeneration;
 import org.cerberus.service.email.IEmailFactory;
+import org.cerberus.service.email.IEmailGenerationService;
+import org.cerberus.service.email.entity.Email;
 import org.cerberus.util.StringUtil;
+import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.cerberus.service.email.IEmailGenerationService;
-import org.json.JSONArray;
 
 /**
  *
@@ -446,6 +447,7 @@ public class EmailGenerationService implements IEmailGenerationService {
             // Get TestcaseExecutionDetail in order to replace %TAGTCDETAIL%.
             StringBuilder detailStatus = new StringBuilder();
             List<TestCaseExecution> testCaseExecutions = testCaseExecutionService.readLastExecutionAndExecutionInQueueByTag(tag);
+            Collections.sort(testCaseExecutions, new SortExecution());
             Integer totalTC = 0;
             Integer maxLines = parameterService.getParameterIntegerByKey("cerberus_notification_tagexecutionend_tclistmax", system, 100);
             boolean odd = true;
@@ -509,6 +511,23 @@ public class EmailGenerationService implements IEmailGenerationService {
         }
         return null;
 
+    }
+
+    class SortExecution implements Comparator<TestCaseExecution> {
+        // Used for sorting in ascending order of 
+        // Label name. 
+
+        @Override
+        public int compare(TestCaseExecution a, TestCaseExecution b) {
+            if (a != null && b != null) {
+                if (a.getTest().equals(b.getTest())) {
+                    return a.getTestCase().compareToIgnoreCase(b.getTestCase());
+                }
+                return a.getTest().compareToIgnoreCase(b.getTest());
+            } else {
+                return 1;
+            }
+        }
     }
 
 }

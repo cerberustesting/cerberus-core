@@ -29,7 +29,6 @@ import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionQueue;
-import org.cerberus.crud.factory.IFactoryApplication;
 import org.cerberus.crud.factory.IFactoryTagSystem;
 import org.cerberus.crud.factory.IFactoryTestCaseExecution;
 import org.cerberus.crud.service.IParameterService;
@@ -37,7 +36,6 @@ import org.cerberus.crud.service.ITagService;
 import org.cerberus.crud.service.ITagSystemService;
 import org.cerberus.crud.service.ITestCaseExecutionQueueDepService;
 import org.cerberus.crud.service.ITestCaseExecutionQueueService;
-import org.cerberus.crud.service.ITestCaseExecutionService;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.engine.queuemanagement.entity.TestCaseExecutionQueueToTreat;
 import org.cerberus.enums.MessageEventEnum;
@@ -239,6 +237,7 @@ public class TestCaseExecutionQueueService implements ITestCaseExecutionQueueSer
                 try {
                     String notExecutedMessage = nbReleasedNOK + " RELEASED dependency(ies) not OK.";
                     updateToErrorFromQuWithDep(id, notExecutedMessage);
+                    testCaseExecutionQueueDepService.manageDependenciesEndOfQueueExecution(id);
                     tagService.manageCampaignEndOfExecution(tag);
                 } catch (CerberusException ex) {
                     LOG.error(ex.toString(), ex);

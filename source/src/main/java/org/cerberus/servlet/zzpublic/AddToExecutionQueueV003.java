@@ -21,6 +21,7 @@ package org.cerberus.servlet.zzpublic;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URLDecoder;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -205,6 +206,13 @@ public class AddToExecutionQueueV003 extends HttpServlet {
 
         // Execution parameters.
         String tag = ParameterParserUtil.parseStringParam(request.getParameter(PARAMETER_TAG), DEFAULT_VALUE_TAG);
+        try {
+            tag = URLDecoder.decode(tag, "UTF-8");
+        } catch (Exception ex) {
+            // In case exception is raized, we keep the original string.
+            LOG.debug(ex, ex);
+        }
+
         String robotIP = ParameterParserUtil.parseStringParamAndDecode(request.getParameter(PARAMETER_ROBOT_IP), null, charset);
         String robotPort = ParameterParserUtil.parseStringParamAndDecode(request.getParameter(PARAMETER_ROBOT_PORT), null, charset);
         String browser = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter(PARAMETER_BROWSER), null, charset);
@@ -305,19 +313,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
         boolean error = false;
 
         if ((tag == null || tag.isEmpty()) && mCampaign != null && !StringUtil.isNullOrEmpty(mCampaign.getTag())) {
-            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-            String mytimestamp = sdf.format(timestamp);
-            String myuser = request.getRemoteUser();
-            if (myuser == null) {
-                myuser = "";
-            }
-            String reqEnvironments = StringUtil.convertToString(environments, parameterService.getParameterStringByKey("cerberus_tagvariable_separator", "", "-"));
-            String reqCountries = StringUtil.convertToString(countries, parameterService.getParameterStringByKey("cerberus_tagvariable_separator", "", "-"));
-            tag = mCampaign.getTag()
-                    .replace("%TIMESTAMP%", mytimestamp)
-                    .replace("%USER%", myuser)
-                    .replace("%REQCOUNTRYLIST%", reqCountries)
-                    .replace("%REQENVIRONMENTLIST%", reqEnvironments);
+            tag = mCampaign.getTag();
         } else if (tag == null || tag.isEmpty()) {
             if (request.getRemoteUser() != null) {
                 tag = request.getRemoteUser();
@@ -340,6 +336,20 @@ public class AddToExecutionQueueV003 extends HttpServlet {
             errorMessage.append("Error - Parameter ").append(PARAMETER_TAG).append(" is too big. Maximum size if 255. Current size is : ").append(tag.length()).append("\n");
             error = true;
         }
+        
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        String mytimestamp = sdf.format(timestamp);
+        String myuser = request.getRemoteUser();
+        if (myuser == null) {
+            myuser = "";
+        }
+        String reqEnvironments = StringUtil.convertToString(environments, parameterService.getParameterStringByKey("cerberus_tagvariable_separator", "", "-"));
+        String reqCountries = StringUtil.convertToString(countries, parameterService.getParameterStringByKey("cerberus_tagvariable_separator", "", "-"));
+        tag = tag
+                .replace("%TIMESTAMP%", mytimestamp)
+                .replace("%USER%", myuser)
+                .replace("%REQCOUNTRYLIST%", reqCountries)
+                .replace("%REQENVIRONMENTLIST%", reqEnvironments);
 
         if (campaign != null && !campaign.isEmpty()) {
             final AnswerItem<Map<String, List<String>>> parsedCampaignParameters = campaignParameterService.parseParametersByCampaign(campaign);

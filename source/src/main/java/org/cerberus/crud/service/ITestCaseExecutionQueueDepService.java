@@ -19,12 +19,11 @@
  */
 package org.cerberus.crud.service;
 
+import java.util.List;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
-
-import java.util.List;
 
 /**
  *
@@ -86,14 +85,13 @@ public interface ITestCaseExecutionQueueDepService {
      */
     AnswerItem<Integer> readNbWaitingByExeQueue(long exeQueueId);
 
-
     /**
      * load test case dependency Queue on object each TestCaseExecution
+     *
      * @param testCaseExecutions
      * @throws org.cerberus.exception.CerberusException
      */
     void loadDependenciesOnTestCaseExecution(List<TestCaseExecution> testCaseExecutions) throws CerberusException;
-
 
     /**
      *
@@ -109,5 +107,13 @@ public interface ITestCaseExecutionQueueDepService {
      * @param tCExecution
      */
     void manageDependenciesEndOfExecution(TestCaseExecution tCExecution);
+
+    /**
+     *
+     * That method manage the dependency after the end of a queue entry.
+     *
+     * @param idQueue
+     */
+    void manageDependenciesEndOfQueueExecution(long idQueue);
 
 }
