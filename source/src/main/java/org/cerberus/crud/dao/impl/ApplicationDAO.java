@@ -380,10 +380,10 @@ public class ApplicationDAO implements IApplicationDAO {
     public Answer create(Application object) {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO application (`application`, `description`, `sort`, `type`, `system`, `SubSystem`, `svnurl`, `BugTrackerUrl`, `BugTrackerNewUrl`, `deploytype`");
+        query.append("INSERT INTO application (`application`, `description`, `sort`, `type`, `system`, `SubSystem`, `svnurl`, `poolSize`, `BugTrackerUrl`, `BugTrackerNewUrl`, `deploytype`");
         query.append(", `mavengroupid`, `usrcreated` ) ");
         if (StringUtil.isNullOrEmpty(object.getDeploytype())) {
-            query.append("VALUES (?,?,?,?,?,?,?,?,?,null,?,?)");
+            query.append("VALUES (?,?,?,?,?,?,?,?,?,?,null,?,?)");
 
         } else {
             query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?)");
@@ -406,6 +406,7 @@ public class ApplicationDAO implements IApplicationDAO {
                 preStat.setString(i++, object.getSystem());
                 preStat.setString(i++, object.getSubsystem());
                 preStat.setString(i++, object.getSvnurl());
+                preStat.setInt(i++, object.getPoolSize());
                 preStat.setString(i++, object.getBugTrackerUrl());
                 preStat.setString(i++, object.getBugTrackerNewUrl());
                 if (!StringUtil.isNullOrEmpty(object.getDeploytype())) {
@@ -494,7 +495,7 @@ public class ApplicationDAO implements IApplicationDAO {
         if (StringUtil.isNullOrEmpty(object.getDeploytype())) {
             object.setDeploytype(null);
         }
-        final String query = "UPDATE application SET Application = ?, description = ?, sort = ?, `type` = ?, `system` = ?, SubSystem = ?, svnurl = ?, BugTrackerUrl = ?, BugTrackerNewUrl = ?, "
+        final String query = "UPDATE application SET Application = ?, description = ?, sort = ?, `type` = ?, `system` = ?, SubSystem = ?, svnurl = ?, poolSize = ?, BugTrackerUrl = ?, BugTrackerNewUrl = ?, "
                 + "deploytype = ?, mavengroupid = ?, dateModif = NOW(), usrModif= ?  WHERE Application = ?";
 
         // Debug message on SQL.
@@ -514,6 +515,7 @@ public class ApplicationDAO implements IApplicationDAO {
                 preStat.setString(i++, object.getSystem());
                 preStat.setString(i++, object.getSubsystem());
                 preStat.setString(i++, object.getSvnurl());
+                preStat.setInt(i++, object.getPoolSize());
                 preStat.setString(i++, object.getBugTrackerUrl());
                 preStat.setString(i++, object.getBugTrackerNewUrl());
                 preStat.setString(i++, object.getDeploytype());
@@ -622,6 +624,7 @@ public class ApplicationDAO implements IApplicationDAO {
         String system = ParameterParserUtil.parseStringParam(rs.getString("app.system"), "");
         String subsystem = ParameterParserUtil.parseStringParam(rs.getString("app.subsystem"), "");
         String svnUrl = ParameterParserUtil.parseStringParam(rs.getString("app.svnurl"), "");
+        int poolSize = ParameterParserUtil.parseIntegerParam(rs.getString("app.poolSize"), 0);
         String deployType = ParameterParserUtil.parseStringParam(rs.getString("app.deploytype"), "");
         String mavenGroupId = ParameterParserUtil.parseStringParam(rs.getString("app.mavengroupid"), "");
         String bugTrackerUrl = ParameterParserUtil.parseStringParam(rs.getString("app.bugtrackerurl"), "");
@@ -633,7 +636,7 @@ public class ApplicationDAO implements IApplicationDAO {
 
         //TODO remove when working in test with mockito and autowired
         factoryApplication = new FactoryApplication();
-        return factoryApplication.create(application, description, sort, type, system, subsystem, svnUrl, deployType, mavenGroupId,
+        return factoryApplication.create(application, description, sort, type, system, subsystem, svnUrl, poolSize, deployType, mavenGroupId,
                 bugTrackerUrl, bugTrackerNewUrl, usrCreated, dateCreated, usrModif, dateModif);
     }
 

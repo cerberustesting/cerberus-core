@@ -776,7 +776,7 @@ function aoColumnsFunc_followUp() {
                     // Constrain is global and hasPermitionUpdate is true.
                     buttons += editGlobalParam;
                 }
-                if ((data[0] === "constrain3_robot") && (data[9])) {
+                if ((data[0] === "constrain4_robot") && (data[9])) {
                     // Constrain is global and hasPermitionUpdate is true.
                     if (data[10]) {
                         // Invariant exist. We can edit it.

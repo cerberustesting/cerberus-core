@@ -450,7 +450,7 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
 
         final StringBuilder query = new StringBuilder();
 
-        query.append("SELECT exq.id, exq.manualexecution, app.System, cea.environment, cea.country, cea.application, cea.poolsize, exq.robot, exq.robotIP, exq.robotPort, exq.DebugFlag, exq.selectedRobotHost, app.type ");
+        query.append("SELECT exq.id, exq.manualexecution, app.System, app.poolSize, cea.environment, cea.country, cea.application, cea.poolsize, exq.robot, exq.robotIP, exq.robotPort, exq.DebugFlag, exq.selectedRobotHost, app.type ");
         query.append("from testcaseexecutionqueue exq ");
         query.append("left join testcase tec on tec.test=exq.test and tec.testcase=exq.testcase ");
         query.append("left join application app on app.application=tec.application ");
@@ -2388,7 +2388,8 @@ public class TestCaseExecutionQueueDAO implements ITestCaseExecutionQueueDAO {
             inQueue.setEnvironment(resultSet.getString("cea.environment"));
             inQueue.setCountry(resultSet.getString("cea.country"));
             inQueue.setApplication(resultSet.getString("cea.application"));
-            inQueue.setPoolSizeApplication(resultSet.getInt("cea.poolsize"));
+            inQueue.setPoolSizeAppEnvironment(resultSet.getInt("cea.poolsize"));
+            inQueue.setPoolSizeApplication(resultSet.getInt("app.poolsize"));
             inQueue.setDebugFlag(resultSet.getString("exq.DebugFlag"));
             /**
              * Robot host is feed only if application type really required a

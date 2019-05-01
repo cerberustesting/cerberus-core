@@ -35,6 +35,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.TestCaseExecutionQueue;
+import org.cerberus.crud.factory.IFactoryInvariant;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.engine.queuemanagement.entity.TestCaseExecutionQueueToTreat;
@@ -66,6 +67,7 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
     private IExecutionThreadPoolService executionThreadPoolService;
     private IParameterService parameterService;
     private IInvariantService invariantService;
+    private IFactoryInvariant factoryInvariant;
 
     private static final Logger LOG = LogManager.getLogger(ReadTestCaseExecutionQueue.class);
 
@@ -232,10 +234,10 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
         for (int a = 0; a < columnToSort.length; a++) {
             if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
                 List<String> search = new ArrayList<>(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
-                if(individualLike.contains(columnToSort[a])) {
-                	individualSearch.put(columnToSort[a]+":like", search);
-                }else {
-                	individualSearch.put(columnToSort[a], search);
+                if (individualLike.contains(columnToSort[a])) {
+                    individualSearch.put(columnToSort[a] + ":like", search);
+                } else {
+                    individualSearch.put(columnToSort[a], search);
                 }
             }
         }
@@ -265,6 +267,7 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
         executionThreadPoolService = appContext.getBean(IExecutionThreadPoolService.class);
         parameterService = appContext.getBean(IParameterService.class);
         invariantService = appContext.getBean(IInvariantService.class);
+        factoryInvariant = appContext.getBean(IFactoryInvariant.class);
         JSONArray jsonArray = new JSONArray();
 
         try {
@@ -290,7 +293,7 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
                             jsonObject.put("nbRunning", ParameterParserUtil.parseIntegerParam(name, 0));
                             jsonObject.put("hasPermissionsUpdate", parameterService.hasPermissionsUpdate("cerberus_queueexecution_global_threadpoolsize", request));
                             break;
-                        case TestCaseExecutionQueueToTreat.CONSTRAIN2_APPLICATION:
+                        case TestCaseExecutionQueueToTreat.CONSTRAIN2_APPLIENV:
                             jsonObject.put("contrainId", data[0]);
                             jsonObject.put("system", data[1]);
                             jsonObject.put("environment", data[2]);
@@ -300,9 +303,21 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
                             jsonObject.put("nbInQueue", ParameterParserUtil.parseIntegerParam(mapInQueue.get(column), 0));
                             jsonObject.put("nbPoolSize", ParameterParserUtil.parseIntegerParam(mapPoolSize.get(column), 0));
                             jsonObject.put("nbRunning", ParameterParserUtil.parseIntegerParam(name, 0));
-                            jsonObject.put("hasPermissionsUpdate", parameterService.hasPermissionsUpdate("cerberus_queueexecution_global_threadpoolsize", request));
+                            jsonObject.put("hasPermissionsUpdate", true);
                             break;
-                        case TestCaseExecutionQueueToTreat.CONSTRAIN3_ROBOT:
+                        case TestCaseExecutionQueueToTreat.CONSTRAIN3_APPLICATION:
+                            jsonObject.put("contrainId", data[0]);
+                            jsonObject.put("system", "");
+                            jsonObject.put("environment", "");
+                            jsonObject.put("country", "");
+                            jsonObject.put("application", data[1]);
+                            jsonObject.put("robot", "");
+                            jsonObject.put("nbInQueue", ParameterParserUtil.parseIntegerParam(mapInQueue.get(column), 0));
+                            jsonObject.put("nbPoolSize", ParameterParserUtil.parseIntegerParam(mapPoolSize.get(column), 0));
+                            jsonObject.put("nbRunning", ParameterParserUtil.parseIntegerParam(name, 0));
+                            jsonObject.put("hasPermissionsUpdate", true);
+                            break;
+                        case TestCaseExecutionQueueToTreat.CONSTRAIN4_ROBOT:
                             jsonObject.put("contrainId", data[0]);
                             jsonObject.put("system", "");
                             jsonObject.put("environment", "");
@@ -324,7 +339,7 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
                             jsonObject.put("nbInQueue", "");
                             jsonObject.put("nbPoolSize", ParameterParserUtil.parseIntegerParam(mapPoolSize.get(column), 0));
                             jsonObject.put("nbRunning", ParameterParserUtil.parseIntegerParam(name, 0));
-                            jsonObject.put("hasPermissionsUpdate", parameterService.hasPermissionsUpdate("cerberus_queueexecution_global_threadpoolsize", request));
+                            jsonObject.put("hasPermissionsUpdate", invariantService.hasPermissionsUpdate(factoryInvariant.create("ROBOTHOST", "", 0, "", "", "", "", "", "", "", "", "", "", ""), request));
                             break;
                     }
                     jsonArray.put(jsonObject);
@@ -333,7 +348,9 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
             object.put("contentTable", jsonArray);
 
         } catch (CerberusException ex) {
-            LOG.warn(ex);
+            LOG.warn(ex, ex);
+        } catch (Exception ex) {
+            LOG.error(ex, ex);
         }
 
         object.put("messageType", "");
@@ -385,12 +402,12 @@ public class ReadTestCaseExecutionQueue extends HttpServlet {
                 Map<String, List<String>> individualSearch = new HashMap<>();
                 for (int a = 0; a < columnToSort.length; a++) {
                     if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
-                    	List<String> search = new ArrayList<>(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
-                    	if(individualLike.contains(columnToSort[a])) {
-                        	individualSearch.put(columnToSort[a]+":like", search);
-                        }else {
-                        	individualSearch.put(columnToSort[a], search);
-                        } 
+                        List<String> search = new ArrayList<>(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
+                        if (individualLike.contains(columnToSort[a])) {
+                            individualSearch.put(columnToSort[a] + ":like", search);
+                        } else {
+                            individualSearch.put(columnToSort[a], search);
+                        }
                     }
                 }
                 values = executionService.readDistinctValuesByCriteria(columnName, sort, searchParameter, individualSearch, column);

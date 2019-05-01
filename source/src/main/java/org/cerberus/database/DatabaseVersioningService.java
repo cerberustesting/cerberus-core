@@ -6046,8 +6046,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append("select 1 from DUAL;");
         a.add(b.toString());
         b = new StringBuilder();
-        b.append("ALTER TABLE `countryenvironmentparameters` ");
-        b.append("ADD COLUMN `poolSize` INT NULL AFTER `Var4`;");
+        b.append("ALTER TABLE `countryenvironmentparameters` ADD COLUMN `poolSize` INT NULL AFTER `Var4`;");
         a.add(b.toString());
 
         // Parameter in order to limit the frequency of the websocket push
@@ -8103,10 +8102,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 
         //Post campaign scheduler in myversion
         //1407
-        b = new StringBuilder();
-        b.append("insert into myversion values('scheduler_version',0,'INIT');");
-        a.add(b.toString());
+        a.add("INSERT into myversion values('scheduler_version',0,'INIT');");
 
+        //1407 New constrain at application level.
+        a.add("ALTER TABLE `application` ADD COLUMN `poolSize` INT NULL AFTER `BugTrackerNewUrl`;");
+        
+        
         return a;
     }
 

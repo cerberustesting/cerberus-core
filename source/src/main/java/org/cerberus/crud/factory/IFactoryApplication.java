@@ -35,6 +35,7 @@ public interface IFactoryApplication {
      * @param system
      * @param subsystem
      * @param svnurl
+     * @param poolSize
      * @param deploytype
      * @param mavengroupid
      * @param bugtrackerurl
@@ -47,7 +48,7 @@ public interface IFactoryApplication {
      */
     Application create(String application, String description,
             int sort, String type, String system, String subsystem,
-            String svnurl, String deploytype, String mavengroupid,
+            String svnurl, int poolSize, String deploytype, String mavengroupid,
             String bugtrackerurl, String bugtrackernewurl,
             String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif);
 

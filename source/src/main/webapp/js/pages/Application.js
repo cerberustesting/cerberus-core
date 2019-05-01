@@ -83,6 +83,7 @@ function displayPageLabel() {
     //$("[name='sortField']").html(doc.getDocOnline("application", "sort"));
     $("[name='typeField']").html(doc.getDocOnline("application", "type"));
     $("[name='systemField']").html(doc.getDocOnline("application", "system"));
+    $("[name='poolSizeField']").html(doc.getDocOnline("application", "poolSize"));
     $("[name='subsystemField']").html(doc.getDocOnline("application", "subsystem"));
     $("[name='svnurlField']").html(doc.getDocOnline("application", "svnurl"));
     $("[name='bugtrackerurlField']").html(doc.getDocOnline("application", "bugtrackerurl"));
@@ -256,6 +257,7 @@ function editEntryModalSaveHandler() {
             sort: data.sort,
             type: data.type,
             system: data.system,
+            poolSize: data.poolSize,
             subsystem: data.subsystem,
             svnurl: data.svnurl,
             bugtrackerurl: data.bugtrackerurl,
@@ -312,6 +314,7 @@ function editEntryClick(id, system) {
         formEdit.find("#type").prop("value", obj["type"]);
         formEdit.find("#system").prop("value", obj["system"]);
         formEdit.find("#subsystem").prop("value", obj["subsystem"]);
+        formEdit.find("#poolSize").prop("value", obj["poolSize"]);
         formEdit.find("#svnurl").prop("value", obj["svnurl"]);
         formEdit.find("#bugtrackerurl").prop("value", obj["bugTrackerUrl"]);
         formEdit.find("#bugtrackernewurl").prop("value", obj["bugTrackerNewUrl"]);
@@ -324,6 +327,7 @@ function editEntryClick(id, system) {
             formEdit.find("#type").prop("disabled", "disabled");
             formEdit.find("#system").prop("disabled", "disabled");
             formEdit.find("#subsystem").prop("readonly", "readonly");
+            formEdit.find("#poolSize").prop("readonly", "readonly");
             formEdit.find("#svnurl").prop("readonly", "readonly");
             formEdit.find("#bugtrackerurl").prop("readonly", "readonly");
             formEdit.find("#bugtrackernewurl").prop("readonly", "readonly");

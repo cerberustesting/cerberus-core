@@ -93,8 +93,9 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
         // Calculate constrain values.
         for (TestCaseExecutionQueueToTreat exe : executionsRunning) {
             String const01_key = TestCaseExecutionQueueToTreat.CONSTRAIN1_GLOBAL;
-            String const02_key = TestCaseExecutionQueueToTreat.CONSTRAIN2_APPLICATION + CONST_SEPARATOR + exe.getSystem() + CONST_SEPARATOR + exe.getEnvironment() + CONST_SEPARATOR + exe.getCountry() + CONST_SEPARATOR + exe.getApplication();
-            String const03_key = TestCaseExecutionQueueToTreat.CONSTRAIN3_ROBOT + CONST_SEPARATOR + exe.getSelectedRobotHost();
+            String const02_key = TestCaseExecutionQueueToTreat.CONSTRAIN2_APPLIENV + CONST_SEPARATOR + exe.getSystem() + CONST_SEPARATOR + exe.getEnvironment() + CONST_SEPARATOR + exe.getCountry() + CONST_SEPARATOR + exe.getApplication();
+            String const03_key = TestCaseExecutionQueueToTreat.CONSTRAIN3_APPLICATION + CONST_SEPARATOR + exe.getApplication();
+            String const04_key = TestCaseExecutionQueueToTreat.CONSTRAIN4_ROBOT + CONST_SEPARATOR + exe.getSelectedRobotHost();
 
             if (constrains_current.containsKey(const01_key)) {
                 constrains_current.put(const01_key, constrains_current.get(const01_key) + 1);
@@ -110,6 +111,11 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                 constrains_current.put(const03_key, constrains_current.get(const03_key) + 1);
             } else {
                 constrains_current.put(const03_key, 1);
+            }
+            if (constrains_current.containsKey(const04_key)) {
+                constrains_current.put(const04_key, constrains_current.get(const04_key) + 1);
+            } else {
+                constrains_current.put(const04_key, 1);
             }
         }
         return constrains_current;
@@ -135,10 +141,13 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
         List<TestCaseExecutionQueueToTreat> executionsToTreat = (List<TestCaseExecutionQueueToTreat>) answer.getDataList();
         // Calculate constrain values.
         for (TestCaseExecutionQueueToTreat exe : executionsToTreat) {
-            String const02_key = TestCaseExecutionQueueToTreat.CONSTRAIN2_APPLICATION + CONST_SEPARATOR + exe.getSystem() + CONST_SEPARATOR + exe.getEnvironment() + CONST_SEPARATOR + exe.getCountry() + CONST_SEPARATOR + exe.getApplication();
-            String const03_key = TestCaseExecutionQueueToTreat.CONSTRAIN3_ROBOT + CONST_SEPARATOR + exe.getSelectedRobotHost();
+            String const02_key = TestCaseExecutionQueueToTreat.CONSTRAIN2_APPLIENV + CONST_SEPARATOR + exe.getSystem() + CONST_SEPARATOR + exe.getEnvironment() + CONST_SEPARATOR + exe.getCountry() + CONST_SEPARATOR + exe.getApplication();
+            String const03_key = TestCaseExecutionQueueToTreat.CONSTRAIN3_APPLICATION + CONST_SEPARATOR + exe.getApplication();
+            String const04_key = TestCaseExecutionQueueToTreat.CONSTRAIN4_ROBOT + CONST_SEPARATOR + exe.getSelectedRobotHost();
 
-            constrains_current.put(const02_key, exe.getPoolSizeApplication());
+            constrains_current.put(const02_key, exe.getPoolSizeAppEnvironment());
+
+            constrains_current.put(const03_key, exe.getPoolSizeApplication());
 
             // Getting Robot Host PoolSize from invariant hashmap.
             int robot_poolsize_final = 0;
@@ -149,7 +158,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                     robot_poolsize_final = poolSizeRobot;
                 }
             }
-            constrains_current.put(const03_key, robot_poolsize_final);
+            constrains_current.put(const04_key, robot_poolsize_final);
         }
         return constrains_current;
 
@@ -167,8 +176,9 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
         // Calculate constrain values.
         for (TestCaseExecutionQueueToTreat exe : executionsToTreat) {
             String const01_key = TestCaseExecutionQueueToTreat.CONSTRAIN1_GLOBAL;
-            String const02_key = TestCaseExecutionQueueToTreat.CONSTRAIN2_APPLICATION + CONST_SEPARATOR + exe.getSystem() + CONST_SEPARATOR + exe.getEnvironment() + CONST_SEPARATOR + exe.getCountry() + CONST_SEPARATOR + exe.getApplication();
-            String const03_key = TestCaseExecutionQueueToTreat.CONSTRAIN3_ROBOT + CONST_SEPARATOR + exe.getQueueRobotHost();
+            String const02_key = TestCaseExecutionQueueToTreat.CONSTRAIN2_APPLIENV + CONST_SEPARATOR + exe.getSystem() + CONST_SEPARATOR + exe.getEnvironment() + CONST_SEPARATOR + exe.getCountry() + CONST_SEPARATOR + exe.getApplication();
+            String const03_key = TestCaseExecutionQueueToTreat.CONSTRAIN3_APPLICATION + CONST_SEPARATOR + exe.getApplication();
+            String const04_key = TestCaseExecutionQueueToTreat.CONSTRAIN4_ROBOT + CONST_SEPARATOR + exe.getQueueRobotHost();
 
             if (constrains_current.containsKey(const01_key)) {
                 constrains_current.put(const01_key, constrains_current.get(const01_key) + 1);
@@ -184,6 +194,11 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                 constrains_current.put(const03_key, constrains_current.get(const03_key) + 1);
             } else {
                 constrains_current.put(const03_key, 1);
+            }
+            if (constrains_current.containsKey(const04_key)) {
+                constrains_current.put(const04_key, constrains_current.get(const04_key) + 1);
+            } else {
+                constrains_current.put(const04_key, 1);
             }
         }
         return constrains_current;
@@ -244,6 +259,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                     int const01_current = 0;
                     int const02_current = 0;
                     int const03_current = 0;
+                    int const04_current = 0;
                     HashMap<String, Integer> constrains_current = new HashMap<>();
                     HashMap<String, Integer> robothost_poolsize = new HashMap<>();
                     HashMap<String, List<RobotExecutor>> robot_executor = new HashMap<>();
@@ -259,6 +275,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                         const01_current = 0;
                         const02_current = 0;
                         const03_current = 0;
+                        const04_current = 0;
                         constrains_current = getCurrentlyRunning();
                         LOG.debug("Current Constrains : " + constrains_current);
 
@@ -343,11 +360,12 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                                 }
                             }
 
-                            LOG.debug("Pool Values : poolGen " + poolSizeGeneral + " poolApp " + exe.getPoolSizeApplication() + " poolRobotHost " + robothost_poolsize_final);
+                            LOG.debug("Pool Values : poolGen " + poolSizeGeneral + " poolApp " + exe.getPoolSizeAppEnvironment() + " poolRobotHost " + robothost_poolsize_final);
 
                             String const01_key = TestCaseExecutionQueueToTreat.CONSTRAIN1_GLOBAL;
-                            String const02_key = TestCaseExecutionQueueToTreat.CONSTRAIN2_APPLICATION + CONST_SEPARATOR + exe.getSystem() + CONST_SEPARATOR + exe.getEnvironment() + CONST_SEPARATOR + exe.getCountry() + CONST_SEPARATOR + exe.getApplication();
-                            String const03_key = TestCaseExecutionQueueToTreat.CONSTRAIN3_ROBOT + CONST_SEPARATOR + robotHost;
+                            String const02_key = TestCaseExecutionQueueToTreat.CONSTRAIN2_APPLIENV + CONST_SEPARATOR + exe.getSystem() + CONST_SEPARATOR + exe.getEnvironment() + CONST_SEPARATOR + exe.getCountry() + CONST_SEPARATOR + exe.getApplication();
+                            String const03_key = TestCaseExecutionQueueToTreat.CONSTRAIN3_APPLICATION + CONST_SEPARATOR + exe.getApplication();
+                            String const04_key = TestCaseExecutionQueueToTreat.CONSTRAIN4_ROBOT + CONST_SEPARATOR + robotHost;
 
                             // Eval Constrain 1
                             if (constrains_current.containsKey(const01_key)) {
@@ -372,11 +390,11 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                             }
                             // Eval Constrain 2
                             boolean constMatch02;
-                            if (exe.getPoolSizeApplication() == 0) {
+                            if (exe.getPoolSizeAppEnvironment() == 0) {
                                 // if poolsize == 0, this means no constrain specified.
                                 constMatch02 = false;
                             } else {
-                                constMatch02 = (const02_current >= exe.getPoolSizeApplication());
+                                constMatch02 = (const02_current >= exe.getPoolSizeAppEnvironment());
                             }
 
                             // Eval Constrain 3
@@ -387,17 +405,33 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                             }
                             // Eval Constrain 3
                             boolean constMatch03;
-                            if (robothost_poolsize_final == 0) {
+                            if (exe.getPoolSizeApplication()== 0) {
                                 // if poolsize == 0, this means no constrain specified.
                                 constMatch03 = false;
                             } else {
-                                constMatch03 = (const03_current >= robothost_poolsize_final);
+                                constMatch03 = (const03_current >= exe.getPoolSizeApplication());
+                            }
+                            
+                            // Eval Constrain 4
+                            if (constrains_current.containsKey(const04_key)) {
+                                const04_current = constrains_current.get(const04_key);
+                            } else {
+                                const04_current = 0;
+                            }
+                            // Eval Constrain 4
+                            boolean constMatch04;
+                            if (robothost_poolsize_final == 0) {
+                                // if poolsize == 0, this means no constrain specified.
+                                constMatch04 = false;
+                            } else {
+                                constMatch04 = (const04_current >= robothost_poolsize_final);
                             }
 
-                            if ((!constMatch01 && !constMatch02 && !constMatch03)
+                            if ((!constMatch01 && !constMatch02 && !constMatch03 && !constMatch04)
                                     || (!constMatch01 && exe.getManualExecution().equals("Y"))) {
                                 // None of the constrains match or exe is manual so we can trigger the execution.
 
+                                // Execution could already been triggered on a different executor.
                                 if (triggerExe == false) {
 
                                     // Adding execution to queue.
@@ -439,8 +473,8 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                                             nbqueuedexe++;
 
                                             // Debug messages.
-                                            LOG.debug("RESULT : Execution triggered. Const1 " + constMatch01 + " Const2 " + constMatch02 + " Const3 " + constMatch03 + " Manual " + exe.getManualExecution());
-                                            LOG.debug(" CurConst1 " + const01_current + " CurConst2 " + const02_current + " CurConst3 " + const03_current);
+                                            LOG.debug("RESULT : Execution triggered. Const1 " + constMatch01 + " Const2 " + constMatch02 + " Const3 " + constMatch03 + " Const4 " + constMatch04 + " Manual " + exe.getManualExecution());
+                                            LOG.debug(" CurConst1 " + const01_current + " CurConst2 " + const02_current + " CurConst3 " + const03_current + " CurConst4 " + const04_current);
 
                                             // Constrains Counter increase
                                             constrains_current.put(const01_key, const01_current + 1);
@@ -448,6 +482,7 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                                                 // Specific increment only if automatic execution.
                                                 constrains_current.put(const02_key, const02_current + 1);
                                                 constrains_current.put(const03_key, const03_current + 1);
+                                                constrains_current.put(const04_key, const04_current + 1);
                                             }
 
                                         } catch (Exception e) {
@@ -460,17 +495,20 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService {
                                 }
 
                             } else {
+                                if (constMatch04) {
+                                    notTriggeredExeMessage += "Robot Host contrain on '" + const04_key + "' reached. " + robothost_poolsize_final + " Execution(s) already in pool. ";
+                                }
                                 if (constMatch03) {
-                                    notTriggeredExeMessage += "Robot Host contrain on '" + const03_key + "' reached. " + robothost_poolsize_final + " Execution(s) already in pool. ";
+                                    notTriggeredExeMessage += "Application contrain on '" + const03_key + "' reached . " + exe.getPoolSizeApplication()+ " Execution(s) already in pool. ";
                                 }
                                 if (constMatch02) {
-                                    notTriggeredExeMessage += "Application Environment contrain on '" + const02_key + "' reached . " + exe.getPoolSizeApplication() + " Execution(s) already in pool. ";
+                                    notTriggeredExeMessage += "Application Environment contrain on '" + const02_key + "' reached . " + exe.getPoolSizeAppEnvironment() + " Execution(s) already in pool. ";
                                 }
                                 if (constMatch01) {
                                     notTriggeredExeMessage += "Global contrain reached. " + poolSizeGeneral + " Execution(s) already in pool. ";
                                 }
-                                LOG.debug("RESULT : Execution not triggered. Const1 " + constMatch01 + " Const2 " + constMatch02 + " Const3 " + constMatch03 + " Manual " + exe.getManualExecution());
-                                LOG.debug(" CurConst1 " + const01_current + " CurConst2 " + const02_current + " CurConst3 " + const03_current);
+                                LOG.debug("RESULT : Execution not triggered. Const1 " + constMatch01 + " Const2 " + constMatch02 + " Const3 " + constMatch03 + " Const4 " + constMatch04 + " Manual " + exe.getManualExecution());
+                                LOG.debug(" CurConst1 " + const01_current + " CurConst2 " + const02_current + " CurConst3 " + const03_current + " CurConst4 " + const04_current);
                             }
                         }
 

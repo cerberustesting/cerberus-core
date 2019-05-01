@@ -28,6 +28,7 @@ public class TestCaseExecutionQueueToTreat {
     private String environment;
     private String country;
     private String application;
+    private int poolSizeAppEnvironment;
     private int poolSizeApplication;
     private String queueRobot;
     private String queueRobotHost;
@@ -39,8 +40,9 @@ public class TestCaseExecutionQueueToTreat {
      * Invariant Constrains.
      */
     public static final String CONSTRAIN1_GLOBAL = "constrain1_global";
-    public static final String CONSTRAIN2_APPLICATION = "constrain2_application";
-    public static final String CONSTRAIN3_ROBOT = "constrain3_robot";
+    public static final String CONSTRAIN2_APPLIENV = "constrain2_applienvironment";
+    public static final String CONSTRAIN3_APPLICATION = "constrain3_application";
+    public static final String CONSTRAIN4_ROBOT = "constrain4_robot";
 
     public long getId() {
         return id;
@@ -136,6 +138,14 @@ public class TestCaseExecutionQueueToTreat {
 
     public void setQueueRobotPort(String queueRobotPort) {
         this.queueRobotPort = queueRobotPort;
+    }
+
+    public int getPoolSizeAppEnvironment() {
+        return poolSizeAppEnvironment;
+    }
+
+    public void setPoolSizeAppEnvironment(int poolSizeAppEnvironment) {
+        this.poolSizeAppEnvironment = poolSizeAppEnvironment;
     }
 
     public int getPoolSizeApplication() {
