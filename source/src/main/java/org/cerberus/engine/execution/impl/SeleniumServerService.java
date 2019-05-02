@@ -249,6 +249,9 @@ public class SeleniumServerService implements ISeleniumServerService {
                         // Appium does not support connection from HTTPCommandExecutor. When connecting from Executor, it stops to work after a couple of instructions.
                         appiumDriver = new AndroidDriver(url, caps);
                         driver = (WebDriver) appiumDriver;
+                    } else if (caps.getPlatform().is(Platform.IOS)||caps.getPlatform().is(Platform.MAC)) {
+                        appiumDriver = new IOSDriver(url, caps);
+                        driver = (WebDriver) appiumDriver;
                     } else {
                         driver = new RemoteWebDriver(executor, caps);
                     }
@@ -322,7 +325,8 @@ public class SeleniumServerService implements ISeleniumServerService {
              * get the Real UserAgent from the browser.
              */
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
-                    && !caps.getPlatform().equals(Platform.ANDROID) && !caps.getPlatform().equals(Platform.IOS)) {
+                    && !caps.getPlatform().equals(Platform.ANDROID) && !caps.getPlatform().equals(Platform.IOS)
+                    && !caps.getPlatform().equals(Platform.MAC)) {
                 if (!caps.getBrowserName().equals(BrowserType.CHROME)) {
                     driver.manage().window().maximize();
                 }
