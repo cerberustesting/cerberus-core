@@ -451,7 +451,7 @@ public class EmailGenerationService implements IEmailGenerationService {
             Integer totalTC = 0;
             Integer maxLines = parameterService.getParameterIntegerByKey("cerberus_notification_tagexecutionend_tclistmax", system, 100);
             boolean odd = true;
-            detailStatus.append("<table><thead><tr style=\"background-color:#cad3f1; font-style:bold\"><td>Test Folder</td><td>Test Case</td><td>Prio</td><td>Environment</td><td>Country</td><td>Robot Decli</td><td>Status</td></tr></thead><tbody>");
+            detailStatus.append("<table><thead><tr style=\"background-color:#cad3f1; font-style:bold\"><td>Prio</td><td>Test Folder</td><td>Test Case</td><td>Environment</td><td>Country</td><td>Robot Decli</td><td>Status</td></tr></thead><tbody>");
             for (TestCaseExecution execution : testCaseExecutions) {
                 if (!TestCaseExecution.CONTROLSTATUS_OK.equals(execution.getControlStatus())) {
                     if (totalTC < maxLines) {
@@ -463,16 +463,16 @@ public class EmailGenerationService implements IEmailGenerationService {
                         }
                         odd = !odd;
                         detailStatus.append(tr);
+                        detailStatus.append("<td rowspan=\"2\" style=\"text-align: center;\">").append(execution.getTestCasePriority()).append("</td>");
                         detailStatus.append("<td><b>").append(execution.getTest()).append("</b></td>");
                         detailStatus.append("<td><b>").append(execution.getTestCase()).append("</b></td>");
-                        detailStatus.append("<td>").append(execution.getTestCasePriority()).append("</td>");
                         detailStatus.append("<td>").append(execution.getEnvironment()).append("</td>");
                         detailStatus.append("<td>").append(execution.getCountry()).append("</td>");
                         detailStatus.append("<td>").append(execution.getRobotDecli()).append("</td>");
                         detailStatus.append("<td rowspan=\"2\" style=\"text-align: center; background-color:").append(statColorMap.get(execution.getControlStatus())).append(";\">").append(execution.getControlStatus()).append("</td>");
                         detailStatus.append("</tr>");
                         detailStatus.append(tr);
-                        detailStatus.append("<td colspan=\"6\" style=\"font-size: xx-small;margin-left: 30px;\">").append(execution.getDescription()).append("</td>");
+                        detailStatus.append("<td colspan=\"5\" style=\"font-size: xx-small;margin-left: 10px;\">").append(execution.getDescription()).append("</td>");
                         detailStatus.append("</tr>");
                     } else if (totalTC == maxLines) {
                         detailStatus.append("<tr style=\"background-color:#ffcaba; font-style:bold\">");
@@ -520,10 +520,36 @@ public class EmailGenerationService implements IEmailGenerationService {
         @Override
         public int compare(TestCaseExecution a, TestCaseExecution b) {
             if (a != null && b != null) {
-                if (a.getTest().equals(b.getTest())) {
-                    return a.getTestCase().compareToIgnoreCase(b.getTestCase());
+                int aPrio = a.getTestCasePriority();
+                if (a.getTestCasePriority() < 1 || a.getTestCasePriority() > 5) {
+                    aPrio = 999 + a.getTestCasePriority();
                 }
-                return a.getTest().compareToIgnoreCase(b.getTest());
+                int bPrio = b.getTestCasePriority();
+                if (b.getTestCasePriority() < 1 || b.getTestCasePriority() > 5) {
+                    bPrio = 999 + b.getTestCasePriority();
+                }
+
+                if (aPrio == bPrio) {
+                    if (a.getTest().equals(b.getTest())) {
+                        if (a.getTestCase().equals(b.getTestCase())) {
+                            if (a.getEnvironment().equals(b.getEnvironment())) {
+                                if (a.getCountry().equals(b.getCountry())) {
+                                    return a.getRobotDecli().compareToIgnoreCase(b.getRobotDecli());
+                                } else {
+                                    return a.getCountry().compareToIgnoreCase(b.getCountry());
+                                }
+                            } else {
+                                return a.getEnvironment().compareToIgnoreCase(b.getEnvironment());
+                            }
+                        } else {
+                            return a.getTestCase().compareToIgnoreCase(b.getTestCase());
+                        }
+                    } else {
+                        return a.getTest().compareToIgnoreCase(b.getTest());
+                    }
+                } else {
+                    return aPrio - bPrio;
+                }
             } else {
                 return 1;
             }

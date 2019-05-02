@@ -1214,6 +1214,8 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('page_global','btn_showHideColumns','','fr','Afficher/Cacher','',NULL)");
         b.append(",('page_global','buttonAdd','','en','Create','',NULL)");
         b.append(",('page_global','buttonAdd','','fr','Créer','',NULL)");
+        b.append(",('page_global','buttonEdit','','en','Save','',NULL)");
+        b.append(",('page_global','buttonEdit','','fr','Sauvegarder','',NULL)");
         b.append(",('page_global','buttonClose','','en','Close','',NULL)");
         b.append(",('page_global','buttonClose','','fr','Fermer','',NULL)");
         b.append(",('page_global','buttonConfirm','','en','Yes','',NULL)");

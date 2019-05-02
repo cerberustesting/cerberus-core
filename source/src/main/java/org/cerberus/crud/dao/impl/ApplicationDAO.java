@@ -384,7 +384,6 @@ public class ApplicationDAO implements IApplicationDAO {
         query.append(", `mavengroupid`, `usrcreated` ) ");
         if (StringUtil.isNullOrEmpty(object.getDeploytype())) {
             query.append("VALUES (?,?,?,?,?,?,?,?,?,?,null,?,?)");
-
         } else {
             query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
