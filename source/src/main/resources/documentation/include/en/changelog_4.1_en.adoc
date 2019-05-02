@@ -11,7 +11,7 @@
 * At the end of notification, the variables %ENVIRONMENTLIST% %COUNTRYLIST% %APPLICATIONLIST% %SYSTEMLIST% %ROBOTDECLILIST% %REQENVIRONMENTLIST% %REQCOUNTRYLIST% can be used. #1815.
 * On tag definition (at cmpaign level or on runtest page), the variables %REQENVIRONMENTLIST% and %REQCOUNTRYLIST% can be used. ('cerberus_tagvariable_separator' parameter can be used in order to define the separator to use) #1815.
 * New constrain has been created at application level. constrain2_application has been renamed to constrain2_applienvironment. constrain3_application was created in order to handle constrain on application accross all environments. You can configure the poolsize at application level.
-* Sorted end of tag notification email detail table by test folder and test case ID
+* Sorted end of tag notification email detail table by prio (valid ci prio first.), test folder and test case ID
 * tag variable are also decoded from runtest page.
 
 *Warning to be considered before applying the version (deprecated features)*
