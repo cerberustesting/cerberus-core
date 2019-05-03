@@ -19,17 +19,25 @@
  */
 package org.cerberus.engine.scheduler;
 
+import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.MyVersion;
+import org.cerberus.crud.entity.ScheduleEntry;
+import org.cerberus.crud.entity.ScheduledExecution;
+import org.cerberus.crud.factory.IFactoryScheduledExecution;
+import org.cerberus.crud.factory.impl.FactoryScheduledExecution;
 import org.cerberus.crud.service.IMyVersionService;
 import org.cerberus.crud.service.IParameterService;
+import org.cerberus.util.answer.AnswerItem;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
@@ -40,85 +48,112 @@ import org.quartz.TriggerBuilder;
 import org.quartz.impl.StdSchedulerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.cerberus.crud.service.IScheduleEntryService;
+import org.cerberus.crud.service.IScheduledExecutionService;
+import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.StringUtil;
+import org.cerberus.util.answer.Answer;
 
 @Component
 public class SchedulerInit {
-
-    private static final Logger LOG = LogManager.getLogger(Scheduler.class);
-
     @Autowired
-    private IParameterService parameterService;
+    private IScheduledExecutionService scheduledExecutionService;
+    private static IFactoryScheduledExecution factoryScheduledExecution = new FactoryScheduledExecution();
+
+    private static final Logger LOG = LogManager.getLogger(SchedulerInit.class);
+    @Autowired
+    private IScheduleEntryService scheduleEntryService;
     @Autowired
     private IMyVersionService MyversionService;
+
     private static SchedulerFactory schFactory = new StdSchedulerFactory();
-    private String schedulerVersion = "INIT";
+    private String instanceSchedulerVersion = "INIT";
     private boolean isRunning = false;
     Scheduler myScheduler;
-
-    //Création du jon
+    //Création du job
     JobDetail scheduledJob = JobBuilder.newJob(ScheduledJob.class).withIdentity("ScheduledJob", "group1").build();
 
     @PostConstruct
     public void init() {
-        LOG.debug("Reload Scheduler entries from database.");
-
+        AnswerItem<List> ans = new AnswerItem();
+        List<ScheduleEntry> listSched = new ArrayList<ScheduleEntry>();
+        
         // read myversion scheduler_version
-        MyVersion MVersion;
-        MVersion = MyversionService.findMyVersionByKey("scheduler_version");
-        LOG.debug("Current version of scheduler in Cerberus: " + schedulerVersion);
-        LOG.debug("Current version of scheduler in DB: " + MVersion.getValueString());
+        MyVersion databaseSchedulerVersion;
+        databaseSchedulerVersion = MyversionService.findMyVersionByKey("scheduler_version");
+        LOG.debug("Current version scheduler in Cerberus : " + instanceSchedulerVersion);
+        LOG.debug("Current version scheduler in DB       : " + databaseSchedulerVersion.getValueString());
 
-        if (MVersion.getValueString() == null || schedulerVersion.equalsIgnoreCase(MVersion.getValueString())) {
+        //Compare version between database and instance
+        if (databaseSchedulerVersion.getValueString() == null || instanceSchedulerVersion.equalsIgnoreCase(databaseSchedulerVersion.getValueString())) {
             LOG.debug("the current version is up to date");
         } else {
             if (isRunning == false) {
                 isRunning = true;
-
+                LOG.debug("Reload Scheduler entries from database.");
                 //Création d'une liste de Trigger
                 Set<Trigger> myTriggersSet = new HashSet();
 
-                //récupération des expression CRON
-                // Load + Boucle sur ScheduledEntry table active = Y
-                String cronFirst = parameterService.getParameterStringByKey("cron_expression_first", "", "");
-                String cronSecond = parameterService.getParameterStringByKey("cron_expression_second", "", "");
-
-                //String myFirstDesc = parameterService.findParameterByKey("cron_expression_first", "CRON").getDescription();
-                //Création du Job
-                //JobDetail myJob = JobBuilder.newJob(myInstructions.class).withIdentity("myJob1", "group1").build();
-                //Création des Triggers
-                Trigger myTrigger = TriggerBuilder.newTrigger().withIdentity("ID1", "group1").usingJobData("name", "First Job").withSchedule(CronScheduleBuilder.cronSchedule(cronFirst)).forJob(scheduledJob).build();
-                Trigger myTriggerTwo = TriggerBuilder.newTrigger().withIdentity("ID2", "group1").usingJobData("name", "Second Job").withSchedule(CronScheduleBuilder.cronSchedule(cronSecond)).forJob(scheduledJob).build();
-
-                //Ajouter mes Triggers dans la liste Set
-                myTriggersSet.add(myTrigger);
-                myTriggersSet.add(myTriggerTwo);
-
                 try {
-                    //Nettoyage des anciennes entree
-                    closeScheduler();
+                    // Get all active entry of scheduleentry
+                    ans = scheduleEntryService.readAllActive();
+                    listSched = ans.getItem();
+                    if (ans.getMessageCodeString().equalsIgnoreCase("OK")) {
+                        // Browse all entry
+                        for (ScheduleEntry sched : listSched) {
+                            LOG.debug("Add to trigger : " + sched.getName());
+                            //Get info of scheduler : cron, name, type to parameter trigger
+                            String cron = sched.getCronDefinition();
+                            String name = sched.getName();
+                            String type = sched.getType();
+                            String id = sched.getID().toString();
+                            int schedulerId = sched.getID();
 
-                    //Creation du scheduler
-                    myScheduler = schFactory.getScheduler();
+                            String user = "";
+                            if(!StringUtil.isNullOrEmpty(sched.getUsrModif())){
+                            user = sched.getUsrModif();
+                            }else{
+                            user = sched.getUsrCreated();
+                            }
+                            //Build trigger with cron settings name and type
+                            Trigger myTrigger = TriggerBuilder.newTrigger().withIdentity(id, "group1").usingJobData("schedulerId", schedulerId).usingJobData("name", name).usingJobData("type", type).usingJobData("user", user).withSchedule(CronScheduleBuilder.cronSchedule(cron)).forJob(scheduledJob).build();
 
-                    //Lancement du scheduler
-                    myScheduler.start();
+                            //Add trigger to list of trigger
+                            myTriggersSet.add(myTrigger);
+                        }
 
-                    //Lancement du job avec la liste de trigger
-                    myScheduler.scheduleJob(scheduledJob, myTriggersSet, false);
-                    LOG.debug("end of Reload Scheduler entries from database.");
+                        try {
+                            //Clean old entry
+                            closeScheduler();
 
-                    LOG.debug("update of scheduler version from : " + schedulerVersion + " to : " + MVersion.getValueString());
-                    schedulerVersion = MVersion.getValueString();
+                            //Create scheduler
+                            myScheduler = schFactory.getScheduler();
+
+                            //run scheduler
+                            myScheduler.start();
+
+                            //run job on list of trigger
+                            myScheduler.scheduleJob(scheduledJob, myTriggersSet, false);
+                            LOG.debug("end of Reload Scheduler entries from database.");
+                            LOG.debug("update of scheduler version from : " + instanceSchedulerVersion + " to : " + databaseSchedulerVersion.getValueString());
+                            instanceSchedulerVersion = databaseSchedulerVersion.getValueString();
+
+                        } catch (Exception e) {
+                            LOG.error("Failed to run scheduler Job");
+                            LOG.error(e);
+                        }
+                    }else{
+                    LOG.debug("Select new result in base not working, catch exception : " + ans.getMessageCodeString());
+                    }
 
                 } catch (Exception e) {
-                    LOG.error("Failed to run scheduler Job");
-                    LOG.error(e);
+                    LOG.debug("Failed to load schedule entry : " + e);
+                } finally {
+                    isRunning = false;
                 }
-                isRunning = false;
             } else {
                 LOG.debug("Scheduler version is already in updating");
             }
-
         }
     }
 
@@ -127,7 +162,6 @@ public class SchedulerInit {
     public void closeScheduler() {
         try {
             LOG.debug("Removing all Schedule entries.");
-
             Collection<Scheduler> myCollectionScheduller = schFactory.getAllSchedulers();
             Iterator it = myCollectionScheduller.iterator();
             for (Scheduler mySched : myCollectionScheduller) {

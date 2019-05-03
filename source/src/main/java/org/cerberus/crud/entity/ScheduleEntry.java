@@ -28,18 +28,18 @@ package org.cerberus.crud.entity;
 
 import java.sql.Timestamp;
 
-public class Scheduler {
+public class ScheduleEntry {
 
     private Integer ID;
     private String type;
     private String name;
     private String cronDefinition;
-    private String lastExecution;
+    private Timestamp lastExecution;
     private String active;
     private String UsrCreated;
-    private String DateCreated;
+    private Timestamp DateCreated;
     private String UsrModif;
-    private String DateModif;
+    private Timestamp DateModif;
 
     public Integer getID() {
         return ID;
@@ -57,7 +57,7 @@ public class Scheduler {
         return cronDefinition;
     }
 
-    public String getLastExecution() {
+    public Timestamp getLastExecution() {
         return lastExecution;
     }
 
@@ -69,7 +69,7 @@ public class Scheduler {
         return UsrCreated;
     }
 
-    public String getDateCreated() {
+    public Timestamp getDateCreated() {
         return DateCreated;
     }
 
@@ -77,7 +77,7 @@ public class Scheduler {
         return UsrModif;
     }
 
-    public String getDateModif() {
+    public Timestamp getDateModif() {
         return DateModif;
     }
 
@@ -97,7 +97,7 @@ public class Scheduler {
         this.cronDefinition = cronDefinition;
     }
 
-    public void setLastExecution(String lastExecution) {
+    public void setLastExecution(Timestamp lastExecution) {
         this.lastExecution = lastExecution;
     }
 
@@ -109,7 +109,7 @@ public class Scheduler {
         this.UsrCreated = UsrCreated;
     }
 
-    public void setDateCreated(String DateCreated) {
+    public void setDateCreated(Timestamp DateCreated) {
         this.DateCreated = DateCreated;
     }
 
@@ -117,7 +117,7 @@ public class Scheduler {
         this.UsrModif = UsrModif;
     }
 
-    public void setDateModif(String DateModif) {
+    public void setDateModif(Timestamp DateModif) {
         this.DateModif = DateModif;
     }
 

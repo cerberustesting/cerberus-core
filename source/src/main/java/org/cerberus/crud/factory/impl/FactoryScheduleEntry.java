@@ -19,19 +19,25 @@ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 package org.cerberus.crud.factory.impl;
 
 import java.sql.Timestamp;
-import org.cerberus.crud.entity.Scheduler;
-import org.cerberus.crud.factory.IFactoryScheduler;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.cerberus.crud.entity.ScheduleEntry;
+import org.cerberus.crud.factory.IFactoryScheduleEntry;
+import org.springframework.stereotype.Service;
 
 /**
  *
  * @author cdelage
  */
 
-public class FactoryScheduler implements IFactoryScheduler {
+@Service
+public class FactoryScheduleEntry implements IFactoryScheduleEntry {
+    
+    private static final Logger LOG = LogManager.getLogger(FactoryScheduleEntry.class);
 
     @Override
-    public Scheduler create(Integer ID, String type, String name, String cronDefinition, String lastExecution, String active, String UsrCreated, String DateCreated, String UsrModif, String DateModif) {
-        Scheduler scheduler = new Scheduler();
+    public ScheduleEntry create(Integer ID, String type, String name, String cronDefinition, Timestamp lastExecution, String active, String UsrCreated, Timestamp DateCreated, String UsrModif, Timestamp DateModif) {
+        ScheduleEntry scheduler = new ScheduleEntry();
         scheduler.setID(ID);
         scheduler.setType(type);
         scheduler.setName(name);
@@ -42,7 +48,7 @@ public class FactoryScheduler implements IFactoryScheduler {
         scheduler.setDateCreated(DateCreated);
         scheduler.setUsrModif(UsrModif);
         scheduler.setDateModif(DateModif);
-
+   
         return scheduler;
     }
 

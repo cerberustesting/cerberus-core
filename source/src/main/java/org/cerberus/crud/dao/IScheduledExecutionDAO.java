@@ -1,7 +1,3 @@
-package org.cerberus.crud.factory;
-
-import org.cerberus.crud.entity.CampaignParameter;
-
 /* Cerberus Copyright (C) 2013 - 2017 cerberustesting
 DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 
@@ -19,17 +15,18 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
-
-package org.cerberus.crud.factory;
  */
+package org.cerberus.crud.dao;
+
+import org.cerberus.crud.entity.ScheduledExecution;
+import org.cerberus.util.answer.Answer;
+
 /**
  *
  * @author cdelage
  */
-import org.cerberus.crud.entity.Scheduler;
-import java.sql.Timestamp;
+public interface IScheduledExecutionDAO {
 
-public interface IFactoryScheduler {
-
-    public Scheduler create(Integer ID, String type, String name, String cronDefinition, String lastExecution, String active, String UsrCreated, String DateCreated, String UsrModif, String DateModif);
+    public Answer create(ScheduledExecution object);
+    public Answer update(ScheduledExecution scheduledExecutionObject);
 }

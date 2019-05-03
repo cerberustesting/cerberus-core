@@ -14,23 +14,22 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
- */
-package org.cerberus.crud.dao;
+along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.*/
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import org.cerberus.crud.entity.Scheduler;
-import org.cerberus.util.answer.AnswerItem;
+package org.cerberus.crud.service;
+
+import org.cerberus.crud.entity.ScheduledExecution;
+import org.cerberus.util.answer.Answer;
 
 /**
  *
  * @author cdelage
  */
-public interface ISchedulerDAO {
 
-    public AnswerItem<Scheduler> readByKey(String name);
 
-    public boolean createScheduleEntry(Scheduler scheduler);
-
+public interface IScheduledExecutionService {
+    
+    public Answer create(ScheduledExecution scheduledExecution);
+    public Answer update(ScheduledExecution scheduledExecution);
+    
 }

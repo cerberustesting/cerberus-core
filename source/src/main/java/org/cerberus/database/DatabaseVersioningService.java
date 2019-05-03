@@ -8088,7 +8088,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append("  `scheduleName` varchar(100) DEFAULT NULL,");
         b.append("  `scheduledDate` timestamp NOT NULL,");
         b.append("  `scheduleFireTime` timestamp NOT NULL DEFAULT '1970-01-01 01:01:01',");
-        b.append("  `status` varchar(15) DEFAULT NULL,"); // TOLAUNCH / IGNORED / TRIGGERED / ERROR
+        b.append("  `status` varchar(15) DEFAULT NULL,"); 
         b.append("  `comment` varchar(250) DEFAULT NULL,");
         b.append("  `UsrCreated` varchar(45) NOT NULL DEFAULT '',");
         b.append("  `DateCreated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,");
