@@ -66,6 +66,7 @@ public class TestCaseStepAction {
     public static final String ACTION_FOCUSDEFAULTIFRAME = "focusDefaultIframe";
     public static final String ACTION_SWITCHTOWINDOW = "switchToWindow";
     public static final String ACTION_MANAGEDIALOG = "manageDialog";
+    public static final String ACTION_MANAGEDIALOGKEYPRESS = "manageDialogKeypress";
     public static final String ACTION_OPENURLWITHBASE = "openUrlWithBase";
     public static final String ACTION_OPENURLLOGIN = "openUrlLogin";
     public static final String ACTION_OPENURL = "openUrl";

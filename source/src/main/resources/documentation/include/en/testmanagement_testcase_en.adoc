@@ -130,23 +130,50 @@ image:testlooptep.png[TestCaseLoopStep]
 |=== 
 
 | *Action* | *Description* | *Example* 
-| Unknown | Unknown action. Default Action when creating a new action. Warning: make the execution fail. | 
-| click | will allow you to click on an element inside the current page. 
-*[red]#Value1#*	Identifier and name of the element to click in the form of : identifier=html_reference. | id=html_reference, xpath=//*[@id='html_reference'], (Sikuli) picture=%object.NameOfYourObject.pictureurl% 
-| mouseLeftButtonPress | allow to press and keep the button pressed until the next ButtonRelease action | 
-| mouseLeftButtonRelease | release the mouse button. Usefull with ButtonPress to perform drag & drop | 
-| doubleClick |  will allow you to double click on an element inside the current page. 
-*[red]#Value1#*	Identifier and name of the element to click in the form of : identifier=html_reference. Example : id=html_reference | 
-| rightClick |  will allow you to right click on an element inside the current page. 
-*[red]#Value1#*	Identifier and name of the element to click in the form of : identifier=html_reference. Example : id=html_reference | 
+| Unknown 
+| Unknown action. Should be used when the action is not yet known. 
+Warning: make the execution fail. 
+| 
+| click 
+| Click on the left mouse button on an element inside the current page.
+*[red]#Value1#*	Identifier and name of the element to click in the form of : identifier=html_reference. 
+| `id=html_reference`
+`xpath=//*[@id='html_reference']`
+`picture=%object.NameOfYourObject.pictureurl%` (for Sikuli)
+| mouseLeftButtonPress 
+| Press and keep the left mouse button pressed until the action 'mouseLeftButtonRelease' is executed. 
+| 
+| mouseLeftButtonRelease 
+| release the mouse button. Usefull with ButtonPress to perform drag & drop 
+| 
+| doubleClick 
+|  Double click on an element inside the current page.
+*[red]#Value1#*	Identifier and name of the element to click in the form of : identifier=html_reference. Example : id=html_reference 
+| 
+| rightClick 
+|  Right click on an element inside the current page. 
+*[red]#Value1#*	Identifier and name of the element to click in the form of : identifier=html_reference. Example : id=html_reference 
+| 
 | mouseOver | mouse cursor over an object *[red]#Element path#* : the id of the element | 
 | focustoIframe | TBD | 
 | focustoDefaultIframe | TBD | 
-| switchToWindow | when the Test case need to switch to another window (like popup dialog) this action is used. Just specify the title or the URL of the other window to switch to this window. | title=titleOfThisNewWindow or url=http://url_of_this_new_window
-| manageDialog | TBD | 
-| OpenUrlWithBase | OpenUrl action using the based defined in the environment section | /cerberustesting
-| OpenUrlLogin | OpenUrl action using credential | 
-| OpenUrl | Open a specified url | https://github.com
+| switchToWindow | Switch to another window (like popup dialog). Just specify the title or the URL of the other window to switch to this window. 
+| `title=titleOfThisNewWindow`
+ `url=http://url_of_this_new_window`
+| manageDialog 
+| Close the browser popup alert windows either by accepting it with `ok` either by cancelling it with `cancel` 
+| `ok`
+`cancel`
+
+| manageDialogKeypress 
+| Keypress inside the browser popup alert windows. You can use special keys with [TAB] 
+Supported keys are : [BACK_SPACE], [TAB], [RETURN], [ENTER], [SHIFT], [LEFT_SHIFT], [CONTROL], [LEFT_CONTROL], [ALT], [LEFT_ALT], [ESCAPE], [SPACE], [PAGE_UP], [PAGE_DOWN], [LEFT], [ARROW_LEFT], [UP], [ARROW_UP], [RIGHT], [ARROW_RIGHT], [DOWN], [ARROW_DOWN], [DELETE], [SEMICOLON], [EQUALS], [NUMPAD0], [NUMPAD1], [NUMPAD2], [NUMPAD3], [NUMPAD4], [NUMPAD5], [NUMPAD6], [NUMPAD7], [NUMPAD8], [NUMPAD9], [MULTIPLY], [ADD], [SEPARATOR], [SUBTRACT], [DECIMAL], [DIVIDE], [F1], [F2], [F3], [F4], [F5], [F6], [F7], [F8], [F9], [F10], [F11], [F12]
+| `texttoenter`
+`user[TAB]password`
+
+| OpenUrlWithBase | OpenUrl action using the base defined in the application / environment section | `/cerberustesting`
+| OpenUrlLogin | OpenUrl action using the login page defined at application / environment level. | 
+| OpenUrl | Open a specified url | `https://github.com`
 | executeJS | execute a JS script (no output can be retrieved) | 
 | openApp | TBD | 
 | closeApp | TBD | 

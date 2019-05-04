@@ -100,6 +100,8 @@ public interface IWebDriverService {
 
     MessageEvent doSeleniumActionManageDialog(Session session, Identifier identifier);
 
+    MessageEvent doSeleniumActionManageDialogKeyPress(Session session, String valueToPress);
+
     MessageEvent doSeleniumActionDoubleClick(Session session, Identifier identifier, boolean waitForVisibility, boolean waitForClickability);
 
     MessageEvent doSeleniumActionType(Session session, Identifier identifier, String property, String propertyName);

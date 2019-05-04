@@ -13,6 +13,7 @@
 * New constrain has been created at application level. constrain2_application has been renamed to constrain2_applienvironment. constrain3_application was created in order to handle constrain on application accross all environments. You can configure the poolsize at application level.
 * Sorted end of tag notification email detail table by prio (valid ci prio first.), test folder and test case ID
 * tag variable are also decoded from runtest page.
+* Added 'manageDialogKeypress' action in order to perform keypress inside browser dialog popup
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

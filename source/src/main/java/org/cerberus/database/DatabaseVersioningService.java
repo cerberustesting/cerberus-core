@@ -8088,7 +8088,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append("  `scheduleName` varchar(100) DEFAULT NULL,");
         b.append("  `scheduledDate` timestamp NOT NULL,");
         b.append("  `scheduleFireTime` timestamp NOT NULL DEFAULT '1970-01-01 01:01:01',");
-        b.append("  `status` varchar(15) DEFAULT NULL,"); 
+        b.append("  `status` varchar(15) DEFAULT NULL,");
         b.append("  `comment` varchar(250) DEFAULT NULL,");
         b.append("  `UsrCreated` varchar(45) NOT NULL DEFAULT '',");
         b.append("  `DateCreated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,");
@@ -8106,8 +8106,11 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 
         //1407 New constrain at application level.
         a.add("ALTER TABLE `application` ADD COLUMN `poolSize` INT NULL AFTER `BugTrackerNewUrl`;");
-        
-        
+
+        // Add new Action to keypress inside a popup
+        // 1408
+        a.add("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('ACTION', 'manageDialogKeypress', '5600', 'Keypress on a popup dialog.', 'Popup Keypress')");
+
         return a;
     }
 
