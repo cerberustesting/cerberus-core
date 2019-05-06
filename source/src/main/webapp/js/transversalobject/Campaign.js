@@ -335,7 +335,7 @@ function editEntryClick(param) {
         formEdit.find("#description").prop("value", obj["description"]);
         if (tinyMCE.get('longDescription') != null)
             tinyMCE.get('longDescription').setContent(obj["longDescription"]);
-        
+
 //        formEdit.find("#longDescription").prop("value", obj["longDescription"]);
         formEdit.find("#id").prop("value", obj["campaignID"]);
 
@@ -438,7 +438,7 @@ function editEntryClick(param) {
 function editEntryModalSaveHandler() {
     clearResponseMessage($('#editTestcampaignModal'));
     var formEdit = $('#editTestcampaignModal #editTestcampaignModalForm');
-        tinyMCE.triggerSave();
+    tinyMCE.triggerSave();
 
     var sa = formEdit.serializeArray();
     var data = {}
@@ -662,28 +662,6 @@ function addEntryModalCloseHandler() {
     clearResponseMessage($('#editTestcampaignModal'));
 }
 
-//function removeEntryClick(key) {
-//    var doc = new Doc();
-//    showModalConfirmation(function (ev) {
-//        var id = $('#confirmationModal #hiddenField1').prop("value");
-//        $.ajax({
-//            url: "DeleteCampaign?key=" + key,
-//            async: true,
-//            method: "GET",
-//            success: function (data) {
-//                hideLoaderInModal('#removeTestampaignModal');
-//                var oTable = $("#testcampaignsTable").dataTable();
-//                oTable.fnDraw(false);
-//                $('#removeTestcampaignModal').modal('hide');
-//                showMessage(data);
-//            },
-//            error: showUnexpectedError
-//        });
-//
-//        $('#confirmationModal').modal('hide');
-//    }, undefined, doc.getDocLabel("page_testcampaign", "title_remove"), doc.getDocLabel("page_testcampaign", "message_remove"), id, undefined, undefined, undefined);
-//}
-
 function addLabelEntryClick(tableId) {
 
     var v = $('#labelSelect2').select2('data')[0];
@@ -824,92 +802,6 @@ function findValueTableDataByCol(tableId, colIndex, value) {
     });
     return result;
 }
-//
-//function aoColumnsFunc(tableId) {
-//    var doc = new Doc();
-//    var aoColumns = [
-//        {
-//            "data": null,
-//            "bSortable": false,
-//            "bSearchable": false,
-//            "sWidth": "120px",
-//            "title": doc.getDocLabel("page_testcampaign", "button_col"),
-//            "mRender": function (data, type, obj) {
-//                var hasPermissions = $("#" + tableId).attr("hasPermissions");
-//
-//                var editTestcampaign = '<button id="editTestcampaign" onclick="editEntryClick(\'' + obj["campaign"] + '\');"\n\
-//                                        class="editCampaign btn btn-default btn-xs margin-right5" \n\
-//                                        name="editTestcampaign" title="' + doc.getDocLabel("page_testcampaign", "button_edit") + '" type="button">\n\
-//                                        <span class="glyphicon glyphicon-pencil"></span></button>';
-//                var removeTestcampaign = '<button id="removeTestcampaign" onclick="removeEntryClick(\'' + obj["campaign"] + '\');"\n\
-//                                        class="removeTestcampaign btn btn-default btn-xs margin-right5" \n\
-//                                        name="removeTestcampaign" title="' + doc.getDocLabel("page_testcampaign", "button_remove") + '" type="button">\n\
-//                                        <span class="glyphicon glyphicon-trash"></span></button>';
-//                var viewTestcampaign = '<button id="viewTestcampaign" onclick="viewEntryClick(\'' + obj["campaign"] + '\');"\n\
-//                                        class="viewTestcampaign btn btn-default btn-xs margin-right5" \n\
-//                                        name="viewTestcampaign" title="' + doc.getDocLabel("page_testcampaign", "button_view") + '" type="button">\n\
-//                                        <span class="glyphicon glyphicon-eye-open"></span></button>';
-//                var Runcampaign = '<a id="runcampaign" class="btn btn-primary btn-xs margin-right5"\n\
-//                                    href="./RunTests.jsp?campaign=' + encodeURIComponent(obj["campaign"]) + '" title="' + doc.getDocLabel("page_testcampaign", "button_run") + '" >\n\
-//                                    <span class="glyphicon glyphicon-play"></span>\n\
-//                                    </a>';
-//
-//                return '<div class="center btn-group">' + editTestcampaign + removeTestcampaign + viewTestcampaign + Runcampaign +'</div>';
-//
-//            }
-//        },
-//        {"data": "campaign", "sName": "campaign", "sWidth": "80px","title": doc.getDocLabel("page_testcampaign", "testcampaign_col")},
-//        {
-//            "data": "notifyStartTagExecution",
-//            "sName": "notifyStartTagExecution",
-//            "sWidth": "30px",
-//            "title": doc.getDocLabel("testcampaign", "notifyStartTagExecution")
-//        },
-//        {
-//            "data": "notifyEndTagExecution",
-//            "sName": "notifyEndTagExecution",
-//            "sWidth": "30px",
-//            "title": doc.getDocLabel("testcampaign", "notifyEndTagExecution")
-//        },
-//        {
-//            "data": "distribList",
-//            "sName": "distribList",
-//            "sWidth": "80px",
-//            "title": doc.getDocLabel("testcampaign", "distribList")
-//        },
-//        {
-//            "data": "SlackNotifyStartTagExecution",
-//            "sName": "SlackNotifyStartTagExecution",
-//            "sWidth": "30px",
-//            "title": doc.getDocLabel("testcampaign", "SlackNotifyStartTagExecution")
-//        },
-//        {
-//            "data": "SlackNotifyEndTagExecution",
-//            "sName": "SlackNotifyEndTagExecution",
-//            "sWidth": "30px",
-//            "title": doc.getDocLabel("testcampaign", "SlackNotifyEndTagExecution")
-//        },
-//        {
-//            "data": "SlackWebhook",
-//            "sName": "SlackWebhook",
-//            "sWidth": "80px",
-//            "title": doc.getDocLabel("testcampaign", "SlackWebhook")
-//        },
-//        {
-//            "data": "SlackChannel",
-//            "sName": "SlackChannel",
-//            "sWidth": "80px",
-//            "title": doc.getDocLabel("testcampaign", "SlackChannel")
-//        },
-//        {
-//            "data": "description",
-//            "sName": "description",
-//            "sWidth": "180px",
-//            "title": doc.getDocLabel("page_testcampaign", "description_col")
-//        }
-//    ];
-//    return aoColumns;
-//}
 
 function aoColumnsFunc_Label(tableId) {
     var doc = new Doc();
@@ -1050,13 +942,20 @@ function aoColumnsFunc_Tag() {
                 if (dur > 0) {
                     return Math.round((obj[0].nbExe / dur) * 10) / 10;
                 }
-                return "exepermin";
+                return "";
             },
             "title": doc.getDocOnline("page_tag", "exepermin")
         },
         {"data": "2", "sName": "nbExe", "sWidth": "40px", "title": doc.getDocOnline("tag", "nbexe")},
         {"data": "7", "sName": "ciscore", "sWidth": "40px", "title": doc.getDocOnline("tag", "ciscore")},
-        {"data": "5", "sName": "DateEndQueue", "sWidth": "150px", "title": doc.getDocOnline("tag", "dateendqueue")}
+        {
+            "data": "5",
+            "sName": "DateEndQueue",
+            "sWidth": "150px",
+            "mRender": function (data, type, obj) {
+                return getDate(obj[0].DateEndQueue);
+            },
+            "title": doc.getDocOnline("tag", "dateendqueue")}
     ];
     return aoColumns;
 }
@@ -1096,5 +995,8 @@ function getDuration(tag) {
     var endTime = new Date(tag.DateEndQueue);
     var diff = (endTime - startTime) / 60000;
     var roundDiff = Math.round(diff * 10) / 10;
+    if (roundDiff < 0) {
+        return "";
+    }
     return (roundDiff);
 }

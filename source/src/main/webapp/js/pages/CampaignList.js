@@ -159,7 +159,7 @@ function aoColumnsFunc(tableId) {
             "data": null,
             "bSortable": false,
             "bSearchable": false,
-            "sWidth": "120px",
+            "sWidth": "170px",
             "title": doc.getDocLabel("page_testcampaign", "button_col"),
             "mRender": function (data, type, obj) {
                 var hasPermissions = $("#" + tableId).attr("hasPermissions");
