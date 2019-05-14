@@ -49,4 +49,8 @@ public class CerberusException extends Exception {
         this.MessageError = MessageError;
     }
 
+    @Override
+    public String getMessage(){
+        return this.MessageError.getDescription() + ". " + super.getMessage();
+    }
 }

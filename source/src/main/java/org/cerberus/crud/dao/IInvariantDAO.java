@@ -43,13 +43,13 @@ public interface IInvariantDAO {
      * @param value
      * @return
      */
-    AnswerItem readByKey(String id, String value);
+    Invariant readByKey(String id, String value) throws CerberusException;
 
     /**
      * @param idName
      * @return
      */
-    AnswerList readByIdname(String idName);
+    List<Invariant>  readByIdname(String idName) throws CerberusException;
 
     /**
      * @param idName

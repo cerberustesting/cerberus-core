@@ -136,7 +136,7 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
         try {
             runID = this.insertTCExecution(tCExecution);
         } catch (CerberusException ex) {
-            LOG.warn(ex.toString());
+            LOG.warn(ex.toString(), ex);
             throw new CerberusException(ex.getMessageError());
         }
         return runID;

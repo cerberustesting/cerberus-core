@@ -35,9 +35,7 @@ import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.SqlUtil;
-import org.cerberus.util.answer.Answer;
-import org.cerberus.util.answer.AnswerItem;
-import org.cerberus.util.answer.AnswerList;
+import org.cerberus.util.answer.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -54,12 +52,12 @@ public class InvariantService implements IInvariantService {
 
     @Override
     public AnswerItem readByKey(String id, String value) {
-        return invariantDao.readByKey(id, value);
+        return AnswerUtil.convertToAnswerItem(() -> invariantDao.readByKey(id, value));
     }
 
     @Override
     public AnswerList readByIdname(String idName) {
-        return invariantDao.readByIdname(idName);
+        return AnswerUtil.convertToAnswerList(() -> invariantDao.readByIdname(idName));
     }
 
     @Override

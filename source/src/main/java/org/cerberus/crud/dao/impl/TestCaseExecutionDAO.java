@@ -138,20 +138,20 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                         return resultSet.getInt(1);
                     }
                 } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
+                    LOG.error("Unable to execute query : " + exception.toString(), exception);
                     throwEx = true;
                 } finally {
                     resultSet.close();
                 }
 
             } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
+                LOG.error("Unable to execute query : " + exception.toString(), exception);
                 throwEx = true;
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
+            LOG.error("Unable to execute query : " + exception.toString(), exception);
             throwEx = true;
         } finally {
             try {
