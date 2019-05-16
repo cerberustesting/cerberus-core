@@ -149,7 +149,7 @@ public class ReadTestCase extends AbstractCrudTestCase {
                 //If columnName is present, then return the distinct value of this column.
                 answer = findDistinctValuesOfColumn(system, test, request, columnName);
                 jsonResponse = (JSONObject) answer.getItem();
-            } else {
+            } else { // Page TestCaseList
                 answer = findTestCaseByTest(system, test, request);
                 jsonResponse = (JSONObject) answer.getItem();
             }

@@ -96,8 +96,8 @@ public class InvariantDAO implements IInvariantDAO {
         // secure invariant with allow System user
         String systemClause = "";
 
-        if ("SYSTEM".equals(idName) && !UserSecurity.isAdministrator()) {
-            systemClause = " and value in " + UserSecurity.getSystemAllowForSQLInClause();
+        if ( "SYSTEM".equals(idName) ) {
+            systemClause = " AND " + UserSecurity.getSystemAllowForSQLInClause("value");
         }
 
         final String query = "SELECT * FROM invariant i  WHERE i.idname = ? " + systemClause + " ORDER BY sort";

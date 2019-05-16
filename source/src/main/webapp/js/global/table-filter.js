@@ -364,10 +364,10 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
         	                var url = './' + contentUrl + urlSeparator + 'columnName=' + title;
         	                var result;
         	                
-        	                var params = table.ajax.params()  
-        	                
+        	                var params = table.ajax.params()
+
 							var like = ""
-								
+
 							$.each(oSettings.aoColumns, function(index,value){
 								if(oSettings.aoColumns[index].like){
 									like += oSettings.aoColumns[index].sName + ","

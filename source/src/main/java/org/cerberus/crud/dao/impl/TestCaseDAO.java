@@ -53,7 +53,7 @@ import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
-import org.jfree.util.Log;
+import org.cerberus.util.security.UserSecurity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -161,9 +161,16 @@ public class TestCaseDAO implements ITestCaseDAO {
 
         searchSQL.append("WHERE 1=1");
 
+        // Always filter on system user can view
+        searchSQL.append(" AND " + UserSecurity.getSystemAllowForSQLInClause("app.`system`") + " ");
+
+
         if (!StringUtil.isNullOrEmpty(system)) {
             searchSQL.append(" AND app.`system` = ? ");
         }
+
+
+
         if (!StringUtil.isNullOrEmpty(test)) {
             searchSQL.append(" AND tec.`test` = ?");
         }

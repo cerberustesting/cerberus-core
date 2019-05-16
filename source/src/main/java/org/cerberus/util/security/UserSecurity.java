@@ -68,14 +68,21 @@ public class UserSecurity {
     }
 
 
-    public static String getSystemAllowForSQLInClause() {
+    public static String getSystemAllowForSQLInClause(String systemAttributeName) {
         StringBuilder st = new StringBuilder();
         boolean firstSys = true;
+
+        List<String> systemAllow = getSystemAllow();
+
+        if(systemAllow == null) {
+            return " 1=1 ";
+        }
+
         for (String sys : getSystemAllow()) {
             st.append(  (!firstSys ? "," : "")  + "'" + StringEscapeUtils.escapeHtml4(escapeSql(sys)) + "'");
             firstSys = false;
         }
-        return "(" + st.toString() + ")";
+        return systemAttributeName + " in (" + st.toString() + ")";
     }
 
 
