@@ -155,14 +155,14 @@ public class TestCaseDAO implements ITestCaseDAO {
         if (!StringUtil.isNullOrEmpty(searchTerm) || individualSearch.get("lab.label") != null
                 || individualSearch.get("lab.labelsSTICKER") != null || individualSearch.get("lab.labelsREQUIREMENT") != null || individualSearch.get("lab.labelsBATTERY") != null) {
             // We don't join the label table if we don't need to.
-            query.append(" LEFT OUTER JOIN testcaselabel tel on tec.test = tel.test AND tec.testcase = tel.testcase ");
-            query.append(" LEFT OUTER JOIN label lab on tel.labelId = lab.id ");
+            query.append(" INNER OUTER JOIN testcaselabel tel on tec.test = tel.test AND tec.testcase = tel.testcase ");
+            query.append(" INNER OUTER JOIN label lab on tel.labelId = lab.id ");
         }
 
         searchSQL.append("WHERE 1=1");
 
         // Always filter on system user can view
-        searchSQL.append(" AND " + UserSecurity.getSystemAllowForSQLInClause("app.`system`") + " ");
+        searchSQL.append(" AND " + UserSecurity.getSystemAllowForSQL("app.`system`") + " ");
 
 
         if (!StringUtil.isNullOrEmpty(system)) {
@@ -1637,7 +1637,15 @@ public class TestCaseDAO implements ITestCaseDAO {
     public AnswerItem readByKey(String test, String testCase) {
         AnswerItem ans = new AnswerItem<>();
         TestCase result = null;
-        final String query = "SELECT * FROM `testcase` tec LEFT OUTER JOIN application app ON app.application=tec.application WHERE tec.`test` = ? AND tec.`testcase` = ?";
+        final String query = "SELECT * FROM `testcase` tec " +
+                "LEFT OUTER JOIN application app " +
+                "ON app.application=tec.application " +
+                "WHERE tec.`test` = ? " +
+                "AND tec.`testcase` = ? " +
+                "AND " + UserSecurity.getSystemAllowForSQL("app.`system`");
+
+
+
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 

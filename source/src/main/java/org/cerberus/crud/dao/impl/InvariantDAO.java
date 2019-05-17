@@ -97,7 +97,7 @@ public class InvariantDAO implements IInvariantDAO {
         String systemClause = "";
 
         if ( "SYSTEM".equals(idName) ) {
-            systemClause = " AND " + UserSecurity.getSystemAllowForSQLInClause("value");
+            systemClause = " AND " + UserSecurity.getSystemAllowForSQL("value");
         }
 
         final String query = "SELECT * FROM invariant i  WHERE i.idname = ? " + systemClause + " ORDER BY sort";

@@ -116,9 +116,15 @@ $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.j
             var testcaseinfo;
             $.ajax({
                 url: "ReadTestCase",
-                data: {test: test, testCase: testcase, withStep: true},
+                data: {test: test, testCase: testcase, withStep: true, system: getSys()},
                 dataType: "json",
                 success: function (data) {
+
+                    // manage error
+                    if(data.messageType != undefined && data.messageType === "KO") {
+                        showUnexpectedError(null, "ERROR", data.message);
+                        return;
+                    }
 
                     canUpdate = data.hasPermissionsUpdate;
 
@@ -290,7 +296,7 @@ $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.j
 
             $.ajax({
                 url: "ReadTestCaseExecution",
-                data: {test: test, testCase: testcase},
+                data: {test: test, testCase: testcase, system: getSys()},
                 dataType: "json",
                 success: function (data) {
                     if (!jQuery.isEmptyObject(data.contentTable)) {

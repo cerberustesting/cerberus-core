@@ -42,7 +42,7 @@ public interface ITestDAO {
 
 
 
-    public AnswerItem readByKey(String test);
+    public Test readByKey(String test) throws CerberusException ;
 
     public AnswerList readDistinctBySystem(String system);
     
@@ -77,6 +77,6 @@ public interface ITestDAO {
      * @param columnName
      * @return
      */
-    public AnswerList<List<String>> readDistinctValuesByCriteria(String searchTerm, Map<String, List<String>> individualSearch, String columnName);
+    public AnswerList<List<String>> readDistinctValuesByCriteria(String searchTerm, Map<String, List<String>> individualSearch, String columnName) ;
 
 }

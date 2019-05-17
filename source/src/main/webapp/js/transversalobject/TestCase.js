@@ -580,7 +580,7 @@ function feedTestCaseModal(test, testCase, modalId, mode) {
     var formEdit = $('#' + modalId);
 
 
-    var jqxhr = $.getJSON("ReadTestCase", "test=" + encodeURIComponent(test) + "&testCase=" + encodeURIComponent(testCase));
+    var jqxhr = $.getJSON("ReadTestCase", "test=" + encodeURIComponent(test) + "&testCase=" + encodeURIComponent(testCase) + "&system="+  encodeURIComponent(system) );
     $.when(jqxhr).then(function (data) {
 
         var testCase = data.contentTable;
@@ -636,9 +636,10 @@ function feedTestCaseModal(test, testCase, modalId, mode) {
 
 function fillTestCaseSelect(selectorTestCaseSelect, test, testcase) {
     var doc = new Doc()
+    var system = getSys()
     if (test !== null) {
         $.ajax({
-            url: "ReadTestCase?test=" + test,
+            url: "ReadTestCase?test=" + encodeURIComponent(test)+"&system="+encodeURIComponent(system),
             async: true,
             success: function (data) {
                 data.contentTable.sort(function (a, b) {
@@ -676,8 +677,9 @@ function fillTestCaseSelect(selectorTestCaseSelect, test, testcase) {
  */
 function fillTestAndTestCaseSelect(selectorTestSelect, selectorTestCaseSelect, test, testcase) {
     var doc = new Doc()
+    var system = getSys()
     $.ajax({
-        url: "ReadTest",
+        url: "ReadTest?system="+encodeURIComponent(system),
         async: true,
         success: function (data) {
             data.contentTable.sort(function (a, b) {

@@ -68,7 +68,7 @@ public class UserSecurity {
     }
 
 
-    public static String getSystemAllowForSQLInClause(String systemAttributeName) {
+    public static String getSystemAllowForSQL(String systemAttributeName) {
         StringBuilder st = new StringBuilder();
         boolean firstSys = true;
 

@@ -55,9 +55,19 @@ public class InvariantService implements IInvariantService {
         return AnswerUtil.convertToAnswerItem(() -> invariantDao.readByKey(id, value));
     }
 
+    /**
+     * Use readByIdName instead to avoid Answer
+     * @param idName
+     * @return
+     */
     @Override
+    @Deprecated
     public AnswerList readByIdname(String idName) {
         return AnswerUtil.convertToAnswerList(() -> invariantDao.readByIdname(idName));
+    }
+
+    public List<Invariant> readByIdName(String idName) throws CerberusException {
+        return invariantDao.readByIdname(idName);
     }
 
     @Override

@@ -20,8 +20,8 @@
 package org.cerberus.crud.utils;
 
 import org.cerberus.database.DatabaseSpring;
-import org.cerberus.engine.entity.MessageGeneral;
-import org.cerberus.enums.MessageGeneralEnum;
+import org.cerberus.engine.entity.*;
+import org.cerberus.enums.*;
 import org.cerberus.exception.CerberusException;
 
 import java.sql.Connection;
