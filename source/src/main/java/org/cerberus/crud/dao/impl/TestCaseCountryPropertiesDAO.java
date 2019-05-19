@@ -76,8 +76,11 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
 
     @Override
     public List<TestCaseCountryProperties> findListOfPropertyPerTestTestCase(String test, String testcase) throws CerberusException {
-        final String query = "SELECT * FROM testcasecountryproperties tcp WHERE test = ? AND testcase = ? " +
-                "OR exists (select 1 from  testcasedep  where DepTest = tcp.Test AND DepTestCase = tcp.TestCase AND Test = ? AND TestCase = ?)"; // Manage tc dependencies
+        final String query = "SELECT * FROM testcasecountryproperties tcp WHERE test = ? AND testcase = ? " ;
+        // TestCase dependency should only be used on testcasedataexecution.
+        // In other words, when a test case is linked to another testcase, it should have access to its data at execution level but should not inherit from testcase property definition.
+        // As a consequece this method should not return properties from dependencies.
+//                "OR exists (select 1 from  testcasedep  where DepTest = tcp.Test AND DepTestCase = tcp.TestCase AND Test = ? AND TestCase = ?)"; // Manage tc dependencies
 
 
         return RequestDbUtils.executeQueryList(databaseSpring, query,
