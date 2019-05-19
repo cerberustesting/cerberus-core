@@ -42,14 +42,16 @@ public interface IInvariantDAO {
      * @param id
      * @param value
      * @return
+     * @throws org.cerberus.exception.CerberusException
      */
     Invariant readByKey(String id, String value) throws CerberusException;
 
     /**
      * @param idName
      * @return
+     * @throws org.cerberus.exception.CerberusException
      */
-    List<Invariant>  readByIdname(String idName) throws CerberusException;
+    List<Invariant> readByIdname(String idName) throws CerberusException;
 
     /**
      * @param idName

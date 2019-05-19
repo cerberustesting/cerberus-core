@@ -88,8 +88,6 @@ public class AnswerUtil {
         return null; // That should never happen.
     }
 
-
-
     @FunctionalInterface
     public interface AnswerItemFunction<R> {
 
@@ -102,16 +100,13 @@ public class AnswerUtil {
         List<R> apply() throws CerberusException;
     }
 
-
-
-
     public static <R> AnswerItem convertToAnswerItem(AnswerItemFunction<R> answerFunction) {
         AnswerItem answer = new AnswerItem<>();
         MessageEvent msg = null;
         R result = null;
-
         try {
             result = answerFunction.apply();
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK_GENERIC);
         } catch (CerberusException exception) {
             LOG.error("A CerberusException occured : " + exception.toString(), exception);
             msg = new MessageEvent(exception.getMessageError().getCodeString(), exception.getMessageError().getDescription());

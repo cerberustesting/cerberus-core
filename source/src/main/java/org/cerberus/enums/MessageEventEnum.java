@@ -449,6 +449,7 @@ public enum MessageEventEnum {
     CASTING_OPERATION_FAILED(660, "FA", "Error on casting %FIELD% from string to integer : %ERROR%", true, false, false, MessageGeneralEnum.EXECUTION_FA),
     // *********** DATA OPERATION ***********
     DATA_OPERATION_OK(500, MessageCodeEnum.GENERIC_CODE_SUCCESS.getCodeString(), "%ITEM% - %OPERATION% was finished with success!", false, false, false, MessageGeneralEnum.DATA_OPERATION_SUCCESS),
+    DATA_OPERATION_OK_GENERIC(500, MessageCodeEnum.GENERIC_CODE_SUCCESS.getCodeString(), "Operation was finished with success!", false, false, false, MessageGeneralEnum.DATA_OPERATION_SUCCESS),
     DATA_OPERATION_WARNING_PARTIAL_RESULT(500, MessageCodeEnum.GENERIC_CODE_WARNING.getCodeString(), "Result may contain partial result. %DESCRIPTION%", false, false, false, MessageGeneralEnum.DATA_OPERATION_WARNING),
     DATA_OPERATION_WARNING_NOUPDATE(500, MessageCodeEnum.GENERIC_CODE_WARNING.getCodeString(), "No record was updated. %DESCRIPTION%", false, false, false, MessageGeneralEnum.DATA_OPERATION_WARNING),
     DATA_OPERATION_WARNING(500, MessageCodeEnum.GENERIC_CODE_WARNING.getCodeString(), "%ITEM% - %OPERATION% was finished successfuly with warnings! %REASON%", false, false, false, MessageGeneralEnum.DATA_OPERATION_WARNING),
