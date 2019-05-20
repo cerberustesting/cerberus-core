@@ -87,8 +87,8 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                 ps -> {
                     ps.setString(1, test);
                     ps.setString(2, testcase);
-                    ps.setString(3, test);
-                    ps.setString(4, testcase);
+                    //ps.setString(3, test);
+                    //ps.setString(4, testcase);
                 },
                 resultSet -> {
                     String country = resultSet.getString("country");
