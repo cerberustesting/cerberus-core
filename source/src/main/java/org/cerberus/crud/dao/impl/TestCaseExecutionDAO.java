@@ -27,20 +27,18 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import org.apache.commons.lang3.StringUtils;
+import java.util.*;
+
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.IApplicationDAO;
 import org.cerberus.crud.dao.ITestCaseDAO;
 import org.cerberus.crud.dao.ITestCaseExecutionDAO;
+import org.cerberus.crud.entity.*;
 import org.cerberus.crud.service.IParameterService;
+import org.cerberus.crud.utils.RequestDbUtils;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.MessageGeneral;
-import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.factory.IFactoryTestCaseExecution;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.enums.MessageEventEnum;
@@ -52,6 +50,7 @@ import org.cerberus.util.SqlUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
+import org.cerberus.util.security.UserSecurity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -768,7 +767,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     }
 
     @Override
-    public AnswerList readByTagByCriteria(String tag, int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException {
+    public List<TestCaseExecution> readByTagByCriteria(String tag, int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
         AnswerList answer = new AnswerList<>();
         List<String> individalColumnSearchValues = new ArrayList<String>();
@@ -820,71 +819,30 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             LOG.debug("SQL : " + query.toString());
             LOG.debug("SQL.param.tag : " + tag);
         }
-        List<TestCaseExecution> testCaseExecutionList = new ArrayList<TestCaseExecution>();
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
-            int i = 1;
-            if (!StringUtil.isNullOrEmpty(tag)) {
-                preStat.setString(i++, tag);
-            }
-            if (!Strings.isNullOrEmpty(searchTerm)) {
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-            }
-            for (String individualColumnSearchValue : individalColumnSearchValues) {
-                preStat.setString(i++, individualColumnSearchValue);
-            }
 
-            try {
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    while (resultSet.next()) {
-                        testCaseExecutionList.add(this.loadWithDependenciesFromResultSet(resultSet));
+
+        return RequestDbUtils.executeQueryList(databaseSpring, query.toString(),
+                preStat -> {
+                    int i = 1;
+                    if (!StringUtil.isNullOrEmpty(tag)) {
+                        preStat.setString(i++, tag);
                     }
-                    msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCaseExecution").replace("%OPERATION%", "SELECT"));
-//                    answer = new AnswerList<>(testCaseExecutionList, testCaseExecutionList.size());
-                    answer.setTotalRows(testCaseExecutionList.size());
-                } catch (SQLException exception) {
-                    LOG.warn("Unable to execute query : " + exception.toString());
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
-                    testCaseExecutionList = null;
-                } finally {
-                    resultSet.close();
-                }
-            } catch (SQLException exception) {
-                LOG.warn("Unable to execute query : " + exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
-                testCaseExecutionList = null;
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            LOG.warn("Unable to execute query : " + exception.toString());
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
-            testCaseExecutionList = null;
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
-            }
-        }
 
-        answer.setResultMessage(msg);
-        answer.setDataList(testCaseExecutionList);
-        return answer;
+                    if (!Strings.isNullOrEmpty(searchTerm)) {
+                        preStat.setString(i++, "%" + searchTerm + "%");
+                        preStat.setString(i++, "%" + searchTerm + "%");
+                        preStat.setString(i++, "%" + searchTerm + "%");
+                        preStat.setString(i++, "%" + searchTerm + "%");
+                        preStat.setString(i++, "%" + searchTerm + "%");
+                        preStat.setString(i++, "%" + searchTerm + "%");
+                    }
+                    for (String individualColumnSearchValue : individalColumnSearchValues) {
+                        preStat.setString(i++, individualColumnSearchValue);
+                    }
+                },
+                rs -> loadWithDependenciesFromResultSet(rs)
+        );
+
     }
 
     @Override
@@ -1018,7 +976,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
 
 
     @Override
-    public AnswerList readByCriteria(int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch, List<String> individualLike) throws CerberusException {
+    public List<TestCaseExecution> readByCriteria(int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch, List<String> individualLike, List<String> system) throws CerberusException {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
         AnswerList answer = new AnswerList<>();
         List<String> individalColumnSearchValues = new ArrayList<String>();
@@ -1026,6 +984,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         final StringBuffer query = new StringBuffer();
 
         query.append("SELECT * FROM testcaseexecution exe ");
+        query.append("left join testcase tec on exe.Test = tec.Test and exe.TestCase = tec.TestCase ");
+        query.append("left join application as app on tec.application = app.application ");
         query.append("where exe.`start`> '").append(DateUtil.getMySQLTimestampTodayDeltaMinutes(-360000)).append("' ");
 
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
@@ -1068,6 +1028,13 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             query.append(" ) ");
         }
 
+
+        if(system != null && ! system.isEmpty()) {
+            query.append( " and " + SqlUtil.generateInClause("app.system", system) + " ");
+        }
+
+        query.append( " AND " + UserSecurity.getSystemAllowForSQL("app.system"));
+
         if (!StringUtil.isNullOrEmpty(sort)) {
             query.append(" order by ").append(sort);
         }
@@ -1082,90 +1049,56 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
         }
-        List<TestCaseExecution> testCaseExecutionList = new ArrayList<TestCaseExecution>();
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
-            int i = 1;
-            if (!Strings.isNullOrEmpty(searchTerm)) {
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-            }
-            for (String individualColumnSearchValue : individalColumnSearchValues) {
-                preStat.setString(i++, individualColumnSearchValue);
-            }
 
-            try {
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    while (resultSet.next()) {
-                        testCaseExecutionList.add(this.loadFromResultSet(resultSet));
+
+        return RequestDbUtils.executeQueryList(databaseSpring, query.toString(),
+                preStat -> {
+                    int i = 1;
+                    if (!Strings.isNullOrEmpty(searchTerm)) {
+                        preStat.setString(i++, "%" + searchTerm + "%");
+                        preStat.setString(i++, "%" + searchTerm + "%");
+                        preStat.setString(i++, "%" + searchTerm + "%");
+                        preStat.setString(i++, "%" + searchTerm + "%");
+                        preStat.setString(i++, "%" + searchTerm + "%");
+                        preStat.setString(i++, "%" + searchTerm + "%");
+                        preStat.setString(i++, "%" + searchTerm + "%");
+                        preStat.setString(i++, "%" + searchTerm + "%");
+                        preStat.setString(i++, "%" + searchTerm + "%");
+                        preStat.setString(i++, "%" + searchTerm + "%");
+                        preStat.setString(i++, "%" + searchTerm + "%");
+                        preStat.setString(i++, "%" + searchTerm + "%");
+                        preStat.setString(i++, "%" + searchTerm + "%");
+                        preStat.setString(i++, "%" + searchTerm + "%");
+                        preStat.setString(i++, "%" + searchTerm + "%");
+                        preStat.setString(i++, "%" + searchTerm + "%");
+                        preStat.setString(i++, "%" + searchTerm + "%");
+                        preStat.setString(i++, "%" + searchTerm + "%");
+                        preStat.setString(i++, "%" + searchTerm + "%");
+                        preStat.setString(i++, "%" + searchTerm + "%");
+                        preStat.setString(i++, "%" + searchTerm + "%");
+                        preStat.setString(i++, "%" + searchTerm + "%");
+                        preStat.setString(i++, "%" + searchTerm + "%");
+                        preStat.setString(i++, "%" + searchTerm + "%");
+                        preStat.setString(i++, "%" + searchTerm + "%");
+                        preStat.setString(i++, "%" + searchTerm + "%");
+                        preStat.setString(i++, "%" + searchTerm + "%");
+                        preStat.setString(i++, "%" + searchTerm + "%");
+
                     }
-                    msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCaseExecution").replace("%OPERATION%", "SELECT"));
-//                    answer = new AnswerList<>(testCaseExecutionList, testCaseExecutionList.size());
-                    answer.setTotalRows(testCaseExecutionList.size());
-                } catch (SQLException exception) {
-                    LOG.warn("Unable to execute query : " + exception.toString());
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
-                    testCaseExecutionList = null;
-                } finally {
-                    resultSet.close();
-                }
-            } catch (SQLException exception) {
-                LOG.warn("Unable to execute query : " + exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
-                testCaseExecutionList = null;
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            LOG.warn("Unable to execute query : " + exception.toString());
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
-            testCaseExecutionList = null;
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                LOG.warn(e.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
-            }
-        }
+                    for (String individualColumnSearchValue : individalColumnSearchValues) {
+                        preStat.setString(i++, individualColumnSearchValue);
+                    }
 
-        answer.setResultMessage(msg);
-        answer.setDataList(testCaseExecutionList);
-        return answer;
+                    if(system != null && ! system.isEmpty()) {
+                        for(String sys : system) {
+                            preStat.setString(i++, sys);
+                        }
+                    }
+                },
+                rs -> loadFromResultSet(rs)
+        );
+
+
     }
 
     @Override
@@ -1346,324 +1279,6 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             }
         }
 
-        answer.setResultMessage(msg);
-        return answer;
-    }
-
-    @Override
-    public AnswerList readBySystemByVarious(String system, List<String> testList, List<String> applicationList, List<String> projectList, List<String> tcstatusList,
-            List<String> groupList, List<String> tcactiveList, List<String> priorityList, List<String> targetsprintList, List<String> targetrevisionList,
-            List<String> creatorList, List<String> implementerList, List<String> buildList, List<String> revisionList, List<String> environmentList,
-            List<String> countryList, List<String> browserList, List<String> tcestatusList, String ip, String port, String tag, String browserversion,
-            String comment, String bugid, String ticket) {
-
-        AnswerList answer = new AnswerList<>();
-        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-        List<TestCaseExecution> tceList = new ArrayList<TestCaseExecution>();
-        List<String> whereClauses = new LinkedList<String>();
-
-        StringBuilder query = new StringBuilder();
-
-        int paramNumber = 0;
-
-        query.append(" select t.ID as statusExecutionID, t.* from ( ");
-        query.append(" select exe.*, tec.*, app.* ");
-        query.append(" from testcaseexecution exe ");
-        query.append(" inner join testcase tec on exe.test = tec.test and exe.testcase = tec.testcase ");
-        query.append(" inner join application app on exe.application = app.application ");
-
-        String testClause = SqlUtil.generateInClause("exe.test", testList);
-        if (!StringUtil.isNullOrEmpty(testClause)) {
-            whereClauses.add(testClause);
-        }
-
-        String applicationClause = SqlUtil.generateInClause("exe.application", applicationList);
-        if (!StringUtil.isNullOrEmpty(applicationClause)) {
-            whereClauses.add(applicationClause);
-        }
-
-        String projectClause = SqlUtil.generateInClause("tec.project", projectList);
-        if (!StringUtil.isNullOrEmpty(projectClause)) {
-            whereClauses.add(projectClause);
-        }
-        //test case status: working, fully_implemented, ...
-        String tcsClause = SqlUtil.generateInClause("exe.status", tcstatusList);
-        if (!StringUtil.isNullOrEmpty(tcsClause)) {
-            whereClauses.add(tcsClause);
-        }
-
-        //group 
-        String groupClause = SqlUtil.generateInClause("tec.group", groupList);
-        if (!StringUtil.isNullOrEmpty(groupClause)) {
-            whereClauses.add(groupClause);
-        }
-        //test case active
-        String tcactiveClause = SqlUtil.generateInClause("tec.tcactive", tcactiveList);
-        if (!StringUtil.isNullOrEmpty(tcactiveClause)) {
-            whereClauses.add(tcactiveClause);
-        }
-
-        //test case active
-        String priorityClause = SqlUtil.generateInClause("tec.Priority", priorityList);
-        if (!StringUtil.isNullOrEmpty(priorityClause)) {
-            whereClauses.add(priorityClause);
-        }
-
-        //target sprint
-        String targetsprintClause = SqlUtil.generateInClause("tec.TargetBuild", targetsprintList);
-        if (!StringUtil.isNullOrEmpty(targetsprintClause)) {
-            whereClauses.add(targetsprintClause);
-        }
-
-        //target revision
-        String targetrevisionClause = SqlUtil.generateInClause("tec.TargetRev", targetrevisionList);
-        if (!StringUtil.isNullOrEmpty(targetrevisionClause)) {
-            whereClauses.add(targetrevisionClause);
-        }
-
-        //creator
-        String creatorClause = SqlUtil.generateInClause("tec.UsrCreated", creatorList);
-        if (!StringUtil.isNullOrEmpty(creatorClause)) {
-            whereClauses.add(creatorClause);
-        }
-
-        //implementer
-        String implementerClause = SqlUtil.generateInClause("tec.Implementer", implementerList);
-        if (!StringUtil.isNullOrEmpty(implementerClause)) {
-            whereClauses.add(implementerClause);
-        }
-
-        //build
-        String buildClause = SqlUtil.generateInClause("exe.Build", buildList);
-        if (!StringUtil.isNullOrEmpty(buildClause)) {
-            whereClauses.add(buildClause);
-        }
-        //revision
-        String revisionClause = SqlUtil.generateInClause("exe.Revision", revisionList);
-        if (!StringUtil.isNullOrEmpty(revisionClause)) {
-            whereClauses.add(revisionClause);
-        }
-        //environment
-        String environmentClause = SqlUtil.generateInClause("exe.Environment", environmentList);
-        if (!StringUtil.isNullOrEmpty(environmentClause)) {
-            whereClauses.add(environmentClause);
-        }
-        //country
-        String countryClause = SqlUtil.generateInClause("exe.Country", countryList);
-        if (!StringUtil.isNullOrEmpty(countryClause)) {
-            whereClauses.add(countryClause);
-        }
-        //browser
-        String browserClause = SqlUtil.generateInClause("exe.Browser", browserList);
-        if (!StringUtil.isNullOrEmpty(browserClause)) {
-            whereClauses.add(browserClause);
-        }
-        //test case execution
-        String tcestatusClause = SqlUtil.generateInClause("exe.ControlStatus", tcestatusList);
-        if (!StringUtil.isNullOrEmpty(tcestatusClause)) {
-            whereClauses.add(tcestatusClause);
-        }
-
-        if (!StringUtil.isNullOrEmpty(system)) {
-            whereClauses.add(" app.system like ? ");
-        }
-        if (!StringUtil.isNullOrEmpty(ip)) {
-            whereClauses.add(" exe.IP like ? ");
-        }
-        if (!StringUtil.isNullOrEmpty(port)) {
-            whereClauses.add(" exe.port like ? ");
-        }
-        if (!StringUtil.isNullOrEmpty(tag)) {
-            whereClauses.add(" exe.tag like ? ");
-        }
-        if (!StringUtil.isNullOrEmpty(browserversion)) {
-            whereClauses.add(" exe.browserfullversion like ? ");
-        }
-        if (!StringUtil.isNullOrEmpty(comment)) {
-            whereClauses.add(" exe.comment like ? ");
-        }
-        if (!StringUtil.isNullOrEmpty(bugid)) {
-            whereClauses.add(" tec.BugID like ? ");
-        }
-        if (!StringUtil.isNullOrEmpty(ticket)) {
-            whereClauses.add(" tec.Ticket like ? ");
-        }
-
-        if (whereClauses.size() > 0) {
-            query.append("where ");
-            String joined = StringUtils.join(whereClauses, " and ");
-            query.append(joined);
-        }
-
-        query.append(" order by exe.ID desc ");
-        query.append(" ) as t group by t.test, t.testcase, t.environment, t.browser, t.country");
-        Connection connection = this.databaseSpring.connect();
-
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
-            if (testList != null) {
-                for (String param : testList) {
-                    preStat.setString(++paramNumber, param);
-                }
-            }
-            if (applicationList != null) {
-                for (String param : applicationList) {
-                    preStat.setString(++paramNumber, param);
-                }
-            }
-            if (projectList != null) {
-                for (String param : projectList) {
-                    preStat.setString(++paramNumber, param);
-                }
-            }
-            if (tcstatusList != null) {
-                for (String param : tcstatusList) {
-                    preStat.setString(++paramNumber, param);
-                }
-            }
-            if (groupList != null) {
-                for (String param : groupList) {
-                    preStat.setString(++paramNumber, param);
-                }
-            }
-
-            if (tcactiveList != null) {
-                for (String param : tcactiveList) {
-                    preStat.setString(++paramNumber, param);
-                }
-            }
-            if (priorityList != null) {
-                for (String param : priorityList) {
-                    preStat.setString(++paramNumber, param);
-                }
-            }
-            if (targetsprintList != null) {
-                for (String param : targetsprintList) {
-                    preStat.setString(++paramNumber, param);
-                }
-            }
-            if (targetrevisionList != null) {
-                for (String param : targetrevisionList) {
-                    preStat.setString(++paramNumber, param);
-                }
-            }
-            if (creatorList != null) {
-                for (String param : creatorList) {
-                    preStat.setString(++paramNumber, param);
-                }
-            }
-            if (implementerList != null) {
-                for (String param : implementerList) {
-                    preStat.setString(++paramNumber, param);
-                }
-            }
-            if (buildList != null) {
-                for (String param : buildList) {
-                    preStat.setString(++paramNumber, param);
-                }
-            }
-            if (revisionList != null) {
-                for (String param : revisionList) {
-                    preStat.setString(++paramNumber, param);
-                }
-            }
-            //environment
-            if (environmentList != null) {
-                for (String param : environmentList) {
-                    preStat.setString(++paramNumber, param);
-                }
-            }
-            //country
-            if (countryList != null) {
-                for (String param : countryList) {
-                    preStat.setString(++paramNumber, param);
-                }
-            }
-            //browser            
-            if (browserList != null) {
-                for (String param : browserList) {
-                    preStat.setString(++paramNumber, param);
-                }
-            }
-            //controlstatus
-            if (tcestatusList != null) {
-                for (String param : tcestatusList) {
-                    preStat.setString(++paramNumber, param);
-                }
-            }
-
-            if (!StringUtil.isNullOrEmpty(system)) {
-                preStat.setString(++paramNumber, system);
-            }
-
-            if (!StringUtil.isNullOrEmpty(ip)) {
-                preStat.setString(++paramNumber, "%" + ip + "%");
-            }
-            if (!StringUtil.isNullOrEmpty(port)) {
-                preStat.setString(++paramNumber, "%" + port + "%");
-            }
-            if (!StringUtil.isNullOrEmpty(tag)) {
-                preStat.setString(++paramNumber, "%" + tag + "%");
-            }
-            if (!StringUtil.isNullOrEmpty(browserversion)) {
-                preStat.setString(++paramNumber, "%" + browserversion + "%");
-            }
-            if (!StringUtil.isNullOrEmpty(comment)) {
-                preStat.setString(++paramNumber, "%" + comment + "%");
-            }
-            if (!StringUtil.isNullOrEmpty(bugid)) {
-                preStat.setString(++paramNumber, "%" + bugid + "%");
-            }
-            if (!StringUtil.isNullOrEmpty(ticket)) {
-                preStat.setString(++paramNumber, "%" + ticket + "%");
-            }
-
-            try {
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    while (resultSet.next()) {
-                        tceList.add(loadWithDependenciesFromResultSet(resultSet));
-                    }
-                    if (tceList.isEmpty()) {
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                    } else {
-                        msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCaseExecution").replace("%OPERATION%", "SELECT"));
-                    }
-
-                } catch (SQLException exception) {
-                    LOG.warn("Unable to execute query : " + exception.toString());
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
-                    tceList.clear();
-                } finally {
-                    if (resultSet != null) {
-                        resultSet.close();
-                    }
-                }
-            } catch (SQLException ex) {
-                LOG.warn("Unable to execute query : " + ex.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
-            } finally {
-                if (preStat != null) {
-                    preStat.close();
-                }
-            }
-        } catch (SQLException ex) {
-            LOG.warn(ex.toString());
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException ex) {
-                LOG.warn("Unable to execute query : " + ex.toString());
-            }
-        }
-        answer.setTotalRows(tceList.size());
-        answer.setDataList(tceList);
         answer.setResultMessage(msg);
         return answer;
     }
