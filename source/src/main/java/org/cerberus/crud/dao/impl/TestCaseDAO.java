@@ -155,8 +155,8 @@ public class TestCaseDAO implements ITestCaseDAO {
         if (!StringUtil.isNullOrEmpty(searchTerm) || individualSearch.get("lab.label") != null
                 || individualSearch.get("lab.labelsSTICKER") != null || individualSearch.get("lab.labelsREQUIREMENT") != null || individualSearch.get("lab.labelsBATTERY") != null) {
             // We don't join the label table if we don't need to.
-            query.append(" INNER OUTER JOIN testcaselabel tel on tec.test = tel.test AND tec.testcase = tel.testcase ");
-            query.append(" INNER OUTER JOIN label lab on tel.labelId = lab.id ");
+            query.append(" LEFT OUTER JOIN testcaselabel tel on tec.test = tel.test AND tec.testcase = tel.testcase ");
+            query.append(" LEFT OUTER JOIN label lab on tel.labelId = lab.id ");
         }
 
         searchSQL.append("WHERE 1=1");
