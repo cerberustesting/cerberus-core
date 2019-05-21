@@ -59,6 +59,12 @@ public class UserSecurity {
 
         List<UserSystem> userSystemList = (List<UserSystem>) getSession().getAttribute("MySystemsAllow");
 
+        // if systemAllow is null, request come from RunTestCaseV001 or AddToExecutionQueue
+        // => authorize all system in this case
+        if(userSystemList == null) {
+            return null;
+        }
+
         List<String> res = new LinkedList<>();
         for(UserSystem systemUser : userSystemList) {
             res.add(systemUser.getSystem());

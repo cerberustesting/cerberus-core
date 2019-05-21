@@ -75,7 +75,7 @@ public class TestDAO implements ITestDAO {
     public Test readByKey(String test) throws CerberusException {
 
         StringBuilder query = new StringBuilder();
-        query.append("SELECT DISTINCT(tes.test) FROM test tes ");
+        query.append("SELECT * FROM test tes ");
         query.append("WHERE tes.test = ? ");
 
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
