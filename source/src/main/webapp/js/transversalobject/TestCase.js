@@ -580,7 +580,7 @@ function feedTestCaseModal(test, testCase, modalId, mode) {
     var formEdit = $('#' + modalId);
 
 
-    var jqxhr = $.getJSON("ReadTestCase", "test=" + encodeURIComponent(test) + "&testCase=" + encodeURIComponent(testCase) + "&system="+  encodeURIComponent(system) );
+    var jqxhr = $.getJSON("ReadTestCase", "test=" + encodeURIComponent(test) + "&testCase=" + encodeURIComponent(testCase) + "&system="+  encodeURIComponent(getSys()) );
     $.when(jqxhr).then(function (data) {
 
         var testCase = data.contentTable;
