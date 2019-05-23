@@ -84,4 +84,6 @@ public interface IAppiumService {
      * @return
      */
     MessageEvent openApp(Session session, String appPackage, String appActivity);
+
+    MessageEvent longPress(Session session, Identifier identifier);
 }

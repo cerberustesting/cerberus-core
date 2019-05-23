@@ -291,6 +291,9 @@ public class ActionService implements IActionService {
                 case TestCaseStepAction.ACTION_DRAGANDDROP:
                     res = this.doActionDragAndDrop(tCExecution, value1, value2);
                     break;
+                case TestCaseStepAction.ACTION_LONG_CLICK:
+                    res = this.doActionLongClick(tCExecution, value1, value2);
+                    break;
                 /**
                  * DEPRECATED ACTIONS FROM HERE.
                  */
@@ -1504,5 +1507,52 @@ public class ActionService implements IActionService {
                 .resolveDescription("ACTION", "Swipe screen")
                 .resolveDescription("APPLICATIONTYPE", tCExecution.getApplicationObj().getType());
     }
+
+    private MessageEvent doActionLongClick(TestCaseExecution tCExecution, String value1, String value2) {
+        String element;
+        try {
+            /**
+             * Get element to use String object if not empty, String property if
+             * object empty, throws Exception if both empty)
+             */
+            element = getElementToUse(value1, value2, TestCaseStepAction.ACTION_CLICK, tCExecution);
+            /**
+             * Get Identifier (identifier, locator) and check it's valid
+             */
+            Identifier identifier = identifierService.convertStringToIdentifier(element);
+
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
+                if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
+                    return sikuliService.doSikuliActionClick(tCExecution.getSession(), identifier.getLocator(), "");
+                } else if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_TEXT)) {
+                    return sikuliService.doSikuliActionClick(tCExecution.getSession(), "", identifier.getLocator());
+                } else {
+                    identifierService.checkWebElementIdentifier(identifier.getIdentifier());
+                    return webdriverService.doSeleniumActionClick(tCExecution.getSession(), identifier, true, true);
+                }
+            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
+                identifierService.checkWebElementIdentifier(identifier.getIdentifier());
+                return androidAppiumService.longPress(tCExecution.getSession(), identifier);
+            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
+                identifierService.checkWebElementIdentifier(identifier.getIdentifier());
+                return iosAppiumService.longPress(tCExecution.getSession(), identifier);
+            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
+                identifierService.checkSikuliIdentifier(identifier.getIdentifier());
+                if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
+                    return sikuliService.doSikuliActionClick(tCExecution.getSession(), identifier.getLocator(), "");
+                } else {
+                    return sikuliService.doSikuliActionClick(tCExecution.getSession(), "", identifier.getLocator());
+                }
+            } else {
+                return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION)
+                        .resolveDescription("ACTION", "Long Click")
+                        .resolveDescription("APPLICATIONTYPE", tCExecution.getApplicationObj().getType());
+            }
+        } catch (CerberusEventException ex) {
+            LOG.fatal("Error doing Action Click :" + ex, ex);
+            return ex.getMessageError();
+        }
+    }
+
 
 }

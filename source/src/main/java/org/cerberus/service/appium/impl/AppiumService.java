@@ -392,4 +392,27 @@ public abstract class AppiumService implements IAppiumService {
 
         return location.getX() + ";" + location.getY();
     }
+
+    @Override
+    public MessageEvent longPress(final Session session, final Identifier identifier) {
+        try {
+            final TouchAction action = new TouchAction(session.getAppiumDriver());
+            if (identifier.isSameIdentifier(Identifier.Identifiers.COORDINATE)) {
+                final Coordinates coordinates = getCoordinates(identifier);
+                action.longPress(PointOption.point(coordinates.getX(), coordinates.getY())).perform();
+            } else {
+                action.longPress(ElementOption.element(getElement(session, identifier, false, false))).perform();
+            }
+            return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_LONG_CLICK).resolveDescription("ELEMENT", identifier.toString());
+        } catch (NoSuchElementException e) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug(e.getMessage());
+            }
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED_LONG_CLICK_NO_SUCH_ELEMENT).resolveDescription("ELEMENT", identifier.toString());
+        } catch (WebDriverException e) {
+            LOG.warn(e.getMessage());
+            return parseWebDriverException(e);
+        }
+
+    }
 }

@@ -207,6 +207,7 @@ public enum MessageEventEnum {
     ACTION_SUCCESS_INSTALLAPP(200, "OK", "Install application with success", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_REMOVEAPP(200, "OK", "Remove applcation with success", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_DRAGANDDROP(200, "OK", "Drag and drop from %SOURCE% to %TARGET% with success", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    ACTION_SUCCESS_LONG_CLICK(200, "OK", "Element '%ELEMENT%' long clicked.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
 
     ACTION_FAILED(250, "FA", "Unknown Action Error.", true, true, false, MessageGeneralEnum.EXECUTION_FA),
     ACTION_FAILED_CLICK(251, "FA", "Failed to click on '%ELEMENT%'. %MESS%", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
@@ -240,6 +241,7 @@ public enum MessageEventEnum {
     ACTION_FAILED_CLOSEAPP(265, "FA", "Failed to openApp. Please check that action is set correctly. Application name or path cannot be empty.", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_SELECT(266, "FA", "Element and Option are both mandatory in order to perform the action.", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_CLICK_NO_SUCH_ELEMENT(267, "FA", "Failed to click because could not find element '%ELEMENT%'!", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
+    ACTION_FAILED_LONG_CLICK_NO_SUCH_ELEMENT(267, "FA", "Failed to long clicked because could not find element '%ELEMENT%'!", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_DOUBLECLICK_NO_SUCH_ELEMENT(268, "FA", "Failed to double click because could not find element '%ELEMENT%'!", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_TYPE_NO_SUCH_ELEMENT(269, "FA", "Failed to type because could not find element '%ELEMENT%'!", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_MOUSEOVER_NO_SUCH_ELEMENT(270, "FA", "Failed to move mouse over because could not find element '%ELEMENT%'!", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
