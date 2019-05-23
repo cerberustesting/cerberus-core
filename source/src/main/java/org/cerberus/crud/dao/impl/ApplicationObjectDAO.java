@@ -49,6 +49,7 @@ import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
+import org.cerberus.util.security.UserSecurity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -341,6 +342,8 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
 
         query.append(searchSQL);
 
+
+
         if (!StringUtil.isNullOrEmpty(column)) {
             query.append(" order by `").append(column).append("` ").append(dir);
         }
@@ -420,7 +423,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
     }
 
     @Override
-    public AnswerList readByApplicationByCriteria(String application, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
+    public AnswerList readByApplicationByCriteria(String application, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, List<String> systems) {
         AnswerList response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -431,7 +434,8 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
         StringBuilder query = new StringBuilder();
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that
         //were applied -- used for pagination p
-        query.append("SELECT SQL_CALC_FOUND_ROWS * FROM applicationobject ");
+        query.append("SELECT SQL_CALC_FOUND_ROWS obj.* FROM applicationobject obj ");
+        query.append(" left outer JOIN application app ON obj.Application = app.Application ");
 
         searchSQL.append(" where 1=1 ");
 
@@ -458,7 +462,16 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
         if (!StringUtil.isNullOrEmpty(application)) {
             searchSQL.append(" and (`Application` = ? )");
         }
+
+        if ((systems != null) && (!systems.isEmpty())) {
+            systems.add("");
+            searchSQL.append(" and (" + SqlUtil.generateInClause("app.`System`", systems) + ") ");
+        }
+
+        searchSQL.append( " AND " + UserSecurity.getSystemAllowForSQL("app.`System`") + " ");
+
         query.append(searchSQL);
+
 
         if (!StringUtil.isNullOrEmpty(column)) {
             query.append(" order by `").append(column).append("` ").append(dir);
@@ -495,6 +508,13 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
                 if (!StringUtil.isNullOrEmpty(application)) {
                     preStat.setString(i++, application);
                 }
+
+                if ((systems != null) && (!systems.isEmpty())) {
+                    for (String mysystem : systems) {
+                        preStat.setString(i++, mysystem);
+                    }
+                }
+
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     //gets the data
