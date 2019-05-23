@@ -88,7 +88,7 @@ public class UserSecurity {
             st.append(  (!firstSys ? "," : "")  + "'" + StringEscapeUtils.escapeHtml4(escapeSql(sys)) + "'");
             firstSys = false;
         }
-        return systemAttributeName + " in (" + st.toString() + ")";
+        return systemAttributeName + " in (''," + st.toString() + ")";
     }
 
 

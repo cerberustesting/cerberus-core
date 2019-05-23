@@ -54,7 +54,7 @@ public interface IAppServiceDAO {
      * @param individualSearch the string to search for each column
      * @return
      */
-    AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+    AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch, List<String> systems);
 
     /**
      * Get the {@link AppService} of the given key

@@ -50,6 +50,7 @@ import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
+import org.cerberus.util.security.UserSecurity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -201,7 +202,7 @@ public class AppServiceDAO implements IAppServiceDAO {
     }
 
     @Override
-    public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
+    public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, List<String> systems) {
 
         AnswerList response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -214,6 +215,7 @@ public class AppServiceDAO implements IAppServiceDAO {
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that
         //were applied -- used for pagination p
         query.append("SELECT SQL_CALC_FOUND_ROWS * FROM appservice srv ");
+        query.append("left outer JOIN application app ON srv.application = app.application");
 
         query.append(" WHERE 1=1");
 
@@ -248,7 +250,16 @@ public class AppServiceDAO implements IAppServiceDAO {
         }
 
         query.append(searchSQL);
-        
+
+        if(systems != null && ! systems.isEmpty()) {
+            systems.add(""); // authorize tranversal object
+            query.append( " and ( app.Application is null or " + SqlUtil.generateInClause("app.system", systems) + " ) ") ;
+        }
+
+        query.append( " AND " + UserSecurity.getSystemAllowForSQL("app.system"));
+
+
+
 
         if (!StringUtil.isNullOrEmpty(column)) {
             query.append(" order by ").append(column).append(" ").append(dir);
@@ -288,6 +299,13 @@ public class AppServiceDAO implements IAppServiceDAO {
                 }
                 for (String individualColumnSearchValue : individalColumnSearchValues) {
                     preStat.setString(i++, individualColumnSearchValue);
+                }
+
+
+                if(systems != null && ! systems.isEmpty()) {
+                    for(String sys : systems) {
+                        preStat.setString(i++, sys);
+                    }
                 }
 
                 ResultSet resultSet = preStat.executeQuery();

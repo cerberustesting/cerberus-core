@@ -1028,8 +1028,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             query.append(" ) ");
         }
 
-
         if(system != null && ! system.isEmpty()) {
+            system.add(""); // authorize tranversal object
             query.append( " and " + SqlUtil.generateInClause("app.system", system) + " ");
         }
 
