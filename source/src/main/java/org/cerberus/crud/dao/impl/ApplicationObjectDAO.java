@@ -440,14 +440,14 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
         searchSQL.append(" where 1=1 ");
 
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
-            searchSQL.append(" and (`Application` like ?");
-            searchSQL.append(" or `Object` like ?");
-            searchSQL.append(" or `Value` like ?");
-            searchSQL.append(" or `ScreenshotFileName` like ?");
-            searchSQL.append(" or `UsrCreated` like ?");
-            searchSQL.append(" or `DateCreated` like ?");
-            searchSQL.append(" or `UsrModif` like ?");
-            searchSQL.append(" or `DateModif` like ?)");
+            searchSQL.append(" and (obj.`Application` like ?");
+            searchSQL.append(" or obj.`Object` like ?");
+            searchSQL.append(" or obj.`Value` like ?");
+            searchSQL.append(" or obj.`ScreenshotFileName` like ?");
+            searchSQL.append(" or obj.`UsrCreated` like ?");
+            searchSQL.append(" or obj.`DateCreated` like ?");
+            searchSQL.append(" or obj.`UsrModif` like ?");
+            searchSQL.append(" or obj.`DateModif` like ?)");
         }
         if (individualSearch != null && !individualSearch.isEmpty()) {
             searchSQL.append(" and ( 1=1 ");
@@ -460,7 +460,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
         }
 
         if (!StringUtil.isNullOrEmpty(application)) {
-            searchSQL.append(" and (`Application` = ? )");
+            searchSQL.append(" and (obj.`Application` = ? )");
         }
 
         if ((systems != null) && (!systems.isEmpty())) {
