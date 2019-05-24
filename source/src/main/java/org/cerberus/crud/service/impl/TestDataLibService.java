@@ -117,7 +117,7 @@ public class TestDataLibService implements ITestDataLibService {
         } else {
             maxFetch = maxSecurityFetch;
         }
-        answer = this.readByVariousByCriteria(dataName, Arrays.asList(dataSystem), dataEnvironment, dataCountry, "INTERNAL", 0, maxFetch, null, null, null, null);
+        answer = this.readByVariousByCriteria(dataName, new ArrayList<>(Arrays.asList(dataSystem)), dataEnvironment, dataCountry, "INTERNAL", 0, maxFetch, null, null, null, null);
         List<TestDataLib> objectList = new ArrayList<TestDataLib>();
         objectList = answer.getDataList();
         for (TestDataLib tdl : objectList) {
