@@ -256,7 +256,7 @@ public class AppServiceDAO implements IAppServiceDAO {
             query.append( " and ( app.Application is null or " + SqlUtil.generateInClause("app.system", systems) + " ) ") ;
         }
 
-        query.append( " AND " + UserSecurity.getSystemAllowForSQL("app.system"));
+        query.append( " AND ( app.Application is null or " + UserSecurity.getSystemAllowForSQL("app.system") + " ) " );
 
 
 
