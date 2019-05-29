@@ -8112,11 +8112,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('ACTION', 'manageDialogKeypress', '5600', 'Keypress on a popup dialog.', 'Popup Keypress')");
 
         // Add the "longPress" Action
-        // 1409
-        b = new StringBuilder();
-        b.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `id`, `description`) VALUES ");
-        b.append("('ACTION', 'longPress', 3010, 12, 'longPress'),");
-        a.add(b.toString());
+        // 1410
+        a.add("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('ACTION', 'longPress', '3010', 'Long tap on element', 'longPress')");
 
         return a;
     }
