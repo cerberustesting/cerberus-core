@@ -27,7 +27,6 @@ import io.appium.java_client.android.AndroidElement;
 import io.appium.java_client.touch.WaitOptions;
 import io.appium.java_client.touch.offset.ElementOption;
 import io.appium.java_client.touch.offset.PointOption;
-import io.appium.java_client.touch.LongPressOptions;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.cerberus.engine.entity.Identifier;
@@ -400,14 +399,14 @@ public abstract class AppiumService implements IAppiumService {
     }
 
     @Override
-    public MessageEvent longPress(final Session session, final Identifier identifier) {
+    public MessageEvent longPress(final Session session, final Identifier identifier, final Integer timeDuration) {
         try {
             final TouchAction action = new TouchAction(session.getAppiumDriver());
             if (identifier.isSameIdentifier(Identifier.Identifiers.COORDINATE)) {
                 final Coordinates coordinates = getCoordinates(identifier);
-                action.press(PointOption.point(coordinates.getX(), coordinates.getY())).waitAction(WaitOptions.waitOptions(Duration.ofMillis(8000))).release().perform();
+                action.press(PointOption.point(coordinates.getX(), coordinates.getY())).waitAction(WaitOptions.waitOptions(Duration.ofMillis(timeDuration))).release().perform();
             } else {
-                action.press(ElementOption.element(getElement(session, identifier, false, false))).waitAction(WaitOptions.waitOptions(Duration.ofMillis(8000))).release().perform();
+                action.press(ElementOption.element(getElement(session, identifier, false, false))).waitAction(WaitOptions.waitOptions(Duration.ofMillis(timeDuration))).release().perform();
             }
             return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_LONG_CLICK).resolveDescription("ELEMENT", identifier.toString());
         } catch (NoSuchElementException e) {
@@ -415,6 +414,35 @@ public abstract class AppiumService implements IAppiumService {
                 LOG.debug(e.getMessage());
             }
             return new MessageEvent(MessageEventEnum.ACTION_FAILED_LONG_CLICK_NO_SUCH_ELEMENT).resolveDescription("ELEMENT", identifier.toString());
+        } catch (WebDriverException e) {
+            LOG.warn(e.getMessage());
+            return parseWebDriverException(e);
+        }
+
+    }
+
+    @Override
+    public MessageEvent clearField(final Session session, final Identifier identifier) {
+        try {
+            final TouchAction action = new TouchAction(session.getAppiumDriver());
+            if (identifier.isSameIdentifier(Identifier.Identifiers.COORDINATE)) {
+                final Coordinates coordinates = getCoordinates(identifier);
+                click(session,  identifier);
+            } else {
+                click(session,  identifier);
+                //action.press(ElementOption.element(getElement(session, identifier, false, false))).waitAction(WaitOptions.waitOptions(Duration.ofMillis(8000))).release().perform();
+                //MobileElement element = (MobileElement) session.getAppiumDriver().findElementByAccessibilityId("SomeAccessibilityID");
+                //element.clear();
+               // WebElement elmt = this.getElement(session, identifier, false, false);
+                ((MobileElement) this.getElement(session, identifier, false, false)).clear();
+
+            }
+            return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLEAR).resolveDescription("ELEMENT", identifier.toString());
+        } catch (NoSuchElementException e) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug(e.getMessage());
+            }
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED_CLEAR_NO_SUCH_ELEMENT).resolveDescription("ELEMENT", identifier.toString());
         } catch (WebDriverException e) {
             LOG.warn(e.getMessage());
             return parseWebDriverException(e);

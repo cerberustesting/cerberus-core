@@ -208,6 +208,7 @@ public enum MessageEventEnum {
     ACTION_SUCCESS_REMOVEAPP(200, "OK", "Remove applcation with success", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_DRAGANDDROP(200, "OK", "Drag and drop from %SOURCE% to %TARGET% with success", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_LONG_CLICK(200, "OK", "Element '%ELEMENT%' long clicked.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    ACTION_SUCCESS_CLEAR(200, "OK", "Screenshot taken.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
 
     ACTION_FAILED(250, "FA", "Unknown Action Error.", true, true, false, MessageGeneralEnum.EXECUTION_FA),
     ACTION_FAILED_CLICK(251, "FA", "Failed to click on '%ELEMENT%'. %MESS%", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
@@ -297,6 +298,7 @@ public enum MessageEventEnum {
     ACTION_PENDING(299, "PE", "Doing Action...", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_FAILED_DRAGANDDROP_NO_SUCH_ELEMENT(299, "FA", "Failed to dragAndDrop because could not find element '%ELEMENT%'!", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_WAITINGFORMANUALEXECUTION(240, "WE", "", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    ACTION_FAILED_CLEAR_NO_SUCH_ELEMENT(267, "FA", "Failed to long clicked because could not find element '%ELEMENT%'!", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
 
     // *********** EXECUTION CONTROLS ***********
     CONTROL_SUCCESS(300, "OK", "", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),

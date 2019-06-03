@@ -8113,7 +8113,11 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 
         // Add the "longPress" Action
         // 1410
-        a.add("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('ACTION', 'longPress', '3010', 'Long tap on element', 'longPress')");
+        a.add("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('ACTION', 'longPress', '3100', 'Long tap on element', 'longPress')");
+
+        // Add the "clearField" Action
+        // 1411
+        a.add("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('ACTION', 'clearField', '11500', 'Clear a Field', 'clearField')");
 
         return a;
     }

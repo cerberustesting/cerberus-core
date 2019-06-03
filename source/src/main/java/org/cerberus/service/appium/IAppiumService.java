@@ -85,5 +85,7 @@ public interface IAppiumService {
      */
     MessageEvent openApp(Session session, String appPackage, String appActivity);
 
-    MessageEvent longPress(Session session, Identifier identifier);
+    MessageEvent longPress(Session session, Identifier identifier, Integer pressDuration);
+
+    MessageEvent clearField(Session session, Identifier identifier);
 }
