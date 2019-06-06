@@ -8115,7 +8115,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         //
         //1409
         b = new StringBuilder();
-        b.append("ALTER TABLE `cerberus`.`robotexecutor` ");
+        b.append("ALTER TABLE `robotexecutor` ");
         b.append("ADD COLUMN `executorExtensionPort` INT(8) NULL DEFAULT NULL AFTER `deviceLockUnlock`,");
         b.append("ADD COLUMN `executorProxyHost` VARCHAR(255) NULL DEFAULT NULL AFTER `executorExtensionPort`,");
         b.append("ADD COLUMN `executorProxyPort` INT(8) NULL DEFAULT NULL AFTER `executorProxyHost`,");
