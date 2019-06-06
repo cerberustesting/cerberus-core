@@ -192,7 +192,7 @@ public class TagDAO implements ITagDAO {
     }
 
     @Override
-    public AnswerList<Tag> readByVariousByCriteria(String campaign, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
+    public AnswerList<Tag> readByVariousByCriteria(String campaign, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, List<String> systems) {
         AnswerList response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -227,6 +227,7 @@ public class TagDAO implements ITagDAO {
             searchSQL.append(" and (`campaign` = ? )");
         }
         query.append(searchSQL);
+
 
         if (!StringUtil.isNullOrEmpty(column)) {
             query.append(" order by `").append(column).append("` ").append(dir);

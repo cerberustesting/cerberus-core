@@ -38,6 +38,7 @@
         <script type="text/javascript" src="js/pages/ReportingExecutionByTag.js"></script>
         <script type="text/javascript" src="js/transversalobject/TestCaseExecutionQueue.js"></script>
         <script type="text/javascript" src="js/transversalobject/TestCase.js"></script>
+        <script type="text/javascript" src="js/transversalobject/Campaign.js"></script>
         <script type="text/javascript" src="dependencies/Bootstrap-treeview-1.2.0/js/bootstrap-treeview.js"></script>
         <title id="pageTitle">Campaign Reporting</title>
     </head>
@@ -47,6 +48,7 @@
             <%@ include file="include/global/messagesArea.html"%>
             <%@ include file="include/transversalobject/TestCaseExecutionQueue.html"%>
             <%@ include file="include/transversalobject/TestCase.html"%>
+            <%@ include file="include/pages/testcampaign/viewStatcampaign.html"%>
 
             <h1 class="page-title-line" id="title">Execution reporting by tag</h1>
             <div class="row">
@@ -202,6 +204,7 @@
                                 </div>
                                 <div class="input-group-btn col-sm-4" id="TagcampaignCel2">
                                     <a id="buttonRunCampaign"><button type="button" class="btn btn-default" style="margin-left: 10px;margin-top: 20px;">Run Campaign</button></a>
+                                    <a id="buttonSeeStatsCampaign"><button type="button" class="btn btn-default" style="margin-left: 10px;margin-top: 20px;">See Stats</button></a>
                                 </div>
                             </div>
                         </div>

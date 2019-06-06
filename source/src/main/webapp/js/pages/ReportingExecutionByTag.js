@@ -20,7 +20,6 @@
 /* global handleErrorAjaxAfterTimeout */
 
 var statusOrder = ["OK", "KO", "FA", "NA", "NE", "WE", "PE", "QU", "QE", "CA"];
-
 $.when($.getScript("js/global/global.js")).then(function () {
     $(document).ready(function () {
 
@@ -280,6 +279,9 @@ function loadReportingData(selectTag) {
                 $("#TagcampaignCel1").removeClass("hidden");
                 $("#TagcampaignCel2").removeClass("hidden");
                 $("#buttonRunCampaign").attr("href", "./RunTests.jsp?campaign=" + data.tagObject.campaign);
+                $("#buttonSeeStatsCampaign").on("click", function () {
+                    viewStatEntryClick(data.tagObject.campaign);
+                });
             }
 
             $("#durExe").val(data.tagDuration);
@@ -331,11 +333,11 @@ function loadReportingData(selectTag) {
         $('[data-toggle="popover"]').popover({
             'placement': 'auto',
             'container': 'body'}
-        ).on('shown.bs.popover', function() {
+        ).on('shown.bs.popover', function () {
             // Manually offer possibility to popover elemt to know when it's loading
             let idPopup = $(this).attr("aria-describedby")
-            let elmt = $("#"+idPopup).find("[onload]")
-            if(elmt.length > 0)
+            let elmt = $("#" + idPopup).find("[onload]")
+            if (elmt.length > 0)
                 eval(elmt.attr("onload")) // TODO eval la method
         });
     });
@@ -1106,7 +1108,7 @@ function generateTooltip(data) {
     } else {
         htmlRes = '<div><span class=\'bold\'>Execution ID :</span> ' + data.ID + '</div>';
     }
-    htmlRes += 
+    htmlRes +=
             '<div><span class=\'bold\'>Environment : </span>' + data.Environment + '</div>' +
             '<div><span class=\'bold\'>Country : </span>' + data.Country + '</div>' +
             '<div><span class=\'bold\'>Robot Decli : </span>' + data.RobotDecli + '</div>' +
@@ -1237,7 +1239,7 @@ function massAction_copyQueue() {
 
 }
 
-var cptDep=0;
+var cptDep = 0;
 function aoColumnsFunc(Columns) {
     var doc = new Doc();
     var colNb = Columns.length;
@@ -1319,9 +1321,9 @@ function aoColumnsFunc(Columns) {
                     cell += '</span>';
                     let idProgressBar = (data.Test + "_" + data.TestCase + "_" + data.RobotDecli).replace("\.", "_").replace(" ", "_");
                     if ((data.ControlStatus === "QU") || (data.ControlStatus === "QE")) {
-                        cell += '<div class="progress-bar progress-bar-queue status' + data.ControlStatus + '" id="' + idProgressBar +'" ';
+                        cell += '<div class="progress-bar progress-bar-queue status' + data.ControlStatus + '" id="' + idProgressBar + '" ';
                     } else {
-                        cell += '<div class="progress-bar status' + data.ControlStatus + '" id="' + idProgressBar +'" ';
+                        cell += '<div class="progress-bar status' + data.ControlStatus + '" id="' + idProgressBar + '" ';
                     }
                     cell += 'role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;cursor: pointer; height: 40px;"';
                     cell += 'data-toggle="tooltip" data-html="true" title="' + tooltip + '"';
@@ -1332,20 +1334,20 @@ function aoColumnsFunc(Columns) {
                     }
                     cell += '<span class="' + glyphClass.glyph + ' marginRight5"></span>';
                     cell += '<span name="tcResult">' + data.ControlStatus + '<span>';
-                    if(data.TestCaseDep.length > 0) {
+                    if (data.TestCaseDep.length > 0) {
                         let button = ""
                         let txt = ""
                         let dependencyArray = ""
-                        for ( let dep of data.TestCaseDep) {
+                        for (let dep of data.TestCaseDep) {
                             dependencyArray += "{test:'" + dep.test + "',testcase:'" + dep.testcase + "',robotdecli:'" + data.RobotDecli + "'},"
 
                         }
 
-                        let dependency = "renderDependency('dep" + cptDep + "',["+dependencyArray+"]);"
+                        let dependency = "renderDependency('dep" + cptDep + "',[" + dependencyArray + "]);"
 
                         button = '<button id="dep' + cptDep + '" type="button" class="btn  btn-info hideFeatureTCDependencies" onclick="stopPropagation(event);' + dependency + '" data-html="true" data-toggle="popover">' +
-                            '<span class="glyphicon glyphicon-tasks" aria-hidden="true"></span> </button>'
-                        ;
+                                '<span class="glyphicon glyphicon-tasks" aria-hidden="true"></span> </button>'
+                                ;
                         cell += '<br><span style="font-size: xx-small">' + data.QueueState + " " + button + '<span>';
                         cptDep++
                     }
@@ -1410,19 +1412,19 @@ function aoColumnsFunc(Columns) {
 
 
 function renderDependency(id, dependencyArray) {
-    let text=""
+    let text = ""
 
-    dependencyArray.forEach( dep => {
+    dependencyArray.forEach(dep => {
         let idProgressBar = (dep.test + "_" + dep.testcase + "_" + dep.robotdecli).replace("\.", "_").replace(" ", "_");
-        let tcDepResult = $("#" + idProgressBar ).find("[name='tcResult']").text();
+        let tcDepResult = $("#" + idProgressBar).find("[name='tcResult']").text();
 
-        text+= "<a href='#" + idProgressBar +"'>" + dep.test + " - " + dep.testcase + " - " + tcDepResult + "</a><a onclick='$(\"#" + idProgressBar + "\").click()'> (open on new tab)</a><br />"
+        text += "<a href='#" + idProgressBar + "'>" + dep.test + " - " + dep.testcase + " - " + tcDepResult + "</a><a onclick='$(\"#" + idProgressBar + "\").click()'> (open on new tab)</a><br />"
     })
 
     $("#" + id).attr('title', "Dependency")
-        .popover('fixTitle')
-        .attr( "data-content", text)
-        .popover('show');
+            .popover('fixTitle')
+            .attr("data-content", text)
+            .popover('show');
 
 }
 

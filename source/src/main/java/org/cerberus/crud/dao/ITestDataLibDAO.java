@@ -93,7 +93,7 @@ public interface ITestDataLibDAO {
      * resultSet
      * @return
      */
-    AnswerList readByVariousByCriteria(String name, String system, String environment, String country, String type, int start, int amount, String colName, String dir, String searchTerm, Map<String, List<String>> individualSearch);
+    AnswerList readByVariousByCriteria(String name, List<String> systems, String environment, String country, String type, int start, int amount, String colName, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
     /**
      *

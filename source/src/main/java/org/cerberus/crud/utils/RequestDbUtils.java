@@ -20,8 +20,8 @@
 package org.cerberus.crud.utils;
 
 import org.cerberus.database.DatabaseSpring;
-import org.cerberus.engine.entity.MessageGeneral;
-import org.cerberus.enums.MessageGeneralEnum;
+import org.cerberus.engine.entity.*;
+import org.cerberus.enums.*;
 import org.cerberus.exception.CerberusException;
 
 import java.sql.Connection;
@@ -90,9 +90,9 @@ public class RequestDbUtils {
             if (exception.getSQLState().equals(SQL_DUPLICATED_CODE)) { //23000 is the sql state for duplicate entries
                 MessageGeneral message = new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR);
                 message.setDescription(message.getDescription().replace("%ITEM%", query).replace("%OPERATION%", "INSERT").replace("%REASON%", exception.toString()));
-                throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR),  exception); // TODO pass SQL DUPLICATE CODE
+                throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR_DUPLICATE),  exception); // TODO pass SQL DUPLICATE CODE
             } else {
-                throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR), exception);
+                throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR_WITH_REQUEST).resolveDescription("REQUEST", query), exception);
             }
         }
 
@@ -119,7 +119,7 @@ public class RequestDbUtils {
                 }
             }
         } catch (SQLException exception) {
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR), exception);
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR_WITH_REQUEST).resolveDescription("REQUEST", query), exception);
         }
 
         return res;

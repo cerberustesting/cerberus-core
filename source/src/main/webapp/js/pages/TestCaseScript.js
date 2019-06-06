@@ -116,9 +116,15 @@ $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.j
             var testcaseinfo;
             $.ajax({
                 url: "ReadTestCase",
-                data: {test: test, testCase: testcase, withStep: true},
+                data: {test: test, testCase: testcase, withStep: true, system: getSys()},
                 dataType: "json",
                 success: function (data) {
+
+                    // manage error
+                    if(data.messageType != undefined && data.messageType === "KO") {
+                        showUnexpectedError(null, "ERROR", data.message);
+                        return;
+                    }
 
                     canUpdate = data.hasPermissionsUpdate;
 
@@ -290,7 +296,7 @@ $.when($.getScript("js/global/global.js"), $.getScript("js/global/autocomplete.j
 
             $.ajax({
                 url: "ReadTestCaseExecution",
-                data: {test: test, testCase: testcase},
+                data: {test: test, testCase: testcase, system: getSys()},
                 dataType: "json",
                 success: function (data) {
                     if (!jQuery.isEmptyObject(data.contentTable)) {
@@ -3061,6 +3067,7 @@ function setPlaceholderAction(actionElement) {
             {"type": "focusDefaultIframe", "object": null, "property": null},
             {"type": "switchToWindow", "object": "Titre ou url de la fenêtre", "property": null},
             {"type": "manageDialog", "object": "ok ou cancel", "property": null},
+            {"type": "manageDialogKeypress", "object": "Touches à appuyer.", "property": null},
             {"type": "openUrlWithBase", "object": "URI à appeler (ex : /index.html)", "property": null},
             {"type": "openUrlLogin", "object": null, "property": null},
             {"type": "openUrl", "object": "URL à appeler (ex : http://www.domain.com)", "property": null},
@@ -3069,7 +3076,7 @@ function setPlaceholderAction(actionElement) {
             {"type": "openApp", "object": "Nom ou chemin de l'application, package pour android", "property": "[Optionnel, obligatoire pour Android] Activity"},
             {"type": "closeApp", "object": "Nom ou chemin de l'application", "property": null},
             {"type": "select", "object": "Chemin vers l'élement", "property": "Chemin vers l'option"},
-            {"type": "keypress", "object": "[opt] Chemin vers l'élement à cibler", "property": "Touche à presser"},
+            {"type": "keypress", "object": "[opt] Chemin vers l'élement à cibler", "property": "Touche à appuyer"},
             {"type": "type", "object": "Chemin vers l'élement", "property": "Texte à entrer"},
             {"type": "hideKeyboard", "object": null, "property": null},
             {"type": "swipe", "object": "Action (UP DOWN LEFT RIGHT CUSTOM...)", "property": "Direction x;y;z;y"},
@@ -3098,6 +3105,7 @@ function setPlaceholderAction(actionElement) {
             {"type": "focusDefaultIframe", "object": null, "property": null},
             {"type": "switchToWindow", "object": "Window title or url", "property": null},
             {"type": "manageDialog", "object": "ok or cancel", "property": null},
+            {"type": "manageDialogKeypress", "object": "keys to press.", "property": null},
             {"type": "openUrlWithBase", "object": "URI to call  (ex : /index.html)", "property": null},
             {"type": "openUrlLogin", "object": null, "property": null},
             {"type": "openUrl", "object": "URL to call (ex : http://www.domain.com)", "property": null},

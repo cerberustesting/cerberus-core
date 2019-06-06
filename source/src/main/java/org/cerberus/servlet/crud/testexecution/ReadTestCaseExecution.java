@@ -23,20 +23,12 @@ import com.google.common.base.Strings;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.commons.text.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.Invariant;
@@ -108,66 +100,74 @@ public class ReadTestCaseExecution extends HttpServlet {
 
         // Calling Servlet Transversal Util.
         ServletUtil.servletStart(request);
-
+        JSONObject jsonResponse = new JSONObject();
         try {
-            JSONObject jsonResponse = new JSONObject();
-            AnswerItem answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
-            // Data/Filter Parameters.
-            String Tag = ParameterParserUtil.parseStringParam(request.getParameter("Tag"), "");
-            String value = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
-            String test = ParameterParserUtil.parseStringParam(request.getParameter("test"), "");
-            String testCase = ParameterParserUtil.parseStringParam(request.getParameter("testCase"), "");
-            String system = ParameterParserUtil.parseStringParam(request.getParameter("system"), "");
-            long executionId = ParameterParserUtil.parseLongParam(request.getParameter("executionId"), 0);
-            boolean likeColumn = ParameterParserUtil.parseBooleanParam(request.getParameter("likeColumn"), false);
-            // Switch Parameters.
-            boolean executionWithDependency = ParameterParserUtil.parseBooleanParam("executionWithDependency", false);
-            String columnName = ParameterParserUtil.parseStringParam(request.getParameter("columnName"), "");
-            boolean byColumns = ParameterParserUtil.parseBooleanParam(request.getParameter("byColumns"), false);
+            try {
 
-            if (!Strings.isNullOrEmpty(columnName)) {
-                //If columnName is present, then return the distinct value of this column.
-                answer = findValuesForColumnFilter(system, test, appContext, request, columnName);
-                jsonResponse = (JSONObject) answer.getItem();
-            }else if (!Tag.equals("") && byColumns) {
-                //Return the columns to display in the execution table
-                answer = findExecutionColumns(appContext, request, Tag);
-                jsonResponse = (JSONObject) answer.getItem();
-            } else if (!Tag.equals("") && !byColumns) {
-                //Return the list of execution for the execution table
-                answer = findExecutionListByTag(appContext, request, Tag);
-                jsonResponse = (JSONObject) answer.getItem();
-            } else if (!system.isEmpty()) {
-                //find execution by system, the remaining parameters are parsed after avoiding the extra processing
-                answer = findExecutionListBySystem(system, appContext, request);
-                jsonResponse = (JSONObject) answer.getItem();
-            } else if (!test.equals("") && !testCase.equals("")) {
-                TestCaseExecution lastExec = testCaseExecutionService.findLastTestCaseExecutionNotPE(test, testCase);
-                JSONObject result = new JSONObject();
-                if (lastExec != null) {
-                    result.put("id", lastExec.getId());
-                    result.put("queueId", lastExec.getQueueID());
-                    result.put("controlStatus", lastExec.getControlStatus());
-                    result.put("env", lastExec.getEnvironment());
-                    result.put("country", lastExec.getCountry());
-                    result.put("end", new Date(lastExec.getEnd())).toString();
+                AnswerItem answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+                // Data/Filter Parameters.
+                String Tag = ParameterParserUtil.parseStringParam(request.getParameter("Tag"), "");
+                String value = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
+                String test = ParameterParserUtil.parseStringParam(request.getParameter("test"), "");
+                String testCase = ParameterParserUtil.parseStringParam(request.getParameter("testCase"), "");
+                String system = ParameterParserUtil.parseStringParam(request.getParameter("system"), "");
+                long executionId = ParameterParserUtil.parseLongParam(request.getParameter("executionId"), 0);
+                boolean likeColumn = ParameterParserUtil.parseBooleanParam(request.getParameter("likeColumn"), false);
+                // Switch Parameters.
+                boolean executionWithDependency = ParameterParserUtil.parseBooleanParam("executionWithDependency", false);
+                String columnName = ParameterParserUtil.parseStringParam(request.getParameter("columnName"), "");
+                boolean byColumns = ParameterParserUtil.parseBooleanParam(request.getParameter("byColumns"), false);
+
+                if (!Strings.isNullOrEmpty(columnName)) {
+                    //If columnName is present, then return the distinct value of this column.
+                    answer = findValuesForColumnFilter(system, test, appContext, request, columnName);
+                    jsonResponse = (JSONObject) answer.getItem();
+                } else if (!Tag.equals("") && byColumns) {
+                    //Return the columns to display in the execution table
+                    answer = findExecutionColumns(appContext, request, Tag);
+                    jsonResponse = (JSONObject) answer.getItem();
+                } else if (!Tag.equals("") && !byColumns) {
+                    //Return the list of execution for the execution table
+                    answer = findExecutionListByTag(appContext, request, Tag);
+                    jsonResponse = (JSONObject) answer.getItem();
+                } else if (!test.equals("") && !testCase.equals("")) {
+                    TestCaseExecution lastExec = testCaseExecutionService.findLastTestCaseExecutionNotPE(test, testCase);
+                    JSONObject result = new JSONObject();
+                    if (lastExec != null) {
+                        result.put("id", lastExec.getId());
+                        result.put("queueId", lastExec.getQueueID());
+                        result.put("controlStatus", lastExec.getControlStatus());
+                        result.put("env", lastExec.getEnvironment());
+                        result.put("country", lastExec.getCountry());
+                        result.put("end", new Date(lastExec.getEnd())).toString();
+                    }
+                    jsonResponse.put("contentTable", result);
+                } else if (executionId != 0 && !executionWithDependency) {
+                    answer = testCaseExecutionService.readByKeyWithDependency(executionId);
+                    TestCaseExecution tce = (TestCaseExecution) answer.getItem();
+                    jsonResponse.put("testCaseExecution", tce.toJson(true));
+                } else if (executionId != 0 && executionWithDependency) {
+
+                } else {
+                    answer = findTestCaseExecutionList(appContext, true, request);
+                    jsonResponse = (JSONObject) answer.getItem();
                 }
-                jsonResponse.put("contentTable", result);
-            } else if (executionId != 0 && !executionWithDependency) {
-                answer = testCaseExecutionService.readByKeyWithDependency(executionId);
-                TestCaseExecution tce = (TestCaseExecution) answer.getItem();
-                jsonResponse.put("testCaseExecution", tce.toJson(true));
-            } else if (executionId != 0 && executionWithDependency) {
 
-            } else {
-                answer = findTestCaseExecutionList(appContext, true, request);
-                jsonResponse = (JSONObject) answer.getItem();
+                jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
+                jsonResponse.put("message", answer.getResultMessage().getDescription());
+
+                response.getWriter().print(jsonResponse.toString());
+            } catch(CerberusException ce) {
+                AnswerItem answer = AnswerUtil.convertToAnswerItem(() -> {
+                    throw ce;
+                });
+
+                jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
+                jsonResponse.put("message", answer.getResultMessage().getDescription());
+
+                response.getWriter().print(jsonResponse.toString());
             }
 
-            jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
-            jsonResponse.put("message", answer.getResultMessage().getDescription());
-
-            response.getWriter().print(jsonResponse.toString());
         } catch (JSONException ex) {
             LOG.warn(ex);
             //returns a default error message with the json format that is able to be parsed by the client-side
@@ -430,7 +430,7 @@ public class ReadTestCaseExecution extends HttpServlet {
 
     private AnswerItem findTestCaseExecutionList(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException, CerberusException {
         AnswerItem answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
-        AnswerList testCaseExecutionList = new AnswerList<>();
+        List<TestCaseExecution> testCaseExecutionList;
         JSONObject object = new JSONObject();
 
         testCaseExecutionService = appContext.getBean(TestCaseExecutionService.class);
@@ -444,6 +444,7 @@ public class ReadTestCaseExecution extends HttpServlet {
         String columnToSort[] = sColumns.split(",");
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
+        List<String> system = ParameterParserUtil.parseListParamAndDecodeAndDeleteEmptyValue(request.getParameterValues("system"), Arrays.asList("DEFAULT"), "UTF-8");
 
         Map<String, List<String>> individualSearch = new HashMap<>();
         List<String> individualLike = new ArrayList<>(Arrays.asList(ParameterParserUtil.parseStringParam(request.getParameter("sLike"), "").split(",")));
@@ -459,22 +460,20 @@ public class ReadTestCaseExecution extends HttpServlet {
             }
         }
         
-        testCaseExecutionList = testCaseExecutionService.readByCriteria(startPosition, length, columnName.concat(" ").concat(sort), searchParameter, individualSearch, individualLike);
+        testCaseExecutionList = testCaseExecutionService.readByCriteria(startPosition, length, columnName.concat(" ").concat(sort), searchParameter, individualSearch, individualLike, system);
 
         JSONArray jsonArray = new JSONArray();
-        if (testCaseExecutionList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (TestCaseExecution testCaseExecution : (List<TestCaseExecution>) testCaseExecutionList.getDataList()) {
-                jsonArray.put(testCaseExecution.toJson(true).put("hasPermissions", userHasPermissions));
-            }
+        for (TestCaseExecution testCaseExecution : testCaseExecutionList) {
+            jsonArray.put(testCaseExecution.toJson(true).put("hasPermissions", userHasPermissions));
         }
 
         object.put("contentTable", jsonArray);
         object.put("hasPermissions", userHasPermissions);
-        object.put("iTotalRecords", testCaseExecutionList.getTotalRows());
-        object.put("iTotalDisplayRecords", testCaseExecutionList.getTotalRows());
+        object.put("iTotalRecords", testCaseExecutionList.size());
+        object.put("iTotalDisplayRecords", testCaseExecutionList.size());
 
         answer.setItem(object);
-        answer.setResultMessage(testCaseExecutionList.getResultMessage());
+        answer.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK_GENERIC));
         return answer;
     }
 
@@ -603,132 +602,6 @@ public class ReadTestCaseExecution extends HttpServlet {
          */
         testCaseExecutions = hashExecution(testCaseExecutions, testCaseExecutionsInQueue);
         return testCaseExecutions;
-    }
-
-    private AnswerItem findExecutionListBySystem(String system, ApplicationContext appContext, HttpServletRequest request)
-            throws ParseException, JSONException {
-        AnswerItem answer = new AnswerItem<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
-
-        /**
-         * Parse all parameters used in the search.
-         */
-        String charset = request.getCharacterEncoding() == null ? "UTF-8" : request.getCharacterEncoding();
-        /**
-         * Parse parameters - list of values
-         */
-
-        List<String> testList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("test"), null, charset);
-        List<String> applicationList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("application"), null, charset);
-        List<String> projectList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("project"), null, charset);
-
-        List<String> tcstatusList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("tcstatus"), null, charset);
-        List<String> groupList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("group"), null, charset);
-        List<String> tcactiveList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("tcactive"), null, charset);
-        List<String> priorityList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("priority"), null, charset);
-
-        List<String> targetsprintList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("targetsprint"), null, charset);
-        List<String> targetrevisionList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("targetrevision"), null, charset);
-        List<String> creatorList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("creator"), null, charset);
-        List<String> implementerList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("implementer"), null, charset);
-
-        List<String> environmentList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("environment"), null, charset);
-        List<String> buildList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("build"), null, charset);
-        List<String> revisionList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("revision"), null, charset);
-
-        List<String> countryList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("country"), null, charset);
-        List<String> browserList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("browser"), null, charset);
-        List<String> tcestatusList = ParameterParserUtil.parseListParamAndDecode(request.getParameterValues("tcestatus"), null, charset);
-
-        //Sorts the lists 
-        if (countryList != null) {
-            Collections.sort(countryList);
-        }
-        if (browserList != null) {
-            Collections.sort(browserList);
-        }
-
-        /**
-         * Parse parameters - free text
-         */
-        String bugid = StringEscapeUtils.escapeHtml4(request.getParameter("bugid"));
-        String ticket = StringEscapeUtils.escapeHtml4(request.getParameter("ticket"));
-        String ip = StringEscapeUtils.escapeHtml4(request.getParameter("ip"));
-        String port = StringEscapeUtils.escapeHtml4(request.getParameter("port"));
-        String tag = StringEscapeUtils.escapeHtml4(request.getParameter("tag"));
-        String browserversion = StringEscapeUtils.escapeHtml4(request.getParameter("browserversion"));
-        String comment = StringEscapeUtils.escapeHtml4(request.getParameter("comment"));
-
-        /**
-         * Gets regular executions (not in queue)
-         */
-        AnswerList answerExecutions = testCaseExecutionService.readBySystemByVarious(system, testList, applicationList, projectList, tcstatusList, groupList, tcactiveList, priorityList,
-                targetsprintList, targetrevisionList, creatorList, implementerList, buildList, revisionList,
-                environmentList, countryList, browserList, tcestatusList, ip, port, tag, browserversion, comment, bugid, ticket);
-
-        List<TestCaseExecution> testCaseExecutions = (List<TestCaseExecution>) answerExecutions.getDataList();
-
-        /**
-         * Get list of Execution in Queue by Tag
-         */
-        ITestCaseExecutionQueueService testCaseExecutionInQueueService = appContext.getBean(ITestCaseExecutionQueueService.class);
-        AnswerList answerExecutionsInQueue = testCaseExecutionInQueueService.readBySystemByVarious(system, testList, applicationList, projectList, tcstatusList, groupList, tcactiveList, priorityList,
-                targetsprintList, targetrevisionList, creatorList, implementerList, buildList, revisionList,
-                environmentList, countryList, browserList, tcestatusList, ip, port, tag, browserversion, comment, bugid, ticket);
-        List<TestCaseExecutionQueue> testCaseExecutionsInQueue = (List<TestCaseExecutionQueue>) answerExecutionsInQueue.getDataList();
-
-        /**
-         * Merge Test Case Executions
-         */
-        List<TestCaseExecution> allTestCaseExecutions = hashExecution(testCaseExecutions, testCaseExecutionsInQueue);
-
-        JSONArray executionList = new JSONArray();
-        LinkedHashMap<String, JSONObject> ttc = new LinkedHashMap<String, JSONObject>();
-
-        for (TestCaseExecution testCaseExecution : allTestCaseExecutions) {
-            try {
-                JSONObject execution = testCaseExecutionToJSONObject(testCaseExecution);
-                String execKey = testCaseExecution.getCountry() + " " + testCaseExecution.getBrowser(); //the key is country and browser
-                String testCaseKey = testCaseExecution.getTest() + "_" + testCaseExecution.getTestCase();
-                JSONObject execTab = new JSONObject();
-
-                executionList.put(testCaseExecutionToJSONObject(testCaseExecution));
-                JSONObject ttcObject = new JSONObject();
-
-                if (ttc.containsKey(testCaseKey)) {
-                    ttcObject = ttc.get(testCaseKey);
-                    execTab = ttcObject.getJSONObject("execTab");
-                    execTab.put(execKey, execution);
-                    ttcObject.put("execTab", execTab);
-                } else {
-                    ttcObject.put("test", testCaseExecution.getTest());
-                    ttcObject.put("testCase", testCaseExecution.getTestCase());
-                    ttcObject.put("function", testCaseExecution.getTestCaseObj().getFunction());
-                    ttcObject.put("shortDesc", testCaseExecution.getTestCaseObj().getDescription());
-                    ttcObject.put("status", testCaseExecution.getTestCaseObj().getStatus());
-                    ttcObject.put("application", testCaseExecution.getApplication());
-                    ttcObject.put("bugId", testCaseExecution.getTestCaseObj().getBugID());
-                    ttcObject.put("ticket", testCaseExecution.getTestCaseObj().getTicket());
-                    ttcObject.put("comment", testCaseExecution.getTestCaseObj().getComment());
-                    ttcObject.put("priority", testCaseExecution.getTestCaseObj().getPriority());
-                    ttcObject.put("status", testCaseExecution.getStatus());
-                    ttcObject.put("group", testCaseExecution.getTestCaseObj().getGroup());
-                    execTab.put(execKey, execution);
-                    ttcObject.put("execTab", execTab);
-                }
-                ttc.put(testCaseExecution.getTest() + "_" + testCaseExecution.getTestCase(), ttcObject);
-            } catch (JSONException ex) {
-                LOG.warn(ex);
-            }
-        }
-
-        JSONObject jsonResponse = new JSONObject();
-        jsonResponse.put("contentTable", ttc.values());
-        jsonResponse.put("iTotalRecords", ttc.size());
-        jsonResponse.put("iTotalDisplayRecords", ttc.size());
-
-        answer.setItem(jsonResponse);
-        answer.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
-        return answer;
     }
 
     /**

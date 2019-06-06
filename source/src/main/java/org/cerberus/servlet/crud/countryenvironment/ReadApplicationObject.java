@@ -215,6 +215,7 @@ public class ReadApplicationObject extends HttpServlet {
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
         List<String> individualLike = new ArrayList<>(Arrays.asList(ParameterParserUtil.parseStringParam(request.getParameter("sLike"), "").split(",")));
+        List<String> systems = ParameterParserUtil.parseListParamAndDecodeAndDeleteEmptyValue(request.getParameterValues("system"), Arrays.asList("DEFAULT"), "UTF-8");
 
 
         Map<String, List<String>> individualSearch = new HashMap<>();
@@ -229,7 +230,7 @@ public class ReadApplicationObject extends HttpServlet {
             }
         }
 
-        AnswerList resp = applicationObjectService.readByApplicationByCriteria(application, startPosition, length, columnName, sort, searchParameter, individualSearch);
+        AnswerList resp = applicationObjectService.readByApplicationByCriteria(application, startPosition, length, columnName, sort, searchParameter, individualSearch, systems);
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values

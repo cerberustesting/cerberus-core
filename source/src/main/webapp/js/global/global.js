@@ -1439,6 +1439,9 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
             like = like.substring(0, like.length - 1);
 
             aoData.push({name: "sLike", value: like});
+            if(sSource !== "ReadTest" ) { // RG, don't filter on system if it is a Test Folder
+                aoData.push({name: "system", value: getSys()});
+            }
 
             var objectWL = $(objectWaitingLayer);
             if (objectWaitingLayer !== undefined) {

@@ -1,3 +1,7 @@
+package org.cerberus.crud.factory;
+
+import org.cerberus.crud.entity.CampaignParameter;
+
 /* Cerberus Copyright (C) 2013 - 2017 cerberustesting
 DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 
@@ -15,29 +19,18 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
- */
-package org.cerberus.crud.service.impl;
-
-import org.cerberus.crud.dao.ISchedulerDAO;
-import org.cerberus.crud.entity.Scheduler;
-import org.cerberus.util.answer.AnswerItem;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.cerberus.crud.service.ISchedulerService;
-
+*/
+ 
 /**
  *
  * @author cdelage
  */
-public class SchedulerService implements ISchedulerService {
+import org.cerberus.crud.entity.ScheduleEntry;
+import java.sql.Timestamp;
+import org.cerberus.crud.factory.impl.FactoryScheduleEntry;
+import org.springframework.beans.factory.annotation.Autowired;
 
-    @Autowired
-    ISchedulerDAO schedulerDao;
-
-    @Override
-    public AnswerItem<Scheduler> readbykey(String name) {
-        AnswerItem<Scheduler> ans = new AnswerItem();
-        schedulerDao.readByKey(name);
-        return ans;
-    }
-
+public interface IFactoryScheduleEntry {
+    
+    ScheduleEntry create(Integer ID, String type, String name, String cronDefinition, Timestamp lastExecution, String active, String UsrCreated, Timestamp DateCreated, String UsrModif, Timestamp DateModif);
 }

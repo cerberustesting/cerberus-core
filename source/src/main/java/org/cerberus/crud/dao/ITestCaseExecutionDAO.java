@@ -151,7 +151,7 @@ public interface ITestCaseExecutionDAO {
      * @return
      * @throws CerberusException
      */
-    public AnswerList readByTagByCriteria(String tag, int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException;
+    public List<TestCaseExecution> readByTagByCriteria(String tag, int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException;
 
     /**
      * Read TestCaseExecution By Tag
@@ -179,7 +179,7 @@ public interface ITestCaseExecutionDAO {
      * @return
      * @throws CerberusException
      */
-    public AnswerList readByCriteria(int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch, List<String> individualLike) throws CerberusException;
+    List<TestCaseExecution> readByCriteria(int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch, List<String> individualLike, List<String> system) throws CerberusException;
 
     /**
      *
@@ -198,37 +198,6 @@ public interface ITestCaseExecutionDAO {
      * @return
      */
     public AnswerList readDistinctColumnByTag(String tag, boolean env, boolean country, boolean browser, boolean app);
-
-    /**
-     *
-     * @param system
-     * @param testList
-     * @param applicationList
-     * @param projectList
-     * @param tcstatusList
-     * @param groupList
-     * @param tcactiveList
-     * @param priorityList
-     * @param targetsprintList
-     * @param targetrevisionList
-     * @param creatorList
-     * @param implementerList
-     * @param buildList
-     * @param revisionList
-     * @param environmentList
-     * @param countryList
-     * @param browserList
-     * @param tcestatusList
-     * @param ip
-     * @param port
-     * @param tag
-     * @param browserversion
-     * @param comment
-     * @param bugid
-     * @param ticket
-     * @return
-     */
-    public AnswerList readBySystemByVarious(String system, List<String> testList, List<String> applicationList, List<String> projectList, List<String> tcstatusList, List<String> groupList, List<String> tcactiveList, List<String> priorityList, List<String> targetsprintList, List<String> targetrevisionList, List<String> creatorList, List<String> implementerList, List<String> buildList, List<String> revisionList, List<String> environmentList, List<String> countryList, List<String> browserList, List<String> tcestatusList, String ip, String port, String tag, String browserversion, String comment, String bugid, String ticket);
 
     /**
      *

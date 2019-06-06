@@ -470,17 +470,20 @@ public final class StringUtil {
 
     /**
      *
-     * @param jsonResult
+     * @param listString
      * @param separator
      * @return
      */
-    public static String convertToString(List<String> jsonResult, String separator) {
+    public static String convertToString(List<String> listString, String separator) {
         String result = "";
         if (separator == null) {
             separator = ",";
         }
         boolean first = true;
-        for (String string : jsonResult) {
+        if (listString == null){
+            return "";
+        }
+        for (String string : listString) {
             if (first == true) {
                 first = false;
                 result = string;

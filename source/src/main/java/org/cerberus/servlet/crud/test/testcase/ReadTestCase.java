@@ -123,13 +123,13 @@ public class ReadTestCase extends AbstractCrudTestCase {
 
         // Init Answer with potencial error from Parsing parameter.
         AnswerItem answer = new AnswerItem<>(msg);
+        JSONObject jsonResponse = new JSONObject();
 
         try {
-            JSONObject jsonResponse = new JSONObject();
             if (!Strings.isNullOrEmpty(test) && testCase != null && !withStep) {
                 answer = findTestCaseByTestTestCase(test, testCase, request);
                 jsonResponse = (JSONObject) answer.getItem();
-            } else if (!Strings.isNullOrEmpty(test) && testCase != null && withStep) {
+            } else if (!Strings.isNullOrEmpty(test) && testCase != null && withStep) { // TestCaseScript
                 answer = findTestCaseWithStep(request, test, testCase);
                 jsonResponse = (JSONObject) answer.getItem();
             } else if (!Strings.isNullOrEmpty(test) && getMaxTC) {
@@ -149,10 +149,13 @@ public class ReadTestCase extends AbstractCrudTestCase {
                 //If columnName is present, then return the distinct value of this column.
                 answer = findDistinctValuesOfColumn(system, test, request, columnName);
                 jsonResponse = (JSONObject) answer.getItem();
-            } else {
+            } else { // Page TestCaseList
                 answer = findTestCaseByTest(system, test, request);
                 jsonResponse = (JSONObject) answer.getItem();
             }
+
+            if(jsonResponse == null)
+                jsonResponse = new JSONObject();
 
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
             jsonResponse.put("message", answer.getResultMessage().getDescription());
@@ -167,7 +170,6 @@ public class ReadTestCase extends AbstractCrudTestCase {
             LOG.error(ex, ex);
             // TODO return to the gui
         }
-
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -488,6 +490,12 @@ public class ReadTestCase extends AbstractCrudTestCase {
 
         //finds the testcase     
         AnswerItem answer = testCaseService.readByKey(test, testCase);
+
+        if(answer.getItem() == null) {
+            answer.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_NOT_FOUND_OR_NOT_AUTHORIZE));
+            return answer;
+        }
+
 
         AnswerList testCaseCountryList = testCaseCountryService.readByTestTestCase(null, test, testCase, null);
         AnswerList testCaseStepList = testCaseStepService.readByTestTestCase(test, testCase);

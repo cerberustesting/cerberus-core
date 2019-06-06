@@ -42,6 +42,7 @@ import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
+import org.cerberus.util.security.UserSecurity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -157,6 +158,9 @@ public class LabelDAO implements ILabelDAO {
             }
             searchSQL.append(" and (" + SqlUtil.generateInClause("lab.`System`", system) + ")");
         }
+
+        query.append( " AND " + UserSecurity.getSystemAllowForSQL("lab.`System`") + " ");
+
         if ((type != null) && (!type.isEmpty())) {
             searchSQL.append(" and (" + SqlUtil.generateInClause("lab.`Type`", type) + ")");
         }

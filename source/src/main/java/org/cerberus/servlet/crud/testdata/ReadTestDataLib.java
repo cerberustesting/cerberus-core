@@ -199,6 +199,9 @@ public class ReadTestDataLib extends HttpServlet {
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
 
+        List<String> systems = ParameterParserUtil.parseListParamAndDecodeAndDeleteEmptyValue(request.getParameterValues("system"), Arrays.asList("DEFAULT"), "UTF-8");
+
+
         Map<String, List<String>> individualSearch = new HashMap<String, List<String>>();
         List<String> individualLike = new ArrayList<>(Arrays.asList(request.getParameter("sLike").split(",")));
 
@@ -213,7 +216,7 @@ public class ReadTestDataLib extends HttpServlet {
             }
         }
 
-        AnswerList resp = testDataLibService.readByVariousByCriteria(null, null, null, null, null, startPosition, length, columnName, sort, searchParameter, individualSearch);
+        AnswerList resp = testDataLibService.readByVariousByCriteria(null, systems, null, null, null, startPosition, length, columnName, sort, searchParameter, individualSearch);
 
         JSONArray jsonArray = new JSONArray();
         boolean userHasPermissions = request.isUserInRole("TestDataManager");

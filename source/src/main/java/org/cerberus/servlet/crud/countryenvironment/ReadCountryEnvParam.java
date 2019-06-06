@@ -121,7 +121,7 @@ public class ReadCountryEnvParam extends HttpServlet {
                 answer = findDistinctValuesOfColumn(system, appContext, request, columnName);
                 jsonResponse = (JSONObject) answer.getItem();
             } else { // Default behaviour, we return the list of objects.
-                answer = findCountryEnvParamList(system, country, environment, build, revision, active, envGp, appContext, userHasPermissions, request);
+                answer = findCountryEnvParamList(country, environment, build, revision, active, envGp, appContext, userHasPermissions, request);
                 jsonResponse = (JSONObject) answer.getItem();
             }
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
@@ -184,7 +184,7 @@ public class ReadCountryEnvParam extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findCountryEnvParamList(String system, String country, String environment, String build, String revision, String active, String envGp, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
+    private AnswerItem findCountryEnvParamList(String country, String environment, String build, String revision, String active, String envGp, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
         AnswerItem item = new AnswerItem<>();
         JSONObject object = new JSONObject();
@@ -202,6 +202,9 @@ public class ReadCountryEnvParam extends HttpServlet {
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
         List<String> individualLike = new ArrayList<>(Arrays.asList(ParameterParserUtil.parseStringParam(request.getParameter("sLike"), "").split(",")));
 
+        List<String> systems = ParameterParserUtil.parseListParamAndDecodeAndDeleteEmptyValue(request.getParameterValues("system"), Arrays.asList("DEFAULT"), "UTF-8");
+
+
         Map<String, List<String>> individualSearch = new HashMap<String, List<String>>();
         for (int a = 0; a < columnToSort.length; a++) {
             if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
@@ -214,7 +217,7 @@ public class ReadCountryEnvParam extends HttpServlet {
             }
         }
 
-        AnswerList resp = cepService.readByVariousByCriteria(system, country, environment, build, revision, active, envGp, startPosition, length, columnName, sort, searchParameter, individualSearch);
+        AnswerList resp = cepService.readByVariousByCriteria(systems, country, environment, build, revision, active, envGp, startPosition, length, columnName, sort, searchParameter, individualSearch);
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values

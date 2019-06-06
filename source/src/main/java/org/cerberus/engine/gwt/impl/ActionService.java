@@ -219,6 +219,9 @@ public class ActionService implements IActionService {
                 case TestCaseStepAction.ACTION_MANAGEDIALOG:
                     res = this.doActionManageDialog(tCExecution, value1, value2);
                     break;
+                case TestCaseStepAction.ACTION_MANAGEDIALOGKEYPRESS:
+                    res = this.doActionManageDialogKeyPress(tCExecution, value1);
+                    break;
                 case TestCaseStepAction.ACTION_OPENURLWITHBASE:
                     res = this.doActionOpenURL(tCExecution, value1, value2, true);
                     break;
@@ -658,7 +661,7 @@ public class ActionService implements IActionService {
         }
     }
 
-    private MessageEvent doActionManageDialog(TestCaseExecution tCExecution, String object, String property) {
+    private MessageEvent doActionManageDialog(TestCaseExecution tCExecution, String value1, String value2) {
         MessageEvent message;
         String element;
         try {
@@ -666,7 +669,7 @@ public class ActionService implements IActionService {
              * Get element to use String object if not empty, String property if
              * object empty, throws Exception if both empty)
              */
-            element = getElementToUse(object, property, "manageDialog", tCExecution);
+            element = getElementToUse(value1, value2, "manageDialog", tCExecution);
             /**
              * Get Identifier (identifier, locator)
              */
@@ -682,6 +685,29 @@ public class ActionService implements IActionService {
             return message;
         } catch (CerberusEventException ex) {
             LOG.fatal("Error doing Action ManageDialog :" + ex);
+            return ex.getMessageError();
+        }
+    }
+
+    private MessageEvent doActionManageDialogKeyPress(TestCaseExecution tCExecution, String value1) {
+        MessageEvent message;
+        String element;
+        try {
+            /**
+             * Get element to use String object if not empty, String property if
+             * object empty, throws Exception if both empty)
+             */
+            element = getElementToUse(value1, "", "manageDialogKeyPress", tCExecution);
+
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
+                return webdriverService.doSeleniumActionManageDialogKeyPress(tCExecution.getSession(), element);
+            }
+            message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+            message.setDescription(message.getDescription().replace("%ACTION%", "ManageDialogKeypress"));
+            message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
+            return message;
+        } catch (CerberusEventException ex) {
+            LOG.fatal("Error doing Action ManageDialogKeypress :" + ex);
             return ex.getMessageError();
         }
     }

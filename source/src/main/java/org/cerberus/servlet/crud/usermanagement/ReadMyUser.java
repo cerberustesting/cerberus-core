@@ -35,10 +35,8 @@ import org.cerberus.crud.entity.UserGroup;
 import org.cerberus.crud.entity.User;
 import org.cerberus.crud.entity.UserSystem;
 import org.cerberus.crud.factory.IFactoryUser;
+import org.cerberus.crud.service.*;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.crud.service.IUserGroupService;
-import org.cerberus.crud.service.IUserService;
-import org.cerberus.crud.service.IUserSystemService;
 import org.cerberus.crud.service.impl.UserGroupService;
 import org.cerberus.crud.service.impl.UserService;
 import org.cerberus.util.StringUtil;
@@ -162,12 +160,14 @@ public class ReadMyUser extends HttpServlet {
             data.put("group", groups);
 
             JSONArray systems = new JSONArray();
-            for (UserSystem sys : userSystemService.findUserSystemByUser(myUser.getLogin())) {
+            List<UserSystem> userSysList = userSystemService.findUserSystemByUser(myUser.getLogin());
+            for (UserSystem sys : userSysList) {
                 systems.put(sys.getSystem());
             }
             data.put("system", systems);
             HttpSession session = request.getSession();
             session.setAttribute("MySystem", myUser.getDefaultSystem());
+            session.setAttribute("MySystemsAllow", userSysList);
             session.setAttribute("MyLang", myUser.getLanguage());
 
         } catch (CerberusException ex) {

@@ -45,6 +45,7 @@ import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
+import org.cerberus.util.security.UserSecurity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -391,7 +392,7 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
     }
 
     @Override
-    public AnswerList readByVariousByCriteria(String system, String country, String environment, String build, String revision, String active, String envGp, int start, int amount, String colName, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
+    public AnswerList readByVariousByCriteria(List<String> systems, String country, String environment, String build, String revision, String active, String envGp, int start, int amount, String colName, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
         AnswerList response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -435,9 +436,13 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
             }
             searchSQL.append(" )");
         }
-        if (!StringUtil.isNullOrEmpty(system)) {
-            searchSQL.append(" and (cev.`System` = ? )");
+
+        if ((systems != null) && (!systems.isEmpty())) {
+            searchSQL.append(" and (" + SqlUtil.generateInClause("cev.`System`", systems) + ") ");
         }
+
+        searchSQL.append( " AND " + UserSecurity.getSystemAllowForSQL("cev.`System`") + " ");
+
         if (!StringUtil.isNullOrEmpty(active)) {
             searchSQL.append(" and (cev.`active` = ? )");
         }
@@ -498,8 +503,10 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
                 for (String individualColumnSearchValue : individalColumnSearchValues) {
                     preStat.setString(i++, individualColumnSearchValue);
                 }
-                if (!StringUtil.isNullOrEmpty(system)) {
-                    preStat.setString(i++, system);
+                if ((systems != null) && (!systems.isEmpty())) {
+                    for (String mysystem : systems) {
+                        preStat.setString(i++, mysystem);
+                    }
                 }
                 if (!StringUtil.isNullOrEmpty(active)) {
                     preStat.setString(i++, active);
@@ -549,7 +556,7 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
                     }
 
                 } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
+                    LOG.error("Unable to execute query : " + exception.toString(), exception);
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
 
@@ -560,7 +567,7 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
                 }
 
             } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
+                LOG.error("Unable to execute query : " + exception.toString(), exception);
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
             } finally {
@@ -570,7 +577,7 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
             }
 
         } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
+            LOG.error("Unable to execute query : " + exception.toString(), exception);
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
         } finally {

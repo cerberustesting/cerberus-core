@@ -361,13 +361,13 @@ function privateDisplayColumnSearch(tableId, contentUrl, oSettings, clientSide) 
 
         	                //Check if URL already contains parameters
         	                var urlSeparator = contentUrl.indexOf("?") > -1 ? "&" : "?";
-        	                var url = './' + contentUrl + urlSeparator + 'columnName=' + title;
+        	                var url = './' + contentUrl + urlSeparator + 'columnName=' + title + '&system=' + getSys();
         	                var result;
         	                
-        	                var params = table.ajax.params()  
-        	                
+        	                var params = table.ajax.params()
+
 							var like = ""
-								
+
 							$.each(oSettings.aoColumns, function(index,value){
 								if(oSettings.aoColumns[index].like){
 									like += oSettings.aoColumns[index].sName + ","

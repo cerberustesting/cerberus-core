@@ -39,10 +39,7 @@ import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
-import org.cerberus.util.answer.Answer;
-import org.cerberus.util.answer.AnswerItem;
-import org.cerberus.util.answer.AnswerList;
-import org.jfree.util.Log;
+import org.cerberus.util.answer.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -136,7 +133,7 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
         try {
             runID = this.insertTCExecution(tCExecution);
         } catch (CerberusException ex) {
-            LOG.warn(ex.toString());
+            LOG.warn(ex.toString(), ex);
             throw new CerberusException(ex.getMessageError());
         }
         return runID;
@@ -176,12 +173,12 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
 
     @Override
     public AnswerList readByTagByCriteria(String tag, int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException {
-        return testCaseExecutionDao.readByTagByCriteria(tag, start, amount, sort, searchTerm, individualSearch);
+        return AnswerUtil.convertToAnswerList(() -> testCaseExecutionDao.readByTagByCriteria(tag, start, amount, sort, searchTerm, individualSearch));
     }
 
     @Override
-    public AnswerList readByCriteria(int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch, List<String> individualLike) throws CerberusException {
-        return testCaseExecutionDao.readByCriteria(start, amount, sort, searchTerm, individualSearch, individualLike);
+    public List<TestCaseExecution>  readByCriteria(int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch, List<String> individualLike, List<String> system) throws CerberusException {
+        return testCaseExecutionDao.readByCriteria(start, amount, sort, searchTerm, individualSearch, individualLike, system);
     }
 
     @Override
@@ -223,18 +220,6 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
         }
 
         return result;
-    }
-
-    @Override
-    public AnswerList readBySystemByVarious(String system, List<String> testList, List<String> applicationList, List<String> projectList, List<String> tcstatusList,
-            List<String> groupList, List<String> tcactiveList, List<String> priorityList, List<String> targetsprintList, List<String> targetrevisionList,
-            List<String> creatorList, List<String> implementerList, List<String> buildList, List<String> revisionList, List<String> environmentList,
-            List<String> countryList, List<String> browserList, List<String> tcestatusList, String ip, String port, String tag, String browserversion,
-            String comment, String bugid, String ticket) {
-
-        return testCaseExecutionDao.readBySystemByVarious(system, testList, applicationList, projectList, tcstatusList, groupList, tcactiveList, priorityList, targetsprintList,
-                targetrevisionList, creatorList, implementerList, buildList, revisionList, environmentList, countryList, browserList, tcestatusList,
-                ip, port, tag, browserversion, comment, bugid, ticket);
     }
 
     @Override

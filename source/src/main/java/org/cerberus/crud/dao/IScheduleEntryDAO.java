@@ -16,17 +16,24 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.crud.service;
+package org.cerberus.crud.dao;
 
-import org.cerberus.crud.entity.Scheduler;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
+import org.cerberus.crud.entity.ScheduleEntry;
 import org.cerberus.util.answer.AnswerItem;
 
 /**
  *
  * @author cdelage
  */
-public interface ISchedulerService {
+public interface IScheduleEntryDAO {
 
-    public AnswerItem<Scheduler> readbykey(String campaign);
+    public AnswerItem<ScheduleEntry> readByKey(String name);
 
+    public boolean create(ScheduleEntry scheduler);
+    
+    public AnswerItem<List> readAllActive();
+    
 }

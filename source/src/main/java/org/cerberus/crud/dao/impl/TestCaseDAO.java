@@ -53,7 +53,7 @@ import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
-import org.jfree.util.Log;
+import org.cerberus.util.security.UserSecurity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -161,9 +161,16 @@ public class TestCaseDAO implements ITestCaseDAO {
 
         searchSQL.append("WHERE 1=1");
 
+        // Always filter on system user can view
+        searchSQL.append(" AND " + UserSecurity.getSystemAllowForSQL("app.`system`") + " ");
+
+
         if (!StringUtil.isNullOrEmpty(system)) {
             searchSQL.append(" AND app.`system` = ? ");
         }
+
+
+
         if (!StringUtil.isNullOrEmpty(test)) {
             searchSQL.append(" AND tec.`test` = ?");
         }
@@ -1630,7 +1637,15 @@ public class TestCaseDAO implements ITestCaseDAO {
     public AnswerItem readByKey(String test, String testCase) {
         AnswerItem ans = new AnswerItem<>();
         TestCase result = null;
-        final String query = "SELECT * FROM `testcase` tec LEFT OUTER JOIN application app ON app.application=tec.application WHERE tec.`test` = ? AND tec.`testcase` = ?";
+        final String query = "SELECT * FROM `testcase` tec " +
+                "LEFT OUTER JOIN application app " +
+                "ON app.application=tec.application " +
+                "WHERE tec.`test` = ? " +
+                "AND tec.`testcase` = ? " +
+                "AND " + UserSecurity.getSystemAllowForSQL("app.`system`");
+
+
+
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 

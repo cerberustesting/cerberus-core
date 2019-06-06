@@ -121,60 +121,61 @@ public class WebDriverService implements IWebDriverService {
             throw new NoSuchElementException(identifier.getIdentifier());
         }
     }
-    
+
     @Override
     public MessageEvent scrollTo(Session session, Identifier identifier, String text) {
-    	 WebDriver mWebdriver = session.getDriver();
-    	 MessageEvent message;
-    	 
-    	 try {
-    		message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SCROLLTO);
-    		if (StringUtil.isNullOrEmpty(text)) {
-    			scrollElement(mWebdriver, identifier);
-    		}else {
-    		scrollText(mWebdriver,text);
-    		}
-    		return message;
-    		
-     	}catch(Exception e){    		
-    		LOG.error("An error occured during scroll to (element:" + identifier, e);
+        WebDriver mWebdriver = session.getDriver();
+        MessageEvent message;
+
+        try {
+            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SCROLLTO);
+            if (StringUtil.isNullOrEmpty(text)) {
+                scrollElement(mWebdriver, identifier);
+            } else {
+                scrollText(mWebdriver, text);
+            }
+            return message;
+
+        } catch (Exception e) {
+            LOG.error("An error occured during scroll to (element:" + identifier, e);
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_GENERIC);
             message.setDescription(message.getDescription().replace("%DETAIL%", e.getMessage()));
             return message;
-            
-    	}    	
-    	 
-    }
-    
-    private void scrollText(WebDriver driver, String text) {
-    	// Create instance of Javascript executor
-    	JavascriptExecutor je = (JavascriptExecutor) driver;
 
-    	//Identify the WebElement which will appear after scrolling down
-    	WebElement element = driver.findElement(By.xpath("//*[contains(text()," + text + ")]"));
-    	
-    	// now execute query which actually will scroll until that element is not appeared on page.
-    	je.executeScript("arguments[0].scrollIntoView(true);",element);
+        }
+
     }
-    
-    private void scrollElement(WebDriver driver, Identifier identifier) {   	
-    	/**WebElement element = driver.findElement(By.id(identifier.getLocator()));
-    	Actions actions = new Actions(driver);
-    	actions.moveToElement(element);
-    	actions.perform();
-    	*/
-    	WebElement element;
-    	String locator = identifier.getLocator().replaceAll("\"", "");
-    	if(identifier.getIdentifier().contains("xpath")) {
-        	element = driver.findElement(By.xpath(locator));
-    	}else {
-        	element = driver.findElement(By.xpath("//*[@"+identifier.getIdentifier()+"='"+locator+"']"));
-    	}
-    	
-    	((JavascriptExecutor)driver).executeScript("arguments[0].scrollIntoView();", element);
-    	
+
+    private void scrollText(WebDriver driver, String text) {
+        // Create instance of Javascript executor
+        JavascriptExecutor je = (JavascriptExecutor) driver;
+
+        //Identify the WebElement which will appear after scrolling down
+        WebElement element = driver.findElement(By.xpath("//*[contains(text()," + text + ")]"));
+
+        // now execute query which actually will scroll until that element is not appeared on page.
+        je.executeScript("arguments[0].scrollIntoView(true);", element);
     }
-    
+
+    private void scrollElement(WebDriver driver, Identifier identifier) {
+        /**
+         * WebElement element =
+         * driver.findElement(By.id(identifier.getLocator())); Actions actions =
+         * new Actions(driver); actions.moveToElement(element);
+         * actions.perform();
+         */
+        WebElement element;
+        String locator = identifier.getLocator().replaceAll("\"", "");
+        if (identifier.getIdentifier().contains("xpath")) {
+            element = driver.findElement(By.xpath(locator));
+        } else {
+            element = driver.findElement(By.xpath("//*[@" + identifier.getIdentifier() + "='" + locator + "']"));
+        }
+
+        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView();", element);
+
+    }
+
     private AnswerItem<WebElement> getSeleniumElement(Session session, Identifier identifier, boolean visible, boolean clickable) {
         AnswerItem<WebElement> answer = new AnswerItem<WebElement>();
         MessageEvent msg;
@@ -184,9 +185,9 @@ public class WebDriverService implements IWebDriverService {
             WebDriverWait wait = new WebDriverWait(session.getDriver(), TimeUnit.MILLISECONDS.toSeconds(session.getCerberus_selenium_wait_element()));
             WebElement element;
             if (visible) {
-            	if(session.isCerberus_selenium_autoscroll()) {
-            		scrollElement(session.getDriver(),identifier);
-            	}
+                if (session.isCerberus_selenium_autoscroll()) {
+                    scrollElement(session.getDriver(), identifier);
+                }
                 if (clickable) {
                     element = wait.until(ExpectedConditions.elementToBeClickable(locator));
                 } else {
@@ -469,13 +470,13 @@ public class WebDriverService implements IWebDriverService {
     public boolean isElementInElement(Session session, Identifier identifier, Identifier childIdentifier) {
         By elementLocator = this.getBy(identifier);
         By childElementLocator = this.getBy(childIdentifier);
-        
+
         try {
-        	return (session.getDriver().findElement(elementLocator) != null
+            return (session.getDriver().findElement(elementLocator) != null
                     && session.getDriver().findElement(elementLocator).findElement(childElementLocator) != null);
-        }catch(NoSuchElementException e) {
-        	return false;
-        }        
+        } catch (NoSuchElementException e) {
+            return false;
+        }
     }
 
     @Override
@@ -728,6 +729,61 @@ public class WebDriverService implements IWebDriverService {
             return parseWebDriverException(exception);
         }
         return new MessageEvent(MessageEventEnum.ACTION_FAILED_CLOSE_ALERT);
+    }
+
+    @Override
+    public MessageEvent doSeleniumActionManageDialogKeyPress(Session session, String valueToPress) {
+        MessageEvent message;
+        String newKey = valueToPress;
+        try {
+            // Mapp Keys.
+            // Not mapped keys are : NULL, CANCEL, HELP, , CLEAR, PAUSE, END, HOME, INSERT, META, COMMAND, ZENKAKU_HANKAKU
+
+            newKey = newKey.replace("[TAB]", Keys.TAB)
+                    .replace("[BACK_SPACE]", Keys.BACK_SPACE)
+                    .replace("[RETURN]", Keys.RETURN).replace("[ENTER]", Keys.ENTER)
+                    .replace("[SHIFT]", Keys.SHIFT).replace("[LEFT_SHIFT]", Keys.LEFT_SHIFT)
+                    .replace("[CONTROL]", Keys.CONTROL).replace("[LEFT_CONTROL]", Keys.LEFT_CONTROL)
+                    .replace("[ALT]", Keys.ALT).replace("[LEFT_ALT]", Keys.LEFT_ALT)
+                    .replace("[ESCAPE]", Keys.ESCAPE)
+                    .replace("[SPACE]", Keys.SPACE)
+                    .replace("[PAGE_UP]", Keys.PAGE_UP).replace("[PAGE_DOWN]", Keys.PAGE_DOWN)
+                    .replace("[LEFT]", Keys.LEFT).replace("[ARROW_LEFT]", Keys.ARROW_LEFT)
+                    .replace("[UP]", Keys.UP).replace("[ARROW_UP]", Keys.ARROW_UP)
+                    .replace("[RIGHT]", Keys.RIGHT).replace("[ARROW_RIGHT]", Keys.ARROW_RIGHT)
+                    .replace("[DOWN]", Keys.DOWN).replace("[ARROW_DOWN]", Keys.ARROW_DOWN)
+                    .replace("[DELETE]", Keys.DELETE)
+                    .replace("[SEMICOLON]", Keys.SEMICOLON)
+                    .replace("[EQUALS]", Keys.EQUALS)
+                    .replace("[NUMPAD0]", Keys.NUMPAD0).replace("[NUMPAD1]", Keys.NUMPAD1).replace("[NUMPAD2]", Keys.NUMPAD2).replace("[NUMPAD3]", Keys.NUMPAD3)
+                    .replace("[NUMPAD4]", Keys.NUMPAD4).replace("[NUMPAD5]", Keys.NUMPAD5).replace("[NUMPAD6]", Keys.NUMPAD6).replace("[NUMPAD7]", Keys.NUMPAD7)
+                    .replace("[NUMPAD8]", Keys.NUMPAD8).replace("[NUMPAD9]", Keys.NUMPAD9)
+                    .replace("[MULTIPLY]", Keys.MULTIPLY)
+                    .replace("[ADD]", Keys.ADD)
+                    .replace("[SEPARATOR]", Keys.SEPARATOR)
+                    .replace("[SUBTRACT]", Keys.SUBTRACT)
+                    .replace("[DECIMAL]", Keys.DECIMAL)
+                    .replace("[DIVIDE]", Keys.DIVIDE)
+                    .replace("[F1]", Keys.F1).replace("[F2]", Keys.F2).replace("[F3]", Keys.F3).replace("[F4]", Keys.F4).replace("[F5]", Keys.F5)
+                    .replace("[F6]", Keys.F6).replace("[F7]", Keys.F7).replace("[F8]", Keys.F8).replace("[F9]", Keys.F9).replace("[F10]", Keys.F10).replace("[F11]", Keys.F11).replace("[F12]", Keys.F12);
+
+            // Press Keyx on an alert popup dialog.
+            session.getDriver().switchTo().alert().sendKeys(newKey);
+            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_KEYPRESS_ALERT);
+            message.setDescription(message.getDescription().replace("%KEY%", valueToPress));
+            return message;
+        } catch (NoSuchWindowException exception) {
+            // Add try catch to handle not exist anymore alert popup (like when popup is closed).
+            LOG.debug("Alert popup still exist ? " + exception.toString());
+        } catch (TimeoutException exception) {
+            LOG.warn(exception.toString());
+        } catch (WebDriverException exception) {
+            LOG.debug("Alert popup still exist ? " + exception.toString());
+            return parseWebDriverException(exception);
+        }
+        message = new MessageEvent(MessageEventEnum.ACTION_FAILED_KEYPRESS_ALERT);
+        message.setDescription(message.getDescription().replace("%KEY%", valueToPress));
+        return message;
     }
 
     private boolean checkIfExpectedWindow(Session session, String identifier, String value) {
@@ -1116,46 +1172,46 @@ public class WebDriverService implements IWebDriverService {
             return ex.getMessageError();
         }
     }
-    
+
     // we need to implement the right selenium dragAndDrop method when it works
     @Override
-    public MessageEvent doSeleniumActionDragAndDrop(Session session, Identifier drag, Identifier drop) throws IOException{
+    public MessageEvent doSeleniumActionDragAndDrop(Session session, Identifier drag, Identifier drop) throws IOException {
         MessageEvent message;
         try {
-	        AnswerItem answerDrag = this.getSeleniumElement(session, drag, true, true);
-	        AnswerItem answerDrop = this.getSeleniumElement(session, drop, true, true);
-	        if (answerDrag.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode()) &&
-	        		answerDrop.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode())) {
-	            WebElement source = (WebElement) answerDrag.getItem();
-	            WebElement target = (WebElement) answerDrop.getItem();
-	            if (source != null && target != null ) {
-	            	((JavascriptExecutor) session.getDriver()).executeScript("function createEvent(typeOfEvent) {\n" + "var event =document.createEvent(\"CustomEvent\");\n"
-	                        + "event.initCustomEvent(typeOfEvent,true, true, null);\n" + "event.dataTransfer = {\n" + "data: {},\n"
-	                        + "setData: function (key, value) {\n" + "this.data[key] = value;\n" + "},\n"
-	                        + "getData: function (key) {\n" + "return this.data[key];\n" + "}\n" + "};\n" + "return event;\n"
-	                        + "}\n" + "\n" + "function dispatchEvent(element, event,transferData) {\n"
-	                        + "if (transferData !== undefined) {\n" + "event.dataTransfer = transferData;\n" + "}\n"
-	                        + "if (element.dispatchEvent) {\n" + "element.dispatchEvent(event);\n"
-	                        + "} else if (element.fireEvent) {\n" + "element.fireEvent(\"on\" + event.type, event);\n" + "}\n"
-	                        + "}\n" + "\n" + "function simulateHTML5DragAndDrop(element, destination) {\n"
-	                        + "var dragStartEvent =createEvent('dragstart');\n" + "dispatchEvent(element, dragStartEvent);\n"
-	                        + "var dropEvent = createEvent('drop');\n"
-	                        + "dispatchEvent(destination, dropEvent,dragStartEvent.dataTransfer);\n"
-	                        + "var dragEndEvent = createEvent('dragend');\n"
-	                        + "dispatchEvent(element, dragEndEvent,dropEvent.dataTransfer);\n" + "}\n" + "\n"
-	                        + "var source = arguments[0];\n" + "var destination = arguments[1];\n"
-	                        + "simulateHTML5DragAndDrop(source,destination);", source, target);
-	            }
-	            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_DRAGANDDROP);
-	            message.setDescription(message.getDescription().replace("%SOURCE%", drag.getIdentifier() + "=" + drag.getLocator()));
-	            message.setDescription(message.getDescription().replace("%TARGET%", drop.getIdentifier() + "=" + drop.getLocator()));
-	            return message;
-	        }else {
-	        	 message = new MessageEvent(MessageEventEnum.ACTION_FAILED_DRAGANDDROP_NO_SUCH_ELEMENT);
-	             message.setDescription(message.getDescription().replace("%ELEMENT%", drag.getIdentifier() + "=" + drag.getLocator()));
-	             return message;
-	        }
-        }catch (NoSuchElementException exception) {
+            AnswerItem answerDrag = this.getSeleniumElement(session, drag, true, true);
+            AnswerItem answerDrop = this.getSeleniumElement(session, drop, true, true);
+            if (answerDrag.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode())
+                    && answerDrop.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode())) {
+                WebElement source = (WebElement) answerDrag.getItem();
+                WebElement target = (WebElement) answerDrop.getItem();
+                if (source != null && target != null) {
+                    ((JavascriptExecutor) session.getDriver()).executeScript("function createEvent(typeOfEvent) {\n" + "var event =document.createEvent(\"CustomEvent\");\n"
+                            + "event.initCustomEvent(typeOfEvent,true, true, null);\n" + "event.dataTransfer = {\n" + "data: {},\n"
+                            + "setData: function (key, value) {\n" + "this.data[key] = value;\n" + "},\n"
+                            + "getData: function (key) {\n" + "return this.data[key];\n" + "}\n" + "};\n" + "return event;\n"
+                            + "}\n" + "\n" + "function dispatchEvent(element, event,transferData) {\n"
+                            + "if (transferData !== undefined) {\n" + "event.dataTransfer = transferData;\n" + "}\n"
+                            + "if (element.dispatchEvent) {\n" + "element.dispatchEvent(event);\n"
+                            + "} else if (element.fireEvent) {\n" + "element.fireEvent(\"on\" + event.type, event);\n" + "}\n"
+                            + "}\n" + "\n" + "function simulateHTML5DragAndDrop(element, destination) {\n"
+                            + "var dragStartEvent =createEvent('dragstart');\n" + "dispatchEvent(element, dragStartEvent);\n"
+                            + "var dropEvent = createEvent('drop');\n"
+                            + "dispatchEvent(destination, dropEvent,dragStartEvent.dataTransfer);\n"
+                            + "var dragEndEvent = createEvent('dragend');\n"
+                            + "dispatchEvent(element, dragEndEvent,dropEvent.dataTransfer);\n" + "}\n" + "\n"
+                            + "var source = arguments[0];\n" + "var destination = arguments[1];\n"
+                            + "simulateHTML5DragAndDrop(source,destination);", source, target);
+                }
+                message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_DRAGANDDROP);
+                message.setDescription(message.getDescription().replace("%SOURCE%", drag.getIdentifier() + "=" + drag.getLocator()));
+                message.setDescription(message.getDescription().replace("%TARGET%", drop.getIdentifier() + "=" + drop.getLocator()));
+                return message;
+            } else {
+                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_DRAGANDDROP_NO_SUCH_ELEMENT);
+                message.setDescription(message.getDescription().replace("%ELEMENT%", drag.getIdentifier() + "=" + drag.getLocator()));
+                return message;
+            }
+        } catch (NoSuchElementException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_DRAGANDDROP_NO_SUCH_ELEMENT);
             message.setDescription(message.getDescription().replace("%ELEMENT%", drag.getIdentifier() + "=" + drag.getLocator()));
             LOG.debug(exception.toString());
@@ -1165,7 +1221,7 @@ public class WebDriverService implements IWebDriverService {
             message.setDescription(message.getDescription().replace("%TIMEOUT%", String.valueOf(session.getCerberus_selenium_wait_element())));
             LOG.warn(exception.toString());
             return message;
-        }  
+        }
     }
 
     private void selectRequestedOption(Select select, Identifier property, String element) throws CerberusEventException {

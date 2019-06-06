@@ -35,11 +35,13 @@ import org.cerberus.util.answer.AnswerList;
 public interface IInvariantService {
 
     /**
-     *
+     * Use readByIdName instead to avoid Answer
      * @param idName
      * @return
      */
+    @Deprecated
     AnswerList readByIdname(String idName);
+    List<Invariant> readByIdName(String idName) throws CerberusException;
 
     /**
      *

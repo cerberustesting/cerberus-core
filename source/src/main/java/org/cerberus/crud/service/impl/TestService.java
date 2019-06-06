@@ -29,9 +29,7 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.ITestService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
-import org.cerberus.util.answer.Answer;
-import org.cerberus.util.answer.AnswerItem;
-import org.cerberus.util.answer.AnswerList;
+import org.cerberus.util.answer.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -50,7 +48,7 @@ public class TestService implements ITestService {
 
     @Override
     public AnswerItem readByKey(String test) {
-        return testDao.readByKey(test);
+        return  AnswerUtil.convertToAnswerItem(() -> testDao.readByKey(test));
     }
 
     @Override

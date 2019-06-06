@@ -24,7 +24,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-import org.cerberus.engine.scheduler.SchedulerInit;
 import org.cerberus.config.Property;
 import org.cerberus.crud.dao.IParameterDAO;
 import org.cerberus.crud.entity.Parameter;
@@ -55,8 +54,7 @@ public class ParameterService implements IParameterService {
     private IFactoryParameter factoryParameter;
     @Autowired
     private ObservableEngine<String, Parameter> observableEngine;
-    @Autowired
-    private SchedulerInit myPilote;
+
     
     private static final Logger LOG = LogManager.getLogger(ParameterService.class);
 
@@ -288,7 +286,6 @@ public class ParameterService implements IParameterService {
              */
             finalAnswer = new Answer(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED));
         }
-//        myPilote.init();
         return finalAnswer;
     }
 

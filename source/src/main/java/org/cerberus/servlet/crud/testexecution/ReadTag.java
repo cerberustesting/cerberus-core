@@ -202,6 +202,7 @@ public class ReadTag extends HttpServlet {
         String columnToSort[] = sColumns.split(",");
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "desc");
+        List<String> systems = ParameterParserUtil.parseListParamAndDecodeAndDeleteEmptyValue(request.getParameterValues("system"), Arrays.asList("DEFAULT"), "UTF-8");
 
         Map<String, List<String>> individualSearch = new HashMap<>();
         for (int a = 0; a < columnToSort.length; a++) {
@@ -211,7 +212,7 @@ public class ReadTag extends HttpServlet {
             }
         }
 
-        AnswerList resp = tagService.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
+        AnswerList resp = tagService.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch, systems);
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values

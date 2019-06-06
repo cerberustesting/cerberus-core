@@ -47,6 +47,7 @@ import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
+import org.cerberus.util.security.UserSecurity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.cerberus.crud.service.IParameterService;
@@ -444,7 +445,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
     }
 
     @Override
-    public AnswerList readByVariousByCriteria(String name, String system, String environment, String country, String type, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
+    public AnswerList readByVariousByCriteria(String name, List<String> systems, String environment, String country, String type, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
 
         AnswerList answer = new AnswerList<>();
         MessageEvent msg;
@@ -494,9 +495,6 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         if (name != null) {
             searchSQL.append(" and tdl.`name` = ? ");
         }
-        if (system != null) {
-            searchSQL.append(" and tdl.`system` = ? ");
-        }
         if (environment != null) {
             searchSQL.append(" and tdl.`environment` = ? ");
         }
@@ -507,6 +505,13 @@ public class TestDataLibDAO implements ITestDataLibDAO {
             searchSQL.append(" and tdl.`type` = ? ");
         }
         query.append(searchSQL);
+
+        if(systems != null && ! systems.isEmpty()) {
+            // authorize transversal object
+            systems.add("");
+            query.append( " and " + SqlUtil.generateInClause("tdl.`system`", systems) + " ");
+        }
+        query.append( " AND " + UserSecurity.getSystemAllowForSQL("tdl.`system`"));
 
         if (!StringUtil.isNullOrEmpty(column)) {
             query.append(" order by ").append(column).append(" ").append(dir);
@@ -522,7 +527,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
             LOG.debug("SQL.name : " + name);
-            LOG.debug("SQL.system : " + system);
+            LOG.debug("SQL.system : " + systems);
             LOG.debug("SQL.environment : " + environment);
             LOG.debug("SQL.country : " + country);
             LOG.debug("SQL.type : " + type);
@@ -558,9 +563,6 @@ public class TestDataLibDAO implements ITestDataLibDAO {
                 if (name != null) {
                     preStat.setString(i++, name);
                 }
-                if (system != null) {
-                    preStat.setString(i++, system);
-                }
                 if (environment != null) {
                     preStat.setString(i++, environment);
                 }
@@ -570,6 +572,13 @@ public class TestDataLibDAO implements ITestDataLibDAO {
                 if (!StringUtil.isNullOrEmpty(type)) {
                     preStat.setString(i++, type);
                 }
+
+                if(systems != null && ! systems.isEmpty()) {
+                    for(String sys : systems) {
+                        preStat.setString(i++, sys);
+                    }
+                }
+
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     //gets the data

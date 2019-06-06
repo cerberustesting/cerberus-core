@@ -32,21 +32,18 @@ import java.util.Map;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.cerberus.crud.dao.ITestDAO;
+import org.cerberus.crud.utils.RequestDbUtils;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.database.DatabaseSpring;
-import org.cerberus.engine.entity.MessageGeneral;
-import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.crud.entity.Test;
-import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.factory.IFactoryTest;
 import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.util.DateUtil;
-import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.exception.CerberusException;
 import org.cerberus.util.SqlUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
-import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
+import org.cerberus.util.security.UserSecurity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -75,10 +72,12 @@ public class TestDAO implements ITestDAO {
     private final int MAX_ROW_SELECTED = 100000;
 
     @Override
-    public AnswerItem readByKey(String test) {
-        AnswerItem ans = new AnswerItem<>();
-        Test result;
-        final String query = "SELECT * FROM `test` tes WHERE tes.`test` = ?";
+    public Test readByKey(String test) throws CerberusException {
+
+        StringBuilder query = new StringBuilder();
+        query.append("SELECT * FROM test tes ");
+        query.append("WHERE tes.test = ? ");
+
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
@@ -88,52 +87,15 @@ public class TestDAO implements ITestDAO {
             LOG.debug("SQL.param.test : " + test);
         }
 
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                preStat.setString(1, test);
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    if (resultSet.first()) {
-                        result = loadFromResultSet(resultSet);
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-                        ans.setItem(result);
-                    } else {
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
-                    }
-                } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-                } finally {
-                    resultSet.close();
+        return RequestDbUtils.executeQuery(databaseSpring, query.toString(),
+                ps -> {
+                    ps.setString(1, test);
+                },
+                resultSet -> {
+                    return loadFromResultSet(resultSet);
                 }
-            } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException exception) {
-                LOG.warn("Unable to close connection : " + exception.toString());
-            }
-        }
+        );
 
-        //sets the message
-        ans.setResultMessage(msg);
-        return ans;
     }
 
     @Override
@@ -312,8 +274,9 @@ public class TestDAO implements ITestDAO {
         query.append("SELECT SQL_CALC_FOUND_ROWS DISTINCT(tes.test), tes.* FROM test tes ");
         query.append("LEFT JOIN testcase tec ON tes.test = tec.test ");
         query.append("LEFT JOIN application app ON tec.application = app.application ");
-        query.append("WHERE app.system = ?");
+        query.append("WHERE app.system = ? ");
 
+        // FIXME create a generic RequestDbUtils method to manage limit and DATA_OPERATION_WARNING_PARTIAL_RESULT constraint
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -401,7 +364,7 @@ public class TestDAO implements ITestDAO {
         StringBuilder query = new StringBuilder();
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
         //were applied -- used for pagination p
-        query.append("SELECT SQL_CALC_FOUND_ROWS * FROM test tes ");
+        query.append("SELECT SQL_CALC_FOUND_ROWS DISTINCT tes.*  FROM test tes ");
 
         searchSQL.append(" where 1=1 ");
 
@@ -481,7 +444,7 @@ public class TestDAO implements ITestDAO {
                     }
 
                 } catch (SQLException exception) {
-                    LOG.error("Unable to execute query : " + exception.toString());
+                    LOG.error("Unable to execute query : " + exception.toString(), exception);
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
 
@@ -492,7 +455,7 @@ public class TestDAO implements ITestDAO {
                 }
 
             } catch (SQLException exception) {
-                LOG.error("Unable to execute query : " + exception.toString());
+                LOG.error("Unable to execute query : " + exception.toString(), exception);
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
             } finally {
@@ -502,7 +465,7 @@ public class TestDAO implements ITestDAO {
             }
 
         } catch (SQLException exception) {
-            LOG.error("Unable to execute query : " + exception.toString());
+            LOG.error("Unable to execute query : " + exception.toString(), exception);
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
         } finally {
