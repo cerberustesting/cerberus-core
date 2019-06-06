@@ -65,6 +65,7 @@ public enum MessageGeneralEnum {
     VALIDATION_FAILED_TEST_NOT_FOUND(87, "FA", "Test '%TEST%' does not exist."),
     VALIDATION_FAILED_TEST_NOTACTIVE(88, "FA", "The test '%TEST%' isn't active."),
     VALIDATION_FAILED_USERAGENTDIFFERENT(90, "FA", "User Agent has been specified at robot and TestCase level with different values. TestCase : '%UATESTCASE%' Robot : '%UAROBOT%'"),
+    VALIDATION_FAILED_CERBERUSEXECUTORNOTAVAILABLE(90, "FA", "Cerberus Executor Proxy not available while the flag executorProxyActive is set to Yes. Check the cerberus-executor is up and running, or change the flag executorProxyActive to N."),
     VALIDATION_SUCCEEDED(89, "PE", "The validation succeeded"),
     EXECUTION_PE_TESTSTARTED(5, "PE", "Test started..."),
     EXECUTION_PE_CHECKINGPARAMETERS(5, "PE", "Checking parameters..."),

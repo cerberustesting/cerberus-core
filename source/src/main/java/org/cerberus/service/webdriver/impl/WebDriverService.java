@@ -519,43 +519,51 @@ public class WebDriverService implements IWebDriverService {
                     // We noticed that sometimes, webelement.click never finished whatever the timeout set.
                     // Below is an implementation to secure timeout on thread before calling selenium.
                     // This is a test that can be extended or clean depending on the result.
-                    ExecutorService executor = Executors.newCachedThreadPool();
-                    Callable<MessageEvent> task = new Callable<MessageEvent>() {
-                        public MessageEvent call() {
-                            MessageEvent message;
-                            Actions actions = new Actions(session.getDriver());
-                            actions.click(webElement);
-                            actions.build().perform();
-                            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLICK);
-                            message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
-                            return message;
-                        }
-                    };
-                    Future<MessageEvent> future = executor.submit(task);
-                    try {
-                        MessageEvent result = future.get(session.getCerberus_selenium_action_click_timeout(), TimeUnit.MILLISECONDS);
-                        return result;
-                    } catch (java.util.concurrent.TimeoutException ex) {
-                        // handle the timeout
-                        LOG.warn("Exception clicking on element :" + ex, ex);
-                        message = new MessageEvent(MessageEventEnum.ACTION_FAILED_TIMEOUT);
-                        message.setDescription(message.getDescription().replace("%TIMEOUT%", String.valueOf(session.getCerberus_selenium_wait_element())));
-                        return message;
-                    } catch (InterruptedException e) {
-                        // handle the interrupts
-                        LOG.warn("Exception clicking on element :" + e, e);
-                        message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CLICK);
-                        message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()).replace("%MESS%", e.toString()));
-                        return message;
-                    } catch (ExecutionException e) {
-                        // handle other exceptions
-                        LOG.warn("Exception clicking on element :" + e, e);
-                        message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CLICK_NO_SUCH_ELEMENT);
-                        message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()).replace("%MESS%", e.toString()));
-                        return message;
-                    } finally {
-                        future.cancel(true);
-                    }
+//                    ExecutorService executor = Executors.newCachedThreadPool();
+//                    Callable<MessageEvent> task = new Callable<MessageEvent>() {
+//                        public MessageEvent call() {
+//                            MessageEvent message;
+//                            Actions actions = new Actions(session.getDriver());
+//                            actions.click(webElement);
+//                            actions.build().perform();
+//                            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLICK);
+//                            message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
+//                            return message;
+//                        }
+//                    };
+//                    Future<MessageEvent> future = executor.submit(task);
+//                    
+//                    try {
+//                        MessageEvent result = future.get(session.getCerberus_selenium_action_click_timeout(), TimeUnit.MILLISECONDS);
+//                        return result;
+//                    } catch (java.util.concurrent.TimeoutException ex) {
+//                        // handle the timeout
+//                        LOG.warn("Exception clicking on element :" + ex, ex);
+//                        message = new MessageEvent(MessageEventEnum.ACTION_FAILED_TIMEOUT);
+//                        message.setDescription(message.getDescription().replace("%TIMEOUT%", String.valueOf(session.getCerberus_selenium_wait_element())));
+//                        return message;
+//                    } catch (InterruptedException e) {
+//                        // handle the interrupts
+//                        LOG.warn("Exception clicking on element :" + e, e);
+//                        message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CLICK);
+//                        message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()).replace("%MESS%", e.toString()));
+//                        return message;
+//                    } catch (ExecutionException e) {
+//                        // handle other exceptions
+//                        LOG.warn("Exception clicking on element :" + e, e);
+//                        message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CLICK_NO_SUCH_ELEMENT);
+//                        message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()).replace("%MESS%", e.toString()));
+//                        return message;
+//                    } finally {
+//                        future.cancel(true);
+//                    }
+
+                    Actions actions = new Actions(session.getDriver());
+                    actions.click(webElement);
+                    actions.build().perform();
+                    message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLICK);
+                    message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
+                    return message;
                 }
             }
 

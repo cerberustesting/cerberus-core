@@ -60,6 +60,7 @@ import org.cerberus.service.webdriver.IWebDriverService;
 import org.cerberus.service.xmlunit.IXmlUnitService;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
+import org.openqa.selenium.Platform;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -404,11 +405,10 @@ public class ActionService implements IActionService {
 
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
                 return androidAppiumService.scrollTo(tCExecution.getSession(), identifier, text);
-                
+
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
                 return iosAppiumService.scrollTo(tCExecution.getSession(), identifier, text);
-            } 
-            else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
+            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
                 return webdriverService.scrollTo(tCExecution.getSession(), identifier, text);
             }
 
@@ -461,14 +461,20 @@ public class ActionService implements IActionService {
             Identifier identifier = identifierService.convertStringToIdentifier(element);
 
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
-                if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
-                    return sikuliService.doSikuliActionClick(tCExecution.getSession(), identifier.getLocator(), "");
-                } else if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_TEXT)) {
-                    return sikuliService.doSikuliActionClick(tCExecution.getSession(), "", identifier.getLocator());
-                } else {
-                    identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-                    return webdriverService.doSeleniumActionClick(tCExecution.getSession(), identifier, true, true);
-                }
+//                if (tCExecution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.MAC.toString())
+//                        || tCExecution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.IOS.toString())) {
+//                    identifierService.checkWebElementIdentifier(identifier.getIdentifier());
+//                    return iosAppiumService.click(tCExecution.getSession(), identifier);
+//                } else {
+                    if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
+                        return sikuliService.doSikuliActionClick(tCExecution.getSession(), identifier.getLocator(), "");
+                    } else if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_TEXT)) {
+                        return sikuliService.doSikuliActionClick(tCExecution.getSession(), "", identifier.getLocator());
+                    } else {
+                        identifierService.checkWebElementIdentifier(identifier.getIdentifier());
+                        return webdriverService.doSeleniumActionClick(tCExecution.getSession(), identifier, true, true);
+                    }
+//                }
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
                 identifierService.checkWebElementIdentifier(identifier.getIdentifier());
                 return androidAppiumService.click(tCExecution.getSession(), identifier);
@@ -803,7 +809,7 @@ public class ActionService implements IActionService {
                     identifierService.checkWebElementIdentifier(identifier.getIdentifier());
                     return webdriverService.doSeleniumActionMouseOver(tCExecution.getSession(), identifier);
                 }
-                
+
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
                 identifierService.checkSikuliIdentifier(identifier.getIdentifier());
                 if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
@@ -812,7 +818,7 @@ public class ActionService implements IActionService {
                     return sikuliService.doSikuliActionMouseOver(tCExecution.getSession(), "", identifier.getLocator());
                 }
             }
-            
+
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             message.setDescription(message.getDescription().replace("%ACTION%", "mouseOver"));
             message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
@@ -939,22 +945,28 @@ public class ActionService implements IActionService {
             Identifier objectIdentifier = identifierService.convertStringToIdentifier(value1);
 
             if (appType.equalsIgnoreCase(Application.TYPE_GUI)) {
+                if (tCExecution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.MAC.toString())
+                        || tCExecution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.IOS.toString())) {
+                    return iosAppiumService.keyPress(tCExecution.getSession(), value2);
+                } else if (tCExecution.getRobotObj().getPlatform().equalsIgnoreCase(Platform.ANDROID.toString())) {
+                    return androidAppiumService.keyPress(tCExecution.getSession(), value2);
+                }
                 if (objectIdentifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
                     return sikuliService.doSikuliActionKeyPress(tCExecution.getSession(), objectIdentifier.getLocator(), value2);
                 } else {
                     identifierService.checkWebElementIdentifier(objectIdentifier.getIdentifier());
                     return webdriverService.doSeleniumActionKeyPress(tCExecution.getSession(), objectIdentifier, value2);
                 }
-                
+
             } else if (appType.equalsIgnoreCase(Application.TYPE_APK)) {
                 return androidAppiumService.keyPress(tCExecution.getSession(), value2);
-                
+
             } else if (appType.equalsIgnoreCase(Application.TYPE_IPA)) {
                 return iosAppiumService.keyPress(tCExecution.getSession(), value2);
-                
+
             } else if (appType.equalsIgnoreCase(Application.TYPE_FAT)) {
                 return sikuliService.doSikuliActionKeyPress(tCExecution.getSession(), objectIdentifier.getLocator(), value2);
-                
+
             } else {
                 return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION)
                         .resolveDescription("ACTION", "KeyPress")
