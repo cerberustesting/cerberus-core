@@ -33,7 +33,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.commons.lang3.StringUtils;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionQueue;
@@ -213,26 +212,35 @@ public class RunTestCaseV001 extends HttpServlet {
 
         // -- Checking the parameter validity. --
         // test, testcase and country parameters are mandatory
-        if (StringUtils.isBlank(test)) {
+        if (StringUtil.isNullOrEmpty(test)) {
             errorMessage += "Error - Parameter Test is mandatory. ";
             error = true;
         }
-        if (StringUtils.isBlank(testCase)) {
+        if (StringUtil.isNullOrEmpty(testCase)) {
             errorMessage += "Error - Parameter TestCase is mandatory. ";
             error = true;
         }
-        if (!StringUtils.isBlank(tag) && tag.length() > 255) {
+        if (!StringUtil.isNullOrEmpty(tag) && tag.length() > 255) {
             errorMessage += "Error - Parameter Tag value is too big. Tag cannot be larger than 255 Characters. Currently has : " + tag.length();
             error = true;
         }
-        if (StringUtils.isBlank(country)) {
+        if (StringUtil.isNullOrEmpty(country)) {
             errorMessage += "Error - Parameter Country is mandatory. ";
             error = true;
         }
         // environment is mandatory when manualURL is not activated.
-        if (StringUtils.isBlank(environment) && !manualURL) {
-            errorMessage += "Error - Parameter Environment is mandatory (or use the manualURL parameter). ";
+        if (StringUtil.isNullOrEmpty(environment) && !manualURL) {
+            errorMessage += "Error - Parameter Environment is mandatory (or activate the manualURL parameter). ";
             error = true;
+        }
+        // myenv is mandatory when manualURL is activated.
+        if (StringUtil.isNullOrEmpty(myEnvData) && manualURL) {
+            if (StringUtil.isNullOrEmpty(environment)) {
+                errorMessage += "Error - Parameter myenvdata is mandatory (when manualURL parameter is activated). ";
+                error = true;
+            } else {
+                myEnvData = environment;
+            }
         }
 
         // We check that execution is not desactivated by cerberus_automaticexecution_enable parameter.

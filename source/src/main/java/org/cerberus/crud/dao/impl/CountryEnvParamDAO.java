@@ -151,6 +151,13 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.system : " + system);
+            LOG.debug("SQL.param.country : " + country);
+            LOG.debug("SQL.param.environment : " + environment);
+        }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
@@ -441,7 +448,7 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
             searchSQL.append(" and (" + SqlUtil.generateInClause("cev.`System`", systems) + ") ");
         }
 
-        searchSQL.append( " AND " + UserSecurity.getSystemAllowForSQL("cev.`System`") + " ");
+        searchSQL.append(" AND " + UserSecurity.getSystemAllowForSQL("cev.`System`") + " ");
 
         if (!StringUtil.isNullOrEmpty(active)) {
             searchSQL.append(" and (cev.`active` = ? )");
