@@ -408,6 +408,14 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('robotexecutor','description','','fr','Description','',NULL)");
         b.append(",('robotexecutor','dateLastExeSubmitted','','en','Timestamp of last Exe Submitted','',NULL)");
         b.append(",('robotexecutor','dateLastExeSubmitted','','fr','Timestamp de la dernière execution soumise','',NULL)");
+        b.append(",('robotexecutor','executorExtensionPort','','fr','Port de l\\'extension de l\\'Executor','Port d\\'écoute de l\\'extension de l\\'Executor. Le host est le même que celui de l\\'executor.',NULL)");
+        b.append(",('robotexecutor','executorExtensionPort','','en','Executor Extension Port', 'Port of the extension of the executor. Extension Host is the same than the executor Host.',NULL)");
+        b.append(",('robotexecutor','executorProxyHost','','fr','Nom d\\'hote du proxy', 'Nom d\\'hote du proxy de l\\'executor.',NULL)");
+        b.append(",('robotexecutor','executorProxyHost','','en','Executor Proxy Host', 'Host of the executor proxy.',NULL)");
+        b.append(",('robotexecutor','executorProxyPort','','fr','Port du proxy','Port du proxy de l\\'executor. Si 0, il sera determiné aléatoirement.',NULL)");
+        b.append(",('robotexecutor','executorProxyPort','','en','Executor Proxy Port','Port of the executor proxy. If 0, port will be determined randomly.',NULL)");
+        b.append(",('robotexecutor','executorProxyActive','','fr','Proxy Actif / Inactif', 'Activer / Désactiver l\\'utilisation du proxy de l\\'extension de l\\'executor.',NULL)");
+        b.append(",('robotexecutor','executorProxyActive','','en','Active / Unactive Proxy', 'Activate / Unactivate the usage of of proxy through the Executor Extension.',NULL)");
         b.append(",('tag','id','','en','Tag ID','Technical ID of the tag',NULL)");
         b.append(",('tag','id','','fr','ID du Tag','ID technique du Tag',NULL)");
         b.append(",('tag','tag','','en','Tag','',NULL)");

@@ -8111,6 +8111,17 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // 1408
         a.add("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('ACTION', 'manageDialogKeypress', '5600', 'Keypress on a popup dialog.', 'Popup Keypress')");
 
+        
+        //
+        //1409
+        b = new StringBuilder();
+        b.append("ALTER TABLE `robotexecutor` ");
+        b.append("ADD COLUMN `executorExtensionPort` INT(8) NULL DEFAULT NULL AFTER `deviceLockUnlock`,");
+        b.append("ADD COLUMN `executorProxyHost` VARCHAR(255) NULL DEFAULT NULL AFTER `executorExtensionPort`,");
+        b.append("ADD COLUMN `executorProxyPort` INT(8) NULL DEFAULT NULL AFTER `executorProxyHost`,");
+        b.append("ADD COLUMN `executorProxyActive` VARCHAR(1) NOT NULL DEFAULT 'N' AFTER `executorProxyPort`;");
+        a.add(b.toString());
+        
         return a;
     }
 

@@ -25,16 +25,19 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Scanner;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -674,6 +677,59 @@ public class RecorderService implements IRecorderService {
             }
         } else {
             LOG.debug(logPrefix + "Selenium Log not recorded because test on non GUI application");
+        }
+        return object;
+    }
+
+    @Override
+    public TestCaseExecutionFile recordHarLog(TestCaseExecution testCaseExecution, String url) {
+        TestCaseExecutionFile object = null;
+        // Used for logging purposes
+        String logPrefix = Infos.getInstance().getProjectNameAndVersion() + " - ";
+
+        if (testCaseExecution.getApplicationObj().getType().equals(Application.TYPE_GUI)) {
+
+            if (testCaseExecution.getSeleniumLog() == 2 || (testCaseExecution.getSeleniumLog() == 1 && !testCaseExecution.getControlStatus().equals("OK"))) {
+                LOG.debug(logPrefix + "Starting to save Har log file.");
+
+                try {
+                    Recorder recorder = this.initFilenames(testCaseExecution.getId(), null, null, null, null, null, null, null, 0, "har_log", "json", false);
+
+                    File dir = new File(recorder.getFullPath());
+                    dir.mkdirs();
+
+                    File file = new File(recorder.getFullFilename());
+
+                    try (InputStream initialStream = new URL(url).openStream(); OutputStream outStream = new FileOutputStream(file)) {
+
+                        byte[] buffer = new byte[8 * 1024];
+                        int bytesRead;
+                        while ((bytesRead = initialStream.read(buffer)) != -1) {
+                            outStream.write(buffer, 0, bytesRead);
+                        }
+                        //IOUtils.closeQuietly(initialStream);
+                        //IOUtils.closeQuietly(outStream);
+
+                        LOG.info("File saved : " + recorder.getFullFilename());
+
+                        // Index file created to database.
+                        object = testCaseExecutionFileFactory.create(0, testCaseExecution.getId(), recorder.getLevel(), "Har log", recorder.getRelativeFilenameURL(), "JSON", "", null, "", null);
+                        testCaseExecutionFileService.save(object);
+
+                    } catch (FileNotFoundException ex) {
+                        LOG.error(logPrefix + ex.toString(), ex);
+                    } catch (IOException ex) {
+                        LOG.error(logPrefix + ex.toString(), ex);
+                    }
+
+                    LOG.debug(logPrefix + "Har log recorded in : " + recorder.getRelativeFilenameURL());
+
+                } catch (CerberusException ex) {
+                    LOG.error(logPrefix + ex.toString(), ex);
+                }
+            }
+        } else {
+            LOG.debug(logPrefix + "Har Log not recorded because test on non GUI application");
         }
         return object;
     }

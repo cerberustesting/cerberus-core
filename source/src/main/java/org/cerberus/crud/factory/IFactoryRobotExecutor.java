@@ -40,13 +40,21 @@ public interface IFactoryRobotExecutor {
      * @param hostUser
      * @param hostPassword
      * @param deviceName
+     * @param devicePort
+     * @param deviceLockUnlock
+     * @param executorExtensionPort
+     * @param executorProxyHost
+     * @param executorProxyPort
      * @param deviceUdid
      * @param UsrCreated
+     * @param executorProxyActive
      * @param DateCreated
      * @param UsrModif
      * @param DateModif
      * @return
      */
-    RobotExecutor create(Integer ID, String robot, String executor, String active, Integer rank, String host, String port, String hostUser, String hostPassword, String deviceUdid, String deviceName, Integer devicePort, String deviceLockUnlock, String description,
-            String UsrCreated, Timestamp DateCreated, String UsrModif, Timestamp DateModif);
+    RobotExecutor create(Integer ID, String robot, String executor, String active, 
+            Integer rank, String host, String port, String hostUser, String hostPassword, String deviceUdid,
+            String deviceName, Integer devicePort, String deviceLockUnlock, Integer executorExtensionPort, String executorProxyHost, Integer executorProxyPort, String executorProxyActive, 
+            String description, String UsrCreated, Timestamp DateCreated, String UsrModif, Timestamp DateModif);
 }

@@ -14,6 +14,9 @@
 * Sorted end of tag notification email detail table by prio (valid ci prio first.), test folder and test case ID
 * tag variable are also decoded from runtest page.
 * Added 'manageDialogKeypress' action in order to perform keypress inside browser dialog popup
+* Display only System you have right on the System Combo. # #1358
+* Filter Cerberus Object (TestCase, DataObject, Services, Object, etc.) according to the system you choose on the System Combo.  #1358 
+
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]

@@ -283,7 +283,7 @@ public class VariableService implements IVariableService {
             stringToDecode = stringToDecode.replace("%system.EXESTORAGEURL%", recorderService.getStorageSubFolderURL(tCExecution.getId()));
             nowInMS = new Date().getTime();
             stringToDecode = stringToDecode.replace("%system.EXEELAPSEDMS%", String.valueOf(nowInMS - tCExecution.getStart()));
-
+            stringToDecode = stringToDecode.replace("%system.REMOTEPROXYUUID%", tCExecution.getRemoteProxyUUID());
             /**
              * Trying to replace by system environment variables from Step
              * Execution .

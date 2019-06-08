@@ -141,7 +141,9 @@ public class TestCaseExecution {
     private boolean cerberus_featureflipping_activatewebsocketpush;
     private long cerberus_featureflipping_websocketpushperiod;
     private long lastWebsocketPush;
-
+    private Integer remoteProxyPort;
+    private String remoteProxyUUID;
+    private String remoteProxyLastHarMD5;
     /**
      * Invariant PROPERTY TYPE String.
      */
@@ -909,6 +911,32 @@ public class TestCaseExecution {
     public void setTestCaseDep(List<TestCaseExecutionQueueDep> testCaseDep) {
         this.testCaseDep = testCaseDep;
     }
+
+    public Integer getRemoteProxyPort() {
+        return remoteProxyPort;
+    }
+
+    public void setRemoteProxyPort(Integer remoteProxyPort) {
+        this.remoteProxyPort = remoteProxyPort;
+    }
+
+    public String getRemoteProxyUUID() {
+        return remoteProxyUUID;
+    }
+
+    public void setRemoteProxyUUID(String remoteProxyUUID) {
+        this.remoteProxyUUID = remoteProxyUUID;
+    }
+
+    public String getRemoteProxyLastHarMD5() {
+        return remoteProxyLastHarMD5;
+    }
+
+    public void setRemoteProxyLastHarMD5(String remoteProxyLastHarMD5) {
+        this.remoteProxyLastHarMD5 = remoteProxyLastHarMD5;
+    }
+    
+    
 
     /**
      * Convert the current TestCaseExecution into JSON format

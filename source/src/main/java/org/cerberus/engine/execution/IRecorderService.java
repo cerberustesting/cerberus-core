@@ -126,6 +126,14 @@ public interface IRecorderService {
      * @return
      */
     TestCaseExecutionFile recordSeleniumLog(TestCaseExecution testCaseExecution);
+    
+    /**
+     *
+     * @param testCaseExecution
+     * @param url
+     * @return
+     */
+    TestCaseExecutionFile recordHarLog(TestCaseExecution testCaseExecution, String url);
 
     /**
      *
