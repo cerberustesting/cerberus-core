@@ -316,16 +316,10 @@ public class AddToExecutionQueueV003 extends HttpServlet {
             tag = mCampaign.getTag();
         } else if (tag == null || tag.isEmpty()) {
             if (request.getRemoteUser() != null) {
-                tag = request.getRemoteUser();
-            }
-            if (tag.length() > 0) {
-                tag += ".";
+                tag = request.getRemoteUser() + ".";
             }
             if (campaign != null) {
-                tag += campaign;
-            }
-            if (tag.length() > 0) {
-                tag += ".";
+                tag += campaign + ".";
             }
             Timestamp timestamp = new Timestamp(System.currentTimeMillis());
             String mytimestamp = sdf.format(timestamp);
