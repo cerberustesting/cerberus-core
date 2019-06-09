@@ -442,50 +442,46 @@ public class RunTestCaseV001 extends HttpServlet {
                 case "json":
                     try {
                         JSONObject jsonResponse = new JSONObject();
-
-                        if (runID > 0) { // Execution has been created.
-                            TestCaseExecution t = (TestCaseExecution) tces.readByKeyWithDependency(tCExecution.getId()).getItem();
-                            out.print(tCExecution.toJson(true).toString());
-                        } else { // Execution was not even created.
-                            jsonResponse.put("Time Start", new Timestamp(tCExecution.getStart()));
-                            jsonResponse.put("Time End", new Timestamp(tCExecution.getEnd()));
-                            jsonResponse.put("OutputFormat", outputFormat);
-                            jsonResponse.put("Verbose", verbose);
-                            jsonResponse.put("Screenshot", screenshot);
-                            jsonResponse.put("PageSource", getPageSource);
-                            jsonResponse.put("SeleniumLog", getSeleniumLog);
-                            jsonResponse.put("Robot", robot);
-                            jsonResponse.put("Robot Server IP", robotHost);
-                            jsonResponse.put("Robot Server Port", robotPort);
-                            jsonResponse.put("Timeout", timeout);
-                            jsonResponse.put("Synchroneous", synchroneous);
-                            jsonResponse.put("Browser", browser);
-                            jsonResponse.put("Version", version);
-                            jsonResponse.put("Platform", platform);
-                            jsonResponse.put("ScreenSize", screenSize);
-                            jsonResponse.put("Nb Of Retry", numberOfRetries);
-                            jsonResponse.put("ManualURL", manualURL);
-                            jsonResponse.put("MyHost", myHost);
-                            jsonResponse.put("MyContextRoot", myContextRoot);
-                            jsonResponse.put("MyLoginRelativeURL", myLoginRelativeURL);
-                            jsonResponse.put("myEnvironmentData", myEnvData);
-                            jsonResponse.put("ReturnCode", tCExecution.getResultMessage().getCode());
-                            jsonResponse.put("helpMessage", helpMessage);
-
-                            // Correct format. Previous entries will have to be removed in an earlier version.
-                            jsonResponse.put("id", 0);
-                            jsonResponse.put("queueID", idFromQueue);
-                            jsonResponse.put("test", test);
-                            jsonResponse.put("testcase", testCase);
-                            jsonResponse.put("country", country);
-                            jsonResponse.put("environment", environment);
-                            jsonResponse.put("controlStatus", tCExecution.getResultMessage().getCodeString());
-                            jsonResponse.put("controlMessage", tCExecution.getResultMessage().getDescription());
-
-                        }
-
                         response.setContentType("application/json");
                         response.setCharacterEncoding("utf8");
+
+                        jsonResponse.put("id", runID);
+                        jsonResponse.put("queueID", idFromQueue);
+                        jsonResponse.put("test", test);
+                        jsonResponse.put("testcase", testCase);
+                        jsonResponse.put("country", country);
+                        jsonResponse.put("environment", environment);
+                        jsonResponse.put("Time Start", new Timestamp(tCExecution.getStart()));
+                        jsonResponse.put("Time End", new Timestamp(tCExecution.getEnd()));
+                        jsonResponse.put("OutputFormat", outputFormat);
+                        jsonResponse.put("Verbose", verbose);
+                        jsonResponse.put("Screenshot", screenshot);
+                        jsonResponse.put("PageSource", getPageSource);
+                        jsonResponse.put("SeleniumLog", getSeleniumLog);
+                        jsonResponse.put("Robot", robot);
+                        jsonResponse.put("Robot Server IP", robotHost);
+                        jsonResponse.put("Robot Server Port", robotPort);
+                        jsonResponse.put("Timeout", timeout);
+                        jsonResponse.put("Synchroneous", synchroneous);
+                        jsonResponse.put("Browser", browser);
+                        jsonResponse.put("Version", version);
+                        jsonResponse.put("Platform", platform);
+                        jsonResponse.put("ScreenSize", screenSize);
+                        jsonResponse.put("Nb Of Retry", numberOfRetries);
+                        jsonResponse.put("ManualURL", manualURL);
+                        jsonResponse.put("MyHost", myHost);
+                        jsonResponse.put("MyContextRoot", myContextRoot);
+                        jsonResponse.put("MyLoginRelativeURL", myLoginRelativeURL);
+                        jsonResponse.put("myEnvironmentData", myEnvData);
+                        jsonResponse.put("ReturnCode", tCExecution.getResultMessage().getCode());
+                        jsonResponse.put("helpMessage", helpMessage);
+                        jsonResponse.put("controlStatus", tCExecution.getResultMessage().getCodeString());
+                        jsonResponse.put("controlMessage", tCExecution.getResultMessage().getDescription());
+                        if (runID > 0) { // Execution has been created.
+                            TestCaseExecution t = (TestCaseExecution) tces.readByKeyWithDependency(runID).getItem();
+                            jsonResponse.put("executionDetail", t.toJson(true));
+//                            out.print(t.toJson(true).toString());
+                        }
                         response.getWriter().print(jsonResponse.toString());
                     } catch (JSONException e) {
                         LOG.warn(e);

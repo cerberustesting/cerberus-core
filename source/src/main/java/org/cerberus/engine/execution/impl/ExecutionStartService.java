@@ -278,14 +278,12 @@ public class ExecutionStartService implements IExecutionStartService {
                         tCExecution.getApplicationObj().getSystem(), tCExecution.getCountry(), tCExecution.getEnvironment(), tCExecution.getApplicationObj().getApplication()));
                 if (cea != null) {
                     tCExecution.setCountryEnvironmentParameters(cea);
-//                    tCExecution.setUrl(cea.getIp()+ cea.getUrl());
                     tCExecution.setUrl(StringUtil.getURLFromString(cea.getIp(), cea.getUrl(), "", ""));
 
-                    // add possiblity to override URL with MyHost if MyHost is available
+                    // add possibility to override URL with MyHost if MyHost is available
                     if (!StringUtil.isNullOrEmpty(tCExecution.getMyHost())) {
                         String contextRoot = !StringUtil.isNullOrEmpty(tCExecution.getMyContextRoot()) ? tCExecution.getMyContextRoot() : "";
                         tCExecution.setUrl(StringUtil.getURLFromString(tCExecution.getMyHost(), contextRoot, "", ""));
-
                     }
                     if (!StringUtil.isNullOrEmpty(tCExecution.getMyLoginRelativeURL())) {
                         cea.setUrlLogin(tCExecution.getMyLoginRelativeURL());
