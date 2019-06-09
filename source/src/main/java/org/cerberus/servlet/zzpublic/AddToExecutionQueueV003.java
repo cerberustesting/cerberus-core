@@ -336,7 +336,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
             errorMessage.append("Error - Parameter ").append(PARAMETER_TAG).append(" is too big. Maximum size if 255. Current size is : ").append(tag.length()).append("\n");
             error = true;
         }
-        
+
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         String mytimestamp = sdf.format(timestamp);
         String myuser = request.getRemoteUser();
@@ -504,7 +504,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                                             }
 
                                             // manage manual host for this execution
-                                            String manualHostforThisApplicatin = getManualHostForThisApplication(manualHost, app.getApplication());
+                                            String manualHostforThisApplication = getManualHostForThisApplication(manualHost, app.getApplication());
 
                                             if ((app != null)
                                                     && (app.getType() != null)
@@ -532,7 +532,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                                                                         test, testCase, country.getCountry(), environment,
                                                                         robot.getRobot(), robotDecli, robotIP, robotPort, browser,
                                                                         browserVersion, platform, screenSize, manualURL,
-                                                                        manualHostforThisApplicatin, manualContextRoot,
+                                                                        manualHostforThisApplication, manualContextRoot,
                                                                         manualLoginRelativeURL, manualEnvData, tag,
                                                                         screenshot, verbose, timeout, pageSource,
                                                                         seleniumLog, 0, retries, manualExecution, priority,
@@ -554,7 +554,7 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                                                     LOG.debug("Insert Queue Entry.");
                                                     toInserts.add(inQueueFactoryService.create(app.getSystem(), test,
                                                             testCase, country.getCountry(), environment, "", "", "", "",
-                                                            "", "", "", "", manualURL, manualHostforThisApplicatin, manualContextRoot,
+                                                            "", "", "", "", manualURL, manualHostforThisApplication, manualContextRoot,
                                                             manualLoginRelativeURL, manualEnvData, tag, screenshot,
                                                             verbose, timeout, pageSource, seleniumLog, 0, retries,
                                                             manualExecution, priority, user, null, null, null));
@@ -638,9 +638,6 @@ public class AddToExecutionQueueV003 extends HttpServlet {
             // Message that everything went fine.
             msg = new MessageEvent(MessageEventEnum.GENERIC_OK);
 
-        } else {
-            // In case of errors, we display the help message.
-//            errorMessage.append(helpMessage);
         }
 
         // Init Answer with potencial error from Parsing parameter.
@@ -652,7 +649,10 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                     JSONObject jsonResponse = new JSONObject();
                     jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
                     jsonResponse.put("message", errorMessage.toString());
-                    jsonResponse.put("helpMessage", helpMessage);
+                    if (error) {
+                        // Only display help message if error.
+                        jsonResponse.put("helpMessage", helpMessage);
+                    }
                     jsonResponse.put("tag", tag);
                     jsonResponse.put("nbExe", nbExe);
                     jsonResponse.put("nbErrorTCNotActive", nbtestcasenotactive);
@@ -682,11 +682,6 @@ public class AddToExecutionQueueV003 extends HttpServlet {
                 response.getWriter().print(errorMessage.toString());
         }
 
-//        } catch (Exception e) {
-//            LOG.error(e);
-//            out.println(helpMessage);
-//            out.println(e.toString());
-//        }
     }
 
     /**
@@ -698,16 +693,23 @@ public class AddToExecutionQueueV003 extends HttpServlet {
      * @return
      */
     private String getManualHostForThisApplication(String manualHost, String application) {
-        if (!StringUtil.isNullOrEmpty(manualHost) && !manualHost.contains(":")) {
+        String newManualHost = "";
+        // Remove the http:// and https:// in order to avoid conflict with : split that will be done
+        if (!StringUtil.isNullOrEmpty(manualHost)) {
+            newManualHost = manualHost.replace("http://", "|ZZZHTTPZZZ|");
+            newManualHost = newManualHost.replace("https://", "|ZZZHTTPSZZZ|");
+        }
+        if (!StringUtil.isNullOrEmpty(manualHost) && !newManualHost.contains(":")) {
             return manualHost; // if no :, just return manual host (case 1)
         }
         // (case 2)
         if (!StringUtil.isNullOrEmpty(manualHost)) {
-            String[] manualHostByApp = manualHost.split(";");
+            String[] manualHostByApp = newManualHost.split(";");
             for (String appManualHost : manualHostByApp) {
                 String[] appAndHost = appManualHost.split(":");
                 if (appAndHost.length >= 2 && appAndHost[0].equals(application)) {
-                    return appAndHost[1];
+                    // Put back the http:// and https://
+                    return appAndHost[1].replace("|ZZZHTTPZZZ|", "http://").replace("|ZZZHTTPSZZZ|", "https://");
                 }
             }
         }
