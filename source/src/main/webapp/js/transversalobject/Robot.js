@@ -659,7 +659,11 @@ function addNewExecutorRow(tableBody) {
         deviceUdid: "",
         deviceName: "",
         deviceLockUnlock: false,
-        description: ""
+        description: "",
+        executorExtensionPort: "",
+        executorProxyHost: "",
+        executorProxyPort: "",
+        executorProxyActive: false
     };
     appendExecutorRow(tableBody, newExecutor);
 }
