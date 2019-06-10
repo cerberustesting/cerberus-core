@@ -111,11 +111,6 @@ public class RobotDAO implements IRobotDAO {
         Robot result;
         final String query = "SELECT * FROM `robot` WHERE `robot` = ?";
 
-        // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query);
-        }
-
         result = RequestDbUtils.executeQuery(databaseSpring, query,
                 ps -> ps.setString(1, robot),
                 rs -> loadFromResultSet(rs)

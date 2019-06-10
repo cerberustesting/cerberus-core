@@ -361,84 +361,93 @@ public class ExecutionStartService implements IExecutionStartService {
         }
         LOG.debug("Country/Environment Information Loaded. " + tCExecution.getCountry() + " - " + tCExecution.getEnvironmentData());
 
-         // If Robot is feeded, we check it exist. If it exist, we overwrite the associated parameters.
-            Robot robObj = null;
-            RobotExecutor robExeObj = null;
-            String robotHost = "";
-            String robotPort = "";
-            String browser = tCExecution.getBrowser();
-            String robotDecli = "";
-            String version = "";
-            String platform = "";
-            if (!StringUtil.isNullOrEmpty(tCExecution.getRobot())) {
-                try {
-                    robObj = robotService.readByKey(tCExecution.getRobot());
+        // If Robot is feeded, we check it exist. If it exist, we overwrite the associated parameters.
+        Robot robObj = null;
+        RobotExecutor robExeObj = null;
+        String robotHost = "";
+        String robotPort = "";
+        String browser = tCExecution.getBrowser();
+        String robotDecli = "";
+        String version = "";
+        String platform = "";
+        if (!StringUtil.isNullOrEmpty(tCExecution.getRobot())) {
+            robObj = robotService.readByKey(tCExecution.getRobot());
 
-                    // If Robot parameter is defined and we can find the robot, we overwrite the corresponding parameters.
-                    browser = ParameterParserUtil.parseStringParam(robObj.getBrowser(), browser);
-                    robotDecli = ParameterParserUtil.parseStringParam(robObj.getRobotDecli(), "");
-                    if (StringUtil.isNullOrEmpty(robotDecli)) {
-                        robotDecli = robObj.getRobot();
-                    }
-                    version = ParameterParserUtil.parseStringParam(robObj.getVersion(), version);
-                    platform = ParameterParserUtil.parseStringParam(robObj.getPlatform(), platform);
-                    tCExecution.setUserAgent(robObj.getUserAgent());
-                    tCExecution.setScreenSize(robObj.getScreenSize());
-                    tCExecution.setBrowser(browser);
-                    tCExecution.setRobotDecli(robotDecli);
-                    tCExecution.setVersion(version);
-                    tCExecution.setPlatform(platform);
-                    tCExecution.setRobotObj(robObj);
-
-                    // We cannot execute a testcase on a desactivated Robot.
-                    if (robObj.getActive().equals("N")) {
-                        throw new CerberusException(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_CAPABILITYDECODE)
-                                .resolveDescription("ROBOT", tCExecution.getRobot()));
-                    }
-
-                    // If executor is not set, we get the best one from the list.
-                    if (StringUtil.isNullOrEmpty(tCExecution.getRobotExecutor())) {
-                        LOG.debug("Getting the best Executor on Robot : " + tCExecution.getRobot());
-                        robExeObj = robotExecutorService.readBestByKey(tCExecution.getRobot());
-                        if (robExeObj != null) {
-                            tCExecution.setRobotExecutor(robExeObj.getExecutor());
-                            tCExecution.setRobotExecutorObj(robExeObj);
-                            robotExecutorService.updateLastExe(robExeObj.getRobot(), robExeObj.getExecutor());
-                        } else {
-                            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_ROBOTEXECUTORNOTEXIST)
-                                    .resolveDescription("ROBOT", tCExecution.getRobot())
-                                    .resolveDescription("EXECUTOR", tCExecution.getRobotExecutor()));
-                        }
-                        LOG.debug(" Executor retreived : " + robExeObj.getExecutor());
-                    } else {
-                        LOG.debug(" Getting Requested Robot / Executor : " + tCExecution.getRobot() + " / " + tCExecution.getRobotExecutor());
-                        robExeObj = robotExecutorService.convert(robotExecutorService.readByKey(tCExecution.getRobot(), tCExecution.getRobotExecutor()));
-                        tCExecution.setRobotExecutorObj(robExeObj);
-                        if (robExeObj == null) {
-                            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_ROBOTEXECUTORNOTEXIST)
-                                    .resolveDescription("ROBOT", tCExecution.getRobot())
-                                    .resolveDescription("EXECUTOR", tCExecution.getRobotExecutor()));
-                        }
-                    }
-
-                    robotHost = ParameterParserUtil.parseStringParam(robExeObj.getHost(), tCExecution.getRobotHost());
-                    robotPort = ParameterParserUtil.parseStringParam(String.valueOf(robExeObj.getPort()), tCExecution.getRobotPort());
-                    tCExecution.setRobotHost(robotHost);
-                    tCExecution.setRobotPort(robotPort);
-                    tCExecution.setSeleniumIP(robotHost);
-                    tCExecution.setSeleniumPort(robotPort);
-                    tCExecution.setSeleniumIPUser(robExeObj.getHostUser());
-                    tCExecution.setSeleniumIPPassword(robExeObj.getHostPassword());
-
-                } catch (CerberusException ex) {
-                    throw new CerberusException(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_ROBOTNOTEXIST)
-                            .resolveDescription("ROBOT", tCExecution.getRobot()), ex);
-                }
-            } else {
-                tCExecution.setRobotDecli(browser);
+            if (robObj == null) {
+                throw new CerberusException(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_ROBOTNOTEXIST)
+                        .resolveDescription("ROBOT", tCExecution.getRobot()));
             }
-            
-            
+
+            // If Robot parameter is defined and we can find the robot, we overwrite the corresponding parameters.
+            browser = ParameterParserUtil.parseStringParam(robObj.getBrowser(), browser);
+            robotDecli = ParameterParserUtil.parseStringParam(robObj.getRobotDecli(), "");
+            if (StringUtil.isNullOrEmpty(robotDecli)) {
+                robotDecli = robObj.getRobot();
+            }
+            version = ParameterParserUtil.parseStringParam(robObj.getVersion(), version);
+            platform = ParameterParserUtil.parseStringParam(robObj.getPlatform(), platform);
+            tCExecution.setUserAgent(robObj.getUserAgent());
+            tCExecution.setScreenSize(robObj.getScreenSize());
+            tCExecution.setBrowser(browser);
+            tCExecution.setRobotDecli(robotDecli);
+            tCExecution.setVersion(version);
+            tCExecution.setPlatform(platform);
+            tCExecution.setRobotObj(robObj);
+
+            // We cannot execute a testcase on a desactivated Robot.
+            if ("N".equalsIgnoreCase(robObj.getActive())) {
+                LOG.debug("Robot " + tCExecution.getRobot() + " is not active.");
+                throw new CerberusException(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_ROBOTNOTACTIVE)
+                        .resolveDescription("ROBOT", tCExecution.getRobot()));
+            }
+
+            // If executor is not set, we get the best one from the list.
+            if (StringUtil.isNullOrEmpty(tCExecution.getRobotExecutor())) {
+                LOG.debug("Getting the best Executor on Robot : " + tCExecution.getRobot());
+                robExeObj = robotExecutorService.readBestByKey(tCExecution.getRobot());
+                if (robExeObj != null) {
+                    tCExecution.setRobotExecutor(robExeObj.getExecutor());
+                    tCExecution.setRobotExecutorObj(robExeObj);
+                    robotExecutorService.updateLastExe(robExeObj.getRobot(), robExeObj.getExecutor());
+                } else {
+                    throw new CerberusException(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_ROBOTBESTEXECUTORNOTEXIST)
+                            .resolveDescription("ROBOT", tCExecution.getRobot())
+                            .resolveDescription("EXECUTOR", tCExecution.getRobotExecutor()));
+                }
+                LOG.debug(" Executor retreived : " + robExeObj.getExecutor());
+            } else {
+                LOG.debug(" Getting Requested Robot / Executor : " + tCExecution.getRobot() + " / " + tCExecution.getRobotExecutor());
+                robExeObj = robotExecutorService.convert(robotExecutorService.readByKey(tCExecution.getRobot(), tCExecution.getRobotExecutor()));
+                tCExecution.setRobotExecutorObj(robExeObj);
+                if (robExeObj == null) {
+                    throw new CerberusException(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_ROBOTEXECUTORNOTEXIST)
+                            .resolveDescription("ROBOT", tCExecution.getRobot())
+                            .resolveDescription("EXECUTOR", tCExecution.getRobotExecutor()));
+                } else {
+                    // We cannot execute a testcase on a desactivated Robot.
+                    if ("N".equalsIgnoreCase(robExeObj.getActive())) {
+                        LOG.debug("Robot Executor " + tCExecution.getRobot() + " / " + tCExecution.getRobotExecutor() + " is not active.");
+                        throw new CerberusException(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_ROBOTEXECUTORNOTACTIVE)
+                                .resolveDescription("ROBOT", tCExecution.getRobot())
+                                .resolveDescription("EXECUTOR", tCExecution.getRobotExecutor()));
+                    }
+
+                }
+            }
+
+            robotHost = ParameterParserUtil.parseStringParam(robExeObj.getHost(), tCExecution.getRobotHost());
+            robotPort = ParameterParserUtil.parseStringParam(String.valueOf(robExeObj.getPort()), tCExecution.getRobotPort());
+            tCExecution.setRobotHost(robotHost);
+            tCExecution.setRobotPort(robotPort);
+            tCExecution.setSeleniumIP(robotHost);
+            tCExecution.setSeleniumPort(robotPort);
+            tCExecution.setSeleniumIPUser(robExeObj.getHostUser());
+            tCExecution.setSeleniumIPPassword(robExeObj.getHostPassword());
+
+        } else {
+            tCExecution.setRobotDecli(browser);
+        }
+
         /**
          * If Timeout is defined at the execution level, set action wait default
          * to this value, else Get the cerberus_action_wait_default parameter.
