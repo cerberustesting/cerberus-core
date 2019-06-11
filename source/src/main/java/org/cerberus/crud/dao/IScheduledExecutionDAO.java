@@ -18,8 +18,10 @@ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.cerberus.crud.dao;
 
+import java.sql.ResultSet;
 import org.cerberus.crud.entity.ScheduledExecution;
 import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 
 /**
  *
@@ -27,6 +29,6 @@ import org.cerberus.util.answer.Answer;
  */
 public interface IScheduledExecutionDAO {
 
-    public Answer create(ScheduledExecution object);
+    public AnswerItem<Integer> create(ScheduledExecution object);
     public Answer update(ScheduledExecution scheduledExecutionObject);
 }

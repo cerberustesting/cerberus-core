@@ -20,12 +20,16 @@ package org.cerberus.crud.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.ScheduleEntry;
 import org.cerberus.util.answer.AnswerItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.cerberus.crud.dao.IScheduleEntryDAO;
 import org.cerberus.crud.service.IScheduleEntryService;
+import org.cerberus.engine.scheduler.SchedulerInit;
+import org.cerberus.util.answer.Answer;
 
 /**
  *
@@ -37,7 +41,8 @@ public class ScheduleEntryService implements IScheduleEntryService{
     
     @Autowired
     IScheduleEntryDAO schedulerDao;
-    
+    private static final Logger LOG = LogManager.getLogger(ScheduleEntryService.class);
+
     @Override
     public AnswerItem<ScheduleEntry> readbykey (String name){
     AnswerItem<ScheduleEntry> ans = new AnswerItem();
@@ -51,10 +56,21 @@ public class ScheduleEntryService implements IScheduleEntryService{
     ans = schedulerDao.readAllActive();
     return ans;
     }
-    /*
-    public boolean createScheduleEntry (ScheduleEntry scheduleentry){
-        boolean response = true;
+    
+    @Override
+    public AnswerItem<Integer> create (ScheduleEntry scheduleentry){
+        LOG.debug("scheduleentryservice.create");
+        AnswerItem<Integer> response = new AnswerItem();
+        response = schedulerDao.create(scheduleentry);
         return response;
-    }*/
+    }  
+    
+    @Override
+    public Answer update (ScheduleEntry scheduleentry){
+        Answer response = new Answer();
+        response = schedulerDao.update(scheduleentry);
+        return response;
+    }
+    
     
 }
