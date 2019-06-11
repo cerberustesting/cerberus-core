@@ -466,6 +466,14 @@ public enum MessageEventEnum {
     DATA_OPERATION_VALIDATIONS_OK(002, MessageCodeEnum.GENERIC_CODE_SUCCESS.getCodeString(), "Data is valid!", false, false, false, MessageGeneralEnum.DATA_OPERATION_SUCCESS),
     DATA_OPERATION_VALIDATIONS_ERROR(905, MessageCodeEnum.GENERIC_CODE_ERROR.getCodeString(), "Data is invalid! Details: %DESCRIPTION%", false, false, false, MessageGeneralEnum.DATA_OPERATION_ERROR),
     FILE_ERROR(905, MessageCodeEnum.GENERIC_CODE_ERROR.getCodeString(), "Impossible to create the file! %MORE% reason: %DESCRIPTION%", false, false, false, MessageGeneralEnum.DATA_OPERATION_ERROR),
+    // *********** Schedule Entry ***********
+    SCHEDULER_CREATE_OK(400, MessageCodeEnum.GENERIC_CODE_SUCCESS.getCodeString(), "schedule entry for %ITEM% was created with success!", false, false, false, MessageGeneralEnum.DATA_OPERATION_SUCCESS),
+    SCHEDULER_UPDATE_OK(401, MessageCodeEnum.GENERIC_CODE_SUCCESS.getCodeString(), "schedule entry for %ITEM% was updated with success!", false, false, false, MessageGeneralEnum.DATA_OPERATION_SUCCESS),
+    SCHEDULER_DELETE_OK(401, MessageCodeEnum.GENERIC_CODE_SUCCESS.getCodeString(), "schedule entry for %ITEM% was delete with success!", false, false, false, MessageGeneralEnum.DATA_OPERATION_SUCCESS),
+    SCHEDULER_NO_DATA_FOUND(402, MessageCodeEnum.GENERIC_CODE_WARNING.getCodeString(), "Could not find any data that match the required criteria to create Schedule entry.", true, true, false, MessageGeneralEnum.DATA_OPERATION_SUCCESS),
+    SCHEDULER_ERROR_EXPECTED(403, MessageCodeEnum.GENERIC_CODE_ERROR.getCodeString(), "%ITEM% - schedule entry %OPERATION% failed to complete. %REASON%", false, false, false, MessageGeneralEnum.DATA_OPERATION_ERROR),
+
+
     // *********** GENERIC ***********
     GENERIC_OK(500, MessageCodeEnum.GENERIC_CODE_SUCCESS.getCodeString(), "Operation finished with success.", false, false, false, MessageGeneralEnum.GENERIC_SUCCESS),
     GENERIC_WARNING(500, MessageCodeEnum.GENERIC_CODE_WARNING.getCodeString(), "Operation finished with Warning :  %REASON%.", false, false, false, MessageGeneralEnum.GENERIC_WARNING),

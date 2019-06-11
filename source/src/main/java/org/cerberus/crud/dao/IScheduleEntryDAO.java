@@ -22,6 +22,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import org.cerberus.crud.entity.ScheduleEntry;
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 
 /**
@@ -32,8 +33,9 @@ public interface IScheduleEntryDAO {
 
     public AnswerItem<ScheduleEntry> readByKey(String name);
 
-    public boolean create(ScheduleEntry scheduler);
+    public AnswerItem<Integer> create(ScheduleEntry scheduler);
     
     public AnswerItem<List> readAllActive();
     
+    public Answer update(ScheduleEntry scheduleEntryObject);
 }

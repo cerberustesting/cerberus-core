@@ -319,6 +319,10 @@
         <servlet-class>org.cerberus.servlet.integration.NewBuildRev</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>CreateScheduleEntry</servlet-name>
+        <servlet-class>org.cerberus.servlet.scheduleentry.CreateScheduleEntry</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>DisableEnvironment</servlet-name>
         <servlet-class>org.cerberus.servlet.integration.DisableEnvironment</servlet-class>
     </servlet>
@@ -1507,6 +1511,10 @@
         <servlet-name>UpdateTestCaseExecutionQueue</servlet-name>
         <url-pattern>/UpdateTestCaseExecutionQueue</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CreateScheduleEntry</servlet-name>
+        <url-pattern>/CreateScheduleEntry</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>60</session-timeout>
     </session-config>
@@ -1620,6 +1628,7 @@
             <url-pattern>/ReadTestCaseStep</url-pattern>
             <url-pattern>/GetReportTest</url-pattern>
             <url-pattern>/ReadTestCaseExecutionByTag</url-pattern>
+            <url-pattern>/CreateScheduleEntry</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>TestRO</description>

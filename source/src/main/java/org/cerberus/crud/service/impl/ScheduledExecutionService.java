@@ -18,6 +18,7 @@ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.cerberus.crud.service.impl;
 
+import java.sql.ResultSet;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.dao.IScheduledExecutionDAO;
@@ -25,6 +26,7 @@ import org.cerberus.crud.dao.impl.ScheduledExecutionDAO;
 import org.cerberus.crud.entity.ScheduledExecution;
 import org.cerberus.crud.service.IScheduledExecutionService;
 import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -40,8 +42,8 @@ public class ScheduledExecutionService implements IScheduledExecutionService {
     IScheduledExecutionDAO scheduledExecutionDAO = new ScheduledExecutionDAO();
 
     @Override
-    public Answer create(ScheduledExecution scheduledExecution) {
-        Answer response = new Answer();
+    public AnswerItem<Integer> create(ScheduledExecution scheduledExecution) {
+        AnswerItem<Integer> response = new AnswerItem();
         response = scheduledExecutionDAO.create(scheduledExecution);
         return response;
     }

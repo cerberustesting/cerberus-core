@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.TimeZone;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import org.apache.logging.log4j.LogManager;
@@ -33,6 +34,7 @@ import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.MyVersion;
 import org.cerberus.crud.entity.ScheduleEntry;
 import org.cerberus.crud.entity.ScheduledExecution;
+import org.cerberus.crud.factory.IFactoryScheduleEntry;
 import org.cerberus.crud.factory.IFactoryScheduledExecution;
 import org.cerberus.crud.factory.impl.FactoryScheduledExecution;
 import org.cerberus.crud.service.IMyVersionService;
@@ -56,15 +58,14 @@ import org.cerberus.util.answer.Answer;
 
 @Component
 public class SchedulerInit {
-    @Autowired
-    private IScheduledExecutionService scheduledExecutionService;
-    private static IFactoryScheduledExecution factoryScheduledExecution = new FactoryScheduledExecution();
 
     private static final Logger LOG = LogManager.getLogger(SchedulerInit.class);
     @Autowired
     private IScheduleEntryService scheduleEntryService;
     @Autowired
     private IMyVersionService MyversionService;
+    @Autowired
+    private IFactoryScheduleEntry factoryScheduleEntry;
 
     private static SchedulerFactory schFactory = new StdSchedulerFactory();
     private String instanceSchedulerVersion = "INIT";
@@ -77,7 +78,7 @@ public class SchedulerInit {
     public void init() {
         AnswerItem<List> ans = new AnswerItem();
         List<ScheduleEntry> listSched = new ArrayList<ScheduleEntry>();
-        
+
         // read myversion scheduler_version
         MyVersion databaseSchedulerVersion;
         databaseSchedulerVersion = MyversionService.findMyVersionByKey("scheduler_version");
@@ -110,13 +111,13 @@ public class SchedulerInit {
                             int schedulerId = sched.getID();
 
                             String user = "";
-                            if(!StringUtil.isNullOrEmpty(sched.getUsrModif())){
-                            user = sched.getUsrModif();
-                            }else{
-                            user = sched.getUsrCreated();
+                            if (!StringUtil.isNullOrEmpty(sched.getUsrModif())) {
+                                user = sched.getUsrModif();
+                            } else {
+                                user = sched.getUsrCreated();
                             }
                             //Build trigger with cron settings name and type
-                            Trigger myTrigger = TriggerBuilder.newTrigger().withIdentity(id, "group1").usingJobData("schedulerId", schedulerId).usingJobData("name", name).usingJobData("type", type).usingJobData("user", user).withSchedule(CronScheduleBuilder.cronSchedule(cron)).forJob(scheduledJob).build();
+                            Trigger myTrigger = TriggerBuilder.newTrigger().withIdentity(id, "group1").usingJobData("schedulerId", schedulerId).usingJobData("name", name).usingJobData("type", type).usingJobData("user", user).withSchedule(CronScheduleBuilder.cronSchedule(cron).inTimeZone(TimeZone.getTimeZone("UTC+2"))).forJob(scheduledJob).build();
 
                             //Add trigger to list of trigger
                             myTriggersSet.add(myTrigger);
@@ -142,8 +143,8 @@ public class SchedulerInit {
                             LOG.error("Failed to run scheduler Job");
                             LOG.error(e);
                         }
-                    }else{
-                    LOG.debug("Select new result in base not working, catch exception : " + ans.getMessageCodeString());
+                    } else {
+                        LOG.debug("Select new result in base not working, catch exception : " + ans.getMessageCodeString());
                     }
 
                 } catch (Exception e) {

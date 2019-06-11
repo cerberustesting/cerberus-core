@@ -405,7 +405,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
     private boolean checkExecutorProxy(TestCaseExecution tce) {
 
         //if executor proxy active, check cerberus-executor is available
-        if ("Y".equals(tce.getRobotExecutorObj().getExecutorProxyActive())) {
+        if (tce.getRobotExecutorObj() != null && "Y".equals(tce.getRobotExecutorObj().getExecutorProxyActive())) {
 
             String url = "http://" + tce.getRobotExecutorObj().getHost() + ":" + tce.getRobotExecutorObj().getExecutorExtensionPort() + "/check";
 
