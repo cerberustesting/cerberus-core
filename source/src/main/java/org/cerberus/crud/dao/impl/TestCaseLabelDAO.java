@@ -28,6 +28,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -406,17 +407,35 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
 
         query.append(" WHERE 1=1");
 
+        HashMap<String, String> testCaseMap = new HashMap();
         if ((testCaseList != null) && !testCaseList.isEmpty()) {
-            query.append(" AND (");
-            int j = 0;
-            for (TestCase testCase1 : testCaseList) {
-                if (j != 0) {
-                    query.append(" OR");
+            if (testCaseList.size() < 101) {
+                // if more than 100 testcases to filter, we only filter by testfolder (this is to reduce the size of SQL sent to database engine)
+                query.append(" AND (");
+                int j = 0;
+                for (TestCase testCase1 : testCaseList) {
+                    if (j != 0) {
+                        query.append(" OR");
+                    }
+                    query.append(" (tel.`test` = ? and tel.testcase = ?) ");
+                    j++;
                 }
-                query.append(" (tel.`test` = ? and tel.testcase = ?) ");
-                j++;
+                query.append(" )");
+            } else {
+                for (TestCase testCaseObject : testCaseList) {
+                    testCaseMap.put(testCaseObject.getTest(), null);
+                }
+                query.append(" AND (");
+                int j = 0;
+                for (Map.Entry<String, String> entry : testCaseMap.entrySet()) {
+                    if (j != 0) {
+                        query.append(" OR");
+                    }
+                    query.append(" tel.`test` = ? ");
+                    j++;
+                }
+                query.append(" )");
             }
-            query.append(" )");
         }
 
         if (!Strings.isNullOrEmpty(test)) {
@@ -437,9 +456,16 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
                 Statement stm = connection.createStatement();) {
             int i = 1;
             if ((testCaseList != null) && !testCaseList.isEmpty()) {
-                for (TestCase testCase1 : testCaseList) {
-                    preStat.setString(i++, testCase1.getTest());
-                    preStat.setString(i++, testCase1.getTestCase());
+                if (testCaseList.size() < 101) {
+                    for (TestCase testCase1 : testCaseList) {
+                        preStat.setString(i++, testCase1.getTest());
+                        preStat.setString(i++, testCase1.getTestCase());
+                    }
+                } else {
+                    for (Map.Entry<String, String> entry : testCaseMap.entrySet()) {
+                        String key = entry.getKey();
+                        preStat.setString(i++, key);
+                    }
                 }
             }
             if (!Strings.isNullOrEmpty(test)) {
