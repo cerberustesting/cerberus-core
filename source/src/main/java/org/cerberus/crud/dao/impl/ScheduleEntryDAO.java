@@ -63,30 +63,34 @@ public class ScheduleEntryDAO implements IScheduleEntryDAO {
     private final int MAX_ROW_SELECTED = 100000;
 
     @Override
-    public AnswerItem<ScheduleEntry> readByKey(String name) {
+    public AnswerItem<ScheduleEntry> readByKey(Integer id) {
+        LOG.debug(id);
         AnswerItem<ScheduleEntry> ans = new AnswerItem<>();
         ScheduleEntry result = null;
-        final String query = "SELECT * FROM `scheduleentry` AS sce WHERE `name` = ?";
+        final String query = "SELECT * FROM `scheduleentry` WHERE `id` = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
-            LOG.debug("SQL.param.SchedulerDAO : " + name);
+            LOG.debug("SQL.param.SchedulerDAO : " + id);
         }
 
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
-                //LOG.debug(name);
-                preStat.setString(1, name);
+                int i = 1;
+                preStat.setInt(i++, id);
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     if (resultSet.first()) {
+                        LOG.debug("find resultset");
                         result = loadFromResultSet(resultSet);
+                        LOG.debug("load resultset");
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                        LOG.debug("data message resultset");
                         msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
                         ans.setItem(result);
                     } else {
@@ -196,16 +200,6 @@ public class ScheduleEntryDAO implements IScheduleEntryDAO {
         Timestamp dateModif = rs.getTimestamp("scheduleentry.DateModif");
         Timestamp dateCreated = rs.getTimestamp("scheduleentry.DateCreated");
         ScheduleEntry newScheduleEntry = factoryscheduleentry.create(schedulerId, type, name, cronDefinition, lastExecution, active, usrCreated, dateCreated, usrModif, dateModif);
-        //LOG.debug("id             : " + newScheduleEntry.getID());
-        //LOG.debug("type           : " + newScheduleEntry.getType());
-        //LOG.debug("name           : " + newScheduleEntry.getName());
-        //LOG.debug("active         : " + newScheduleEntry.getActive());
-        //LOG.debug("usrCreated     : " + newScheduleEntry.getUsrCreated());
-        //LOG.debug("dateCreated    : " + newScheduleEntry.getDateCreated());
-        //LOG.debug("usrModif       : " + newScheduleEntry.getUsrModif());
-        //LOG.debug("dateModif      : " + newScheduleEntry.getDateModif());
-        //LOG.debug("lastExecution  : " + newScheduleEntry.getLastExecution());
-        //LOG.debug("CronDefinition : " + newScheduleEntry.getCronDefinition());
         return newScheduleEntry;
 
     }
@@ -215,7 +209,7 @@ public class ScheduleEntryDAO implements IScheduleEntryDAO {
         LOG.debug("SCHEDULE ENTRY DAO CALL");
         MessageEvent msg = null;
         AnswerItem<Integer> ans = new AnswerItem();
-        final StringBuilder query = new StringBuilder("INSERT INTO `scheduleentry` (`type`, `name`,`cronDefinition`,`lastExecution`,`active`,`UsrCreated`,`DateCreated`,`UsrModif`,`DateModif`) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+        final StringBuilder query = new StringBuilder("INSERT INTO `scheduleentry` (`type`, `name`,`cronDefinition`,`active`,`UsrCreated`) VALUES ( ?, ?, ?, ?, ?);");
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -223,16 +217,12 @@ public class ScheduleEntryDAO implements IScheduleEntryDAO {
             PreparedStatement preStat = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
 
             try {
-
-                preStat.setString(1, scheduler.getType());
-                preStat.setString(2, scheduler.getName());
-                preStat.setString(3, scheduler.getCronDefinition());
-                preStat.setString(4, scheduler.getLastExecution().toString());
-                preStat.setString(5, scheduler.getActive());
-                preStat.setString(6, scheduler.getUsrCreated());
-                preStat.setString(7, scheduler.getDateCreated().toString());
-                preStat.setString(8, scheduler.getUsrModif());
-                preStat.setString(9, scheduler.getDateModif().toString());
+                int i = 1;
+                preStat.setString(i++, scheduler.getType());
+                preStat.setString(i++, scheduler.getName());
+                preStat.setString(i++, scheduler.getCronDefinition());
+                preStat.setString(i++, scheduler.getActive());
+                preStat.setString(i++, scheduler.getUsrCreated());
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                 msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT"));
@@ -284,14 +274,11 @@ public class ScheduleEntryDAO implements IScheduleEntryDAO {
     public Answer update(ScheduleEntry scheduleEntryObject) {
         MessageEvent msg = null;
 
-        String query = "UPDATE scheduleentry SET type = ? , name = ?, cronDefinition = ?,lastExecution = ?, active = ?, UsrCreated = ?, DateCreated = ?, UsrModif = ?, DateModif = ? WHERE ID = ?";
+        String query = "UPDATE scheduleentry SET type = ? , name = ?, cronDefinition = ?,lastExecution = ?, active = ?, DateModif = CURRENT_TIMESTAMP, UsrModif = ? WHERE ID = ?";
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
             LOG.debug("SQL.param.scheduleEntryObject : " + scheduleEntryObject.getName());
-            LOG.debug("SQL.param.scheduleEntryObject : " + scheduleEntryObject.getID());
-            LOG.debug("SQL.param.scheduleEntryObject : " + scheduleEntryObject.getType());
-            LOG.debug("SQL.param.scheduleEntryObject : " + scheduleEntryObject.getCronDefinition());
 
         }
         Connection connection = this.databaseSpring.connect();
@@ -300,16 +287,13 @@ public class ScheduleEntryDAO implements IScheduleEntryDAO {
             try {
 
                 int i = 1;
-                preStat.setString(1, scheduleEntryObject.getType());
-                preStat.setString(2, scheduleEntryObject.getName());
-                preStat.setString(3, scheduleEntryObject.getCronDefinition());
-                preStat.setString(4, scheduleEntryObject.getLastExecution().toString());
-                preStat.setString(5, scheduleEntryObject.getActive());
-                preStat.setString(6, scheduleEntryObject.getUsrCreated());
-                preStat.setTimestamp(7, scheduleEntryObject.getDateCreated());
-                preStat.setString(8, scheduleEntryObject.getUsrModif());
-                preStat.setString(9, "CURRENT_TIMESTAMP");
-                preStat.setInt(10, scheduleEntryObject.getID());
+                preStat.setString(i++, scheduleEntryObject.getType());
+                preStat.setString(i++, scheduleEntryObject.getName());
+                preStat.setString(i++, scheduleEntryObject.getCronDefinition());
+                preStat.setTimestamp(i++, scheduleEntryObject.getLastExecution());
+                preStat.setString(i++, scheduleEntryObject.getActive());
+                preStat.setString(i++, scheduleEntryObject.getUsrModif());
+                preStat.setInt(i++, scheduleEntryObject.getID());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -317,6 +301,47 @@ public class ScheduleEntryDAO implements IScheduleEntryDAO {
                 LOG.debug(msg.getDescription());
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : ", exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
+            }
+        }
+        return new Answer(msg);
+    }
+    
+    @Override
+    public Answer delete(ScheduleEntry object) {
+        MessageEvent msg = null;
+        final String query = "DELETE FROM scheduleentry WHERE id = ? ";
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setInt(1, object.getID());
+
+                preStat.executeUpdate();
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "DELETE"));
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
             } finally {

@@ -320,7 +320,15 @@
     </servlet>
     <servlet>
         <servlet-name>CreateScheduleEntry</servlet-name>
-        <servlet-class>org.cerberus.servlet.scheduleentry.CreateScheduleEntry</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.scheduleentry.CreateScheduleEntry</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UpdateScheduleEntry</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.scheduleentry.UpdateScheduleEntry</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DeleteScheduleEntry</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.scheduleentry.DeleteScheduleEntry</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DisableEnvironment</servlet-name>
@@ -1515,6 +1523,14 @@
         <servlet-name>CreateScheduleEntry</servlet-name>
         <url-pattern>/CreateScheduleEntry</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UpdateScheduleEntry</servlet-name>
+        <url-pattern>/UpdateScheduleEntry</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteScheduleEntry</servlet-name>
+        <url-pattern>/DeleteScheduleEntry</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>60</session-timeout>
     </session-config>
@@ -1628,7 +1644,6 @@
             <url-pattern>/ReadTestCaseStep</url-pattern>
             <url-pattern>/GetReportTest</url-pattern>
             <url-pattern>/ReadTestCaseExecutionByTag</url-pattern>
-            <url-pattern>/CreateScheduleEntry</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>TestRO</description>
@@ -1754,6 +1769,9 @@
             <url-pattern>/UpdateCampaign</url-pattern>
             <url-pattern>/CreateCampaign</url-pattern>
             <url-pattern>/DeleteCampaign</url-pattern>
+            <url-pattern>/CreateScheduleEntry</url-pattern>
+            <url-pattern>/UpdateScheduleEntry</url-pattern>
+            <url-pattern>/DeleteScheduleEntry</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>RunTest</description>
@@ -1947,7 +1965,7 @@
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>
             <description>servlet</description>
-<!--            Public Servlets -->
+            <!--            Public Servlets -->
             <url-pattern>/RunTestCase</url-pattern>
             <url-pattern>/RunTestCaseV001</url-pattern>
             <url-pattern>/GetNumberOfExecutions</url-pattern>
@@ -1966,11 +1984,11 @@
             <url-pattern>/NewEnvironmentEventV000</url-pattern>
             <url-pattern>/GetTagExecutions</url-pattern>
             <url-pattern>/GetTestCasesV000</url-pattern>
-<!--            Password Management Servlets -->
+            <!--            Password Management Servlets -->
             <url-pattern>/ForgotPassword</url-pattern>
             <url-pattern>/ForgotPasswordEmailConfirmation</url-pattern>
             <url-pattern>/ChangeUserPassword</url-pattern>
-<!--            Dummy Servlets -->
+            <!--            Dummy Servlets -->
             <url-pattern>/DummyRESTCall</url-pattern>
             <url-pattern>/DummyRESTCallEmpty</url-pattern>
         </web-resource-collection>

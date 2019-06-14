@@ -29,12 +29,14 @@ import org.cerberus.util.answer.AnswerItem;
  */
 public interface IScheduleEntryService {
 
-    public AnswerItem<ScheduleEntry> readbykey(String campaign);
+    public AnswerItem<ScheduleEntry> readbykey(Integer id);
   
     public AnswerItem<List> readAllActive ();
     
     public AnswerItem<Integer> create (ScheduleEntry scheduleentry);
     
     public Answer update (ScheduleEntry scheduleentry);
+    
+     public Answer delete(ScheduleEntry object);
 
 }

@@ -8111,7 +8111,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // 1408
         a.add("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('ACTION', 'manageDialogKeypress', '5600', 'Keypress on a popup dialog.', 'Popup Keypress')");
 
-        
         //
         //1409
         b = new StringBuilder();
@@ -8122,6 +8121,11 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append("ADD COLUMN `executorProxyActive` VARCHAR(1) NOT NULL DEFAULT 'N' AFTER `executorProxyPort`;");
         a.add(b.toString());
         
+        //1410
+        a.add("ALTER TABLE `scheduledexecution` DROP FOREIGN KEY FK_scheduledexecution_01;");
+
+        a.add("ALTER TABLE `scheduledexecution` ADD CONSTRAINT `FK_scheduledexecution_01` FOREIGN KEY (`schedulerID`) REFERENCES `scheduleentry` (`ID`) ON UPDATE CASCADE ON DELETE CASCADE");
+
         return a;
     }
 

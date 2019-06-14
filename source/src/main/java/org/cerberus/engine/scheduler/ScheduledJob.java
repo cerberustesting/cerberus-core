@@ -111,7 +111,6 @@ public class ScheduledJob implements Job {
                         try {
                             if (statusCode == 200 || statusCode == 201) {
                                 scheduledExecutionObject.setStatus("TRIGGERED");
-
                             }
                             //= Set comment from servlet
                             if ((statusCode != 200) && (statusCode != 201)) {
@@ -138,15 +137,17 @@ public class ScheduledJob implements Job {
                                 }
                                 LOG.debug(scheduledExecutionObject.getComment());
                             }
-                            scheduledExecutionObject.setID(createScx.getItem());
-                            LOG.debug("Id of scheduledExecution object : " + scheduledExecutionObject.getID());
-                            Answer updateScx = new Answer();
-                            updateScx = scheduledExecutionService.update(scheduledExecutionObject);
-                            LOG.debug(updateScx.getMessageDescription());
+                            try {
+                                scheduledExecutionObject.setID(createScx.getItem());
+                                Answer updateScx = new Answer();
+                                updateScx = scheduledExecutionService.update(scheduledExecutionObject);
+                                LOG.debug(updateScx.getMessageDescription());
+                            } catch (Exception e) {
+                                LOG.debug("Failed to update scheduledExecution", e);
+                            }
                         } catch (Exception e) {
-                            LOG.debug("Failed to update scheduledExecution", e);
+                            LOG.debug("Failed to read result of AddToExecutionQueueV003 : ", e);
                         }
-
                     } catch (Exception e) {
                         LOG.debug("Failed to call AddToExecutionQueueV003, catch exception", e);
                     }
@@ -159,7 +160,8 @@ public class ScheduledJob implements Job {
                 } catch (Exception e) {
                     LOG.debug("Cannot insert execution in database (Potentialy another instance of Cerberus already triggered the job), catch exception :", e);
                     scheduledExecutionObject.setStatus("IGNORED");
-                    //AnswerItem updateScx = scheduledExecutionService.update(scheduledExecutionObject);
+                    Answer updateScx = scheduledExecutionService.update(scheduledExecutionObject);
+                    LOG.debug(updateScx);
 
                 }
             }

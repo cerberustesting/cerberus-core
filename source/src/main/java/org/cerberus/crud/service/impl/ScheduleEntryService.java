@@ -44,9 +44,9 @@ public class ScheduleEntryService implements IScheduleEntryService{
     private static final Logger LOG = LogManager.getLogger(ScheduleEntryService.class);
 
     @Override
-    public AnswerItem<ScheduleEntry> readbykey (String name){
+    public AnswerItem<ScheduleEntry> readbykey (Integer id){
     AnswerItem<ScheduleEntry> ans = new AnswerItem();
-    ans = schedulerDao.readByKey(name);
+    ans = schedulerDao.readByKey(id);
     return ans;
     }
     
@@ -71,6 +71,13 @@ public class ScheduleEntryService implements IScheduleEntryService{
         response = schedulerDao.update(scheduleentry);
         return response;
     }
+    
+    @Override
+    public Answer delete(ScheduleEntry object){
+    Answer response = new Answer();
+    response = schedulerDao.delete(object);
+    return response;
+    };
     
     
 }

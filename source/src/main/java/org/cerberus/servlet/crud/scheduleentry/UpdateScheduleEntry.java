@@ -19,8 +19,6 @@ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 package org.cerberus.servlet.crud.scheduleentry;
 
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -40,14 +38,13 @@ import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.servlet.ServletUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
-import org.quartz.CronExpression;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -55,13 +52,11 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author cdelage
  */
-@WebServlet(name = "CreateScheduleEntry", urlPatterns = {"/CreateScheduleEntry"})
-public class CreateScheduleEntry extends HttpServlet {
+@WebServlet(name = "UpdateScheduleEntry", urlPatterns = {"/UpdateScheduleEntry"})
+public class UpdateScheduleEntry extends HttpServlet {
 
-    private static final Logger LOG = LogManager.getLogger(CreateScheduleEntry.class);
-    
-    @Autowired
-    CronExpression cronExpression;
+    private static final Logger LOG = LogManager.getLogger(UpdateScheduleEntry.class);
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -74,7 +69,7 @@ public class CreateScheduleEntry extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, JSONException {
         JSONObject jsonResponse = new JSONObject();
-        AnswerItem<Integer> ans = new AnswerItem<>();
+        Answer ans = new AnswerItem<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         ans.setResultMessage(msg);
@@ -88,30 +83,41 @@ public class CreateScheduleEntry extends HttpServlet {
         /**
          * Parsing and securing all required parameters.
          */
-        String name = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("name"), "");
+        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+        IFactoryScheduleEntry factoryScheduleEntry = appContext.getBean(IFactoryScheduleEntry.class);
+        IScheduleEntryService scheduleEntryService = appContext.getBean(IScheduleEntryService.class);
+        Integer id = ParameterParserUtil.parseIntegerParam(request.getParameter("id"), 0);
+        ScheduleEntry oldScheduleEntry = new ScheduleEntry();
+        oldScheduleEntry = scheduleEntryService.readbykey(id).getItem();
+        String oldName = oldScheduleEntry.getName();
+        String name = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("name"), oldName);
         String cronDefinition = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("cronDefinition"), "");
         String type = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("type"), "CAMPAIGN");
         String active = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("active"), "Y");
+        String userModif = request.getUserPrincipal().getName();
         Boolean validCron = org.quartz.CronExpression.isValidExpression(cronDefinition);
-        LOG.debug("validCron : " + validCron);
+
         /**
          * Checking all constrains before calling the services.
          */
         if (name.isEmpty() || cronDefinition.isEmpty() || !validCron) {
             msg = new MessageEvent(MessageEventEnum.SCHEDULER_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "campaign")
-                    .replace("%OPERATION%", "Create")
-                    .replace("%REASON%", "Some mendatory fields are missing or iregular!"));
+                    .replace("%OPERATION%", "Update")
+                    .replace("%REASON%", "Some mendatory fields are missing!"));
             ans.setResultMessage(msg);
         } else {
             /**
              * All data seems cleans so we can call the services.
              */
-            ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-            IFactoryScheduleEntry factoryScheduleEntry = appContext.getBean(IFactoryScheduleEntry.class);
-            IScheduleEntryService scheduleEntryService = appContext.getBean(IScheduleEntryService.class);
-            ScheduleEntry scheduleEntry = factoryScheduleEntry.create(0, type, name, cronDefinition, null, active, request.getUserPrincipal().getName(), null, null, null);
-            ans = scheduleEntryService.create(scheduleEntry);
+            
+            ScheduleEntry scheduleEntry = scheduleEntryService.readbykey(id).getItem();
+            scheduleEntry.setName(name);
+            scheduleEntry.setType(type);
+            scheduleEntry.setCronDefinition(cronDefinition);
+            scheduleEntry.setActive(active);
+            scheduleEntry.setUsrModif(userModif);
+            ans = scheduleEntryService.update(scheduleEntry);
 
             if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                 /**
@@ -121,7 +127,7 @@ public class CreateScheduleEntry extends HttpServlet {
                 IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
                 IMyVersionService myVersionService = appContext.getBean(IMyVersionService.class);
                 myVersionService.updateMyVersionString("scheduler_version", String.valueOf(new Date()));
-                logEventService.createForPrivateCalls("/CreateScheduleEntry", "CREATE", "Create schedule entry : ['" + scheduleEntry.getName() + "']", request);
+                logEventService.createForPrivateCalls("/UpdateScheduleEntry", "Update", "Update schedule entry : ['" + scheduleEntry.getName() + "']", request);
             }
         }
 
@@ -130,7 +136,7 @@ public class CreateScheduleEntry extends HttpServlet {
          */
         jsonResponse.put("messageType", ans.getResultMessage().getMessage().getCodeString());
         jsonResponse.put("message", ans.getResultMessage().getDescription());
-        
+
         response.getWriter().print(jsonResponse);
         response.getWriter().flush();
 

@@ -31,11 +31,13 @@ import org.cerberus.util.answer.AnswerItem;
  */
 public interface IScheduleEntryDAO {
 
-    public AnswerItem<ScheduleEntry> readByKey(String name);
+    public AnswerItem<ScheduleEntry> readByKey(Integer id);
 
     public AnswerItem<Integer> create(ScheduleEntry scheduler);
     
     public AnswerItem<List> readAllActive();
     
     public Answer update(ScheduleEntry scheduleEntryObject);
+    
+    public Answer delete(ScheduleEntry object);
 }

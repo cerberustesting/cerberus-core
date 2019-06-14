@@ -150,18 +150,20 @@ public class ScheduledExecutionDAO implements IScheduledExecutionDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
-
                 int i = 1;
                 preStat.setString(i++, scheduledExecutionObject.getStatus());
-                preStat.setString(i++, scheduledExecutionObject.getComment());
+                preStat.setString(i++, scheduledExecutionObject.getComment().replace("'", ""));
                 preStat.setInt(i++, scheduledExecutionObject.getID());
-
+                
+                LOG.debug("status : " + scheduledExecutionObject.getStatus());
+                LOG.debug("comment : " + scheduledExecutionObject.getComment());
+                LOG.debug("id : " + scheduledExecutionObject.getID());
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                 msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
                 LOG.debug(msg.getDescription());
             } catch (SQLException exception) {
-                LOG.error("Unable to execute query : ", exception.toString());
+                LOG.error("Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
             } finally {
