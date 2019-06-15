@@ -20,6 +20,8 @@
 package org.cerberus.servlet.crud.testexecution;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -67,6 +69,8 @@ public class UpdateTestCaseExecutionQueue extends HttpServlet {
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
+     * @throws org.cerberus.exception.CerberusException
+     * @throws org.json.JSONException
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, CerberusException, JSONException {
@@ -135,7 +139,11 @@ public class UpdateTestCaseExecutionQueue extends HttpServlet {
         if (!StringUtil.isNullOrEmpty(tag)) {
             // We create or update it.
             ITagService tagService = appContext.getBean(ITagService.class);
-            tagService.createAuto(tag, "", request.getRemoteUser(), new JSONArray(environment), new JSONArray(country));
+            List<String> envList = new ArrayList<>();
+            envList.add(environment);
+            List<String> countryList = new ArrayList<>();
+            countryList.add(country);
+            tagService.createAuto(tag, "", request.getRemoteUser(), new JSONArray(envList), new JSONArray(countryList));
         }
 
         // Prepare the final answer.
@@ -318,9 +326,9 @@ public class UpdateTestCaseExecutionQueue extends HttpServlet {
             processRequest(request, response);
 
         } catch (CerberusException ex) {
-            LOG.warn(ex);
+            LOG.warn(ex, ex);
         } catch (JSONException ex) {
-            LOG.warn(ex);
+            LOG.warn(ex, ex);
         }
     }
 
