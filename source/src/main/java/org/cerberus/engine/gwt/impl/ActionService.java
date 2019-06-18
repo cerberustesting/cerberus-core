@@ -19,7 +19,9 @@
  */
 package org.cerberus.engine.gwt.impl;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
 import org.apache.logging.log4j.Logger;
@@ -432,20 +434,77 @@ public class ActionService implements IActionService {
         MessageEvent message;
 
         try {
-
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
                 return androidAppiumService.executeCommand(tCExecution.getSession(), command, args);
+            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_BAT)
+                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)
+                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_SRV)) {
+                return executeCommand(command, args);
+            } else {
+                message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+                message.setDescription(message.getDescription().replace("%ACTION%", "executeCommand"));
+                message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
+                return message;
             }
-
-            message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-            message.setDescription(message.getDescription().replace("%ACTION%", "executeJS"));
-            message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
-            return message;
         } catch (Exception e) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTECOMMAND);
             String messageString = e.getMessage().split("\n")[0];
             message.setDescription(message.getDescription().replace("%EXCEPTION%", messageString));
             LOG.debug("Exception Running Shell :" + messageString, e);
+            return message;
+        }
+    }
+
+    private MessageEvent executeCommand(String command, String args) {
+
+        MessageEvent message;
+        String fullCommand;
+
+        // command and args check
+        if (command.isEmpty()) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTECOMMAND);
+            message.setDescription(message.getDescription().replace("%EXCEPTION%", "no command defined.."));
+            return message;
+        } else if (!args.isEmpty()) {
+            fullCommand = command + args;
+        } else {
+            fullCommand = command;
+        }
+
+        ProcessBuilder processBuilder = new ProcessBuilder();
+        boolean isWindows = System.getProperty("os.name").toLowerCase().startsWith("windows");
+        if (isWindows) {
+            processBuilder.command("cmd.exe", "/c", fullCommand);
+        } else {
+            processBuilder.command("bash", "-c", fullCommand);
+        }
+
+        try {
+            Process process = processBuilder.start();
+            StringBuilder output = new StringBuilder();
+            BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(process.getInputStream()));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                output.append(line + "\n");
+            }
+            int exitVal = process.waitFor();
+            if (exitVal == 0) {
+                message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_EXECUTECOMMAND);
+                message.setDescription(message.getDescription().replace("%LOG%", fullCommand + " Output : " + output));
+                return message;
+            } else {
+                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTECOMMAND);
+                message.setDescription(message.getDescription().replace("%EXCEPTION%", fullCommand));
+                return message;
+            }
+        } catch (IOException e) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTECOMMAND);
+            message.setDescription(message.getDescription().replace("%EXCEPTION%", e.toString()));
+            return message;
+        } catch (InterruptedException e) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_EXECUTECOMMAND);
+            message.setDescription(message.getDescription().replace("%EXCEPTION%", e.toString()));
             return message;
         }
     }
@@ -469,14 +528,14 @@ public class ActionService implements IActionService {
 //                    identifierService.checkWebElementIdentifier(identifier.getIdentifier());
 //                    return iosAppiumService.click(tCExecution.getSession(), identifier);
 //                } else {
-                    if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
-                        return sikuliService.doSikuliActionClick(tCExecution.getSession(), identifier.getLocator(), "");
-                    } else if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_TEXT)) {
-                        return sikuliService.doSikuliActionClick(tCExecution.getSession(), "", identifier.getLocator());
-                    } else {
-                        identifierService.checkWebElementIdentifier(identifier.getIdentifier());
-                        return webdriverService.doSeleniumActionClick(tCExecution.getSession(), identifier, true, true);
-                    }
+                if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_PICTURE)) {
+                    return sikuliService.doSikuliActionClick(tCExecution.getSession(), identifier.getLocator(), "");
+                } else if (identifier.getIdentifier().equals(SikuliService.SIKULI_IDENTIFIER_TEXT)) {
+                    return sikuliService.doSikuliActionClick(tCExecution.getSession(), "", identifier.getLocator());
+                } else {
+                    identifierService.checkWebElementIdentifier(identifier.getIdentifier());
+                    return webdriverService.doSeleniumActionClick(tCExecution.getSession(), identifier, true, true);
+                }
 //                }
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
                 identifierService.checkWebElementIdentifier(identifier.getIdentifier());
