@@ -1,6 +1,7 @@
 *Bug fixes*
 [square]
 * Closing depencies even when previous execution ended in QE Queue Error. #1973
+* Adding dependency on testcase modal when test has more than 1 space now works. #1976
 
 *Improvements / New features*
 [square]
