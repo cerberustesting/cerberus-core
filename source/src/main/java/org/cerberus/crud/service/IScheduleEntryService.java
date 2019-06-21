@@ -46,4 +46,6 @@ public interface IScheduleEntryService {
      public Answer deleteListSched(List<ScheduleEntry> objectList);
      
      public Answer createListSched(List<ScheduleEntry> objectList);
+     
+     public Answer deleteByCampaignName(String name);
 }

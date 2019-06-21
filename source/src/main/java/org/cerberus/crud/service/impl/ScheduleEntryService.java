@@ -111,18 +111,40 @@ public class ScheduleEntryService implements IScheduleEntryService {
     }
 
     @Override
+    public Answer deleteByCampaignName(String name) {
+        Answer ans = new Answer(null);
+        List<ScheduleEntry> objectList = new ArrayList<ScheduleEntry>();
+        objectList = this.readByName(name).getItem();
+        for (ScheduleEntry objectToDelete : objectList){
+            ans = this.delete(objectToDelete);
+            if(!ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) ){
+            return ans;
+            }
+        }
+        return ans;
+    }
+
+    @Override
     public Answer createListSched(List<ScheduleEntry> objectList) {
         Answer ans = new Answer(null);
-        for (ScheduleEntry objectToCreate : objectList) {
-            Boolean validCron = org.quartz.CronExpression.isValidExpression(objectToCreate.getCronDefinition());
-            if (objectToCreate.getName().isEmpty() || objectToCreate.getCronDefinition().isEmpty() || !validCron) {
-                MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unvalid SchedulerEntry data"));
-                ans.setResultMessage(msg);
-                return ans;
-            } else {
-                LOG.debug("ScheduleEntry Created for : " + objectToCreate.getName() + "with Cron expression : " + objectToCreate.getCronDefinition());
-                ans = schedulerDao.create(objectToCreate);
+        LOG.debug("createListSched" + objectList);
+        if (objectList.isEmpty()) {
+            MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unvalid SchedulerEntry data"));
+            ans.setResultMessage(msg);
+            return ans;
+        } else {
+            for (ScheduleEntry objectToCreate : objectList) {
+                Boolean validCron = org.quartz.CronExpression.isValidExpression(objectToCreate.getCronDefinition());
+                if (objectToCreate.getName().isEmpty() || objectToCreate.getCronDefinition().isEmpty() || !validCron) {
+                    MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unvalid SchedulerEntry data"));
+                    ans.setResultMessage(msg);
+                    return ans;
+                } else {
+                    LOG.debug("ScheduleEntry Created for : " + objectToCreate.getName() + "with Cron expression : " + objectToCreate.getCronDefinition());
+                    ans = schedulerDao.create(objectToCreate);
+                }
             }
         }
         return ans;
