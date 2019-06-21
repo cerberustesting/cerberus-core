@@ -427,7 +427,7 @@ function editEntryClick(param) {
 
         hideLoader("#testcampaignList");
 
-        var displayScheduler = 0
+        var displayScheduler = 0;
         if (displayScheduler == 0) {
             $('#createTab8Text').hide();   
         }
@@ -1121,7 +1121,7 @@ function appendSchedulerRow(scheduler) {
 
 function addNewSchedulerRow() {
     var newScheduler = {
-        cronDefinition: "",
+        cronDefinition: $('#schedulerinput').val(),
         active: "N",
         lastExecution: "",
         ID: "0",
