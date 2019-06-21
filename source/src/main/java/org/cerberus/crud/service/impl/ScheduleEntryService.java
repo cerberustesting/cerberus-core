@@ -15,7 +15,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 package org.cerberus.crud.service.impl;
 
 import java.util.ArrayList;
@@ -27,57 +27,159 @@ import org.cerberus.util.answer.AnswerItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.cerberus.crud.dao.IScheduleEntryDAO;
+import org.cerberus.crud.entity.CountryEnvironmentParameters;
 import org.cerberus.crud.service.IScheduleEntryService;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.scheduler.SchedulerInit;
+import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerUtil;
 
 /**
  *
  * @author cdelage
  */
-
 @Service
-public class ScheduleEntryService implements IScheduleEntryService{
-    
+public class ScheduleEntryService implements IScheduleEntryService {
+
     @Autowired
     IScheduleEntryDAO schedulerDao;
     private static final Logger LOG = LogManager.getLogger(ScheduleEntryService.class);
 
     @Override
-    public AnswerItem<ScheduleEntry> readbykey (Integer id){
-    AnswerItem<ScheduleEntry> ans = new AnswerItem();
-    ans = schedulerDao.readByKey(id);
-    return ans;
+    public AnswerItem<ScheduleEntry> readbykey(Integer id) {
+        AnswerItem<ScheduleEntry> ans = new AnswerItem();
+        ans = schedulerDao.readByKey(id);
+        return ans;
     }
-    
+
     @Override
-    public AnswerItem<List> readAllActive (){
-    AnswerItem<List> ans = new AnswerItem();
-    ans = schedulerDao.readAllActive();
-    return ans;
+    public AnswerItem<List> readAllActive() {
+        AnswerItem<List> ans = new AnswerItem();
+        ans = schedulerDao.readAllActive();
+        return ans;
     }
-    
+
     @Override
-    public AnswerItem<Integer> create (ScheduleEntry scheduleentry){
+    public AnswerItem<Integer> create(ScheduleEntry scheduleentry) {
         LOG.debug("scheduleentryservice.create");
         AnswerItem<Integer> response = new AnswerItem();
         response = schedulerDao.create(scheduleentry);
         return response;
-    }  
-    
+    }
+
     @Override
-    public Answer update (ScheduleEntry scheduleentry){
+    public Answer update(ScheduleEntry scheduleentry) {
         Answer response = new Answer();
-        response = schedulerDao.update(scheduleentry);
+        Boolean validCron = org.quartz.CronExpression.isValidExpression(scheduleentry.getCronDefinition());
+        if (scheduleentry.getName().isEmpty() || scheduleentry.getCronDefinition().isEmpty() || !validCron) {
+            MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unvalid SchedulerEntry data"));
+            response.setResultMessage(msg);
+        } else {
+            response = schedulerDao.update(scheduleentry);
+
+        }
+
         return response;
     }
+
+    @Override
+    public Answer delete(ScheduleEntry object) {
+        Answer response = new Answer();
+        response = schedulerDao.delete(object);
+        return response;
+    }
+
+    ;
     
     @Override
-    public Answer delete(ScheduleEntry object){
-    Answer response = new Answer();
-    response = schedulerDao.delete(object);
-    return response;
-    };
-    
-    
+    public AnswerItem<List> readByName(String name) {
+        AnswerItem<List> response = new AnswerItem();
+        response = schedulerDao.readByName(name);
+        return response;
+    }
+
+    @Override
+    public Answer deleteListSched(List<ScheduleEntry> objectList) {
+        Answer ans = new Answer(null);
+        for (ScheduleEntry objectToDelete : objectList) {
+            LOG.debug("object to delete" + objectToDelete.getID());
+            ans = schedulerDao.delete(objectToDelete);
+        }
+        return ans;
+    }
+
+    @Override
+    public Answer createListSched(List<ScheduleEntry> objectList) {
+        Answer ans = new Answer(null);
+        for (ScheduleEntry objectToCreate : objectList) {
+            Boolean validCron = org.quartz.CronExpression.isValidExpression(objectToCreate.getCronDefinition());
+            if (objectToCreate.getName().isEmpty() || objectToCreate.getCronDefinition().isEmpty() || !validCron) {
+                MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unvalid SchedulerEntry data"));
+                ans.setResultMessage(msg);
+                return ans;
+            } else {
+                LOG.debug("ScheduleEntry Created for : " + objectToCreate.getName() + "with Cron expression : " + objectToCreate.getCronDefinition());
+                ans = schedulerDao.create(objectToCreate);
+            }
+        }
+        return ans;
+    }
+
+    @Override
+    public Answer compareSchedListAndUpdateInsertDeleteElements(String campaign, List<ScheduleEntry> newList) {
+        Answer ans = new Answer();
+
+        MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
+        Answer finalAnswer = new Answer(msg1);
+
+        List<ScheduleEntry> oldList = new ArrayList();
+        oldList = schedulerDao.readByName(campaign).getItem();
+        List<ScheduleEntry> listToUpdateOrInsert = new ArrayList<>(newList);
+        listToUpdateOrInsert.removeAll(oldList);
+        List<ScheduleEntry> listToUpdateOrInsertToIterate = new ArrayList<>(listToUpdateOrInsert);
+
+        /**
+         * Update and Create all objects database Objects from newList
+         */
+        for (ScheduleEntry objectDifference : listToUpdateOrInsertToIterate) {
+            for (ScheduleEntry objectInDatabase : oldList) {
+                if (objectDifference.schedHasSameKey(objectInDatabase)) {
+                    ans = this.update(objectDifference);
+                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                    listToUpdateOrInsert.remove(objectDifference);
+
+                }
+            }
+        }
+
+        /**
+         * Delete all objects database Objects that do not exist from newList
+         */
+        List<ScheduleEntry> listToDelete = new ArrayList<>(oldList);
+        listToDelete.removeAll(newList);
+        List<ScheduleEntry> listToDeleteToIterate = new ArrayList<>(listToDelete);
+
+        for (ScheduleEntry scheDifference : listToDeleteToIterate) {
+            for (ScheduleEntry scheInPage : newList) {
+                if (scheDifference.schedHasSameKey(scheInPage)) {
+                    listToDelete.remove(scheDifference);
+                }
+            }
+        }
+        if (!listToDelete.isEmpty()) {
+            ans = this.deleteListSched(listToDelete);
+            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+        }
+
+        // We insert only at the end (after deletion of all potencial enreg)
+        if (!listToUpdateOrInsert.isEmpty()) {
+            ans = this.createListSched(listToUpdateOrInsert);
+            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+        }
+        return finalAnswer;
+    }
+
 }

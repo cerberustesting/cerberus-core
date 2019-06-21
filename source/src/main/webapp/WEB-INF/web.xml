@@ -323,6 +323,10 @@
         <servlet-class>org.cerberus.servlet.crud.scheduleentry.CreateScheduleEntry</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>ReadScheduleEntry</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.scheduleentry.ReadScheduleEntry</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>UpdateScheduleEntry</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.scheduleentry.UpdateScheduleEntry</servlet-class>
     </servlet>
@@ -1524,6 +1528,10 @@
         <url-pattern>/CreateScheduleEntry</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>ReadScheduleEntry</servlet-name>
+        <url-pattern>/ReadScheduleEntry</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>UpdateScheduleEntry</servlet-name>
         <url-pattern>/UpdateScheduleEntry</url-pattern>
     </servlet-mapping>
@@ -1770,6 +1778,7 @@
             <url-pattern>/CreateCampaign</url-pattern>
             <url-pattern>/DeleteCampaign</url-pattern>
             <url-pattern>/CreateScheduleEntry</url-pattern>
+            <url-pattern>/ReadScheduleEntry</url-pattern>
             <url-pattern>/UpdateScheduleEntry</url-pattern>
             <url-pattern>/DeleteScheduleEntry</url-pattern>
         </web-resource-collection>

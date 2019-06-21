@@ -416,6 +416,10 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('robotexecutor','executorProxyPort','','en','Executor Proxy Port','Port of the executor proxy. If 0, port will be determined randomly.',NULL)");
         b.append(",('robotexecutor','executorProxyActive','','fr','Proxy Actif / Inactif', 'Activer / Désactiver l\\'utilisation du proxy de l\\'extension de l\\'executor.',NULL)");
         b.append(",('robotexecutor','executorProxyActive','','en','Active / Unactive Proxy', 'Activate / Unactivate the usage of of proxy through the Executor Extension.',NULL)");
+        b.append(",('scheduler','cronDefinition','','fr','Expression Cron','Expression Cron parametree pour ordonnancer la campagne',NULL)");
+        b.append(",('scheduler','cronDefinition','','en','Cron Expression','Cron expression use to schedule campaign',NULL)");
+        b.append(",('scheduler','active','','en','Active','Scheduler activity',NULL)");
+        b.append(",('scheduler','active','','fr','Active','Activité du scheduler',NULL)");
         b.append(",('tag','id','','en','Tag ID','Technical ID of the tag',NULL)");
         b.append(",('tag','id','','fr','ID du Tag','ID technique du Tag',NULL)");
         b.append(",('tag','tag','','en','Tag','',NULL)");

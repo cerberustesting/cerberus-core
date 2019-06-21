@@ -39,4 +39,11 @@ public interface IScheduleEntryService {
     
      public Answer delete(ScheduleEntry object);
 
+     public AnswerItem<List> readByName(String name);
+     
+     public Answer compareSchedListAndUpdateInsertDeleteElements(String campaign, List<ScheduleEntry> newList);
+     
+     public Answer deleteListSched(List<ScheduleEntry> objectList);
+     
+     public Answer createListSched(List<ScheduleEntry> objectList);
 }

@@ -50,18 +50,18 @@ import org.cerberus.util.answer.Answer;
  */
 @Repository
 public class ScheduleEntryDAO implements IScheduleEntryDAO {
-
+    
     @Autowired
     private DatabaseSpring databaseSpring;
-
+    
     @Autowired
     IFactoryScheduleEntry factoryscheduleentry = new FactoryScheduleEntry();
-
+    
     private static final Logger LOG = LogManager.getLogger(ScheduleEntryDAO.class);
     private final String OBJECT_NAME = "Scheduler";
     private final String SQL_DUPLICATED_CODE = "23000";
     private final int MAX_ROW_SELECTED = 100000;
-
+    
     @Override
     public AnswerItem<ScheduleEntry> readByKey(Integer id) {
         LOG.debug(id);
@@ -76,7 +76,7 @@ public class ScheduleEntryDAO implements IScheduleEntryDAO {
             LOG.debug("SQL : " + query);
             LOG.debug("SQL.param.SchedulerDAO : " + id);
         }
-
+        
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
@@ -86,11 +86,8 @@ public class ScheduleEntryDAO implements IScheduleEntryDAO {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     if (resultSet.first()) {
-                        LOG.debug("find resultset");
                         result = loadFromResultSet(resultSet);
-                        LOG.debug("load resultset");
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-                        LOG.debug("data message resultset");
                         msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
                         ans.setItem(result);
                     } else {
@@ -127,7 +124,72 @@ public class ScheduleEntryDAO implements IScheduleEntryDAO {
         //sets the message
         return ans;
     }
-
+    
+    @Override
+    public AnswerItem<List> readByName(String name) {
+        //LOG.debug("readAllActive is running");
+        AnswerItem<List> ans = new AnswerItem();
+        List<ScheduleEntry> objectList = new ArrayList<ScheduleEntry>();
+        final String query = "SELECT * FROM `scheduleentry` WHERE `name` = ?";
+        MessageEvent msg = null;
+        // Debug message on SQL.        
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                int i = 1;
+                preStat.setString(i++, name);
+                try {
+                    ResultSet resultSet = preStat.executeQuery();
+                    try {
+                        objectList = new ArrayList<ScheduleEntry>();
+                        while (resultSet.next()) {
+                            objectList.add(this.loadFromResultSet(resultSet));
+                        }
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+                    } catch (SQLException exception) {
+                        LOG.error("Unable to execute query : " + exception.toString());
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+                        
+                    } finally {
+                        resultSet.close();
+                    }
+                } catch (SQLException exception) {
+                    LOG.error("Unable to execute query : " + exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+                } finally {
+                    preStat.close();
+                }
+            } catch (Exception exception) {
+                LOG.debug("Failed to construct request for read schduler");
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException exception) {
+                LOG.warn(exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            }
+        }
+        ans.setResultMessage(msg);
+        ans.setItem(objectList);
+        //sets the message
+        return ans;
+    }
+    
     @Override
     public AnswerItem<List> readAllActive() {
         //LOG.debug("readAllActive is running");
@@ -155,7 +217,7 @@ public class ScheduleEntryDAO implements IScheduleEntryDAO {
                     LOG.error("Unable to execute query : " + exception.toString());
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
-
+                    
                 } finally {
                     resultSet.close();
                 }
@@ -186,7 +248,7 @@ public class ScheduleEntryDAO implements IScheduleEntryDAO {
         //sets the message
         return ans;
     }
-
+    
     private ScheduleEntry loadFromResultSet(ResultSet rs) throws SQLException {
         //LOG.debug("loadFromResultSet scheduleentry");
         int schedulerId = ParameterParserUtil.parseIntegerParam(rs.getString("scheduleentry.ID"), 0);
@@ -201,21 +263,21 @@ public class ScheduleEntryDAO implements IScheduleEntryDAO {
         Timestamp dateCreated = rs.getTimestamp("scheduleentry.DateCreated");
         ScheduleEntry newScheduleEntry = factoryscheduleentry.create(schedulerId, type, name, cronDefinition, lastExecution, active, usrCreated, dateCreated, usrModif, dateModif);
         return newScheduleEntry;
-
+        
     }
-
+    
     @Override
     public AnswerItem<Integer> create(ScheduleEntry scheduler) {
         LOG.debug("SCHEDULE ENTRY DAO CALL");
         MessageEvent msg = null;
         AnswerItem<Integer> ans = new AnswerItem();
         final StringBuilder query = new StringBuilder("INSERT INTO `scheduleentry` (`type`, `name`,`cronDefinition`,`active`,`UsrCreated`) VALUES ( ?, ?, ?, ?, ?);");
-
+        
         Connection connection = this.databaseSpring.connect();
         try {
-
+            
             PreparedStatement preStat = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
-
+            
             try {
                 int i = 1;
                 preStat.setString(i++, scheduler.getType());
@@ -228,7 +290,7 @@ public class ScheduleEntryDAO implements IScheduleEntryDAO {
                 msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT"));
                 ans.setItem(MAX_ROW_SELECTED);
                 ResultSet resultSet = preStat.getGeneratedKeys();
-
+                
                 try {
                     if (resultSet.first()) {
                         LOG.debug("ID of new job " + resultSet.getInt(1));
@@ -239,10 +301,10 @@ public class ScheduleEntryDAO implements IScheduleEntryDAO {
                 } finally {
                     resultSet.close();
                 }
-
+                
             } catch (SQLException exception) {
                 LOG.error("Unable to execute query : " + exception.toString());
-
+                
                 if (exception.getSQLState().equals(SQL_DUPLICATED_CODE)) { //23000 is the sql state for duplicate entries
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_DUPLICATE);
                     msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT").replace("%REASON%", exception.toString()));
@@ -269,23 +331,23 @@ public class ScheduleEntryDAO implements IScheduleEntryDAO {
         ans.setResultMessage(msg);
         return ans;
     }
-
+    
     @Override
     public Answer update(ScheduleEntry scheduleEntryObject) {
         MessageEvent msg = null;
-
+        
         String query = "UPDATE scheduleentry SET type = ? , name = ?, cronDefinition = ?,lastExecution = ?, active = ?, DateModif = CURRENT_TIMESTAMP, UsrModif = ? WHERE ID = ?";
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
             LOG.debug("SQL.param.scheduleEntryObject : " + scheduleEntryObject.getName());
-
+            
         }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
-
+                
                 int i = 1;
                 preStat.setString(i++, scheduleEntryObject.getType());
                 preStat.setString(i++, scheduleEntryObject.getName());
@@ -294,7 +356,7 @@ public class ScheduleEntryDAO implements IScheduleEntryDAO {
                 preStat.setString(i++, scheduleEntryObject.getActive());
                 preStat.setString(i++, scheduleEntryObject.getUsrModif());
                 preStat.setInt(i++, scheduleEntryObject.getID());
-
+                
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                 msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
@@ -336,7 +398,7 @@ public class ScheduleEntryDAO implements IScheduleEntryDAO {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
                 preStat.setInt(1, object.getID());
-
+                
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
                 msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "DELETE"));

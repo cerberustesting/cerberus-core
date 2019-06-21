@@ -121,4 +121,44 @@ public class ScheduleEntry {
         this.DateModif = DateModif;
     }
 
+    public boolean schedHasSameKey(ScheduleEntry obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        
+        if (getID() != obj.getID()){
+            return false;
+        }
+
+        return true;
+    }
+
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final ScheduleEntry other = (ScheduleEntry) obj;
+        if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name)) {
+            return false;
+        }
+        if ((this.ID == null) ? (other.ID != null) : !this.ID.equals(other.ID)) {
+            return false;
+        }
+        if ((this.cronDefinition == null) ? (other.cronDefinition != null) : !this.cronDefinition.equals(other.cronDefinition)) {
+            return false;
+        }
+        if ((this.active == null) ? (other.active != null) : !this.active.equals(other.active)) {
+            return false;
+        }
+        if ((this.type == null) ? (other.type != null) : !this.type.equals(other.type)) {
+            return false;
+        }
+        return true;
+    }
 }

@@ -40,4 +40,6 @@ public interface IScheduleEntryDAO {
     public Answer update(ScheduleEntry scheduleEntryObject);
     
     public Answer delete(ScheduleEntry object);
+    
+    public AnswerItem<List> readByName(String name);
 }
