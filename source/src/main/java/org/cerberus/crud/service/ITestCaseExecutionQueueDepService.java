@@ -69,7 +69,7 @@ public interface ITestCaseExecutionQueueDepService {
      * @param exeId
      * @return
      */
-    AnswerItem<Integer> updateStatusToRelease(String env, String Country, String tag, String type, String test, String testCase, String comment, long exeId);
+    AnswerItem<Integer> updateStatusToRelease(String env, String Country, String tag, String type, String test, String testCase, String comment, long exeId, long queueId);
 
     /**
      *
@@ -77,6 +77,13 @@ public interface ITestCaseExecutionQueueDepService {
      * @return
      */
     AnswerList<Long> readExeQueueIdByExeId(long exeId);
+
+    /**
+     *
+     * @param exeId
+     * @return
+     */
+    AnswerList<Long> readExeQueueIdByQueueId(long exeId);
 
     /**
      *

@@ -189,7 +189,7 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
         AnswerItem<Integer> ans = new AnswerItem<>();
         MessageEvent msg = null;
 
-        final String query = "SELECT tce.controlstatus FROM testcaseexecutionqueuedep tcd JOIN testcaseexecution tce ON tcd.exeid=tce.id WHERE tcd.`ExeQueueID` = ? and tcd.Status = 'RELEASED' and tce.controlstatus != 'OK';";
+        final String query = "SELECT tce.controlstatus FROM testcaseexecutionqueuedep tcd LEFT OUTER JOIN testcaseexecution tce ON tcd.exeid=tce.id WHERE tcd.`ExeQueueID` = ? and tcd.Status = 'RELEASED' and (tce.controlstatus is null or tce.controlstatus != 'OK');";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -245,6 +245,49 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
                 PreparedStatement preStat = connection.prepareStatement(query)) {
             // Prepare and execute query
             preStat.setLong(1, exeId);
+            ResultSet rs = preStat.executeQuery();
+            try {
+                List<Long> al = new ArrayList<>();
+                while (rs.next()) {
+                    al.add(rs.getLong("ExeQueueID"));
+                }
+                ans.setDataList(al);
+                // Set the final message
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME).resolveDescription("OPERATION", "SELECT");
+            } catch (Exception e) {
+                LOG.error("Unable to execute query : " + e.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION", e.toString());
+            } finally {
+                if (rs != null) {
+                    rs.close();
+                }
+            }
+        } catch (Exception e) {
+            LOG.error("Unable to read by exeId : " + e.getMessage());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION", e.toString());
+        } finally {
+            ans.setResultMessage(msg);
+        }
+        return ans;
+    }
+
+    @Override
+    public AnswerList<Long> readExeQueueIdByQueueId(long queueId) {
+        AnswerList ans = new AnswerList<>();
+        MessageEvent msg = null;
+
+        final String query = "SELECT DISTINCT ExeQueueID FROM testcaseexecutionqueuedep WHERE `QueueID` = ?";
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.queueId : " + queueId);
+        }
+
+        try (Connection connection = databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query)) {
+            // Prepare and execute query
+            preStat.setLong(1, queueId);
             ResultSet rs = preStat.executeQuery();
             try {
                 List<Long> al = new ArrayList<>();
@@ -471,10 +514,10 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
     }
 
     @Override
-    public AnswerItem<Integer> updateStatusToRelease(String env, String Country, String tag, String type, String test, String testCase, String comment, long exeId) {
+    public AnswerItem<Integer> updateStatusToRelease(String env, String Country, String tag, String type, String test, String testCase, String comment, long exeId, long queueId) {
         AnswerItem<Integer> ans = new AnswerItem();
         MessageEvent msg = null;
-        String query = "UPDATE `testcaseexecutionqueuedep` SET `Status` = 'RELEASED', `Comment` = ? , `ExeId` = ?, ReleaseDate = NOW(), DateModif = NOW() "
+        String query = "UPDATE `testcaseexecutionqueuedep` SET `Status` = 'RELEASED', `Comment` = ? , `ExeId` = ?, `QueueId` = ?, ReleaseDate = NOW(), DateModif = NOW() "
                 + " WHERE `Status` = 'WAITING' and `Type` = ? and `DepTest` = ? and `DepTestCase` = ? and `Tag` = ? and `Environment` = ? and `Country` = ? ";
 
         // Debug message on SQL.
@@ -488,6 +531,7 @@ public class TestCaseExecutionQueueDepDAO implements ITestCaseExecutionQueueDepD
             int i = 1;
             preStat.setString(i++, comment);
             preStat.setLong(i++, exeId);
+            preStat.setLong(i++, queueId);
             preStat.setString(i++, type);
             preStat.setString(i++, test);
             preStat.setString(i++, testCase);

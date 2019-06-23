@@ -75,6 +75,13 @@ public interface ITestCaseExecutionQueueDepDAO {
 
     /**
      *
+     * @param queueId
+     * @return
+     */
+    AnswerList<Long> readExeQueueIdByQueueId(long queueId);
+
+    /**
+     *
      * @param startPosition
      * @param length
      * @param columnName
@@ -115,9 +122,10 @@ public interface ITestCaseExecutionQueueDepDAO {
      * @param testCase
      * @param comment
      * @param exeId
+     * @param queueId
      * @return
      */
-    AnswerItem<Integer> updateStatusToRelease(String env, String Country, String tag, String type, String test, String testCase, String comment, long exeId);
+    AnswerItem<Integer> updateStatusToRelease(String env, String Country, String tag, String type, String test, String testCase, String comment, long exeId, long queueId);
 
     /**
      *

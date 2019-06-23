@@ -146,6 +146,11 @@ public class PropertyService implements IPropertyService {
         }
 
         /**
+         * We start to decode properties from available executiondata List.
+         */
+        stringToDecode = decodeStringWithAlreadyCalculatedProperties(stringToDecode, tCExecution);
+
+        /**
          * Look at all the potencial properties still contained in
          * StringToDecode (considering that properties are between %).
          */
@@ -579,7 +584,7 @@ public class PropertyService implements IPropertyService {
                     if (data != null) {
                         useCache = true;
                     }
-                } catch(CerberusException e) {
+                } catch (CerberusException e) {
                     // do nothing, useCache will be false
                 }
             }
@@ -930,15 +935,15 @@ public class PropertyService implements IPropertyService {
         if (tCExecution.getApplicationObj().getType().equals(Application.TYPE_GUI)) {
 
             try {
-            //TODO : check if HAR is the same than the last one to avoid to download same har file several times
-            // String remoteHarMD5 = "http://" + tCExecution.getRobotExecutorObj().getHost() + ":" + tCExecution.getRobotExecutorObj().getExecutorExtensionPort() + "/getHarMD5?uuid="+tCExecution.getRemoteProxyUUID();
-                
+                //TODO : check if HAR is the same than the last one to avoid to download same har file several times
+                // String remoteHarMD5 = "http://" + tCExecution.getRobotExecutorObj().getHost() + ":" + tCExecution.getRobotExecutorObj().getExecutorExtensionPort() + "/getHarMD5?uuid="+tCExecution.getRemoteProxyUUID();
+
                 //getHarFile
-            String url = "http://" + tCExecution.getRobotExecutorObj().getHost() + ":" + tCExecution.getRobotExecutorObj().getExecutorExtensionPort() + "/getHar?uuid="+tCExecution.getRemoteProxyUUID();
-            //tCExecution.addFileList(recorderService.recordHarLog(tCExecution, url));
-            testCaseExecutionData.setValue2(url);
-            testCaseExecutionData = this.property_getFromJson(testCaseExecutionData, tCExecution, forceCalculation);
-            
+                String url = "http://" + tCExecution.getRobotExecutorObj().getHost() + ":" + tCExecution.getRobotExecutorObj().getExecutorExtensionPort() + "/getHar?uuid=" + tCExecution.getRemoteProxyUUID();
+                //tCExecution.addFileList(recorderService.recordHarLog(tCExecution, url));
+                testCaseExecutionData.setValue2(url);
+                testCaseExecutionData = this.property_getFromJson(testCaseExecutionData, tCExecution, forceCalculation);
+
             } catch (Exception ex) {
                 LOG.warn(ex);
                 MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_SQLLIB_NOTEXIT);
@@ -1063,10 +1068,10 @@ public class PropertyService implements IPropertyService {
         String script = testCaseExecutionData.getValue1();
         String valueFromJS;
         String message = "";
-        if(tCExecution.getManualExecution().equals("Y")) {
+        if (tCExecution.getManualExecution().equals("Y")) {
             MessageEvent mes = new MessageEvent(MessageEventEnum.PROPERTY_NOTPOSSIBLE);
             testCaseExecutionData.setPropertyResultMessage(mes);
-        }else {
+        } else {
             try {
                 valueFromJS = this.webdriverService.getValueFromJS(tCExecution.getSession(), script);
             } catch (Exception e) {
