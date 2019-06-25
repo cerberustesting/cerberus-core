@@ -64,13 +64,18 @@ public class TestCaseExecutionQueueDepService implements ITestCaseExecutionQueue
     }
 
     @Override
-    public AnswerItem<Integer> updateStatusToRelease(String env, String Country, String tag, String type, String test, String testCase, String comment, long exeId) {
-        return testCaseExecutionQueueDepDAO.updateStatusToRelease(env, Country, tag, type, test, testCase, comment, exeId);
+    public AnswerItem<Integer> updateStatusToRelease(String env, String Country, String tag, String type, String test, String testCase, String comment, long exeId, long queueId) {
+        return testCaseExecutionQueueDepDAO.updateStatusToRelease(env, Country, tag, type, test, testCase, comment, exeId, queueId);
     }
 
     @Override
     public AnswerList<Long> readExeQueueIdByExeId(long exeId) {
         return testCaseExecutionQueueDepDAO.readExeQueueIdByExeId(exeId);
+    }
+
+    @Override
+    public AnswerList<Long> readExeQueueIdByQueueId(long queueId) {
+        return testCaseExecutionQueueDepDAO.readExeQueueIdByQueueId(queueId);
     }
 
     @Override
@@ -96,11 +101,11 @@ public class TestCaseExecutionQueueDepService implements ITestCaseExecutionQueue
     @Override
     public void manageDependenciesEndOfExecution(TestCaseExecution tCExecution) {
         if (tCExecution != null) {
-            LOG.debug("Releaase dependencies of Execution : " + tCExecution.getId() + ".");
+            LOG.debug("Release dependencies of Execution : " + tCExecution.getId() + ".");
 
-            // We only do the dependency management if there are no longuer retry.
+            // Updating all dependencies of type TCEEXEEND and tCExecution.getId() to RELEASED.
             AnswerItem ansNbDep = updateStatusToRelease(tCExecution.getEnvironment(), tCExecution.getCountry(), tCExecution.getTag(),
-                    TestCaseExecutionQueueDep.TYPE_TCEXEEND, tCExecution.getTest(), tCExecution.getTestCase(), "", tCExecution.getId());
+                    TestCaseExecutionQueueDep.TYPE_TCEXEEND, tCExecution.getTest(), tCExecution.getTestCase(), "", tCExecution.getId(), 0);
             int nbdep = (int) ansNbDep.getItem();
             // Only check status of each Queue Entries if we RELEASED at least 1 entry.
             if (nbdep > 0) {
@@ -118,21 +123,21 @@ public class TestCaseExecutionQueueDepService implements ITestCaseExecutionQueue
 
     @Override
     public void manageDependenciesEndOfQueueExecution(long idQueue) {
-        LOG.debug("Releaase dependencies of Queue : " + idQueue + ".");
+        LOG.debug("Release dependencies of Queue : " + idQueue + ".");
 
         try {
             //, String environment, String country, String tag, String test, String testCase
             TestCaseExecutionQueue queueEntry = executionQueueService.convert(executionQueueService.readByKey(idQueue));
 
-            // We only do the dependency management if there are no longuer retry.
+            // Updating all dependencies of type TCEEXEEND and tCExecution.getId() to RELEASED.
             AnswerItem ansNbDep = updateStatusToRelease(queueEntry.getEnvironment(), queueEntry.getCountry(), queueEntry.getTag(),
-                    TestCaseExecutionQueueDep.TYPE_TCEXEEND, queueEntry.getTest(), queueEntry.getTestCase(), "Queue Entry " + idQueue + "in ERROR.", idQueue);
+                    TestCaseExecutionQueueDep.TYPE_TCEXEEND, queueEntry.getTest(), queueEntry.getTestCase(), "Queue Entry " + idQueue + " in ERROR.", 0, idQueue);
             int nbdep = (int) ansNbDep.getItem();
             // Only check status of each Queue Entries if we RELEASED at least 1 entry.
             if (nbdep > 0) {
                 // Getting the list of impacted Queue Entries where we released dependencies.
                 List<Long> al = new ArrayList<>();
-                AnswerList ansQueueId = readExeQueueIdByExeId(idQueue);
+                AnswerList ansQueueId = readExeQueueIdByQueueId(idQueue);
                 al = ansQueueId.getDataList();
                 // For each exequeue entry we just updated, we move status from QUWITHDEP to QUEUED in case there are no more WAITING dependency.
                 for (Long long1 : al) {

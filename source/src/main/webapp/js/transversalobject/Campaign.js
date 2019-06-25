@@ -427,17 +427,17 @@ function editEntryClick(param) {
 
         hideLoader("#testcampaignList");
 
-        var displayScheduler = 0
+        var displayScheduler = 0;
         if (displayScheduler == 0) {
-            $('#createTab8Text').hide();   
+            $('#createTab8Text').hide();
         }
-            /* SCHEDULER */
-            $('#editTestcampaignModal .nav-tabs a[href="#tabsCreate-1"]').tab('show');
-            formEdit.modal('show');
-            $('#addscheduler').off('click');
-            $('#addscheduler').click(addNewSchedulerRow);
-            loadSchedulerTable(param);
-        
+        /* SCHEDULER */
+        $('#editTestcampaignModal .nav-tabs a[href="#tabsCreate-1"]').tab('show');
+        formEdit.modal('show');
+        $('#addscheduler').off('click');
+        $('#addscheduler').click(addNewSchedulerRow);
+        loadSchedulerTable(param);
+
     });
 
 }
@@ -586,9 +586,14 @@ function addEntryClick() {
     $('#editTestcampaignModal .nav-tabs a[href="#tabsCreate-1"]').tab('show');
     $('#editTestcampaignModal').modal('show');
 
-    //$('#parameterScheduler tr').remove();
-    //$('#addscheduler').off('click');
-    //$('#addscheduler').click(addNewSchedulerRow);
+    var displayScheduler = 0;
+    if (displayScheduler == 0) {
+        $('#createTab8Text').hide();
+    }
+
+    $('#parameterScheduler tr').remove();
+    $('#addscheduler').off('click');
+    $('#addscheduler').click(addNewSchedulerRow);
 }
 
 function addEntryModalSaveHandler() {
@@ -602,9 +607,9 @@ function addEntryModalSaveHandler() {
     }
 
     // Getting Data from Scheduler TAB
-    var table1 = $("#parameterSchedulerTable tr");
+    var table1 = $("#parameterSchedulerTable tr.dataField");
     var table_scheduler = [];
-    for (var i = 1; i < table1.length; i++) {
+    for (var i = 0; i < table1.length; i++) {
         table_scheduler.push($(table1[i]).data("scheduler"));
     }
     console.log(table_scheduler);
@@ -1121,7 +1126,7 @@ function appendSchedulerRow(scheduler) {
 
 function addNewSchedulerRow() {
     var newScheduler = {
-        cronDefinition: "",
+        cronDefinition: $('#schedulerinput').val(),
         active: "N",
         lastExecution: "",
         ID: "0",

@@ -489,13 +489,11 @@ public class ExecutionRunService implements IExecutionRunService {
                 LOG.debug(logPrefix + "All Properties Loaded. " + tcProperties.size() + " property(ies) found : " + tcProperties);
             }
 
-
             /**
              * Load All Execution Data of testcases that this execution depends
              */
             LOG.debug(logPrefix + "Loading all Execution Data of the execution from queue dependencies.");
             this.testCaseExecutionDataService.loadTestCaseExecutionDataFromDependencies(tCExecution);
-
 
             /**
              * Start Execution of the steps/Actions/controls Iterate Steps.

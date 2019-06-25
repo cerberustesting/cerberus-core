@@ -169,76 +169,83 @@ public class UpdateCampaign extends HttpServlet {
                 camp.setManualExecution(manualExecution);
                 camp.setUsrModif(request.getRemoteUser());
 
-                IScheduleEntryService scheduleentryservice = appContext.getBean(IScheduleEntryService.class);
-                schedAns = scheduleentryservice.compareSchedListAndUpdateInsertDeleteElements(c, schList);
-
-                if (schedAns.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                    finalAnswer = campaignService.update(camp);
-                    if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                        /**
-                         * Adding Log entry.
-                         */
-                        ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                        logEventService.createForPrivateCalls("/UpdateCampaign", "UPDATE", "Update Campaign : " + c, request);
-                    }
-
-                    if (parameter != null) {
-                        JSONArray parameters = new JSONArray(parameter);
-                        ICampaignParameterService campaignParameterService = appContext.getBean(ICampaignParameterService.class);
-                        IFactoryCampaignParameter factoryCampaignParameter = appContext.getBean(IFactoryCampaignParameter.class);
-                        ArrayList<CampaignParameter> arr = new ArrayList<>();
-                        for (int i = 0; i < parameters.length(); i++) {
-                            JSONArray bat = parameters.getJSONArray(i);
-                            CampaignParameter co = factoryCampaignParameter.create(0, bat.getString(0), bat.getString(2), bat.getString(3));
-                            arr.add(co);
-                        }
-
-                        finalAnswer = campaignParameterService.compareListAndUpdateInsertDeleteElements(c, arr);
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "Scheduler").replace("%OPERATION%", "No Insert"));
+                schedAns.setResultMessage(msg);
+                if (!schList.isEmpty()) {
+                    IScheduleEntryService scheduleentryservice = appContext.getBean(IScheduleEntryService.class);
+                    schedAns = scheduleentryservice.compareSchedListAndUpdateInsertDeleteElements(c, schList);
+                }
+                
+                    if (schedAns.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                        finalAnswer = campaignService.update(camp);
                         if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                             /**
                              * Adding Log entry.
                              */
                             ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                            logEventService.createForPrivateCalls("/UpdateCampaign", "UPDATE", "Update Campaign Parameter : " + camp.getCampaign(), request);
+                            logEventService.createForPrivateCalls("/UpdateCampaign", "UPDATE", "Update Campaign : " + c, request);
                         }
+
+                        if (parameter != null) {
+                            JSONArray parameters = new JSONArray(parameter);
+                            ICampaignParameterService campaignParameterService = appContext.getBean(ICampaignParameterService.class);
+                            IFactoryCampaignParameter factoryCampaignParameter = appContext.getBean(IFactoryCampaignParameter.class);
+                            ArrayList<CampaignParameter> arr = new ArrayList<>();
+                            for (int i = 0; i < parameters.length(); i++) {
+                                JSONArray bat = parameters.getJSONArray(i);
+                                CampaignParameter co = factoryCampaignParameter.create(0, bat.getString(0), bat.getString(2), bat.getString(3));
+                                arr.add(co);
+                            }
+
+                            finalAnswer = campaignParameterService.compareListAndUpdateInsertDeleteElements(c, arr);
+                            if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                                /**
+                                 * Adding Log entry.
+                                 */
+                                ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                                logEventService.createForPrivateCalls("/UpdateCampaign", "UPDATE", "Update Campaign Parameter : " + camp.getCampaign(), request);
+                            }
+                        }
+
+                        if (label != null) {
+                            JSONArray labels = new JSONArray(label);
+                            ICampaignLabelService campaignLabelService = appContext.getBean(ICampaignLabelService.class);
+                            IFactoryCampaignLabel factoryCampaignLabel = appContext.getBean(IFactoryCampaignLabel.class);
+                            ArrayList<CampaignLabel> arr = new ArrayList<>();
+                            for (int i = 0; i < labels.length(); i++) {
+                                JSONArray bat = labels.getJSONArray(i);
+                                CampaignLabel co = factoryCampaignLabel.create(0, bat.getString(0), Integer.valueOf(bat.getString(2)), request.getRemoteUser(), null, request.getRemoteUser(), null);
+                                arr.add(co);
+                            }
+
+                            finalAnswer = campaignLabelService.compareListAndUpdateInsertDeleteElements(c, arr);
+                            if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                                /**
+                                 * Adding Log entry.
+                                 */
+                                ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                                logEventService.createForPrivateCalls("/UpdateCampaign", "UPDATE", "Update Campaign Label : " + camp.getCampaign(), request);
+                            }
+                        }
+
+                    } else {
+                        finalAnswer = schedAns;
                     }
-
-                    if (label != null) {
-                        JSONArray labels = new JSONArray(label);
-                        ICampaignLabelService campaignLabelService = appContext.getBean(ICampaignLabelService.class);
-                        IFactoryCampaignLabel factoryCampaignLabel = appContext.getBean(IFactoryCampaignLabel.class);
-                        ArrayList<CampaignLabel> arr = new ArrayList<>();
-                        for (int i = 0; i < labels.length(); i++) {
-                            JSONArray bat = labels.getJSONArray(i);
-                            CampaignLabel co = factoryCampaignLabel.create(0, bat.getString(0), Integer.valueOf(bat.getString(2)), request.getRemoteUser(), null, request.getRemoteUser(), null);
-                            arr.add(co);
-                        }
-
-                        finalAnswer = campaignLabelService.compareListAndUpdateInsertDeleteElements(c, arr);
-                        if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                            /**
-                             * Adding Log entry.
-                             */
-                            ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                            logEventService.createForPrivateCalls("/UpdateCampaign", "UPDATE", "Update Campaign Label : " + camp.getCampaign(), request);
-                        }
-                    }
-
-                }else{
-                finalAnswer = schedAns;
                 }
             }
+
+            /**
+             * Formating and returning the json result.
+             */
+            jsonResponse.put("messageType", finalAnswer.getResultMessage().getMessage().getCodeString());
+            jsonResponse.put("message", finalAnswer.getResultMessage().getDescription());
+
+            response.getWriter().print(jsonResponse);
+            response.getWriter().flush();
         }
 
-        /**
-         * Formating and returning the json result.
-         */
-        jsonResponse.put("messageType", finalAnswer.getResultMessage().getMessage().getCodeString());
-        jsonResponse.put("message", finalAnswer.getResultMessage().getDescription());
-
-        response.getWriter().print(jsonResponse);
-        response.getWriter().flush();
-    }
+    
 
     private List<ScheduleEntry> getScheduleEntryListFromParameter(HttpServletRequest request, ApplicationContext appContext, String campaign, JSONArray json) throws JSONException {
         List<ScheduleEntry> scheList = new ArrayList<>();
@@ -260,7 +267,7 @@ public class UpdateCampaign extends HttpServlet {
             String name = campaign;
 
             int id;
-            if (cronExpression.isEmpty()) {
+            if (strId.isEmpty()) {
                 id = 0;
             } else {
                 try {

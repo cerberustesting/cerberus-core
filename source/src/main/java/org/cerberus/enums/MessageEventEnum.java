@@ -66,7 +66,7 @@ public enum MessageEventEnum {
     PROPERTY_SUCCESS_GETFROMDATALIB_NATURERANDOM(100, "OK", "row %POS% out of %TOTALPOS% selected randomly", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     PROPERTY_SUCCESS_GETFROMDATALIB_NATURERANDOMNEW(100, "OK", "out of %TOTNB% entries, %REMNB% removed (Already used for the same property name, testcase in the same country environment and build), row %POS% out of %TOTALPOS% selected randomly", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     PROPERTY_SUCCESS_GETFROMDATALIB_NATURENOTINUSE(100, "OK", "out of %TOTNB% entries, %REMNB% removed (Recent pending (PE) executions for the same property name in the same country, environment), row %POS% out of %TOTALPOS% selected randomly", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
-    PROPERTY_SUCCESS_RETRIEVE_BY_DEPENDENCY(100, "OK", "Property retrieve by depedency successfully.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    PROPERTY_SUCCESS_RETRIEVE_BY_DEPENDENCY(100, "OK", "Property retrieved from dependency of execution %EXEID% successfully.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     PROPERTY_SUCCESS_CSV(100, "OK", "CSV file found from '%URL%' and successfully parsed", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     PROPERTY_SUCCESS_FROMCACHE(100, "OK", "Property retrieved from cache entry. Execution ID : %ID% Generated at : %DATE%.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     PROPERTY_FAILED(150, "NA", "ERROR : Generic error on getting the property.", true, false, false, MessageGeneralEnum.EXECUTION_NA),

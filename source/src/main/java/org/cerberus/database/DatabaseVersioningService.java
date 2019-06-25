@@ -7898,7 +7898,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append(",('STEPCONDITIONOPER', 'ifTextNotInElement', 280, 'Only execute if text is not present in element.')");
         a.add(b.toString());
 
-        //Missing invariant on manual URL.
+        // Missing invariant on manual URL.
         // 1384
         a.add("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ('MANUALURL', '2', 300, 'Activate Application URL Manual definition only on defined parameters.')");
 
@@ -7954,7 +7954,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
                 + ",('', 'cerberus_automaticqueuecancellationjob_active', 'Y', 'Y in order to activate the job that will cancel old queue entries that are still running.')"
                 + ",('', 'cerberus_automaticqueuecancellationjob_timeout', '3600', 'Nb of Second after which a queue entry will be moved to CANCELLED state automaticly (3600 default).');");
 
-        //Insert the invariant IfTextInElement and IfTextNotInElement for Condition-Control
+        // Insert the invariant IfTextInElement and IfTextNotInElement for Condition-Control
         // 1391
         b = new StringBuilder();
         b.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ");
@@ -8100,19 +8100,19 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append(") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
         a.add(b.toString());
 
-        //Post campaign scheduler in myversion
-        //1407
+        // Post campaign scheduler in myversion
+        // 1407
         a.add("INSERT into myversion values('scheduler_version',0,'INIT');");
 
-        //1408 New constrain at application level.
+        // 1408 New constrain at application level.
         a.add("ALTER TABLE `application` ADD COLUMN `poolSize` INT NULL AFTER `BugTrackerNewUrl`;");
 
         // Add new Action to keypress inside a popup
         // 1409
         a.add("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('ACTION', 'manageDialogKeypress', '5600', 'Keypress on a popup dialog.', 'Popup Keypress')");
 
-        //
-        //1410
+        // Adding columns for proxy management.
+        // 1410
         b = new StringBuilder();
         b.append("ALTER TABLE `robotexecutor` ");
         b.append("ADD COLUMN `executorExtensionPort` INT(8) NULL DEFAULT NULL AFTER `deviceLockUnlock`,");
@@ -8120,20 +8120,18 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append("ADD COLUMN `executorProxyPort` INT(8) NULL DEFAULT NULL AFTER `executorProxyHost`,");
         b.append("ADD COLUMN `executorProxyActive` VARCHAR(1) NOT NULL DEFAULT 'N' AFTER `executorProxyPort`;");
         a.add(b.toString());
-        
-        //1411
+
+        // 1411-1412
         a.add("ALTER TABLE `scheduledexecution` DROP FOREIGN KEY FK_scheduledexecution_01;");
-        //1412
         a.add("ALTER TABLE `scheduledexecution` ADD CONSTRAINT `FK_scheduledexecution_01` FOREIGN KEY (`schedulerID`) REFERENCES `scheduleentry` (`ID`) ON UPDATE CASCADE ON DELETE CASCADE");
-        
-        // Add the "longPress" and "clearField" Action
+
         // 1413
         b = new StringBuilder();
-        b.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ");
-        b.append("('ACTION', 'longPress', '3100', 'Long tap on element', 'longPress'),");
-        b.append("('ACTION', 'clearField', '11500', 'Clear a Field', 'clearField')");
+        b.append("ALTER TABLE `testcaseexecutionqueuedep` ");
+        b.append("ADD COLUMN `QueueID` BIGINT(20) UNSIGNED NULL DEFAULT NULL AFTER `ExeID`, ");
+        b.append("ADD INDEX `IX_testcaseexecutiondep_05` (`QueueID` ASC);");
         a.add(b.toString());
-        
+
         return a;
     }
 

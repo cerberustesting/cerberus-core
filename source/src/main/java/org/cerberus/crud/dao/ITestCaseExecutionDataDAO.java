@@ -41,6 +41,7 @@ public interface ITestCaseExecutionDataDAO {
      * @param property
      * @param index
      * @return
+     * @throws org.cerberus.exception.CerberusException
      */
     TestCaseExecutionData readByKey(long id, String property, int index) throws CerberusException;
 
@@ -53,7 +54,8 @@ public interface ITestCaseExecutionDataDAO {
      * @param dir
      * @param searchTerm
      * @param individualSearch
-     * @return
+     * @return 
+     * @throws org.cerberus.exception.CerberusException
      */
     List<TestCaseExecutionData> readByIdByCriteria(long id, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException;
 
@@ -65,6 +67,7 @@ public interface ITestCaseExecutionDataDAO {
      * @param property
      * @param cacheExpire
      * @return
+     * @throws org.cerberus.exception.CerberusException
      */
     TestCaseExecutionData readLastCacheEntry(String system, String environment, String country, String property, int cacheExpire) throws CerberusException;
 
@@ -81,6 +84,7 @@ public interface ITestCaseExecutionDataDAO {
      * @param environment
      * @param country
      * @return
+     * @throws org.cerberus.exception.CerberusException
      */
     List<String> getPastValuesOfProperty(long id, String propName, String test, String testCase, String build, String environment, String country) throws CerberusException;
 
@@ -96,20 +100,21 @@ public interface ITestCaseExecutionDataDAO {
      * @param timeoutInSecond
      * @param country
      * @return
+     * @throws org.cerberus.exception.CerberusException
      */
     List<String> getInUseValuesOfProperty(long id, String propName, String environment, String country, Integer timeoutInSecond) throws CerberusException;
 
     /**
      *
      * @param object
-     * @return
+     * @throws org.cerberus.exception.CerberusException
      */
     void create(TestCaseExecutionData object) throws CerberusException;
 
     /**
      *
      * @param object
-     * @return
+     * @throws org.cerberus.exception.CerberusException
      */
     void delete(TestCaseExecutionData object) throws CerberusException;
 
@@ -126,5 +131,5 @@ public interface ITestCaseExecutionDataDAO {
      * @return
      * @throws CerberusException
      */
-    List<TestCaseExecutionData> readTestCaseExecutionDataFromDependencies(TestCaseExecution tce)  throws CerberusException ;
+    List<TestCaseExecutionData> readTestCaseExecutionDataFromDependencies(TestCaseExecution tce) throws CerberusException;
 }

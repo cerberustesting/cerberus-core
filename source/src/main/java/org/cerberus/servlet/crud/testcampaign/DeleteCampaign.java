@@ -20,6 +20,7 @@
 package org.cerberus.servlet.crud.testcampaign;
 
 import java.io.IOException;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -28,8 +29,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.Campaign;
+import org.cerberus.crud.entity.ScheduleEntry;
 import org.cerberus.crud.service.ICampaignService;
 import org.cerberus.crud.service.ILogEventService;
+import org.cerberus.crud.service.IScheduleEntryService;
 import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
@@ -65,6 +68,7 @@ public class DeleteCampaign extends HttpServlet {
         JSONObject jsonResponse = new JSONObject();
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         Answer ans = new Answer();
+        Answer schedAns = new Answer();
         Answer finalAnswer = new Answer();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -102,18 +106,30 @@ public class DeleteCampaign extends HttpServlet {
                         .replace("%REASON%", "Campaign can not be found"));
                 finalAnswer.setResultMessage(msg);
             } else {
-                Campaign camp = (Campaign) resp.getItem();
-                finalAnswer = campaignService.delete(camp);
-
-                if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                    /**
-                     * Adding Log entry.
-                     */
-                    ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createForPrivateCalls("/DeleteCampaign", "DELETE", "Delete Campaign : " + key, request);
-
+                IScheduleEntryService scheduleentryservice = appContext.getBean(IScheduleEntryService.class);
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "Scheduler").replace("%OPERATION%", "No Insert"));
+                schedAns.setResultMessage(msg);
+                List<ScheduleEntry> schList = scheduleentryservice.readByName(key).getItem();
+                if (!schList.isEmpty()) {
+                    schedAns = scheduleentryservice.deleteByCampaignName(key);
                 }
+                if (schedAns.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                    Campaign camp = (Campaign) resp.getItem();
+                    finalAnswer = campaignService.delete(camp);
 
+                    if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                        /**
+                         * Adding Log entry.
+                         */
+                        ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                        logEventService.createForPrivateCalls("/DeleteCampaign", "DELETE", "Delete Campaign : " + key, request);
+
+                    }
+
+                }else{
+                finalAnswer = schedAns;
+                }
             }
         }
 
