@@ -41,6 +41,7 @@ public class Session {
     private Integer cerberus_selenium_wait_element;
     private Integer cerberus_appium_wait_element;
     private Integer cerberus_selenium_action_click_timeout;
+    private Integer cerberus_appium_action_longpress_wait;
     private boolean started;
     private boolean cerberus_selenium_autoscroll;
     private DesiredCapabilities desiredCapabilities;
@@ -172,6 +173,14 @@ public class Session {
 
     public void setCerberus_selenium_action_click_timeout(Integer cerberus_selenium_action_click_timeout) {
         this.cerberus_selenium_action_click_timeout = cerberus_selenium_action_click_timeout;
+    }
+
+    public Integer getCerberus_appium_action_longpress_wait() {
+        return cerberus_selenium_action_click_timeout;
+    }
+    
+    public void setCerberus_appium_action_longpress_wait(Integer cerberus_appium_action_longpress_wait) {
+        this.cerberus_appium_action_longpress_wait = cerberus_appium_action_longpress_wait;
     }
     
 }

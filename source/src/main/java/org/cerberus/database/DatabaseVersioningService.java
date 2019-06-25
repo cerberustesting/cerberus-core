@@ -8104,15 +8104,15 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         //1407
         a.add("INSERT into myversion values('scheduler_version',0,'INIT');");
 
-        //1407 New constrain at application level.
+        //1408 New constrain at application level.
         a.add("ALTER TABLE `application` ADD COLUMN `poolSize` INT NULL AFTER `BugTrackerNewUrl`;");
 
         // Add new Action to keypress inside a popup
-        // 1408
+        // 1409
         a.add("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('ACTION', 'manageDialogKeypress', '5600', 'Keypress on a popup dialog.', 'Popup Keypress')");
 
         //
-        //1409
+        //1410
         b = new StringBuilder();
         b.append("ALTER TABLE `robotexecutor` ");
         b.append("ADD COLUMN `executorExtensionPort` INT(8) NULL DEFAULT NULL AFTER `deviceLockUnlock`,");
@@ -8121,11 +8121,19 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append("ADD COLUMN `executorProxyActive` VARCHAR(1) NOT NULL DEFAULT 'N' AFTER `executorProxyPort`;");
         a.add(b.toString());
         
-        //1410
+        //1411
         a.add("ALTER TABLE `scheduledexecution` DROP FOREIGN KEY FK_scheduledexecution_01;");
-
+        //1412
         a.add("ALTER TABLE `scheduledexecution` ADD CONSTRAINT `FK_scheduledexecution_01` FOREIGN KEY (`schedulerID`) REFERENCES `scheduleentry` (`ID`) ON UPDATE CASCADE ON DELETE CASCADE");
-
+        
+        // Add the "longPress" and "clearField" Action
+        // 1413
+        b = new StringBuilder();
+        b.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ");
+        b.append("('ACTION', 'longPress', '3100', 'Long tap on element', 'longPress'),");
+        b.append("('ACTION', 'clearField', '11500', 'Clear a Field', 'clearField')");
+        a.add(b.toString());
+        
         return a;
     }
 

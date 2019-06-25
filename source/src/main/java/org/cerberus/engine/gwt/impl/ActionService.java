@@ -294,6 +294,12 @@ public class ActionService implements IActionService {
                 case TestCaseStepAction.ACTION_DRAGANDDROP:
                     res = this.doActionDragAndDrop(tCExecution, value1, value2);
                     break;
+                case TestCaseStepAction.ACTION_LONG_CLICK:
+                    res = this.doActionLongClick(tCExecution, value1, value2);
+                    break;
+                case TestCaseStepAction.ACTION_CLEAR:
+                    res = this.doActionClear(tCExecution, value1);
+                    break;
                 /**
                  * DEPRECATED ACTIONS FROM HERE.
                  */
@@ -352,6 +358,8 @@ public class ActionService implements IActionService {
         testCaseStepActionExecution.setEnd(new Date().getTime());
         return testCaseStepActionExecution;
     }
+
+
 
     private MessageEvent doActionInstallApp(TestCaseExecution tCExecution, String appPath) {
         MessageEvent message;
@@ -1575,6 +1583,81 @@ public class ActionService implements IActionService {
         return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION)
                 .resolveDescription("ACTION", "Swipe screen")
                 .resolveDescription("APPLICATIONTYPE", tCExecution.getApplicationObj().getType());
+    }
+
+    private MessageEvent doActionLongClick(TestCaseExecution tCExecution, String value1, String value2) {
+        String element;
+        try {
+            /**
+             * Get element to use String object if not empty, String property if
+             * object empty, throws Exception if both empty)
+             */
+            element = getElementToUse(value1, value2, TestCaseStepAction.ACTION_LONG_CLICK, tCExecution);
+            /**
+             * Get Identifier (identifier, locator) and check it's valid
+             */
+            Integer longPressTime = 8000;
+            try {
+                longPressTime = Integer.parseInt(value2);
+            } catch (NumberFormatException e) {
+                // do nothing
+            }
+            Identifier identifier = identifierService.convertStringToIdentifier(element);
+
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
+                identifierService.checkWebElementIdentifier(identifier.getIdentifier());
+                return androidAppiumService.longPress(tCExecution.getSession(), identifier, longPressTime);
+            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
+                identifierService.checkWebElementIdentifier(identifier.getIdentifier());
+                return iosAppiumService.longPress(tCExecution.getSession(), identifier, longPressTime);
+            } else {
+                return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION)
+                        .resolveDescription("ACTION", "Long Click")
+                        .resolveDescription("APPLICATIONTYPE", tCExecution.getApplicationObj().getType());
+            }
+        } catch (CerberusEventException ex) {
+            LOG.fatal("Error doing Action Click :" + ex, ex);
+            return ex.getMessageError();
+        }
+    }
+
+    private MessageEvent doActionClear(TestCaseExecution tCExecution, String object) {
+        String element;
+        try {
+            /**
+             * Check object and property are not null for GUI/APK/IPA Check
+             * property is not null for FAT Application
+             */
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
+                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
+                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
+                if (object == null) {
+                    return new MessageEvent(MessageEventEnum.ACTION_FAILED_TYPE);
+                }
+            }
+            /**
+             * Get Identifier (identifier, locator) if object not null
+             */
+            Identifier identifier = new Identifier();
+            if (object != null) {
+                identifier = identifierService.convertStringToIdentifier(object);
+            }
+
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
+                identifierService.checkWebElementIdentifier(identifier.getIdentifier());
+                return androidAppiumService.clearField(tCExecution.getSession(), identifier);
+            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
+                identifierService.checkWebElementIdentifier(identifier.getIdentifier());
+                return iosAppiumService.clearField(tCExecution.getSession(), identifier);
+            } else {
+                return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION)
+                        .resolveDescription("ACTION", "ClearField")
+                        .resolveDescription("APPLICATIONTYPE", tCExecution.getApplicationObj().getType());
+            }
+        } catch (CerberusEventException ex) {
+            LOG.fatal("Error doing Action Type : " + ex);
+            return ex.getMessageError();
+        }
     }
 
 }

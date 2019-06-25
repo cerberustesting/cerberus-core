@@ -24,6 +24,7 @@ import io.appium.java_client.MobileBy;
 import io.appium.java_client.MobileElement;
 import io.appium.java_client.TouchAction;
 import io.appium.java_client.android.AndroidElement;
+import io.appium.java_client.touch.WaitOptions;
 import io.appium.java_client.touch.offset.ElementOption;
 import io.appium.java_client.touch.offset.PointOption;
 import org.apache.logging.log4j.Logger;
@@ -47,6 +48,7 @@ import java.awt.geom.Line2D;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
+import java.time.Duration;
 import org.cerberus.engine.entity.SwipeAction.Direction;
 
 /**
@@ -218,6 +220,9 @@ public abstract class AppiumService implements IAppiumService {
 
         } else if (identifier.getIdentifier().equalsIgnoreCase("data-cerberus")) {
             return By.xpath("//*[@data-cerberus='" + identifier.getLocator() + "']");
+
+        } else if (identifier.getIdentifier().equalsIgnoreCase("accesibility-id")) {
+            return MobileBy.AccessibilityId(identifier.getLocator());
 
         } else {
             throw new NoSuchElementException(identifier.getIdentifier());
@@ -391,5 +396,57 @@ public abstract class AppiumService implements IAppiumService {
         Point location = element.getLocation();
 
         return location.getX() + ";" + location.getY();
+    }
+
+    @Override
+    public MessageEvent longPress(final Session session, final Identifier identifier, final Integer timeDuration) {
+        try {
+            final TouchAction action = new TouchAction(session.getAppiumDriver());
+            if (identifier.isSameIdentifier(Identifier.Identifiers.COORDINATE)) {
+                final Coordinates coordinates = getCoordinates(identifier);
+                action.press(PointOption.point(coordinates.getX(), coordinates.getY())).waitAction(WaitOptions.waitOptions(Duration.ofMillis(timeDuration))).release().perform();
+            } else {
+                action.press(ElementOption.element(getElement(session, identifier, false, false))).waitAction(WaitOptions.waitOptions(Duration.ofMillis(timeDuration))).release().perform();
+            }
+            return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_LONG_CLICK).resolveDescription("ELEMENT", identifier.toString());
+        } catch (NoSuchElementException e) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug(e.getMessage());
+            }
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED_LONG_CLICK_NO_SUCH_ELEMENT).resolveDescription("ELEMENT", identifier.toString());
+        } catch (WebDriverException e) {
+            LOG.warn(e.getMessage());
+            return parseWebDriverException(e);
+        }
+
+    }
+
+    @Override
+    public MessageEvent clearField(final Session session, final Identifier identifier) {
+        try {
+            final TouchAction action = new TouchAction(session.getAppiumDriver());
+            if (identifier.isSameIdentifier(Identifier.Identifiers.COORDINATE)) {
+                final Coordinates coordinates = getCoordinates(identifier);
+                click(session,  identifier);
+            } else {
+                click(session,  identifier);
+                //action.press(ElementOption.element(getElement(session, identifier, false, false))).waitAction(WaitOptions.waitOptions(Duration.ofMillis(8000))).release().perform();
+                //MobileElement element = (MobileElement) session.getAppiumDriver().findElementByAccessibilityId("SomeAccessibilityID");
+                //element.clear();
+               // WebElement elmt = this.getElement(session, identifier, false, false);
+                ((MobileElement) this.getElement(session, identifier, false, false)).clear();
+
+            }
+            return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLEAR).resolveDescription("ELEMENT", identifier.toString());
+        } catch (NoSuchElementException e) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug(e.getMessage());
+            }
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED_CLEAR_NO_SUCH_ELEMENT).resolveDescription("ELEMENT", identifier.toString());
+        } catch (WebDriverException e) {
+            LOG.warn(e.getMessage());
+            return parseWebDriverException(e);
+        }
+
     }
 }
