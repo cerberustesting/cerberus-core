@@ -8131,6 +8131,15 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append("ADD COLUMN `QueueID` BIGINT(20) UNSIGNED NULL DEFAULT NULL AFTER `ExeID`, ");
         b.append("ADD INDEX `IX_testcaseexecutiondep_05` (`QueueID` ASC);");
         a.add(b.toString());
+        
+              
+        // Add the "longPress" and "clearField" Action
+        // 1414
+        b = new StringBuilder();
+        b.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ");
+        b.append("('ACTION', 'longPress', '3100', 'Long tap on element', 'longPress'),");
+        b.append("('ACTION', 'clearField', '11500', 'Clear a Field', 'clearField')");
+        a.add(b.toString());
 
         return a;
     }
