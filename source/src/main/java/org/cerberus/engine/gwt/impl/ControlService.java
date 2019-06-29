@@ -172,6 +172,9 @@ public class ControlService implements IControlService {
                 case TestCaseStepActionControl.CONTROL_VERIFYSTRINGCONTAINS:
                     res = this.verifyStringContains(testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
                     break;
+                case TestCaseStepActionControl.CONTROL_VERIFYSTRINGNOTCONTAINS:
+                    res = this.verifyStringNotContains(testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
+                    break;
                 case TestCaseStepActionControl.CONTROL_VERIFYNUMERICEQUALS:
                 case TestCaseStepActionControl.CONTROL_VERIFYNUMERICDIFFERENT:
                 case TestCaseStepActionControl.CONTROL_VERIFYNUMERICGREATER:
@@ -323,6 +326,22 @@ public class ControlService implements IControlService {
         mes.setDescription(mes.getDescription().replace("%STRING1%", value1));
         mes.setDescription(mes.getDescription().replace("%STRING2%", value2));
         return mes;
+
+    }
+
+    private MessageEvent verifyStringNotContains(String value1, String value2) {
+        MessageEvent mes;
+        if (value1.indexOf(value2) >= 0) {
+            
+        mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTCONTAINS);
+        mes.setDescription(mes.getDescription().replace("%STRING1%", value1));
+        mes.setDescription(mes.getDescription().replace("%STRING2%", value2));
+        return mes;
+        }
+            mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_NOTCONTAINS);
+            mes.setDescription(mes.getDescription().replace("%STRING1%", value1));
+            mes.setDescription(mes.getDescription().replace("%STRING2%", value2));
+            return mes;
 
     }
 

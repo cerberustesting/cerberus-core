@@ -8132,6 +8132,21 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append("ADD INDEX `IX_testcaseexecutiondep_05` (`QueueID` ASC);");
         a.add(b.toString());
 
+        // Insert the invariant verifyStringNotContains and ifPropertyNotExist
+        // 1414
+        b = new StringBuilder();
+        b.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ");
+        b.append("('CONTROL', 'verifyStringNotContains', 1420, 'verifyStringNotContains.')");
+        b.append(",('ACTIONCONDITIONOPER', 'ifStringNotContains', 445, 'Only execute if value1 does not contains value2.')");
+        b.append(",('CONTROLCONDITIONOPER', 'ifStringNotContains', 445, 'Only execute if value1 does not contains value2.')");
+        b.append(",('STEPCONDITIONOPER', 'ifStringNotContains', 445, 'Only execute if value1 does not contains value2.')");
+        b.append(",('TESTCASECONDITIONOPER', 'ifStringNotContains', 445, 'Only execute if value1 does not contains value2.')");
+        b.append(",('ACTIONCONDITIONOPER', 'ifPropertyNotExist', 210, 'Only execute if property does not exist for the execution.')");
+        b.append(",('CONTROLCONDITIONOPER', 'ifPropertyNotExist', 210, 'Only execute if property does not exist for the execution.')");
+        b.append(",('STEPCONDITIONOPER', 'ifPropertyNotExist', 210, 'Only execute if property does not exist for the execution.')");
+        b.append(",('TESTCASECONDITIONOPER', 'ifPropertyNotExist', 210, 'Only execute if property does not exist for the execution.')");
+        a.add(b.toString());
+
         return a;
     }
 

@@ -17,6 +17,8 @@
 * Added 'manageDialogKeypress' action in order to perform keypress inside browser dialog popup
 * Display only System you have right on the System Combo. # #1358
 * Filter Cerberus Object (TestCase, DataObject, Services, Object, etc.) according to the system you choose on the System Combo.  #1358 
+* Added new condition operator : ifStringNotContains and ifPropertyNotExist #1984
+* Added new control : verifyStringNotContains
 
 
 *Warning to be considered before applying the version (deprecated features)*

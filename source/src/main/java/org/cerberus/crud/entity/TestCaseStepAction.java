@@ -108,6 +108,7 @@ public class TestCaseStepAction {
     public static final String CONDITIONOPER_IFELEMENTPRESENT = "ifElementPresent";
     public static final String CONDITIONOPER_IFELEMENTNOTPRESENT = "ifElementNotPresent";
     public static final String CONDITIONOPER_IFPROPERTYEXIST = "ifPropertyExist";
+    public static final String CONDITIONOPER_IFPROPERTYNOTEXIST = "ifPropertyNotExist";
     public static final String CONDITIONOPER_IFNUMERICEQUAL = "ifNumericEqual";
     public static final String CONDITIONOPER_IFNUMERICDIFFERENT = "ifNumericDifferent";
     public static final String CONDITIONOPER_IFNUMERICGREATER = "ifNumericGreater";
@@ -119,6 +120,7 @@ public class TestCaseStepAction {
     public static final String CONDITIONOPER_IFSTRINGGREATER = "ifStringGreater";
     public static final String CONDITIONOPER_IFSTRINGMINOR = "ifStringMinor";
     public static final String CONDITIONOPER_IFSTRINGCONTAINS = "ifStringContains";
+    public static final String CONDITIONOPER_IFSTRINGNOTCONTAINS = "ifStringNotContains";
     public static final String CONDITIONOPER_IFTEXTINELEMENT = "ifTextInElement";
     public static final String CONDITIONOPER_IFTEXTNOTINELEMENT = "ifTextNotInElement";
     public static final String CONDITIONOPER_NEVER = "never";

@@ -3163,7 +3163,8 @@ function setPlaceholderCondition(conditionElement) {
     var placeHoldersList = {
         "fr": [
             {"type": "always", "object": null, "property": null},
-            {"type": "ifPropertyExist", "object": "Property (ex : data-cerberus=fieldTest)", "property": null},
+            {"type": "ifPropertyExist", "object": "Propriété (ex : PROP1)", "property": null},
+            {"type": "ifPropertyNotExist", "object": "Propriété (ex : PROP1)", "property": null},
             {"type": "ifElementPresent", "object": "Element", "property": null},
             {"type": "ifElementNotPresent", "object": "Element (ex : data-cerberus=fieldTest)", "property": null},
             {"type": "ifTextInElement", "object": "Element", "property": "Texte"},
@@ -3178,11 +3179,13 @@ function setPlaceholderCondition(conditionElement) {
             {"type": "ifStringDifferent", "object": "String1", "property": "String2"},
             {"type": "ifStringGreater", "object": "String1 (ex : ZZZ)", "property": "String2 (ex : AAA)"},
             {"type": "ifStringMinor", "object": "String2 (ex : AAA)", "property": "String2 (ex : ZZZ)"},
-            {"type": "ifStringContains", "object": "String1 (ex : ot)", "property": "String2 (ex : toto)"},
+            {"type": "ifStringContains", "object": "String1 (ex : toto)", "property": "String2 (ex : ot)"},
+            {"type": "ifStringNotContains", "object": "String1 (ex : toto)", "property": "String2 (ex : zot)"},
             {"type": "Never", "object": null, "property": null}            
         ], "en": [
             {"type": "always", "object": null, "property": null},
-            {"type": "ifPropertyExist", "object": "Property", "property": null},
+            {"type": "ifPropertyExist", "object": "Property name  (ex : PROP1)", "property": null},
+            {"type": "ifPropertyNotExist", "object": "Property name  (ex : PROP1)", "property": null},
             {"type": "ifElementPresent", "object": "Element (ex : data-cerberus=fieldTest)", "property": null},
             {"type": "ifElementNotPresent", "object": "Element (ex : data-cerberus=fieldTest)", "property": null},
             {"type": "ifTextInElement", "object": "Element", "property": "Text"},
@@ -3197,7 +3200,8 @@ function setPlaceholderCondition(conditionElement) {
             {"type": "ifStringDifferent", "object": "String1", "property": "String2"},
             {"type": "ifStringGreater", "object": "String1 (ex : ZZZ)", "property": "String2 (ex : AAA)"},
             {"type": "ifStringMinor", "object": "String1 (ex : AAA)", "property": "String (ex : ZZZ)"},
-            {"type": "ifStringContains", "object": "String1 (ex : ot)", "property": "String2 (ex : toto)"},
+            {"type": "ifStringContains", "object": "String1 (ex : toto)", "property": "String2 (ex : ot)"},
+            {"type": "ifStringNotContains", "object": "String1 (ex : toto)", "property": "String2 (ex : zot)"},
             {"type": "never", "object": null, "property": null}       
         ]
     };
@@ -3289,8 +3293,14 @@ function setPlaceholderControl(controlElement) {
             },
             {
                 "type": "verifyStringContains",
-                "controlValue": "String2 (ex : toto)",
-                "controlProp": "String1 (ex : ot)",
+                "controlValue": "String2 (ex : ot)",
+                "controlProp": "String1 (ex : toto)",
+                "fatal": ""
+            },
+            {
+                "type": "verifyStringNotContains",
+                "controlValue": "String2 (ex : zot)",
+                "controlProp": "String1 (ex : toto)",
                 "fatal": ""
             },
             {"type": "verifyNumericEquals", "controlValue": "Integer2", "controlProp": "Integer1", "fatal": ""},
@@ -3402,8 +3412,14 @@ function setPlaceholderControl(controlElement) {
             },
             {
                 "type": "verifyStringContains",
-                "controlValue": "String2 (ex : toto)",
-                "controlProp": "String1 (ex : ot)",
+                "controlValue": "String2 (ex : ot)",
+                "controlProp": "String1 (ex : toto)",
+                "fatal": ""
+            },
+            {
+                "type": "verifyStringNotContains",
+                "controlValue": "String2 (ex : zot)",
+                "controlProp": "String1 (ex : toto)",
                 "fatal": ""
             },
             {"type": "verifyNumericEquals", "controlValue": "Integer2", "controlProp": "Integer1", "fatal": ""},
