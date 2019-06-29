@@ -18,6 +18,8 @@
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+var modalInvariantAttributeNB = 1;
+
 /***
  * Open the modal with testcase information.
  * @param {String} invariant - idname of the invariant (ex : "SYSTEM")
@@ -50,7 +52,6 @@ function openModalInvariant(invariant, value, mode, tab) {
 
 function initModalInvariant() {
 
-//    console.info("init");
     var doc = new Doc();
     $("[name='buttonClose']").html(doc.getDocLabel("page_global", "buttonClose"));
     $("[name='buttonAdd']").html(doc.getDocLabel("page_global", "btn_add"));
@@ -85,18 +86,18 @@ function initModalInvariant() {
         confirmInvariantModalHandler("DUPLICATE");
     });
     // We add an attribute button by clicking on add button
-    var i = 1;
     // Click on close modal will reinitialize i  
     $('[name="buttonClose"],[class="close"]').click(function () {
-        i = 1;
+        // Clear last added attribute index back to 1 when modal is closed.
+        modalInvariantAttributeNB = 1;
     });
     $('#AddInvButton').click(function () {
-        i++;
-        if ($('#Grpgp' + i).is(":visible")) {
-            i = i + 1;
+        modalInvariantAttributeNB++;
+        if ($('#Grpgp' + modalInvariantAttributeNB).is(":visible")) {
+            modalInvariantAttributeNB++;
         }
-        if (i < 10) {
-            $('#Grpgp' + i).show();
+        if (modalInvariantAttributeNB < 10) {
+            $('#Grpgp' + modalInvariantAttributeNB).show();
         } else {
             var localMessage = new Message("WARNING", "You cannot add more than 9 attributes");
             showMessage(localMessage, $('#editInvariantModal'));
@@ -124,7 +125,6 @@ function editInvariantClick(invariant, value) {
     $('#addInvariantButton').attr('class', '');
     $('#addInvariantButton').attr('hidden', 'hidden');
 
-    console.info("change");
     $('#editInvariantModalForm select[name="idname"]').off("change");
     $('#editInvariantModalForm select[name="idname"]').change(function () {
         // Compare with original value in order to display the warning message.
@@ -140,7 +140,6 @@ function editInvariantClick(invariant, value) {
 }
 
 function displayWarningOnChangeInvariantKey() {
-    console.info("change");
     // Compare with original value in order to display the warning message.
     let old1 = $("#originalIdName").val();
     let old2 = $("#originalValue").val();
@@ -263,6 +262,8 @@ function confirmInvariantModalHandler(mode) {
             gp9: data.gp9
         },
         success: function (data) {
+            // Clear last added attribute index back to 1 when modal is closed.
+            modalInvariantAttributeNB = 1;
             data = JSON.parse(data);
             hideLoaderInModal('#editInvariantModal');
             if (getAlertType(data.messageType) === "success") {
@@ -296,7 +297,6 @@ function feedInvariantModal(invariant, value, modalId, mode) {
 
     var formEdit = $('#' + modalId);
 
-    console.info(value);
     if (mode === "DUPLICATE" || mode === "EDIT") {
         $.ajax({
             url: "ReadInvariant",
