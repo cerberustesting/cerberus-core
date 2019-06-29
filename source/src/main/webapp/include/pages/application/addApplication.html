@@ -11,8 +11,8 @@
                 <!--add form-->
                 <form id="addApplicationModalForm" name="addApplicationModalForm"  title="Add Aplication" role="form">
                     <div class="container-fluid center">
-                         <!-- messages area-->
-                         <div id="DialogMessagesArea">
+                        <!-- messages area-->
+                        <div id="DialogMessagesArea">
                             <div class="alert" id="DialogMessagesAlert"  style="display:none;">
                                 <strong><span class="alert-description" id="DialogAlertDescription"></span></strong>
                                 <button type="button" class="close" data-hide="alert"  aria-hidden="true">
@@ -21,7 +21,7 @@
                             </div>
                         </div>
                         <div id="NavtabsScriptEdit">
-                             <ul id="tabsScriptEdit" class="nav nav-tabs" data-tabs="tabs">
+                            <ul id="tabsScriptEdit" class="nav nav-tabs" data-tabs="tabs">
                                 <li class="active"><a data-toggle="tab" href="#tabDefinition" id="editAppDefinition" name="tabDefinition">Definition</a></li>
                                 <li><a data-toggle="tab" href="#tabAdvanced" id="editAppAdvanced" name="tabAdvanced">Advanced</a></li>
                             </ul>
@@ -31,7 +31,7 @@
                                 <div class="row">
                                     <div class="form-group col-xs-12">
                                         <label for="application" name="applicationField">Application</label>
-                                        <input type="text" class="form-control" name="application" id="application" aria-describedby="basic-addon1" maxlength="200">
+                                        <input type="text" class="form-control" name="application" id="application" aria-describedby="basic-addon1" maxlength="200" onkeydown="return app_keyispressed(event, 'add');" >
                                     </div>
                                 </div>
                                 <div class="row">
