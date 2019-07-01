@@ -76,6 +76,7 @@ public class SchedulerInit {
 
     @PostConstruct
     public void init() {
+        try{
         AnswerItem<List> ans = new AnswerItem();
         List<ScheduleEntry> listSched = new ArrayList<ScheduleEntry>();
 
@@ -155,6 +156,9 @@ public class SchedulerInit {
             } else {
                 LOG.debug("Scheduler version is already in updating");
             }
+        }
+        }catch(Exception e){
+        LOG.debug("failed to launch scheduler init :" + e);
         }
     }
 

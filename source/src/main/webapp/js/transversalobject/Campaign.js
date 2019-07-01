@@ -427,10 +427,6 @@ function editEntryClick(param) {
 
         hideLoader("#testcampaignList");
 
-        var displayScheduler = 0;
-        if (displayScheduler == 0) {
-            $('#createTab8Text').hide();
-        }
         /* SCHEDULER */
         $('#editTestcampaignModal .nav-tabs a[href="#tabsCreate-1"]').tab('show');
         formEdit.modal('show');
@@ -585,11 +581,6 @@ function addEntryClick() {
 
     $('#editTestcampaignModal .nav-tabs a[href="#tabsCreate-1"]').tab('show');
     $('#editTestcampaignModal').modal('show');
-
-    var displayScheduler = 0;
-    if (displayScheduler == 0) {
-        $('#createTab8Text').hide();
-    }
 
     $('#parameterScheduler tr').remove();
     $('#addscheduler').off('click');
