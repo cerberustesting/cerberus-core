@@ -8131,8 +8131,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append("ADD COLUMN `QueueID` BIGINT(20) UNSIGNED NULL DEFAULT NULL AFTER `ExeID`, ");
         b.append("ADD INDEX `IX_testcaseexecutiondep_05` (`QueueID` ASC);");
         a.add(b.toString());
-        
-              
+
         // Add the "longPress" and "clearField" Action
         // 1414
         b = new StringBuilder();
@@ -8142,7 +8141,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         a.add(b.toString());
 
         // Insert the invariant verifyStringNotContains and ifPropertyNotExist
-        // 1414
+        // 1415
         b = new StringBuilder();
         b.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ");
         b.append("('CONTROL', 'verifyStringNotContains', 1420, 'verifyStringNotContains.')");
@@ -8155,6 +8154,9 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         b.append(",('STEPCONDITIONOPER', 'ifPropertyNotExist', 210, 'Only execute if property does not exist for the execution.')");
         b.append(",('TESTCASECONDITIONOPER', 'ifPropertyNotExist', 210, 'Only execute if property does not exist for the execution.')");
         a.add(b.toString());
+
+        // 1416
+        a.add("ALTER TABLE `user` CHANGE COLUMN `DefaultSystem` `DefaultSystem` MEDIUMTEXT NULL DEFAULT NULL ;");
 
         return a;
     }

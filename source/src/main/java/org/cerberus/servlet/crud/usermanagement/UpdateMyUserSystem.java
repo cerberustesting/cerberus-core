@@ -20,6 +20,7 @@
 package org.cerberus.servlet.crud.usermanagement;
 
 import java.io.IOException;
+import java.util.logging.Level;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -33,6 +34,8 @@ import org.cerberus.crud.service.IUserService;
 import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.crud.service.impl.UserService;
 import org.cerberus.exception.CerberusException;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -42,9 +45,9 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  */
 @WebServlet(name = "UpdateMyUserSystem", urlPatterns = {"/UpdateMyUserSystem"})
 public class UpdateMyUserSystem extends HttpServlet {
-
-    private static final Logger LOG = LogManager.getLogger(UpdateMyUserSystem.class);
     
+    private static final Logger LOG = LogManager.getLogger(UpdateMyUserSystem.class);
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -57,18 +60,23 @@ public class UpdateMyUserSystem extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String login = request.getUserPrincipal().getName();
-        String value = request.getParameter("value").replace("'", "");
-
-        LOG.info("value : " + value + " login : " + login);
-
+        String[] sys = request.getParameterValues("MySystem");
+        JSONArray sysArray = new JSONArray();
+        try {
+            sysArray = new JSONArray(sys);
+            LOG.debug(sysArray.toString());
+        } catch (JSONException ex) {
+            java.util.logging.Logger.getLogger(UpdateMyUserSystem.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         IUserService userService = appContext.getBean(UserService.class);
-
+        
         User myUser;
         try {
             myUser = userService.findUserByKey(login);
-            myUser.setDefaultSystem(value);
-            request.getSession().setAttribute("MySystem", value);
+            myUser.setDefaultSystem(sysArray.toString());
+            request.getSession().setAttribute("MySystem", sysArray);
             try {
                 userService.updateUser(myUser);
 
@@ -77,7 +85,7 @@ public class UpdateMyUserSystem extends HttpServlet {
                  */
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
                 logEventService.createForPrivateCalls("/UpdateMyUserSystem", "UPDATE", "Updated user : " + login, request);
-                response.getWriter().print(value);
+                response.getWriter().print(sysArray);
             } catch (CerberusException ex) {
                 response.getWriter().print(ex.getMessageError().getDescription());
             }

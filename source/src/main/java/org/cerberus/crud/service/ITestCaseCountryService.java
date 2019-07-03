@@ -73,7 +73,7 @@ public interface ITestCaseCountryService {
      * @param testCaseList
      * @return
      */
-    AnswerList<TestCaseCountry> readByTestTestCase(String system, String test, String testCase, List<TestCase> testCaseList);
+    AnswerList<TestCaseCountry> readByTestTestCase(List<String> system, String test, String testCase, List<TestCase> testCaseList);
 
     /**
      *

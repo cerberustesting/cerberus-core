@@ -97,7 +97,7 @@ $.when($.getScript("js/global/global.js")).then(function () {
         });
 
         //configure and create the dataTable
-        var jqxhr = $.getJSON("Homepage", "system=" + getSys());
+        var jqxhr = $.getJSON("Homepage", "e=1" + getUser().defaultSystemsQuery);
 
         $.when(jqxhr).then(function (result) {
             var configurations = new TableConfigurationsClientSide("homePageTable", result["aaData"], aoColumnsFunc(), true);
@@ -273,8 +273,8 @@ function readLastTagExec(searchString) {
     if (!((paramExe >= 0) && (paramExe <= 20))) {
         paramExe = 5;
     }
-
-    var myUrl = "ReadTag?iSortCol_0=0&sSortDir_0=desc&sColumns=id,tag,campaign,description&iDisplayLength=" + paramExe;
+    
+    var myUrl = "ReadTag?iSortCol_0=0&sSortDir_0=desc&sColumns=id,tag,campaign,description&iDisplayLength=" + paramExe + getUser().defaultSystemsQuery;
     if (!isEmpty(searchString)) {
         myUrl = myUrl + "&sSearch=" + searchString;
     }

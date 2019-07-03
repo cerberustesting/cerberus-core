@@ -284,7 +284,7 @@ public class ApplicationDAO implements IApplicationDAO {
     }
 
     @Override
-    public AnswerItem<HashMap<String, HashMap<String, Integer>>> readTestCaseCountersBySystemByStatus(String system) {
+    public AnswerItem<HashMap<String, HashMap<String, Integer>>> readTestCaseCountersBySystemByStatus(List<String> system) {
         AnswerItem response = new AnswerItem<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -294,8 +294,9 @@ public class ApplicationDAO implements IApplicationDAO {
         query.append("FROM application a ");
         query.append("inner join testcase tc on a.application = tc.application ");
         query.append("inner join invariant inv on tc.`Status` = inv.`value` ");
-        query.append("where a.system = ? ");
-        query.append("and inv.idname='TCSTATUS' and inv.gp1<>'N' ");
+        query.append("where ");
+        query.append(SqlUtil.generateInClause("a.system", system));
+        query.append(" and inv.idname='TCSTATUS' and inv.gp1<>'N' ");
         query.append("group by a.application, inv.`value` ");
 
         HashMap<String, HashMap<String, Integer>> result = new HashMap<String, HashMap<String, Integer>>();
@@ -308,7 +309,10 @@ public class ApplicationDAO implements IApplicationDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
-                preStat.setString(1, system);
+                int i = 1;
+                for (String string : system) {
+                    preStat.setString(i++, string);
+                }
 
                 ResultSet resultSet = preStat.executeQuery();
                 try {
@@ -690,7 +694,7 @@ public class ApplicationDAO implements IApplicationDAO {
         }
         try (Connection connection = databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(query.toString());
-        		Statement stm = connection.createStatement();) {
+                Statement stm = connection.createStatement();) {
 
             int i = 1;
             if (!StringUtil.isNullOrEmpty(system)) {
@@ -713,9 +717,9 @@ public class ApplicationDAO implements IApplicationDAO {
                 preStat.setString(i++, individualColumnSearchValue);
             }
 
-            try(ResultSet resultSet = preStat.executeQuery();
-            		ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
-            	//gets the data
+            try (ResultSet resultSet = preStat.executeQuery();
+                    ResultSet rowSet = stm.executeQuery("SELECT FOUND_ROWS()");) {
+                //gets the data
                 while (resultSet.next()) {
                     distinctValues.add(resultSet.getString("distinctValues") == null ? "" : resultSet.getString("distinctValues"));
                 }
@@ -739,11 +743,11 @@ public class ApplicationDAO implements IApplicationDAO {
                     msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
                     answer = new AnswerList<>(distinctValues, nrTotalRows);
                 }
-            }catch (Exception e) {
+            } catch (Exception e) {
                 LOG.warn("Unable to execute query : " + e.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
                         e.toString());
-            } 
+            }
         } catch (Exception e) {
             LOG.warn("Unable to execute query : " + e.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",

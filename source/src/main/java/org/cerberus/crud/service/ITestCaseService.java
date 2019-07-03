@@ -144,7 +144,7 @@ public interface ITestCaseService {
      * @param individualSearch
      * @return
      */
-    public AnswerList readByTestByCriteria(String system, String test, int start, int amount, String sortInformation, String searchTerm, Map<String, List<String>> individualSearch);
+    public AnswerList readByTestByCriteria(List<String> system, String test, int start, int amount, String sortInformation, String searchTerm, Map<String, List<String>> individualSearch);
 
     /**
      * @param test
@@ -179,7 +179,16 @@ public interface ITestCaseService {
     public AnswerList<List<TestCase>> readByVarious(String[] test, String[] idProject, String[] app, String[] creator, String[] implementer, String[] system,
             String[] campaign, String[] labelid, String[] priority, String[] group, String[] status, int length);
 
-    public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+    /**
+     *
+     * @param system
+     * @param test
+     * @param searchParameter
+     * @param individualSearch
+     * @param columnName
+     * @return
+     */
+    public AnswerList<List<String>> readDistinctValuesByCriteria(List<String> system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 
     /**
      *

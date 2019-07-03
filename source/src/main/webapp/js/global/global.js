@@ -1440,7 +1440,9 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
 
             aoData.push({name: "sLike", value: like});
             if (sSource !== "ReadTest") { // RG, don't filter on system if it is a Test Folder
-                aoData.push({name: "system", value: getSys()});
+                for (var s in getUser().defaultSystems) {
+                    aoData.push({name: "system", value: getUser().defaultSystems[s]});
+                }
             }
 
             var objectWL = $(objectWaitingLayer);
@@ -2487,7 +2489,7 @@ function getComboConfigTag() {
     var config =
             {
                 ajax: {
-                    url: "ReadTag?iSortCol_0=0&sSortDir_0=desc&sColumns=id,tag,campaign,description&iDisplayLength=30",
+                    url: "ReadTag?iSortCol_0=0&sSortDir_0=desc&sColumns=id,tag,campaign,description&iDisplayLength=30" + getUser().defaultSystemsQuery,
                     dataType: 'json',
                     delay: 250,
                     data: function (params) {

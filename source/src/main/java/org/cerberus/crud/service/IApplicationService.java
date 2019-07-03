@@ -84,7 +84,7 @@ public interface IApplicationService {
      * @param system
      * @return
      */
-    AnswerItem readTestCaseCountersBySystemByStatus(String system);
+    AnswerItem readTestCaseCountersBySystemByStatus(List<String> system);
 
     /**
      *
