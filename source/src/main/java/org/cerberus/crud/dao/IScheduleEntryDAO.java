@@ -20,6 +20,7 @@ package org.cerberus.crud.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.List;
 import org.cerberus.crud.entity.ScheduleEntry;
 import org.cerberus.util.answer.Answer;
@@ -42,4 +43,6 @@ public interface IScheduleEntryDAO {
     public Answer delete(ScheduleEntry object);
     
     public AnswerItem<List> readByName(String name);
+    
+    public Answer updateLastExecution(Integer schedulerId, Timestamp lastExecution);
 }

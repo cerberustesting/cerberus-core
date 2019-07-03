@@ -18,6 +18,7 @@ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.cerberus.crud.service.impl;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
@@ -202,6 +203,13 @@ public class ScheduleEntryService implements IScheduleEntryService {
             finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
         }
         return finalAnswer;
+    }
+    
+    @Override
+    public Answer updateLastExecution(Integer schedulerId, Timestamp lastExecution){
+    Answer ans = new Answer();
+    ans = schedulerDao.updateLastExecution(schedulerId, lastExecution);
+    return ans;
     }
 
 }

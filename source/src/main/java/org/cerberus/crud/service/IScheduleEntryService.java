@@ -18,6 +18,7 @@ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.cerberus.crud.service;
 
+import java.sql.Timestamp;
 import java.util.List;
 import org.cerberus.crud.entity.ScheduleEntry;
 import org.cerberus.util.answer.Answer;
@@ -48,4 +49,6 @@ public interface IScheduleEntryService {
      public Answer createListSched(List<ScheduleEntry> objectList);
      
      public Answer deleteByCampaignName(String name);
+     
+     public Answer updateLastExecution(Integer schedulerId, Timestamp lastExecution);
 }

@@ -33,9 +33,11 @@ import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cerberus.crud.entity.ScheduledExecution;
+import org.cerberus.crud.factory.IFactoryScheduleEntry;
 import org.cerberus.crud.factory.IFactoryScheduledExecution;
 import org.cerberus.crud.factory.impl.FactoryScheduledExecution;
 import org.cerberus.crud.service.IParameterService;
+import org.cerberus.crud.service.IScheduleEntryService;
 import org.cerberus.crud.service.IScheduledExecutionService;
 import org.cerberus.crud.service.impl.ScheduledExecutionService;
 import org.cerberus.util.StringUtil;
@@ -59,6 +61,9 @@ public class ScheduledJob implements Job {
     private IScheduledExecutionService scheduledExecutionService = new ScheduledExecutionService();
     @Autowired
     private IParameterService parameterService;
+    @Autowired
+    private IScheduleEntryService scheduleEntryService;
+    
     private static final Logger LOG = LogManager.getLogger(ScheduledJob.class);
     private static IFactoryScheduledExecution factoryScheduledExecution = new FactoryScheduledExecution();
 
@@ -118,8 +123,10 @@ public class ScheduledJob implements Job {
                                 LOG.debug("ERROR HTTP Response " + statusCode);
                                 LOG.debug("Sent request : " + request);
                             }
-
+                            
                             HttpEntity entity = responsehttp.getEntity();
+                            
+                        
                             if (entity != null) {
                                 String json_string = EntityUtils.toString(entity);
                                 JSONObject temp1 = new JSONObject(json_string);
@@ -142,6 +149,7 @@ public class ScheduledJob implements Job {
                                 Answer updateScx = new Answer();
                                 updateScx = scheduledExecutionService.update(scheduledExecutionObject);
                                 LOG.debug(updateScx.getMessageDescription());
+                                scheduleEntryService.updateLastExecution(scheduledExecutionObject.getSchedulerId(), scheduledExecutionObject.getScheduledDate());
                             } catch (Exception e) {
                                 LOG.debug("Failed to update scheduledExecution", e);
                             }
