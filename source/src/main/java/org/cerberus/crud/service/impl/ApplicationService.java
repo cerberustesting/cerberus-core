@@ -77,7 +77,7 @@ public class ApplicationService implements IApplicationService {
     }
 
     @Override
-    public AnswerItem readTestCaseCountersBySystemByStatus(String system) {
+    public AnswerItem readTestCaseCountersBySystemByStatus(List<String> system) {
         return this.ApplicationDAO.readTestCaseCountersBySystemByStatus(system);
     }
 

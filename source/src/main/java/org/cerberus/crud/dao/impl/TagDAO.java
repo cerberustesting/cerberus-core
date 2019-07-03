@@ -203,9 +203,13 @@ public class TagDAO implements ITagDAO {
         StringBuilder query = new StringBuilder();
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
         //were applied -- used for pagination p
-        query.append("SELECT SQL_CALC_FOUND_ROWS * FROM tag tag ");
-
-        searchSQL.append(" where 1=1 ");
+        if (systems != null && !systems.isEmpty()) {
+            query.append("SELECT SQL_CALC_FOUND_ROWS tag.* FROM tag tag JOIN tagsystem tas ON tas.tag=tag.tag WHERE ");
+            searchSQL.append(SqlUtil.generateInClause("tas.system", systems));
+        } else {
+            query.append("SELECT SQL_CALC_FOUND_ROWS * FROM tag tag ");
+            searchSQL.append(" where 1=1 ");
+        }
 
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
             searchSQL.append(" and (tag.`id` like ?");
@@ -228,7 +232,6 @@ public class TagDAO implements ITagDAO {
         }
         query.append(searchSQL);
 
-
         if (!StringUtil.isNullOrEmpty(column)) {
             query.append(" order by `").append(column).append("` ").append(dir);
         }
@@ -248,6 +251,12 @@ public class TagDAO implements ITagDAO {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
                 int i = 1;
+                if (systems != null && !systems.isEmpty()) {
+                    for (String system : systems) {
+                        preStat.setString(i++, system);
+                    }
+                }
+
                 if (!StringUtil.isNullOrEmpty(searchTerm)) {
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");

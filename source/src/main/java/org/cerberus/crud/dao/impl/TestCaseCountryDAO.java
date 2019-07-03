@@ -39,6 +39,7 @@ import org.cerberus.crud.entity.TestCaseCountry;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.factory.IFactoryTestCaseCountry;
 import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.util.SqlUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
@@ -300,7 +301,7 @@ public class TestCaseCountryDAO implements ITestCaseCountryDAO {
     }
 
     @Override
-    public AnswerList<TestCaseCountry> readByVarious1(String system, String test, String testCase, List<TestCase> testCaseList) {
+    public AnswerList<TestCaseCountry> readByVarious1(List<String> system, String test, String testCase, List<TestCase> testCaseList) {
         AnswerList<TestCaseCountry> answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -308,7 +309,7 @@ public class TestCaseCountryDAO implements ITestCaseCountryDAO {
         StringBuilder query = new StringBuilder();
 
         query.append("SELECT * FROM testcasecountry tcc ");
-        if (!Strings.isNullOrEmpty(system)) {
+        if (system != null && !system.isEmpty()) {
             query.append(" LEFT OUTER JOIN testcase tec on tec.test = tcc.test and tec.testcase = tcc.testcase  ");
             query.append(" LEFT OUTER JOIN application app on app.application = tec.application ");
         }
@@ -328,8 +329,9 @@ public class TestCaseCountryDAO implements ITestCaseCountryDAO {
             query.append(" )");
         }
 
-        if (!Strings.isNullOrEmpty(system)) {
-            query.append(" AND app.`system` = ?");
+        if (system != null && !system.isEmpty()) {
+            query.append(" AND ");
+            query.append(SqlUtil.generateInClause("app.`system`", system));
         }
         if (!Strings.isNullOrEmpty(test)) {
             query.append(" AND tcc.test = ?");
@@ -359,8 +361,10 @@ public class TestCaseCountryDAO implements ITestCaseCountryDAO {
                     }
                 }
 
-                if (!Strings.isNullOrEmpty(system)) {
-                    preStat.setString(i++, system);
+                if (system != null && !system.isEmpty()) {
+                    for (String string : system) {
+                        preStat.setString(i++, string);
+                    }
                 }
                 if (!Strings.isNullOrEmpty(test)) {
                     preStat.setString(i++, test);

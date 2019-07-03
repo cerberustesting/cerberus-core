@@ -107,7 +107,7 @@ public class ReadTestCase extends AbstractCrudTestCase {
          * Parsing and securing all required parameters.
          */
         String test = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("test"), "");
-        String system = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("system"), "");
+        List<String> system = ParameterParserUtil.parseListParamAndDecodeAndDeleteEmptyValue(request.getParameterValues("system"), Arrays.asList("DEFAULT"), "UTF-8");
         String testCase = ParameterParserUtil.parseStringParam(request.getParameter("testCase"), null);
         String campaign = ParameterParserUtil.parseStringParam(request.getParameter("campaign"), "");
         boolean getMaxTC = ParameterParserUtil.parseBooleanParam(request.getParameter("getMaxTC"), false);
@@ -209,7 +209,7 @@ public class ReadTestCase extends AbstractCrudTestCase {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findTestCaseByTest(String system, String test, HttpServletRequest request) throws JSONException, CerberusException {
+    private AnswerItem findTestCaseByTest(List<String> system, String test, HttpServletRequest request) throws JSONException, CerberusException {
         AnswerItem answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
 
@@ -652,7 +652,7 @@ public class ReadTestCase extends AbstractCrudTestCase {
         return result;
     }
 
-    private AnswerItem findDistinctValuesOfColumn(String system, String test, HttpServletRequest request, String columnName) throws JSONException {
+    private AnswerItem findDistinctValuesOfColumn(List<String> system, String test, HttpServletRequest request, String columnName) throws JSONException {
         AnswerItem answer = new AnswerItem<>();
         JSONObject object = new JSONObject();
 

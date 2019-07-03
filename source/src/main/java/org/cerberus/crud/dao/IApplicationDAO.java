@@ -65,7 +65,7 @@ public interface IApplicationDAO {
      * @param system
      * @return
      */
-    AnswerItem<HashMap<String, HashMap<String, Integer>>> readTestCaseCountersBySystemByStatus(String system);
+    AnswerItem<HashMap<String, HashMap<String, Integer>>> readTestCaseCountersBySystemByStatus(List<String> system);
 
     /**
      *

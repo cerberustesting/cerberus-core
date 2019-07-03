@@ -112,7 +112,7 @@ public class TestCaseCountryService implements ITestCaseCountryService {
     }
 
     @Override
-    public AnswerList<TestCaseCountry> readByTestTestCase(String system, String test, String testCase, List<TestCase> testCaseList) {
+    public AnswerList<TestCaseCountry> readByTestTestCase(List<String> system, String test, String testCase, List<TestCase> testCaseList) {
         return tccDao.readByVarious1(system, test, testCase, testCaseList);
     }
 

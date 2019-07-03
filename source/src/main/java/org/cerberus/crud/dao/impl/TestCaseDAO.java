@@ -138,7 +138,7 @@ public class TestCaseDAO implements ITestCaseDAO {
     }
 
     @Override
-    public AnswerList readByTestByCriteria(String system, String test, int start, int amount, String sortInformation, String searchTerm, Map<String, List<String>> individualSearch) {
+    public AnswerList readByTestByCriteria(List<String> system, String test, int start, int amount, String sortInformation, String searchTerm, Map<String, List<String>> individualSearch) {
         AnswerList answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -164,12 +164,10 @@ public class TestCaseDAO implements ITestCaseDAO {
         // Always filter on system user can view
         searchSQL.append(" AND " + UserSecurity.getSystemAllowForSQL("app.`system`") + " ");
 
-
-        if (!StringUtil.isNullOrEmpty(system)) {
-            searchSQL.append(" AND app.`system` = ? ");
+        if (system != null && !system.isEmpty()) {
+            searchSQL.append(" AND ");
+            searchSQL.append(SqlUtil.generateInClause("app.`system`", system));
         }
-
-
 
         if (!StringUtil.isNullOrEmpty(test)) {
             searchSQL.append(" AND tec.`test` = ?");
@@ -229,8 +227,10 @@ public class TestCaseDAO implements ITestCaseDAO {
 
             try {
                 int i = 1;
-                if (!StringUtil.isNullOrEmpty(system)) {
-                    preStat.setString(i++, system);
+                if (system != null && !system.isEmpty()) {
+                    for (String string : system) {
+                        preStat.setString(i++, string);
+                    }
                 }
                 if (!StringUtil.isNullOrEmpty(test)) {
                     preStat.setString(i++, test);
@@ -1637,14 +1637,12 @@ public class TestCaseDAO implements ITestCaseDAO {
     public AnswerItem readByKey(String test, String testCase) {
         AnswerItem ans = new AnswerItem<>();
         TestCase result = null;
-        final String query = "SELECT * FROM `testcase` tec " +
-                "LEFT OUTER JOIN application app " +
-                "ON app.application=tec.application " +
-                "WHERE tec.`test` = ? " +
-                "AND tec.`testcase` = ? " +
-                "AND " + UserSecurity.getSystemAllowForSQL("app.`system`");
-
-
+        final String query = "SELECT * FROM `testcase` tec "
+                + "LEFT OUTER JOIN application app "
+                + "ON app.application=tec.application "
+                + "WHERE tec.`test` = ? "
+                + "AND tec.`testcase` = ? "
+                + "AND " + UserSecurity.getSystemAllowForSQL("app.`system`");
 
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -1683,7 +1681,7 @@ public class TestCaseDAO implements ITestCaseDAO {
     }
 
     @Override
-    public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String test, String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
+    public AnswerList<List<String>> readDistinctValuesByCriteria(List<String> system, String test, String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
         AnswerList answer = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         String columnNameOri = columnName;
@@ -1717,8 +1715,9 @@ public class TestCaseDAO implements ITestCaseDAO {
                 searchSQL.append(" AND lab.`type` = 'BATTERY' ");
                 break;
         }
-        if (!StringUtil.isNullOrEmpty(system)) {
-            searchSQL.append(" AND app.`system` = ? ");
+        if (system != null && !system.isEmpty()) {
+            searchSQL.append(" AND ");
+            searchSQL.append(SqlUtil.generateInClause("app.`system`", system));
         }
         if (!StringUtil.isNullOrEmpty(test)) {
             searchSQL.append(" AND tec.`test` = ?");
@@ -1765,8 +1764,10 @@ public class TestCaseDAO implements ITestCaseDAO {
                 Statement stm = connection.createStatement();) {
 
             int i = 1;
-            if (!StringUtil.isNullOrEmpty(system)) {
-                preStat.setString(i++, system);
+            if (system != null && !system.isEmpty()) {
+                for (String string : system) {
+                    preStat.setString(i++, string);
+                }
             }
             if (!StringUtil.isNullOrEmpty(test)) {
                 preStat.setString(i++, test);

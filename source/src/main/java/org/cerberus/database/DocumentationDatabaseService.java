@@ -2381,11 +2381,11 @@ public class DocumentationDatabaseService implements IDocumentationDatabaseServi
         b.append(",('modal_upload','title','','en','Upload File','',NULL)");
         b.append(",('modal_upload','title','','fr','Uploader Fichier','',NULL)");
         b.append(",('multiselect','all_selected','','en','All selected','',NULL)");
-        b.append(",('multiselect','all_selected','','fr','Tous selectionner','',NULL)");
+        b.append(",('multiselect','all_selected','','fr','Tous selectionnés','',NULL)");
         b.append(",('multiselect','none_selected','','en','None selected','',NULL)");
-        b.append(",('multiselect','none_selected','','fr','Selectionner aucun','',NULL)");
+        b.append(",('multiselect','none_selected','','fr','aucun selectionné','',NULL)");
         b.append(",('multiselect','nselected','','en','selected','',NULL)");
-        b.append(",('multiselect','nselected','','fr','Selectionné','',NULL)");
+        b.append(",('multiselect','nselected','','fr','Selectionné(s)','',NULL)");
         b.append(",('multiselect','search','','en','Search','',NULL)");
         b.append(",('multiselect','search','','fr','Chercher','',NULL)");
         b.append(",('multiselect','select_all','','en','Select all','',NULL)");

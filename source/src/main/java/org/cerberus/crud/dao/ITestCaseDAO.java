@@ -98,7 +98,18 @@ public interface ITestCaseDAO {
 
     AnswerList readTestCaseByStepsInLibrary(String test);
 
-    public AnswerList readByTestByCriteria(String system, String test, int start, int amount, String sortInformation, String searchTerm, Map<String, List<String>> individualSearch);
+    /**
+     *
+     * @param system
+     * @param test
+     * @param start
+     * @param amount
+     * @param sortInformation
+     * @param searchTerm
+     * @param individualSearch
+     * @return
+     */
+    public AnswerList readByTestByCriteria(List<String> system, String test, int start, int amount, String sortInformation, String searchTerm, Map<String, List<String>> individualSearch);
 
     /**
      *
@@ -121,7 +132,16 @@ public interface ITestCaseDAO {
 
     public AnswerItem readByKey(String test, String testCase);
 
-    public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+    /**
+     *
+     * @param system
+     * @param test
+     * @param searchParameter
+     * @param individualSearch
+     * @param columnName
+     * @return
+     */
+    public AnswerList<List<String>> readDistinctValuesByCriteria(List<String> system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 
     /**
      *

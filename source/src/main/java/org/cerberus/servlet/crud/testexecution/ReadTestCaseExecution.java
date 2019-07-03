@@ -653,7 +653,7 @@ public class ReadTestCaseExecution extends HttpServlet {
             case "exe.test":
             case "exe.testcase":
             case "exe.status":
-                values = testCaseService.readDistinctValuesByCriteria(system, test, "", null, columnName.replace("exe.", "tec."));
+                values = testCaseService.readDistinctValuesByCriteria(Arrays.asList(system), test, "", null, columnName.replace("exe.", "tec."));
                 break;
             /**
              * For columns country, environment get values from invariant

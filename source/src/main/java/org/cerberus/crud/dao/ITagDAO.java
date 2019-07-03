@@ -61,6 +61,7 @@ public interface ITagDAO {
      * @param sort
      * @param searchParameter
      * @param individualSearch
+     * @param system
      * @return
      */
     AnswerList<Tag> readByVariousByCriteria(String campaign, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch, List<String> system);

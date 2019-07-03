@@ -299,19 +299,35 @@ function displayHeaderLabel(doc) {
                 i++;
             }
             aL = aL + "Logout.jsp"
-            $("#menuLogout").attr("href", user.menu.logoutLink.replace('%LOGOUTURL%',encodeURIComponent(aL)) );
+            $("#menuLogout").attr("href", user.menu.logoutLink.replace('%LOGOUTURL%', encodeURIComponent(aL)));
             $("#menuLogout").attr("style", "display: block;");
 
         }
 
 
         // System menu
-        var systems = getSystem();
+//        var systems = getSystem();
         $("#MySystem option").remove();
-        for (var s in systems) {
-            $("#MySystem").append($('<option></option>').text(systems[s].value).val(systems[s].value));
+        for (var s in user.system) {
+            $("#MySystem").append($('<option></option>').text(user.system[s]).val(user.system[s]));
         }
-        $("#MySystem option[value='" + user.defaultSystem + "']").attr("selected", "selected");
+        for (var s in user.defaultSystems) {
+            $("#MySystem option[value='" + user.defaultSystems[s] + "']").attr("selected", "selected");
+        }
+
+
+        var select = $("#MySystem");
+        select.multiselect(new multiSelectConfSystem("MySystem"));
+
+        $("#MySystem").on("onChange", function () {
+            console.info("onChange");
+        });
+        $("#MySystem").on("onDropdownHidden", function () {
+            console.info("onDropdownHidden");
+        });
+        $("#MySystem").change(function () {
+            console.info("onDropdownHidden");
+        });
 
         // Language menu
         var languages = getLanguageFromSessionStorage();
@@ -327,6 +343,16 @@ function displayHeaderLabel(doc) {
         $("#MyLang option[value=" + user.language + "]").attr("selected", "selected");
 
     }
+}
+
+function multiSelectConfSystem(name) {
+    this.maxHeight = 450;
+    this.checkboxName = name;
+    this.buttonWidth = "100%";
+    this.enableFiltering = true;
+    this.enableCaseInsensitiveFiltering = true;
+    this.includeSelectAllOption = true;
+    this.includeSelectAllIfMoreThan = 2;
 }
 
 function ChangeLanguage() {
@@ -345,12 +371,11 @@ function ChangeLanguage() {
 }
 
 function ChangeSystem() {
-    var select = document.getElementById("MySystem");
-    var selectValue = select.options[select.selectedIndex].value;
+
     var user = getUser();
 
     $.ajax({url: "UpdateMyUserSystem",
-        data: {id: user.login, value: selectValue},
+        data: "id=" + user.login + "&" + $("#SysFilter").serialize(),
         async: false,
         success: function () {
             sessionStorage.removeItem("user");
@@ -445,7 +470,7 @@ function readSystem() {
 function getSystem() {
     var sys;
 
-    if (sessionStorage.getItem("sys") === null) {
+    if (sessionStorage.getItem("systems") === null) {
         readSystem();
     }
     sys = sessionStorage.getItem("systems");

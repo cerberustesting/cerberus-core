@@ -354,43 +354,6 @@ function massActionClick() {
     }
 }
 
-function loadTestFilters(selectTest) {
-    var jqxhr = $.get("ReadTest", "system=" + getUser().defaultSystem);
-    $.when(jqxhr).then(function (data) {
-        var messageType = getAlertType(data.messageType);
-        var option = $('<option></option>').attr("value", "ALL").text("-- ALL --");
-        $('#selectTest').append(option);
-        if (messageType === "success") {
-            var index;
-            for (index = 0; index < data.contentTable.length; index++) {
-                //the character " needs a special encoding in order to avoid breaking the string that creates the html element   
-                var encodedString = data.contentTable[index].test.replace(/\"/g, "%22");
-                var text = data.contentTable[index].test + ' - ' + data.contentTable[index].description;
-                var option = $('<option></option>').attr("value", encodedString).text(text);
-                $('#selectTest').append(option);
-            }
-            $('#selectTest').select2();
-
-            //if the test is passed as a url parameter, then we load the testcase list from that test. If not we load the list with testcases from all tests.
-            if (!isEmptyorALL(selectTest)) {
-//                $('#selectTest').val(selectTest);
-                $('#selectTest').val(selectTest).trigger("change");
-
-                var selectTestNew = $("#selectTest option:selected").attr("value");
-                if (selectTestNew !== selectTest) { // If the url test value does not exist in the combobox --> we display a warning message.
-                    showMessageMainPage("warning", "The test \"" + selectTest + "\" contains no testcase on application that belong to " + getUser().defaultSystem + " system.", false);
-                    option = $('<option></option>').attr("value", selectTest).text(selectTest);
-                    $('#selectTest').append(option);
-//                    $('#selectTest').val(selectTest);
-                    $('#selectTest').val(selectTest).trigger("change");
-                }
-            }
-        } else {
-            showMessageMainPage(messageType, data.message, false);
-        }
-    }).fail(handleErrorAjaxAfterTimeout);
-}
-
 function setActive(checkbox) {
     var test = checkbox.dataset.test;
     var testCase = checkbox.name;
