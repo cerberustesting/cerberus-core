@@ -20,6 +20,7 @@
 package org.cerberus.servlet.crud.testcampaign;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -32,6 +33,7 @@ import org.cerberus.crud.entity.Campaign;
 import org.cerberus.crud.entity.ScheduleEntry;
 import org.cerberus.crud.service.ICampaignService;
 import org.cerberus.crud.service.ILogEventService;
+import org.cerberus.crud.service.IMyVersionService;
 import org.cerberus.crud.service.IScheduleEntryService;
 import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.engine.entity.MessageEvent;
@@ -113,6 +115,10 @@ public class DeleteCampaign extends HttpServlet {
                 List<ScheduleEntry> schList = scheduleentryservice.readByName(key).getItem();
                 if (!schList.isEmpty()) {
                     schedAns = scheduleentryservice.deleteByCampaignName(key);
+                    if (schedAns.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                        IMyVersionService myVersionService = appContext.getBean(IMyVersionService.class);
+                        myVersionService.updateMyVersionString("scheduler_version", String.valueOf(new Date()));
+                    }
                 }
                 if (schedAns.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                     Campaign camp = (Campaign) resp.getItem();
@@ -127,8 +133,8 @@ public class DeleteCampaign extends HttpServlet {
 
                     }
 
-                }else{
-                finalAnswer = schedAns;
+                } else {
+                    finalAnswer = schedAns;
                 }
             }
         }

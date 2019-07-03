@@ -22,6 +22,7 @@ package org.cerberus.servlet.crud.testcampaign;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -37,11 +38,14 @@ import org.cerberus.crud.entity.ScheduleEntry;
 import org.cerberus.crud.factory.IFactoryCampaign;
 import org.cerberus.crud.factory.IFactoryCampaignLabel;
 import org.cerberus.crud.factory.IFactoryCampaignParameter;
+import org.cerberus.crud.factory.IFactoryLogEvent;
 import org.cerberus.crud.factory.IFactoryScheduleEntry;
+import org.cerberus.crud.factory.impl.FactoryLogEvent;
 import org.cerberus.crud.service.ICampaignLabelService;
 import org.cerberus.crud.service.ICampaignParameterService;
 import org.cerberus.crud.service.ICampaignService;
 import org.cerberus.crud.service.ILogEventService;
+import org.cerberus.crud.service.IMyVersionService;
 import org.cerberus.crud.service.IScheduleEntryService;
 import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.engine.entity.MessageEvent;
@@ -143,7 +147,11 @@ public class CreateCampaign extends HttpServlet {
             schedAns.setResultMessage(msg);
             if(!schList.isEmpty()){
             IScheduleEntryService scheduleentryservice = appContext.getBean(IScheduleEntryService.class);
-            schedAns = scheduleentryservice.createListSched(schList);          
+            schedAns = scheduleentryservice.createListSched(schList);
+                if (schedAns.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                    IMyVersionService myVersionService = appContext.getBean(IMyVersionService.class);
+                    myVersionService.updateMyVersionString("scheduler_version", String.valueOf(new Date()));
+                }
             }         
             if (schedAns.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
 
@@ -154,7 +162,9 @@ public class CreateCampaign extends HttpServlet {
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
                     logEventService.createForPrivateCalls("/CreateCampaign", "CREATE", "Create Campaign : " + camp.getCampaign(), request);
-
+                    IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
+                    
+            
                     if (parameter != null) {
                         JSONArray parameters = new JSONArray(parameter);
                         ICampaignParameterService campaignParameterService = appContext.getBean(ICampaignParameterService.class);
