@@ -38,7 +38,7 @@ function readUserFromDatabase() {
                 data.defaultSystemsQuery = systemQuery;
             } catch (err) {
                 // defaultSystem column is not yet in JSON format so we leave the column unchanged
-                data.defaultSystems = JSON.parse("[ " + data.defaultSystem + " ]");
+                data.defaultSystems = JSON.parse("[ \"" + data.defaultSystem + "\" ]");
                 data.defaultSystemsQuery = "&system=" + data.defaultSystem;
             }
             user = data;
