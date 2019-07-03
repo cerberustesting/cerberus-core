@@ -21,6 +21,7 @@ package org.cerberus.servlet.guipages;
 
 import com.google.gson.Gson;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -36,6 +37,7 @@ import org.cerberus.crud.service.ICountryEnvParamService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.statistics.BuildRevisionStatisticsEnv;
 import org.cerberus.statistics.IEnvironmentStatisticsService;
+import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.cerberus.util.answer.AnswerUtil;
@@ -82,7 +84,8 @@ public class GetEnvironmentsPerBuildRevision extends HttpServlet {
         /**
          * Parsing and securing all required parameters.
          */
-        String system = policy.sanitize(request.getParameter("system"));
+        List<String> system = ParameterParserUtil.parseListParamAndDecodeAndDeleteEmptyValue(request.getParameterValues("system"), Arrays.asList("DEFAULT"), "UTF-8");
+//        String system = policy.sanitize(request.getParameter("system"));
         //
         // Global boolean on the servlet that define if the user has permition to edit and delete object.
         boolean userHasPermissions = true;
@@ -111,7 +114,7 @@ public class GetEnvironmentsPerBuildRevision extends HttpServlet {
 
     }
 
-    private AnswerItem findBuildRevList(String system, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
+    private AnswerItem findBuildRevList(List<String> system, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
         AnswerItem<JSONObject> item = new AnswerItem<>();
         JSONObject object = new JSONObject();

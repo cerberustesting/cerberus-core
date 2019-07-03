@@ -144,6 +144,7 @@ function displayPageLabel() {
     $("#title").html(doc.getDocLabel("homepage", "title"));
 
     $("#reportStatus").html(doc.getDocOnline("page_integrationstatus", "environmentStatus"));
+    $("#systemHeader").html(doc.getDocOnline("invariant", "SYSTEM"));
     $("#buildHeader").html(doc.getDocOnline("buildrevisioninvariant", "versionname01"));
     $("#revisionHeader").html(doc.getDocOnline("buildrevisioninvariant", "versionname02"));
     $("#devHeader").html(doc.getDocOnline("page_integrationstatus", "DEV"));
@@ -309,7 +310,7 @@ function aoColumnsFunc() {
     var mDoc = getDoc();
     var status = readStatus();
     var statusLen = status.length;
-    console.log(doc.getDocOnline("application", "Application"));
+
     var aoColumns = [
         {"data": "Application", "bSortable": true, "sName": "Application", "title": doc.getDocOnline("application", "Application"), "sWidth": "50px",
             "mRender": function (data, type, oObj) {
@@ -340,7 +341,7 @@ function aoColumnsFunc() {
 function loadBuildRevTable() {
     $('#envTableBody tr').remove();
     selectSystem = "VC";
-    var jqxhr = $.getJSON("GetEnvironmentsPerBuildRevision", "system=" + getUser().defaultSystem);
+    var jqxhr = $.getJSON("GetEnvironmentsPerBuildRevision", "q=1" + getUser().defaultSystemsQuery);
     $.when(jqxhr).then(function (result) {
         if (result["contentTable"].length > 0) {
             $.each(result["contentTable"], function (idx, obj) {
@@ -368,15 +369,17 @@ function appendBuildRevRow(dtb) {
     var toto = counterFormated(dtb.nbEnvDEV);
 
     var row = $("<tr></tr>");
-    var buildRow = $("<td></td>").append(dtb.build);
-    var revRow = $("<td></td>").append(dtb.revision);
+    var systemCel = $("<td></td>").append(dtb.system);
+    var buildCel = $("<td></td>").append(dtb.build);
+    var revCel = $("<td></td>").append(dtb.revision);
     var nbdev = $("<td style=\"text-align: right;\"></td>").append(counterFormated(dtb.nbEnvDEV, dtb.build, dtb.revision, "DEV"));
     var nbqa = $("<td style=\"text-align: right;\"></td>").append(counterFormated(dtb.nbEnvQA, dtb.build, dtb.revision, "QA"));
     var nbuat = $("<td style=\"text-align: right;\"></td>").append(counterFormated(dtb.nbEnvUAT, dtb.build, dtb.revision, "UAT"));
     var nbprod = $("<td style=\"text-align: right;\"></td>").append(counterFormated(dtb.nbEnvPROD, dtb.build, dtb.revision, "PROD"));
 
-    row.append(buildRow);
-    row.append(revRow);
+    row.append(systemCel);
+    row.append(buildCel);
+    row.append(revCel);
     row.append(nbdev);
     row.append(nbqa);
     row.append(nbuat);

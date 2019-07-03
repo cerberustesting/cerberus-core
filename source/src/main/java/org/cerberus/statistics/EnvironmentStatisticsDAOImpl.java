@@ -27,11 +27,11 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-import org.cerberus.crud.entity.Invariant;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.SqlUtil;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -51,7 +51,7 @@ public class EnvironmentStatisticsDAOImpl implements IEnvironmentStatisticsDAO {
     private final int MAX_ROW_SELECTED = 1000;
 
     @Override
-    public AnswerList<BuildRevisionStatisticsEnv> getEnvironmentStatistics(String system) {
+    public AnswerList<BuildRevisionStatisticsEnv> getEnvironmentStatistics(List<String> system) {
         AnswerList response = new AnswerList<>();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -61,24 +61,32 @@ public class EnvironmentStatisticsDAOImpl implements IEnvironmentStatisticsDAO {
         StringBuilder query = new StringBuilder();
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
         //were applied -- used for pagination p
-        query.append("SELECT distinct c.Build, c.Revision, PROD.cnt PROD, UAT.cnt UAT, QA.cnt QA, DEV.cnt DEV ");
+        query.append("SELECT distinct c.system, c.Build, c.Revision, PROD.cnt PROD, UAT.cnt UAT, QA.cnt QA, DEV.cnt DEV ");
         query.append("FROM `countryenvparam` c ");
+        query.append("  JOIN invariant isys ON isys.value=c.system and isys.idname='SYSTEM' ");
         query.append("  LEFT OUTER JOIN ( SELECT Build, Revision, count(*) cnt from countryenvparam ");
-        query.append("    JOIN invariant i ON i.value=Environment and i.idname='ENVIRONMENT' where gp1='PROD' and build is not null and build<>'' and Active='Y' and `System`=? ");
+        query.append("    JOIN invariant i ON i.value=Environment and i.idname='ENVIRONMENT' where gp1='PROD' and build is not null and build<>'' and Active='Y' and ");
+        query.append(SqlUtil.generateInClause("`System`", system));
         query.append("    GROUP BY Build, Revision) as PROD on PROD.Build=c.Build and PROD.Revision=c.Revision ");
         query.append("  LEFT OUTER JOIN ( select Build, Revision, count(*) cnt from countryenvparam ");
-        query.append("    JOIN invariant i ON i.value=Environment and i.idname='ENVIRONMENT' where gp1='UAT' and build is not null and build<>'' and Active='Y' and `System`=? ");
+        query.append("    JOIN invariant i ON i.value=Environment and i.idname='ENVIRONMENT' where gp1='UAT' and build is not null and build<>'' and Active='Y' and ");
+        query.append(SqlUtil.generateInClause("`System`", system));
         query.append("    GROUP BY Build, Revision) as UAT on UAT.Build=c.Build and UAT.Revision=c.Revision ");
         query.append("  LEFT OUTER JOIN ( select Build, Revision, count(*) cnt from countryenvparam ");
-        query.append("    JOIN invariant i ON i.value=Environment and i.idname='ENVIRONMENT' where gp1='QA' and build is not null and build<>'' and Active='Y' and `System`=? ");
+        query.append("    JOIN invariant i ON i.value=Environment and i.idname='ENVIRONMENT' where gp1='QA' and build is not null and build<>'' and Active='Y' and ");
+        query.append(SqlUtil.generateInClause("`System`", system));
         query.append("    GROUP BY Build, Revision) as QA on QA.Build=c.Build and QA.Revision=c.Revision ");
         query.append("  LEFT OUTER JOIN ( select Build, Revision, count(*) cnt from countryenvparam ");
-        query.append("    JOIN invariant i ON i.value=Environment and i.idname='ENVIRONMENT' where gp1='DEV' and build is not null and build<>'' and Active='Y' and `System`=? ");
+        query.append("    JOIN invariant i ON i.value=Environment and i.idname='ENVIRONMENT' where gp1='DEV' and build is not null and build<>'' and Active='Y' and ");
+        query.append(SqlUtil.generateInClause("`System`", system));
         query.append("    GROUP BY Build, Revision) as DEV on DEV.Build=c.Build and DEV.Revision=c.Revision ");
-        query.append("	left outer join buildrevisioninvariant bri1 on c.build = bri1.versionname and bri1.level=1 and bri1.`System` = ? ");
-        query.append("	left outer join buildrevisioninvariant bri2 on c.revision = bri2.versionname and bri2.level=2 and bri2.`System` = ? ");
-        query.append("WHERE c.build is not null and c.build not in ('','NA') and Active='Y' and c.`System`=? ");
-        query.append("ORDER BY bri1.seq asc, bri2.seq asc;");
+        query.append("	left outer join buildrevisioninvariant bri1 on c.build = bri1.versionname and bri1.level=1 and ");
+        query.append(SqlUtil.generateInClause("bri1.`System`", system));
+        query.append("	left outer join buildrevisioninvariant bri2 on c.revision = bri2.versionname and bri2.level=2 and ");
+        query.append(SqlUtil.generateInClause("bri2.`System`", system));
+        query.append("WHERE c.build is not null and c.build not in ('','NA') and Active='Y' and ");
+        query.append(SqlUtil.generateInClause("c.`System`", system));
+        query.append("ORDER BY  isys.sort asc, c.system asc, bri1.seq asc, bri2.seq asc;");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -89,13 +97,11 @@ public class EnvironmentStatisticsDAOImpl implements IEnvironmentStatisticsDAO {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
                 int i = 1;
-                preStat.setString(i++, system);
-                preStat.setString(i++, system);
-                preStat.setString(i++, system);
-                preStat.setString(i++, system);
-                preStat.setString(i++, system);
-                preStat.setString(i++, system);
-                preStat.setString(i++, system);
+                for (int j = 0; j < 7; j++) {
+                    for (String string : system) {
+                        preStat.setString(i++, string);
+                    }
+                }
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     //gets the data
@@ -169,6 +175,7 @@ public class EnvironmentStatisticsDAOImpl implements IEnvironmentStatisticsDAO {
 
     private BuildRevisionStatisticsEnv loadFromResultSet(ResultSet rs) throws SQLException {
         BuildRevisionStatisticsEnv newBRStat = new BuildRevisionStatisticsEnv();
+        newBRStat.setSystem(ParameterParserUtil.parseStringParam(rs.getString("system"), ""));
         newBRStat.setBuild(ParameterParserUtil.parseStringParam(rs.getString("build"), ""));
         newBRStat.setRevision(ParameterParserUtil.parseStringParam(rs.getString("revision"), ""));
         newBRStat.setNbEnvDEV(ParameterParserUtil.parseIntegerParam(rs.getString("DEV"), 0));
