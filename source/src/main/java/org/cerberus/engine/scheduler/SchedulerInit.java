@@ -82,6 +82,7 @@ public class SchedulerInit {
 
         // read myversion scheduler_version
         MyVersion databaseSchedulerVersion;
+        try{
         databaseSchedulerVersion = MyversionService.findMyVersionByKey("scheduler_version");
         LOG.debug("Current version scheduler in Cerberus : " + instanceSchedulerVersion);
         LOG.debug("Current version scheduler in DB       : " + databaseSchedulerVersion.getValueString());
@@ -159,6 +160,9 @@ public class SchedulerInit {
         }
         }catch(Exception e){
         LOG.debug("failed to launch scheduler init :" + e);
+        }
+        }catch(Exception e){
+        LOG.debug("Execption : ", e);
         }
     }
 
