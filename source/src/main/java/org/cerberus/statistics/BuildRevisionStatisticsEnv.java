@@ -25,12 +25,21 @@ package org.cerberus.statistics;
  */
 public class BuildRevisionStatisticsEnv {
 
+    private String system;
     private String build;
     private String revision;
     private int nbEnvDEV;
     private int nbEnvQA;
     private int nbEnvUAT;
     private int nbEnvPROD;
+
+    public String getSystem() {
+        return system;
+    }
+
+    public void setSystem(String system) {
+        this.system = system;
+    }
 
     public String getBuild() {
         return build;
